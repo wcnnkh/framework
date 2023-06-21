@@ -11,7 +11,7 @@ public class JpaContextPostProcessor implements ContextPostProcessor {
 	
 	@Override
 	public void postProcessContext(ConfigurableContext context) {
-		for (Class<?> clazz : context.getContextClasses()) {
+		for (Class<?> clazz : context.getContextClasses().getServices()) {
 			if (clazz.isAnnotationPresent(Repository.class)) {
 				BeanDefinition definition = new RepositoryDefinition(context, clazz);
 				if (!context.containsDefinition(definition.getId())) {

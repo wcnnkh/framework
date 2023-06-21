@@ -1,18 +1,15 @@
 package io.basc.framework.jpa;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.Executables;
-import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
-import io.basc.framework.util.Elements;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+
+import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.util.Elements;
 
 public class JpaMethodInterceptor implements ExecutionInterceptor {
 	private final EntityManagerFactory entityManagerFactory;
@@ -24,26 +21,25 @@ public class JpaMethodInterceptor implements ExecutionInterceptor {
 	}
 
 	@Override
-	public Object intercept(Executables source, Executor executor, Elements<? extends Object> args) throws Throwable {
-		if(!(executor instanceof ReflectionMethodExecutor)) {
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
+		if (!(executor instanceof MethodExecutor)) {
 			return executor.execute(args);
 		}
-		
-		ReflectionMethodExecutor methodExecutor = (ReflectionMethodExecutor) executor;
+
+		MethodExecutor methodExecutor = (MethodExecutor) executor;
 		Method method = methodExecutor.getExecutable();
-		
-		if (Modifier.isAbstract(executor.getMethod().getModifiers())) {
+		if (Modifier.isAbstract(method.getModifiers())) {
 			EntityManager entityManager = null;
 			try {
 				entityManager = entityManagerFactory.createEntityManager();
-				return JpaUtils.execute(entityManager, repositoryClass, invoker.getMethod(), args);
+				return JpaUtils.execute(entityManager, repositoryClass, method, args.toArray());
 			} finally {
 				if (entityManager != null) {
 					entityManager.close();
 				}
 			}
 		}
-		return invoker.invoke(args);
+		return executor.execute(args);
 	}
 
 }

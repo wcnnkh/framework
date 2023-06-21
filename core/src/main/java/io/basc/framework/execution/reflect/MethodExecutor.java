@@ -10,10 +10,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReflectionMethodExecutor extends ReflectionMethod implements SwitchableTargetExecutor {
+public class MethodExecutor extends DefaultMethod implements SwitchableTargetExecutor {
 	private Object target;
 
-	public ReflectionMethodExecutor(TypeDescriptor source, Method executable, Object target) {
+	public MethodExecutor(TypeDescriptor source, Method executable, Object target) {
 		super(source, executable);
 		this.target = target;
 	}

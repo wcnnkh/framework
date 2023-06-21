@@ -37,4 +37,12 @@ public class DefaultBeanDefinition<T extends Executor> implements BeanDefinition
 	public Elements<? extends T> getConstructors() {
 		return executors;
 	}
+
+	@Override
+	public String toString() {
+		if (resourceDescription != null) {
+			return resourceDescription;
+		}
+		return super.toString();
+	}
 }

@@ -12,12 +12,12 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ReflectionMethod extends ReflectionExecutable<java.lang.reflect.Method> implements Method {
+public class DefaultMethod extends ReflectionExecutable<java.lang.reflect.Method> implements Method {
 	private Aop aop;
 	private Class<?>[] aopInterfaces;
 	private ExecutionInterceptor executionInterceptor;
 
-	public ReflectionMethod(TypeDescriptor source, java.lang.reflect.Method executable) {
+	public DefaultMethod(TypeDescriptor source, java.lang.reflect.Method executable) {
 		super(source, executable);
 	}
 

@@ -2,15 +2,15 @@ package io.basc.framework.context.config.support;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
-import io.basc.framework.beans.factory.config.support.ClassBeanDefinition;
+import io.basc.framework.beans.factory.config.support.BeanFactoryExecutor;
 import io.basc.framework.beans.factory.config.support.DefaultBeanDefinition;
-import io.basc.framework.beans.factory.config.support.MethodBeanDefinition;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.execution.reflect.ConstructorExecutor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
@@ -23,20 +23,37 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 				continue;
 			}
 
-			BeanDefinition beanDefinition = resolveBeanDefinition(clazz);
-			if (!registerBeanDefinition(context, beanDefinition)) {
-				continue;
-			}
-
-			for (Method method : getResolveMethod(clazz)) {
-				if (!canResolveBeanDefinition(clazz, beanDefinition, method)) {
-					continue;
+			String beanName = getBeanName(clazz);
+			BeanDefinition beanDefinition = resolveBeanDefinition(context, clazz);
+			if (registerBeanDefinition(context, beanName, beanDefinition)) {
+				for (String alias : getAliasNames(clazz)) {
+					context.registerAlias(beanName, alias);
 				}
 
-				BeanDefinition methodBeanDefinition = resolveBeanDefinition(clazz, beanDefinition, method);
-				registerBeanDefinition(context, methodBeanDefinition);
+				for (Method method : getResolveMethod(clazz)) {
+					if (!canResolveBeanDefinition(clazz, beanDefinition, method)) {
+						continue;
+					}
+
+					String methodBeanName = getBeanName(clazz, method);
+					BeanDefinition methodBeanDefinition = resolveBeanDefinition(context, clazz, beanName,
+							beanDefinition, method);
+					if (registerBeanDefinition(context, methodBeanName, methodBeanDefinition)) {
+						for (String alias : getAliasNames(clazz, method)) {
+							context.registerAlias(methodBeanName, alias);
+						}
+					}
+				}
 			}
 		}
+	}
+
+	protected Elements<String> getAliasNames(Class<?> clazz) {
+		return Elements.empty();
+	}
+
+	protected Elements<String> getAliasNames(Class<?> clazz, Method method) {
+		return Elements.empty();
 	}
 
 	protected abstract boolean canResolveBeanDefinition(Class<?> clazz);
@@ -48,36 +65,26 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 	protected abstract boolean canResolveBeanDefinition(Class<?> clazz, BeanDefinition originBeanDefinition,
 			Method method);
 
-	protected Scope getScop(Class<?> clazz) {
-		return Scope.DEFAULT;
-	}
-
-	protected Scope getScop(Class<?> clazz, Method method) {
-		return Scope.DEFAULT;
-	}
-
-	protected boolean isSingleton(Class<?> clazz) {
-		return true;
-	}
-
-	protected boolean isSingleton(Class<?> clazz, Method method) {
-		return true;
-	}
-	
 	@Nullable
-	protected BeanDefinition resolveBeanDefinition(Class<?> clazz) {
-		return new ClassBeanDefinition(getBeanName(clazz), clazz, getScop(clazz), isSingleton(clazz));
+	protected DefaultBeanDefinition<ConstructorExecutor> resolveBeanDefinition(ConfigurableContext context,
+			Class<?> clazz) {
+		DefaultBeanDefinition<ConstructorExecutor> beanDefinition = new DefaultBeanDefinition<>();
+		return beanDefinition;
 	}
 
-	protected boolean registerBeanDefinition(BeanDefinitionRegistry beanDefinitionRegistry,
+	protected boolean registerBeanDefinition(BeanDefinitionRegistry beanDefinitionRegistry, String beanName,
 			BeanDefinition beanDefinition) {
-		beanDefinitionRegistry.registerBeanDefinition(beanDefinition);
+		beanDefinitionRegistry.registerBeanDefinition(beanName, beanDefinition);
 		return true;
 	}
 
-	protected BeanDefinition resolveBeanDefinition(Class<?> clazz, BeanDefinition originBeanDefinition, Method method) {
-		return new MethodBeanDefinition(getBeanName(clazz, method), getScop(clazz, method), isSingleton(clazz, method),
-				originBeanDefinition, method, clazz);
+	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableContext context,
+			Class<?> clazz, String originBeanName, BeanDefinition originBeanDefinition, Method method) {
+		DefaultBeanDefinition<BeanFactoryExecutor> beanDefinition = new DefaultBeanDefinition<>();
+		BeanFactoryExecutor beanFactoryExecutor = new BeanFactoryExecutor(TypeDescriptor.valueOf(clazz), method,
+				originBeanName);
+		beanDefinition.setExecutors(Elements.singleton(beanFactoryExecutor));
+		return beanDefinition;
 	}
 
 	protected String getBeanName(Class<?> clazz) {
