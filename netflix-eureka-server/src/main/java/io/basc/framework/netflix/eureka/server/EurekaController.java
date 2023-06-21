@@ -28,7 +28,7 @@ import com.netflix.eureka.resources.StatusResource;
 import com.netflix.eureka.util.StatusInfo;
 import com.netflix.eureka.util.StatusInfo.Builder;
 
-import io.basc.framework.context.ioc.annotation.Value;
+import io.basc.framework.context.annotation.Value;
 import io.basc.framework.util.CollectionUtils;
 
 @Path("${eureka.dashboard.path:/}")

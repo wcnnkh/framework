@@ -6,8 +6,6 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.config.support.MethodHookBeanPostProcessor;
 import io.basc.framework.beans.factory.support.DefinitionFactoryBean;
-import io.basc.framework.context.ioc.annotation.Destroy;
-import io.basc.framework.context.ioc.annotation.InitMethod;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
 

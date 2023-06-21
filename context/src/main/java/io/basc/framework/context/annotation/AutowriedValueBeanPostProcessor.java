@@ -1,4 +1,4 @@
-package io.basc.framework.context.ioc.annotation;
+package io.basc.framework.context.annotation;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.support.BeanRegistrationManager;

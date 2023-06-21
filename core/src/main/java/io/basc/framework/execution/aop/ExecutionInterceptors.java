@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ExecutionInterceptors implements ExecutionInterceptor {
 	private final Elements<? extends ExecutionInterceptor> executionInterceptors;
-	private final Executor nextChain;
+	private Executor nextChain;
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {

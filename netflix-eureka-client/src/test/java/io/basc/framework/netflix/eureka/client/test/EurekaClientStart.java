@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
 import io.basc.framework.cloud.loadbalancer.DiscoveryLoadBalancer;
-import io.basc.framework.context.ioc.annotation.Autowired;
+import io.basc.framework.context.annotation.Autowired;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.logger.Logger;

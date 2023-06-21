@@ -45,7 +45,7 @@ public class Aop extends ProxyFactoryRegistry {
 			executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
 					getExecutionInterceptorRegistry(), executionInterceptor);
 		}
-		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors, null);
+		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
 
 		Class<?>[] useInterfaces = new Class<?>[] { DelegatedObject.class };
 		if (interfaces != null) {
@@ -74,7 +74,7 @@ public class Aop extends ProxyFactoryRegistry {
 			executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
 					getExecutionInterceptorRegistry(), executionInterceptor);
 		}
-		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors, null);
+		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
 		return new InterceptableExecutor(executor, useExecutionInterceptor);
 	}
 
@@ -93,7 +93,7 @@ public class Aop extends ProxyFactoryRegistry {
 		} else {
 			executionInterceptors = Elements.forArray(switchableTargetExecutionInterceptor, executionInterceptor);
 		}
-		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors, null);
+		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
 		return getProxy(sourceClass, interfaces, useExecutionInterceptor);
 	}
 

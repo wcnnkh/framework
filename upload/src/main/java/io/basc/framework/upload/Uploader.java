@@ -11,7 +11,7 @@ import java.util.List;
 
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.context.ioc.annotation.Value;
+import io.basc.framework.context.annotation.Value;
 import io.basc.framework.data.DataException;
 import io.basc.framework.data.resource.ResourceStorageService;
 import io.basc.framework.data.resource.ResourceUploadPolicy;

@@ -77,6 +77,11 @@ public class Symbol implements Serializable, Named {
 		return value;
 	}
 
+	public static <T> T getFirstOrCreate(String name, Class<T> type, Supplier<T> creator) {
+		Assert.requiredArgument(name != null, "name");
+		return getOrCreate(() -> getSymbols(type, name).first(), creator);
+	}
+
 	public static Elements<Symbol> getSymbols() {
 		ReadLock lock = READ_WRITE_LOCK.readLock();
 		lock.lock();
@@ -181,7 +186,7 @@ public class Symbol implements Serializable, Named {
 			lock.unlock();
 		}
 	}
-	
+
 	public static Elements<Class<?>> types() {
 		ReadLock lock = READ_WRITE_LOCK.readLock();
 		lock.lock();

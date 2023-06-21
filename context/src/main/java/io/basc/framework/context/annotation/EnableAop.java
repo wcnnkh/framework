@@ -7,6 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.basc.framework.execution.aop.ExecutionInterceptor;
+
 /**
  * 是否启用aop
  * 
@@ -20,5 +22,7 @@ import java.lang.annotation.Target;
 public @interface EnableAop {
 	Class<?>[] interfaces() default {};
 
-	String[] interceptors() default {};
+	Class<? extends ExecutionInterceptor>[] interceptors() default {};
+
+	String[] interceptorNames() default {};
 }

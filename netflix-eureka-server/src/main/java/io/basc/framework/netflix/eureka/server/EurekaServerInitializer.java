@@ -5,8 +5,8 @@ import javax.servlet.ServletContext;
 import io.basc.framework.beans.factory.Destroy;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
+import io.basc.framework.context.annotation.Autowired;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
