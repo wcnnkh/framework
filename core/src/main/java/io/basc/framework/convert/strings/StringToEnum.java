@@ -1,4 +1,4 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert.strings;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.Converter;

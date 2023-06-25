@@ -1,4 +1,4 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert.strings;
 
 import java.math.BigDecimal;
 import java.util.function.Function;

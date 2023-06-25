@@ -10,7 +10,7 @@ import java.util.function.LongSupplier;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.StringConverter;
+import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;

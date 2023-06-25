@@ -3,7 +3,7 @@ package io.basc.framework.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.convert.lang.StringConverter;
+import io.basc.framework.convert.strings.StringConverter;
 
 public class StringUtilsTest {
 

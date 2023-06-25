@@ -4,6 +4,7 @@ import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.util.Assert;
 
 public class StringConversionService implements ConversionService {

@@ -1,4 +1,4 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert.strings;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -10,12 +10,19 @@ import java.util.TimeZone;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFactory;
 import io.basc.framework.convert.ConversionFailedException;
+import io.basc.framework.convert.lang.ObjectToString;
+import io.basc.framework.convert.lang.ReaderToString;
+import io.basc.framework.convert.lang.ResourceToString;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Optional;
 
 public class StringConverter extends ConversionFactory<String, ConversionException> {
 	public static final StringConverter DEFAULT = new StringConverter();
+
+	static {
+		DEFAULT.registerInverter(Object.class, ObjectToString.DEFAULT::convert);
+	}
 
 	public static <T> Optional<T> parse(String source, Class<T> type) {
 		T value = DEFAULT.convert(source, type);
@@ -89,7 +96,6 @@ public class StringConverter extends ConversionFactory<String, ConversionExcepti
 		return value == null ? defaultValue : value.shortValue();
 	}
 
-	private ObjectToString objectToString = ObjectToString.DEFAULT;
 	private ReaderToString readerToString = ReaderToString.DEFAULT;
 	private ResourceToString resourceToString = ResourceToString.DEFAULT;
 
@@ -149,12 +155,6 @@ public class StringConverter extends ConversionFactory<String, ConversionExcepti
 				throw new ConversionFailedException(sourceType, targetType, source, e);
 			}
 		});
-
-		registerInverter(Object.class, objectToString::convert);
-	}
-
-	public ObjectToString getObjectToString() {
-		return objectToString;
 	}
 
 	public ReaderToString getReaderToString() {
@@ -223,11 +223,6 @@ public class StringConverter extends ConversionFactory<String, ConversionExcepti
 
 	public StringToTimeZone getStringToTimeZone() {
 		return stringToTimeZone;
-	}
-
-	public void setObjectToString(ObjectToString objectToString) {
-		Assert.requiredArgument(objectToString != null, "objectToString");
-		this.objectToString = objectToString;
 	}
 
 	public void setReaderToString(ReaderToString readerToString) {

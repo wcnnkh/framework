@@ -17,16 +17,16 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	private final BeanDefinition beanDefinition;
 	private final ExecutionParametersExtractor executionParametersExtractor;
 	private volatile Elements<? extends Object> singletonConstructionParameters;
-	private volatile Executor executor;
+	private volatile Executor constructor;
 	private volatile Object singletonObject;
 
-	public Executor getExecutor() {
-		if (executor == null) {
+	public Executor getConstructor() {
+		if (constructor == null) {
 			synchronized (this) {
-				if (executor == null) {
-					for (Executor executor : beanDefinition.getExecutors()) {
+				if (constructor == null) {
+					for (Executor executor : beanDefinition.getConstructors()) {
 						if (executionParametersExtractor.canExtractExecutionParameters(executor)) {
-							this.executor = executor;
+							this.constructor = executor;
 							break;
 						}
 					}
@@ -34,15 +34,15 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 			}
 		}
 
-		if (executor == null) {
+		if (constructor == null) {
 			throw new FatalBeanException("Unable to construct this bean");
 		}
-		return executor;
+		return constructor;
 	}
 
 	@Override
 	public ResolvableType getType() {
-		return getExecutor().getReturnType().getResolvableType();
+		return getConstructor().getReturnType().getResolvableType();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	}
 
 	private Object createObject() {
-		Executor executor = getExecutor();
+		Executor executor = getConstructor();
 		Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
 		if (isSingleton()) {
 			this.singletonConstructionParameters = args;
@@ -82,11 +82,11 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 
 	@Override
 	public void destroy(Object instance) throws BeansException {
-		beanDefinition.destroy(getExecutor(), instance);
+		beanDefinition.destroy(getConstructor(), instance);
 	}
 
 	@Override
 	public void init(Object instance) throws BeansException {
-		beanDefinition.init(getExecutor(), instance);
+		beanDefinition.init(getConstructor(), instance);
 	}
 }

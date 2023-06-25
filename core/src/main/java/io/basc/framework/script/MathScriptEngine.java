@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.basc.framework.convert.lang.StringConverter;
+import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;

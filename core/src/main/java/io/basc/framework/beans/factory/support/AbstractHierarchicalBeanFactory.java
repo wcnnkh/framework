@@ -13,7 +13,7 @@ public abstract class AbstractHierarchicalBeanFactory extends AbstractListableBe
 
 	public void setParentBeanFactory(BeanFactory parentBeanFactory) {
 		if (parentBeanFactory == this) {
-
+			
 		}
 
 		BeanFactory parent = parentBeanFactory;

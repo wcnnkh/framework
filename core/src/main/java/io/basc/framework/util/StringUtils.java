@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.function.IntPredicate;
-import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
@@ -1486,35 +1485,35 @@ public final class StringUtils {
 	 * @param charSequence
 	 * @return
 	 */
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence) {
+	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence) {
 		return split(charSequence, DEFAULT_SEPARATOR);
 	}
 
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens,
+	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens,
 			boolean ignoreEmptyTokens, CharSequence... filters) {
 		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
 	}
 
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, CharSequence... filters) {
+	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence, CharSequence... filters) {
 		if (charSequence == null) {
-			return Stream.empty();
+			return Elements.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
 
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence,
+	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence,
 			Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
-			return Stream.empty();
+			return Elements.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
 
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, int beginIndex, int endIndex,
+	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence, int beginIndex, int endIndex,
 			Collection<? extends CharSequence> filters) {
 		if (StringUtils.isEmpty(charSequence)) {
-			return Stream.empty();
+			return Elements.empty();
 		}
 
 		boolean find = false;
@@ -1526,9 +1525,9 @@ public final class StringUtils {
 		}
 
 		if (!find) {
-			return Arrays.asList(new CharSequenceSplitSegment(charSequence)).stream();
+			return Elements.singleton(new CharSequenceSplitSegment(charSequence));
 		}
-		return Streams.stream(new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
+		return Elements.of(() -> new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
 	}
 
 	public static String[] splitToArray(CharSequence charSequence) {
@@ -1631,26 +1630,26 @@ public final class StringUtils {
 		return true;
 	}
 
-	public static Stream<String> tokenize(String text, String delimiters) {
+	public static Elements<String> tokenize(String text, String delimiters) {
 		if (StringUtils.isEmpty(text)) {
-			return Stream.empty();
+			return Elements.empty();
 		}
 
 		return tokenize(new StringTokenizer(text, delimiters));
 	}
 
-	public static Stream<String> tokenize(String str, String delimiters, boolean trimTokens,
+	public static Elements<String> tokenize(String str, String delimiters, boolean trimTokens,
 			boolean ignoreEmptyTokens) {
 		return tokenize(str, delimiters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
 	}
 
-	public static Stream<String> tokenize(StringTokenizer tokenizer) {
+	public static Elements<String> tokenize(StringTokenizer tokenizer) {
 		if (tokenizer == null) {
-			return Stream.empty();
+			return Elements.empty();
 		}
 
-		Iterator<String> iterator = new Iterator<String>() {
+		return Elements.of(() -> new Iterator<String>() {
 			@Override
 			public boolean hasNext() {
 				return tokenizer.hasMoreTokens();
@@ -1660,8 +1659,7 @@ public final class StringUtils {
 			public String next() {
 				return tokenizer.nextToken();
 			}
-		};
-		return Streams.stream(iterator);
+		});
 	}
 
 	/**

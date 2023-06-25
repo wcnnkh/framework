@@ -1,4 +1,4 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert.strings;
 
 import java.util.function.ToDoubleFunction;
 
