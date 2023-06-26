@@ -58,8 +58,8 @@ public abstract class ConfigurationPropertiesBeanPostProcessor extends DefaultOb
 	}
 
 	@Override
-	public void postProcessAfterDestory(Object bean, String beanName) throws BeansException {
-		BeanPostProcessor.super.postProcessAfterDestory(bean, beanName);
+	public void postProcessAfterDestroy(Object bean, String beanName) throws BeansException {
+		BeanPostProcessor.super.postProcessAfterDestroy(bean, beanName);
 		if (isSingleton(beanName)) {
 			beanRegistrationManager.unregister(beanName);
 		}

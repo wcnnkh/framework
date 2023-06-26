@@ -43,8 +43,8 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 	}
 
 	@Override
-	public void postProcessAfterDestory(Object bean, String beanName) throws BeansException {
-		super.postProcessAfterDestory(bean, beanName);
+	public void postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		super.postProcessAfterInitialization(bean, beanName);
 		if (isSingleton(beanName)) {
 			beanRegistrationManager.unregister(beanName);
 		}
