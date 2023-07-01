@@ -1,4 +1,4 @@
-package io.basc.framework.net.uri.convert;
+package io.basc.framework.net.uri;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -9,27 +9,42 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ReversibleConverter;
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.util.StringUtils;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
-public class MapToQueryString implements
-		ReversibleConverter<Map<String, String>, String, ConversionException>, Codec<Map<String, String>, String> {
+@Getter
+public class QueryStringConverter extends StringConverter implements Codec<Map<String, String>, String> {
 	private final Codec<String, String> keyCodec;
 	private final Codec<String, String> valueCodec;
+	private final ConversionService conversionService;
 
 	@Override
-	public String convert(Map<String, String> source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		return encode(source);
+		if (isConverterRegistred(targetType.getType())) {
+			return super.convert(source, sourceType, targetType);
+		}
+
+		Map<String, String> map = decode(source);
+		return conversionService.convert(map, TypeDescriptor.map(Map.class, String.class, String.class), targetType);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, String> invert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		return decode(source);
+		if (isInverterRegistred(sourceType.getType())) {
+			return super.invert(source, sourceType, targetType);
+		}
+
+		Map<String, String> map = (Map<String, String>) conversionService.convert(source, sourceType,
+				TypeDescriptor.map(Map.class, String.class, String.class));
+		return encode(map);
 	}
 
 	@Override
@@ -77,4 +92,7 @@ public class MapToQueryString implements
 		return map;
 	}
 
+	public void appendTo(String target, Map<String, ?> parameterMap) {
+
+	}
 }

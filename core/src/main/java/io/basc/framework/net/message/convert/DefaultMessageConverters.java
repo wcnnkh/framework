@@ -3,7 +3,7 @@ package io.basc.framework.net.message.convert;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.lang.ConfigurableConversionService;
+import io.basc.framework.convert.config.support.ConfigurableConversionService;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
@@ -19,7 +19,7 @@ public class DefaultMessageConverters extends MessageConverters {
 
 	public DefaultMessageConverters(ConversionService conversionService) {
 		this.conversionService = new ConfigurableConversionService();
-		this.conversionService.registerLast(conversionService);
+		this.conversionService.getRegistry().registerLast(conversionService);
 		afterConfigure();
 	}
 

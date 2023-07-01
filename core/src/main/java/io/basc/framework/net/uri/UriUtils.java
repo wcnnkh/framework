@@ -5,21 +5,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import io.basc.framework.codec.Encoder;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.Value;
 
 public class UriUtils {
 	public static final String QUERY_CONNECTOR = "?";
@@ -198,120 +188,6 @@ public class UriUtils {
 			queryString = queryString.substring(0, index - 1);
 		}
 		return UriComponentsBuilder.newInstance().query(queryString).build().getQueryParams();
-	}
-
-	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder) {
-		return toQueryString(body, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
-	}
-
-	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder,
-			@Nullable String parameterConnector, @Nullable String nameValueConnector) {
-		if (body == null) {
-			return null;
-		}
-
-		if (Value.isBaseType(body.getClass())) {
-			return body.toString();
-		}
-		
-		return toQueryString(MapperUtils.toMap(body), encoder, parameterConnector, nameValueConnector);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private static String toQueryString(String key, Collection values, @Nullable Encoder<String, String> encoder,
-			@Nullable String parameterConnector, @Nullable String nameValueConnector) {
-		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (Object value : values) {
-			if (value == null) {
-				continue;
-			}
-
-			if (sb.length() > 0 && parameterConnector != null) {
-				sb.append(parameterConnector);
-			}
-
-			sb.append(key);
-			if (nameValueConnector != null) {
-				sb.append(nameValueConnector);
-			}
-			if (encoder != null) {
-				sb.append(encoder.encode(value.toString()));
-			} else {
-				sb.append(value.toString());
-			}
-		}
-		return sb.toString();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder) {
-		return toQueryString(parameterMap, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder,
-			@Nullable String parameterConnector, @Nullable String nameValueConnector) {
-		if (CollectionUtils.isEmpty(parameterMap)) {
-			return null;
-		}
-
-		Map parameters = CollectionUtils.sort(parameterMap);
-		StringBuilder sb = new StringBuilder();
-		Set<Entry> entries = parameters.entrySet();
-		for (Map.Entry entry : entries) {
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
-			}
-
-			String key = entry.getKey().toString();
-			String text;
-			if (value instanceof Collection) {
-				text = toQueryString(key, (Collection) value, encoder, parameterConnector, nameValueConnector);
-			} else if (value.getClass().isArray()) {
-				text = toQueryString(key, ArrayUtils.toList(value), encoder, parameterConnector, nameValueConnector);
-			} else {
-				text = toQueryString(key, Arrays.asList(value), encoder, parameterConnector, nameValueConnector);
-			}
-
-			if (text == null) {
-				continue;
-			}
-
-			if (sb.length() != 0 && parameterConnector != null) {
-				sb.append(parameterConnector);
-			}
-
-			sb.append(text);
-		}
-		return sb.toString();
-	}
-
-	public static String appendQueryParams(String url, Map<String, ?> paramMap,
-			@Nullable Encoder<String, String> encoder) {
-		if (paramMap == null || paramMap.isEmpty()) {
-			return url;
-		}
-
-		StringBuilder sb = new StringBuilder(128);
-		if (!StringUtils.isEmpty(url)) {
-			sb.append(url);
-			if (url.lastIndexOf(QUERY_CONNECTOR) == -1) {
-				sb.append(QUERY_CONNECTOR);
-			} else {
-				sb.append(PARAMETER_CONNECTOR);
-			}
-		}
-
-		String text = toQueryString(paramMap, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
-		if (text != null) {
-			sb.append(text);
-		}
-		return sb.toString();
 	}
 
 	public static String encode(String source, String charsetName) {

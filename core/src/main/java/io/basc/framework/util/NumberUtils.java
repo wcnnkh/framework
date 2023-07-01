@@ -22,8 +22,10 @@ import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.function.IntPredicate;
 
 import io.basc.framework.execution.parameter.ParameterException;
+import io.basc.framework.lang.Nullable;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
@@ -467,5 +469,120 @@ public abstract class NumberUtils {
 			charBuffer.put("0");
 		}
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
+	}
+
+	@Nullable
+	public static String extractNumberic(int radix, boolean unsigned, @Nullable CharSequence source,
+			@Nullable IntPredicate filter) {
+		if (StringUtils.isEmpty(source)) {
+			return null;
+		}
+
+		char[] chars = new char[source.length()];
+		int pos = 0;
+		boolean findPoint = false;
+		for (int i = 0, len = source.length(); i < len; i++) {
+			char chr = source.charAt(i);
+			if (isNumberSign(chr)) {
+				if (pos == 0) {
+					// 无符号类型的不应该存在符号
+					if (unsigned && chr == '-') {
+						// 不支持解析？
+						return null;
+					}
+				}
+				chars[pos++] = chr;
+				continue;
+			}
+
+			if (radix > 10) {
+				if (chr == '#' && !findPoint && (pos == 0 || (pos == 1 && isNumberSign(chars[0])))) {
+					chars[pos++] = chr;
+					continue;
+				}
+			}
+
+			if (chr == '.') {
+				if (findPoint) {
+					continue;
+				}
+
+				findPoint = true;
+				chars[pos++] = chr;
+				continue;
+			}
+
+			if (filter == null || filter.test(chr)) {
+				chars[pos++] = chr;
+			}
+		}
+		return pos == 0 ? null : new String(chars, 0, pos);
+	}
+
+	public static String extractNumberic(int radix, boolean unsigned, CharSequence source) {
+		return extractNumberic(radix, unsigned, source,
+				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
+	}
+
+	public static boolean isNumeric(int radix, boolean unsigned, CharSequence source) {
+		return isNumeric(radix, unsigned, source,
+				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
+	}
+
+	public static boolean isNumeric(int radix, boolean unsigned, @Nullable CharSequence source,
+			@Nullable IntPredicate filter) {
+		if (StringUtils.isEmpty(source)) {
+			return false;
+		}
+
+		boolean findPoint = false;
+		char[] chars = new char[source.length()];
+		int pos = 0;
+		for (int i = 0, len = source.length(); i < len; i++) {
+			char chr = source.charAt(i);
+			if (chr == '-' || chr == '+') {
+				if (pos == 0) {
+					// 如果是无符号的
+					if (unsigned && chr == '-') {
+						return false;
+					}
+
+					pos++;
+					continue;
+				}
+
+				return false;
+			}
+
+			if (radix > 10) {
+				if (chr == '#') {
+					if (!findPoint && (pos == 0 || (pos == 1 && isNumberSign(chars[0])))) {
+						chars[pos++] = chr;
+						continue;
+					}
+					return false;
+				}
+			}
+
+			if (chr == '.') {
+				if (findPoint) {
+					return false;
+				}
+
+				findPoint = true;
+				pos++;
+				continue;
+			}
+
+			if (filter != null && !filter.test(chr)) {
+				return false;
+			}
+			pos++;
+		}
+		return true;
+	}
+
+	public static boolean isNumberSign(char chr) {
+		return chr == '-' || chr == '+';
 	}
 }

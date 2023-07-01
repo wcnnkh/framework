@@ -1,21 +1,22 @@
 package io.basc.framework.convert.strings;
 
-import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.config.support.DefaultReversibleConverterRegistry;
-import io.basc.framework.convert.lang.ReaderToString;
 import io.basc.framework.convert.lang.ResourceToString;
-import io.basc.framework.io.Resource;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class StringConverter extends DefaultReversibleConverterRegistry<String, ConversionException> {
 	public static final StringConverter DEFAULT = new StringConverter();
 
@@ -91,217 +92,46 @@ public class StringConverter extends DefaultReversibleConverterRegistry<String, 
 		return value == null ? defaultValue : value.shortValue();
 	}
 
-	private ReaderToString readerToString = ReaderToString.DEFAULT;
+	private ReaderConverter readerConverter = new ReaderConverter();
+	private EnumConverter enumConverter = new EnumConverter();
+	private CharsetConverter charsetConverter = new CharsetConverter();
+	private ClassConverter classConverter = new ClassConverter();
+	private TimeZoneConverter timeZoneConverter = new TimeZoneConverter();
+	private CurrencyConverter currencyConverter = new CurrencyConverter();
+	private LocaleConverter localeConverter = new LocaleConverter();
+	private BigDecimalConverter bigDecimalConverter = new BigDecimalConverter();
+	private BigIntegerConverter bigIntegerConverter = new BigIntegerConverter();
+
+	// 基本类型
+	private CharacterConverter characterConverter = new CharacterConverter();
+	private BooleanConverter booleanConverter = new BooleanConverter();
+	private DoubleConverter doubleConverter = new DoubleConverter();
+	private ByteConverter byteConverter = new ByteConverter();
+	private FloatConverter floatConverter = new FloatConverter();
+	private ShortConverter shortConverter = new ShortConverter();
+	private IntegerConverter integerConverter = new IntegerConverter();
+	private LongConverter longConverter = new LongConverter();
+
 	private ResourceToString resourceToString = ResourceToString.DEFAULT;
 
-	private StringToBoolean stringToBoolean = StringToBoolean.DEFAULT;
-	private StringToByte stringToByte = StringToByte.DEFAULT;
-	private StringToCharacter stringToCharacter = StringToCharacter.DEFAULT;
-	private StringToCharset stringToCharset = StringToCharset.DEFAULT;
-	private StringToClass stringToClass = StringToClass.DEFAULT;
-	private StringToCurrency stringToCurrency = StringToCurrency.DEFAULT;
-	private StringToDouble stringToDouble = StringToDouble.DEFAULT;
-	private StringToEnum stringToEnum = StringToEnum.DEFAULT;
-	private StringToFloat stringToFloat = StringToFloat.DEFAULT;
-	private StringToInteger stringToInteger = StringToInteger.DEFAULT;
-	private StringToLocale stringToLocale = StringToLocale.DEFAULT;
-	private StringToLong stringToLong = StringToLong.DEFAULT;
-	private StringToNumber stringToNumber = StringToNumber.DEFAULT;
-	private StringToShort stringToShort = StringToShort.DEFAULT;
-	private StringToTimeZone stringToTimeZone = StringToTimeZone.DEFAULT;
-
 	public StringConverter() {
-		registerConverter(char.class, (source, sourceType, targetType) -> stringToCharacter.applyAsChar(source));
-		registerConverter(Character.class, (source, sourceType, targetType) -> stringToCharacter.apply(source));
-		registerConverter(boolean.class, (source, sourceType, targetType) -> stringToBoolean.applyAsBoolean(source));
-		registerConverter(Boolean.class, (source, sourceType, targetType) -> stringToBoolean.apply(source));
-		registerConverter(byte.class, (source, sourceType, targetType) -> stringToByte.applyAsByte(source));
-		registerConverter(Byte.class, (source, sourceType, targetType) -> stringToByte.apply(source));
-		registerConverter(short.class, (source, sourceType, targetType) -> stringToShort.applyAsShort(source));
-		registerConverter(Short.class, (source, sourceType, targetType) -> stringToShort.apply(source));
-		registerConverter(int.class, (source, sourceType, targetType) -> stringToInteger.applyAsInt(source));
-		registerConverter(Integer.class, (source, sourceType, targetType) -> stringToInteger.apply(source));
-		registerConverter(long.class, (source, sourceType, targetType) -> stringToLong.applyAsLong(source));
-		registerConverter(Long.class, (source, sourceType, targetType) -> stringToLong.apply(source));
-		registerConverter(float.class, (source, sourceType, targetType) -> stringToFloat.applyAsFloat(source));
-		registerConverter(Float.class, (source, sourceType, targetType) -> stringToFloat.apply(source));
-		registerConverter(double.class, (source, sourceType, targetType) -> stringToDouble.applyAsDouble(source));
-		registerConverter(Double.class, (source, sourceType, targetType) -> stringToDouble.apply(source));
-		registerConverter(Enum.class, stringToEnum);
-		registerConverter(Number.class, (source, sourceType, targetType) -> stringToNumber.apply(source));
-		registerConverter(Locale.class, (source, sourceType, targetType) -> stringToLocale.apply(source));
-		registerConverter(Charset.class, (source, sourceType, targetType) -> stringToCharset.apply(source));
-		registerConverter(Currency.class, (source, sourceType, targetType) -> stringToCurrency.apply(source));
-		registerConverter(TimeZone.class, (source, sourceType, targetType) -> stringToTimeZone.apply(source));
-		registerConverter(Class.class, (source, sourceType, targetType) -> stringToClass.apply(source));
+		registerReversibleConverter(Reader.class, readerConverter);
+		registerReversibleConverter(Enum.class, enumConverter);
+		registerReversibleConverter(Charset.class, charsetConverter);
+		registerReversibleConverter(Class.class, classConverter);
+		registerReversibleConverter(TimeZone.class, timeZoneConverter);
+		registerReversibleConverter(Currency.class, currencyConverter);
+		registerReversibleConverter(Locale.class, localeConverter);
+		registerReversibleConverter(BigDecimal.class, bigDecimalConverter);
+		registerReversibleConverter(BigInteger.class, bigIntegerConverter);
 
-		registerInverter(Reader.class, (source, sourceType, targetType) -> {
-			try {
-				return readerToString.convert(source, sourceType, targetType);
-			} catch (IOException e) {
-				throw new ConversionFailedException(sourceType, targetType, source, e);
-			}
-		});
-
-		registerInverter(Resource.class, (source, sourceType, targetType) -> {
-			try {
-				return resourceToString.convert(source, sourceType, targetType);
-			} catch (IOException e) {
-				throw new ConversionFailedException(sourceType, targetType, source, e);
-			}
-		});
-	}
-
-	public ReaderToString getReaderToString() {
-		return readerToString;
-	}
-
-	public ResourceToString getResourceToString() {
-		return resourceToString;
-	}
-
-	public StringToBoolean getStringToBoolean() {
-		return stringToBoolean;
-	}
-
-	public StringToByte getStringToByte() {
-		return stringToByte;
-	}
-
-	public StringToCharacter getStringToCharacter() {
-		return stringToCharacter;
-	}
-
-	public StringToCharset getStringToCharset() {
-		return stringToCharset;
-	}
-
-	public StringToClass getStringToClass() {
-		return stringToClass;
-	}
-
-	public StringToCurrency getStringToCurrency() {
-		return stringToCurrency;
-	}
-
-	public StringToDouble getStringToDouble() {
-		return stringToDouble;
-	}
-
-	public StringToEnum getStringToEnum() {
-		return stringToEnum;
-	}
-
-	public StringToFloat getStringToFloat() {
-		return stringToFloat;
-	}
-
-	public StringToInteger getStringToInteger() {
-		return stringToInteger;
-	}
-
-	public StringToLocale getStringToLocale() {
-		return stringToLocale;
-	}
-
-	public StringToLong getStringToLong() {
-		return stringToLong;
-	}
-
-	public StringToNumber getStringToNumber() {
-		return stringToNumber;
-	}
-
-	public StringToShort getStringToShort() {
-		return stringToShort;
-	}
-
-	public StringToTimeZone getStringToTimeZone() {
-		return stringToTimeZone;
-	}
-
-	public void setReaderToString(ReaderToString readerToString) {
-		Assert.requiredArgument(readerToString != null, "readerToString");
-		this.readerToString = readerToString;
-	}
-
-	public void setResourceToString(ResourceToString resourceToString) {
-		Assert.requiredArgument(resourceToString != null, "resourceToString");
-		this.resourceToString = resourceToString;
-	}
-
-	public void setStringToBoolean(StringToBoolean stringToBoolean) {
-		Assert.requiredArgument(stringToBoolean != null, "stringToBoolean");
-		this.stringToBoolean = stringToBoolean;
-	}
-
-	public void setStringToByte(StringToByte stringToByte) {
-		Assert.requiredArgument(stringToByte != null, "stringToByte");
-		this.stringToByte = stringToByte;
-	}
-
-	public void setStringToCharacter(StringToCharacter stringToCharacter) {
-		Assert.requiredArgument(stringToCharacter != null, "stringToCharacter");
-		this.stringToCharacter = stringToCharacter;
-	}
-
-	public void setStringToCharset(StringToCharset stringToCharset) {
-		Assert.requiredArgument(stringToCharset != null, "stringToCharset");
-		this.stringToCharset = stringToCharset;
-	}
-
-	public void setStringToClass(StringToClass stringToClass) {
-		Assert.requiredArgument(stringToClass != null, "stringToClass");
-		this.stringToClass = stringToClass;
-	}
-
-	public void setStringToCurrency(StringToCurrency stringToCurrency) {
-		Assert.requiredArgument(stringToCurrency != null, "stringToCurrency");
-		this.stringToCurrency = stringToCurrency;
-	}
-
-	public void setStringToDouble(StringToDouble stringToDouble) {
-		Assert.requiredArgument(stringToDouble != null, "stringToDouble");
-		this.stringToDouble = stringToDouble;
-	}
-
-	public void setStringToEnum(StringToEnum stringToEnum) {
-		Assert.requiredArgument(stringToEnum != null, "stringToEnum");
-		this.stringToEnum = stringToEnum;
-	}
-
-	public void setStringToFloat(StringToFloat stringToFloat) {
-		Assert.requiredArgument(stringToFloat != null, "stringToFloat");
-		this.stringToFloat = stringToFloat;
-	}
-
-	public void setStringToInteger(StringToInteger stringToInteger) {
-		Assert.requiredArgument(stringToInteger != null, "stringToInteger");
-		this.stringToInteger = stringToInteger;
-	}
-
-	public void setStringToLocale(StringToLocale stringToLocale) {
-		Assert.requiredArgument(stringToLocale != null, "stringToLocale");
-		this.stringToLocale = stringToLocale;
-	}
-
-	public void setStringToLong(StringToLong stringToLong) {
-		Assert.requiredArgument(stringToLong != null, "stringToLong");
-		this.stringToLong = stringToLong;
-	}
-
-	public void setStringToNumber(StringToNumber stringToNumber) {
-		Assert.requiredArgument(stringToNumber != null, "stringToNumber");
-		this.stringToNumber = stringToNumber;
-	}
-
-	public void setStringToShort(StringToShort stringToShort) {
-		Assert.requiredArgument(stringToShort != null, "stringToShort");
-		this.stringToShort = stringToShort;
-	}
-
-	public void setStringToTimeZone(StringToTimeZone stringToTimeZone) {
-		Assert.requiredArgument(stringToTimeZone != null, "stringToTimeZone");
-		this.stringToTimeZone = stringToTimeZone;
+		registerReversibleConverter(Character.class, characterConverter);
+		registerReversibleConverter(Boolean.class, booleanConverter);
+		registerReversibleConverter(Double.class, doubleConverter);
+		registerReversibleConverter(Byte.class, byteConverter);
+		registerReversibleConverter(Float.class, floatConverter);
+		registerReversibleConverter(Short.class, shortConverter);
+		registerReversibleConverter(Integer.class, integerConverter);
+		registerReversibleConverter(Long.class, longConverter);
 	}
 }
