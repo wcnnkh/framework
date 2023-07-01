@@ -2,13 +2,13 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConverterNotFoundException;
-import io.basc.framework.convert.ReversibleMapperFactory;
+import io.basc.framework.convert.MapperRegistry;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
 
-public interface ObjectMapper extends ReversibleMapperFactory<Object, ConversionException>, MappingFactory,
+public interface ObjectMapper extends MapperRegistry<Object, ConversionException>, MappingFactory,
 		ObjectAccessFactoryRegistry, MappingStrategyFactory {
 
 	/**
@@ -31,7 +31,7 @@ public interface ObjectMapper extends ReversibleMapperFactory<Object, Conversion
 		}
 
 		if (isConverterRegistred(targetType.getType())) {
-			return ReversibleMapperFactory.super.convert(source, sourceType, targetType);
+			return MapperRegistry.super.convert(source, sourceType, targetType);
 		}
 
 		Object target = newInstance(targetType);
@@ -50,7 +50,7 @@ public interface ObjectMapper extends ReversibleMapperFactory<Object, Conversion
 		}
 
 		if (isInverterRegistred(sourceType.getType())) {
-			return ReversibleMapperFactory.super.invert(source, sourceType, targetType);
+			return MapperRegistry.super.invert(source, sourceType, targetType);
 		}
 
 		Object target = newInstance(targetType);
@@ -66,7 +66,7 @@ public interface ObjectMapper extends ReversibleMapperFactory<Object, Conversion
 	default void reverseTransform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
 			throws MappingException {
 		if (isReverseTransformerRegistred(sourceType.getType())) {
-			ReversibleMapperFactory.super.reverseTransform(source, sourceType, target, targetType);
+			MapperRegistry.super.reverseTransform(source, sourceType, target, targetType);
 			return;
 		}
 
@@ -78,7 +78,7 @@ public interface ObjectMapper extends ReversibleMapperFactory<Object, Conversion
 	default void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
 			throws MappingException, ConverterNotFoundException {
 		if (isTransformerRegistred(sourceType.getType())) {
-			ReversibleMapperFactory.super.transform(source, sourceType, target, targetType);
+			MapperRegistry.super.transform(source, sourceType, target, targetType);
 		} else {
 			transform(source, sourceType, null, target, targetType, null, getMappingStrategy(targetType));
 		}

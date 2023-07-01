@@ -8,21 +8,16 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionFactory;
 import io.basc.framework.convert.ConversionFailedException;
-import io.basc.framework.convert.lang.ObjectToString;
 import io.basc.framework.convert.lang.ReaderToString;
 import io.basc.framework.convert.lang.ResourceToString;
+import io.basc.framework.convert.support.DefaultReversibleConverterRegistry;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Optional;
 
-public class StringConverter extends ConversionFactory<String, ConversionException> {
+public class StringConverter extends DefaultReversibleConverterRegistry<String, ConversionException> {
 	public static final StringConverter DEFAULT = new StringConverter();
-
-	static {
-		DEFAULT.registerInverter(Object.class, ObjectToString.DEFAULT::convert);
-	}
 
 	public static <T> Optional<T> parse(String source, Class<T> type) {
 		T value = DEFAULT.convert(source, type);

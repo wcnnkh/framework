@@ -12,7 +12,7 @@ public class JsonToObjectConversionService extends AbstractConversionService {
 			return false;
 		}
 
-		return targetType.isAnnotationPresent(JSON.class);
+		return sourceType.isAnnotationPresent(JSON.class) || targetType.isAnnotationPresent(JSON.class);
 	}
 
 	@Override

@@ -9,12 +9,12 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.convert.support.DefautMapperRegistry;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
@@ -28,7 +28,7 @@ import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.value.PropertyFactory;
 
-public class DefaultObjectMapper extends ConversionFactory<Object, ConversionException>
+public class DefaultObjectMapper extends DefautMapperRegistry<Object, ConversionException>
 		implements ObjectMapper, ConditionalConversionService, ConversionServiceAware {
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
 	private final Map<Class<?>, Mapping<? extends Field>> mappingMap = new ConcurrentHashMap<>();

@@ -2,7 +2,7 @@ package io.basc.framework.convert;
 
 import io.basc.framework.lang.Nullable;
 
-public interface Converter<S, T, E extends Throwable> extends ConverterConfiguration {
+public interface Converter<S, T, E extends Throwable> {
 
 	default <R extends T> R convert(@Nullable S source, Class<? extends R> targetType) throws E {
 		return convert(source, TypeDescriptor.forObject(source), targetType);
