@@ -3,8 +3,8 @@ package io.basc.framework.dom.resolve;
 import org.w3c.dom.Document;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.convert.resolve.ResourceResolver;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.io.Resource;

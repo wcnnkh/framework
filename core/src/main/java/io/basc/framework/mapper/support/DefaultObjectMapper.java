@@ -8,13 +8,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.convert.support.DefautMapperRegistry;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
@@ -28,7 +27,7 @@ import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.value.PropertyFactory;
 
-public class DefaultObjectMapper extends DefautMapperRegistry<Object, ConversionException>
+public class DefaultObjectMapper extends DefaultConversionService
 		implements ObjectMapper, ConditionalConversionService, ConversionServiceAware {
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
 	private final Map<Class<?>, Mapping<? extends Field>> mappingMap = new ConcurrentHashMap<>();
@@ -39,18 +38,6 @@ public class DefaultObjectMapper extends DefautMapperRegistry<Object, Conversion
 	public DefaultObjectMapper() {
 		registerObjectAccessFactory(PropertyFactory.class, (s, e) -> new PropertyFactoryAccess(s));
 		registerObjectAccessFactory(Map.class, (s, e) -> new MapAccess(s, e, mappingStrategy.getConversionService()));
-	}
-
-	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType == null || targetType == null) {
-			return false;
-		}
-
-		boolean b = !canDirectlyConvert(sourceType, targetType)
-				&& ConditionalConversionService.super.canConvert(sourceType, targetType)
-				&& (isEntity(targetType) || isEntity(sourceType));
-		return b;
 	}
 
 	@Override

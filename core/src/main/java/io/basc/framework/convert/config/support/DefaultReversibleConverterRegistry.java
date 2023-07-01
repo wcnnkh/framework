@@ -1,11 +1,11 @@
-package io.basc.framework.convert.support;
+package io.basc.framework.convert.config.support;
 
 import java.util.TreeMap;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.Inverter;
 import io.basc.framework.convert.ReversibleConverter;
-import io.basc.framework.convert.ReversibleConverterRegistry;
+import io.basc.framework.convert.config.ReversibleConverterRegistry;
 
 public class DefaultReversibleConverterRegistry<S, E extends Throwable> extends DefaultConverterRegistry<S, E>
 		implements ReversibleConverterRegistry<S, E> {

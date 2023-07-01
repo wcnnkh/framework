@@ -1,4 +1,7 @@
-package io.basc.framework.convert;
+package io.basc.framework.convert.config;
+
+import io.basc.framework.convert.Mapper;
+import io.basc.framework.convert.TypeDescriptor;
 
 public interface MapperRegistry<S, E extends Throwable>
 		extends ReversibleConverterRegistry<S, E>, ReversibleTransformerRegistry<S, E>, Mapper<S, Object, E> {

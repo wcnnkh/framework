@@ -2,7 +2,7 @@ package io.basc.framework.web.message.support;
 
 import io.basc.framework.beans.factory.DefaultParameterFactoryAware;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.convert.ConversionServiceAware;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.net.InetUtils;

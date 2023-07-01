@@ -6,9 +6,9 @@ import java.util.Date;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.ZoneOffset;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.core.ResolvableType;
 
 class LocalDateTimeConversion implements ConversionService, ConversionServiceAware {

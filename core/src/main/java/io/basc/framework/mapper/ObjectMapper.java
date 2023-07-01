@@ -2,8 +2,8 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConverterNotFoundException;
-import io.basc.framework.convert.MapperRegistry;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.MapperRegistry;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
@@ -21,45 +21,6 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 		return (!Value.isBaseType(source.getType()) && !source.isArray() && source.getType() != Object.class
 				&& ReflectionUtils.isInstance(source.getType()) && !source.isMap() && !source.isCollection())
 				|| isMappingRegistred(source.getType());
-	}
-
-	@Override
-	default Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws MappingException {
-		if (canDirectlyConvert(sourceType, targetType)) {
-			return source;
-		}
-
-		if (isConverterRegistred(targetType.getType())) {
-			return MapperRegistry.super.convert(source, sourceType, targetType);
-		}
-
-		Object target = newInstance(targetType);
-		if (target == null) {
-			return null;
-		}
-
-		transform(source, sourceType, target, targetType);
-		return target;
-	}
-
-	@Override
-	default Object invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws MappingException {
-		if (canDirectlyConvert(sourceType, targetType)) {
-			return source;
-		}
-
-		if (isInverterRegistred(sourceType.getType())) {
-			return MapperRegistry.super.invert(source, sourceType, targetType);
-		}
-
-		Object target = newInstance(targetType);
-		if (target == null) {
-			return null;
-		}
-
-		reverseTransform(source, sourceType, target, targetType);
-		return target;
 	}
 
 	@Override

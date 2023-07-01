@@ -1,5 +1,7 @@
-package io.basc.framework.convert;
+package io.basc.framework.convert.config;
 
+import io.basc.framework.convert.ReversibleConverter;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 
 public interface ReversibleConverterRegistry<S, E extends Throwable>

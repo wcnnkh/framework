@@ -1,4 +1,8 @@
-package io.basc.framework.convert;
+package io.basc.framework.convert.config;
+
+import io.basc.framework.convert.ConverterNotFoundException;
+import io.basc.framework.convert.Inverter;
+import io.basc.framework.convert.TypeDescriptor;
 
 public interface InverterRegistry<S, E extends Throwable> extends Inverter<S, Object, E> {
 	default boolean isInverterRegistred(Class<?> type) {

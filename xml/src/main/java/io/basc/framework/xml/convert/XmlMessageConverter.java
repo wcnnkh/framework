@@ -6,8 +6,8 @@ import java.util.Collection;
 import org.w3c.dom.Document;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.InputMessage;

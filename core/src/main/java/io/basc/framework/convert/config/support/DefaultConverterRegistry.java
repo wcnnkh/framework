@@ -1,10 +1,10 @@
-package io.basc.framework.convert.support;
+package io.basc.framework.convert.config.support;
 
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.ConverterRegistry;
+import io.basc.framework.convert.config.ConverterRegistry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.comparator.TypeComparator;
 

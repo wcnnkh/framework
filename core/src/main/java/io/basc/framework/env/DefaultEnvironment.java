@@ -8,8 +8,8 @@ import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
-import io.basc.framework.convert.ConversionServiceAware;
-import io.basc.framework.convert.lang.ConfigurableConversionService;
+import io.basc.framework.convert.config.ConversionServiceAware;
+import io.basc.framework.convert.config.support.ConfigurableConversionService;
 import io.basc.framework.convert.lang.ConverterConversionService;
 import io.basc.framework.convert.lang.ResourceToPropertiesConverter;
 import io.basc.framework.convert.resolve.ResourceResolverConversionService;
@@ -67,7 +67,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 	public DefaultEnvironment(Scope scope) {
 		super(scope);
-		conversionService.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		conversionService.getRegistry().getServiceInjectorRegistry().register(getServiceInjectorRegistry());
 		environmentPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
 		environmentResourceLoader.getProtocolResolvers().getServiceInjectorRegistry()
 				.register(getServiceInjectorRegistry());
@@ -89,9 +89,9 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 		// 注册一个默认的参数解析
 		properties.setConversionService(conversionService);
-		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
+		conversionService.getRegistry().register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
-		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
+		conversionService.getRegistry().register(new ResourceResolverConversionService(resourceResolvers));
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 		setParentBeanFactory(environment);
 		this.parentEnvironment = environment;
 		if (environment != null) {
-			conversionService.registerLast(environment.getConversionService());
+			conversionService.getRegistry().registerLast(environment.getConversionService());
 			properties.setParentProperties(environment.getProperties());
 			environmentResourceLoader.getResourceLoaders().registerLast(environment.getResourceLoader());
 			resourceResolvers.registerLast(environment.getResourceResolver());

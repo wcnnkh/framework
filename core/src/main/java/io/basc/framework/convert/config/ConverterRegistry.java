@@ -1,5 +1,8 @@
-package io.basc.framework.convert;
+package io.basc.framework.convert.config;
 
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.ConverterNotFoundException;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 
 public interface ConverterRegistry<S, E extends Throwable> extends Converter<S, Object, E> {

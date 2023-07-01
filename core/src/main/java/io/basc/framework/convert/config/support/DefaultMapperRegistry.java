@@ -1,15 +1,15 @@
-package io.basc.framework.convert.support;
+package io.basc.framework.convert.config.support;
 
 import java.util.TreeMap;
 
 import io.basc.framework.convert.Mapper;
-import io.basc.framework.convert.MapperRegistry;
 import io.basc.framework.convert.ReverseTransformer;
 import io.basc.framework.convert.ReversibleConverter;
 import io.basc.framework.convert.ReversibleTransformer;
 import io.basc.framework.convert.Transformer;
+import io.basc.framework.convert.config.MapperRegistry;
 
-public class DefautMapperRegistry<S, E extends Throwable> extends DefaultReversibleConverterRegistry<S, E>
+public class DefaultMapperRegistry<S, E extends Throwable> extends DefaultReversibleConverterRegistry<S, E>
 		implements MapperRegistry<S, E> {
 	private TreeMap<Class<?>, ReversibleTransformer<? super S, ?, ? extends E>> reversibleTransformerMap;
 	private TreeMap<Class<?>, Transformer<? super S, ?, ? extends E>> transformerMap;

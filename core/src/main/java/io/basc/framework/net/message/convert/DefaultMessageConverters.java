@@ -2,7 +2,7 @@ package io.basc.framework.net.message.convert;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.net.InetUtils;

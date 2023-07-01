@@ -1,7 +1,7 @@
 package io.basc.framework.convert.support;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.lang.ConfigurableConversionService;
+import io.basc.framework.convert.config.support.ConfigurableConversionService;
 import io.basc.framework.convert.lang.DateFormatConversionService;
 import io.basc.framework.convert.lang.JsonConversionService;
 import io.basc.framework.convert.lang.JsonToObjectConversionService;
@@ -12,32 +12,32 @@ import io.basc.framework.util.ClassUtils;
 public class DefaultConversionService extends ConfigurableConversionService {
 
 	public DefaultConversionService() {
-		register(new ArrayToArrayConversionService(this));
-		register(new ArrayToCollectionConversionService(this));
+		getRegistry().register(new ArrayToArrayConversionService(this));
+		getRegistry().register(new ArrayToCollectionConversionService(this));
 
-		register(new ByteBufferConversionService(this));
+		getRegistry().register(new ByteBufferConversionService(this));
 
-		register(new CollectionToArrayConversionService(this));
-		register(new CollectionToCollectionConversionService(this));
-		register(new CollectionToObjectConversionService(this));
+		getRegistry().register(new CollectionToArrayConversionService(this));
+		getRegistry().register(new CollectionToCollectionConversionService(this));
+		getRegistry().register(new CollectionToObjectConversionService(this));
 
-		register(new DateFormatConversionService());
-		register(new LocalDateTimeConversion());
+		getRegistry().register(new DateFormatConversionService());
+		getRegistry().register(new LocalDateTimeConversion());
 
-		register(new MapToMapConversionService(this));
+		getRegistry().register(new MapToMapConversionService(this));
 
-		register(new ValueConversionService(this));
-		register(new JsonConversionService());
-		register(new JsonToObjectConversionService());
+		getRegistry().register(new ValueConversionService(this));
+		getRegistry().register(new JsonConversionService());
+		getRegistry().register(new JsonToObjectConversionService());
 
-		register(StringConversionService.DEFAULT);
+		getRegistry().register(StringConversionService.DEFAULT);
 
-		register(new ObjectToArrayConversionService(this));
-		register(new ObjectToCollectionConversionService(this));
+		getRegistry().register(new ObjectToArrayConversionService(this));
+		getRegistry().register(new ObjectToCollectionConversionService(this));
 
 		// 并非所有的环境都支持sql类型
 		if (ClassUtils.isPresent("io.basc.framework.convert.lang.SqlDateConversionService", null)) {
-			register((ConversionService) ReflectionUtils
+			getRegistry().register((ConversionService) ReflectionUtils
 					.newInstance(ClassUtils.getClass("io.basc.framework.convert.lang.SqlDateConversionService", null)));
 		}
 	}

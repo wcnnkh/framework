@@ -1,4 +1,6 @@
-package io.basc.framework.convert;
+package io.basc.framework.convert.config;
+
+import io.basc.framework.convert.ReversibleTransformer;
 
 public interface ReversibleTransformerRegistry<S, E extends Throwable>
 		extends TransformerRegistry<S, E>, ReverseTransformerRegistry<S, E>, ReversibleTransformer<S, Object, E> {
