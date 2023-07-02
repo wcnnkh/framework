@@ -8,11 +8,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;

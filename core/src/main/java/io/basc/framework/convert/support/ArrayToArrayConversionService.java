@@ -4,11 +4,11 @@ import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Set;
 
+import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.AbstractConversionService;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
 
 class ArrayToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 

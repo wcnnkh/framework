@@ -1,11 +1,12 @@
 package io.basc.framework.convert.config;
 
+import io.basc.framework.convert.ConversionTester;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 
-public interface ConverterRegistry<S, E extends Throwable> extends Converter<S, Object, E> {
+public interface ConverterRegistry<S, E extends Throwable> extends Converter<S, Object, E>, ConversionTester {
 
 	default boolean isConverterRegistred(Class<?> type) {
 		return getConverter(type) != null;

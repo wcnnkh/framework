@@ -1,7 +1,5 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.ClassUtils;
 
 public interface ConditionalConversionService extends ConversionService, ConvertibleConditional {

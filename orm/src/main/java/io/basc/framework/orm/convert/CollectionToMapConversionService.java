@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionFailedException;
+import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.AbstractConversionService;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.orm.EntityMapper;

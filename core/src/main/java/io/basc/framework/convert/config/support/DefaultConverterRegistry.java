@@ -3,13 +3,27 @@ package io.basc.framework.convert.config.support;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConversionComparator;
 import io.basc.framework.convert.config.ConverterRegistry;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.NestingChecker;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.ThreadLocalNestingChecker;
 import io.basc.framework.util.comparator.TypeComparator;
 
-public class DefaultConverterRegistry<S, E extends Throwable> implements ConverterRegistry<S, E> {
+public class DefaultConverterRegistry<S, E extends Throwable> extends ConfigurableServices<ConversionService>
+		implements ConverterRegistry<S, E> {
+	private static final NestingChecker<ConversionService> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
+
 	private TreeMap<Class<?>, Converter<? super S, ?, ? extends E>> converterMap;
+
+	public DefaultConverterRegistry() {
+		super(ConversionComparator.INSTANCE, ConversionService.class);
+	}
 
 	protected <T> T get(Class<?> type, TreeMap<Class<?>, T> sourceMap) {
 		if (sourceMap == null || sourceMap.isEmpty()) {
@@ -45,6 +59,48 @@ public class DefaultConverterRegistry<S, E extends Throwable> implements Convert
 	@Override
 	public <T> void registerConverter(Class<T> type, Converter<? super S, ? extends T, ? extends E> converter) {
 		this.converterMap = register(type, converter, converterMap);
+	}
+
+	@Override
+	public Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		for (ConversionService service : getServices()) {
+			if (NESTING_CHECKERS.isNestingExists(service)) {
+				continue;
+			}
+
+			Registration registration = NESTING_CHECKERS.registerNestedElement(service);
+			try {
+				if (service.canConvert(sourceType, targetType)) {
+					return service.convert(source, sourceType, targetType);
+				}
+			} finally {
+				registration.unregister();
+			}
+		}
+		return ConverterRegistry.super.convert(source, sourceType, targetType);
+	}
+
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (isConverterRegistred(targetType.getType())) {
+			return true;
+		}
+
+		for (ConversionService service : getServices()) {
+			if (NESTING_CHECKERS.isNestingExists(service)) {
+				continue;
+			}
+
+			Registration registration = NESTING_CHECKERS.registerNestedElement(service);
+			try {
+				if (service.canConvert(sourceType, targetType)) {
+					return true;
+				}
+			} finally {
+				registration.unregister();
+			}
+		}
+		return false;
 	}
 
 }

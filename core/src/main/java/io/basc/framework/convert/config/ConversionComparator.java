@@ -1,8 +1,10 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert.config;
 
 import java.util.Comparator;
 import java.util.Set;
 
+import io.basc.framework.convert.ConvertibleConditional;
+import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.util.comparator.ComparableComparator;
 
 /**

@@ -10,14 +10,11 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.ZoneOffset;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.core.ResolvableType;
+import lombok.Data;
 
+@Data
 class LocalDateTimeConversion implements ConversionService, ConversionServiceAware {
 	private ConversionService conversionService;
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {

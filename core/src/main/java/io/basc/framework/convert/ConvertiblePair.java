@@ -1,4 +1,4 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.convert;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;

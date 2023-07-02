@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.Inverter;
 import io.basc.framework.convert.ReversibleConverter;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ReversibleConverterRegistry;
 
 public class DefaultReversibleConverterRegistry<S, E extends Throwable> extends DefaultConverterRegistry<S, E>
@@ -48,4 +49,16 @@ public class DefaultReversibleConverterRegistry<S, E extends Throwable> extends 
 		this.reversibleConverterMap = register(type, reversibleConverter, reversibleConverterMap);
 	}
 
+	@Override
+	public Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return source;
+		}
+		return super.convert(source, sourceType, targetType);
+	}
+
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return canDirectlyConvert(sourceType, targetType) || super.canConvert(sourceType, targetType);
+	}
 }

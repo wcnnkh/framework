@@ -67,7 +67,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 	public DefaultEnvironment(Scope scope) {
 		super(scope);
-		conversionService.getRegistry().getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		conversionService.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
 		environmentPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
 		environmentResourceLoader.getProtocolResolvers().getServiceInjectorRegistry()
 				.register(getServiceInjectorRegistry());
@@ -89,9 +89,9 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 		// 注册一个默认的参数解析
 		properties.setConversionService(conversionService);
-		conversionService.getRegistry().register(new ConverterConversionService(Resource.class, Properties.class,
+		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
-		conversionService.getRegistry().register(new ResourceResolverConversionService(resourceResolvers));
+		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 		setParentBeanFactory(environment);
 		this.parentEnvironment = environment;
 		if (environment != null) {
-			conversionService.getRegistry().registerLast(environment.getConversionService());
+			conversionService.registerLast(environment.getConversionService());
 			properties.setParentProperties(environment.getProperties());
 			environmentResourceLoader.getResourceLoaders().registerLast(environment.getResourceLoader());
 			resourceResolvers.registerLast(environment.getResourceResolver());

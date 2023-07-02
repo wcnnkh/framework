@@ -19,7 +19,7 @@ public class DefaultMessageConverters extends MessageConverters {
 
 	public DefaultMessageConverters(ConversionService conversionService) {
 		this.conversionService = new ConfigurableConversionService();
-		this.conversionService.getRegistry().registerLast(conversionService);
+		this.conversionService.registerLast(conversionService);
 		afterConfigure();
 	}
 
