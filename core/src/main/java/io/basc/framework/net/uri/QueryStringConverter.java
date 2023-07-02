@@ -99,20 +99,25 @@ public class QueryStringConverter extends StringConverter {
 		});
 	}
 
-	public String toQueryString(Object form, @Nullable Encoder<String, String> encoder,
+	public String toQueryString(Object form, @Nullable String rootName, @Nullable Encoder<String, String> encoder,
 			ConversionService conversionService) {
 		Assert.requiredArgument(form != null, "form");
 		if (form instanceof Map && conversionService.canConvert(form.getClass(), Map.class)) {
 			StringBuilder sb = new StringBuilder();
-			appendQueryString(sb, null, form, encoder, conversionService);
+			appendQueryString(sb, rootName, form, encoder, conversionService);
 			return sb.toString();
 		}
 		throw new ConversionFailedException(TypeDescriptor.forObject(form), TypeDescriptor.valueOf(String.class), form,
 				null);
 	}
 
-	public final String toQueryString(Object form, Encoder<String, String> encoder) {
-		return toQueryString(form, encoder, Sys.getEnv().getConversionService());
+	public final String toQueryString(Object form, @Nullable String rootName,
+			@Nullable Encoder<String, String> encoder) {
+		return toQueryString(form, rootName, encoder, Sys.getEnv().getConversionService());
+	}
+
+	public final String toQueryString(Object form, @Nullable Encoder<String, String> encoder) {
+		return toQueryString(form, null, encoder);
 	}
 
 	public MultiValueMap<String, String> parseFormParameters(String query, Decoder<String, String> decoder) {
