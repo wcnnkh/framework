@@ -68,14 +68,14 @@ public abstract class AbstractMessageConverter<T> extends JsonSupportAccessor im
 		return false;
 	}
 
-	public abstract boolean support(Class<?> clazz);
+	public abstract boolean isSupported(Class<?> clazz);
 
 	public boolean canWrite(TypeDescriptor type) {
-		return support(type.getResolvableType().getRawClass());
+		return isSupported(type.getResolvableType().getRawClass());
 	}
 
 	public boolean canRead(TypeDescriptor type) {
-		return support(type.getResolvableType().getRawClass());
+		return isSupported(type.getResolvableType().getRawClass());
 	}
 
 	public boolean canRead(TypeDescriptor type, MimeType contentType) {

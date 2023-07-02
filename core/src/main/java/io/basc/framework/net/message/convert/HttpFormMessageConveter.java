@@ -9,22 +9,20 @@ import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.uri.QueryStringConverter;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
 
 public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
-
+	
 	public HttpFormMessageConveter() {
 		supportMimeTypes.add(MediaType.APPLICATION_FORM_URLENCODED);
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
-		if (Collection.class.isAssignableFrom(clazz)) {
-			return false;
-		}
-		return true;
+	public boolean isSupported(Class<?> clazz) {
+		return Collection.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -43,7 +41,7 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 	@Override
 	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
-		String queryString = UriUtils.toQueryString(body, new URLCodec(getCharset(outputMessage)));
+		String queryString = QueryStringConverter.getInstance().toQueryString(body, new URLCodec(getCharset(outputMessage)));
 		writeTextBody(queryString, contentType, outputMessage);
 	}
 

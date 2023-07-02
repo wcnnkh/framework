@@ -19,7 +19,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
+	public boolean isSupported(Class<?> clazz) {
 		return true;
 	}
 

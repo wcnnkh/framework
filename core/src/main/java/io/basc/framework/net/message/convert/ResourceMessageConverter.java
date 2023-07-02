@@ -25,7 +25,7 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
+	public boolean isSupported(Class<?> clazz) {
 		return Resource.class.isAssignableFrom(clazz) && File.class.isAssignableFrom(clazz);
 	}
 

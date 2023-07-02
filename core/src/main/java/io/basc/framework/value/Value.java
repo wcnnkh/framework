@@ -598,7 +598,12 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).isNumber();
 		}
 
-		return getStringConverter().getStringToNumber().isNumeric(getAsString());
+		try {
+			getAsNumber();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

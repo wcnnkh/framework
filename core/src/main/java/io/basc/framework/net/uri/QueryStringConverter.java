@@ -1,125 +1,123 @@
 package io.basc.framework.net.uri;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
+import io.basc.framework.codec.Decoder;
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.strings.StringConverter;
-import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.env.Sys;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class QueryStringConverter extends StringConverter implements Codec<Map<String, String>, String> {
-	private final Codec<String, String> keyCodec;
-	private final Codec<String, String> valueCodec;
-	private final ConversionService conversionService;
+public class QueryStringConverter extends StringConverter {
+	private static volatile QueryStringConverter instance;
 
-	@Override
-	public Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		if (isConverterRegistred(targetType.getType())) {
-			return super.convert(source, sourceType, targetType);
+	public static QueryStringConverter getInstance() {
+		if (instance == null) {
+			synchronized (QueryStringConverter.class) {
+				if (instance == null) {
+					instance = new QueryStringConverter();
+				}
+			}
 		}
-
-		Map<String, String> map = decode(source);
-		return conversionService.convert(map, TypeDescriptor.map(Map.class, String.class, String.class), targetType);
+		return instance;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public String invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		if (isInverterRegistred(sourceType.getType())) {
-			return super.invert(source, sourceType, targetType);
-		}
+	@SuppressWarnings({ "rawtypes" })
+	private void appendQueryString(StringBuilder append, String name, Object value, Encoder<String, String> encoder,
+			ConversionService conversionService) {
+		if (value.getClass().isArray()) {
+			int len = Array.getLength(value);
+			for (int i = 0; i < len; i++) {
+				Object item = Array.get(value, i);
+				appendQueryString(append, name, item, encoder, conversionService);
+			}
+		} else if (Collection.class.isAssignableFrom(value.getClass())) {
+			Collection collection = (Collection) value;
+			for (Object item : collection) {
+				appendQueryString(append, name, item, encoder, conversionService);
+			}
+		} else if (Map.class.isAssignableFrom(value.getClass())) {
+			Map map = (Map) value;
+			appendQueryString(append, name, map, encoder, conversionService);
+		} else {
+			if (conversionService.canConvert(value.getClass(), Map.class)) {
+				Map map = conversionService.convert(value, Map.class);
+				appendQueryString(append, name, map, encoder, conversionService);
+			} else {
+				String k = name;
+				String v;
+				if (canConvert(value.getClass(), String.class)) {
+					v = invert(value, String.class);
+				} else if (conversionService.canConvert(value.getClass(), String.class)) {
+					v = conversionService.convert(value, String.class);
+				} else {
+					v = value.toString();
+				}
 
-		Map<String, String> map = (Map<String, String>) conversionService.convert(source, sourceType,
-				TypeDescriptor.map(Map.class, String.class, String.class));
-		return encode(map);
+				if (encoder != null) {
+					k = encoder.encode(k);
+					v = encoder.encode(v);
+				}
+
+				if (append.length() > 0) {
+					append.append("&");
+				}
+				append.append(k);
+				append.append("=");
+				append.append(v);
+			}
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String toQueryString(StringBuilder append, String parentName, Map parameterMap,
-			Encoder<String, String> keyEncoder, Encoder<String, String> valueEncoder) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<Entry> iterator = parameterMap.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry entry = iterator.next();
-			Object key = entry.getKey();
-			Object value = entry.getValue();
-			if (key == null || value == null) {
-				continue;
+	private void appendQueryString(StringBuilder append, String name, Map map, Encoder<String, String> encoder,
+			ConversionService conversionService) {
+		map.forEach((k, v) -> {
+			String key;
+			if (canConvert(k.getClass(), String.class)) {
+				key = invert(v, String.class);
+			} else if (conversionService.canConvert(v.getClass(), String.class)) {
+				key = conversionService.convert(v, String.class);
+			} else {
+				key = v.toString();
 			}
-
-			String encodeKey = key instanceof String ? (String) key : invert(key, String.class);
-			if (keyEncoder != null) {
-				encodeKey = keyEncoder.encode(encodeKey);
-			}
-
-			if (value.getClass().isArray()) {
-
-			} else if (Collection.class.isAssignableFrom(value.getClass())) {
-
-			} else if (Map.class.isAssignableFrom(value.getClass())) {
-
-			}
-
-			sb.append(key);
-			sb.append("=");
-
-			String value = entry.getValue();
-			value = value == null ? null : valueCodec.encode(value);
-			if (value != null) {
-				sb.append(value);
-			}
-
-			if (iterator.hasNext()) {
-				sb.append("&");
-			}
-		}
-		return sb.toString();
+			key = StringUtils.isEmpty(name) ? key : (name + "." + k);
+			appendQueryString(append, key, v, encoder, conversionService);
+		});
 	}
 
-	@Override
-	public String encode(Map<String, String> source) throws EncodeException {
-		StringBuilder sb = new StringBuilder();
-		Iterator<Entry<String, String>> iterator = source.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, String> entry = iterator.next();
-			String key = entry.getKey();
-			key = keyCodec.encode(key);
-			sb.append(key);
-			sb.append("=");
-			String value = entry.getValue();
-			value = value == null ? null : valueCodec.encode(value);
-			if (value != null) {
-				sb.append(value);
-			}
-
-			if (iterator.hasNext()) {
-				sb.append("&");
-			}
+	public String toQueryString(Object form, @Nullable Encoder<String, String> encoder,
+			ConversionService conversionService) {
+		Assert.requiredArgument(form != null, "form");
+		if (form instanceof Map && conversionService.canConvert(form.getClass(), Map.class)) {
+			StringBuilder sb = new StringBuilder();
+			appendQueryString(sb, null, form, encoder, conversionService);
+			return sb.toString();
 		}
-		return sb.toString();
+		throw new ConversionFailedException(TypeDescriptor.forObject(form), TypeDescriptor.valueOf(String.class), form,
+				null);
 	}
 
-	@Override
-	public Map<String, String> decode(String source) throws DecodeException {
-		Map<String, String> map = new LinkedHashMap<>();
-		StringUtils.split(source, "&").forEach((s) -> {
+	public final String toQueryString(Object form, Encoder<String, String> encoder) {
+		return toQueryString(form, encoder, Sys.getEnv().getConversionService());
+	}
+
+	public MultiValueMap<String, String> parseFormParameters(String query, Decoder<String, String> decoder) {
+		MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
+		StringUtils.split(query, "&").forEach((s) -> {
 			String[] kv = StringUtils.splitToArray(s, "=");
 			if (kv.length == 0) {
 				return;
@@ -130,15 +128,15 @@ public class QueryStringConverter extends StringConverter implements Codec<Map<S
 			}
 
 			String key = kv[0];
-			key = keyCodec.decode(key);
 			String value = kv.length == 2 ? kv[1] : null;
-			value = value == null ? null : valueCodec.decode(value);
-			map.put(key, value);
+			if (decoder != null) {
+				key = decoder.decode(key);
+				if (value != null) {
+					value = decoder.decode(value);
+				}
+			}
+			parameterMap.add(key, value);
 		});
-		return map;
-	}
-
-	public void appendTo(String target, Map<String, ?> parameterMap) {
-
+		return parameterMap;
 	}
 }

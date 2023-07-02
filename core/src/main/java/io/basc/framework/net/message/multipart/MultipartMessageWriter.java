@@ -39,7 +39,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
+	public boolean isSupported(Class<?> clazz) {
 		return true;
 	}
 

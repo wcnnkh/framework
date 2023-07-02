@@ -20,7 +20,7 @@ public class StringMessageConverter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
+	public boolean isSupported(Class<?> clazz) {
 		return true;
 	}
 

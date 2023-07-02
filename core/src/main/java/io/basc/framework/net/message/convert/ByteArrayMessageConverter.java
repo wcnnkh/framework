@@ -17,7 +17,7 @@ public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]> 
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
+	public boolean isSupported(Class<?> clazz) {
 		return clazz == byte[].class;
 	}
 

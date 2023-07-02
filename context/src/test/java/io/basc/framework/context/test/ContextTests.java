@@ -21,21 +21,14 @@ public class ContextTests {
 	}
 
 	@Test
-	public void test() throws Throwable {
-		assertTrue(environment.isInstance(TestFactoryBean1.class));
-		assertTrue(environment.isInstance(TestFactoryBean2.class));
-		System.out.println(environment.getInstance(TestFactoryBean2.class));
-	}
-
-	@Test
 	public void configurableProperties() {
 		environment.getProperties().put("test.a", "abc");
 		environment.getProperties().put("test.b", "121");
 
-		TestConfigurableBean bean = environment.getInstance(TestConfigurableBean.class);
+		TestConfigurableBean bean = environment.getBean(TestConfigurableBean.class);
 		System.out.println(JsonUtils.getSupport().toJsonString(bean));
 
-		TestPropertiesBean propertiesBean = environment.getInstance(TestPropertiesBean.class);
+		TestPropertiesBean propertiesBean = environment.getBean(TestPropertiesBean.class);
 		System.out.println(propertiesBean);
 	}
 

@@ -1,18 +1,5 @@
 package io.basc.framework.consistency.support;
 
-import io.basc.framework.consistency.CompensateException;
-import io.basc.framework.consistency.CompensatePolicy;
-import io.basc.framework.consistency.CompensateRegistry;
-import io.basc.framework.consistency.Compensator;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.retry.RetryCallback;
-import io.basc.framework.retry.RetryContext;
-import io.basc.framework.retry.RetryOperations;
-import io.basc.framework.retry.support.RetryTemplate;
-
 import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,7 +7,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+import io.basc.framework.consistency.CompensateException;
+import io.basc.framework.consistency.CompensatePolicy;
+import io.basc.framework.consistency.CompensateRegistry;
+import io.basc.framework.consistency.Compensator;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.retry.RetryCallback;
+import io.basc.framework.retry.RetryContext;
+import io.basc.framework.retry.RetryOperations;
+import io.basc.framework.retry.support.RetryTemplate;
+
 public class DefaultCompensateRegistry implements CompensateRegistry {
 	private static Logger logger = LoggerFactory
 			.getLogger(DefaultCompensateRegistry.class);
