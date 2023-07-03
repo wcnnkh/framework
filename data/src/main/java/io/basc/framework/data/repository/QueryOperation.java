@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SelectOperation extends Operation {
+public class QueryOperation extends Operation {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 查询的表达式
@@ -26,19 +26,19 @@ public class SelectOperation extends Operation {
 	 */
 	private Elements<? extends Sort> sorts;
 
-	public SelectOperation() {
-		super(SelectOperationSymbol.SELECT);
+	public QueryOperation() {
+		super(QueryOperationSymbol.QUERY);
 	}
 
-	public SelectOperation(SelectOperationSymbol selectOperationSymbol) {
+	public QueryOperation(QueryOperationSymbol selectOperationSymbol) {
 		super(selectOperationSymbol);
 	}
 
-	public SelectOperation(Operation operation) {
-		this(SelectOperationSymbol.SELECT, operation);
+	public QueryOperation(Operation operation) {
+		this(QueryOperationSymbol.QUERY, operation);
 	}
 
-	public SelectOperation(SelectOperationSymbol selectOperationSymbol, Operation operation) {
+	public QueryOperation(QueryOperationSymbol selectOperationSymbol, Operation operation) {
 		super(selectOperationSymbol, operation);
 	}
 

@@ -17,7 +17,7 @@ public abstract class AbstractIpAddressWebMessageConverter extends AbstractWebMe
 			throws IOException, WebMessagelConverterException {
 		Object ip = request.getIp();
 		if (ip == null) {
-			ip = getDefaultValue(parameterDescriptor);
+			return null;
 		}
 		return getConversionService().convert(ip, TypeDescriptor.forObject(ip),
 				parameterDescriptor.getTypeDescriptor());

@@ -54,8 +54,8 @@ public abstract class ServletContextUtils {
 	}
 
 	public static Servlet createServlet(BeanFactory beanFactory) {
-		if (instanceFactory.isInstance(Servlet.class)) {
-			return instanceFactory.getInstance(Servlet.class);
+		if (beanFactory.isUnique(Servlet.class)) {
+			return beanFactory.getBean(Servlet.class);
 		}
 		return new DispatcherServlet();
 	}

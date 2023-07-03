@@ -32,7 +32,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 	}
 
 	@Override
-	public boolean support(Class<?> clazz) {
+	public boolean isSupported(Class<?> clazz) {
 		if (Collection.class.isAssignableFrom(clazz)) {
 			return false;
 		}

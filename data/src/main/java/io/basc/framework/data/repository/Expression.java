@@ -2,7 +2,6 @@ package io.basc.framework.data.repository;
 
 import java.io.Serializable;
 
-import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,12 +42,8 @@ public class Expression implements Serializable {
 	 */
 	private final String aliasName;
 
-	public Expression(String name) {
-		this(new Column(name));
-	}
-
-	public Expression(Parameter parameter) {
-		this(new Column(parameter));
+	public Expression(Repository repository, String name) {
+		this(new Column(repository, name));
 	}
 
 	public Expression(Column column) {

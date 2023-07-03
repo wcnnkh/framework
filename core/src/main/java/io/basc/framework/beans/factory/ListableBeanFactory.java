@@ -22,6 +22,16 @@ public interface ListableBeanFactory extends BeanFactory {
 		return getBeanNames().filter((name) -> isTypeMatch(name, type));
 	}
 
+	@Override
+	default <T> Elements<T> getBeanProvider(Class<T> requiredType) {
+		return getBeanNamesForType(requiredType).map((e) -> getBean(e, requiredType));
+	}
+
+	@Override
+	default Elements<Object> getBeanProvider(ResolvableType requiredType) {
+		return getBeanNamesForType(requiredType).map((e) -> getBean(e));
+	}
+
 	Elements<String> getFactoryBeanNames();
 
 	@SuppressWarnings("unchecked")

@@ -24,9 +24,9 @@ public abstract class AbstractPathParamWebMessageConverter extends AbstractWebMe
 		if (valueMap != null) {
 			value = valueMap.get(parameterDescriptor.getName());
 		}
-
-		if (value == null) {
-			value = getDefaultValue(parameterDescriptor);
+		
+		if(value == null) {
+			return null;
 		}
 
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),

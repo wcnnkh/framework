@@ -37,22 +37,23 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 
 	@Override
 	public Elements<IndexInfo> getIndexs(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return TableResolverExtendChain.build(tableResolverExtends.iterator()).getIndexs(entityClass, descriptor);
+		return TableResolverExtendChain.build(tableResolverExtends.getServices().iterator()).getIndexs(entityClass,
+				descriptor);
 	}
 
 	@Override
 	public String getEngine(Class<?> entityClass) {
-		return TableResolverExtendChain.build(tableResolverExtends.iterator()).getEngine(entityClass);
+		return TableResolverExtendChain.build(tableResolverExtends.getServices().iterator()).getEngine(entityClass);
 	}
 
 	@Override
 	public String getRowFormat(Class<?> entityClass) {
-		return TableResolverExtendChain.build(tableResolverExtends.iterator()).getRowFormat(entityClass);
+		return TableResolverExtendChain.build(tableResolverExtends.getServices().iterator()).getRowFormat(entityClass);
 	}
 
 	@Override
 	public boolean isAutoCreate(Class<?> entityClass) {
-		return TableResolverExtendChain.build(tableResolverExtends.iterator()).isAutoCreate(entityClass);
+		return TableResolverExtendChain.build(tableResolverExtends.getServices().iterator()).isAutoCreate(entityClass);
 	}
 
 	@SuppressWarnings("unchecked")

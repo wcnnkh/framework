@@ -23,7 +23,7 @@ public abstract class AbstractHeaderWebMessageConverter extends AbstractWebMessa
 		}
 
 		if (value == null) {
-			value = getDefaultValue(parameterDescriptor);
+			return null;
 		}
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
 				parameterDescriptor.getTypeDescriptor());

@@ -6,9 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.StringUtils;
@@ -19,7 +18,7 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.model.ModelAndView;
 import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@Component
 public class JspMessageConverter extends ModelAndViewMessageConverter {
 
 	@Override

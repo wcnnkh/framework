@@ -101,7 +101,7 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		Connector connector = null;
 		String connectorName = TomcatUtils.getTomcatConnectorName(application);
 		if (!StringUtils.isEmpty(connectorName)) {
-			connector = (Connector) application.getInstance(connectorName);
+			connector = application.getBean(connectorName, Connector.class);
 		} else {
 			connector = new Connector(TomcatUtils.getTomcatProtocol(application));
 		}
@@ -111,13 +111,13 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 	}
 
 	protected void configureJSP(Context context, Application application) throws Exception {
-		if (application.isInstance(JspConfigDescriptor.class)) {
-			context.setJspConfigDescriptor(application.getInstance(JspConfigDescriptor.class));
+		if (application.isUnique(JspConfigDescriptor.class)) {
+			context.setJspConfigDescriptor(application.getBean(JspConfigDescriptor.class));
 		}
 
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
 			ServletContainerInitializer containerInitializer = (ServletContainerInitializer) Sys.getEnv()
-					.getInstance("org.apache.jasper.servlet.JasperInitializer");
+					.getBean("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer, null);
 			} // else Probably not Tomcat 8
@@ -143,10 +143,10 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		wrapper.setAsyncSupported(true);
 
-		if (application.isInstance(MultipartConfigElement.class)) {
-			wrapper.setMultipartConfigElement(application.getInstance(MultipartConfigElement.class));
+		if (application.isUnique(MultipartConfigElement.class)) {
+			wrapper.setMultipartConfigElement(application.getBean(MultipartConfigElement.class));
 		} else {
-			for (Class<?> clazz : application.getSourceClasses()) {
+			for (Class<?> clazz : application.getSourceClasses().getServices()) {
 				if (clazz.isAnnotationPresent(MultipartConfig.class)) {
 					wrapper.setMultipartConfigElement(
 							new MultipartConfigElement(clazz.getAnnotation(MultipartConfig.class)));

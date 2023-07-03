@@ -71,7 +71,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 				continue;
 			}
 
-			String name = mapping.getName(parameterDescriptor.getType(), field.getGetter());
+			String name =  mapppe.getName(parameterDescriptor.getType(), field.getGetter());
 			Object fieldValue = field.get(parameter);
 			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
 					TypeDescriptor.valueOf(String.class));

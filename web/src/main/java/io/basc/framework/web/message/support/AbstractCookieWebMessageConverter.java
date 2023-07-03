@@ -19,12 +19,11 @@ public abstract class AbstractCookieWebMessageConverter extends AbstractWebMessa
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		HttpCookie httpCookie = WebUtils.getCookie(request, parameterDescriptor.getName());
-		Object value;
 		if (httpCookie == null) {
-			value = getDefaultValue(parameterDescriptor);
-		} else {
-			value = httpCookie.getValue();
+			return null;
 		}
+
+		Object value = httpCookie.getValue();
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
 				parameterDescriptor.getTypeDescriptor());
 	}

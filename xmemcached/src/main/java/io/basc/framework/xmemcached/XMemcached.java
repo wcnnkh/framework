@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
 import io.basc.framework.memcached.Memcached;
@@ -28,7 +27,6 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 
-@Provider
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 

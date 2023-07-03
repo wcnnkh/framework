@@ -14,7 +14,6 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
@@ -31,18 +30,15 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 			throws IOException, WebMessagelConverterException {
 		Object value;
 		if (ClassUtils.isMultipleValues(parameterDescriptor.getTypeDescriptor().getType())) {
-			List<String> values = request.getParameterMap().get(parameterDescriptor.getName());
-			if (CollectionUtils.isEmpty(values)) {
-				value = getDefaultValue(parameterDescriptor);
-			} else {
-				value = values;
-			}
+			value = request.getParameterMap().get(parameterDescriptor.getName());
 		} else {
 			value = request.getParameterMap().getFirst(parameterDescriptor.getName());
-			if (value == null) {
-				value = getDefaultValue(parameterDescriptor);
-			}
 		}
+
+		if (value == null) {
+			return null;
+		}
+
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
 				parameterDescriptor.getTypeDescriptor());
 	}

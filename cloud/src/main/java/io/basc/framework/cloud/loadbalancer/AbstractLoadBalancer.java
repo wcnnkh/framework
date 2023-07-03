@@ -45,7 +45,7 @@ public abstract class AbstractLoadBalancer<T extends Node> implements LoadBalanc
 	@Override
 	public final T choose(Predicate<? super T> accept) {
 		startAutoReload();
-		Elements<T> servers = accept == null ? this : filter(accept);
+		Elements<T> servers = accept == null ? this.getServices() : getServices().filter(accept);
 		return choose(servers);
 	}
 

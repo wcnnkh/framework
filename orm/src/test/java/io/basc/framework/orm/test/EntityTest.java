@@ -4,11 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.orm.ObjectRelational;
-import io.basc.framework.orm.ObjectRelationalFactory;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.annotation.Entity;
-import io.basc.framework.orm.support.DefaultEntityMapper1;
+import io.basc.framework.orm.support.DefaultEntityMapper;
 
 @Entity
 public class EntityTest {
@@ -42,9 +42,9 @@ public class EntityTest {
 
 	@Test
 	public void test() {
-		ObjectRelationalFactory orm = new DefaultEntityMapper1();
-		assertTrue(orm.isEntity(EntityTest.class));
-		ObjectRelational<? extends Property> objectRelational = orm.getStructure(EntityTest.class)
+		DefaultEntityMapper orm = new DefaultEntityMapper();
+		assertTrue(orm.isEntity(TypeDescriptor.valueOf(EntityTest.class)));
+		EntityMapping<? extends Property> objectRelational = orm.getMapping(EntityTest.class)
 				.withEntitysAfter((e) -> e.setNameNestingDepth(1));
 		objectRelational.getElements().forEach((e) -> System.out.println(e.getName()));
 		assertTrue(

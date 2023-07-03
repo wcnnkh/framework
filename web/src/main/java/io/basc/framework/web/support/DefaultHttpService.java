@@ -15,7 +15,7 @@ public class DefaultHttpService extends AbstractHttpService {
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 
 	public DefaultHttpService(ServiceLoaderFactory factory) {
-		super(factory.getInstance(HttpServiceRegistry.class));
+		super(factory.getBean(HttpServiceRegistry.class));
 		if (factory.isInstance(CorsRegistry.class)) {
 			setCorsRegistry(factory.getInstance(CorsRegistry.class));
 		}

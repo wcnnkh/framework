@@ -67,11 +67,12 @@ public interface RepositoryOperations {
 	 * 查询操作
 	 * 
 	 * @param <T>
+	 * @param operation
 	 * @param resultTypeDescriptor
-	 * @param select
 	 * @return
+	 * @throws RepositoryException
 	 */
-	<T> Query<T> select(TypeDescriptor resultTypeDescriptor, SelectOperation operation) throws RepositoryException;
+	<T> Query<T> query(QueryOperation operation, TypeDescriptor resultTypeDescriptor) throws RepositoryException;
 
 	/**
 	 * 更新操作

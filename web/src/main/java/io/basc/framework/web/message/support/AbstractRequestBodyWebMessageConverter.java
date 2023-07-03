@@ -22,7 +22,7 @@ public abstract class AbstractRequestBodyWebMessageConverter extends AbstractWeb
 			throws IOException, WebMessagelConverterException {
 		Object body = WebUtils.getRequestBody(request);
 		if (body == null) {
-			return getDefaultValue(parameterDescriptor);
+			return null;
 		}
 		return getConversionService().convert(body, TypeDescriptor.forObject(body),
 				parameterDescriptor.getTypeDescriptor());

@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.annotation;
+package io.basc.framework.web.message.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -19,7 +19,7 @@ import io.basc.framework.core.annotation.AliasFor;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface Controller {
+public @interface ResponseBody {
 	@AliasFor(annotation = Component.class)
 	String value() default "";
 }

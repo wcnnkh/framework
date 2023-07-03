@@ -1,6 +1,9 @@
 package io.basc.framework.web.message.model;
 
-import io.basc.framework.context.annotation.Provider;
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
@@ -13,10 +16,7 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.support.AbstractWebMessageConverter;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-@Provider
+@Component
 public class TextWebMessageConverter extends AbstractWebMessageConverter {
 
 	@Override

@@ -30,15 +30,11 @@ public class Column implements Serializable {
 	@Nullable
 	private final String aliasName;
 
-	public Column(String name) {
-		this(new Parameter(name));
+	public Column(Repository repository, String name) {
+		this(repository, new Parameter(name));
 	}
 
-	public Column(Parameter parameter) {
-		this(parameter, null);
-	}
-
-	public Column(Parameter parameter, String aliasName) {
-		this(null, parameter, aliasName);
+	public Column(Repository repository, Parameter parameter) {
+		this(repository, parameter, null);
 	}
 }

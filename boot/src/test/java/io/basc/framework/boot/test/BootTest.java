@@ -33,10 +33,10 @@ public class BootTest {
 
 		assertTrue(application.getPort().getAsInt() == 8888);
 
-		BootTest context1 = (BootTest) application.getInstance(BootTest.class);
+		BootTest context1 = application.getBean(BootTest.class);
 		assertTrue(context1.getValue() == 1);
 
-		BootTest context2 = (BootTest) application.getInstance("testBean");
+		BootTest context2 = application.getBean("testBean", BootTest.class);
 		assertTrue(context2.getValue() == 2);
 	}
 

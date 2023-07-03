@@ -14,8 +14,6 @@ import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
@@ -43,19 +41,9 @@ class LastWebMessageConverter extends AbstractWebMessageConverter implements Ord
 			throws IOException, WebMessagelConverterException {
 		Object source;
 		if (parameterDescriptor.getClass().isArray()) {
-			Value[] values = WebUtils.getParameterValues(request, parameterDescriptor.getName());
-			if (ArrayUtils.isEmpty(values)) {
-				source = getDefaultValue(parameterDescriptor);
-			} else {
-				source = values;
-			}
+			source = WebUtils.getParameterValues(request, parameterDescriptor.getName());
 		} else {
-			Value value = WebUtils.getParameter(request, parameterDescriptor.getName());
-			if (value == null || value.isEmpty()) {
-				source = getDefaultValue(parameterDescriptor);
-			} else {
-				source = value;
-			}
+			source = WebUtils.getParameter(request, parameterDescriptor.getName());
 		}
 		return source;
 	}

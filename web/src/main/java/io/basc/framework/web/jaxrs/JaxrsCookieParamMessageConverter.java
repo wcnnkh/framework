@@ -1,6 +1,10 @@
 package io.basc.framework.web.jaxrs;
 
-import io.basc.framework.context.annotation.Provider;
+import java.io.IOException;
+
+import javax.ws.rs.CookieParam;
+
+import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.mapper.ParameterDescriptor;
@@ -9,11 +13,7 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.support.AbstractCookieWebMessageConverter;
 
-import java.io.IOException;
-
-import javax.ws.rs.CookieParam;
-
-@Provider
+@Component
 public class JaxrsCookieParamMessageConverter extends AbstractCookieWebMessageConverter {
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {

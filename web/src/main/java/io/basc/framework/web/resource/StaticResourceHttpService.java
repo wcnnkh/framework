@@ -16,12 +16,12 @@ import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
 		implements HttpService, ServerHttpRequestAccept {
 	private static final long serialVersionUID = 1L;
-	
+
 	public StaticResourceHttpService() {
 	}
 
 	public StaticResourceHttpService(ServiceLoaderFactory serviceLoaderFactory) {
-		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceLoader.class).toList());
+		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceLoader.class).getServices().toList());
 	}
 
 	public boolean test(ServerHttpRequest request) {

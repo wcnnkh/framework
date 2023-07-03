@@ -3,14 +3,12 @@ package io.basc.framework.cloud.loadbalancer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.cloud.DiscoveryClient;
 import io.basc.framework.cloud.Service;
-import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
@@ -18,7 +16,6 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Selector;
 
-@Provider(value = DiscoveryLoadBalancer.class, assignableValue = false)
 public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> implements DiscoveryLoadBalancer {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDiscoveryLoadBalancer.class);
 	private final DiscoveryClient discoveryClient;
@@ -47,14 +44,14 @@ public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> 
 	}
 
 	@Override
-	public Iterator<Service> iterator() {
+	public Elements<Service> getServices() {
 		touch();
 		if (CollectionUtils.isEmpty(serviceMap)) {
-			return Collections.emptyIterator();
+			return Elements.empty();
 		}
 
-		return serviceMap.values().stream().flatMap((e) -> Arrays.asList(e).stream())
-				.filter((e) -> getState(e) != State.FAILED).iterator();
+		return Elements.of(() -> serviceMap.values().stream().flatMap((e) -> Arrays.asList(e).stream())
+				.filter((e) -> getState(e) != State.FAILED));
 	}
 
 	public State getState(Service service) {

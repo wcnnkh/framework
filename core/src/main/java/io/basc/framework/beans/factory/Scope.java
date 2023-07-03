@@ -26,7 +26,11 @@ public class Scope extends Symbol {
 		super(name);
 	}
 
-	public Elements<Scope> getScopes(){
+	public static Elements<Scope> getScopes() {
 		return getSymbols(Scope.class);
+	}
+
+	public static Scope getUniqueScope(String name) {
+		return getFirstOrCreate(name, Scope.class, () -> new Scope(name));
 	}
 }

@@ -11,8 +11,8 @@ import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.RepositoryOperations;
-import io.basc.framework.data.repository.SelectOperation;
-import io.basc.framework.data.repository.SelectOperationSymbol;
+import io.basc.framework.data.repository.QueryOperation;
+import io.basc.framework.data.repository.QueryOperationSymbol;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.data.repository.UpdateOperationSymbol;
 import io.basc.framework.orm.support.DefaultObjectKeyFormat;
@@ -151,23 +151,23 @@ public interface EntityOperations extends RepositoryOperations {
 				entitys.map((e) -> Value.of(e, entityTypeDescriptor)));
 	}
 
-	default <T, R> Query<R> select(TypeDescriptor resultTypeDescriptor, Class<? extends T> entityClass, T entity) {
+	default <T, R> Query<R> query(TypeDescriptor resultTypeDescriptor, Class<? extends T> entityClass, T entity) {
 		TypeDescriptor entityTypeDescriptor = new TypeDescriptor(ResolvableType.forClass(entityClass), entityClass,
 				resultTypeDescriptor);
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		SelectOperation selectOperation = getMapper().getSelectOperation(SelectOperationSymbol.SELECT,
+		QueryOperation selectOperation = getMapper().getSelectOperation(QueryOperationSymbol.QUERY,
 				Value.of(entity, entityTypeDescriptor), entityMapping);
-		return select(resultTypeDescriptor, selectOperation);
+		return query(selectOperation, resultTypeDescriptor);
 	}
 
 	default <R> Query<R> selectAll(TypeDescriptor resultTypeDescriptor, Class<?> entityClass) {
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
 		TypeDescriptor entityTypeDescriptor = new TypeDescriptor(ResolvableType.forClass(entityClass), entityClass,
 				resultTypeDescriptor);
-		SelectOperation selectOperation = new SelectOperation();
+		QueryOperation selectOperation = new QueryOperation();
 		selectOperation.setRepositorys(
 				getMapper().getRepositorys(selectOperation.getOperationSymbol(), entityTypeDescriptor, entityMapping));
-		return select(resultTypeDescriptor, selectOperation);
+		return query(selectOperation, resultTypeDescriptor);
 	}
 
 	default <R> Query<R> selectByPrimaryKeys(TypeDescriptor resultTypeDescriptor, Class<?> entityClass,
@@ -175,9 +175,9 @@ public interface EntityOperations extends RepositoryOperations {
 		TypeDescriptor entityTypeDescriptor = new TypeDescriptor(ResolvableType.forClass(entityClass), entityClass,
 				resultTypeDescriptor);
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		SelectOperation selectOperation = getMapper().getSelectOperationByPrimaryKeys(SelectOperationSymbol.SELECT,
+		QueryOperation selectOperation = getMapper().getSelectOperationByPrimaryKeys(QueryOperationSymbol.QUERY,
 				entityMapping, entityTypeDescriptor, Elements.forArray(primaryKeys).map((e) -> Value.of(e)));
-		return select(resultTypeDescriptor, selectOperation);
+		return query(selectOperation, resultTypeDescriptor);
 	}
 
 	default <T, R> Query<R> selectByPrimaryKeys(TypeDescriptor resultTypeDescriptor, Class<? extends T> entityClass,
@@ -185,18 +185,18 @@ public interface EntityOperations extends RepositoryOperations {
 		TypeDescriptor entityTypeDescriptor = new TypeDescriptor(ResolvableType.forClass(entityClass), entityClass,
 				resultTypeDescriptor);
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		SelectOperation selectOperation = getMapper().getSelectOperationByPrimaryKeys(SelectOperationSymbol.SELECT,
+		QueryOperation selectOperation = getMapper().getSelectOperationByPrimaryKeys(QueryOperationSymbol.QUERY,
 				Value.of(entity, entityTypeDescriptor), entityMapping);
-		return select(resultTypeDescriptor, selectOperation);
+		return query(selectOperation, resultTypeDescriptor);
 	}
 
 	default <K, R> PrimaryKeyQuery<K, R> selectInPrimaryKeys(TypeDescriptor resultTypeDescriptor, Class<?> entityClass,
 			Elements<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		SelectOperation selectOperation = getMapper().getSelectOperationInPrimaryKeys(SelectOperationSymbol.SELECT,
+		QueryOperation selectOperation = getMapper().getSelectOperationInPrimaryKeys(QueryOperationSymbol.QUERY,
 				entityMapping, resultTypeDescriptor, Elements.forArray(primaryKeys).map((e) -> Value.of(e)),
 				inPrimaryKeys.map((e) -> Value.of(e)));
-		Query<R> query = select(resultTypeDescriptor, selectOperation);
+		Query<R> query = query(selectOperation, resultTypeDescriptor);
 		ObjectKeyFormat objectKeyFormat = new DefaultObjectKeyFormat();
 		return new PrimaryKeyQuery<>(query, entityMapping, objectKeyFormat, inPrimaryKeys, primaryKeys);
 	}

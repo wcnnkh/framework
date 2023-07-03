@@ -18,8 +18,8 @@ import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.OperationSymbol;
-import io.basc.framework.data.repository.SelectOperation;
-import io.basc.framework.data.repository.SelectOperationSymbol;
+import io.basc.framework.data.repository.QueryOperation;
+import io.basc.framework.data.repository.QueryOperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.lang.UnsupportedException;
@@ -35,8 +35,8 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 
 	default Operation getOperation(OperationSymbol operationSymbol, Value entity,
 			EntityMapping<? extends Property> entityMapping) {
-		if (operationSymbol instanceof SelectOperationSymbol) {
-			return getSelectOperation((SelectOperationSymbol) operationSymbol, entity, entityMapping);
+		if (operationSymbol instanceof QueryOperationSymbol) {
+			return getSelectOperation((QueryOperationSymbol) operationSymbol, entity, entityMapping);
 		} else if (operationSymbol instanceof InsertOperationSymbol) {
 			return getInsertOperation((InsertOperationSymbol) operationSymbol, entityMapping, entity);
 		} else if (operationSymbol instanceof DeleteOperationSymbol) {
@@ -148,9 +148,9 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 		return Elements.of(parameters);
 	}
 
-	default SelectOperation getSelectOperation(SelectOperationSymbol selectOperationSymbol, Value entity,
+	default QueryOperation getSelectOperation(QueryOperationSymbol selectOperationSymbol, Value entity,
 			EntityMapping<? extends Property> entityMapping) {
-		SelectOperation selectOperation = new SelectOperation(selectOperationSymbol);
+		QueryOperation selectOperation = new QueryOperation(selectOperationSymbol);
 		selectOperation
 				.setRepositorys(getRepositorys(selectOperationSymbol, entity.getTypeDescriptor(), entityMapping));
 		selectOperation.setExpressions(getExpressions(selectOperationSymbol, entity, entityMapping));
@@ -159,26 +159,26 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 		return selectOperation;
 	}
 
-	default SelectOperation getSelectOperationByPrimaryKeys(SelectOperationSymbol selectOperationSymbol,
+	default QueryOperation getSelectOperationByPrimaryKeys(QueryOperationSymbol selectOperationSymbol,
 			EntityMapping<? extends Property> entityMapping, TypeDescriptor source,
 			Elements<? extends Value> primaryKeys) {
-		SelectOperation selectOperation = new SelectOperation(selectOperationSymbol);
+		QueryOperation selectOperation = new QueryOperation(selectOperationSymbol);
 		selectOperation.setRepositorys(getRepositorys(selectOperationSymbol, source, entityMapping));
 		selectOperation
 				.setConditions(getConditionsByPrimaryKeys(selectOperationSymbol, source, entityMapping, primaryKeys));
 		return selectOperation;
 	}
 
-	default SelectOperation getSelectOperationByPrimaryKeys(SelectOperationSymbol selectOperationSymbol, Value entity,
+	default QueryOperation getSelectOperationByPrimaryKeys(QueryOperationSymbol selectOperationSymbol, Value entity,
 			EntityMapping<? extends Property> entityMapping) {
-		SelectOperation selectOperation = new SelectOperation(selectOperationSymbol);
+		QueryOperation selectOperation = new QueryOperation(selectOperationSymbol);
 		selectOperation
 				.setRepositorys(getRepositorys(selectOperationSymbol, entity.getTypeDescriptor(), entityMapping));
 		selectOperation.setConditions(getConditionsByPrimaryKeys(selectOperationSymbol, entity, entityMapping));
 		return selectOperation;
 	}
 
-	default SelectOperation getSelectOperationInPrimaryKeys(SelectOperationSymbol selectOperationSymbol,
+	default QueryOperation getSelectOperationInPrimaryKeys(QueryOperationSymbol selectOperationSymbol,
 			EntityMapping<? extends Property> entityMapping, TypeDescriptor source,
 			Elements<? extends Value> primaryKeys, Elements<? extends Value> inPrimaryKeys) {
 		Iterator<? extends Property> propertyIterator = entityMapping.getPrimaryKeys().iterator();
@@ -204,7 +204,7 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 		// in字段
 		Property property = propertyIterator.next();
 		Parameter parameter = new Parameter(property.getName(), inPrimaryKeys);
-		SelectOperation selectOperation = new SelectOperation();
+		QueryOperation selectOperation = new QueryOperation();
 		selectOperation.setRepositorys(getRepositorys(selectOperationSymbol, source, entityMapping));
 		conditions
 				.add(new Condition(new Expression(property.getName()), ConditionSymbol.IN, new Expression(parameter)));

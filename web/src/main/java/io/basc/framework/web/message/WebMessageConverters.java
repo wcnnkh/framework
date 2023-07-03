@@ -20,7 +20,7 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 
 	public WebMessageConverters() {
 		super(WebMessageConverter.class);
-		getServiceInjectors().register((service) -> {
+		getServiceInjectorRegistry().register((service) -> {
 			if (service instanceof WebMessageConverterAware) {
 				((WebMessageConverterAware) service).setWebMessageConverter(this);
 			}

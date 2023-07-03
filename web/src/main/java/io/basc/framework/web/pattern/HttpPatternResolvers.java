@@ -16,7 +16,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	public HttpPatternResolvers() {
 		super(HttpPatternResolver.class);
-		getServiceInjectors().register((service) -> {
+		getServiceInjectorRegistry().register((service) -> {
 			if (placeholderFormat != null) {
 				if (service instanceof PlaceholderFormatAware) {
 					((PlaceholderFormatAware) service).setPlaceholderFormat(placeholderFormat);
@@ -36,7 +36,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	@Override
 	public boolean canResolve(Class<?> clazz) {
-		for (HttpPatternResolver resolver : this) {
+		for (HttpPatternResolver resolver : getServices()) {
 			if (resolver.canResolve(clazz)) {
 				return true;
 			}
@@ -47,7 +47,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 	@Override
 	public Collection<HttpPattern> resolve(Class<?> clazz) {
 		Collection<HttpPattern> patterns = new LinkedHashSet<>(8);
-		for (HttpPatternResolver resolver : this) {
+		for (HttpPatternResolver resolver : getServices()) {
 			if (resolver.canResolve(clazz)) {
 				patterns.addAll(resolver.resolve(clazz));
 			}
@@ -57,7 +57,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	@Override
 	public boolean canResolve(Method method) {
-		for (HttpPatternResolver resolver : this) {
+		for (HttpPatternResolver resolver : getServices()) {
 			if (resolver.canResolve(method)) {
 				return true;
 			}
@@ -68,7 +68,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 	@Override
 	public Collection<HttpPattern> resolve(Method method) {
 		Collection<HttpPattern> patterns = new LinkedHashSet<>(8);
-		for (HttpPatternResolver resolver : this) {
+		for (HttpPatternResolver resolver : getServices()) {
 			if (resolver.canResolve(method)) {
 				patterns.addAll(resolver.resolve(method));
 			}
@@ -78,7 +78,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	@Override
 	public boolean canResolve(Class<?> clazz, Method method) {
-		for (HttpPatternResolver resolver : this) {
+		for (HttpPatternResolver resolver : getServices()) {
 			if (resolver.canResolve(clazz, method)) {
 				return true;
 			}
@@ -89,7 +89,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 	@Override
 	public Collection<HttpPattern> resolve(Class<?> clazz, Method method) {
 		Collection<HttpPattern> patterns = new LinkedHashSet<>(8);
-		for (HttpPatternResolver resolver : this) {
+		for (HttpPatternResolver resolver : getServices()) {
 			if (resolver.canResolve(clazz, method)) {
 				patterns.addAll(resolver.resolve(clazz, method));
 			}

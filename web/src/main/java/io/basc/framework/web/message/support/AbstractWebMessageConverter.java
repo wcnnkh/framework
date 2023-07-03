@@ -2,14 +2,11 @@ package io.basc.framework.web.message.support;
 
 import java.io.IOException;
 
-import io.basc.framework.beans.factory.DefaultParameterFactory;
-import io.basc.framework.beans.factory.DefaultParameterFactoryAware;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.value.Value;
@@ -25,9 +22,8 @@ import io.basc.framework.web.message.WebMessagelConverterException;
  *
  */
 public abstract class AbstractWebMessageConverter
-		implements WebMessageConverter, ConversionServiceAware, DefaultParameterFactoryAware, MessageConverterAware {
+		implements WebMessageConverter, ConversionServiceAware, MessageConverterAware {
 	private ConversionService conversionService;
-	private DefaultParameterFactory defaultParameterFactory;
 	private MessageConverter messageConverter;
 
 	public MessageConverter getMessageConverter() {
@@ -37,21 +33,6 @@ public abstract class AbstractWebMessageConverter
 	@Override
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
-	}
-
-	public DefaultParameterFactory getDefaultParameterFactory() {
-		return defaultParameterFactory;
-	}
-
-	public Object getDefaultValue(ParameterDescriptor parameterDescriptor) {
-		DefaultParameterFactory defaultParameterFactory = getDefaultParameterFactory();
-		return defaultParameterFactory == null ? null
-				: defaultParameterFactory.getDefaultParameter(parameterDescriptor);
-	}
-
-	@Override
-	public void setDefaultParameterFactory(DefaultParameterFactory defaultParameterFactory) {
-		this.defaultParameterFactory = defaultParameterFactory;
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
@@ -9,6 +7,7 @@ import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.LRULinkedHashMap;
 import io.basc.framework.util.Selector;
 import io.basc.framework.util.ServiceRegistry;
@@ -36,12 +35,11 @@ public class DefaultLoadBalancer<T extends Node> extends AbstractLoadBalancer<T>
 	}
 
 	@Override
-	public Iterator<T> iterator() {
+	public Elements<T> getServices() {
 		ReadLock readLock = getRegistry().getLock().readLock();
 		try {
 			readLock.lock();
-			List<T> list = getRegistry().getElements().filter((server) -> getState(server) != State.FAILED).toList();
-			return list.iterator();
+			return getRegistry().getElements().filter((server) -> getState(server) != State.FAILED);
 		} finally {
 			readLock.unlock();
 		}
@@ -68,12 +66,7 @@ public class DefaultLoadBalancer<T extends Node> extends AbstractLoadBalancer<T>
 			writeLock.lock();
 			// 重新构造
 			getRegistry().reload();
-			long size = count();
-			if (size < 512) {
-				stateMap.clear();
-			} else {
-				stateMap = new LRULinkedHashMap<>(Math.max(Short.MAX_VALUE, (int) size));
-			}
+			stateMap.clear();
 		} finally {
 			writeLock.unlock();
 		}

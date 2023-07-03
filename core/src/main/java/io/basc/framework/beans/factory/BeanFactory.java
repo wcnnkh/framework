@@ -2,6 +2,7 @@ package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.util.Elements;
 
 public interface BeanFactory {
 	Scope getScope();
@@ -25,7 +26,11 @@ public interface BeanFactory {
 	boolean isUnique(Class<?> requiredType);
 
 	boolean isUnique(ResolvableType requiredType);
-
+	
+	<T> Elements<T> getBeanProvider(Class<T> requiredType);
+	
+	Elements<Object> getBeanProvider(ResolvableType requiredType);
+	
 	<T> T getBean(Class<T> requiredType) throws BeansException, NoUniqueBeanDefinitionException;
 
 	Object getBean(ResolvableType requiredType) throws BeansException, NoUniqueBeanDefinitionException;

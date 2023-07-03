@@ -46,8 +46,8 @@ public final class ServletUtils {
 	}
 
 	public static ServletService createServletService(Environment environment) {
-		if (environment.isInstance(ServletService.class)) {
-			return environment.getInstance(ServletService.class);
+		if (environment.isUnique(ServletService.class)) {
+			return environment.getBean(ServletService.class);
 		}
 		return new DefaultHttpServletService(environment);
 	}

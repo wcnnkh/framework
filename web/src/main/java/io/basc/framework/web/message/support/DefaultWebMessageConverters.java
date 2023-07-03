@@ -1,6 +1,5 @@
 package io.basc.framework.web.message.support;
 
-import io.basc.framework.beans.factory.DefaultParameterFactoryAware;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.env.Environment;
@@ -21,7 +20,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final WebMessageConverters afters = new WebMessageConverters();
 
 	public DefaultWebMessageConverters(Environment environment) {
-		getServiceInjectors().register((service) -> {
+		getServiceInjectorRegistry().register((service) -> {
 			if (service instanceof EnvironmentAware) {
 				((EnvironmentAware) service).setEnvironment(environment);
 			}
@@ -33,17 +32,13 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 			if (service instanceof ConversionServiceAware) {
 				((ConversionServiceAware) service).setConversionService(getMessageConverters().getConversionService());
 			}
-
-			if (service instanceof DefaultParameterFactoryAware) {
-				((DefaultParameterFactoryAware) service).setDefaultParameterFactory(environment.getBeanResolver());
-			}
 			return Registration.EMPTY;
 		});
 		super.registerLast(afters);
-		afters.getServiceInjectors().register(getServiceInjectors());
+		afters.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
 		this.messageConverters = new DefaultMessageConverters(environment.getConversionService());
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
-		getServiceInjectors().inject(lastWebMessageConverter);
+		getServiceInjectorRegistry().inject(lastWebMessageConverter);
 		afters.registerLast(lastWebMessageConverter);
 		register(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
 		register(new EntityMessageConverter());

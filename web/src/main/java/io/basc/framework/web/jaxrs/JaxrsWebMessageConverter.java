@@ -1,21 +1,5 @@
 package io.basc.framework.web.jaxrs;
 
-import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.http.HttpMessage;
-import io.basc.framework.http.client.ClientHttpRequest;
-import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.message.WebMessageConverter;
-import io.basc.framework.web.message.WebMessagelConverterException;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -25,8 +9,23 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.aop.ProxyUtils;
+import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.client.ClientHttpResponse;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessagelConverterException;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@Component
 public class JaxrsWebMessageConverter implements WebMessageConverter, Configurable {
 	private final ConfigurableServices<MessageBodyReader> messageBodyReaders = new ConfigurableServices<>(
 			MessageBodyReader.class);

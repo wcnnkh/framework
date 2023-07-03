@@ -17,12 +17,12 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 
 	@SuppressWarnings("unchecked")
 	public void postProcessApplication(ConfigurableApplication application) {
-		for (Class<?> clazz : application.getContextClasses()) {
+		for (Class<?> clazz : application.getContextClasses().getServices()) {
 			if (io.basc.framework.amqp.MessageListener.class.isAssignableFrom(clazz)) {
 				MessageListener messageListener = clazz.getAnnotation(MessageListener.class);
 				if (messageListener != null) {
-					MethodInvokerExchange exchange = application.getInstance(messageListener.exchange());
-					BinaryMessageListener listener = application.getInstance((Class<BinaryMessageListener>) clazz);
+					MethodInvokerExchange exchange = application.getBean(messageListener.exchange());
+					BinaryMessageListener listener = application.getBean((Class<BinaryMessageListener>) clazz);
 					exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), listener);
 				}
 			}
@@ -30,7 +30,7 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 			ReflectionUtils.getDeclaredMethods(clazz).all().getElements()
 					.filter((e) -> e.isAnnotationPresent(MessageListener.class)).forEach((method) -> {
 						MessageListener messageListener = method.getAnnotation(MessageListener.class);
-						MethodInvokerExchange exchange = application.getInstance(messageListener.exchange());
+						MethodInvokerExchange exchange = application.getBean(messageListener.exchange());
 						Supplier<Object> supplier = new NameInstanceSupplier<Object>(application, clazz.getName());
 						MethodInvoker invoker = application.getAop().getProxyMethod(clazz, supplier, method);
 						exchange.registerInvoker(messageListener.routingKey(), createQueueDeclare(messageListener),

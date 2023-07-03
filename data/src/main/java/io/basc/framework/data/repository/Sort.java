@@ -19,11 +19,11 @@ public class Sort implements Serializable {
 	private final Expression expression;
 	private final SortSymbol sortSymbol;
 	private final Elements<? extends Sort> withSorts;
-	
-	public Sort(String column, SortSymbol sortSymbol) {
+
+	public Sort(Column column, SortSymbol sortSymbol) {
 		this(new Expression(column), sortSymbol);
 	}
-	
+
 	public Sort(Expression expression, SortSymbol sortSymbol) {
 		this(expression, sortSymbol, null);
 	}

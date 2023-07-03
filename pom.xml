@@ -626,11 +626,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>jpa</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>validation</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -814,7 +809,6 @@
 		<module>apollo-client</module>
 		<module>dom</module>
 		<module>swagger</module>
-		<module>jpa</module>
 		<module>validation</module>
 		<module>oracle</module>
 		<module>sqlserver</module>

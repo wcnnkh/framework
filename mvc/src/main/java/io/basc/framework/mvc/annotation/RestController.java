@@ -6,20 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.core.annotation.AliasFor;
+import io.basc.framework.web.message.annotation.ResponseBody;
 
-/**
- * 显示指明controller使用的实例名称
- * 
- * @author wcnnkh
- *
- */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Component
-public @interface Controller {
-	@AliasFor(annotation = Component.class)
+@Controller
+@ResponseBody
+public @interface RestController {
+	@AliasFor(annotation = Controller.class)
 	String value() default "";
 }

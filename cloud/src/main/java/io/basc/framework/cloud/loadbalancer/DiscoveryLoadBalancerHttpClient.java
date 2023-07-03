@@ -3,9 +3,7 @@ package io.basc.framework.cloud.loadbalancer;
 import java.net.CookieHandler;
 import java.net.URI;
 
-import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.ClientHttpRequestCallback;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
@@ -17,7 +15,6 @@ import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient {
 	private final DiscoveryLoadBalancer loadbalancer;
 
