@@ -14,18 +14,15 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class InsertOperation extends Operation {
 	private static final long serialVersionUID = 1L;
-	private Elements<? extends Column> columns;
+	private Elements<? extends Expression> columns;
 
-	public InsertOperation() {
-		this(InsertOperationSymbol.INSERT);
+	public InsertOperation(Repository repository, Elements<? extends Expression> columns) {
+		this(InsertOperationSymbol.INSERT, repository, columns);
 	}
 
-	public InsertOperation(InsertOperationSymbol insertOperationSymbol) {
-		super(insertOperationSymbol);
-	}
-
-	public InsertOperation(InsertOperationSymbol insertOperationSymbol, InsertOperation operation) {
-		super(insertOperationSymbol, operation);
-		this.columns = operation.columns;
+	public InsertOperation(InsertOperationSymbol insertOperationSymbol, Repository repository,
+			Elements<? extends Expression> columns) {
+		super(insertOperationSymbol, repository);
+		this.columns = columns;
 	}
 }

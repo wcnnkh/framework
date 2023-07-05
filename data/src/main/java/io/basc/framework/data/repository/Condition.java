@@ -1,54 +1,38 @@
 package io.basc.framework.data.repository;
 
-import java.io.Serializable;
-
-import io.basc.framework.util.Elements;
-import lombok.AllArgsConstructor;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.lang.Nullable;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * 条件
- * <p>
- * {relationshipSymbol} {expression}
+ * 条件表达式
  * 
  * @author wcnnkh
  *
  */
 @Data
-@AllArgsConstructor
-public class Condition implements Serializable {
-	private static final long serialVersionUID = 1L;
+@EqualsAndHashCode(callSuper = true)
+public class Condition extends Expression {
 	/**
 	 * 和上一个条件的关系
 	 */
 	private final RelationshipSymbol relationshipSymbol;
 
 	/**
-	 * 左边的表达式
-	 */
-	private final Expression leftExpression;
-
-	/**
 	 * 表达式的条件
 	 */
 	private final ConditionSymbol conditionSymbol;
 
-	/**
-	 * 右边的表达式
-	 */
-	private final Expression rightExpression;
-
-	/**
-	 * 关联条件
-	 */
-	private final Elements<? extends Condition> withConditions;
-
-	public Condition(Expression leftExpression, ConditionSymbol conditionSymbol, Expression rightExpression) {
-		this(RelationshipSymbol.AND, leftExpression, conditionSymbol, rightExpression, null);
+	public Condition(String name, ConditionSymbol conditionSymbol, @Nullable Object value,
+			@Nullable TypeDescriptor valueTypeDescriptor) {
+		this(RelationshipSymbol.AND, name, conditionSymbol, value, valueTypeDescriptor);
 	}
 
-	public Condition(RelationshipSymbol relationshipSymbol, Expression leftExpression, ConditionSymbol conditionSymbol,
-			Expression rightExpression) {
-		this(relationshipSymbol, leftExpression, conditionSymbol, rightExpression, null);
+	public Condition(RelationshipSymbol relationshipSymbol, String name, ConditionSymbol conditionSymbol,
+			@Nullable Object value, @Nullable TypeDescriptor valueTypeDescriptor) {
+		super(name, value, valueTypeDescriptor);
+		this.relationshipSymbol = relationshipSymbol;
+		this.conditionSymbol = conditionSymbol;
 	}
 }

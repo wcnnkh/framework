@@ -12,6 +12,15 @@ import java.util.function.Predicate;
 
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.repository.DeleteOperation;
+import io.basc.framework.data.repository.DeleteOperationSymbol;
+import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.InsertOperation;
+import io.basc.framework.data.repository.InsertOperationSymbol;
+import io.basc.framework.data.repository.Operation;
+import io.basc.framework.data.repository.QueryOperation;
+import io.basc.framework.data.repository.QueryOperationSymbol;
+import io.basc.framework.data.repository.UpdateOperationSymbol;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.execution.parameter.ParameterException;
@@ -903,5 +912,36 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			changeMap.put(column.getSetter().getName(), value);
 		});
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
+	}
+	
+	private void appendExpression(StringBuilder append, Expression expression) {
+		if(expression.getExpressionSymbol())
+	}
+	
+	@Override
+	public Sql toOperationSql(Operation operation) {
+		StringBuilder sb = new StringBuilder();
+		List<Object> params = new ArrayList<>();
+		if(operation instanceof QueryOperation) {
+			QueryOperation queryOperation = (QueryOperation) operation;
+			sb.append("select ");
+			if(CollectionUtils.isEmpty(queryOperation.getExpressions())) {
+				sb.append("*");
+			}else {
+				for(Expression expression : queryOperation.getExpressions()) {
+					
+				}
+			}
+		}
+		if (operation.getOperationSymbol().getName().equals(QueryOperationSymbol.QUERY.getName())) {
+			
+		} else if (operation.getOperationSymbol().getName().equals(UpdateOperationSymbol.UPDATE.getName())) {
+
+		} else if (operation.getOperationSymbol().getName().equals(DeleteOperationSymbol.DELETE.getName())) {
+
+		} else if (operation.getOperationSymbol().getName().equals(InsertOperationSymbol.INSERT.getName())) {
+			
+		}
+		throw new UnsupportedOperationException(operation.getOperationSymbol().getName());
 	}
 }

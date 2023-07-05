@@ -5,10 +5,6 @@ public class InsertOperationSymbol extends OperationSymbol {
 
 	public static final InsertOperationSymbol INSERT = new InsertOperationSymbol("insert");
 
-	public static final InsertOperationSymbol INSERT_IF_ABSENT = new InsertOperationSymbol("insertIfAbsent");
-
-	public static final InsertOperationSymbol INSERT_OR_UPDATE = new InsertOperationSymbol("insertOrUpdate");
-
 	public InsertOperationSymbol(String name) {
 		super(name);
 	}

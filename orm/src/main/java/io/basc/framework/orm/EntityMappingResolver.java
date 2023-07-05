@@ -1,12 +1,12 @@
 package io.basc.framework.orm;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.repository.Column;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.Sort;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
@@ -60,19 +60,16 @@ public interface EntityMappingResolver {
 
 	boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter);
 
-	Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter);
+	Elements<? extends Expression> getColumns(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
+			@Nullable Object entity);
 
-	Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source, Parameter parameter);
+	Elements<? extends Condition> getCondition(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
+			@Nullable Object entity);
 
-	Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol, TypeDescriptor entityTypeDescriptor,
-			EntityMapping<? extends Property> entityMapping);
+	Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
+			@Nullable Object entity);
 
-	Elements<? extends Condition> getConditions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter);
-
-	Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
-			ParameterDescriptor descriptor);
+	Repository getRepository(EntityMapping<?> entityMapping, @Nullable Object entity);
 
 	MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy);
 }

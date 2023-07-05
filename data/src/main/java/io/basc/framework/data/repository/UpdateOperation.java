@@ -4,26 +4,26 @@ import io.basc.framework.util.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * 更新操作
+ * 
+ * @author shuchaowen
+ *
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class UpdateOperation extends Operation {
 	private static final long serialVersionUID = 1L;
-	private Elements<? extends Column> columns;
+	private final Elements<? extends Expression> columns;
+	private Elements<? extends Condition> conditions;
 
-	public UpdateOperation() {
-		super(UpdateOperationSymbol.UPDATE);
+	public UpdateOperation(Repository repository, Elements<? extends Expression> columns) {
+		this(UpdateOperationSymbol.UPDATE, repository, columns);
 	}
 
-	public UpdateOperation(UpdateOperationSymbol updateOperationSymbol) {
-		super(updateOperationSymbol);
-	}
-
-	public UpdateOperation(UpdateOperationSymbol updateOperationSymbol, Operation operation) {
-		super(updateOperationSymbol, operation);
-	}
-
-	public UpdateOperation(UpdateOperationSymbol updateOperationSymbol, InsertOperation insertOperation) {
-		super(updateOperationSymbol);
-		this.columns = insertOperation.getColumns();
+	public UpdateOperation(UpdateOperationSymbol updateOperationSymbol, Repository repository,
+			Elements<? extends Expression> columns) {
+		super(updateOperationSymbol, repository);
+		this.columns = columns;
 	}
 }

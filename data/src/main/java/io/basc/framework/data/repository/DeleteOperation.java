@@ -1,5 +1,6 @@
 package io.basc.framework.data.repository;
 
+import io.basc.framework.util.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,11 +15,16 @@ import lombok.EqualsAndHashCode;
 public class DeleteOperation extends Operation {
 	private static final long serialVersionUID = 1L;
 
-	public DeleteOperation() {
-		this(DeleteOperationSymbol.DELETE);
+	/**
+	 * 条件
+	 */
+	private Elements<? extends Condition> conditions;
+
+	public DeleteOperation(Repository repository) {
+		this(DeleteOperationSymbol.DELETE, repository);
 	}
 
-	public DeleteOperation(DeleteOperationSymbol deleteOperationSymbol) {
-		super(deleteOperationSymbol);
+	public DeleteOperation(DeleteOperationSymbol deleteOperationSymbol, Repository repository) {
+		super(deleteOperationSymbol, repository);
 	}
 }

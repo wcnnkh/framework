@@ -8,8 +8,6 @@ public class UpdateOperationSymbol extends OperationSymbol {
 	 */
 	public static final UpdateOperationSymbol UPDATE = new UpdateOperationSymbol("update");
 
-	public static final UpdateOperationSymbol INSERT_OR_UPDATE = new UpdateOperationSymbol("insertOrUpdate");
-
 	public UpdateOperationSymbol(String name) {
 		super(name);
 	}

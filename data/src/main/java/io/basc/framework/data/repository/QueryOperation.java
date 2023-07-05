@@ -18,28 +18,26 @@ import lombok.EqualsAndHashCode;
 public class QueryOperation extends Operation {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 查询的表达式
+	 * 查询的列
 	 */
-	private Elements<? extends Expression> expressions;
+	private Elements<? extends Expression> columns;
+
+	/**
+	 * 查询条件
+	 */
+	private Elements<? extends Condition> conditions;
+
 	/**
 	 * 排序
 	 */
 	private Elements<? extends Sort> sorts;
 
-	public QueryOperation() {
-		super(QueryOperationSymbol.QUERY);
+	public QueryOperation(Repository repository) {
+		this(QueryOperationSymbol.QUERY, repository);
 	}
 
-	public QueryOperation(QueryOperationSymbol selectOperationSymbol) {
-		super(selectOperationSymbol);
-	}
-
-	public QueryOperation(Operation operation) {
-		this(QueryOperationSymbol.QUERY, operation);
-	}
-
-	public QueryOperation(QueryOperationSymbol selectOperationSymbol, Operation operation) {
-		super(selectOperationSymbol, operation);
+	public QueryOperation(QueryOperationSymbol queryOperationSymbol, Repository repository) {
+		super(queryOperationSymbol, repository);
 	}
 
 }
