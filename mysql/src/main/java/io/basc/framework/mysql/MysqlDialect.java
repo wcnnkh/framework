@@ -3,36 +3,29 @@ package io.basc.framework.mysql;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import io.basc.framework.sql.EasySql;
+import io.basc.framework.data.repository.Repository;
+import io.basc.framework.mapper.Getter;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
-import io.basc.framework.sql.orm.TableStructure;
-import io.basc.framework.sql.orm.TableStructureMapping;
+import io.basc.framework.sql.orm.TableMapping;
 import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public class MysqlDialect extends StandardSqlDialect {
-	private static final String DUPLICATE_KEY = " ON DUPLICATE KEY UPDATE ";
-	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";
 
 	public SqlType getSqlType(java.lang.Class<?> type) {
 		if (ClassUtils.isString(type) || type.isEnum()) {
@@ -72,74 +65,19 @@ public class MysqlDialect extends StandardSqlDialect {
 	};
 
 	@Override
-	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.count() == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		StringBuilder sb = new StringBuilder(512);
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.columns().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
-				continue;
-			}
-
-			keywordProcessing(cols, column.getName());
-			values.append("?");
-			params.add(toDataBaseValue(column.getParameter(entity)));
-
-			if (iterator.hasNext()) {
-				cols.append(",");
-				values.append(",");
-			}
-		}
-
-		sb.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		sb.append("(");
-		sb.append(cols);
-		sb.append(")");
-		sb.append(VALUES);
-		sb.append("(");
-		sb.append(values);
-		sb.append(")");
-		sb.append(DUPLICATE_KEY);
-
-		iterator = tableStructure.columns().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
-				continue;
-			}
-
-			keywordProcessing(sb, column.getName());
-			sb.append("=?");
-			params.add(toDataBaseValue(column.getParameter(entity)));
-			if (iterator.hasNext()) {
-				sb.append(",");
-			}
-		}
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	@Override
-	public Collection<Sql> createTable(TableStructure tableStructure) {
+	public Elements<Sql> toCreateTableSql(TableMapping<?> tableMapping, String tableName) throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
-		keywordProcessing(sb, tableStructure.getName());
+		keywordProcessing(sb, tableName);
 		sb.append(" (");
 
-		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		Iterator<Column> iterator = tableStructure.columns().iterator();
+		Elements<? extends Column> primaryKeys = tableMapping.getPrimaryKeys();
+		Iterator<? extends Column> iterator = tableMapping.columns().iterator();
 		while (iterator.hasNext()) {
 			Column col = iterator.next();
-			SqlType sqlType = getSqlType(col.getGetter().getType());
+			Getter getter = col.getGetters().first();
+			SqlType sqlType = getSqlType(getter.getTypeDescriptor().getType());
 			keywordProcessing(sb, col.getName());
 
 			sb.append(" ");
@@ -176,7 +114,7 @@ public class MysqlDialect extends StandardSqlDialect {
 			}
 		}
 
-		for (Entry<IndexInfo, List<Column>> entry : tableStructure.getIndexGroups().entrySet()) {
+		for (Entry<IndexInfo, List<Column>> entry : tableMapping.getIndexGroups().entrySet()) {
 			sb.append(",");
 			sb.append(" INDEX");
 			sb.append(" ");
@@ -209,32 +147,26 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 		sb.append(")");
 
-		if (StringUtils.hasText(tableStructure.getEngine())) {
-			sb.append(" ENGINE=").append(tableStructure.getEngine());
+		if (StringUtils.hasText(tableMapping.getEngine())) {
+			sb.append(" ENGINE=").append(tableMapping.getEngine());
 		}
 
-		if (StringUtils.hasText(tableStructure.getCharsetName())) {
-			sb.append(" CHARSET=").append(tableStructure.getCharsetName());
+		if (StringUtils.hasText(tableMapping.getCharsetName())) {
+			sb.append(" CHARSET=").append(tableMapping.getCharsetName());
 		}
 
-		if (StringUtils.hasText(tableStructure.getRowFormat())) {
-			sb.append(" ROW_FORMAT=").append(tableStructure.getRowFormat());
+		if (StringUtils.hasText(tableMapping.getRowFormat())) {
+			sb.append(" ROW_FORMAT=").append(tableMapping.getRowFormat());
 		}
 
-		if (StringUtils.hasText(tableStructure.getComment())) {
-			sb.append(" comment=\'").append(tableStructure.getComment()).append("\'");
+		if (StringUtils.hasText(tableMapping.getComment())) {
+			sb.append(" comment=\'").append(tableMapping.getComment()).append("\'");
 		}
-
-		return Arrays.asList(new SimpleSql(sb.toString()));
+		return Elements.singleton(new SimpleSql(sb.toString()));
 	}
 
 	@Override
-	public Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException {
-		return new SimpleSql(LAST_INSERT_ID_SQL);
-	}
-
-	@Override
-	public Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
+	public Sql toCopyTableStructureSql(TableMapping<?> tableMapping, String newTableName, String oldTableName)
 			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
@@ -246,68 +178,7 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public TableStructureMapping getTableStructureMapping(TableStructure tableStructure) {
-		return new TableStructureMapping() {
-
-			public Sql getSql() {
-				return new SimpleSql(
-						"select * from INFORMATION_SCHEMA.COLUMNS where table_schema=database() and table_name=?",
-						tableStructure.getName());
-			}
-
-			public Column getColumn(ResultSet resultSet) throws SQLException {
-				Column column = new Column();
-				column.setName(resultSet.getString("COLUMN_NAME"));
-				column.setObjectRelationalResolver(MysqlDialect.this);
-				return column;
-			}
-		};
-	}
-
-	@Override
-	public Sql condition(Sql condition, Sql left, Sql right) {
-		EasySql sql = new EasySql();
-		sql.append("IF(");
-		sql.append(condition);
-		sql.append(",");
-		sql.append(left);
-		sql.append(",");
-		sql.append(right);
-		sql.append(")");
-		return sql;
-	}
-
-	@Override
-	public Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		StringBuilder sql = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.getElements().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
-				continue;
-			}
-
-			if (cols.length() > 0) {
-				cols.append(",");
-				values.append(",");
-			}
-
-			keywordProcessing(cols, column.getName());
-			values.append("?");
-			params.add(toDataBaseValue(column.getParameter(entity)));
-		}
-		sql.append("insert ignore into ");
-		keywordProcessing(sql, tableStructure.getName());
-		sql.append("(");
-		sql.append(cols);
-		sql.append(")");
-		sql.append(VALUES);
-		sql.append("(");
-		sql.append(values);
-		sql.append(")");
-		return new SimpleSql(sql.toString(), params.toArray());
+	public Sql toLastInsertIdSql(Repository repository) throws SqlDialectException {
+		return new SimpleSql("select last_insert_id()");
 	}
 }

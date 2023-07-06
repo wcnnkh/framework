@@ -1,22 +1,15 @@
 package io.basc.framework.sqlite;
 
 import java.sql.Blob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
-import io.basc.framework.sql.EasySql;
+import io.basc.framework.data.repository.Repository;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
-import io.basc.framework.sql.orm.TableStructure;
-import io.basc.framework.sql.orm.TableStructureMapping;
+import io.basc.framework.sql.orm.TableMapping;
 import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
@@ -41,20 +34,21 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException {
-		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
+	public Elements<Sql> toCreateTableSql(TableMapping<?> tableMapping, String tableName) throws SqlDialectException {
+		Elements<? extends Column> primaryKeys = tableMapping.getPrimaryKeys();
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
-		keywordProcessing(sb, tableStructure.getName());
+		keywordProcessing(sb, tableName);
 		sb.append(" (");
 
-		Iterator<Column> iterator = tableStructure.columns().iterator();
+		Iterator<? extends Column> iterator = tableMapping.columns().iterator();
 		while (iterator.hasNext()) {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.sql.orm.SqlType sqlType = getSqlType(col.getGetter().getType());
+			io.basc.framework.sql.orm.SqlType sqlType = getSqlType(
+					col.getGetters().first().getTypeDescriptor().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
 				sb.append("(" + sqlType.getLength() + ")");
@@ -92,7 +86,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		if (primaryKeys.count() > 1) {
 			// 多主键
 			sb.append(",primary key(");
-			iterator = tableStructure.getPrimaryKeys().iterator();
+			iterator = primaryKeys.iterator();
 			while (iterator.hasNext()) {
 				Column column = iterator.next();
 				keywordProcessing(sb, column.getName());
@@ -104,33 +98,16 @@ public class SQLiteDialect extends StandardSqlDialect {
 		}
 
 		sb.append(")");
-		return Arrays.asList(new SimpleSql(sb.toString()));
+		return Elements.singleton(new SimpleSql(sb.toString()));
 	}
 
 	@Override
-	public Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException {
+	public Sql toLastInsertIdSql(Repository repository) throws SqlDialectException {
 		return new SimpleSql("SELECT last_insert_rowid()");
 	}
 
 	@Override
-	public TableStructureMapping getTableStructureMapping(TableStructure tableStructure) {
-		return new TableStructureMapping() {
-
-			public Sql getSql() {
-				return new SimpleSql("pragma table_info(" + tableStructure.getName() + ")");
-			}
-
-			public Column getColumn(ResultSet resultSet) throws SQLException {
-				Column column = new Column();
-				column.setObjectRelationalResolver(SQLiteDialect.this);
-				column.setName(resultSet.getString("name"));
-				return column;
-			}
-		};
-	}
-
-	@Override
-	public Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
+	public Sql toCopyTableStructureSql(TableMapping<?> tableMapping, String newTableName, String oldTableName)
 			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
@@ -139,86 +116,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sb.append(" like ");
 		keywordProcessing(sb, oldTableName);
 		return new SimpleSql(sb.toString());
-	}
-
-	@Override
-	public Sql condition(Sql condition, Sql left, Sql right) {
-		EasySql sql = new EasySql();
-		sql.append("CASE WHEN ");
-		sql.append(condition);
-		sql.append(" THEN ");
-		sql.append(left);
-		sql.append(" ELSE ");
-		sql.append(right);
-		return sql;
-	}
-
-	@Override
-	public Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		StringBuilder sql = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.columns().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
-				continue;
-			}
-
-			if (cols.length() > 0) {
-				cols.append(",");
-				values.append(",");
-			}
-
-			keywordProcessing(cols, column.getName());
-			values.append("?");
-			params.add(toDataBaseValue(column.getParameter(entity)));
-		}
-		sql.append("insert or ignore into ");
-		keywordProcessing(sql, tableStructure.getName());
-		sql.append("(");
-		sql.append(cols);
-		sql.append(")");
-		sql.append(VALUES);
-		sql.append("(");
-		sql.append(values);
-		sql.append(")");
-		return new SimpleSql(sql.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		StringBuilder sql = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.columns().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
-				continue;
-			}
-
-			if (cols.length() > 0) {
-				cols.append(",");
-				values.append(",");
-			}
-
-			keywordProcessing(cols, column.getName());
-			values.append("?");
-			params.add(toDataBaseValue(column.getParameter(entity)));
-		}
-		sql.append("replace into ");
-		keywordProcessing(sql, tableStructure.getName());
-		sql.append("(");
-		sql.append(cols);
-		sql.append(")");
-		sql.append(VALUES);
-		sql.append("(");
-		sql.append(values);
-		sql.append(")");
-		return new SimpleSql(sql.toString(), params.toArray());
 	}
 
 	@Override

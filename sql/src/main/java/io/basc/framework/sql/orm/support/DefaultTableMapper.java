@@ -7,8 +7,6 @@ import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.sql.ResultSetMapper;
 import io.basc.framework.sql.orm.Column;
-import io.basc.framework.sql.orm.DefaultColumn;
-import io.basc.framework.sql.orm.DefaultTableMapping;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableMapper;
 import io.basc.framework.sql.orm.TableMapping;
@@ -60,34 +58,16 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	@Override
 	public TableMapping<? extends Column> getMapping(Class<?> entityClass) {
 		EntityMapping<? extends Field> mapping = super.getMapping(entityClass);
-		if (mapping == null) {
-			synchronized (this) {
-				mapping = super.getMapping(entityClass);
-				if (mapping == null) {
-					TableMapping<? extends Column> tableMapping = TableMapper.super.getMapping(entityClass);
-					registerMapping(entityClass, tableMapping);
-					return tableMapping;
-				}
-			}
-		}
-
 		if (mapping instanceof TableMapping) {
 			return (TableMapping<? extends Column>) mapping;
 		}
-
-		if (isMappingRegistred(entityClass)) {
-			// 递归
-			return getMapping(entityClass);
-		}
-
 		synchronized (this) {
-			if (isMappingRegistred(entityClass)) {
-				// 递归
-				return getMapping(entityClass);
+			mapping = super.getMapping(entityClass);
+			if (mapping instanceof TableMapping) {
+				return (TableMapping<? extends Column>) mapping;
 			}
 
-			TableMapping<? extends Column> tableMapping = new DefaultTableMapping<>(mapping,
-					(e) -> new DefaultColumn(e, entityClass, this), entityClass, this);
+			TableMapping<? extends Column> tableMapping = TableMapper.super.getMapping(entityClass);
 			registerMapping(entityClass, tableMapping);
 			return tableMapping;
 		}

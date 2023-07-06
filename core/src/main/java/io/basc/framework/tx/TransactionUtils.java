@@ -14,7 +14,7 @@ public final class TransactionUtils {
 	 * Global default transactions(全局默认使用的事务)
 	 */
 	private static final TransactionManager DEFAULT = Sys.getEnv()
-			.getServiceLoader(TransactionManager.class, ThreadLocalTransactionManager.class).getServices().first();
+			.getServiceLoader(TransactionManager.class).getServices().findFirst().orElseGet(() -> new ThreadLocalTransactionManager());
 	private static final ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
 			TransactionManager.class.getSimpleName());
 

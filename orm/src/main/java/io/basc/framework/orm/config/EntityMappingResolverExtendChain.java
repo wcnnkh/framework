@@ -1,9 +1,8 @@
-package io.basc.framework.orm.support;
+package io.basc.framework.orm.config;
 
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.repository.Column;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
@@ -16,7 +15,6 @@ import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityMappingResolver;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.Property;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
@@ -90,11 +88,11 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 		return nextChain == null ? true : nextChain.isNullable(entityClass, descriptor);
 	}
 
-	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isEntity(entityClass, descriptor, this);
+			return iterator.next().isEntity(source, descriptor, this);
 		}
-		return nextChain == null ? false : nextChain.isEntity(entityClass, descriptor);
+		return nextChain == null ? false : nextChain.isEntity(source, descriptor);
 	}
 
 	public boolean isEntity(TypeDescriptor source) {
@@ -184,24 +182,6 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 	}
 
 	@Override
-	public Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
-			ParameterDescriptor descriptor) {
-		if (iterator.hasNext()) {
-			return iterator.next().getSorts(operationSymbol, source, descriptor, this);
-		}
-		return nextChain == null ? Elements.empty() : nextChain.getSorts(operationSymbol, source, descriptor);
-	}
-
-	@Override
-	public Elements<? extends Condition> getConditions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter) {
-		if (iterator.hasNext()) {
-			return iterator.next().getConditions(operationSymbol, source, parameter, this);
-		}
-		return nextChain == null ? Elements.empty() : nextChain.getConditions(operationSymbol, source, parameter);
-	}
-
-	@Override
 	public ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
 			return iterator.next().getForeignKey(entityClass, descriptor, this);
@@ -226,41 +206,12 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 	}
 
 	@Override
-	public boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter) {
+	public boolean hasEffectiveValue(Parameter parameter) {
 		if (iterator.hasNext()) {
-			return iterator.next().hasEffectiveValue(source, parameter, this);
+			return iterator.next().hasEffectiveValue(parameter, this);
 		}
 
-		return nextChain == null ? parameter.isPresent() : nextChain.hasEffectiveValue(source, parameter);
-	}
-
-	@Override
-	public Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter) {
-		if (iterator.hasNext()) {
-			return iterator.next().getExpressions(operationSymbol, source, parameter, this);
-		}
-		return nextChain == null ? Elements.empty() : nextChain.getExpressions(operationSymbol, source, parameter);
-	}
-
-	@Override
-	public Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter) {
-		if (iterator.hasNext()) {
-			return iterator.next().getColumns(operationSymbol, source, parameter, this);
-		}
-		return nextChain == null ? Elements.singleton(new Column(parameter))
-				: nextChain.getColumns(operationSymbol, source, parameter);
-	}
-
-	@Override
-	public Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol,
-			TypeDescriptor entityTypeDescriptor, EntityMapping<? extends Property> entityMapping) {
-		if (iterator.hasNext()) {
-			return iterator.next().getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping, this);
-		}
-		return nextChain == null ? Elements.singleton(new Repository(entityMapping.getName()))
-				: nextChain.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
+		return nextChain == null ? parameter.isPresent() : nextChain.hasEffectiveValue(parameter);
 	}
 
 	@Override
@@ -270,5 +221,45 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 		}
 		return nextChain == null ? dottomlessMappingStrategy
 				: nextChain.getMappingStrategy(source, dottomlessMappingStrategy);
+	}
+
+	@Override
+	public Expression toColumn(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter) {
+		if (iterator.hasNext()) {
+			return iterator.next().toColumn(operationSymbol, repository, entityClass, entityMapping, parameter, this);
+		}
+		return nextChain == null ? null
+				: nextChain.toColumn(operationSymbol, repository, entityClass, entityMapping, parameter);
+	}
+
+	@Override
+	public Condition toCondition(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter) {
+		if (iterator.hasNext()) {
+			return iterator.next().toCondition(operationSymbol, repository, entityClass, entityMapping, parameter,
+					this);
+		}
+		return nextChain == null ? null
+				: nextChain.toCondition(operationSymbol, repository, entityClass, entityMapping, parameter);
+	}
+
+	@Override
+	public Sort toSort(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter) {
+		if (iterator.hasNext()) {
+			return iterator.next().toSort(operationSymbol, repository, entityClass, entityMapping, parameter, this);
+		}
+		return nextChain == null ? null
+				: nextChain.toSort(operationSymbol, repository, entityClass, entityMapping, parameter);
+	}
+
+	@Override
+	public Repository getRepository(OperationSymbol operationSymbol, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Object entity) {
+		if (iterator.hasNext()) {
+			return iterator.next().getRepository(operationSymbol, entityClass, entityMapping, entity, this);
+		}
+		return nextChain == null ? null : nextChain.getRepository(operationSymbol, entityClass, entityMapping, entity);
 	}
 }

@@ -2,9 +2,9 @@ package io.basc.framework.zookeeper.server;
 
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.Component;
 
-@Provider(order = Integer.MAX_VALUE)
+@Component
 public final class AutoZooKeeperServerStart implements ApplicationPostProcessor {
 	private static final String DEFAULT_ZOOKEEPER_CONFIG = "zookeeper.properties";
 

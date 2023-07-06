@@ -11,6 +11,10 @@ import io.basc.framework.value.Value;
 public interface ObjectMapper extends MapperRegistry<Object, ConversionException>, MappingFactory,
 		ObjectAccessFactoryRegistry, MappingStrategyFactory {
 
+	default boolean isEntity(TypeDescriptor source, ParameterDescriptor parameterDescriptor) {
+		return isEntity(parameterDescriptor.getTypeDescriptor());
+	}
+
 	/**
 	 * 判断是否是实体对象
 	 * 

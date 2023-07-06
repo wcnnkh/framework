@@ -8,21 +8,14 @@ import org.apache.zookeeper.ZooKeeper;
 
 import io.basc.framework.cloud.Service;
 import io.basc.framework.cloud.SimpleDiscoveryClient;
-import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
-@Provider(order=Integer.MIN_VALUE + 1)
 public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<Service> implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);
-	public static final String DEFAULT_PARENT_PATH = "/io/basc/framework/zookeeper/service/discovery";
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
-
-	public ZooKeeperServiceDiscovery(ZooKeeper zooKeeper) {
-		this(zooKeeper, DEFAULT_PARENT_PATH);
-	}
 
 	public ZooKeeperServiceDiscovery(ZooKeeper zooKeeper, String parentPath) {
 		this.zooKeeper = zooKeeper;

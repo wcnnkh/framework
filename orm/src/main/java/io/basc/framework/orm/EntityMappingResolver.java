@@ -30,7 +30,7 @@ public interface EntityMappingResolver {
 
 	boolean isNullable(Class<?> sourceClass, ParameterDescriptor descriptor);
 
-	boolean isEntity(Class<?> sourceClass, ParameterDescriptor descriptor);
+	boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor);
 
 	boolean isEntity(TypeDescriptor source);
 
@@ -58,18 +58,19 @@ public interface EntityMappingResolver {
 
 	boolean isConfigurable(TypeDescriptor source);
 
-	boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter);
-
-	Elements<? extends Expression> getColumns(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
-			@Nullable Object entity);
-
-	Elements<? extends Condition> getCondition(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
-			@Nullable Object entity);
-
-	Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
-			@Nullable Object entity);
-
-	Repository getRepository(EntityMapping<?> entityMapping, @Nullable Object entity);
+	boolean hasEffectiveValue(Parameter parameter);
 
 	MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy);
+
+	Repository getRepository(OperationSymbol operationSymbol, Class<?> entityClass, EntityMapping<?> entityMapping,
+			@Nullable Object entity);
+
+	Expression toColumn(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter);
+
+	Condition toCondition(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter);
+
+	Sort toSort(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter);
 }

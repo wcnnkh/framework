@@ -1,6 +1,8 @@
 package io.basc.framework.sql.orm;
 
+import java.util.List;
 import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
@@ -38,15 +40,15 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 	}
 
 	@Override
-	default Elements<OptionalLong> batchExecute(Elements<? extends Operation> operations) throws RepositoryException {
-		// TODO Auto-generated method stub
-		return null;
+	default List<OptionalLong> batchExecute(List<? extends Operation> operations) throws RepositoryException {
+		List<Sql> sqls = operations.stream().map((e) -> getMapper().toSql(e)).collect(Collectors.toList());
+		return executeBatch(sqls);
 	}
-	
+
 	@Override
 	default <T> Query<T> query(TypeDescriptor resultTypeDescriptor, QueryOperation operation)
 			throws RepositoryException {
-		// TODO Auto-generated method stub
-		return null;
+		Sql sql = getMapper().toSql(operation);
+		return query(resultTypeDescriptor, sql);
 	}
 }

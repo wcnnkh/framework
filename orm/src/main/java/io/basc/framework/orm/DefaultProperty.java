@@ -1,5 +1,6 @@
 package io.basc.framework.orm;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
@@ -51,8 +52,8 @@ public class DefaultProperty implements Property {
 				.filter((e) -> e != null).first();
 		this.comment = field.getGetters().map((e) -> resolver.getComment(sourceClass, e)).filter((e) -> e != null)
 				.first();
-		this.entity = field.getSetters().map((e) -> resolver.isEntity(sourceClass, e)).filter((e) -> e != null)
-				.anyMatch((e) -> e);
+		this.entity = field.getSetters().map((e) -> resolver.isEntity(TypeDescriptor.valueOf(sourceClass), e))
+				.filter((e) -> e != null).anyMatch((e) -> e);
 		this.increment = field.getSetters().map((e) -> resolver.isIncrement(sourceClass, e)).filter((e) -> e != null)
 				.anyMatch((e) -> e);
 		this.nullable = field.getSetters().map((e) -> resolver.isNullable(sourceClass, e)).filter((e) -> e != null)

@@ -12,7 +12,7 @@ public class OpenAPIExtensionsReload {
 
 	public static void reload(ServiceLoaderFactory serviceLoaderFactory) {
 		List<OpenAPIExtension> list = new ArrayList<>();
-		list.addAll(serviceLoaderFactory.getServiceLoader(OpenAPIExtension.class).toList());
+		list.addAll(serviceLoaderFactory.getServiceLoader(OpenAPIExtension.class).getServices().toList());
 		list.add(new DefaultParameterExtension());
 		OpenAPIExtensions.setExtensions(list);
 	}

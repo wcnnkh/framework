@@ -14,6 +14,7 @@ import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.RelationshipSymbol;
+import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.SortSymbol;
 import io.basc.framework.lang.Ignore;
@@ -23,8 +24,9 @@ import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.ParameterDescriptorFilter;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityMappingResolver;
-import io.basc.framework.orm.support.EntityMappingResolverExtend;
+import io.basc.framework.orm.config.EntityMappingResolverExtend;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
@@ -190,11 +192,11 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, EntityMappingResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Entity.class)) {
 			return true;
 		}
-		return chain.isEntity(entityClass, descriptor);
+		return chain.isEntity(source, descriptor);
 	}
 
 	@Override
@@ -291,21 +293,21 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
-			ParameterDescriptor descriptor, EntityMappingResolver chain) {
-		SortType sortType = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(), SortType.class);
+	public Sort toSort(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
+		SortType sortType = AnnotatedElementUtils.getMergedAnnotation(parameter.getTypeDescriptor(), SortType.class);
 		if (sortType != null) {
 			SortSymbol sortSymbol = Symbol.getOrCreate(() -> SortSymbol.getSortSymbols(sortType.value()).first(),
 					() -> new SortSymbol(sortType.value()));
-			;
-			return Elements.singleton(new Sort(descriptor.getName(), sortSymbol));
+			return new Sort(new Expression(parameter.getName()), sortSymbol);
 		}
-		return EntityMappingResolverExtend.super.getSorts(operationSymbol, source, descriptor, chain);
+		return EntityMappingResolverExtend.super.toSort(operationSymbol, repository, entityClass, entityMapping,
+				parameter, chain);
 	}
 
 	@Override
-	public Elements<? extends io.basc.framework.data.repository.Condition> getConditions(
-			OperationSymbol operationSymbol, TypeDescriptor source, Parameter parameter, EntityMappingResolver chain) {
+	public Condition toCondition(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
 		io.basc.framework.orm.annotation.Condition condition = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), io.basc.framework.orm.annotation.Condition.class);
 		if (condition != null) {
@@ -321,10 +323,11 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 						() -> RelationshipSymbol.getRelationshipSymbol(relationship.value()).first(),
 						() -> new RelationshipSymbol(relationship.value()));
 			}
-			return Elements.singleton(new Condition(relationshipSymbol, new Expression(parameter), conditionSymbol,
-					new Expression(parameter)));
+			return new Condition(relationshipSymbol, parameter.getName(), conditionSymbol, parameter.getSource(),
+					parameter.getTypeDescriptor());
 		}
-		return EntityMappingResolverExtend.super.getConditions(operationSymbol, source, parameter, chain);
+		return EntityMappingResolverExtend.super.toCondition(operationSymbol, repository, entityClass, entityMapping,
+				parameter, chain);
 	}
 
 	@Override
@@ -399,7 +402,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter, EntityMappingResolver chain) {
+	public boolean hasEffectiveValue(Parameter parameter, EntityMappingResolver chain) {
 		InvalidBaseTypeValue invalidBaseTypeValue = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), InvalidBaseTypeValue.class);
 		if (invalidBaseTypeValue != null && invalidBaseTypeValue.value().length > 0) {
@@ -413,6 +416,6 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 				}
 			}
 		}
-		return EntityMappingResolverExtend.super.hasEffectiveValue(source, parameter, chain);
+		return EntityMappingResolverExtend.super.hasEffectiveValue(parameter, chain);
 	}
 }

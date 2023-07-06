@@ -2,51 +2,33 @@ package io.basc.framework.sql.orm.support;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.repository.Condition;
+import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.DeleteOperation;
 import io.basc.framework.data.repository.DeleteOperationSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.InsertOperation;
-import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.QueryOperation;
-import io.basc.framework.data.repository.QueryOperationSymbol;
-import io.basc.framework.data.repository.UpdateOperationSymbol;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
-import io.basc.framework.execution.parameter.ParameterException;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.orm.repository.Condition;
-import io.basc.framework.orm.repository.ConditionKeywords;
-import io.basc.framework.orm.repository.Conditions;
-import io.basc.framework.orm.repository.OrderColumn;
-import io.basc.framework.orm.repository.WithCondition;
+import io.basc.framework.data.repository.RelationshipSymbol;
+import io.basc.framework.data.repository.Sort;
+import io.basc.framework.data.repository.SortSymbol;
+import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlUtils;
-import io.basc.framework.sql.orm.Column;
 import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
-import io.basc.framework.sql.orm.TableStructure;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
@@ -58,244 +40,7 @@ import io.basc.framework.value.Value;
  *
  */
 public abstract class StandardSqlDialect extends DefaultTableMapper implements SqlDialect {
-	protected static final String AND = " and ";
-	protected static final String DELETE_PREFIX = "delete from ";
-	private static final String IN = " in (";
-	protected static final String INSERT_INTO_PREFIX = "insert into ";
-	protected static final String OR = " or ";
-
-	private static final char POINT = '.';
-	protected static final String SELECT_ALL_PREFIX = "select * from ";
-	protected static final String SET = " set ";
-	protected static final String UPDATE_PREFIX = "update ";
-
-	protected static final String VALUES = " values ";
-	protected static final String WHERE = " where ";
-
-	private Environment environment;
 	private String escapeCharacter = "`";
-
-	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns) {
-		while (columns.hasNext()) {
-			Column column = columns.next();
-			Object value = toDataBaseValue(column.getGetter().getValue(entity));
-			if (ObjectUtils.isEmpty(value)) {
-				continue;
-			}
-
-			if (sb.length() != 0) {
-				sb.append(" and ");
-			}
-			keywordProcessing(sb, column.getName());
-			sb.append(" = ?");
-			params.add(value);
-		}
-	}
-
-	protected void appendExtendWhere(Column column, StringBuilder sb, Collection<Object> params,
-			Map<String, Object> changeMap, Object entity) {
-		Collection<Range<Double>> numberRanges = column.getNumberRanges();
-		if (!CollectionUtils.isEmpty(numberRanges)) {
-			for (Range<Double> range : numberRanges) {
-				if (range.getLowerBound().isBounded()) {
-					sb.append(AND);
-					keywordProcessing(sb, column.getName());
-					if (column.isIncrement()) {
-						Value newValue = Value.of(toDataBaseValue(column.getGetter().getValue(entity)));
-						Value oldValue = changeMap == null ? null
-								: Value.of(changeMap.get(column.getSetter().getName()));
-						if (oldValue != null) {
-							sb.append("+");
-							sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
-						}
-					}
-					sb.append(">");
-					if (range.getLowerBound().isInclusive()) {
-						sb.append("=");
-					}
-					sb.append(range.getLowerBound().get());
-				}
-
-				if (range.getUpperBound().isBounded()) {
-					sb.append(AND);
-					keywordProcessing(sb, column.getName());
-					if (column.isIncrement()) {
-						Value newValue = Value.of(toDataBaseValue(column.getGetter().getValue(entity)));
-						Value oldValue = changeMap == null ? null
-								: Value.of(changeMap.get(column.getSetter().getName()));
-						if (oldValue != null) {
-							sb.append("+");
-							sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
-						}
-					}
-					sb.append("<");
-					if (range.getUpperBound().isInclusive()) {
-						sb.append("=");
-					}
-					sb.append(range.getUpperBound().get());
-				}
-			}
-		}
-
-		if (column.isVersion()) {
-			Value oldVersion = null;
-			if (changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
-				oldVersion = Value.of(changeMap.get(column.getSetter().getName()));
-				if (oldVersion.getAsLong() == 0) {
-					// 如果存在变更但版本号为0就忽略此条件
-					return;
-				}
-			}
-
-			// 因为一定存在主键，所有一定有where条件，此处直接and
-			sb.append(AND);
-			keywordProcessing(sb, column.getName());
-			sb.append("=?");
-
-			// 如果存在旧值就使用旧值
-			params.add(oldVersion == null ? toDataBaseValue(column.getGetter().getValue(entity))
-					: toDataBaseValue(Value.of(oldVersion.getAsLong())));
-		}
-	}
-
-	protected void appendOrders(List<? extends OrderColumn> orders, StringBuilder sb) {
-		Iterator<? extends OrderColumn> iterator = orders.iterator();
-		while (iterator.hasNext()) {
-			OrderColumn orderColumn = iterator.next();
-			keywordProcessing(sb, orderColumn.getName());
-			if (orderColumn.getSort() != null) {
-				sb.append(" " + orderColumn.getSort());
-			}
-
-			// 不做嵌套
-			List<OrderColumn> orderColumns = orderColumn.getWithOrders();
-			if (!CollectionUtils.isEmpty(orderColumns)) {
-				sb.append(", ");
-				appendOrders(orderColumns, sb);
-			}
-
-			if (iterator.hasNext()) {
-				sb.append(",");
-			}
-		}
-	}
-
-	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			Map<String, Object> changeMap) {
-		Value newValue = Value.of(toDataBaseValue(column.getGetter().getValue(entity)));
-		Value oldValue = changeMap == null ? null : Value.of(changeMap.get(column.getSetter().getName()));
-		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
-	}
-
-	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			@Nullable Value oldValue, Value newValue) {
-		if (column.isIncrement() && oldValue != null) {
-			keywordProcessing(sb, column.getName());
-			sb.append("+");
-			sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
-		} else {
-			sb.append("?");
-			params.add(newValue.getSource());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	protected boolean appendWhere(Condition condition, StringBuilder sb, List<Object> params) {
-		if (condition == null || condition.isInvalid() || condition.getParameter() == null) {
-			return false;
-		}
-
-		ConditionKeywords conditionKeywords = getConditionKeywords();
-		if (conditionKeywords.getEqualKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append("=?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getEndWithKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" like ");
-			concat(sb, "'%'", "?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" >= ?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" <= ?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getGreaterThanKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" > ?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
-			if (!condition.getParameter().isPresent()) {
-				return false;
-			}
-
-			List<Object> list;
-			TypeDescriptor typeDescriptor = condition.getParameter().getTypeDescriptor();
-			if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
-				list = (List<Object>) condition.getParameter().convert(
-						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()),
-						getEnvironment().getConversionService());
-				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
-			} else {
-				list = Arrays.asList(condition.getParameter().getSource());
-			}
-
-			if (list == null || list.isEmpty()) {
-				return false;
-			}
-
-			keywordProcessing(sb, condition.getParameter().getName());
-			Iterator<Object> iterator = list.iterator();
-			sb.append(" in(");
-			while (iterator.hasNext()) {
-				sb.append("?");
-				params.add(toDataBaseValue(Value.of(iterator.next(), typeDescriptor)));
-				if (iterator.hasNext()) {
-					sb.append(",");
-				}
-			}
-			sb.append(")");
-		} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" < ?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getLikeKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" like ");
-			concat(sb, "'%'", "?", "'%'");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" is not ?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else if (conditionKeywords.getSearchKeywords().exists(condition.getCondition())) {
-			String value = condition.getParameter().convert(String.class, getEnvironment().getConversionService());
-			if (StringUtils.isEmpty(value)) {
-				return false;
-			}
-
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" like '%");
-			for (int i = 0; i < value.length(); i++) {
-				sb.append(value.charAt(i));
-				sb.append("%");
-			}
-			sb.append("'");
-		} else if (conditionKeywords.getStartWithKeywords().exists(condition.getCondition())) {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" like ");
-			concat(sb, "?", "'%'");
-			params.add(toDataBaseValue(condition.getParameter()));
-		} else {
-			keywordProcessing(sb, condition.getParameter().getName());
-			sb.append(" ").append(condition.getCondition()).append(" ?");
-			params.add(toDataBaseValue(condition.getParameter()));
-		}
-		return true;
-	}
 
 	public void concat(StringBuilder sb, String... strs) {
 		if (strs == null || strs.length == 0) {
@@ -312,107 +57,18 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		sb.append(")");
 	}
 
-	@Nullable
-	protected Map<String, Object> getChangeMap(Object entity) throws SqlDialectException {
-		Map<String, Object> changeMap = null;
-		if (entity instanceof FieldSetterListen) {
-			changeMap = ((FieldSetterListen) entity)._getFieldSetterMap();
-			if (CollectionUtils.isEmpty(changeMap)) {
-				throw new SqlDialectException("not change properties");
-			}
-		}
-		return changeMap;
-	}
-
 	public String getCreateTablePrefix() {
 		return "CREATE TABLE IF NOT EXISTS";
 	}
 
 	// --------------以下为标准实现-----------------
 
-	@Override
-	public Environment getEnvironment() {
-		return environment == null ? Sys.getEnv() : environment;
-	}
-
 	public String getEscapeCharacter() {
 		return escapeCharacter;
 	}
 
-	@Override
-	public Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
-			throws SqlDialectException {
-		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
-			throw new SqlDialectException("in 语句至少要有一个in条件");
-		}
-
-		Elements<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
-		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
-		if (whereSize > primaryKeyColumns.count()) {
-			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
-		}
-
-		List<Object> params = new ArrayList<Object>(inPrimaryKeys.size() + whereSize);
-		StringBuilder sb = new StringBuilder();
-		Iterator<Column> iterator = primaryKeyColumns.iterator();
-		if (whereSize > 0) {
-			for (int i = 0; i < whereSize && iterator.hasNext(); i++) {
-				if (sb.length() != 0) {
-					sb.append(AND);
-				}
-
-				Column column = iterator.next();
-				keywordProcessing(sb, column.getName());
-				sb.append("=?");
-				params.add(toDataBaseValue(Value.of(primaryKeys[i])));
-			}
-		}
-
-		if (iterator.hasNext()) {
-			if (sb.length() != 0) {
-				sb.append(AND);
-			}
-
-			keywordProcessing(sb, iterator.next().getName());
-			sb.append(IN);
-			Iterator<?> valueIterator = inPrimaryKeys.iterator();
-			while (valueIterator.hasNext()) {
-				params.add(toDataBaseValue(Value.of(valueIterator.next())));
-				sb.append("?");
-				if (valueIterator.hasNext()) {
-					sb.append(",");
-				}
-			}
-			sb.append(")");
-		}
-
-		String where = sb.toString();
-		sb = new StringBuilder();
-		sb.append(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		sb.append(WHERE).append(where);
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	public String getSqlName(String tableName, String column) {
-		StringBuilder sb = new StringBuilder();
-		keywordProcessing(sb, tableName, column);
-		return sb.toString();
-	}
-
 	public void keywordProcessing(StringBuilder sb, String column) {
 		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
-	}
-
-	public void keywordProcessing(StringBuilder sb, String tableName, String column) {
-		sb.append(getEscapeCharacter()).append(tableName).append(getEscapeCharacter());
-		sb.append(POINT);
-		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
 	}
 
 	public void setEscapeCharacter(String escapeCharacter) {
@@ -446,91 +102,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			return value;
 		}
 
-		return value.convert(TypeDescriptor.valueOf(sqlType.getType()), getEnvironment().getConversionService());
-	}
-
-	@Override
-	public Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
-		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.count() == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		if (primaryKeys.count() != ids.length) {
-			throw new ParameterException("主键数量不一致:" + tableStructure.getName());
-		}
-
-		StringBuilder sql = new StringBuilder();
-		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, tableStructure.getName());
-		sql.append(WHERE);
-
-		int i = 0;
-		Object[] params = new Object[ids.length];
-		Iterator<Column> iterator = primaryKeys.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			keywordProcessing(sql, column.getName());
-			sql.append("=?");
-			params[i] = toDataBaseValue(Value.of(ids[i]));
-			i++;
-			if (iterator.hasNext()) {
-				sql.append(AND);
-			}
-		}
-		return new SimpleSql(sql.toString(), params);
-	}
-
-	@Override
-	public Sql toDeleteSql(TableStructure structure, Conditions conditions) {
-		List<Object> params = new ArrayList<Object>();
-		StringBuilder sql = new StringBuilder();
-		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, structure.getName());
-
-		Sql conditionsSql = toSql(conditions);
-		if (conditionsSql != null) {
-			sql.append(WHERE);
-			sql.append(conditionsSql.getSql());
-			params.addAll(Arrays.asList(conditionsSql.getParams()));
-		}
-		return new SimpleSql(sql.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.count() == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		List<Object> params = new ArrayList<Object>();
-		StringBuilder sql = new StringBuilder();
-		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, tableStructure.getName());
-		sql.append(WHERE);
-		Iterator<Column> iterator = tableStructure.getPrimaryKeys().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			keywordProcessing(sql, column.getName());
-			sql.append("=?");
-			params.add(toDataBaseValue(column.getGetter().getValue(entity)));
-			if (iterator.hasNext()) {
-				sql.append(AND);
-			}
-		}
-
-		// 添加版本号字段变更条件
-		tableStructure.getNotPrimaryKeys().forEach((column) -> {
-			if (column.isVersion()) {
-				// 因为一定存在主键，所有一定有where条件，此处直接and
-				sql.append(AND);
-				keywordProcessing(sql, column.getName());
-				sql.append("=?");
-				params.add(toDataBaseValue(column.getGetter().getValue(entity)));
-			}
-		});
-		return new SimpleSql(sql.toString(), params.toArray());
+		return value.convert(TypeDescriptor.valueOf(sqlType.getType()), this);
 	}
 
 	/**
@@ -562,386 +134,182 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 
-	@Override
-	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
-		Column column = tableStructure.getByName(field.getName());
-		if (column == null) {
-			throw new SqlDialectException("not found " + field);
+	private void appendWhere(StringBuilder sb, List<Object> params, Elements<? extends Condition> conditions) {
+		if (conditions == null || conditions.isEmpty()) {
+			return;
 		}
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ");
-		keywordProcessing(sb, column.getName());
-		sb.append(" from ");
-		keywordProcessing(sb, tableStructure.getName());
+		sb.append(" where ");
+		boolean first = true;
+		Iterator<? extends Condition> conditionIterator = conditions.iterator();
+		while (conditionIterator.hasNext()) {
+			Condition condition = conditionIterator.next();
+
+			if (!first) {
+				if (RelationshipSymbol.AND.getName().equals(condition.getRelationshipSymbol().getName())) {
+					sb.append(" and ");
+				} else if (RelationshipSymbol.OR.getName().equals(condition.getRelationshipSymbol().getName())) {
+					sb.append(" or ");
+				} else {
+					sb.append(condition.getRelationshipSymbol().getName());
+				}
+			}
+			appendCondition(sb, params, condition);
+			first = false;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void appendCondition(StringBuilder sb, List<Object> params, Condition condition) {
+		if (ConditionSymbol.EQU.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append("=?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.ENDS_WITH.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" like ");
+			concat(sb, "'%'", "?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.GEQ.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" >= ?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.LEQ.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" <= ?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.GTR.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" > ?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.IN.getName().equals(condition.getConditionSymbol().getName())) {
+			List<Object> list;
+			TypeDescriptor typeDescriptor = condition.getTypeDescriptor();
+			if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
+				list = (List<Object>) condition.convert(
+						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()), this);
+				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			} else {
+				list = Arrays.asList(condition.getSource());
+			}
+
+			keywordProcessing(sb, condition.getName());
+			Iterator<Object> iterator = list.iterator();
+			sb.append(" in(");
+			while (iterator.hasNext()) {
+				sb.append("?");
+				params.add(toDataBaseValue(Value.of(iterator.next(), typeDescriptor)));
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+			}
+			sb.append(")");
+		} else if (ConditionSymbol.LSS.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" < ?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.LIKE.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" like ");
+			concat(sb, "'%'", "?", "'%'");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.NEQ.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" is not ?");
+			params.add(toDataBaseValue(condition));
+		} else if (ConditionSymbol.STARTS_WITH.getName().equals(condition.getConditionSymbol().getName())) {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" like ");
+			concat(sb, "?", "'%'");
+			params.add(toDataBaseValue(condition));
+		} else {
+			keywordProcessing(sb, condition.getName());
+			sb.append(" ").append(condition.getConditionSymbol().getName()).append(" ?");
+			params.add(toDataBaseValue(condition));
+		}
+	}
+
+	protected void appendOrderBy(StringBuilder sb, List<Object> params, Elements<? extends Sort> sorts) {
+		if (sorts == null || sorts.isEmpty()) {
+			return;
+		}
+
 		sb.append(" order by ");
-		keywordProcessing(sb, column.getName());
-		sb.append(" desc");
-		return new SimpleSql(sb.toString());
-	}
-
-	@Override
-	public Sql toQuerySql(TableStructure tableStructure, Object query) {
-		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		StringBuilder whereSql = new StringBuilder();
-		List<Object> whereParams = new ArrayList<Object>(8);
-		and(whereSql, whereParams, query, tableStructure.columns().iterator());
-		if (StringUtils.isEmpty(whereSql)) {
-			return new SimpleSql(sb.toString());
-		}
-		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
-		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
-	}
-
-	@Override
-	public Sql toQuerySqlByIndexs(TableStructure tableStructure, Object query) {
-		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		StringBuilder whereSql = new StringBuilder();
-		List<Object> whereParams = new ArrayList<Object>(8);
-		and(whereSql, whereParams, query, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
-		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
-		if (StringUtils.isEmpty(where.getSql())) {
-			return new SimpleSql(sb.toString());
-		}
-		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
-	}
-
-	@Override
-	public Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query) {
-		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		StringBuilder whereSql = new StringBuilder();
-		List<Object> whereParams = new ArrayList<Object>(8);
-		and(whereSql, whereParams, query, tableStructure.columns().filter((col) -> col.isPrimaryKey()).iterator());
-		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
-		if (StringUtils.isEmpty(where.getSql())) {
-			return new SimpleSql(sb.toString());
-		}
-		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
-	}
-
-	@Override
-	public Sql toSaveColumnsSql(TableStructure structure, Collection<? extends Parameter> columns) {
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		StringBuilder sql = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<? extends Parameter> iterator = columns.iterator();
+		Iterator<? extends Sort> iterator = sorts.iterator();
 		while (iterator.hasNext()) {
-			Parameter column = iterator.next();
-			if (cols.length() > 0) {
-				cols.append(",");
-				values.append(",");
-			}
-
-			keywordProcessing(cols, column.getName());
-			values.append("?");
-			params.add(toDataBaseValue(column));
-		}
-		sql.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sql, structure.getName());
-		sql.append("(");
-		sql.append(cols);
-		sql.append(")");
-		sql.append(VALUES);
-		sql.append("(");
-		sql.append(values);
-		sql.append(")");
-		return new SimpleSql(sql.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		StringBuilder sql = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.columns().iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
-				continue;
-			}
-
-			if (cols.length() > 0) {
-				cols.append(",");
-				values.append(",");
-			}
-
-			keywordProcessing(cols, column.getName());
-			values.append("?");
-			params.add(toDataBaseValue(column.getGetter().getValue(entity)));
-		}
-		sql.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sql, tableStructure.getName());
-		sql.append("(");
-		sql.append(cols);
-		sql.append(")");
-		sql.append(VALUES);
-		sql.append("(");
-		sql.append(values);
-		sql.append(")");
-		return new SimpleSql(sql.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
-		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (ids.length > primaryKeys.count()) {
-			throw new SqlDialectException("Wrong number of primary key parameters");
-		}
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		Iterator<Column> iterator = primaryKeys.iterator();
-		Iterator<Object> valueIterator = Arrays.asList(ids).iterator();
-		if (iterator.hasNext() && valueIterator.hasNext()) {
-			sb.append(WHERE);
-		}
-
-		Object[] params = new Object[ids.length];
-		int i = 0;
-		while (iterator.hasNext() && valueIterator.hasNext()) {
-			Column column = iterator.next();
-			Object value = valueIterator.next();
-			params[i++] = toDataBaseValue(Value.of(value, getConversionService()));
-			keywordProcessing(sb, column.getName());
-			sb.append("=?");
-			if (iterator.hasNext() && valueIterator.hasNext()) {
-				sb.append(AND);
-			}
-		}
-		return new SimpleSql(sb.toString(), params);
-	}
-
-	@Override
-	public Sql toSelectSql(TableStructure structure, Conditions conditions, List<? extends OrderColumn> orders) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, structure.getName());
-		List<Object> params = new ArrayList<Object>();
-
-		Sql conditionsSql = toSql(conditions);
-		if (conditionsSql != null) {
-			sb.append(WHERE);
-			sb.append(conditionsSql.getSql());
-			params.addAll(Arrays.asList(conditionsSql.getParams()));
-		}
-
-		if (!CollectionUtils.isEmpty(orders)) {
-			sb.append(" order by ");
-			appendOrders(orders, sb);
-		}
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toSql(Conditions conditions) {
-		return toString(conditions, new AtomicInteger());
-	}
-
-	public Sql toString(Conditions conditions, AtomicInteger count) {
-		if (conditions == null) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		if (appendWhere(conditions.getCondition(), sb, params)) {
-			count.getAndIncrement();
-		}
-
-		List<WithCondition> withConditions = conditions.getWiths();
-		if (!CollectionUtils.isEmpty(withConditions)) {
-			for (WithCondition condition : withConditions) {
-				AtomicInteger withCount = new AtomicInteger();
-				Sql sql = toString(condition.getCondition(), withCount);
-				if (sql == null || withCount.get() == 0) {
-					continue;
+			Sort sort = iterator.next();
+			keywordProcessing(sb, sort.getExpression().getName());
+			if (sort.getSymbol() != null) {
+				sb.append(" ");
+				if (SortSymbol.ASC.getName().equals(sort.getSymbol().getName())) {
+					sb.append("asc");
+				} else if (SortSymbol.DESC.getName().equals(sort.getSymbol().getName())) {
+					sb.append("desc");
+				} else {
+					sb.append(sort.getSymbol().getName());
 				}
-
-				if (count.get() > 0) {
-					if (getRelationshipKeywords().getAndKeywords().exists(condition.getWith())) {
-						sb.append(" and ");
-					} else if (getRelationshipKeywords().getOrKeywords().exists(condition.getWith())) {
-						sb.append(" or ");
-					} else {
-						sb.append(" ").append(condition.getWith()).append(" ");
-					}
-				}
-
-				if (withCount.get() > 1) {
-					sb.append("(");
-				}
-
-				sb.append(sql.getSql());
-				params.addAll(Arrays.asList(sql.getParams()));
-
-				if (withCount.get() > 1) {
-					sb.append(")");
-				}
-
-				count.getAndIncrement();
 			}
 		}
-
-		if (count.get() == 0) {
-			return null;
-		}
-
-		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
 	@Override
-	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		Map<String, Object> changeMap = getChangeMap(entity);
-		return toUpdateSql(tableStructure, entity, changeMap, (column) -> {
-			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
-				return false;
-			}
-
-			// 如果字段不能为空，且实体字段没有值就忽略
-			if (!column.isNullable() && !hasEffectiveValue(entity, column)) {
-				return false;
-			}
-			return true;
-		});
-	}
-
-	@Override
-	public Sql toUpdateSql(TableStructure structure, Collection<? extends Parameter> columns, Conditions conditions) {
-		StringBuilder sb = new StringBuilder(512);
-		sb.append(UPDATE_PREFIX);
-		keywordProcessing(sb, structure.getName());
-		sb.append(SET);
-		List<Object> params = new ArrayList<Object>();
-		Iterator<? extends Parameter> iterator = columns.iterator();
-		while (iterator.hasNext()) {
-			Parameter column = iterator.next();
-			keywordProcessing(sb, column.getName());
-			sb.append("=?");
-			params.add(toDataBaseValue(column));
-			if (iterator.hasNext()) {
-				sb.append(",");
-			}
-		}
-
-		Sql conditionsSql = toSql(conditions);
-		if (conditionsSql != null) {
-			sb.append(WHERE);
-			sb.append(conditionsSql.getSql());
-			params.addAll(Arrays.asList(conditionsSql.getParams()));
-		}
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		Map<String, Object> changeMap = getChangeMap(entity);
-		return toUpdateSql(tableStructure, entity, changeMap, (column) -> true);
-	}
-
-	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap,
-			Predicate<Column> accept) throws SqlDialectException {
-		Elements<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
-		if (primaryKeyColumns.count() == 0) {
-			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
-		}
-
-		Elements<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
-		StringBuilder sb = new StringBuilder(512);
-		sb.append(UPDATE_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		sb.append(SET);
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = notPrimaryKeys.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
-				// 忽略没有变化的字段
-				continue;
-			}
-
-			if (!accept.test(column)) {
-				continue;
-			}
-
-			keywordProcessing(sb, column.getName());
-			sb.append("=");
-			appendUpdateValue(sb, params, entity, column, changeMap);
-			if (iterator.hasNext()) {
-				sb.append(",");
-			}
-		}
-
-		sb.append(WHERE);
-		iterator = primaryKeyColumns.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			keywordProcessing(sb, column.getName());
-			sb.append("=?");
-			params.add(toDataBaseValue(column.getGetter().getValue(entity)));
-			if (iterator.hasNext()) {
-				sb.append(AND);
-			}
-		}
-
-		// 添加版本号字段变更条件
-		notPrimaryKeys.forEach((column) -> {
-			if (!accept.test(column)) {
-				return;
-			}
-
-			appendExtendWhere(column, sb, params, changeMap, entity);
-		});
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	@Override
-	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
-		Map<String, Object> changeMap = new HashMap<String, Object>();
-		tableStructure.columns().forEach((column) -> {
-			Object value = column.get(condition);
-			if (value == null && column.isNullable()) {
-				return;
-			}
-
-			changeMap.put(column.getSetter().getName(), value);
-		});
-		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
-	}
-	
-	private void appendExpression(StringBuilder append, Expression expression) {
-		if(expression.getExpressionSymbol())
-	}
-	
-	@Override
-	public Sql toOperationSql(Operation operation) {
+	public Sql toSql(Operation operation) {
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<>();
-		if(operation instanceof QueryOperation) {
+		if (operation instanceof QueryOperation) {
 			QueryOperation queryOperation = (QueryOperation) operation;
 			sb.append("select ");
-			if(CollectionUtils.isEmpty(queryOperation.getExpressions())) {
+			if (CollectionUtils.isEmpty(queryOperation.getColumns())) {
 				sb.append("*");
-			}else {
-				for(Expression expression : queryOperation.getExpressions()) {
-					
+			} else {
+				Iterator<? extends Expression> iterator = queryOperation.getColumns().iterator();
+				while (iterator.hasNext()) {
+					Expression expression = iterator.next();
+					keywordProcessing(sb, expression.getName());
+					if (iterator.hasNext()) {
+						sb.append(",");
+					}
 				}
 			}
-		}
-		if (operation.getOperationSymbol().getName().equals(QueryOperationSymbol.QUERY.getName())) {
-			
-		} else if (operation.getOperationSymbol().getName().equals(UpdateOperationSymbol.UPDATE.getName())) {
+			sb.append(" from ");
+			keywordProcessing(sb, operation.getRepository().getName());
 
+			appendWhere(sb, params, queryOperation.getConditions());
+
+			appendOrderBy(sb, params, queryOperation.getSorts());
+		} else if (operation instanceof UpdateOperation) {
+			UpdateOperation updateOperation = (UpdateOperation) operation;
+			sb.append("update ");
+			keywordProcessing(sb, operation.getRepository().getName());
+			sb.append(" set ");
+			Iterator<? extends Expression> iterator = updateOperation.getColumns().iterator();
+			while (iterator.hasNext()) {
+				Expression column = iterator.next();
+				keywordProcessing(sb, column.getName());
+				sb.append("=?");
+				params.add(toDataBaseValue(column));
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+			}
+			appendWhere(sb, params, updateOperation.getConditions());
 		} else if (operation.getOperationSymbol().getName().equals(DeleteOperationSymbol.DELETE.getName())) {
-
-		} else if (operation.getOperationSymbol().getName().equals(InsertOperationSymbol.INSERT.getName())) {
-			
+			DeleteOperation deleteOperation = (DeleteOperation) operation;
+			sb.append("delete from ");
+			keywordProcessing(sb, operation.getRepository().getName());
+			appendWhere(sb, params, deleteOperation.getConditions());
+		} else if (operation instanceof InsertOperation) {
+			InsertOperation insertOperation = (InsertOperation) operation;
+			sb.append("insert into ");
+			sb.append("(");
+			sb.append(insertOperation.getColumns().map((e) -> e.getName()).collect(Collectors.joining(",")));
+			sb.append(")");
+			sb.append(" values ");
+			sb.append(insertOperation.getColumns().map((e) -> "?").collect(Collectors.joining(",")));
+			params.addAll(insertOperation.getColumns().map((e) -> toDataBaseValue(e)).toList());
+		}else {
+			throw new UnsupportedOperationException(operation.toString());
 		}
-		throw new UnsupportedOperationException(operation.getOperationSymbol().getName());
+		return new SimpleSql(sb.toString(), params.toArray());
 	}
 }

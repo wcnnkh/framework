@@ -112,7 +112,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 		}
 
 		for (Setter setter : setters) {
-			if (objectMapper.isEntity(setter.getTypeDescriptor())) {
+			if (objectMapper.isEntity(targetType, setter)) {
 				Object entity = objectMapper.newInstance(setter.getTypeDescriptor());
 				MappingContext entityContext = new MappingContext(targetMapping, targetField, targetContext);
 				MappingStrategy strategy = objectMapper.getMappingStrategy(setter.getTypeDescriptor());

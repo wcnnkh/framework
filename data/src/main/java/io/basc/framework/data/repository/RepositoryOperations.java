@@ -1,10 +1,11 @@
 package io.basc.framework.data.repository;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.OptionalLong;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.util.Elements;
 
 /**
  * 对存储库的操作
@@ -21,7 +22,7 @@ public interface RepositoryOperations {
 	 * @throws RepositoryException
 	 */
 	default OptionalLong execute(Operation operation) throws RepositoryException {
-		return batchExecute(Elements.singleton(operation)).first();
+		return batchExecute(Arrays.asList(operation)).get(0);
 	}
 
 	/**
@@ -31,7 +32,7 @@ public interface RepositoryOperations {
 	 * @return
 	 * @throws RepositoryException
 	 */
-	Elements<OptionalLong> batchExecute(Elements<? extends Operation> operations) throws RepositoryException;
+	List<OptionalLong> batchExecute(List<? extends Operation> operations) throws RepositoryException;
 
 	/**
 	 * 删除操作
@@ -40,11 +41,10 @@ public interface RepositoryOperations {
 	 * @return
 	 */
 	default OptionalLong delete(DeleteOperation operation) throws RepositoryException {
-		return batchDelete(Elements.forArray(operation)).first();
+		return batchDelete(Arrays.asList(operation)).get(0);
 	}
 
-	default Elements<OptionalLong> batchDelete(Elements<? extends DeleteOperation> operations)
-			throws RepositoryException {
+	default List<OptionalLong> batchDelete(List<? extends DeleteOperation> operations) throws RepositoryException {
 		return batchExecute(operations);
 	}
 
@@ -55,11 +55,10 @@ public interface RepositoryOperations {
 	 * @return
 	 */
 	default OptionalLong insert(InsertOperation operation) throws RepositoryException {
-		return batchInsert(Elements.forArray(operation)).first();
+		return batchInsert(Arrays.asList(operation)).get(0);
 	}
 
-	default Elements<OptionalLong> batchInsert(Elements<? extends InsertOperation> operations)
-			throws RepositoryException {
+	default List<OptionalLong> batchInsert(List<? extends InsertOperation> operations) throws RepositoryException {
 		return batchExecute(operations);
 	}
 
@@ -80,10 +79,10 @@ public interface RepositoryOperations {
 	 * @return
 	 */
 	default OptionalLong update(UpdateOperation operation) throws RepositoryException {
-		return batchUpdate(Elements.singleton(operation)).first();
+		return batchUpdate(Arrays.asList(operation)).get(0);
 	}
 
-	default Elements<OptionalLong> batchUpdate(Elements<? extends UpdateOperation> operations) {
+	default List<OptionalLong> batchUpdate(List<? extends UpdateOperation> operations) {
 		return batchExecute(operations);
 	}
 }

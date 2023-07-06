@@ -1,16 +1,15 @@
 package io.basc.framework.orm.filter;
 
+import java.util.List;
 import java.util.OptionalLong;
 
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityOperation;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.Property;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 
 public class FilterableEntityOperation implements EntityOperation {
 	private final Iterable<? extends EntityOperationFilter> filters;
@@ -24,11 +23,11 @@ public class FilterableEntityOperation implements EntityOperation {
 	}
 
 	@Override
-	public Elements<OptionalLong> execute(OperationSymbol operationSymbol,
-			EntityMapping<? extends Property> entityMapping, Elements<? extends Value> entitys) throws OrmException {
+	public List<OptionalLong> execute(EntityMapper entityMapper, OperationSymbol operationSymbol, Class<?> entityClass,
+			EntityMapping<?> entityMapping, List<? extends Object> entitys) throws OrmException {
 		EntityOperation entityOperation = new EntityOperationFilterChain(this.filters.iterator(),
 				this.groundEntityOperation);
-		return entityOperation.execute(operationSymbol, entityMapping, entitys);
+		return entityOperation.execute(entityMapper, operationSymbol, entityClass, entityMapping, entitys);
 	}
 
 }

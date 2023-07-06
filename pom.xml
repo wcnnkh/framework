@@ -822,6 +822,7 @@
 		<module>activemq-broker</module>
 		<module>activemq-client</module>
 		<module>spring-context</module>
+		<module>locks</module>
 	</modules>
 	<profiles>
 		<profile>

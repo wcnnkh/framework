@@ -9,7 +9,6 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
@@ -31,7 +30,6 @@ import io.basc.framework.value.Value;
  * @author wcnnkh
  *
  */
-@Provider(order = Integer.MIN_VALUE)
 public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFactory implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final ZooKeeper zooKeeper;

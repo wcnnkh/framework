@@ -1,19 +1,18 @@
-package io.basc.framework.orm.support;
+package io.basc.framework.orm.config;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.repository.Column;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.Sort;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityMappingResolver;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 
@@ -51,8 +50,8 @@ public interface EntityMappingResolverExtend {
 		return chain.isNullable(entityClass, descriptor);
 	}
 
-	default boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
-		return chain.isEntity(entityClass, descriptor);
+	default boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+		return chain.isEntity(source, descriptor);
 	}
 
 	default boolean isEntity(TypeDescriptor source, EntityMappingResolver chain) {
@@ -109,38 +108,32 @@ public interface EntityMappingResolverExtend {
 		return chain.isConfigurable(sourceType);
 	}
 
-	default boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter, EntityMappingResolver chain) {
-		return chain.hasEffectiveValue(source, parameter);
-	}
-
-	default Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter, EntityMappingResolver chain) {
-		return chain.getExpressions(operationSymbol, source, parameter);
-	}
-
-	default Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter, EntityMappingResolver chain) {
-		return chain.getColumns(operationSymbol, source, parameter);
-	}
-
-	default Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol,
-			TypeDescriptor entityTypeDescriptor, EntityMapping<? extends Property> entityMapping,
-			EntityMappingResolver chain) {
-		return chain.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
-	}
-
-	default Elements<? extends Condition> getConditions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter, EntityMappingResolver chain) {
-		return chain.getConditions(operationSymbol, source, parameter);
-	}
-
-	default Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
-			ParameterDescriptor descriptor, EntityMappingResolver chain) {
-		return chain.getSorts(operationSymbol, source, descriptor);
+	default boolean hasEffectiveValue(Parameter parameter, EntityMappingResolver chain) {
+		return chain.hasEffectiveValue(parameter);
 	}
 
 	default MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy,
 			EntityMappingResolver chain) {
 		return chain.getMappingStrategy(source, dottomlessMappingStrategy);
+	}
+
+	default Repository getRepository(OperationSymbol operationSymbol, Class<?> entityClass,
+			EntityMapping<?> entityMapping, @Nullable Object entity, EntityMappingResolver chain) {
+		return chain.getRepository(operationSymbol, entityClass, entityMapping, entity);
+	}
+
+	default Expression toColumn(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
+		return chain.toColumn(operationSymbol, repository, entityClass, entityMapping, parameter);
+	}
+
+	default Condition toCondition(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
+		return chain.toCondition(operationSymbol, repository, entityClass, entityMapping, parameter);
+	}
+
+	default Sort toSort(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
+			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
+		return chain.toSort(operationSymbol, repository, entityClass, entityMapping, parameter);
 	}
 }
