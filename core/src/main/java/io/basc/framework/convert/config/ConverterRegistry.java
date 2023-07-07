@@ -8,14 +8,14 @@ import io.basc.framework.lang.Nullable;
 
 public interface ConverterRegistry<S, E extends Throwable> extends Converter<S, Object, E>, ConversionTester {
 
-	default boolean isConverterRegistred(Class<?> type) {
-		return getConverter(type) != null;
+	default boolean isConverterRegistred(Class<?> targetType) {
+		return getConverter(targetType) != null;
 	}
 
 	@Nullable
-	<T> Converter<S, T, E> getConverter(Class<? extends T> type);
+	<T> Converter<S, T, E> getConverter(Class<? extends T> targetType);
 
-	<T> void registerConverter(Class<T> type, Converter<? super S, ? extends T, ? extends E> converter);
+	<T> void registerConverter(Class<T> targetType, Converter<? super S, ? extends T, ? extends E> converter);
 
 	@Override
 	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {

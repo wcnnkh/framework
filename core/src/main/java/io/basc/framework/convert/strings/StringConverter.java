@@ -125,13 +125,21 @@ public class StringConverter extends DefaultReversibleConverterRegistry<String, 
 		registerReversibleConverter(BigDecimal.class, bigDecimalConverter);
 		registerReversibleConverter(BigInteger.class, bigIntegerConverter);
 
+		registerReversibleConverter(char.class, characterConverter);
 		registerReversibleConverter(Character.class, characterConverter);
+		registerReversibleConverter(boolean.class, booleanConverter);
 		registerReversibleConverter(Boolean.class, booleanConverter);
+		registerReversibleConverter(double.class, doubleConverter);
 		registerReversibleConverter(Double.class, doubleConverter);
+		registerReversibleConverter(byte.class, byteConverter);
 		registerReversibleConverter(Byte.class, byteConverter);
+		registerReversibleConverter(float.class, floatConverter);
 		registerReversibleConverter(Float.class, floatConverter);
+		registerReversibleConverter(short.class, shortConverter);
 		registerReversibleConverter(Short.class, shortConverter);
+		registerReversibleConverter(int.class, integerConverter);
 		registerReversibleConverter(Integer.class, integerConverter);
+		registerReversibleConverter(long.class, longConverter);
 		registerReversibleConverter(Long.class, longConverter);
 	}
 }

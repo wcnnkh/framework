@@ -588,6 +588,13 @@ public abstract class ReflectionUtils {
 		throw new IllegalStateException("Should never get here");
 	}
 
+	/**
+	 * 请不要在clone方法内部调用自身的clone
+	 * 
+	 * @param <T>
+	 * @param source
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeCloneMethod(T source) {
 		if (source == null) {

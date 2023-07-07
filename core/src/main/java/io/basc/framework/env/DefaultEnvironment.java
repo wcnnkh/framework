@@ -22,23 +22,18 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.io.resolver.PropertiesResolvers;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.AntPathMatcher;
 import io.basc.framework.util.CachedServiceLoader;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceRegistry;
-import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultEnvironment extends DefaultServiceLoaderFactory implements ConfigurableEnvironment, Configurable {
-	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
-
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 	private boolean configured = false;
 
@@ -46,11 +41,6 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	private final EnvironmentPostProcessors environmentPostProcessors = new EnvironmentPostProcessors();
 	private final DefaultEnvironmentResourceLoader environmentResourceLoader = new DefaultEnvironmentResourceLoader(
 			this);
-
-	/**
-	 * 是否强制使用spi
-	 */
-	private boolean forceSpi = false;
 
 	private volatile boolean initialized = false;
 
@@ -124,7 +114,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	}
 
 	@Override
-	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
+	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
 		ServiceLoader<S> serviceLoader = new CachedServiceLoader<>(Elements.of(() -> {
 			String services = properties.getAsString(serviceClass.getName());
 			if (StringUtils.isEmpty(services)) {
@@ -134,11 +124,8 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 			String[] array = StringUtils.splitToArray(services);
 			return Elements.forArray(array).map((e) -> getBean(e, serviceClass)).iterator();
 		}));
-
-		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			return serviceLoader.concat(super.getServiceLoaderInternal(serviceClass));
-		}
-		return serviceLoader;
+		serviceRegistry.getServiceLoaderRegistry().register(serviceLoader);
+		super.postProcessorServiceRegistry(serviceRegistry, serviceClass);
 	}
 
 	@Override
@@ -198,17 +185,9 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 		return configured;
 	}
 
-	public boolean isForceSpi() {
-		return forceSpi;
-	}
-
 	@Override
 	public boolean isInitialized() {
 		return super.isInitialized() && initialized;
-	}
-
-	public void setForceSpi(boolean forceSpi) {
-		this.forceSpi = forceSpi;
 	}
 
 	public void setParentEnvironment(Environment environment) {
@@ -253,20 +232,5 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 			registration = registration.and(source(observable));
 		}
 		return registration;
-	}
-
-	protected boolean useSpi(Class<?> serviceClass) {
-		String[] prefixs = getProperties().getAsObject(ENABLE_PREFIX, String[].class);
-		if (prefixs == null) {
-			return false;
-		}
-
-		for (String prefix : prefixs) {
-			if (StringMatchers.matchAny(prefix, serviceClass.getName())
-					|| AntPathMatcher.POINT_PATH_MATCHER.match(prefix, serviceClass.getName())) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

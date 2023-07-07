@@ -13,7 +13,7 @@ public class TypeComparator implements Comparator<Class<?>> {
 	 */
 	@Override
 	public int compare(Class<?> o1, Class<?> o2) {
-		if (o1.equals(o2)) {
+		if (o1 == o2 || o1.equals(o2)) {
 			return 0;
 		}
 		if (ClassUtils.isAssignable(o1, o2)) {
@@ -21,7 +21,8 @@ public class TypeComparator implements Comparator<Class<?>> {
 		} else if (ClassUtils.isAssignable(o2, o1)) {
 			return -1;
 		}
-		return -1;
+		// 注意，这里只能返回1
+		return 1;
 	}
 
 }

@@ -871,4 +871,29 @@ public abstract class CollectionUtils {
 		return leftColllection.size() == rightCollection.size()
 				&& intersection(leftColllection, rightCollection).size() == leftColllection.size();
 	}
+
+	private static void recursion(List<? extends Iterable<String>> source, Elements<String> parents, int deep,
+			List<Elements<String>> target) {
+		if (deep == source.size()) {
+			target.add(parents);
+		} else {
+			for (String name : source.get(deep)) {
+				Elements<String> names = parents.concat(Elements.singleton(name));
+				recursion(source, names, deep + 1, target);
+			}
+		}
+	}
+
+	/**
+	 * 递归实现<br/>
+	 * 从每个集合中取一个组合为新集合的所有可能
+	 * 
+	 * @param source
+	 * @return
+	 */
+	public static List<Elements<String>> recursiveComposition(List<? extends Iterable<String>> source) {
+		List<Elements<String>> target = new ArrayList<>();
+		recursion(source, Elements.empty(), 0, target);
+		return target;
+	}
 }

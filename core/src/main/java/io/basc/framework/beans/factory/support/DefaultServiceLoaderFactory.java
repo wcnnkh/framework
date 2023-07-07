@@ -9,6 +9,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.SpiServiceLoader;
 
 public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements ConfigurableServiceLoaderFactory {
 
@@ -36,18 +37,22 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 				serviceLoader = (ServiceRegistry<S>) serviceLoaderMap.get(serviceClass);
 				if (serviceLoader == null) {
 					serviceLoader = new ServiceRegistry<>();
+					postProcessorServiceRegistry(serviceLoader, serviceClass);
 					serviceLoaderMap.putIfAbsent(serviceClass, serviceLoader);
 				}
-				serviceLoader.getServiceLoaderRegistry().register(getServiceLoaderInternal(serviceClass));
 			}
 		}
 		return serviceLoader;
 	}
 
-	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
+	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
 		ServiceLoader<S> listableServiceLoader = new ListableServiceLoader<>(this, serviceClass);
-		ServiceLoader<S> spiServiceLoader = new BeanFactorySpiServiceLoader<S>(serviceClass, this);
-		return listableServiceLoader.concat(spiServiceLoader);
+		serviceRegistry.getServiceLoaderRegistry().register(listableServiceLoader);
+
+		ServiceLoader<S> spiServiceLoader = new SpiServiceLoader<>(serviceClass);
+		spiServiceLoader = spiServiceLoader
+				.convert((elements) -> elements.peek((e) -> getServiceInjectorRegistry().inject(e)));
+		serviceRegistry.getServiceLoaderRegistry().register(spiServiceLoader);
 	}
 
 	@Override
@@ -56,8 +61,8 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 			getBeanFactoryPostProcessors().configure(this);
 		}
 
-		if (getBeanFactoryPostProcessors().isConfigured()) {
-			getBeanFactoryPostProcessors().configure(this);
+		if (getBeanPostProcessors().isConfigured()) {
+			getBeanPostProcessors().configure(this);
 		}
 		super._init();
 	}

@@ -55,12 +55,17 @@ public class ReflectionTest {
 		public transient String pc;
 	}
 
-	@ToString(callSuper = true)
 	public static class TestBean extends ParentBean {
 		public String a;
 		public Object b;
 		public transient String c;
 		public TestBean d;
+
+		@Override
+		public String toString() {
+			// 测试死循环的处理
+			return ReflectionUtils.getDeclaredFields(TestBean.class).all().toString(this);
+		}
 	}
 
 	@ToString
@@ -69,7 +74,7 @@ public class ReflectionTest {
 
 		@Override
 		public CloneA clone() {
-			return ReflectionUtils.clone(this, false);
+			return ReflectionUtils.getDeclaredFields(CloneA.class).all().clone(this);
 		}
 	}
 }

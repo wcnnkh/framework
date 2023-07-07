@@ -9,10 +9,10 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.convert.ConditionalConversionService;
-import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
@@ -28,7 +28,7 @@ import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.value.PropertyFactory;
 
 public class DefaultObjectMapper extends DefaultConversionService
-		implements ObjectMapper, ConditionalConversionService, ConversionServiceAware {
+		implements ObjectMapper, ConditionalConversionService {
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
 	private final Map<Class<?>, Mapping<? extends Field>> mappingMap = new ConcurrentHashMap<>();
 	private Set<ConvertiblePair> convertiblePairs;
@@ -89,6 +89,25 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
+	public boolean canTransform(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType == null || targetType == null) {
+			return false;
+		}
+		// 一定可以进行转换
+		return true;
+	}
+
+	@Override
+	public void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
+			throws ConversionException, ConverterNotFoundException {
+		if (super.canTransform(sourceType, targetType)) {
+			super.transform(source, sourceType, target, targetType);
+			return;
+		}
+		transform(source, sourceType, null, target, targetType, null, getMappingStrategy(targetType));
+	}
+
+	@Override
 	public boolean isMappingRegistred(Class<?> entityClass) {
 		return mappingMap.containsKey(entityClass);
 	}
@@ -122,14 +141,5 @@ public class DefaultObjectMapper extends DefaultConversionService
 			convertiblePairs.add(c2);
 			objectAccessFactoryMap.put(type, factory);
 		}
-	}
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		mappingStrategy.setConversionService(conversionService);
-	}
-
-	public ConversionService getConversionService() {
-		return mappingStrategy.getConversionService();
 	}
 }

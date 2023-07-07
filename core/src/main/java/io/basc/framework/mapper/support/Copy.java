@@ -14,7 +14,7 @@ public class Copy extends DefaultObjectMapper {
 	 */
 	public static final Copy DEEP = new Copy();
 	static {
-		DEEP.setConversionService(new RecursiveConversionService(DEEP));
+		DEEP.getMappingStrategy().setConversionService(new RecursiveConversionService(DEEP));
 	}
 
 	/**

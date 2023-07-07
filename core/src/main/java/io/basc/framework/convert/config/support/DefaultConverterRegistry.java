@@ -30,8 +30,17 @@ public class DefaultConverterRegistry<S, E extends Throwable> extends Configurab
 			return null;
 		}
 
-		Entry<Class<?>, T> entry = sourceMap.ceilingEntry(type);
-		return entry == null ? null : entry.getValue();
+		T value = sourceMap.get(type);
+		if (value != null) {
+			return value;
+		}
+
+		for (Entry<Class<?>, T> entry : sourceMap.entrySet()) {
+			if (type.isAssignableFrom(entry.getKey())) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	protected <T> TreeMap<Class<?>, T> register(Class<?> type, T conversion, TreeMap<Class<?>, T> sourceMap) {

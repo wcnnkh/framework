@@ -36,7 +36,7 @@ public interface Field extends Named {
 	 * @return
 	 */
 	default Elements<String> getAliasNames() {
-		return getSetters().map((e) -> e.getName());
+		return Elements.empty();
 	}
 
 	default boolean isSupportGetter() {
