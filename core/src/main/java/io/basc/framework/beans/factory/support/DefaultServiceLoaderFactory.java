@@ -6,6 +6,8 @@ import java.util.Map;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
+import io.basc.framework.core.ResolvableType;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceRegistry;
@@ -65,5 +67,17 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 			getBeanPostProcessors().configure(this);
 		}
 		super._init();
+	}
+
+	@Override
+	public boolean canInstantiated(ResolvableType type) {
+		return ReflectionUtils.isInstance(type.getRawClass());
+	}
+
+	@Override
+	public Object newInstance(ResolvableType type) {
+		Object instance = ReflectionUtils.newInstance(type.getRawClass());
+		getServiceInjectorRegistry().inject(instance);
+		return instance;
 	}
 }

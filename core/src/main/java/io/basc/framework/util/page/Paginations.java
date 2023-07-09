@@ -48,7 +48,7 @@ public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
 		Pagination<T> pagination = new Pagination<>();
 		pagination.setTotal(getTotal());
 		pagination.setCursorId(0);
-		pagination.setLimit(pagination.getTotal());
+		pagination.setPageSize(pagination.getTotal());
 		pagination.setElements(pages().flatMap((e) -> e.getElements()));
 		return pagination;
 	}
@@ -79,7 +79,7 @@ public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
 	public Paginations<T> jumpTo(Long cursorId, long count) {
 		Paginations<T> paginations = clone();
 		paginations.setCursorId(cursorId);
-		paginations.setLimit(count);
+		paginations.setPageSize(count);
 		return paginations;
 	}
 }

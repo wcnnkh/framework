@@ -31,7 +31,7 @@ public class Wrapper<W> implements Decorator {
 		if (obj instanceof Wrapper) {
 			return ObjectUtils.equals(wrappedTarget, ((Wrapper<?>) obj).wrappedTarget);
 		}
-		return false;
+		return obj.equals(wrappedTarget);
 	}
 
 	@Override

@@ -4,15 +4,18 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.env.Sys;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverters;
+import io.basc.framework.util.ClassUtils;
 
 public class DefaultHttpClient extends AbstractHttpClient {
+	private static final Class<?> SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS = ClassUtils
+			.getClass("io.basc.framework.http.client.SimpleClientHttpRequestFactory", null);
+
 	/**
 	 * 默认的requestFactory
 	 */
 	private static final ClientHttpRequestFactory REQUEST_FACTORY = Sys.getEnv()
-			.getServiceLoader(ClientHttpRequestFactory.class,
-					"io.basc.framework.http.client.SimpleClientHttpRequestFactory")
-			.getServices().first();
+			.getServiceLoader(ClientHttpRequestFactory.class, SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS).getServices()
+			.first();
 
 	private final MessageConverters messageConverters;
 	private final ClientHttpRequestInterceptors interceptors;

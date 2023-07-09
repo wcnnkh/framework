@@ -2,27 +2,26 @@ package io.basc.framework.beans.factory;
 
 import java.util.Optional;
 
-import io.basc.framework.beans.factory.support.ClassesServiceLoader;
-import io.basc.framework.beans.factory.support.NamesServiceLoader;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CachedServiceLoader;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.InstanceFactory;
 import io.basc.framework.util.ServiceLoader;
 
-public interface ServiceLoaderFactory extends BeanFactory {
+public interface ServiceLoaderFactory extends BeanFactory, InstanceFactory {
 
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);
 
-	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String... defaultNames) {
-		NamesServiceLoader<S> namesServiceLoader = new NamesServiceLoader<>(this, serviceClass,
-				Elements.forArray(defaultNames));
+	@SuppressWarnings("unchecked")
+	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, @Nullable Class<?>... defaultClasses) {
 		ServiceLoader<S> serviceLoader = getServiceLoader(serviceClass);
-		return namesServiceLoader.concat(serviceLoader);
-	}
-
-	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, Class<?>... defaultClasses) {
-		ClassesServiceLoader<S> classesServiceLoader = new ClassesServiceLoader<>(this, serviceClass,
-				Elements.forArray(defaultClasses).filter((e) -> serviceClass.isAssignableFrom(e)));
-		ServiceLoader<S> serviceLoader = getServiceLoader(serviceClass);
-		return classesServiceLoader.concat(serviceLoader);
+		if (defaultClasses != null) {
+			Elements<S> defaultElements = Elements.forArray(defaultClasses)
+					.filter((e) -> e != null && canInstantiated(e)).map((e) -> newInstance(e)).map((e) -> (S) e);
+			CachedServiceLoader<S> defaultServiceLoader = new CachedServiceLoader<>(defaultElements);
+			return serviceLoader.concat(defaultServiceLoader);
+		}
+		return serviceLoader;
 	}
 
 	/**

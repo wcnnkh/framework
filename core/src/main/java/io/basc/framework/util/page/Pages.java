@@ -43,7 +43,7 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 		Paginations<T> paginations = new Paginations<>(all().getElements());
 		paginations.setTotal(paginations.getTotal());
 		paginations.setCursorId(start);
-		paginations.setLimit(limit);
+		paginations.setPageSize(limit);
 		return paginations;
 	}
 

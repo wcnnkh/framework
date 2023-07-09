@@ -29,9 +29,11 @@ public final class PageablesIterator<E extends Pageables<?, ?>> implements Itera
 	@Override
 	public E next() {
 		if (current != null) {
-			E value = current.get();
-			current = null;
-			return value;
+			try {
+				return current.get();
+			} finally {
+				current = null;
+			}
 		} else {
 			this.pageables = next.apply(this.pageables);
 			return pageables;

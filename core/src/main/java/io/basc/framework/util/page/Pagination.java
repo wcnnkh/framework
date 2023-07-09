@@ -43,7 +43,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 		return pageSize;
 	}
 
-	public void setLimit(long pageSize) {
+	public void setPageSize(long pageSize) {
 		Assert.isTrue(pageSize > 0, "limit[" + pageSize + "] greater than 0 is required");
 		this.pageSize = pageSize;
 	}

@@ -29,7 +29,7 @@ public class PageSupport {
 		Assert.isTrue(total >= 0, "required total >= 0");
 		Assert.isTrue(limit > 0, "required limit > 0");
 		Assert.isTrue(start >= 0, "required start >= 0");
-		return (total - start) <= limit;
+		return (total - start) > limit;
 	}
 
 	public static long getPages(long total, long limit) {
