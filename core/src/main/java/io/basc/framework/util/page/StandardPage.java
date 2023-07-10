@@ -7,7 +7,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StandardPage<K, T> extends StandardPageable<K, T> implements Page<K, T> {
+public class StandardPage<K, T> extends StandardCursor<K, T> implements Page<K, T> {
 	private final long total;
 	private long pageSize;
 
@@ -16,7 +16,7 @@ public class StandardPage<K, T> extends StandardPageable<K, T> implements Page<K
 		this.pageSize = pageSize;
 	}
 
-	public StandardPage(long total, long pageSize, Pageable<K, T> pageable) {
+	public StandardPage(long total, long pageSize, Cursor<K, T> pageable) {
 		super(pageable);
 		this.total = total;
 		this.pageSize = pageSize;

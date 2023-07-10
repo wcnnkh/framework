@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.basc.framework.lang.Nullable;
 
-public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T> {
+public class SharedPage<K, T> extends SharedCursor<K, T> implements Page<K, T> {
 	private static final long serialVersionUID = 1L;
 	private long total;
 	private long pageSize;

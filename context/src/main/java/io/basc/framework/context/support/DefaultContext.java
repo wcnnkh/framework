@@ -57,7 +57,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		configurableTypeFilter.register(new AnnotationTypeFilterExtend());
 		configurableTypeFilter.register(new WebSocketTypeFilterExtend());
 		configurableTypeFilter.register(new JaxrsTypeFilterExtend());
-		
+
 		contextClassesLoader.getServiceLoaderRegistry().register(sourceClasses);
 
 		// 注册后置处理器
@@ -196,20 +196,5 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			}
 		}
 		return registration;
-	}
-
-	@Override
-	protected boolean useSpi(Class<?> serviceClass) {
-		for (Class<?> sourceClass : sourceClasses.getServices()) {
-			Package pg = sourceClass.getPackage();
-			if (pg == null) {
-				continue;
-			}
-
-			if (serviceClass.getName().startsWith(pg.getName())) {
-				return true;
-			}
-		}
-		return super.useSpi(serviceClass);
 	}
 }

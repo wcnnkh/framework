@@ -2,10 +2,10 @@ package io.basc.framework.util.page;
 
 import io.basc.framework.util.Elements;
 
-public class AllPageable<S extends Pageables<K, T>, K, T> implements Pageable<K, T> {
+public class AllCursor<S extends Browsable<K, T>, K, T> implements Cursor<K, T> {
 	protected final S source;
 
-	public AllPageable(S source) {
+	public AllCursor(S source) {
 		this.source = source;
 	}
 

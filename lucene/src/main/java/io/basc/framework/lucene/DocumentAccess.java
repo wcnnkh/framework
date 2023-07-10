@@ -2,17 +2,22 @@ package io.basc.framework.lucene;
 
 import org.apache.lucene.document.Document;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Elements;
+import lombok.Data;
 
-public class DocumentAccess implements ObjectAccess<LuceneException> {
+@Data
+public class DocumentAccess implements ObjectAccess {
 	private final Document document;
 	private final LuceneResolver luceneResolver;
+	private final TypeDescriptor typeDescriptor;
 
-	public DocumentAccess(Document document, LuceneResolver luceneResolver) {
+	public DocumentAccess(Document document, LuceneResolver luceneResolver, TypeDescriptor typeDescriptor) {
 		this.document = document;
 		this.luceneResolver = luceneResolver;
+		this.typeDescriptor = typeDescriptor;
 	}
 
 	@Override
@@ -34,5 +39,4 @@ public class DocumentAccess implements ObjectAccess<LuceneException> {
 		document.removeField(parameter.getName());
 		luceneResolver.resolve(parameter).forEach(document::add);
 	}
-
 }

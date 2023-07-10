@@ -6,15 +6,25 @@ import javax.servlet.ServletContext;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletApplicationStartup;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
+import io.basc.framework.util.ClassUtils;
 
 public abstract class ServletContextUtils {
-	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.getEnv().getServiceLoader(
-			ServletApplicationStartup.class,
-			ServletApplicationStartup.class.getPackage().getName() + ".support.Servlet3ApplicationStartup",
-			ServletApplicationStartup.class.getPackage().getName() + ".support.DefaultServletApplicationStartup")
+	private static final Class<?> SERVLET3_APPLICATION_STARTUP_CLASS = ClassUtils
+			.findClass(ServletApplicationStartup.class.getPackage().getName() + ".support.Servlet3ApplicationStartup",
+					null)
+			.filter((e) -> ReflectionUtils.isAvailable(e)).orElse(null);
+	private static final Class<?> SERVLET_APPLICATION_STARTUP_CLASS = ClassUtils
+			.findClass(ServletApplicationStartup.class.getPackage().getName()
+					+ ".support.DefaultServletApplicationStartup", null)
+			.filter((e) -> ReflectionUtils.isAvailable(e)).orElse(null);
+
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.getEnv()
+			.getServiceLoader(ServletApplicationStartup.class, SERVLET3_APPLICATION_STARTUP_CLASS,
+					SERVLET_APPLICATION_STARTUP_CLASS)
 			.getServices().first();
 
 	public static ServletApplicationStartup getServletApplicationStartup() {

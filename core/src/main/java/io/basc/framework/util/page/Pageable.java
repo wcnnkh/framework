@@ -3,40 +3,48 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
-public interface Pageable<K, T> {
-	/**
-	 * 获取当前页的使用的开始游标
-	 * 
-	 * @return
-	 */
-	@Nullable
-	K getCursorId();
+public interface Pageable<K, T> extends Page<K, T>, Browsable<K, T> {
 
-	/**
-	 * 获取下一页的开始游标id
-	 * 
-	 * @return
-	 */
-	@Nullable
-	K getNextCursorId();
-
-	Elements<T> getElements();
-
-	/**
-	 * 是否还有更多数据
-	 * 
-	 * @return
-	 */
-	default boolean hasNext() {
-		return getNextCursorId() != null;
+	@Override
+	default Pageable<K, T> next() {
+		return jumpTo(getNextCursorId());
 	}
 
-	default Pageable<K, T> shared() {
-		return new SharedPageable<>(this);
+	default Pageable<K, T> jumpTo(K cursorId) {
+		return jumpTo(cursorId, getPageSize());
+	}
+
+	/**
+	 * 获取所有页
+	 */
+	default Elements<? extends Page<K, T>> pages() {
+		return Elements.of(() -> new BrowsableIterator<>(this, (e) -> e.next()));
+	}
+
+	Pageable<K, T> jumpTo(K cursorId, long count);
+
+	@Override
+	default Page<K, T> all() {
+		return new AllPage<>(this);
+	}
+
+	/**
+	 * 这是极端情况下的处理，不推荐使用(性能低下)
+	 * 
+	 * @param start
+	 * @param limit
+	 * @return
+	 */
+	default Paginations<T> toPaginations(long start, long limit) {
+		Paginations<T> paginations = new Paginations<>(all().getElements());
+		paginations.setTotal(paginations.getTotal());
+		paginations.setCursorId(start);
+		paginations.setPageSize(limit);
+		return paginations;
 	}
 
 	/**
@@ -51,14 +59,14 @@ public interface Pageable<K, T> {
 	}
 
 	/**
-	 * 默认调用{@link #map(Function, Function)}
+	 * 默认调用{@link #map(Codec, Function)}
 	 * 
 	 * @param <TT>
 	 * @param elementMapper
 	 * @return
 	 */
 	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> elementMapper) {
-		return map(Function.identity(), elementMapper);
+		return map(Codec.identity(), elementMapper);
 	}
 
 	/**
@@ -66,14 +74,13 @@ public interface Pageable<K, T> {
 	 * 
 	 * @param <TK>
 	 * @param <TT>
-	 * @param cursorIdMapper
+	 * @param cursorIdCodec
 	 * @param elementMapper
 	 * @return
 	 */
-	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends TK> cursorIdMapper,
-			Function<? super T, ? extends TT> elementMapper) {
+	default <TK, TT> Pageable<TK, TT> map(Codec<K, TK> cursorIdCodec, Function<? super T, ? extends TT> elementMapper) {
 		Assert.requiredArgument(elementMapper != null, "elementMapper");
-		return convert(cursorIdMapper, (elements) -> elements.map(elementMapper));
+		return convert(cursorIdCodec, (elements) -> elements.map(elementMapper));
 	}
 
 	/**
@@ -89,18 +96,18 @@ public interface Pageable<K, T> {
 	}
 
 	/**
-	 * 默认调用{@link #convert(Function, Function)}
+	 * 默认调用{@link #convert(Codec, Function)}
 	 * 
 	 * @param <TT>
 	 * @param elementsConverter
 	 * @return
 	 */
 	default <TT> Pageable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return convert(Function.identity(), elementsConverter);
+		return convert(Codec.identity(), elementsConverter);
 	}
 
-	default <TK, TT> Pageable<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
+	default <TK, TT> Pageable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return new ConvertiblePageable<>(this, cursorIdConverter, elementsConverter);
+		return new ConvertiblePages<>(this, cursorIdCodec, elementsConverter);
 	}
 }

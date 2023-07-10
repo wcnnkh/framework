@@ -8,22 +8,22 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
-public interface Pageables<K, T> extends Pageable<K, T> {
-	Pageables<K, T> jumpTo(K cursorId);
+public interface Browsable<K, T> extends Cursor<K, T> {
+	Browsable<K, T> jumpTo(K cursorId);
 
-	default Pageables<K, T> next() {
+	default Browsable<K, T> next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException("cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId());
 		}
 		return jumpTo(getNextCursorId());
 	}
 
-	default Elements<? extends Pageable<K, T>> pages() {
-		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
+	default Elements<? extends Cursor<K, T>> pages() {
+		return Elements.of(() -> new BrowsableIterator<>(this, (e) -> e.next()));
 	}
 
-	default Pageable<K, T> all() {
-		return new AllPageable<>(this);
+	default Cursor<K, T> all() {
+		return new AllCursor<>(this);
 	}
 
 	/**
@@ -32,7 +32,7 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	 * @param predicate
 	 * @return
 	 */
-	default Pageables<K, T> filter(Predicate<? super T> predicate) {
+	default Browsable<K, T> filter(Predicate<? super T> predicate) {
 		Assert.requiredArgument(predicate != null, "predicate");
 		return convert((elements) -> elements.filter(predicate));
 	}
@@ -44,7 +44,7 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	 * @param elementMapper
 	 * @return
 	 */
-	default <TT> Pageables<K, TT> map(Function<? super T, ? extends TT> elementMapper) {
+	default <TT> Browsable<K, TT> map(Function<? super T, ? extends TT> elementMapper) {
 		return map(Codec.identity(), elementMapper);
 	}
 
@@ -57,7 +57,7 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	 * @param elementMapper
 	 * @return
 	 */
-	default <TK, TT> Pageables<TK, TT> map(Codec<K, TK> cursorIdCodec,
+	default <TK, TT> Browsable<TK, TT> map(Codec<K, TK> cursorIdCodec,
 			Function<? super T, ? extends TT> elementMapper) {
 		Assert.requiredArgument(elementMapper != null, "elementMapper");
 		return convert(cursorIdCodec, (elements) -> elements.map(elementMapper));
@@ -70,7 +70,7 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	 * @param mapper
 	 * @return
 	 */
-	default <TT> Pageables<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+	default <TT> Browsable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
 		Assert.requiredArgument(mapper != null, "mapper");
 		return convert((elements) -> elements.flatMap(mapper));
 	}
@@ -82,12 +82,12 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	 * @param elementsConverter
 	 * @return
 	 */
-	default <TT> Pageables<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+	default <TT> Browsable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
 		return convert(Codec.identity(), elementsConverter);
 	}
 
-	default <TK, TT> Pageables<TK, TT> convert(Codec<K, TK> cursorIdCodec,
+	default <TK, TT> Browsable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return new ConvertiblePageables<>(this, cursorIdCodec, elementsConverter);
+		return new ConvertibleBrowsable<>(this, cursorIdCodec, elementsConverter);
 	}
 }

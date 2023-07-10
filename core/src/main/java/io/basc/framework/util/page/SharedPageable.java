@@ -1,44 +1,51 @@
 package io.basc.framework.util.page;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-
-import io.basc.framework.util.ElementList;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
-public class SharedPageable<K, T> extends StandardPageable<K, T> implements Serializable {
+public class SharedPageable<K, T> extends SharedPage<K, T> implements Pageable<K, T> {
 	private static final long serialVersionUID = 1L;
+	private Pageable<K, T> pages;
 
-	/**
-	 * 默认的构造方法，cursorId为空
-	 */
 	public SharedPageable() {
 	}
 
-	public SharedPageable(K cursorId) {
-		this(cursorId, Collections.emptyList(), null);
+	public SharedPageable(Pageable<K, T> pages) {
+		this(pages, pages);
 	}
 
-	public SharedPageable(K cursorId, List<T> list, K nextCursorId) {
-		super(cursorId, new ElementList<>(list), nextCursorId);
-	}
-
-	public SharedPageable(Pageable<K, T> pageable) {
-		super(pageable.getCursorId(), pageable.getElements().toList(), pageable.getNextCursorId());
+	public SharedPageable(Page<K, T> currentPage, @Nullable Pageable<K, T> pages) {
+		super(currentPage);
+		this.pages = pages;
 	}
 
 	@Override
-	public ElementList<T> getElements() {
-		return (ElementList<T>) super.getElements();
+	public Pageable<K, T> jumpTo(K cursorId, long count) {
+		Pageable<K, T> pages = this.pages.jumpTo(cursorId, count);
+		return new SharedPageable<>(pages);
 	}
 
 	@Override
-	public final void setElements(Elements<T> elements) {
-		setList(elements.toList());
+	public Pageable<K, T> shared() {
+		return this;
 	}
 
-	public void setList(List<T> list) {
-		super.setElements(new ElementList<>(list));
+	@Override
+	public Pageable<K, T> next() {
+		Pageable<K, T> pages = this.pages.next();
+		return new SharedPageable<>(pages);
+	}
+
+	@Override
+	public Elements<? extends Page<K, T>> pages() {
+		return pages.pages();
+	}
+
+	public Pageable<K, T> getPages() {
+		return pages;
+	}
+
+	public void setPages(Pageable<K, T> pages) {
+		this.pages = pages;
 	}
 }

@@ -15,13 +15,14 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.page.Pageables;
-import io.basc.framework.util.page.StandardPageable;
-import io.basc.framework.util.page.StandardPageables;
+import io.basc.framework.util.page.Browsable;
+import io.basc.framework.util.page.StandardCursor;
+import io.basc.framework.util.page.StandardBrowsable;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -467,6 +468,11 @@ public final class ClassUtils {
 		return clazz;
 	}
 
+	public static Optional<Class<?>> findClass(String className, @Nullable ClassLoader classLoader) {
+		Class<?> clazz = getClass(className, classLoader);
+		return clazz == null ? Optional.empty() : Optional.of(clazz);
+	}
+
 	/**
 	 * Determine the name of the class file, relative to the containing package:
 	 * e.g. "String.class"
@@ -551,12 +557,12 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Pageables<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass) {
+	public static Browsable<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StandardPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
+		return new StandardBrowsable<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new StandardPageable<>(c, new ElementList<>(list), c.getSuperclass());
+			return new StandardCursor<>(c, new ElementList<>(list), c.getSuperclass());
 		});
 	}
 

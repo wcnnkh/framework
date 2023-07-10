@@ -1,8 +1,6 @@
 package io.basc.framework.util.page;
 
-import java.util.stream.Stream;
-
 @FunctionalInterface
 public interface CursorProcessor<K, T> {
-	Stream<T> process(K start, long count);
+	Cursor<K, T> process(K cursorId, long count);
 }

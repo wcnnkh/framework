@@ -41,8 +41,8 @@ import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.page.Pageable;
-import io.basc.framework.util.page.SharedPageable;
+import io.basc.framework.util.page.Cursor;
+import io.basc.framework.util.page.SharedCursor;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.commands.PipelineBinaryCommands;
@@ -356,13 +356,13 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	}
 
 	@Override
-	public RedisResponse<Pageable<Long, byte[]>> scan(long cursorId, ScanOptions<byte[]> options) {
+	public RedisResponse<Cursor<Long, byte[]>> scan(long cursorId, ScanOptions<byte[]> options) {
 		Response<ScanResult<byte[]>> response = commands.scan(SafeEncoder.encode(String.valueOf(cursorId)),
 				JedisUtils.toScanParams(options));
-		return new JedisRedisResponse<Pageable<Long, byte[]>>(() -> {
+		return new JedisRedisResponse<Cursor<Long, byte[]>>(() -> {
 			ScanResult<byte[]> result = response.get();
 			String next = result.getCursor();
-			return new SharedPageable<Long, byte[]>(cursorId, result.getResult(),
+			return new SharedCursor<Long, byte[]>(cursorId, result.getResult(),
 					StringUtils.isEmpty(next) ? null : Long.parseLong(next));
 		});
 	}
@@ -617,12 +617,12 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	}
 
 	@Override
-	public RedisResponse<Pageable<Long, byte[]>> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
+	public RedisResponse<Cursor<Long, byte[]>> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
 		Response<ScanResult<byte[]>> response = commands.scan(SafeEncoder.encode(String.valueOf(cursorId)),
 				JedisUtils.toScanParams(options));
 		return new JedisRedisResponse<>(() -> {
 			ScanResult<byte[]> result = response.get();
-			return new SharedPageable<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
+			return new SharedCursor<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
 		});
 	}
 

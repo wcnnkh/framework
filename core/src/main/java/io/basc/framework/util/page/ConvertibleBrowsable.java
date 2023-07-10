@@ -6,11 +6,11 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
-public class ConvertiblePageables<M extends Pageables<SK, ST>, SK, ST, K, T>
-		extends ConvertiblePageable<M, SK, ST, K, T> implements Pageables<K, T> {
+public class ConvertibleBrowsable<M extends Browsable<SK, ST>, SK, ST, K, T>
+		extends ConvertibleCursor<M, SK, ST, K, T> implements Browsable<K, T> {
 	protected final Codec<SK, K> cursorIdCodec;
 
-	public ConvertiblePageables(M source, Codec<SK, K> cursorIdCodec,
+	public ConvertibleBrowsable(M source, Codec<SK, K> cursorIdCodec,
 			Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter) {
 		super(source, Assert.requiredArgument(cursorIdCodec != null, "elementsConverter", cursorIdCodec)::encode,
 				elementsConverter);
@@ -18,10 +18,10 @@ public class ConvertiblePageables<M extends Pageables<SK, ST>, SK, ST, K, T>
 	}
 
 	@Override
-	public Pageables<K, T> jumpTo(K cursorId) {
+	public Browsable<K, T> jumpTo(K cursorId) {
 		SK targetCursorId = cursorId == null ? null : cursorIdCodec.decode(cursorId);
-		Pageables<SK, ST> pageables = source.jumpTo(targetCursorId);
-		return new ConvertiblePageables<>(pageables, cursorIdCodec, elementsConverter);
+		Browsable<SK, ST> pageables = source.jumpTo(targetCursorId);
+		return new ConvertibleBrowsable<>(pageables, cursorIdCodec, elementsConverter);
 	}
 
 }

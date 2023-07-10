@@ -42,7 +42,7 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 
 	@Override
 	public ResolvableType getType() {
-		return getConstructor().getReturnType().getResolvableType();
+		return getConstructor().getReturnTypeDescriptor().getResolvableType();
 	}
 
 	@Override

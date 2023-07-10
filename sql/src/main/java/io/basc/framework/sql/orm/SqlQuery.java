@@ -56,7 +56,7 @@ public class SqlQuery<T> extends Query<T> {
 
 		SqlQuery<T> query = new SqlQuery<>(connectionFactory, sql, mapProcessor, sqlDialect);
 		query.setCursorId(cursorId);
-		query.setLimit(count);
+		query.setPageSize(count);
 		return query;
 	}
 

@@ -6,8 +6,8 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
-public class ConvertiblePages<M extends Pages<SK, ST>, SK, ST, K, T> extends ConvertiblePage<M, SK, ST, K, T>
-		implements Pages<K, T> {
+public class ConvertiblePages<M extends Pageable<SK, ST>, SK, ST, K, T> extends ConvertiblePage<M, SK, ST, K, T>
+		implements Pageable<K, T> {
 	private final Codec<SK, K> cursorIdCodec;
 
 	public ConvertiblePages(M source, Codec<SK, K> cursorIdCodec,
@@ -18,9 +18,9 @@ public class ConvertiblePages<M extends Pages<SK, ST>, SK, ST, K, T> extends Con
 	}
 
 	@Override
-	public Pages<K, T> jumpTo(K cursorId, long count) {
+	public Pageable<K, T> jumpTo(K cursorId, long count) {
 		SK targetCursorId = cursorId == null ? null : cursorIdCodec.decode(cursorId);
-		Pages<SK, ST> pages = source.jumpTo(targetCursorId);
+		Pageable<SK, ST> pages = source.jumpTo(targetCursorId);
 		return new ConvertiblePages<>(pages, cursorIdCodec, elementsConverter);
 	}
 

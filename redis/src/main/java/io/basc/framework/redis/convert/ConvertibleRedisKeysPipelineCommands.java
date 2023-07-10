@@ -10,7 +10,7 @@ import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.RestoreParams;
 import io.basc.framework.redis.ScanOptions;
-import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Cursor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
@@ -142,7 +142,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 	}
 
 	@Override
-	default RedisResponse<Pageable<Long, K>> scan(long cursorId, ScanOptions<K> options) {
+	default RedisResponse<Cursor<Long, K>> scan(long cursorId, ScanOptions<K> options) {
 		ScanOptions<SK> to = options.convert(getKeyCodec().toEncodeProcessor());
 		return getSourceRedisKeysCommands().scan(cursorId, to).map((p) -> p.map((v) -> getKeyCodec().decode(v)));
 	}

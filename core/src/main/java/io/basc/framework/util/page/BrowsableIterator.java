@@ -6,12 +6,12 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.StaticSupplier;
 
-public final class PageablesIterator<E extends Pageables<?, ?>> implements Iterator<E> {
+public final class BrowsableIterator<E extends Browsable<?, ?>> implements Iterator<E> {
 	private E pageables;
 	private Supplier<E> current;
 	private final Function<? super E, ? extends E> next;
 
-	public PageablesIterator(E pageables, Function<? super E, ? extends E> next) {
+	public BrowsableIterator(E pageables, Function<? super E, ? extends E> next) {
 		this.pageables = pageables;
 		this.current = new StaticSupplier<E>(pageables);
 		this.next = next;

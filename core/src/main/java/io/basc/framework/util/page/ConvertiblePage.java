@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import io.basc.framework.util.Elements;
 
-public class ConvertiblePage<M extends Page<SK, ST>, SK, ST, K, T> extends ConvertiblePageable<M, SK, ST, K, T>
+public class ConvertiblePage<M extends Page<SK, ST>, SK, ST, K, T> extends ConvertibleCursor<M, SK, ST, K, T>
 		implements Page<K, T> {
 
 	public ConvertiblePage(M source, Function<? super SK, ? extends K> cursorIdConverter,

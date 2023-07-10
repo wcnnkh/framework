@@ -12,11 +12,12 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.page.Pageable;
+import lombok.ToString;
 
-public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T> {
+@ToString
+public class SearchResults<T> extends TopFieldDocs implements Pageable<ScoreDoc, T> {
 	private final SearchParameters parameters;
 	private final List<T> list;
 	private Sort resultSort;
@@ -68,7 +69,7 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	@Override
-	public long getLimit() {
+	public long getPageSize() {
 		return parameters.getTop();
 	}
 
@@ -84,7 +85,7 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 
 	@Override
 	public boolean hasNext() {
-		return scoreDocs.length >= getLimit();
+		return scoreDocs.length >= getPageSize();
 	}
 
 	@Override
@@ -101,12 +102,7 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
-	}
-
-	@Override
-	public Pages<ScoreDoc, T> jumpTo(ScoreDoc cursorId, long count) {
+	public Pageable<ScoreDoc, T> jumpTo(ScoreDoc cursorId, long count) {
 		return luceneTemplete.searchAfter(cursorId, parameters.setTop((int) count), rowMapper);
 	}
 }

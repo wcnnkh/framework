@@ -8,6 +8,7 @@ import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.CachedServiceLoader;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceRegistry;
@@ -48,9 +49,8 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 	}
 
 	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
-		ServiceLoader<S> listableServiceLoader = new ListableServiceLoader<>(this, serviceClass);
-		serviceRegistry.getServiceLoaderRegistry().register(listableServiceLoader);
-
+		CachedServiceLoader<S> factoryServiceLoader = new CachedServiceLoader<>(getBeanProvider(serviceClass));
+		serviceRegistry.getServiceLoaderRegistry().register(factoryServiceLoader);
 		ServiceLoader<S> spiServiceLoader = new SpiServiceLoader<>(serviceClass);
 		spiServiceLoader = spiServiceLoader
 				.convert((elements) -> elements.peek((e) -> getServiceInjectorRegistry().inject(e)));

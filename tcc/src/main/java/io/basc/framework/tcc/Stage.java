@@ -50,11 +50,11 @@ public class Stage extends SerializableMethod implements Runnable, BeanFactoryAw
 					throw new IllegalArgumentException("not found beanfactory");
 				}
 
-				if (!beanFactory.isInstance(beanName)) {
+				if (!beanFactory.containsBean(beanName)) {
 					throw new IllegalArgumentException("not found bean " + beanName);
 				}
 
-				instance = beanFactory.getInstance(beanName);
+				instance = beanFactory.getBean(beanName);
 			}
 		}
 

@@ -12,7 +12,7 @@ public class Query<T> extends Paginations<T> {
 		PageRequest request = PageRequest.getPageRequest();
 		if (request != null) {
 			setCursorId(request.getStart());
-			setLimit(request.getPageSize());
+			setPageSize(request.getPageSize());
 		}
 	}
 

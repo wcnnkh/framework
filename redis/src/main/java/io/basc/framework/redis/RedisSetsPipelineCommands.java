@@ -3,7 +3,7 @@ package io.basc.framework.redis;
 import java.util.List;
 import java.util.Set;
 
-import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Cursor;
 
 @SuppressWarnings("unchecked")
 public interface RedisSetsPipelineCommands<K, V> {
@@ -37,5 +37,5 @@ public interface RedisSetsPipelineCommands<K, V> {
 
 	RedisResponse<Long> sunionstore(K destinationKey, K... keys);
 
-	RedisResponse<Pageable<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options);
+	RedisResponse<Cursor<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options);
 }

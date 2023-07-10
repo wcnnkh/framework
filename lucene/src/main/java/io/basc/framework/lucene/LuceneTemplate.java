@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -22,20 +23,26 @@ import org.apache.lucene.search.TermQuery;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.mapper.Parameter;
+import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
-import io.basc.framework.orm.repository.Repository;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.page.Paginations;
 
 @SuppressWarnings("unchecked")
-public interface LuceneTemplate extends Repository {
+public interface LuceneTemplate extends EntityOperations {
 	LuceneMapper getMapper();
+	
+	@Override
+	default <T> OptionalLong insert(Class<T> entityClass, T entity) throws OrmException {
+		Assert.requiredArgument(entity != null, "entity");
+		return EntityOperations.super.insert(entityClass, entity);
+	}
 
 	default <T> void save(T entity) throws LuceneWriteException {
 		Assert.requiredArgument(entity != null, "entity");

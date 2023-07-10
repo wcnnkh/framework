@@ -3,7 +3,7 @@ package io.basc.framework.redis;
 import java.util.Set;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Cursor;
 
 /**
  * https://redis.io/commands#generic
@@ -57,7 +57,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 
 	RedisResponse<String> restore(K key, long ttl, byte[] serializedValue, @Nullable RestoreParams params);
 
-	RedisResponse<Pageable<Long, K>> scan(long cursorId, ScanOptions<K> options);
+	RedisResponse<Cursor<Long, K>> scan(long cursorId, ScanOptions<K> options);
 
 	RedisResponse<Long> touch(K... keys);
 

@@ -5,7 +5,7 @@ import java.util.Set;
 
 import io.basc.framework.redis.RedisSetsCommands;
 import io.basc.framework.redis.ScanOptions;
-import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Cursor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<SK, K, SV, V>, RedisSetsCommands<K, V> {
@@ -98,7 +98,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	}
 
 	@Override
-	default Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
+	default Cursor<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
 		return getSourceRedisSetsCommands()
 				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeProcessor()))
 				.map((v) -> getKeyCodec().decode(v));

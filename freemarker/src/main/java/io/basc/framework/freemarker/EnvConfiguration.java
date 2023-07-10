@@ -41,11 +41,11 @@ public class EnvConfiguration extends Configuration implements Configurable {
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (serviceLoaderFactory.isInstance(TemplateLoader.class)) {
-			setTemplateLoader(serviceLoaderFactory.getInstance(TemplateLoader.class));
+		if (serviceLoaderFactory.isUnique(TemplateLoader.class)) {
+			setTemplateLoader(serviceLoaderFactory.getBean(TemplateLoader.class));
 		}
-		if (serviceLoaderFactory.isInstance(TemplateExceptionHandler.class)) {
-			setTemplateExceptionHandler(serviceLoaderFactory.getInstance(TemplateExceptionHandler.class));
+		if (serviceLoaderFactory.isUnique(TemplateExceptionHandler.class)) {
+			setTemplateExceptionHandler(serviceLoaderFactory.getBean(TemplateExceptionHandler.class));
 		}
 		this.configured = true;
 	}

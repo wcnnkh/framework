@@ -11,7 +11,7 @@ import io.basc.framework.util.Elements;
  *
  * @param <T>
  */
-public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
+public class Paginations<T> extends Pagination<T> implements Pageable<Long, T> {
 	private static final long serialVersionUID = 1L;
 
 	public Paginations(Elements<T> elements) {
@@ -60,7 +60,7 @@ public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
 
 	@Override
 	public Elements<? extends Pagination<T>> pages() {
-		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
+		return Elements.of(() -> new BrowsableIterator<>(this, (e) -> e.next()));
 	}
 
 	@Override

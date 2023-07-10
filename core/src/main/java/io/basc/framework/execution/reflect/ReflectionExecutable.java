@@ -15,7 +15,7 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 	private final TypeDescriptor source;
 	private final T executable;
 	private volatile String name;
-	private volatile TypeDescriptor returnType;
+	private volatile TypeDescriptor returnTypeDescriptor;
 	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
 
 	public ReflectionExecutable(TypeDescriptor source, T executable) {
@@ -38,16 +38,16 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 	}
 
 	@Override
-	public TypeDescriptor getReturnType() {
-		if (returnType == null) {
+	public TypeDescriptor getReturnTypeDescriptor() {
+		if (returnTypeDescriptor == null) {
 			synchronized (this) {
-				if (returnType == null) {
+				if (returnTypeDescriptor == null) {
 					MethodParameter methodParameter = MethodParameter.forExecutable(executable, -1);
-					this.returnType = new TypeDescriptor(methodParameter);
+					this.returnTypeDescriptor = new TypeDescriptor(methodParameter);
 				}
 			}
 		}
-		return returnType;
+		return returnTypeDescriptor;
 	}
 
 	@Override

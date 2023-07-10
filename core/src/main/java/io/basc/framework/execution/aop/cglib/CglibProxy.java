@@ -20,7 +20,7 @@ public class CglibProxy implements Proxy {
 	}
 
 	@Override
-	public TypeDescriptor getReturnType() {
+	public TypeDescriptor getReturnTypeDescriptor() {
 		return source;
 	}
 

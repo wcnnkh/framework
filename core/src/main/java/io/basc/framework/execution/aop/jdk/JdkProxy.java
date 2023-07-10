@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class JdkProxy implements Proxy {
-	private final TypeDescriptor returnType;
+	private final TypeDescriptor returnTypeDescriptor;
 	private final ClassLoader classLoader;
 	private final Class<?>[] interfaces;
 	private final InvocationHandler invocationHandler;

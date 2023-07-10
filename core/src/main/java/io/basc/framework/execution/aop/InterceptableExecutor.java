@@ -22,8 +22,8 @@ public class InterceptableExecutor implements Executor {
 	}
 
 	@Override
-	public TypeDescriptor getReturnType() {
-		return executor.getReturnType();
+	public TypeDescriptor getReturnTypeDescriptor() {
+		return executor.getReturnTypeDescriptor();
 	}
 
 	@Override

@@ -24,30 +24,29 @@ import org.apache.lucene.util.BytesRef;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.repository.Condition;
 import io.basc.framework.lucene.DocumentAccess;
-import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
-import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.Property;
-import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.orm.support.DefaultObjectMapper;
+import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
 
-public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneException> implements LuceneMapper {
+public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMapper {
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
 
 	public DefaultLuceneMapper() {
 		luceneResolverExtends.register(new AnnotationLuceneResolverExtend());
-		registerObjectAccessFactory(Document.class, (s, e) -> new DocumentAccess(s, this));
+		registerObjectAccessFactory(Document.class, (s, e) -> new DocumentAccess(s, this, e));
 	}
 
 	@Override

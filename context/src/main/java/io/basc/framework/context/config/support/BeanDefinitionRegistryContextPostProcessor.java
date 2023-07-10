@@ -1,11 +1,13 @@
 package io.basc.framework.context.config.support;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
 import io.basc.framework.beans.factory.config.support.BeanFactoryExecutor;
 import io.basc.framework.beans.factory.config.support.DefaultBeanDefinition;
+import io.basc.framework.context.config.Condition;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.convert.TypeDescriptor;
@@ -15,7 +17,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
 public abstract class BeanDefinitionRegistryContextPostProcessor implements ContextPostProcessor {
-
 	@Override
 	public void postProcessContext(ConfigurableContext context) throws Throwable {
 		for (Class<?> clazz : context.getContextClasses().getServices()) {
@@ -54,6 +55,11 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 
 	protected Elements<String> getAliasNames(Class<?> clazz, Method method) {
 		return Elements.empty();
+	}
+
+	@Nullable
+	protected Condition getCondition(AnnotatedElement annotatedElement) {
+		return null;
 	}
 
 	protected abstract boolean canResolveBeanDefinition(Class<?> clazz);

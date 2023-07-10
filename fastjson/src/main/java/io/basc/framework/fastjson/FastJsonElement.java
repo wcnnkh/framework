@@ -26,7 +26,7 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		String json = FastJsonSupport.INSTANCE.toJsonString(source);
+		String json = JSON.toJSONString(source);
 		return JSON.parseObject(json, targetType.getResolvableType().getType(), Feature.SupportNonPublicField);
 	}
 

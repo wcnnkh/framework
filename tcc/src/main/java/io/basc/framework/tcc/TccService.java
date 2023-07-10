@@ -3,8 +3,6 @@ package io.basc.framework.tcc;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.beans.factory.support.RuntimeBean;
 import io.basc.framework.consistency.CompensateRegistry;
 import io.basc.framework.consistency.Compensator;
@@ -12,6 +10,8 @@ import io.basc.framework.context.annotation.Autowired;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
@@ -25,7 +25,7 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
-public class TccService implements MethodInterceptor, MethodInterceptorAccept {
+public class TccService implements ExecutionInterceptor {
 	/**
 	 * 获取当前事务的id
 	 * 
@@ -81,10 +81,52 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		return tcc != null;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
+	public Method getStepMethod(Class<?> declaringClass, String stepName) {
+		if (StringUtils.isEmpty(stepName)) {
+			return null;
+		}
+
+		for (Method method : declaringClass.getDeclaredMethods()) {
+			TccStage tccStage = method.getAnnotation(TccStage.class);
+			if (tccStage == null) {
+				continue;
+			}
+
+			String name = StringUtils.isEmpty(tccStage.value()) ? method.getName() : tccStage.value();
+			if (stepName.equals(name)) {
+				return method;
+			}
+		}
+		return null;
+	}
+
+	public Object[] getStepArgs(Method tryMethod, Object tryResult, Object[] tryArgs, Method stepMethod) {
+		Elements<ParameterDescriptor> parameterDescriptors = ParameterUtils.getParameters(stepMethod);
+		if (parameterDescriptors.isEmpty()) {
+			return new Object[0];
+		}
+
+		LinkedHashMap<String, Object> parameterMap = ParameterUtils.getParameterMap(tryMethod, tryArgs);
+		return parameterDescriptors.map((descriptor) -> {
+			TryResult tryResultAnnotation = descriptor.getTypeDescriptor().getAnnotation(TryResult.class);
+			if (tryResultAnnotation != null) {
+				return tryResult;
+			}
+
+			if (!parameterMap.containsKey(descriptor.getName())) {
+				throw new TccException(
+						"Undefined parameter [" + descriptor.getName() + "] in method:" + stepMethod.toString());
+			}
+
+			return parameterMap.get(descriptor.getName());
+		}).toArray();
+	}
+
+	@Override
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
+		Tcc tcc = executor.getReturnTypeDescriptor().getAnnotation(Tcc.class);
 		if (tcc == null) {
-			return invoker.invoke(args);
+			return executor.execute(args);
 		}
 
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
@@ -125,46 +167,5 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 
 		transaction.registerSynchronization(new TccSynchronization(confirm, cancel));
 		return result;
-	}
-
-	public Method getStepMethod(Class<?> declaringClass, String stepName) {
-		if (StringUtils.isEmpty(stepName)) {
-			return null;
-		}
-
-		for (Method method : declaringClass.getDeclaredMethods()) {
-			TccStage tccStage = method.getAnnotation(TccStage.class);
-			if (tccStage == null) {
-				continue;
-			}
-
-			String name = StringUtils.isEmpty(tccStage.value()) ? method.getName() : tccStage.value();
-			if (stepName.equals(name)) {
-				return method;
-			}
-		}
-		return null;
-	}
-
-	public Object[] getStepArgs(Method tryMethod, Object tryResult, Object[] tryArgs, Method stepMethod) {
-		Elements<ParameterDescriptor> parameterDescriptors = ParameterUtils.getParameters(stepMethod);
-		if (parameterDescriptors.isEmpty()) {
-			return new Object[0];
-		}
-
-		LinkedHashMap<String, Object> parameterMap = ParameterUtils.getParameterMap(tryMethod, tryArgs);
-		return parameterDescriptors.map((descriptor) -> {
-			TryResult tryResultAnnotation = descriptor.getTypeDescriptor().getAnnotation(TryResult.class);
-			if (tryResultAnnotation != null) {
-				return tryResult;
-			}
-
-			if (!parameterMap.containsKey(descriptor.getName())) {
-				throw new TccException(
-						"Undefined parameter [" + descriptor.getName() + "] in method:" + stepMethod.toString());
-			}
-
-			return parameterMap.get(descriptor.getName());
-		}).toArray();
 	}
 }

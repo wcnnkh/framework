@@ -45,8 +45,8 @@ import io.basc.framework.util.Decorator;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.page.Pageable;
-import io.basc.framework.util.page.SharedPageable;
+import io.basc.framework.util.page.Cursor;
+import io.basc.framework.util.page.SharedCursor;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
@@ -195,11 +195,11 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Pageable<Long, byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
+	public Cursor<Long, byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
 		ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
 				JedisUtils.toScanParams(options));
 		String next = result.getCursor();
-		return new SharedPageable<Long, byte[]>(cursorId, result.getResult(),
+		return new SharedCursor<Long, byte[]>(cursorId, result.getResult(),
 				StringUtils.isEmpty(next) ? null : Long.parseLong(next));
 	}
 
@@ -443,11 +443,11 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Pageable<Long, byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
+	public Cursor<Long, byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
 		Assert.notNull(key, "Key must not be null!");
 		ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
 				JedisUtils.toScanParams(options));
-		return new SharedPageable<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
+		return new SharedCursor<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
 	}
 
 	@Override

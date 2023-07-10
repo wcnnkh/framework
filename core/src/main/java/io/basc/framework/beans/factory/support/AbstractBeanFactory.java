@@ -420,7 +420,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
 		if (factoryBean instanceof DefinitionFactoryBean) {
 			DefinitionFactoryBean definitionFactoryBean = (DefinitionFactoryBean) factoryBean;
-			return definitionFactoryBean.getConstructor().getReturnType().getAnnotation(annotationType);
+			return definitionFactoryBean.getConstructor().getReturnTypeDescriptor().getAnnotation(annotationType);
 		}
 		return null;
 	}

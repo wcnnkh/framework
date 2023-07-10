@@ -15,7 +15,7 @@ public interface Constructable {
 	 * 
 	 * @return
 	 */
-	TypeDescriptor getReturnType();
+	TypeDescriptor getReturnTypeDescriptor();
 
 	/**
 	 * 是否可执行

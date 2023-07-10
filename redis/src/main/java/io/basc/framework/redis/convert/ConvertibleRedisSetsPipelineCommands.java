@@ -6,7 +6,7 @@ import java.util.Set;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisSetsPipelineCommands;
 import io.basc.framework.redis.ScanOptions;
-import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Cursor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
@@ -100,8 +100,8 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	}
 
 	@Override
-	default RedisResponse<Pageable<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options) {
-		RedisResponse<Pageable<Long, SK>> response = getSourceRedisSetsCommands().sScan(cursorId,
+	default RedisResponse<Cursor<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options) {
+		RedisResponse<Cursor<Long, SK>> response = getSourceRedisSetsCommands().sScan(cursorId,
 				getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeProcessor()));
 		return response.map((p) -> p.map((v) -> getKeyCodec().decode(v)));
 	}

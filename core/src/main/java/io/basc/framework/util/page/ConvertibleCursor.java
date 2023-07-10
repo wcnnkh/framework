@@ -5,12 +5,12 @@ import java.util.function.Function;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
-public class ConvertiblePageable<M extends Pageable<SK, ST>, SK, ST, K, T> implements Pageable<K, T> {
+public class ConvertibleCursor<M extends Cursor<SK, ST>, SK, ST, K, T> implements Cursor<K, T> {
 	protected final M source;
 	protected final Function<? super SK, ? extends K> cursorIdConverter;
 	protected final Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter;
 
-	public ConvertiblePageable(M source, Function<? super SK, ? extends K> cursorIdConverter,
+	public ConvertibleCursor(M source, Function<? super SK, ? extends K> cursorIdConverter,
 			Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(cursorIdConverter != null, "cursorIdConverter");

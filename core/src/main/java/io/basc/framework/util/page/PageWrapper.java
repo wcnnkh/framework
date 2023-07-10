@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import io.basc.framework.util.Elements;
 
-public class PageWrapper<K, T, W extends Page<K, T>> extends PageableWrapper<K, T, W> implements Page<K, T> {
+public class PageWrapper<K, T, W extends Page<K, T>> extends CursorWrapper<K, T, W> implements Page<K, T> {
 
 	public PageWrapper(W wrappedTarget) {
 		super(wrappedTarget);
