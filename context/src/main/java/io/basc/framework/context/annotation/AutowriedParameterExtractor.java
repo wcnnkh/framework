@@ -24,11 +24,11 @@ public class AutowriedParameterExtractor implements ParameterExtractor {
 			return beanFactory.getBean(name, parameterDescriptor.getTypeDescriptor().getType());
 		}
 
-		if (beanFactory.isUnique(parameterDescriptor.getTypeDescriptor().getResolvableType())) {
-			return beanFactory.getBean(parameterDescriptor.getTypeDescriptor().getResolvableType());
-		}
-
-		return beanFactory.getBean(parameterDescriptor.getName(), parameterDescriptor.getTypeDescriptor().getType());
+		// 使用类型或名称
+		return beanFactory.getBeanProvider(parameterDescriptor.getTypeDescriptor().getResolvableType()).getUnique()
+				.orElseGet(() -> {
+					return beanFactory.getBean(parameterDescriptor.getName(),
+							parameterDescriptor.getTypeDescriptor().getType());
+				});
 	}
-
 }

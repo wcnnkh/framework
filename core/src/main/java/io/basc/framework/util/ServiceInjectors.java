@@ -2,7 +2,7 @@ package io.basc.framework.util;
 
 import io.basc.framework.event.support.DefaultDynamicElementRegistry;
 
-public class ServiceInjectorRegistry<S> extends DefaultDynamicElementRegistry<ServiceInjector<? super S>>
+public class ServiceInjectors<S> extends DefaultDynamicElementRegistry<ServiceInjector<? super S>>
 		implements ServiceInjector<S> {
 
 	@Override

@@ -39,7 +39,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 		this.propertiesResolvers = propertiesResolvers;
 		this.conversionService = conversionService;
 		this.charset = charset;
-		getServiceInjectorRegistry().register((service) -> {
+		getServiceInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				((ConversionServiceAware) service).setConversionService(getConversionService());
 			}

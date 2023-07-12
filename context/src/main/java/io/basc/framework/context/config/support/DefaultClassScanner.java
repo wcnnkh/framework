@@ -15,7 +15,7 @@ import io.basc.framework.util.ClassLoaderProviderMap;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaderRegistry;
+import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.StringUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class DefaultClassScanner extends ConfigurableClassScanner {
 		}
 
 		String[] packageNames = StringUtils.splitToArray(pattern);
-		ServiceLoaderRegistry<Class<?>> editableClassesLoader = new ServiceLoaderRegistry<>();
+		ServiceLoaders<Class<?>> editableClassesLoader = new ServiceLoaders<>();
 		for (String name : packageNames) {
 			if (!StringUtils.verifyPackageName(name)) {
 				continue;

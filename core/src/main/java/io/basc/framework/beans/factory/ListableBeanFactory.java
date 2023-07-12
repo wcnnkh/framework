@@ -14,22 +14,12 @@ import io.basc.framework.util.Elements;
 public interface ListableBeanFactory extends BeanFactory {
 	Elements<String> getBeanNames();
 
-	default Elements<String> getBeanNamesForType(ResolvableType type) {
-		return getBeanNames().filter((name) -> isTypeMatch(name, type));
+	default Elements<String> getBeanNamesForType(ResolvableType requiredType) {
+		return getBeanNames().filter((name) -> isTypeMatch(name, requiredType));
 	}
 
-	default Elements<String> getBeanNamesForType(Class<?> type) {
-		return getBeanNames().filter((name) -> isTypeMatch(name, type));
-	}
-
-	@Override
-	default <T> Elements<T> getBeanProvider(Class<T> requiredType) {
-		return getBeanNamesForType(requiredType).map((e) -> getBean(e, requiredType));
-	}
-
-	@Override
-	default Elements<Object> getBeanProvider(ResolvableType requiredType) {
-		return getBeanNamesForType(requiredType).map((e) -> getBean(e));
+	default Elements<String> getBeanNamesForType(Class<?> requiredType) {
+		return getBeanNames().filter((name) -> isTypeMatch(name, requiredType));
 	}
 
 	Elements<String> getFactoryBeanNames();
@@ -47,6 +37,18 @@ public interface ListableBeanFactory extends BeanFactory {
 		}
 
 		return (T) getBean(beanNames.first());
+	}
+
+	@Override
+	default <T> BeanProvider<T> getBeanProvider(Class<T> requiredType) {
+		Elements<String> names = getBeanNamesForType(requiredType);
+		return new NameBeanProvider<>(names, this);
+	}
+
+	@Override
+	default BeanProvider<Object> getBeanProvider(ResolvableType requiredType) {
+		Elements<String> names = getBeanNamesForType(requiredType);
+		return new NameBeanProvider<>(names, this);
 	}
 
 	@Override
@@ -116,15 +118,5 @@ public interface ListableBeanFactory extends BeanFactory {
 			throws NoSuchBeanDefinitionException {
 		Class<?> type = getType(beanName);
 		return type.getAnnotation(annotationType);
-	}
-
-	@Override
-	default boolean isUnique(Class<?> requiredType) {
-		return getBeanNamesForType(requiredType).isSingleton();
-	}
-
-	@Override
-	default boolean isUnique(ResolvableType requiredType) {
-		return getBeanNamesForType(requiredType).isSingleton();
 	}
 }

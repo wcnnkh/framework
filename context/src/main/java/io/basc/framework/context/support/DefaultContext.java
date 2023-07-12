@@ -29,25 +29,25 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
-	private final ServiceRegistry<Class<?>> contextClassesLoader = new ServiceRegistry<>();
+	private final Services<Class<?>> contextClassesLoader = new Services<>();
 	private final ContextPostProcessors contextPostProcessors = new ContextPostProcessors();
 	private final ConfigurableTypeFilter configurableTypeFilter = new ConfigurableTypeFilter();
-	private final ServiceRegistry<Class<?>> sourceClasses = new ServiceRegistry<Class<?>>();
+	private final Services<Class<?>> sourceClasses = new Services<Class<?>>();
 	private ClassLoaderProvider classLoaderProvider;
 	private final Aop aop = new Aop();
 
 	public DefaultContext(Scope scope) {
 		super(scope);
-		classScanner.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
-		contextPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
-		configurableTypeFilter.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
-		getServiceInjectorRegistry().register((bean) -> {
+		classScanner.getServiceInjectors().register(getServiceInjectors());
+		contextPostProcessors.getServiceInjectors().register(getServiceInjectors());
+		configurableTypeFilter.getServiceInjectors().register(getServiceInjectors());
+		getServiceInjectors().register((bean) -> {
 			if (bean instanceof ContextAware) {
 				((ContextAware) bean).setContext(this);
 			}
@@ -58,7 +58,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		configurableTypeFilter.register(new WebSocketTypeFilterExtend());
 		configurableTypeFilter.register(new JaxrsTypeFilterExtend());
 
-		contextClassesLoader.getServiceLoaderRegistry().register(sourceClasses);
+		contextClassesLoader.getServiceLoaders().register(sourceClasses);
 
 		// 注册后置处理器
 		contextPostProcessors.register(new AnnotationContextPostProcessor());
@@ -110,7 +110,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
 		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, getClassLoader(), typeFilter);
-		return getContextClasses().getServiceLoaderRegistry().register(classesLoader);
+		return getContextClasses().getServiceLoaders().register(classesLoader);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ServiceRegistry<Class<?>> getContextClasses() {
+	public Services<Class<?>> getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -128,7 +128,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ServiceRegistry<Class<?>> getSourceClasses() {
+	public Services<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
 

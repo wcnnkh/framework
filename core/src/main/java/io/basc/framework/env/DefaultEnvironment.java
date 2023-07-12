@@ -30,7 +30,7 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultEnvironment extends DefaultServiceLoaderFactory implements ConfigurableEnvironment, Configurable {
@@ -53,19 +53,17 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
 			getObservableCharset());
 
-	private final ServiceRegistry<Resource> resources = new ServiceRegistry<>();
+	private final Services<Resource> resources = new Services<>();
 
 	public DefaultEnvironment(Scope scope) {
 		super(scope);
-		conversionService.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
-		environmentPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
-		environmentResourceLoader.getProtocolResolvers().getServiceInjectorRegistry()
-				.register(getServiceInjectorRegistry());
-		environmentResourceLoader.getResourceLoaders().getServiceInjectorRegistry()
-				.register(getServiceInjectorRegistry());
-		properties.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		conversionService.getServiceInjectors().register(getServiceInjectors());
+		environmentPostProcessors.getServiceInjectors().register(getServiceInjectors());
+		environmentResourceLoader.getProtocolResolvers().getServiceInjectors().register(getServiceInjectors());
+		environmentResourceLoader.getResourceLoaders().getServiceInjectors().register(getServiceInjectors());
+		properties.getServiceInjectors().register(getServiceInjectors());
 
-		getServiceInjectorRegistry().register((bean) -> {
+		getServiceInjectors().register((bean) -> {
 			if (bean instanceof EnvironmentAware) {
 				((EnvironmentAware) bean).setEnvironment(this);
 			}
@@ -114,7 +112,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	}
 
 	@Override
-	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
+	protected <S> void postProcessorServiceRegistry(Services<S> serviceRegistry, Class<S> serviceClass) {
 		ServiceLoader<S> serviceLoader = new CachedServiceLoader<>(Elements.of(() -> {
 			String services = properties.getAsString(serviceClass.getName());
 			if (StringUtils.isEmpty(services)) {
@@ -124,7 +122,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 			String[] array = StringUtils.splitToArray(services);
 			return Elements.forArray(array).map((e) -> getBean(e, serviceClass)).iterator();
 		}));
-		serviceRegistry.getServiceLoaderRegistry().register(serviceLoader);
+		serviceRegistry.getServiceLoaders().register(serviceLoader);
 		super.postProcessorServiceRegistry(serviceRegistry, serviceClass);
 	}
 
@@ -162,7 +160,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	}
 
 	@Override
-	public ServiceRegistry<Resource> getResources() {
+	public Services<Resource> getResources() {
 		return resources;
 	}
 

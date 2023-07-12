@@ -9,9 +9,9 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 
-public class ConfigurableServices<T> extends ServiceRegistry<T> implements Configurable {
+public class ConfigurableServices<T> extends Services<T> implements Configurable {
 	private Registration configurableRegistration;
 	private Class<T> serviceClass;
 
@@ -52,7 +52,7 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 			if (configurableRegistration != null) {
 				configurableRegistration.unregister();
 			}
-			configurableRegistration = getServiceLoaderRegistry().register(serviceLoader);
+			configurableRegistration = getServiceLoaders().register(serviceLoader);
 		}
 	}
 

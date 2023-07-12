@@ -24,7 +24,7 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 			FactoryBean<?> factoryBean = beanFactory.getFactoryBean(beanName);
 			if (factoryBean instanceof DefinitionFactoryBean) {
 				DefinitionFactoryBean definitionFactoryBean = (DefinitionFactoryBean) factoryBean;
-				Bean bean = definitionFactoryBean.getConstructor().getReturnType().getAnnotation(Bean.class);
+				Bean bean = definitionFactoryBean.getConstructor().getReturnTypeDescriptor().getAnnotation(Bean.class);
 				if (bean != null) {
 					if (Arrays.asList(bean.initMethod()).contains(executor.getName())) {
 						return true;
@@ -32,7 +32,7 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 				}
 			}
 		}
-		return executor.getReturnType().hasAnnotation(InitMethod.class);
+		return executor.getReturnTypeDescriptor().hasAnnotation(InitMethod.class);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 			FactoryBean<?> factoryBean = beanFactory.getFactoryBean(beanName);
 			if (factoryBean instanceof DefinitionFactoryBean) {
 				DefinitionFactoryBean definitionFactoryBean = (DefinitionFactoryBean) factoryBean;
-				Bean bean = definitionFactoryBean.getConstructor().getReturnType().getAnnotation(Bean.class);
+				Bean bean = definitionFactoryBean.getConstructor().getReturnTypeDescriptor().getAnnotation(Bean.class);
 				if (bean != null) {
 					if (Arrays.asList(bean.destroyMethod()).contains(executor.getName())) {
 						return true;
@@ -49,6 +49,6 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 				}
 			}
 		}
-		return executor.getReturnType().hasAnnotation(Destroy.class);
+		return executor.getReturnTypeDescriptor().hasAnnotation(Destroy.class);
 	}
 }

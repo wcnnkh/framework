@@ -2,9 +2,9 @@ package io.basc.framework.execution.aop;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 
-public class ProxyFactoryRegistry extends ServiceRegistry<ProxyFactory> implements ProxyFactory {
+public class ProxyFactoryRegistry extends Services<ProxyFactory> implements ProxyFactory {
 
 	@Override
 	public boolean canProxy(Class<?> sourceClass) {

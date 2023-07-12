@@ -55,10 +55,6 @@ public class ConvertibleElements<S, E> extends SerializableElements<E> {
 
 	@Override
 	public Spliterator<E> spliterator() {
-		if (source == null) {
-			return super.spliterator();
-		}
-
 		// 注意这里不可以直接调用Elements#stream方法，因为规定了iterator返回的是无需关闭的迭代
 		Stream<S> sourceStream = Streams.stream(source.spliterator());
 		Stream<E> targetStream = converter.apply(sourceStream);

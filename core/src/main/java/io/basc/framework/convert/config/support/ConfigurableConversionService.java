@@ -11,7 +11,7 @@ import io.basc.framework.util.Registration;
 public class ConfigurableConversionService extends DefaultMapperRegistry<Object, ConversionException>
 		implements ConversionService, Comparable<Object> {
 	public ConfigurableConversionService() {
-		getServiceInjectorRegistry().register((service) -> {
+		getServiceInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				ConversionServiceAware conversionServiceAware = (ConversionServiceAware) service;
 				conversionServiceAware.setConversionService(this);

@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionLifecycle;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 import lombok.Data;
 
 @Data
@@ -17,7 +17,7 @@ public class DefaultBeanDefinition<T extends Executor> implements BeanDefinition
 	private BeanDefinition originatingBeanDefinition;
 	private Elements<? extends T> executors = Elements.empty();
 	private Scope scope = Scope.DEFAULT;
-	private ServiceRegistry<BeanDefinitionLifecycle> lifecycles = new ServiceRegistry<>();
+	private Services<BeanDefinitionLifecycle> lifecycles = new Services<>();
 
 	@Override
 	public void init(Executor constructor, Object bean) throws BeansException {

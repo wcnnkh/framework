@@ -3,24 +3,24 @@ package io.basc.framework.beans.factory.support;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.CachedServiceLoader;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.SpiServiceLoader;
 
 public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements ConfigurableServiceLoaderFactory {
 
-	private volatile Map<Class<?>, ServiceRegistry<?>> serviceLoaderMap = new HashMap<>();
+	private volatile Map<Class<?>, Services<?>> serviceLoaderMap = new HashMap<>();
 
 	public DefaultServiceLoaderFactory(Scope scope) {
 		super(scope);
-		getServiceInjectorRegistry().register((bean) -> {
+		getServiceInjectors().register((bean) -> {
 			if (bean instanceof Configurable) {
 				Configurable configurable = (Configurable) bean;
 				if (!configurable.isConfigured()) {
@@ -33,13 +33,13 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> ServiceRegistry<S> getServiceLoader(Class<S> serviceClass) {
-		ServiceRegistry<S> serviceLoader = (ServiceRegistry<S>) serviceLoaderMap.get(serviceClass);
+	public <S> Services<S> getServiceLoader(Class<S> serviceClass) {
+		Services<S> serviceLoader = (Services<S>) serviceLoaderMap.get(serviceClass);
 		if (serviceLoader == null) {
 			synchronized (this) {
-				serviceLoader = (ServiceRegistry<S>) serviceLoaderMap.get(serviceClass);
+				serviceLoader = (Services<S>) serviceLoaderMap.get(serviceClass);
 				if (serviceLoader == null) {
-					serviceLoader = new ServiceRegistry<>();
+					serviceLoader = new Services<>();
 					postProcessorServiceRegistry(serviceLoader, serviceClass);
 					serviceLoaderMap.putIfAbsent(serviceClass, serviceLoader);
 				}
@@ -48,13 +48,13 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 		return serviceLoader;
 	}
 
-	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
-		CachedServiceLoader<S> factoryServiceLoader = new CachedServiceLoader<>(getBeanProvider(serviceClass));
-		serviceRegistry.getServiceLoaderRegistry().register(factoryServiceLoader);
+	protected <S> void postProcessorServiceRegistry(Services<S> serviceRegistry, Class<S> serviceClass) {
+		BeanProvider<S> beanProvider = getBeanProvider(serviceClass);
+		serviceRegistry.getServiceLoaders().register(beanProvider);
 		ServiceLoader<S> spiServiceLoader = new SpiServiceLoader<>(serviceClass);
 		spiServiceLoader = spiServiceLoader
-				.convert((elements) -> elements.peek((e) -> getServiceInjectorRegistry().inject(e)));
-		serviceRegistry.getServiceLoaderRegistry().register(spiServiceLoader);
+				.convert((elements) -> elements.peek((e) -> getServiceInjectors().inject(e)));
+		serviceRegistry.getServiceLoaders().register(spiServiceLoader);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 	@Override
 	public Object newInstance(ResolvableType type) {
 		Object instance = ReflectionUtils.newInstance(type.getRawClass());
-		getServiceInjectorRegistry().inject(instance);
+		getServiceInjectors().inject(instance);
 		return instance;
 	}
 }

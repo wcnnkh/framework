@@ -2,7 +2,7 @@ package io.basc.framework.execution.parameter;
 
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 
 /**
  * 将多个参数抽取器组合
@@ -10,7 +10,7 @@ import io.basc.framework.util.ServiceRegistry;
  * @author wcnnkh
  *
  */
-public class ParameterExtractorRegistry extends ServiceRegistry<ParameterExtractor> implements ParameterExtractor {
+public class ParameterExtractorRegistry extends Services<ParameterExtractor> implements ParameterExtractor {
 
 	@Override
 	public boolean canExtractParameter(ParameterDescriptor parameterDescriptor) {

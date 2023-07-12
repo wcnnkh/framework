@@ -24,7 +24,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.ServiceInjectorRegistry;
+import io.basc.framework.util.ServiceInjectors;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		implements ConfigurableBeanFactory, InitializingBean, DisposableBean {
@@ -33,14 +33,14 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 	private final BeanPostProcessors beanPostProcessors = new BeanPostProcessors();
 	private final BeanFactoryPostProcessors beanFactoryPostProcessors = new BeanFactoryPostProcessors();
 	private final Set<String> initializedSingletonSet = new HashSet<>();
-	private final ServiceInjectorRegistry<Object> serviceInjectorRegistry = new ServiceInjectorRegistry<>();
+	private final ServiceInjectors<Object> serviceInjectors = new ServiceInjectors<>();
 
 	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
-		beanFactoryPostProcessors.getServiceInjectorRegistry().register(serviceInjectorRegistry);
-		beanPostProcessors.getServiceInjectorRegistry().register(serviceInjectorRegistry);
+		beanFactoryPostProcessors.getServiceInjectors().register(serviceInjectors);
+		beanPostProcessors.getServiceInjectors().register(serviceInjectors);
 
-		serviceInjectorRegistry.register((bean) -> {
+		serviceInjectors.register((bean) -> {
 			if (bean instanceof BeanFactoryAware) {
 				((BeanFactoryAware) bean).setBeanFactory(this);
 			}
@@ -48,8 +48,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		});
 	}
 
-	public ServiceInjectorRegistry<Object> getServiceInjectorRegistry() {
-		return serviceInjectorRegistry;
+	public ServiceInjectors<Object> getServiceInjectors() {
+		return serviceInjectors;
 	}
 
 	public BeanPostProcessors getBeanPostProcessors() {
@@ -334,7 +334,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		beanPostProcessors.postProcessBeforeInitialization(bean, beanName);
 		init(bean, beanName);
 		// 注入
-		serviceInjectorRegistry.inject(bean);
+		serviceInjectors.inject(bean);
 		beanPostProcessors.postProcessAfterInitialization(bean, beanName);
 	}
 

@@ -19,7 +19,7 @@ import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.DynamicElementRegistry;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 
-public class ServiceLoaderRegistry<S> implements ServiceLoader<S>, DynamicElementRegistry<ServiceLoader<? extends S>> {
+public class ServiceLoaders<S> implements ServiceLoader<S>, DynamicElementRegistry<ServiceLoader<? extends S>> {
 	private volatile boolean changed;
 	private final BroadcastEventDispatcher<ChangeEvent<Elements<ServiceLoader<? extends S>>>> elementEventDispatcher;
 	/**
@@ -31,20 +31,20 @@ public class ServiceLoaderRegistry<S> implements ServiceLoader<S>, DynamicElemen
 	private final ElementRegistry<S> registry;
 	private int version;
 
-	public ServiceLoaderRegistry() {
+	public ServiceLoaders() {
 		this(new DefaultElementRegistry<>());
 	}
 
-	public ServiceLoaderRegistry(ElementRegistry<S> registry) {
+	public ServiceLoaders(ElementRegistry<S> registry) {
 		this(registry, OrderComparator.INSTANCE);
 	}
 
-	public ServiceLoaderRegistry(ElementRegistry<S> registry,
+	public ServiceLoaders(ElementRegistry<S> registry,
 			Comparator<? super ServiceLoader<? extends S>> serviceLoaderComparator) {
 		this(registry, serviceLoaderComparator, new StandardBroadcastEventDispatcher<>());
 	}
 
-	public ServiceLoaderRegistry(ElementRegistry<S> registry,
+	public ServiceLoaders(ElementRegistry<S> registry,
 			Comparator<? super ServiceLoader<? extends S>> serviceLoaderComparator,
 			BroadcastEventDispatcher<ChangeEvent<Elements<ServiceLoader<? extends S>>>> elementEventDispatcher) {
 		Assert.requiredArgument(registry != null, "registry");
@@ -133,8 +133,8 @@ public class ServiceLoaderRegistry<S> implements ServiceLoader<S>, DynamicElemen
 				weight, element);
 		try {
 			writeLock.lock();
-			if (element instanceof ServiceLoaderRegistry) {
-				for (ServiceLoader<? extends S> serviceLoader : ((ServiceLoaderRegistry<? extends S>) element).getElements()) {
+			if (element instanceof ServiceLoaders) {
+				for (ServiceLoader<? extends S> serviceLoader : ((ServiceLoaders<? extends S>) element).getElements()) {
 					Assert.isTrue(serviceLoader != registry && serviceLoader != this, "There is a circular reference");
 				}
 			}

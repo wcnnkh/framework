@@ -5,7 +5,7 @@ import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 
 public interface ConfigurableContext extends Context, ConfigurableEnvironment, ClassLoaderAccessor {
 
@@ -14,9 +14,9 @@ public interface ConfigurableContext extends Context, ConfigurableEnvironment, C
 	Registration componentScan(String packageName);
 
 	@Override
-	ServiceRegistry<Class<?>> getContextClasses();
+	Services<Class<?>> getContextClasses();
 
-	ServiceRegistry<Class<?>> getSourceClasses();
+	Services<Class<?>> getSourceClasses();
 
 	Registration source(Class<?> sourceClass);
 

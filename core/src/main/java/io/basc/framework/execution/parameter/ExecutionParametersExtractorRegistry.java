@@ -2,9 +2,9 @@ package io.basc.framework.execution.parameter;
 
 import io.basc.framework.execution.Executor;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 
-public class ExecutionParametersExtractorRegistry extends ServiceRegistry<ExecutionParametersExtractor>
+public class ExecutionParametersExtractorRegistry extends Services<ExecutionParametersExtractor>
 		implements ExecutionParametersExtractor {
 
 	@Override
