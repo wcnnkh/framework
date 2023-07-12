@@ -1,15 +1,12 @@
 package io.basc.framework.memcached.locks;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.locks.LockFactory;
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.locks.RenewableLockFactory;
 import io.basc.framework.memcached.Memcached;
 import io.basc.framework.util.XUtils;
 
-import java.util.concurrent.TimeUnit;
-
-@Provider(value = LockFactory.class)
 public final class MemcachedLockFactory extends RenewableLockFactory {
 	private final Memcached memcached;
 

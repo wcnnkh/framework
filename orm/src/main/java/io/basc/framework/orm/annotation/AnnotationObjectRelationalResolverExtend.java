@@ -14,7 +14,6 @@ import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.RelationshipSymbol;
-import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.SortSymbol;
 import io.basc.framework.lang.Ignore;
@@ -24,9 +23,10 @@ import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.ParameterDescriptorFilter;
-import io.basc.framework.orm.EntityMapping;
-import io.basc.framework.orm.EntityMappingResolver;
-import io.basc.framework.orm.config.EntityMappingResolverExtend;
+import io.basc.framework.orm.EntityRepository;
+import io.basc.framework.orm.EntityResolver;
+import io.basc.framework.orm.Property;
+import io.basc.framework.orm.config.EntityResolverExtend;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
@@ -34,7 +34,7 @@ import io.basc.framework.util.Symbol;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
-public class AnnotationObjectRelationalResolverExtend implements EntityMappingResolverExtend, PlaceholderFormatAware {
+public class AnnotationObjectRelationalResolverExtend implements EntityResolverExtend, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;
 
 	@Nullable
@@ -48,7 +48,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isIgnore(Class<?> entityClass, EntityMappingResolver chain) {
+	public boolean isIgnore(Class<?> entityClass, EntityResolver chain) {
 		Ignore ignore = entityClass.getAnnotation(Ignore.class);
 		if (ignore == null) {
 			return chain.isIgnore(entityClass);
@@ -57,7 +57,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		Ignore ignore = descriptor.getTypeDescriptor().getAnnotation(Ignore.class);
 		if (ignore == null) {
 			return chain.isIgnore(entityClass, descriptor);
@@ -77,7 +77,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public String getName(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		String name = getAnnotationFeldName(descriptor.getTypeDescriptor());
 		if (StringUtils.isEmpty(name)) {
 			return chain.getName(entityClass, descriptor);
@@ -91,8 +91,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
+	public Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		Elements<String> elements = chain.getAliasNames(entityClass, descriptor);
 		Set<String> names = new LinkedHashSet<String>();
 		String name = getAnnotationFeldName(descriptor.getTypeDescriptor());
@@ -112,7 +111,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, EntityMappingResolver chain) {
+	public String getName(Class<?> entityClass, EntityResolver chain) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(entityClass,
 				Entity.class);
 		if (annotationAttributes == null) {
@@ -141,7 +140,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public Elements<String> getAliasNames(Class<?> entityClass, EntityMappingResolver chain) {
+	public Elements<String> getAliasNames(Class<?> entityClass, EntityResolver chain) {
 		Elements<String> elements = chain.getAliasNames(entityClass);
 		Set<String> list = new LinkedHashSet<String>(8);
 		String name = getEntityNameByAnnotatedElement(entityClass);
@@ -161,7 +160,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		// TODO 为什么使用AnnotatedElementUtils.hasAnnotation无法获取到
 		if (descriptor.getTypeDescriptor().isAnnotationPresent(PrimaryKey.class)) {
 			return true;
@@ -183,7 +182,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(), Nullable.class);
 		if (nullable == null) {
 			return chain.isNullable(entityClass, descriptor);
@@ -192,7 +191,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, EntityResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Entity.class)) {
 			return true;
 		}
@@ -200,7 +199,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isEntity(TypeDescriptor source, EntityMappingResolver chain) {
+	public boolean isEntity(TypeDescriptor source, EntityResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(source, Entity.class)) {
 			return true;
 		}
@@ -215,7 +214,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Version.class)) {
 			return true;
 		}
@@ -224,7 +223,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 
 	@Override
 	public Elements<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
+			EntityResolver chain) {
 		NumberRange range = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(),
 				NumberRange.class);
 		if (range != null) {
@@ -234,7 +233,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), AutoIncrement.class)) {
 			return true;
 		}
@@ -243,7 +242,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, EntityMappingResolver chain) {
+	public String getComment(Class<?> entityClass, EntityResolver chain) {
 		Entity entity = AnnotatedElementUtils.getMergedAnnotation(entityClass, Entity.class);
 		if (entity != null && StringUtils.hasText(entity.comment())) {
 			return entity.comment();
@@ -257,7 +256,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		Comment comment = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(), Comment.class);
 		if (comment != null && StringUtils.hasText(comment.value())) {
 			return comment.value();
@@ -266,18 +265,18 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, EntityMappingResolver chain) {
+	public String getCharsetName(Class<?> entityClass, EntityResolver chain) {
 		return Annotations.getCharsetName(entityClass, () -> chain.getCharsetName(entityClass));
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		return Annotations.getCharsetName(descriptor.getTypeDescriptor(),
 				() -> chain.getCharsetName(entityClass, descriptor));
 	}
 
 	@Override
-	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Unique.class)) {
 			return true;
 		}
@@ -285,7 +284,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Increment.class)) {
 			return true;
 		}
@@ -293,21 +292,20 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public Sort toSort(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
-			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
+	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
+			Property property, EntityResolver chain) {
 		SortType sortType = AnnotatedElementUtils.getMergedAnnotation(parameter.getTypeDescriptor(), SortType.class);
 		if (sortType != null) {
 			SortSymbol sortSymbol = Symbol.getOrCreate(() -> SortSymbol.getSortSymbols(sortType.value()).first(),
 					() -> new SortSymbol(sortType.value()));
 			return new Sort(new Expression(parameter.getName()), sortSymbol);
 		}
-		return EntityMappingResolverExtend.super.toSort(operationSymbol, repository, entityClass, entityMapping,
-				parameter, chain);
+		return EntityResolverExtend.super.getSort(operationSymbol, repository, parameter, property, chain);
 	}
 
 	@Override
-	public Condition toCondition(OperationSymbol operationSymbol, Repository repository, Class<?> entityClass,
-			EntityMapping<?> entityMapping, Parameter parameter, EntityMappingResolver chain) {
+	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
+			Parameter parameter, Property property, EntityResolver chain) {
 		io.basc.framework.orm.annotation.Condition condition = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), io.basc.framework.orm.annotation.Condition.class);
 		if (condition != null) {
@@ -326,12 +324,11 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 			return new Condition(relationshipSymbol, parameter.getName(), conditionSymbol, parameter.getSource(),
 					parameter.getTypeDescriptor());
 		}
-		return EntityMappingResolverExtend.super.toCondition(operationSymbol, repository, entityClass, entityMapping,
-				parameter, chain);
+		return EntityResolverExtend.super.getCondition(operationSymbol, repository, parameter, property, chain);
 	}
 
 	@Override
-	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
 		Display display = AnnotatedElementUtils.getMergedAnnotation(entityClass, Display.class);
 		if (display != null && StringUtils.equals(display.name(), descriptor.getName())) {
 			return true;
@@ -341,34 +338,34 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 		if (display != null) {
 			return true;
 		}
-		return EntityMappingResolverExtend.super.isDisplay(entityClass, descriptor, chain);
+		return EntityResolverExtend.super.isDisplay(entityClass, descriptor, chain);
 	}
 
 	@Override
 	public io.basc.framework.orm.ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
+			EntityResolver chain) {
 		ForeignKey foreignKey = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(),
 				ForeignKey.class);
 		if (foreignKey != null) {
 			return new io.basc.framework.orm.ForeignKey(foreignKey.entity(), foreignKey.name());
 		}
-		return EntityMappingResolverExtend.super.getForeignKey(entityClass, descriptor, chain);
+		return EntityResolverExtend.super.getForeignKey(entityClass, descriptor, chain);
 	}
 
 	@Override
-	public boolean isConfigurable(TypeDescriptor sourceType, EntityMappingResolver chain) {
+	public boolean isConfigurable(TypeDescriptor sourceType, EntityResolver chain) {
 		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
 				sourceType, sourceType.getType());
 		if (configurationProperties != null) {
 			return true;
 		}
-		return EntityMappingResolverExtend.super.isConfigurable(sourceType, chain);
+		return EntityResolverExtend.super.isConfigurable(sourceType, chain);
 	}
 
 	@Override
 	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy,
-			EntityMappingResolver chain) {
-		MappingStrategy mappingStrategy = EntityMappingResolverExtend.super.getMappingStrategy(source,
+			EntityResolver chain) {
+		MappingStrategy mappingStrategy = EntityResolverExtend.super.getMappingStrategy(source,
 				dottomlessMappingStrategy, chain);
 		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
 				source, source.getType());
@@ -402,7 +399,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 	}
 
 	@Override
-	public boolean hasEffectiveValue(Parameter parameter, EntityMappingResolver chain) {
+	public boolean hasEffectiveValue(Parameter parameter, EntityResolver chain) {
 		InvalidBaseTypeValue invalidBaseTypeValue = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), InvalidBaseTypeValue.class);
 		if (invalidBaseTypeValue != null && invalidBaseTypeValue.value().length > 0) {
@@ -416,6 +413,6 @@ public class AnnotationObjectRelationalResolverExtend implements EntityMappingRe
 				}
 			}
 		}
-		return EntityMappingResolverExtend.super.hasEffectiveValue(parameter, chain);
+		return EntityResolverExtend.super.hasEffectiveValue(parameter, chain);
 	}
 }

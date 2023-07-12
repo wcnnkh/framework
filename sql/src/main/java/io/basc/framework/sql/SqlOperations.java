@@ -1,8 +1,5 @@
 package io.basc.framework.sql;
 
-import java.util.List;
-import java.util.OptionalLong;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.orm.EntityMapper;
@@ -58,15 +55,5 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default int update(String sql, Object... sqlParams) throws SqlException {
 		return update(sql, sqlParams);
-	}
-
-	default List<OptionalLong> executeBatch(String sql, List<Object[]> batchArgs) throws SqlException {
-		// TODO 还未处理
-		return null;
-	}
-
-	default List<OptionalLong> executeBatch(List<Sql> sqls) throws SqlException {
-		// TODO 还未处理
-		return null;
 	}
 }

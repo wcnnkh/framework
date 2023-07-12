@@ -7,8 +7,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.tx.Transaction;
-import io.basc.framework.tx.TransactionUtils;
+import io.basc.framework.transaction.Transaction;
+import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Processor;
 
 public final class MybatisUtils {

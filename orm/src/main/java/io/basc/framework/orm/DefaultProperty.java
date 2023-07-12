@@ -44,7 +44,7 @@ public class DefaultProperty implements Property {
 		this.version = property.isVersion();
 	}
 
-	public DefaultProperty(Field field, Class<?> sourceClass, EntityMappingResolver resolver) {
+	public DefaultProperty(Field field, Class<?> sourceClass, EntityResolver resolver) {
 		this(field);
 		this.autoIncrement = field.getSetters().map((e) -> resolver.isAutoIncrement(sourceClass, e))
 				.filter((e) -> e != null).anyMatch((e) -> e);

@@ -11,7 +11,7 @@ import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.mysql.MysqlDialect;
 import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.orm.SqlDialect;
+import io.basc.framework.sql.template.dialect.SqlDialect;
 import io.basc.framework.util.Elements;
 
 public class MysqlTest {

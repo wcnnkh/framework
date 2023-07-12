@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-import io.basc.framework.tx.TransactionException;
+import io.basc.framework.transaction.TransactionException;
 
-public class ConnectionSavepoint implements io.basc.framework.tx.Savepoint {
+public class ConnectionSavepoint implements io.basc.framework.transaction.Savepoint {
 	private Connection connection;
 	private Savepoint savepoint;
 

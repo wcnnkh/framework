@@ -10,9 +10,9 @@ public class PrimaryKeyQuery<K, V> extends EntityQuery<V> {
 	private final Elements<? extends K> inPrimaryKeys;
 	private final Object[] primaryKeys;
 
-	public PrimaryKeyQuery(Query<V> packagedQuery, EntityMapping<? extends Property> entityMapping,
-			ObjectKeyFormat objectKeyFormat, Elements<? extends K> inPrimaryKeys, Object... primaryKeys) {
-		super(packagedQuery, entityMapping, objectKeyFormat);
+	public PrimaryKeyQuery(Query<V> source, EntityRepository<?> repository, EntityKeyGenerator entityKeyGenerator,
+			Elements<? extends K> inPrimaryKeys, Object... primaryKeys) {
+		super(source, repository, entityKeyGenerator);
 		this.inPrimaryKeys = inPrimaryKeys;
 		this.primaryKeys = primaryKeys;
 	}

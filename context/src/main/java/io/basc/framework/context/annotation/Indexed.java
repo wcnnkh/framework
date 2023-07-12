@@ -18,4 +18,5 @@ import io.basc.framework.context.Context;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Indexed {
+	int value() default 0;
 }

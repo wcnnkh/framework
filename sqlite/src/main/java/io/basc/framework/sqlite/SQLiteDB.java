@@ -12,12 +12,10 @@ public class SQLiteDB extends DefaultDB implements Configurable {
 
 	public SQLiteDB(SQLiteDataSource dataSource) {
 		super(new DataSourceConnectionFactory(dataSource), new SQLiteDialect());
-		setCheckTableChange(false);
 	}
 
 	public SQLiteDB(String databasePath) {
 		super(new SQLiteConnectionFactory(databasePath), new SQLiteDialect());
-		setCheckTableChange(false);
 	}
 
 	private boolean configured;

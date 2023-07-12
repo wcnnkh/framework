@@ -20,7 +20,7 @@ public class DefaultEntityMapping<T extends Property> extends DefaultMapping<T> 
 
 	public <S extends Field> DefaultEntityMapping(Mapping<? extends S> mapping,
 			Function<? super S, ? extends T> converter, Class<?> sourceClass,
-			EntityMappingResolver relationalResolver) {
+			EntityResolver relationalResolver) {
 		super(mapping, converter);
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Assert.requiredArgument(relationalResolver != null, "relationalResolver");

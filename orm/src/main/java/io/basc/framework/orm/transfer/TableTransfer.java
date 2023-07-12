@@ -24,7 +24,6 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.io.FileRecords;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.ObjectRelational;
-import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ArrayUtils;
@@ -38,12 +37,12 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 
 public abstract class TableTransfer implements Importer, ExportProcessor<Object> {
-	private ObjectRelationalFactory mapper;
+	private TransfMapper mapper;
 	private ConversionService conversionService;
 	private boolean header = true;
 
 	public TableTransfer() {
-		this.mapper = TransfRelationalMapping.INSTANCE;
+		this.mapper = TransfMapper.INSTANCE;
 		this.conversionService = Sys.getEnv().getConversionService();
 	}
 
@@ -53,11 +52,11 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		this.conversionService = source.conversionService;
 	}
 
-	public ObjectRelationalFactory getMapper() {
+	public TransfMapper getMapper() {
 		return mapper;
 	}
 
-	public void setOrm(ObjectRelationalFactory mapper) {
+	public void setOrm(TransfMapper mapper) {
 		Assert.requiredArgument(mapper != null, "mapper");
 		this.mapper = mapper;
 	}
@@ -144,7 +143,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				});
 			}
 		} else {
-			Mapping<? extends Property> structure = mapper.getStructure(targetType.getType());
+			Mapping<? extends Property> structure = mapper.getMapping(targetType.getType());
 			return mapEntity(source, structure);
 		}
 	}

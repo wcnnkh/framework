@@ -15,7 +15,7 @@ import io.basc.framework.io.SerializerException;
 import io.basc.framework.orm.annotation.PrimaryKey;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.orm.annotation.Table;
+import io.basc.framework.sql.template.annotation.Table;
 import io.basc.framework.util.CollectionUtils;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

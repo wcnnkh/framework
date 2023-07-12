@@ -10,7 +10,7 @@ import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.db.DefaultDB;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.sql.orm.SqlDialect;
+import io.basc.framework.sql.template.dialect.SqlDialect;
 import io.basc.framework.util.StringUtils;
 
 public class DataBaseDefinition extends FactoryBeanDefinition {

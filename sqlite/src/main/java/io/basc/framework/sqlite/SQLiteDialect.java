@@ -6,11 +6,11 @@ import java.util.Iterator;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.orm.Column;
-import io.basc.framework.sql.orm.SqlDialectException;
-import io.basc.framework.sql.orm.SqlType;
-import io.basc.framework.sql.orm.TableMapping;
-import io.basc.framework.sql.orm.support.StandardSqlDialect;
+import io.basc.framework.sql.template.Column;
+import io.basc.framework.sql.template.SqlDialectException;
+import io.basc.framework.sql.template.TableMapping;
+import io.basc.framework.sql.template.dialect.SqlType;
+import io.basc.framework.sql.template.dialect.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.NumberUtils;
@@ -47,7 +47,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.sql.orm.SqlType sqlType = getSqlType(
+			io.basc.framework.sql.template.dialect.SqlType sqlType = getSqlType(
 					col.getGetters().first().getTypeDescriptor().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {

@@ -31,7 +31,7 @@ public class ResultSetMapper extends DefaultEntityMapper {
 						throw new ConversionException(e);
 					}
 
-					return getConversionService().convert(array, targetType);
+					return convert(array, targetType);
 				}
 
 				if (isEntity(targetType)) {
@@ -54,7 +54,7 @@ public class ResultSetMapper extends DefaultEntityMapper {
 				} catch (SQLException e) {
 					throw new ConversionException(e);
 				}
-				return getConversionService().convert(value, targetType);
+				return convert(value, targetType);
 			}
 		}
 		return super.convert(source, sourceType, targetType);

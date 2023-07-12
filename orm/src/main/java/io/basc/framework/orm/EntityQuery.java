@@ -4,40 +4,38 @@ import java.util.Map;
 
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 
 public class EntityQuery<E> extends Query<E> {
 	private static final long serialVersionUID = 1L;
-	private final ObjectKeyFormat objectKeyFormat;
-	private final EntityMapping<? extends Property> entityMapping;
-	private final Query<E> packagedQuery;
+	private final EntityRepository<?> repository;
+	private final EntityKeyGenerator entityKeyGenerator;
+	private final Query<E> source;
 
-	public EntityQuery(Query<E> packagedQuery, EntityMapping<? extends Property> entityMapping,
-			ObjectKeyFormat objectKeyFormat) {
-		super(packagedQuery);
-		this.packagedQuery = packagedQuery;
-		this.objectKeyFormat = objectKeyFormat;
-		this.entityMapping = entityMapping;
+	public EntityQuery(Query<E> source, EntityRepository<?> repository, EntityKeyGenerator entityKeyGenerator) {
+		super(source);
+		this.source = source;
+		this.repository = repository;
+		this.entityKeyGenerator = entityKeyGenerator;
 	}
 
 	// TODO 重写其他方法
 
-	public Query<E> getPackagedQuery() {
-		return packagedQuery;
+	public Query<E> getSource() {
+		return source;
 	}
 
-	public ObjectKeyFormat getObjectKeyFormat() {
-		return objectKeyFormat;
+	public EntityRepository<?> getRepository() {
+		return repository;
 	}
 
-	public EntityMapping<? extends Property> getEntityMapping() {
-		return entityMapping;
+	public EntityKeyGenerator getEntityKeyGenerator() {
+		return entityKeyGenerator;
 	}
 
 	public <K> Map<K, E> toMap(Elements<? extends K> inPrimaryKeys, Object... primaryKeys) {
-		Map<String, K> keyMap = objectKeyFormat.getInIdsKeyMap(entityMapping, inPrimaryKeys, primaryKeys);
+		Map<String, K> keyMap = entityKeyGenerator.getEntityKeyMap(repository, inPrimaryKeys.iterator(), primaryKeys);
 		return getElements().toMap((e) -> {
-			String key = objectKeyFormat.getObjectKey(entityMapping, Value.of(e));
+			String key = entityKeyGenerator.getEntityKey(repository, e);
 			return keyMap.get(key);
 		});
 	}

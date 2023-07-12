@@ -13,8 +13,8 @@ public class StandardCursor<K, T> implements Cursor<K, T> {
 	private Elements<T> elements;
 	private K nextCursorId;
 
-	public StandardCursor(Cursor<K, T> pageable) {
-		this(pageable.getCursorId(), pageable.getElements(), pageable.getNextCursorId());
+	public StandardCursor(Cursor<K, T> cursor) {
+		this(cursor.getCursorId(), cursor.getElements(), cursor.getNextCursorId());
 	}
 
 }

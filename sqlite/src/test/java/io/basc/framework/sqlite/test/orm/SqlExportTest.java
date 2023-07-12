@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.microsoft.ExcelTemplate;
 import io.basc.framework.orm.annotation.Entity;
@@ -19,6 +18,7 @@ import io.basc.framework.sql.Sql;
 import io.basc.framework.sqlite.SQLiteDB;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.XUtils;
+import lombok.Data;
 
 public class SqlExportTest {
 	@Test
@@ -43,6 +43,7 @@ public class SqlExportTest {
 		file.delete();
 	}
 
+	@Data
 	@Entity
 	public static class SqlExportTestTable {
 		@PrimaryKey
@@ -50,15 +51,5 @@ public class SqlExportTest {
 		public int a;
 		@TransfColumn
 		public String b;
-
-		@Override
-		public boolean equals(Object obj) {
-			return ReflectionUtils.equals(this, obj);
-		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 }

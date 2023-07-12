@@ -1,7 +1,5 @@
 package io.basc.framework.util.page;
 
-import java.util.stream.Stream;
-
 public class AllPage<S extends Pageable<K, T>, K, T> extends AllCursor<S, K, T> implements Page<K, T> {
 
 	public AllPage(S source) {
@@ -15,11 +13,12 @@ public class AllPage<S extends Pageable<K, T>, K, T> extends AllCursor<S, K, T> 
 
 	@Override
 	public long getPageSize() {
-		Stream<? extends Page<K, T>> stream = source.pages().stream();
-		try {
-			return stream.mapToLong((e) -> e.getPageSize()).sum();
-		} finally {
-			stream.close();
+		// 优化父类实现
+		long pageSize = source.getTotal();
+		long mod = pageSize % source.getPageSize();
+		if (mod != 0) {
+			pageSize = pageSize - mod + source.getPageSize();
 		}
+		return pageSize;
 	}
 }

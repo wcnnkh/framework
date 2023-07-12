@@ -3,7 +3,11 @@ package io.basc.framework.util.page;
 import java.util.List;
 
 import io.basc.framework.lang.Nullable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class SharedPage<K, T> extends SharedCursor<K, T> implements Page<K, T> {
 	private static final long serialVersionUID = 1L;
 	private long total;
@@ -16,10 +20,6 @@ public class SharedPage<K, T> extends SharedCursor<K, T> implements Page<K, T> {
 	public SharedPage() {
 	}
 
-	public SharedPage(K cursorId) {
-		super(cursorId);
-	}
-
 	public SharedPage(K cursorId, long pageSize) {
 		this(cursorId, null, pageSize, 0);
 	}
@@ -30,19 +30,13 @@ public class SharedPage<K, T> extends SharedCursor<K, T> implements Page<K, T> {
 
 	public SharedPage(K cursorId, List<T> rows, @Nullable K nextCursorId, long pageSize, long total) {
 		super(cursorId, rows, nextCursorId);
-		this.pageSize = pageSize;
 		this.total = total;
+		this.pageSize = pageSize;
 	}
 
 	public SharedPage(Page<K, T> page) {
 		super(page);
-		this.pageSize = page.getPageSize();
 		this.total = page.getTotal();
-	}
-
-	@Override
-	public long getTotal() {
-		return total;
 	}
 
 	@Override
@@ -52,18 +46,4 @@ public class SharedPage<K, T> extends SharedCursor<K, T> implements Page<K, T> {
 		}
 		super.setList(list);
 	}
-
-	public void setTotal(long total) {
-		this.total = total;
-	}
-
-	@Override
-	public long getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(long pageSize) {
-		this.pageSize = pageSize;
-	}
-
 }

@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.tx.Isolation;
-import io.basc.framework.tx.Propagation;
+import io.basc.framework.transaction.Isolation;
+import io.basc.framework.transaction.Propagation;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

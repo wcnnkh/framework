@@ -16,26 +16,24 @@ import java.util.concurrent.TimeoutException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
 import io.basc.framework.memcached.Memcached;
-import io.basc.framework.net.BalancedInetSocketAddress;
-import io.basc.framework.net.InetUtils;
+import io.basc.framework.memcached.config.MemcachedNodeProperties;
+import io.basc.framework.memcached.config.MemcachedProperties;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
-import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 
-	public XMemcached(String addressTemplate) throws io.basc.framework.memcached.MemcachedException {
-		XMemcachedClientBuilder builder = builder(addressTemplate);
+	public XMemcached(XMemcachedProperties properties) {
+		XMemcachedClientBuilder builder = builder(properties);
 		try {
 			this.memcachedClient = builder.build();
 		} catch (IOException e) {
-			throw new io.basc.framework.memcached.MemcachedException(addressTemplate, e);
+			throw new io.basc.framework.memcached.MemcachedException(properties.toString(), e);
 		}
 	}
 
@@ -279,39 +277,31 @@ public final class XMemcached implements Memcached {
 		return cas(key, value, valueType, cas, 0, TimeUnit.SECONDS);
 	}
 
-	public static XMemcachedClientBuilder builder(String addressTemplate) {
-		if (StringUtils.isEmpty(addressTemplate)) {
-			return new XMemcachedClientBuilder();
-		}
-
-		Map<InetSocketAddress, InetSocketAddress> addressMap = new LinkedHashMap<>();
-		List<Integer> weights = new ArrayList<Integer>();
-		StringUtils.split(addressTemplate).forEach((content) -> {
-			String[] array = StringUtils.splitToArray(content);
-			if (array.length == 0) {
-				return;
-			}
-
-			BalancedInetSocketAddress address1 = InetUtils.parseInetSocketAddress(array[0], 11211);
-			BalancedInetSocketAddress address2 = null;
-			if (array.length > 1) {
-				address2 = InetUtils.parseInetSocketAddress(array[1], 11211);
-			}
-
-			addressMap.put(address1, address2);
-			weights.add(address1.getWeight());
-		});
+	public static XMemcachedClientBuilder builder(XMemcachedProperties memcachedProperties) {
 		XMemcachedClientBuilder builder;
-		if (CollectionUtils.isEmpty(addressMap)) {
+		if (CollectionUtils.isEmpty(memcachedProperties.getNodes())) {
 			builder = new XMemcachedClientBuilder();
 		} else {
-			builder = new XMemcachedClientBuilder(addressMap, weights.stream().mapToInt((e) -> e).toArray());
+			Map<InetSocketAddress, InetSocketAddress> addressMap = new LinkedHashMap<>();
+			List<Integer> weights = new ArrayList<Integer>();
+			for (MemcachedNodeProperties node : memcachedProperties.getNodes()) {
+				InetSocketAddress master = new InetSocketAddress(node.getHost(), node.getPort());
+				MemcachedProperties slaveProperties = node.getSlave();
+				InetSocketAddress slave = null;
+				if (slaveProperties != null) {
+					slave = new InetSocketAddress(node.getHost(), node.getPort());
+				}
+				weights.add(node.getWeight());
+				addressMap.put(master, slave);
+			}
+			builder = new XMemcachedClientBuilder(addressMap, weights.stream().mapToInt(Integer::intValue).toArray());
 		}
-
 		// 宕机报警
-		builder.setFailureMode(true);
+		builder.setFailureMode(memcachedProperties.isFailureMode());
 		// 使用二进制文件
-		builder.setCommandFactory(new BinaryCommandFactory());
+		if (memcachedProperties.getCommandFactory() != null) {
+			builder.setCommandFactory(memcachedProperties.getCommandFactory());
+		}
 		return builder;
 	}
 }

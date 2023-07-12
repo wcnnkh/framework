@@ -1,13 +1,13 @@
 package io.basc.framework.mysql;
 
-import io.basc.framework.sql.orm.SqlType;
-
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Year;
 import java.util.Set;
+
+import io.basc.framework.sql.template.dialect.SqlType;
 
 /**
  * 一些常见的类型

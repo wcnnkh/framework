@@ -7,21 +7,12 @@ import java.util.List;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.repository.Condition;
-import io.basc.framework.data.repository.DeleteOperation;
-import io.basc.framework.data.repository.DeleteOperationSymbol;
 import io.basc.framework.data.repository.Expression;
-import io.basc.framework.data.repository.InsertOperation;
-import io.basc.framework.data.repository.InsertOperationSymbol;
-import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.OperationSymbol;
-import io.basc.framework.data.repository.QueryOperation;
-import io.basc.framework.data.repository.QueryOperationSymbol;
-import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.data.repository.UpdateOperation;
-import io.basc.framework.data.repository.UpdateOperationSymbol;
-import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
@@ -29,55 +20,60 @@ import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Range;
 
-public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
+public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityResolver {
+	default <T> EntityRepository<T> getRepository(OperationSymbol operationSymbol, Class<? extends T> entityClass,
+			@Nullable T entity) {
+		EntityMapping<?> entityMapping = getMapping(entityClass);
+		String repositoryName = getRepositoryName(operationSymbol, entityMapping, entityClass, entity);
+		return new EntityRepository<T>(repositoryName, entityMapping, entityClass, entity);
+	}
+
+	default <T> Elements<? extends Condition> getConditions(OperationSymbol operationSymbol,
+			EntityRepository<T> repository) {
+		if (repository.getEntity() == null) {
+			return Elements.empty();
+		}
+
+		List<Entry<Property, Parameter>> entries = getEntries(repository.getEntity(),
+				repository.getEntityMapping().columns().iterator());
+		return toConditions(operationSymbol, repository, Elements.of(entries));
+	}
+
+	default <T> Elements<? extends Sort> getOrders(OperationSymbol operationSymbol, EntityRepository<T> repository) {
+		Elements<Entry<Property, Parameter>> entries;
+		if (repository.getEntity() == null) {
+			entries = repository.getEntityMapping().columns().map((property) -> {
+				Parameter parameter = createParameter(property, null);
+				return new Entry<>(property, parameter);
+			});
+		} else {
+			entries = Elements
+					.of(getEntries(repository.getEntity(), repository.getEntityMapping().columns().iterator()));
+		}
+		return entries.map((e) -> getSort(operationSymbol, repository, e.getValue(), e.getKey()));
+	}
+
+	default <T> Elements<? extends Expression> getColumns(OperationSymbol operationSymbol,
+			EntityRepository<T> repository) {
+		if (repository.getEntity() == null) {
+			return repository.getEntityMapping().columns().map((e) -> new Expression(e.getName()));
+		}
+
+		List<Entry<Property, Parameter>> entries = getEntries(repository.getEntity(),
+				repository.getEntityMapping().columns().iterator());
+		return toColumns(operationSymbol, repository, Elements.of(entries));
+	}
+
+	default <T> Range<Long> getLimit(OperationSymbol operationSymbol, EntityRepository<T> repository) {
+		// TODO 实现待定
+		return Range.unbounded();
+	}
 
 	@Override
 	default boolean isEntity(TypeDescriptor source, ParameterDescriptor parameterDescriptor) {
 		return ObjectMapper.super.isEntity(source, parameterDescriptor);
-	}
-
-	default <T> Operation getOperation(OperationSymbol operationSymbol, Class<? extends T> entityClass,
-			EntityMapping<? extends Property> entityMapping, T entity) {
-		Repository repository = getRepository(operationSymbol, entityClass, entityMapping, entity);
-		Elements<? extends Parameter> columnParameters = getParameters(entity, entityMapping.columns().iterator());
-		if (operationSymbol instanceof QueryOperationSymbol) {
-			QueryOperation queryOperation = new QueryOperation((QueryOperationSymbol) operationSymbol, repository);
-
-			Elements<? extends Expression> columns = toColumns(operationSymbol, repository, entityClass, entityMapping,
-					columnParameters);
-			queryOperation.setColumns(columns);
-
-			Elements<? extends Condition> conditions = toConditions(operationSymbol, repository, entityClass,
-					entityMapping, columnParameters);
-			queryOperation.setConditions(conditions);
-
-			Elements<? extends Sort> sorts = toSorts(operationSymbol, repository, entityClass, entityMapping,
-					columnParameters);
-			queryOperation.setSorts(sorts);
-			return queryOperation;
-		} else if (operationSymbol instanceof InsertOperationSymbol) {
-			Elements<? extends Expression> columns = toColumns(operationSymbol, repository, entityClass, entityMapping,
-					columnParameters);
-			return new InsertOperation((InsertOperationSymbol) operationSymbol, repository, columns);
-		} else if (operationSymbol instanceof DeleteOperationSymbol) {
-			DeleteOperation deleteOperation = new DeleteOperation((DeleteOperationSymbol) operationSymbol, repository);
-			Elements<? extends Condition> conditions = toConditions(operationSymbol, repository, entityClass,
-					entityMapping, columnParameters);
-			deleteOperation.setConditions(conditions);
-			deleteOperation.setConditions(conditions);
-			return deleteOperation;
-		} else if (operationSymbol instanceof UpdateOperationSymbol) {
-			Elements<? extends Expression> columns = toColumns(operationSymbol, repository, entityClass, entityMapping,
-					columnParameters);
-			UpdateOperation updateOperation = new UpdateOperation((UpdateOperationSymbol) operationSymbol, repository,
-					columns);
-			Elements<? extends Condition> conditions = toConditions(operationSymbol, repository, entityClass,
-					entityMapping, columnParameters);
-			updateOperation.setConditions(conditions);
-			return updateOperation;
-		}
-		throw new UnsupportedException(operationSymbol.toString());
 	}
 
 	@Override
@@ -86,31 +82,39 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 		return new DefaultEntityMapping<>(mapping, (e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
 	}
 
-	default Elements<Parameter> toParameters(Iterator<? extends Property> properties, Iterator<? extends Object> args) {
-		List<Parameter> parameters = new ArrayList<>(4);
-		while (properties.hasNext() && args.hasNext()) {
-			Property property = properties.next();
-			Object value = args.next();
-			Parameter parameter;
-			if (value instanceof Parameter) {
-				parameter = (Parameter) value;
-				parameter = parameter.rename(property.getName());
-			} else {
-				MultiAnnotatedElement annotatedElement = new MultiAnnotatedElement(
-						property.getGetters().map((e) -> e.getTypeDescriptor()));
-				TypeDescriptor typeDescriptor = new TypeDescriptor(ResolvableType.forClass(value.getClass()),
-						value.getClass(), annotatedElement);
-				parameter = new Parameter(property.getName(), value, typeDescriptor);
-			}
-			parameters.add(parameter);
+	default Parameter createParameter(Property property, Object value) {
+		Parameter parameter;
+		if (value instanceof Parameter) {
+			parameter = (Parameter) value;
+			parameter = parameter.rename(property.getName());
+		} else {
+			MultiAnnotatedElement annotatedElement = new MultiAnnotatedElement(
+					property.getGetters().map((e) -> e.getTypeDescriptor()));
+			TypeDescriptor typeDescriptor = new TypeDescriptor(ResolvableType.forClass(value.getClass()),
+					value.getClass(), annotatedElement);
+			parameter = new Parameter(property.getName(), value, typeDescriptor);
 		}
-		return Elements.of(parameters);
+		return parameter;
 	}
 
-	default Elements<Parameter> getParameters(Object entity, Iterator<? extends Property> propertyIterator) {
-		List<Parameter> parameters = new ArrayList<>(4);
+	default <F extends Property> List<Entry<F, Parameter>> combineEntries(Iterator<? extends F> properties,
+			Iterator<? extends Object> args) {
+		List<Entry<F, Parameter>> entries = new ArrayList<>(8);
+		while (properties.hasNext() && args.hasNext()) {
+			F property = properties.next();
+			Object value = args.next();
+			Parameter parameter = createParameter(property, value);
+			Entry<F, Parameter> entry = new Entry<>(property, parameter);
+			entries.add(entry);
+		}
+		return entries;
+	}
+
+	default <F extends Property> List<Entry<F, Parameter>> getEntries(Object entity,
+			Iterator<? extends F> propertyIterator) {
+		List<Entry<F, Parameter>> entries = new ArrayList<>();
 		while (propertyIterator.hasNext()) {
-			Property property = propertyIterator.next();
+			F property = propertyIterator.next();
 			Getter getter = property.getGetters().first();
 			Object value = getter.get(entity);
 			MultiAnnotatedElement annotatedElement = new MultiAnnotatedElement(
@@ -118,39 +122,22 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 			TypeDescriptor typeDescriptor = new TypeDescriptor(getter.getTypeDescriptor().getResolvableType(),
 					value.getClass(), annotatedElement);
 			Parameter parameter = new Parameter(property.getName(), value, typeDescriptor);
-			parameters.add(parameter);
+			if (!hasEffectiveValue(parameter)) {
+				continue;
+			}
+
+			Entry<F, Parameter> entry = new Entry<>(property, parameter);
+			entries.add(entry);
 		}
-		return Elements.of(parameters);
+		return entries;
 	}
 
-	default Elements<? extends Expression> toColumns(OperationSymbol operationSymbol, Repository repository,
-			Class<?> entityClass, EntityMapping<?> entityMapping, Elements<? extends Parameter> parameters) {
-		return parameters.map((e) -> toColumn(operationSymbol, repository, entityClass, entityMapping, e));
-	}
-
-	default Elements<? extends Condition> toConditions(OperationSymbol operationSymbol, Repository repository,
-			Class<?> entityClass, EntityMapping<?> entityMapping, Elements<? extends Parameter> parameters) {
-		return parameters.map((e) -> toCondition(operationSymbol, repository, entityClass, entityMapping, e));
-	}
-
-	default Elements<? extends Sort> toSorts(OperationSymbol operationSymbol, Repository repository,
-			Class<?> entityClass, EntityMapping<?> entityMapping, Elements<? extends Parameter> parameters) {
-		return parameters.map((e) -> toSort(operationSymbol, repository, entityClass, entityMapping, e));
-	}
-
-	/**
-	 * 是否存在有效值
-	 * 
-	 * @param entity
-	 * @param field
-	 * @return
-	 */
-	default boolean hasEffectiveValue(Object entity, Field field) {
-		if (!field.isSupportGetter()) {
+	default boolean hasEffectiveValue(Object entity, Property property) {
+		if (!property.isSupportGetter()) {
 			return false;
 		}
 
-		for (Getter getter : field.getGetters()) {
+		for (Getter getter : property.getGetters()) {
 			Object value = getter.get(entity);
 			if (value == null) {
 				continue;
@@ -171,5 +158,17 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 	@Override
 	default boolean isEntity(TypeDescriptor source) {
 		return ObjectMapper.super.isEntity(source);
+	}
+
+	default <T> Elements<? extends Expression> toColumns(OperationSymbol operationSymbol,
+			EntityRepository<T> repository, Elements<? extends Entry<Property, Parameter>> elements) {
+		return elements.filter((e) -> hasEffectiveValue(e.getValue()))
+				.map((e) -> getColumn(operationSymbol, repository, e.getValue(), e.getKey()));
+	}
+
+	default <T> Elements<? extends Condition> toConditions(OperationSymbol operationSymbol,
+			EntityRepository<T> repository, Elements<? extends Entry<Property, Parameter>> elements) {
+		return elements.filter((e) -> hasEffectiveValue(e.getValue()))
+				.map((e) -> getCondition(operationSymbol, repository, e.getValue(), e.getKey()));
 	}
 }

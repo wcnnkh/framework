@@ -14,12 +14,12 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.ConditionsBuilder;
-import io.basc.framework.sql.orm.SqlDialect;
+import io.basc.framework.sql.template.dialect.SqlDialect;
 import io.basc.framework.sqlite.SQLiteDB;
 import io.basc.framework.sqlite.SQLiteDialect;
-import io.basc.framework.tx.Transaction;
-import io.basc.framework.tx.TransactionDefinition;
-import io.basc.framework.tx.TransactionUtils;
+import io.basc.framework.transaction.Transaction;
+import io.basc.framework.transaction.TransactionDefinition;
+import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.XUtils;
 
 public class OrmTest {
@@ -36,8 +36,8 @@ public class OrmTest {
 			table1.setId(i);
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
-			db.save(table1);
-			assertFalse(db.saveIfAbsent(table1));
+			db.insert(table1);
+			assertFalse(db.saveIfAbsent(table1) == 0);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class OrmTest {
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
 			db.saveOrUpdate(table1);
-			TestTable1 query = db.getById(TestTable1.class, i);
+			TestTable1 query = db.queryByPrimaryKeys(TestTable1.class, i);
 			assertTrue(query.getKey().equals(table1.getKey()));
 			// 使用queryAll的原因是为了测试全部
 			query = db.queryAll(TestTable1.class).getElements().filter((e) -> e.getId() == table1.getId()).findAny().get();

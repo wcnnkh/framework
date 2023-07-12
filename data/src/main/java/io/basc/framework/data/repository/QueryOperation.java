@@ -1,14 +1,12 @@
 package io.basc.framework.data.repository;
 
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Range;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 查询
- * <p>
- * 
- * select {expressions} form {repositorys} where {conditions} order by {sorts}
+ * 查询操作
  * 
  * @author wcnnkh
  *
@@ -17,20 +15,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class QueryOperation extends Operation {
 	private static final long serialVersionUID = 1L;
-	/**
-	 * 查询的列
-	 */
-	private Elements<? extends Expression> columns;
-
-	/**
-	 * 查询条件
-	 */
-	private Elements<? extends Condition> conditions;
-
-	/**
-	 * 排序
-	 */
-	private Elements<? extends Sort> sorts;
+	private Elements<? extends Sort> orders;
+	private Range<Long> limit;
 
 	public QueryOperation(Repository repository) {
 		this(QueryOperationSymbol.QUERY, repository);
@@ -39,5 +25,4 @@ public class QueryOperation extends Operation {
 	public QueryOperation(QueryOperationSymbol queryOperationSymbol, Repository repository) {
 		super(queryOperationSymbol, repository);
 	}
-
 }

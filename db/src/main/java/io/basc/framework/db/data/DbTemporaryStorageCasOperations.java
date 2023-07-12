@@ -14,7 +14,7 @@ import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerException;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.orm.TableStructure;
+import io.basc.framework.sql.template.TableStructure;
 import io.basc.framework.util.Assert;
 
 /**

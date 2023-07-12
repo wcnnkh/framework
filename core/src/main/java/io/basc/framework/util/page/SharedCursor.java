@@ -24,8 +24,8 @@ public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializ
 		super(cursorId, new ElementList<>(list), nextCursorId);
 	}
 
-	public SharedCursor(Cursor<K, T> pageable) {
-		super(pageable.getCursorId(), pageable.getElements().toList(), pageable.getNextCursorId());
+	public SharedCursor(Cursor<K, T> cursor) {
+		super(cursor.getCursorId(), cursor.getElements().toList(), cursor.getNextCursorId());
 	}
 
 	@Override
