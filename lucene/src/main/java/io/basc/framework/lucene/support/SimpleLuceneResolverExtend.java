@@ -32,18 +32,18 @@ public class SimpleLuceneResolverExtend implements LuceneResolverExtend {
 	@Override
 	public Collection<Field> resolve(Parameter parameter, LuceneResolver chain) {
 		List<Field> fields = new ArrayList<>(4);
-		if (ClassUtils.isLong(parameter.getType()) || ClassUtils.isInt(parameter.getType())
-				|| ClassUtils.isShort(parameter.getType())) {
+		Class<?> type = parameter.getTypeDescriptor().getType();
+		if (ClassUtils.isLong(type) || ClassUtils.isInt(type) || ClassUtils.isShort(type)) {
 			fields.add(new NumericDocValuesField(parameter.getName(), parameter.getAsLong()));
 			if (isStored(parameter)) {
 				fields.add(new StoredField(parameter.getName(), parameter.getAsString()));
 			}
-		} else if (ClassUtils.isDouble(parameter.getType())) {
+		} else if (ClassUtils.isDouble(type)) {
 			fields.add(new DoubleDocValuesField(parameter.getName(), parameter.getAsDouble()));
 			if (isStored(parameter)) {
 				fields.add(new StoredField(parameter.getName(), parameter.getAsString()));
 			}
-		} else if (ClassUtils.isFloat(parameter.getType())) {
+		} else if (ClassUtils.isFloat(type)) {
 			fields.add(new FloatDocValuesField(parameter.getName(), parameter.getAsFloat()));
 			if (isStored(parameter)) {
 				fields.add(new StoredField(parameter.getName(), parameter.getAsString()));

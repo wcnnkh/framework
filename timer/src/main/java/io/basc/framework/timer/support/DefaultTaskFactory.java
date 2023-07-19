@@ -3,12 +3,12 @@ package io.basc.framework.timer.support;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskFactory;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public final class DefaultTaskFactory implements TaskFactory {
 	private final ConcurrentHashMap<String, TaskConfig> taskMap = new ConcurrentHashMap<String, TaskConfig>();
 

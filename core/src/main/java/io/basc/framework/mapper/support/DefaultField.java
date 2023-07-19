@@ -1,6 +1,6 @@
 package io.basc.framework.mapper.support;
 
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.Assert;
@@ -9,7 +9,7 @@ import io.basc.framework.util.StringUtils;
 import lombok.ToString;
 
 @ToString
-public class DefaultField implements Field {
+public class DefaultField implements Element {
 	private final String name;
 	private volatile Elements<String> aliasNames;
 	private Elements<? extends Getter> getters;
@@ -20,7 +20,7 @@ public class DefaultField implements Field {
 		this.name = name;
 	}
 
-	public DefaultField(Field field) {
+	public DefaultField(Element field) {
 		Assert.requiredArgument(field != null, "field");
 		this.name = field.getName();
 		this.aliasNames = field.getAliasNames();
@@ -33,7 +33,7 @@ public class DefaultField implements Field {
 		if (aliasNames == null) {
 			synchronized (this) {
 				if (aliasNames == null) {
-					this.aliasNames = Field.super.getAliasNames();
+					this.aliasNames = Element.super.getAliasNames();
 				}
 			}
 		}

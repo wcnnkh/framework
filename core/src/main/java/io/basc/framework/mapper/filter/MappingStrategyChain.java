@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
 import io.basc.framework.mapper.MappingException;
@@ -42,7 +42,7 @@ public final class MappingStrategyChain implements MappingStrategy {
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Field> targetMapping, Field targetField) throws MappingException {
+			Mapping<? extends Element> targetMapping, Element targetField) throws MappingException {
 		if (iterator.hasNext()) {
 			iterator.next().transform(objectMapper, sourceAccess, sourceContext, target, targetType, targetContext,
 					targetMapping, targetField, this);
@@ -54,7 +54,7 @@ public final class MappingStrategyChain implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Field sourceField,
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Element sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException {
 		if (iterator.hasNext()) {
 			iterator.next().transform(objectMapper, source, sourceType, sourceContext, sourceMapping, sourceField,
@@ -67,9 +67,9 @@ public final class MappingStrategyChain implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Field> targetMapping,
-			Field targetField) throws MappingException {
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Element> targetMapping,
+			Element targetField) throws MappingException {
 		if (iterator.hasNext()) {
 			iterator.next().transform(objectMapper, source, sourceType, sourceContext, sourceMapping, target,
 					targetType, targetContext, targetMapping, targetField, this);

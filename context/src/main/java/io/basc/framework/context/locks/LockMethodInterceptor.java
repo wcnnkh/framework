@@ -30,7 +30,7 @@ public final class LockMethodInterceptor implements ExecutionInterceptor {
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, executor.getReturnType());
+		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, executor.getReturnTypeDescriptor());
 		if (lockConfig == null) {
 			return executor.execute(args);
 		}

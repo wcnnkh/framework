@@ -20,7 +20,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final WebMessageConverters afters = new WebMessageConverters();
 
 	public DefaultWebMessageConverters(Environment environment) {
-		getServiceInjectorRegistry().register((service) -> {
+		getServiceInjectors().register((service) -> {
 			if (service instanceof EnvironmentAware) {
 				((EnvironmentAware) service).setEnvironment(environment);
 			}
@@ -35,10 +35,10 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 			return Registration.EMPTY;
 		});
 		super.registerLast(afters);
-		afters.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		afters.getServiceInjectors().register(getServiceInjectors());
 		this.messageConverters = new DefaultMessageConverters(environment.getConversionService());
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
-		getServiceInjectorRegistry().inject(lastWebMessageConverter);
+		getServiceInjectors().inject(lastWebMessageConverter);
 		afters.registerLast(lastWebMessageConverter);
 		register(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
 		register(new EntityMessageConverter());

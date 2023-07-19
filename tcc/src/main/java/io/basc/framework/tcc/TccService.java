@@ -7,7 +7,7 @@ import io.basc.framework.beans.factory.support.RuntimeBean;
 import io.basc.framework.consistency.CompensateRegistry;
 import io.basc.framework.consistency.Compensator;
 import io.basc.framework.context.annotation.Autowired;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.execution.Executor;
@@ -24,7 +24,7 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public class TccService implements ExecutionInterceptor {
 	/**
 	 * 获取当前事务的id

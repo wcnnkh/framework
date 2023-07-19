@@ -22,7 +22,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
-import io.basc.framework.beans.factory.Destroy;
+import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
@@ -30,7 +30,6 @@ import io.basc.framework.boot.servlet.support.ApplicationServletContainerInitial
 import io.basc.framework.boot.servlet.support.ServletContextUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -42,7 +41,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.HttpPattern;
 
-public class TomcatApplicationServer implements ApplicationServer, Destroy {
+public class TomcatApplicationServer implements ApplicationServer, DisposableBean {
 	private static Logger logger = LoggerFactory.getLogger(TomcatApplicationServer.class);
 	private Tomcat tomcat;
 
@@ -58,8 +57,13 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 	}
 
 	protected void addErrorPage(Context context, Application application) {
-		if (application.isInstance(ActionManager.class)) {
-			for (Action action : application.getInstance(ActionManager.class)) {
+		for (String beanName : application.getBeanNamesForType(ActionManager.class)) {
+			if (!application.isSingleton(beanName)) {
+				continue;
+			}
+
+			ActionManager actionManager = application.getBean(beanName, ActionManager.class);
+			for (Action action : actionManager.getActions()) {
 				ErrorPageController errorCodeController = action.getAnnotation(ErrorPageController.class);
 				if (errorCodeController == null) {
 					continue;
@@ -110,22 +114,27 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		tomcat.setConnector(connector);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void configureJSP(Context context, Application application) throws Exception {
-		if (application.isUnique(JspConfigDescriptor.class)) {
-			context.setJspConfigDescriptor(application.getBean(JspConfigDescriptor.class));
-		}
+		application.getBeanProvider(JspConfigDescriptor.class).getUnique().ifPresent((e) -> {
+			context.setJspConfigDescriptor(e);
+		});
 
-		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
-			ServletContainerInitializer containerInitializer = (ServletContainerInitializer) Sys.getEnv()
-					.getBean("org.apache.jasper.servlet.JasperInitializer");
-			if (containerInitializer != null) {
-				context.addServletContainerInitializer(containerInitializer, null);
-			} // else Probably not Tomcat 8
+		ClassUtils.findClass("org.apache.jasper.servlet.JspServlet", application.getClassLoader())
+				.ifPresent((clazz) -> {
+					ServletContainerInitializer containerInitializer = application
+							.getBeanProvider((Class<ServletContainerInitializer>) clazz).getUnique().orElseGet(() -> {
+								return (ServletContainerInitializer) ReflectionUtils.newInstance(clazz);
+							});
 
-			Tomcat.addServlet(context, "jsp", "org.apache.jasper.servlet.JspServlet");
-			addServletMapping(context, "*.jsp", "jsp");
-			addServletMapping(context, "*.jspx", "jsp");
-		}
+					if (containerInitializer != null) {
+						context.addServletContainerInitializer(containerInitializer, null);
+					} // else Probably not Tomcat 8
+
+					Tomcat.addServlet(context, "jsp", "org.apache.jasper.servlet.JspServlet");
+					addServletMapping(context, "*.jsp", "jsp");
+					addServletMapping(context, "*.jspx", "jsp");
+				});
 	}
 
 	protected void addServletMapping(Context context, String pattern, String servletName) {
@@ -143,16 +152,18 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		wrapper.setAsyncSupported(true);
 
-		if (application.isUnique(MultipartConfigElement.class)) {
-			wrapper.setMultipartConfigElement(application.getBean(MultipartConfigElement.class));
-		} else {
-			for (Class<?> clazz : application.getSourceClasses().getServices()) {
-				if (clazz.isAnnotationPresent(MultipartConfig.class)) {
-					wrapper.setMultipartConfigElement(
-							new MultipartConfigElement(clazz.getAnnotation(MultipartConfig.class)));
-					break;
-				}
-			}
+		MultipartConfigElement multipartConfigElement = application.getBeanProvider(MultipartConfigElement.class)
+				.getUnique().orElseGet(() -> {
+					for (Class<?> clazz : application.getSourceClasses().getServices()) {
+						if (clazz.isAnnotationPresent(MultipartConfig.class)) {
+							return new MultipartConfigElement(clazz.getAnnotation(MultipartConfig.class));
+						}
+					}
+					return null;
+				});
+
+		if (multipartConfigElement != null) {
+			wrapper.setMultipartConfigElement(multipartConfigElement);
 		}
 
 		Properties properties = TomcatUtils.getServletInitParametersConfig(application, servletName, true);
@@ -225,13 +236,13 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		configureJSP(context, application);
 		configureServlet(context, application);
 
-		for (TomcatContextConfiguration configuration : application
-				.getServiceLoader(TomcatContextConfiguration.class)) {
+		for (TomcatContextConfiguration configuration : application.getServiceLoader(TomcatContextConfiguration.class)
+				.getServices()) {
 			configuration.configuration(application, context);
 		}
 
 		ServletContextUtils.setApplication(context.getServletContext(), application);
-		Set<Class<?>> classes = application.getContextClasses().toSet();
+		Set<Class<?>> classes = application.getContextClasses().getServices().toSet();
 		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), classes);
 
 		// init websocket

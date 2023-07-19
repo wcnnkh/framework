@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.Context;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.context.xml.XmlBeanUtils;
@@ -23,7 +23,7 @@ import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 
-@Provider
+@ConditionalOnParameters
 public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 	private static final String TAG_NAME = "http:reference";
 

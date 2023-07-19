@@ -12,7 +12,7 @@ import io.basc.framework.beans.factory.support.DefaultSingletonBeanRegistry;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.util.Return;
@@ -74,10 +74,10 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 
 				if (result != null && result.isSuccess()) {
 					ContextConfigurator beanConfigurator = new ContextConfigurator(context);
-					beanConfigurator.getContext().addFilter(new Predicate<Field>() {
+					beanConfigurator.getContext().addFilter(new Predicate<Element>() {
 
 						@Override
-						public boolean test(Field field) {
+						public boolean test(Element field) {
 							for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
 								if (parameterDescriptor.getName().equals(field.getSetter().getName())) {
 									return false;

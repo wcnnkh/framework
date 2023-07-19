@@ -3,7 +3,7 @@ package io.basc.framework.security.session;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.ResolvableType;
@@ -15,7 +15,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultUserSessionFactory implements UserSessionFactory {
 	private static final String USER_SESSION_PREFIX = Sys.getEnv().getProperties()
 			.get(UserSessionFactory.class.getPackage().getName() + ".prefix")

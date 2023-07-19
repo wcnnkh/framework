@@ -17,8 +17,6 @@ import org.apache.lucene.store.MMapDirectory;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
-import io.basc.framework.orm.ObjectKeyFormat;
-import io.basc.framework.orm.support.DefaultObjectKeyFormat;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Processor;
@@ -43,7 +41,6 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 	private Executor searchExecutor = XUtils.getCommonExecutor();// 搜索执行器
 	private final LucenePool<IndexWriter> indexWriterPool;
 	private final LucenePool<IndexReader> indexReaderPool;
-	private ObjectKeyFormat objectKeyFormat = new DefaultObjectKeyFormat();
 
 	public DefaultLuceneTemplate(String... more) {
 		this(new IndexWriterConfig(), more);
@@ -82,15 +79,6 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 		this.indexWriterPool = indexWriterPool;
 	}
 
-	public ObjectKeyFormat getObjectKeyFormat() {
-		return objectKeyFormat;
-	}
-
-	public void setObjectKeyFormat(ObjectKeyFormat objectKeyFormat) {
-		Assert.requiredArgument(objectKeyFormat != null, "objectKeyFormat");
-		this.objectKeyFormat = objectKeyFormat;
-	}
-
 	@Override
 	public LuceneMapper getMapper() {
 		return this.mapper;
@@ -117,8 +105,7 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 	}
 
 	@Override
-	public <T> Future<T> write(Processor<? super IndexWriter, ? extends T, ? extends Exception> processor)
-			throws LuceneWriteException {
+	public <T> Future<T> write(Processor<? super IndexWriter, ? extends T, ? extends Exception> processor) {
 		return writeExecutor.submit(() -> {
 			return getIndexWriterPool().process((indexWriter) -> {
 				try {

@@ -1,9 +1,8 @@
 package io.basc.framework.web.resource;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.io.Resource;
 import io.basc.framework.net.MimeType;
@@ -13,15 +12,11 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
-public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
+public class StaticResourceHttpService extends ConfigurableServices<StaticResourceLoader>
 		implements HttpService, ServerHttpRequestAccept {
-	private static final long serialVersionUID = 1L;
 
 	public StaticResourceHttpService() {
-	}
-
-	public StaticResourceHttpService(ServiceLoaderFactory serviceLoaderFactory) {
-		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceLoader.class).getServices().toList());
+		super(StaticResourceLoader.class);
 	}
 
 	public boolean test(ServerHttpRequest request) {
@@ -29,7 +24,7 @@ public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
 			return false;
 		}
 
-		for (StaticResourceLoader resolver : this) {
+		for (StaticResourceLoader resolver : getServices()) {
 			Resource resource = resolver.getResource(request);
 			if (resource != null && resource.exists()) {
 				return true;
@@ -40,7 +35,7 @@ public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		for (StaticResourceLoader resolver : this) {
+		for (StaticResourceLoader resolver : getServices()) {
 			Resource resource = resolver.getResource(request);
 			if (resource != null && resource.exists()) {
 				MimeType mimeType = resolver.getMimeType(resource);

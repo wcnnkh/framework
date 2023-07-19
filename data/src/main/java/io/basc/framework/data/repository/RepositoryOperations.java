@@ -2,8 +2,6 @@ package io.basc.framework.data.repository;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
 
 /**
  * 存储库的操作
@@ -12,45 +10,35 @@ import io.basc.framework.util.Elements;
  *
  */
 public interface RepositoryOperations {
-	default long insert(InsertOperationSymbol insertOperationSymbol, Elements<? extends Expression> columns,
-			Repository repository) {
-		Operation operation = new Operation(insertOperationSymbol, columns, repository);
-		return execute(operation);
-	}
-
-	default long delete(DeleteOperationSymbol deleteOperationSymbol, Repository repository,
-			@Nullable Elements<? extends Condition> conditions) {
-		Operation operation = new Operation(deleteOperationSymbol, repository, conditions);
-		return execute(operation);
-	}
-
-	default long update(Repository repository, Elements<? extends Expression> columns,
-			@Nullable Elements<? extends Condition> conditions) {
-		return update(UpdateOperationSymbol.UPDATE, repository, columns, conditions);
-	}
-
-	default long insert(Elements<? extends Expression> columns, Repository repository) {
-		return insert(InsertOperationSymbol.INSERT, columns, repository);
-	}
-
-	default long delete(Repository repository, @Nullable Elements<? extends Condition> conditions) {
-		return delete(DeleteOperationSymbol.DELETE, repository, conditions);
-	}
-
-	default long update(UpdateOperationSymbol updateOperationSymbol, Repository repository,
-			Elements<? extends Expression> columns, @Nullable Elements<? extends Condition> conditions) {
-		Operation operation = new Operation(updateOperationSymbol, repository, columns, conditions);
-		return execute(operation);
-	}
 
 	/**
-	 * 执行
+	 * 删除
 	 * 
+	 * @param operation
+	 * @return
+	 */
+	long delete(DeleteOperation operation) throws RepositoryException;
+
+	/**
+	 * 插入
+	 * 
+	 * @param operation
+	 * @return
+	 */
+	long insert(InsertOperation operation) throws RepositoryException;
+
+	/**
+	 * 查询
+	 * 
+	 * @param <T>
+	 * @param resultType
 	 * @param operation
 	 * @return
 	 * @throws RepositoryException
 	 */
-	long execute(Operation operation) throws RepositoryException;
+	default <T> Query<T> query(Class<T> resultType, QueryOperation operation) throws RepositoryException {
+		return query(TypeDescriptor.valueOf(resultType), operation);
+	}
 
 	/**
 	 * 查询
@@ -62,4 +50,12 @@ public interface RepositoryOperations {
 	 * @throws RepositoryException
 	 */
 	<T> Query<T> query(TypeDescriptor resultTypeDescriptor, QueryOperation operation) throws RepositoryException;
+
+	/**
+	 * 更新
+	 * 
+	 * @param operation
+	 * @return
+	 */
+	long update(UpdateOperation operation) throws RepositoryException;
 }

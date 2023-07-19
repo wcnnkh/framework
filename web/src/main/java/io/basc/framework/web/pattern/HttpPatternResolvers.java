@@ -16,7 +16,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	public HttpPatternResolvers() {
 		super(HttpPatternResolver.class);
-		getServiceInjectorRegistry().register((service) -> {
+		getServiceInjectors().register((service) -> {
 			if (placeholderFormat != null) {
 				if (service instanceof PlaceholderFormatAware) {
 					((PlaceholderFormatAware) service).setPlaceholderFormat(placeholderFormat);

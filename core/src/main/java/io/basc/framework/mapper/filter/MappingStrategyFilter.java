@@ -1,7 +1,7 @@
 package io.basc.framework.mapper.filter;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
 import io.basc.framework.mapper.MappingException;
@@ -51,7 +51,7 @@ public interface MappingStrategyFilter {
 	 */
 	default void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Field> targetMapping, Field targetField, MappingStrategy mappingStrategy)
+			Mapping<? extends Element> targetMapping, Element targetField, MappingStrategy mappingStrategy)
 			throws MappingException {
 		mappingStrategy.transform(objectMapper, sourceAccess, sourceContext, target, targetType, targetContext,
 				targetMapping, targetField);
@@ -72,7 +72,7 @@ public interface MappingStrategyFilter {
 	 * @throws MappingException
 	 */
 	default void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Field sourceField,
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Element sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext, MappingStrategy mappingStrategy)
 			throws MappingException {
 		mappingStrategy.transform(objectMapper, source, sourceType, sourceContext, sourceMapping, sourceField,
@@ -96,9 +96,9 @@ public interface MappingStrategyFilter {
 	 * @throws MappingException
 	 */
 	default void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Field> targetMapping,
-			Field targetField, MappingStrategy mappingStrategy) throws MappingException {
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Element> targetMapping,
+			Element targetField, MappingStrategy mappingStrategy) throws MappingException {
 		mappingStrategy.transform(objectMapper, source, sourceType, sourceContext, sourceMapping, target, targetType,
 				targetContext, targetMapping, targetField);
 	}

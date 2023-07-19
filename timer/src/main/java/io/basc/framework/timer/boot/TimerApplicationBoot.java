@@ -5,14 +5,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.reflect.Invoker;
-import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.reflect.MethodExecutor;
 import io.basc.framework.timer.Delayed;
 import io.basc.framework.timer.ScheduleTaskConfig;
 import io.basc.framework.timer.Task;
@@ -22,33 +21,38 @@ import io.basc.framework.timer.boot.annotation.Crontab;
 import io.basc.framework.timer.boot.annotation.Schedule;
 import io.basc.framework.timer.support.SimpleCrontabConfig;
 import io.basc.framework.timer.support.SimpleTimerTaskConfig;
-import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Elements;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public final class TimerApplicationBoot implements ApplicationPostProcessor {
 
 	public void postProcessApplication(ConfigurableApplication application) {
-		Timer timer = application.getInstance(Timer.class);
-		for (Class<?> clz : application.getContextClasses()) {
-			ReflectionUtils.getDeclaredMethods(clz).all().getElements()
-					.filter((m) -> m.isAnnotationPresent(Schedule.class)).forEach((method) -> {
-						Schedule schedule = method.getAnnotation(Schedule.class);
-						schedule(application, clz, method, timer, schedule);
-					});
+		for (Timer timer : application.getServiceLoader(Timer.class).getServices()) {
+			for (String beanName : application.getBeanNames()) {
+				if (!application.isSingleton(beanName)) {
+					continue;
+				}
 
-			ReflectionUtils.getDeclaredMethods(clz).all().getElements()
-					.filter((m) -> m.isAnnotationPresent(Crontab.class)).forEach((method) -> {
-						Crontab c = method.getAnnotation(Crontab.class);
-						crontab(application, clz, method, timer, c);
-					});
+				Object bean = application.getBean(beanName);
+				Class<?> clazz = bean.getClass();
+				ReflectionUtils.getDeclaredMethods(clazz).all().getElements()
+						.filter((m) -> m.isAnnotationPresent(Schedule.class)).forEach((method) -> {
+							Schedule schedule = method.getAnnotation(Schedule.class);
+							schedule(application, clazz, method, timer, schedule);
+						});
+
+				ReflectionUtils.getDeclaredMethods(clazz).all().getElements()
+						.filter((m) -> m.isAnnotationPresent(Crontab.class)).forEach((method) -> {
+							Crontab c = method.getAnnotation(Crontab.class);
+							crontab(application, clazz, method, timer, c);
+						});
+			}
 		}
 	}
 
-	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
-		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null : method.getParameterTypes()[0];
-		MethodInvoker invoker = beanFactory.getAop().getProxyMethod(clz,
-				new NameInstanceSupplier<Object>(beanFactory, clz.getName()), method);
-		return new CrontabRunnable(invoker, parameterType);
+	private Task getTask(Object bean, Class<?> clz, Method method) {
+		MethodExecutor methodExecutor = new MethodExecutor(clz, method, bean);
+		return new CrontabRunnable(methodExecutor, parameterType);
 	}
 
 	private void schedule(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Schedule schedule) {
@@ -68,17 +72,15 @@ public final class TimerApplicationBoot implements ApplicationPostProcessor {
 	}
 
 	private static final class CrontabRunnable implements Task {
-		private final Invoker invoker;
-		private final Class<?> parameterType;
+		private final Executor executor;
 
-		public CrontabRunnable(Invoker invoker, Class<?> parameterType) {
-			this.invoker = invoker;
-			this.parameterType = parameterType;
+		public CrontabRunnable(Executor executor) {
+			this.executor = executor;
 		}
 
 		public void run(long executionTime) throws Throwable {
 			if (parameterType == null) {
-				invoker.invoke();
+				executor.execute();
 			} else {
 				Object value = executionTime;
 				if (parameterType == Calendar.class) {
@@ -88,7 +90,7 @@ public final class TimerApplicationBoot implements ApplicationPostProcessor {
 				} else if (parameterType == Date.class) {
 					value = new Date(executionTime);
 				}
-				invoker.invoke(value);
+				executor.execute(Elements.singleton(value));
 			}
 		}
 	}

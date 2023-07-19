@@ -14,11 +14,11 @@ public class ConditionSymbol extends RepositorySymbol {
 	/**
 	 * 前缀匹配
 	 */
-	public static final ConditionSymbol STARTS_WITH = new ConditionSymbol("StartsWith");
+	public static final ConditionSymbol STARTS_WITH = new ConditionSymbol("startsWith");
 	/**
 	 * 后缀匹配
 	 */
-	public static final ConditionSymbol ENDS_WITH = new ConditionSymbol("EndsWith");
+	public static final ConditionSymbol ENDS_WITH = new ConditionSymbol("endsWith");
 	/**
 	 * 相等
 	 */
@@ -40,9 +40,9 @@ public class ConditionSymbol extends RepositorySymbol {
 	 */
 	public static final ConditionSymbol LEQ = new ConditionSymbol("Leq");
 	/**
-	 * 任意匹配
+	 * 包含
 	 */
-	public static final ConditionSymbol LIKE = new ConditionSymbol("Like");
+	public static final ConditionSymbol CONTAINS = new ConditionSymbol("contains");
 	/**
 	 * 小于
 	 */
@@ -64,8 +64,8 @@ public class ConditionSymbol extends RepositorySymbol {
 	public ConditionSymbol(String name) {
 		super(name);
 	}
-	
-	public static Elements<ConditionSymbol> getConditionSymbols(String name){
+
+	public static Elements<ConditionSymbol> getConditionSymbols(String name) {
 		return getSymbols(ConditionSymbol.class, name);
 	}
 }

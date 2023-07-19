@@ -9,14 +9,14 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import io.basc.framework.beans.factory.BeanLifecycleEvent;
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.EnvironmentPostProcessor;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class ActivemqEnvironmentPostProcessor implements EnvironmentPostProcessor, EventListener<BeanLifecycleEvent> {
 	private static final String DEFAULT_CONFIG = "activemq/activemq.properties";
 	private ConfigurableEnvironment environment;

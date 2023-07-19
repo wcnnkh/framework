@@ -36,8 +36,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFeature;
+import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.StringUtils;
@@ -77,7 +77,7 @@ public class DubboRegistry {
 			}
 
 			value = environment.getProperties().replacePlaceholders(value);
-			Field field = fields.getBySetterName(name, null);
+			Element field = fields.getBySetterName(name, null);
 			if (field == null) {
 				logger.warn("{} ignore attribute name={}, value={}", instance.getClass(), name, value);
 				continue;

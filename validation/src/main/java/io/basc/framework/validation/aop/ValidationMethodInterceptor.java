@@ -1,14 +1,22 @@
 package io.basc.framework.validation.aop;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.validation.FastValidator;
-
 import javax.validation.Validator;
 
-@Provider
-public class ValidationMethodInterceptor implements MethodInterceptor {
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.context.annotation.ConditionalOnMissingBean;
+import io.basc.framework.core.Ordered;
+import io.basc.framework.core.annotation.Order;
+import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.execution.reflect.ConstructorExecutor;
+import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.util.Elements;
+import io.basc.framework.validation.FastValidator;
+
+@Component
+@ConditionalOnMissingBean(ValidationMethodInterceptor.class)
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class ValidationMethodInterceptor implements ExecutionInterceptor {
 	private Validator validator;
 
 	public ValidationMethodInterceptor() {
@@ -20,12 +28,26 @@ public class ValidationMethodInterceptor implements MethodInterceptor {
 	}
 
 	@Override
-	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		FastValidator.validate(() -> validator.forExecutables()
-				.validateParameters(invoker.getInstance(), invoker.getMethod(), args));
-		Object returnValue = invoker.invoke(args);
-		FastValidator.validate(() -> validator.forExecutables().validateReturnValue(invoker.getInstance(),
-				invoker.getMethod(), returnValue));
-		return returnValue;
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
+		if (executor instanceof MethodExecutor) {
+			MethodExecutor methodExecutor = (MethodExecutor) executor;
+			FastValidator.validate(() -> validator.forExecutables().validateParameters(methodExecutor.getTarget(),
+					methodExecutor.getExecutable(), args.toArray()));
+			Object returnValue = executor.execute(args);
+			FastValidator.validate(() -> validator.forExecutables().validateReturnValue(methodExecutor.getTarget(),
+					methodExecutor.getExecutable(), returnValue));
+			return returnValue;
+		} else if (executor instanceof ConstructorExecutor) {
+			ConstructorExecutor constructorExecutor = (ConstructorExecutor) executor;
+			FastValidator.validate(() -> validator.forExecutables()
+					.validateConstructorParameters(constructorExecutor.getExecutable(), args.toArray()));
+			Object returnValue = executor.execute(args);
+			FastValidator.validate(() -> validator.forExecutables()
+					.validateConstructorReturnValue(constructorExecutor.getExecutable(), returnValue));
+			return returnValue;
+		} else {
+			// TODO 还需要校验不
+			return executor.execute(args);
+		}
 	}
 }

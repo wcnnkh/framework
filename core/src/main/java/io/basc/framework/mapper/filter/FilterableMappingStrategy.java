@@ -2,7 +2,7 @@ package io.basc.framework.mapper.filter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
 import io.basc.framework.mapper.MappingException;
@@ -44,7 +44,7 @@ public class FilterableMappingStrategy implements MappingStrategy {
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Field> targetMapping, Field targetField) throws MappingException {
+			Mapping<? extends Element> targetMapping, Element targetField) throws MappingException {
 		MappingStrategyChain chain = new MappingStrategyChain(this.filters.iterator(), this.dottomlessMappingStrategy);
 		chain.transform(objectMapper, sourceAccess, sourceContext, target, targetType, targetContext, targetMapping,
 				targetField);
@@ -52,7 +52,7 @@ public class FilterableMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Field sourceField,
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Element sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException {
 		MappingStrategyChain chain = new MappingStrategyChain(this.filters.iterator(), this.dottomlessMappingStrategy);
 		chain.transform(objectMapper, source, sourceType, sourceContext, sourceMapping, sourceField, targetAccess,
@@ -61,9 +61,9 @@ public class FilterableMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Field> targetMapping,
-			Field targetField) throws MappingException {
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Element> targetMapping,
+			Element targetField) throws MappingException {
 		MappingStrategyChain chain = new MappingStrategyChain(this.filters.iterator(), this.dottomlessMappingStrategy);
 		chain.transform(objectMapper, source, sourceType, sourceContext, sourceMapping, target, targetType,
 				targetContext, targetMapping, targetField);

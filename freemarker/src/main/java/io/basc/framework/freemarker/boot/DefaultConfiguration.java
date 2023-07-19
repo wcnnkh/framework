@@ -6,14 +6,14 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import io.basc.framework.context.Context;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.freemarker.EnvConfiguration;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 
-@Provider(value = Configuration.class)
+@ConditionalOnParameters(value = Configuration.class)
 public class DefaultConfiguration extends EnvConfiguration {
 	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
 

@@ -4,10 +4,10 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.feign.context.annotation.FeignClient;
 
-@Provider
+@ConditionalOnParameters
 public class FeignContextResolverExtend implements ContextResolverExtend {
 	private final Context context;
 

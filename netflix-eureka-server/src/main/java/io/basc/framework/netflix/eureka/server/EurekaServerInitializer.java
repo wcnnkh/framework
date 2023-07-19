@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.Destroy;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
 import io.basc.framework.context.annotation.Autowired;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
@@ -16,7 +16,7 @@ import io.basc.framework.logger.LoggerFactory;
  * @author wcnnkh
  *
  */
-@Provider
+@ConditionalOnParameters
 public class EurekaServerInitializer implements ServletContextInitialization, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(EurekaServerInitializer.class);
 

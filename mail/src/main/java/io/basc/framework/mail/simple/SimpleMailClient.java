@@ -1,15 +1,5 @@
 package io.basc.framework.mail.simple;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.lang.Constants;
-import io.basc.framework.mail.MailClient;
-import io.basc.framework.mail.MailException;
-import io.basc.framework.mail.MessageCallback;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-
 import java.io.UnsupportedEncodingException;
 
 import javax.mail.Address;
@@ -20,7 +10,14 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+import io.basc.framework.lang.Constants;
+import io.basc.framework.mail.MailClient;
+import io.basc.framework.mail.MailException;
+import io.basc.framework.mail.MessageCallback;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+
 public class SimpleMailClient implements MailClient {
 	private SimpleProperties properties;
 

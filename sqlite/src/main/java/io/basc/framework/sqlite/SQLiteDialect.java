@@ -3,20 +3,21 @@ package io.basc.framework.sqlite;
 import java.sql.Blob;
 import java.util.Iterator;
 
+import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.template.Column;
 import io.basc.framework.sql.template.SqlDialectException;
 import io.basc.framework.sql.template.TableMapping;
+import io.basc.framework.sql.template.dialect.AbstractSqlDialect;
 import io.basc.framework.sql.template.dialect.SqlType;
-import io.basc.framework.sql.template.dialect.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
 
-public class SQLiteDialect extends StandardSqlDialect {
+public class SQLiteDialect extends AbstractSqlDialect {
 
 	@Override
 	public SqlType getSqlType(Class<?> type) {
@@ -130,5 +131,15 @@ public class SQLiteDialect extends StandardSqlDialect {
 			}
 			sb.append(strs[i]);
 		}
+	}
+
+	@Override
+	protected String getInsertPrefix(InsertOperationSymbol operationSymbol) {
+		if (operationSymbol.getName().equals(InsertOperationSymbol.SAVE_IF_ABSENT.getName())) {
+			return "insert or ignore into";
+		} else if (operationSymbol.getName().equals(InsertOperationSymbol.SAVE_OR_UPDATE.getName())) {
+			return "replace into";
+		}
+		return super.getInsertPrefix(operationSymbol);
 	}
 }

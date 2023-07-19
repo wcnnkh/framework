@@ -3,9 +3,11 @@ package io.basc.framework.context.annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
+import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.support.BeanFactoryExecutor;
 import io.basc.framework.beans.factory.config.support.DefaultBeanDefinition;
+import io.basc.framework.context.config.Condition;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.support.BeanDefinitionRegistryContextPostProcessor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
@@ -16,6 +18,16 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitionRegistryContextPostProcessor {
+
+	@Override
+	public void postProcessContext(ConfigurableContext context) throws Throwable {
+		if (!context.getBeanProvider(OnBeanCondition.class).isEmpty()) {
+			// 不存在那么注册一个默认的
+			OnBeanCondition onBeanCondition = new OnBeanCondition();
+			context.registerSingleton(OnBeanCondition.class.getName(), onBeanCondition);
+		}
+		super.postProcessContext(context);
+	}
 
 	@Override
 	protected boolean canResolveBeanDefinition(Class<?> clazz) {
@@ -42,7 +54,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 			Class<?> clazz) {
 		DefaultBeanDefinition<ConstructorExecutor> beanDefinition = super.resolveBeanDefinition(context, clazz);
 		beanDefinition.setSingleton(isSingleton(clazz));
-		beanDefinition.setScope(getScope(clazz));
+		beanDefinition.setScope(getScope(clazz, clazz, Scope.DEFAULT));
 		EnableAop enableAop = AnnotatedElementUtils.getMergedAnnotation(clazz, EnableAop.class);
 		if (enableAop != null) {
 			Elements<? extends ConstructorExecutor> executors = beanDefinition.getExecutors();
@@ -57,12 +69,17 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
+	protected boolean canResolveMethodBeanDefinition(Class<?> clazz) {
+		return clazz.isAnnotationPresent(Configuration.class);
+	}
+
+	@Override
 	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableContext context,
 			Class<?> clazz, String originBeanName, BeanDefinition originBeanDefinition, Method method) {
 		DefaultBeanDefinition<BeanFactoryExecutor> beanDefinition = super.resolveBeanDefinition(context, clazz,
 				originBeanName, originBeanDefinition, method);
 		beanDefinition.setSingleton(isSingleton(method));
-		beanDefinition.setScope(getScope(method));
+		beanDefinition.setScope(getScope(clazz, method, originBeanDefinition.getScope()));
 		EnableAop enableAop = AnnotatedElementUtils.getMergedAnnotation(clazz, EnableAop.class);
 		if (enableAop != null) {
 			Elements<? extends BeanFactoryExecutor> executors = beanDefinition.getExecutors();
@@ -76,14 +93,15 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 		return beanDefinition;
 	}
 
-	protected io.basc.framework.beans.factory.Scope getScope(AnnotatedElement annotatedElement) {
-		Scope scope = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Scope.class);
+	protected Scope getScope(Class<?> sourceClass, AnnotatedElement annotatedElement, Scope defaultScope) {
+		io.basc.framework.context.annotation.Scope scope = AnnotatedElementUtils.getMergedAnnotation(annotatedElement,
+				io.basc.framework.context.annotation.Scope.class);
 		if (scope != null) {
 			return io.basc.framework.beans.factory.Scope.getFirstOrCreate(scope.value(),
 					io.basc.framework.beans.factory.Scope.class,
 					() -> new io.basc.framework.beans.factory.Scope(scope.value()));
 		}
-		return io.basc.framework.beans.factory.Scope.DEFAULT;
+		return defaultScope;
 	}
 
 	protected boolean isSingleton(AnnotatedElement annotatedElement) {
@@ -104,8 +122,19 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
-	protected Elements<String> getAliasNames(Class<?> clazz, Method method) {
-		Bean bean = AnnotatedElementUtils.getMergedAnnotation(method, Bean.class);
+	protected Elements<String> getAliasNames(Class<?> sourceClass, AnnotatedElement annotatedElement) {
+		Bean bean = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Bean.class);
 		return Elements.forArray(bean.value()).concat(Elements.forArray(bean.name()));
+	}
+
+	@Override
+	protected Elements<? extends Condition> getConditions(ConfigurableContext context,
+			AnnotatedElement annotatedElement) {
+		Conditional conditional = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Conditional.class);
+		if (conditional == null) {
+			return super.getConditions(context, annotatedElement);
+		}
+
+		return Elements.forArray(conditional.value()).flatMap((e) -> context.getBeanProvider(e).getServices());
 	}
 }

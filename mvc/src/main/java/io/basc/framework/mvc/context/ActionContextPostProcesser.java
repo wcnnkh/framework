@@ -7,7 +7,7 @@ import java.util.Collection;
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.annotation.EnableConditionUtils;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
@@ -22,7 +22,7 @@ import io.basc.framework.mvc.security.HttpActionAuthorityManager;
 import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class ActionContextPostProcesser implements ContextPostProcessor {
 	private static Logger logger = LoggerFactory.getLogger(ActionContextPostProcesser.class);
 

@@ -9,12 +9,12 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
@@ -39,7 +39,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
  * @author wcnnkh
  * @see io.swagger.v3.jaxrs2.DefaultParameterExtension
  */
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 	private static Logger logger = LoggerFactory.getLogger(BascOpenAPIExtendsion.class);
 	final ObjectMapper mapper = Json.mapper();
@@ -64,7 +64,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 			Set<Type> typesToSkip, javax.ws.rs.Consumes classConsumes, javax.ws.rs.Consumes methodConsumes,
 			Components components, boolean includeRequestBody, JsonView jsonViewAnnotation) {
 		EntityMapping<? extends Property> fields = OrmUtils.getMapper().getMapping(constructType(type).getRawClass());
-		for (final Field field : fields.getElements()) {
+		for (final Element field : fields.getElements()) {
 			final Iterator<OpenAPIExtension> extensions = OpenAPIExtensions.chain();
 			// skip hidden properties
 			boolean hidden = field.getGetters()
@@ -131,7 +131,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 
 	@SuppressWarnings("deprecation")
 	private Parameter requestBodyToQueryParameter(List<Annotation> paramAnnotations, Type type, Parameter source,
-			Field field) {
+			Element field) {
 		Parameter target = new Parameter();
 		if (source.getSchema() != null) {
 			Copy.copy(source.getSchema(), target);

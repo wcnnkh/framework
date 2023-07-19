@@ -1,7 +1,7 @@
 package io.basc.framework.swagger.beans;
 
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.env.Environment;
@@ -11,7 +11,7 @@ import io.basc.framework.web.HttpServiceRegistry;
 import io.basc.framework.web.resource.StaticResourceRegistry;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 
-@Provider
+@ConditionalOnParameters
 public class SwaggerContextPostProcessor implements ContextPostProcessor {
 	private static Logger logger = LoggerFactory.getLogger(SwaggerContextPostProcessor.class);
 

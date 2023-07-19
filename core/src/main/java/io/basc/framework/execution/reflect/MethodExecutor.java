@@ -13,6 +13,10 @@ import lombok.Setter;
 public class MethodExecutor extends DefaultMethod implements SwitchableTargetExecutor {
 	private Object target;
 
+	public MethodExecutor(Class<?> sourceClass, Method executable, Object target) {
+		this(TypeDescriptor.valueOf(sourceClass), executable, target);
+	}
+
 	public MethodExecutor(TypeDescriptor source, Method executable, Object target) {
 		super(source, executable);
 		this.target = target;

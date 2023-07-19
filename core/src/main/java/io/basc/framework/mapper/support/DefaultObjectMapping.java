@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.reflect.DefaultFieldsGenerator;
 import io.basc.framework.util.Elements;
 
 public final class DefaultObjectMapping extends ObjectMapping<DefaultField, DefaultObjectMapping> {

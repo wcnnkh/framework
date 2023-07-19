@@ -13,7 +13,7 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.ObjectMapper;
@@ -78,7 +78,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 
 	@Override
 	default EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
-		Mapping<? extends Field> mapping = ObjectMapper.super.getMapping(entityClass);
+		Mapping<? extends Element> mapping = ObjectMapper.super.getMapping(entityClass);
 		return new DefaultEntityMapping<>(mapping, (e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
 	}
 

@@ -26,7 +26,7 @@ public class AutoIncrementTest {
 				AutoIncrementTestBean bean = new AutoIncrementTestBean();
 				bean.setId(i);
 				bean.setValue(XUtils.getUUID());
-				long b = db.saveIfAbsent(bean);
+				boolean b = db.saveIfAbsent(bean);
 				System.out.println(i + "-" + b);
 			}
 		}

@@ -1,7 +1,7 @@
 package io.basc.framework.mvc.security;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.logger.Logger;
@@ -16,7 +16,7 @@ import io.basc.framework.mvc.annotation.IPSecurity;
 import io.basc.framework.security.ip.IPValidationFailedException;
 import io.basc.framework.security.ip.IPVerification;
 
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public final class IPSecurityActionInterceptor implements ActionInterceptor, ActionInterceptorAccept {
 	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionInterceptor.class);
 	private BeanFactory beanFactory;

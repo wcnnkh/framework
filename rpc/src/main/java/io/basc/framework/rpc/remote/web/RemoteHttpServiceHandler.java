@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import io.basc.framework.beans.factory.InstanceFactory;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
@@ -28,7 +28,7 @@ import io.basc.framework.web.pattern.HttpPattern;
  * @author wcnnkh
  *
  */
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public class RemoteHttpServiceHandler extends HttpPattern implements HttpService {
 	private static Logger logger = LoggerFactory.getLogger(RemoteHttpServiceHandler.class);
 	private final CallableFactory callableFactory;

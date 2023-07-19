@@ -3,7 +3,7 @@ package io.basc.framework.security.limit;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.beans.factory.InstanceFactory;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.reflect.MethodInvoker;
@@ -18,7 +18,7 @@ import io.basc.framework.security.limit.annotation.CountLimitSecurity;
  * @author wcnnkh
  *
  */
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public final class CountLimitMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private static Logger logger = LoggerFactory.getLogger(CountLimitMethodInterceptor.class);
 	private final InstanceFactory instanceFactory;

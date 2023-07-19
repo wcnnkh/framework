@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import io.basc.framework.context.Context;
+import io.basc.framework.core.annotation.AliasFor;
+import io.basc.framework.core.annotation.Order;
 
 /**
  * 上下文扫描时会允许加入上下文
@@ -17,6 +19,8 @@ import io.basc.framework.context.Context;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Order
 public @interface Indexed {
+	@AliasFor(annotation = Order.class)
 	int value() default 0;
 }

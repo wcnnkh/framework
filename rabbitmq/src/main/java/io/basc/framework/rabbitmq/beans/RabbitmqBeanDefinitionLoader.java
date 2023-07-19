@@ -17,7 +17,7 @@ import io.basc.framework.beans.factory.support.BeanDefinitionLoader;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.context.Context;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.env.Environment;
@@ -27,7 +27,7 @@ import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 import io.basc.framework.rabbitmq.RabbitmqExchange;
 import io.basc.framework.util.ClassUtils;
 
-@Provider
+@ConditionalOnParameters
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/rabbitmq/rabbitmq.properties";
 

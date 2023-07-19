@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
@@ -18,7 +18,7 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternMatcher;
 
-@Provider
+@ConditionalOnParameters
 public class DefaultActionManager extends StandardBroadcastEventDispatcher<ChangeEvent<Action>>
 		implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());

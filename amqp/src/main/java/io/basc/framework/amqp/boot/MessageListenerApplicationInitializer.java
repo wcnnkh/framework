@@ -8,11 +8,11 @@ import io.basc.framework.amqp.boot.annotation.MessageListener;
 import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
 
-@Provider
+@ConditionalOnParameters
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {
 
 	@SuppressWarnings("unchecked")

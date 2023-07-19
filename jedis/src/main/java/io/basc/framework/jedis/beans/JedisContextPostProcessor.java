@@ -1,14 +1,14 @@
 package io.basc.framework.jedis.beans;
 
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.redis.RedisClient;
 import redis.clients.jedis.JedisPool;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class JedisContextPostProcessor implements ContextPostProcessor {
 
 	@Override

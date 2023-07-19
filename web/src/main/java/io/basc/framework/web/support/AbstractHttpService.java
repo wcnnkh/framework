@@ -3,6 +3,9 @@ package io.basc.framework.web.support;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -20,16 +23,23 @@ import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.cors.Cors;
 import io.basc.framework.web.cors.CorsRegistry;
 import io.basc.framework.web.cors.CorsUtils;
+import io.basc.framework.web.resource.StaticResourceHttpService;
 
-public abstract class AbstractHttpService implements HttpService {
+public abstract class AbstractHttpService implements HttpService, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
-	private final HttpServiceRegistry serviceRegistry;
-	private CorsRegistry corsRegistry;
-	private NotFoundServiceRegistry notFoundServiceRegistry;
+	private final ConfigurableServices<NotFoundServiceRegistry> notFoundServiceRegistrys = new ConfigurableServices<>(
+			NotFoundServiceRegistry.class);
+	private final HttpServiceRegistry httpServiceRegistry = new HttpServiceRegistry();
+	private final ConfigurableServices<CorsRegistry> corsRegistrys = new ConfigurableServices<>(CorsRegistry.class);
+	private final StaticResourceHttpService staticResourceHttpService = new StaticResourceHttpService();
 	private Supplier<String> requestIdSupplier = XUtils::getUUID;
 
-	public AbstractHttpService(HttpServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		notFoundServiceRegistrys.configure(serviceLoaderFactory);
+		corsRegistrys.configure(serviceLoaderFactory);
+		staticResourceHttpService.configure(serviceLoaderFactory);
+		serviceLoaderFactory.getServiceLoader(HttpService.class).getServices().forEach(httpServiceRegistry::add);
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
@@ -50,7 +60,7 @@ public abstract class AbstractHttpService implements HttpService {
 
 		WebUtils.setLocalServerHttpRequest(request);
 		Iterable<? extends HttpServiceInterceptor> interceptors = getHttpServiceInterceptors();
-		HttpService service = serviceRegistry.get(request);
+		HttpService service = httpServiceRegistry.get(request);
 		if (service == null) {
 			// not found
 			NotFoundServiceRegistry notFoundServiceRegistry = getNotFoundServiceRegistry();

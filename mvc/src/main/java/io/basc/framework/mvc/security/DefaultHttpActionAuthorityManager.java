@@ -3,7 +3,7 @@ package io.basc.framework.mvc.security;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mvc.ActionResolver;
 import io.basc.framework.mvc.action.Action;
@@ -13,7 +13,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 import io.basc.framework.web.pattern.HttpPattern;
 
-@Provider(value = HttpActionAuthorityManager.class)
+@ConditionalOnParameters(value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
 		implements HttpActionAuthorityManager {
 	private Map<Action, Registration> actionMap = new HashMap<>();

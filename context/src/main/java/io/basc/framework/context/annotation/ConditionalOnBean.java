@@ -9,10 +9,13 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Conditional(OnBeanCondition.class)
 public @interface ConditionalOnBean {
-	String[] names() default {};
+	Class<?>[] value() default {};
 
-	Class<?>[] types() default {};
-	
+	String[] name() default {};
+
+	Class<?>[] type() default {};
+
 	SearchStrategy search() default SearchStrategy.ALL;
 }

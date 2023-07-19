@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.sql.SimpleSql;
@@ -19,13 +20,13 @@ import io.basc.framework.sql.template.Column;
 import io.basc.framework.sql.template.IndexInfo;
 import io.basc.framework.sql.template.SqlDialectException;
 import io.basc.framework.sql.template.TableMapping;
+import io.basc.framework.sql.template.dialect.AbstractSqlDialect;
 import io.basc.framework.sql.template.dialect.SqlType;
-import io.basc.framework.sql.template.dialect.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
-public class MysqlDialect extends StandardSqlDialect {
+public class MysqlDialect extends AbstractSqlDialect {
 
 	public SqlType getSqlType(java.lang.Class<?> type) {
 		if (ClassUtils.isString(type) || type.isEnum()) {
@@ -180,5 +181,16 @@ public class MysqlDialect extends StandardSqlDialect {
 	@Override
 	public Sql toLastInsertIdSql(Repository repository) throws SqlDialectException {
 		return new SimpleSql("select last_insert_id()");
+	}
+
+	@Override
+	protected String getInsertPrefix(InsertOperationSymbol operationSymbol) {
+		if (operationSymbol.getName().equals(InsertOperationSymbol.SAVE_IF_ABSENT.getName())) {
+			return "insert ignore into";
+		} else if (operationSymbol.getName().equals(InsertOperationSymbol.SAVE_OR_UPDATE.getName())) {
+			return "replace into";
+		} else {
+			return super.getInsertPrefix(operationSymbol);
+		}
 	}
 }

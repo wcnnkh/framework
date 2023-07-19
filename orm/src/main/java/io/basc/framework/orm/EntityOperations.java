@@ -11,13 +11,16 @@ import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
+import io.basc.framework.data.repository.DeleteOperation;
 import io.basc.framework.data.repository.DeleteOperationSymbol;
 import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.QueryOperationSymbol;
 import io.basc.framework.data.repository.RepositoryOperations;
 import io.basc.framework.data.repository.Sort;
+import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.data.repository.UpdateOperationSymbol;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
@@ -25,10 +28,6 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 
 public interface EntityOperations extends RepositoryOperations {
-	default long delete(Object entity) {
-		return delete(DeleteOperationSymbol.DELETE, entity);
-	}
-
 	default <T> long delete(Class<? extends T> entityClass, T entity) {
 		return delete(DeleteOperationSymbol.DELETE, entityClass, entity);
 	}
@@ -36,7 +35,9 @@ public interface EntityOperations extends RepositoryOperations {
 	default <T> long delete(DeleteOperationSymbol deleteOperationSymbol, Class<? extends T> entityClass, T entity) {
 		EntityRepository<T> repository = getMapper().getRepository(deleteOperationSymbol, entityClass, entity);
 		Elements<? extends Condition> conditions = getMapper().getConditions(deleteOperationSymbol, repository);
-		return delete(deleteOperationSymbol, repository, conditions);
+		DeleteOperation operation = new DeleteOperation(deleteOperationSymbol, repository);
+		operation.setConditions(conditions);
+		return delete(operation);
 	}
 
 	default <T> long delete(DeleteOperationSymbol deleteOperationSymbol, Object entity) {
@@ -44,9 +45,45 @@ public interface EntityOperations extends RepositoryOperations {
 		return delete(deleteOperationSymbol, entity.getClass(), entity);
 	}
 
+	default long delete(Object entity) {
+		return delete(DeleteOperationSymbol.DELETE, entity);
+	}
+
 	default long deleteAll(Class<?> entityClass) {
 		EntityRepository<?> repository = getMapper().getRepository(DeleteOperationSymbol.DELETE, entityClass, null);
-		return delete(DeleteOperationSymbol.DELETE, repository, null);
+		DeleteOperation operation = new DeleteOperation(repository);
+		return delete(operation);
+	}
+
+	default boolean deleteById(Class<?> entityClass, Object... ids) {
+		EntityRepository<?> repository = getMapper().getRepository(DeleteOperationSymbol.DELETE, entityClass, null);
+		Assert.isTrue(repository.getEntityMapping().getPrimaryKeys().count() != ids.length,
+				"Inconsistent number of primary keys and parameters");
+		return deleteByPrimaryKeys(DeleteOperationSymbol.DELETE, repository, ids) > 0;
+	}
+
+	default <T> boolean deleteById(Class<T> entityClass, T entity) {
+		return deleteById(DeleteOperationSymbol.DELETE, entityClass, entity);
+	}
+
+	default <T> boolean deleteById(DeleteOperationSymbol deleteOperationSymbol, Class<? extends T> entityClass,
+			T entity) {
+		EntityRepository<?> repository = getMapper().getRepository(deleteOperationSymbol, entityClass, entity);
+		List<Entry<Property, Parameter>> conditionEntries = getMapper().getEntries(entity,
+				repository.getEntityMapping().getPrimaryKeys().iterator());
+		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+					parameter.getTypeDescriptor());
+		}).collect(Collectors.toList());
+
+		DeleteOperation deleteOperation = new DeleteOperation(deleteOperationSymbol, repository);
+		deleteOperation.setConditions(Elements.of(conditions));
+		return delete(deleteOperation) > 0;
+	}
+
+	default boolean deleteById(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return deleteById(entity.getClass(), entity);
 	}
 
 	/**
@@ -58,45 +95,115 @@ public interface EntityOperations extends RepositoryOperations {
 	 */
 	default long deleteByPrimaryKeys(Class<?> entityClass, Object... primaryKeys) {
 		EntityRepository<?> repository = getMapper().getRepository(DeleteOperationSymbol.DELETE, entityClass, null);
+		return deleteByPrimaryKeys(DeleteOperationSymbol.DELETE, repository, primaryKeys);
+	}
+
+	default long deleteByPrimaryKeys(DeleteOperationSymbol operationSymbol, EntityRepository<?> repository,
+			Object... primaryKeys) {
 		List<Entry<Property, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
-		return delete(DeleteOperationSymbol.DELETE, repository, Elements.of(conditions));
+		DeleteOperation deleteOperation = new DeleteOperation(operationSymbol, repository);
+		deleteOperation.setConditions(Elements.of(conditions));
+		return delete(deleteOperation);
 	}
 
-	default <T> long deleteByPrimaryKeys(Class<T> entityClass, T entity) throws OrmException {
-		EntityRepository<T> repository = getMapper().getRepository(DeleteOperationSymbol.DELETE, entityClass, entity);
+	@SuppressWarnings("unchecked")
+	default <T> T getById(Class<T> entityClass, Object... ids) {
+		EntityRepository<?> repository = getMapper().getRepository(QueryOperationSymbol.QUERY, entityClass, null);
+		Assert.isTrue(repository.getEntityMapping().getPrimaryKeys().count() != ids.length,
+				"Inconsistent number of primary keys and parameters");
+		return (T) queryByPrimaryKeys(TypeDescriptor.valueOf(entityClass), QueryOperationSymbol.QUERY, repository, ids)
+				.getElements().first();
+	}
+
+	default <T> T getById(Class<T> entityClass, T entity) {
+		return getById(QueryOperationSymbol.QUERY, entityClass, entity);
+	}
+
+	default <T> T getById(QueryOperationSymbol queryOperationSymbol, Class<? extends T> entityClass, T entity) {
+		EntityRepository<T> repository = getMapper().getRepository(queryOperationSymbol, entityClass, entity);
+		Elements<? extends Expression> columns = getMapper().getColumns(queryOperationSymbol, repository);
+
 		List<Entry<Property, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
-		return delete(DeleteOperationSymbol.DELETE, repository, Elements.of(conditions));
+
+		QueryOperation queryOperation = new QueryOperation(queryOperationSymbol, columns, repository);
+		queryOperation.setConditions(Elements.of(conditions));
+		Query<T> query = query(TypeDescriptor.valueOf(entityClass), queryOperation);
+		return query.getElements().first();
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T getById(T entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return (T) getById(entity.getClass(), entity);
 	}
 
 	EntityMapper getMapper();
 
-	default long insert(Object entity) {
-		return insert(InsertOperationSymbol.INSERT, entity);
+	default <T> boolean insert(Class<? extends T> entityClass, T entity) {
+		return insert(InsertOperationSymbol.INSERT, entityClass, entity) > 0;
 	}
 
-	default <T> long insert(Class<? extends T> entityClass, T entity) {
-		return insert(InsertOperationSymbol.INSERT, entityClass, entity);
+	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
+		return insert(InsertOperationSymbol.SAVE_OR_UPDATE, entityClass, entity) > 0;
+	}
+
+	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
+		return insert(InsertOperationSymbol.SAVE_IF_ABSENT, entityClass, entity) > 0;
+	}
+
+	default boolean saveOrUpdate(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return saveOrUpdate(entity.getClass(), entity);
+	}
+
+	default boolean saveIfAbsent(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return saveIfAbsent(entity.getClass(), entity);
 	}
 
 	default <T> long insert(InsertOperationSymbol insertOperationSymbol, Class<? extends T> entityClass, T entity) {
 		EntityRepository<T> repository = getMapper().getRepository(insertOperationSymbol, entityClass, entity);
 		Elements<? extends Expression> columns = getMapper().getColumns(insertOperationSymbol, repository);
-		return insert(insertOperationSymbol, columns, repository);
+		InsertOperation operation = new InsertOperation(insertOperationSymbol, repository, columns);
+
+		if (insertOperationSymbol.isIncludeConditions()) {
+			List<Entry<Property, Parameter>> conditionEntries = getMapper().getEntries(entity,
+					repository.getEntityMapping().getPrimaryKeys().iterator());
+			List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
+				return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+						parameter.getTypeDescriptor());
+			}).collect(Collectors.toList());
+			operation.setConditions(Elements.of(conditions));
+		}
+		return insert(operation);
 	}
 
 	default <T> long insert(InsertOperationSymbol insertOperationSymbol, Object entity) {
 		Assert.requiredArgument(entity != null, "entity");
 		return insert(insertOperationSymbol, entity.getClass(), entity);
+	}
+
+	default long insert(Object entity) {
+		return insert(InsertOperationSymbol.INSERT, entity);
+	}
+
+	default <T> Query<T> query(Class<? extends T> entityClass, T entity) {
+		return query(TypeDescriptor.valueOf(entityClass), entityClass, entity);
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> Query<T> query(T entity) {
+		return (Query<T>) query(entity.getClass(), entity);
 	}
 
 	default <T, R> Query<R> query(TypeDescriptor resultTypeDescriptor, Class<? extends T> entityClass, T entity) {
@@ -110,12 +217,16 @@ public interface EntityOperations extends RepositoryOperations {
 		Elements<? extends Condition> conditions = getMapper().getConditions(queryOperationSymbol, repository);
 		Elements<? extends Sort> orders = getMapper().getOrders(queryOperationSymbol, repository);
 		Range<Long> limit = getMapper().getLimit(queryOperationSymbol, repository);
-		QueryOperation operation = new QueryOperation(queryOperationSymbol, repository);
-		operation.setColumns(columns);
+
+		QueryOperation operation = new QueryOperation(queryOperationSymbol, columns, repository);
 		operation.setConditions(conditions);
 		operation.setOrders(orders);
 		operation.setLimit(limit);
 		return query(resultTypeDescriptor, operation);
+	}
+
+	default <T> Query<T> queryAll(Class<T> entityClass) {
+		return queryAll(TypeDescriptor.valueOf(entityClass), entityClass);
 	}
 
 	default <T> Query<T> queryAll(TypeDescriptor resultTypeDescriptor, Class<?> entityClass) {
@@ -125,9 +236,8 @@ public interface EntityOperations extends RepositoryOperations {
 	default <T> Query<T> queryAll(TypeDescriptor resultTypeDescriptor, QueryOperationSymbol queryOperationSymbol,
 			Class<?> entityClass) {
 		EntityRepository<?> repository = getMapper().getRepository(queryOperationSymbol, entityClass, null);
-		QueryOperation queryOperation = new QueryOperation(queryOperationSymbol, repository);
 		Elements<? extends Expression> columns = getMapper().getColumns(queryOperationSymbol, null);
-		queryOperation.setColumns(columns);
+		QueryOperation queryOperation = new QueryOperation(queryOperationSymbol, columns, repository);
 
 		Elements<? extends Sort> orders = getMapper().getOrders(queryOperationSymbol, repository);
 		Range<Long> limit = getMapper().getLimit(queryOperationSymbol, repository);
@@ -136,26 +246,20 @@ public interface EntityOperations extends RepositoryOperations {
 		return query(resultTypeDescriptor, queryOperation);
 	}
 
-	default <T, R> R getByPrimaryKeys(TypeDescriptor resultTypeDescriptor, Class<? extends T> entityClass, T entity) {
-		EntityRepository<?> repository = getMapper().getRepository(QueryOperationSymbol.QUERY, entityClass, null);
-		QueryOperation queryOperation = new QueryOperation(QueryOperationSymbol.QUERY, repository);
-		List<Entry<Property, Parameter>> conditionEntries = getMapper().getEntries(entity,
-				repository.getEntityMapping().getPrimaryKeys().iterator());
-		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
-					parameter.getTypeDescriptor());
-		}).collect(Collectors.toList());
-		queryOperation.setColumns(Elements.of(conditions));
-		Query<R> query = query(resultTypeDescriptor, queryOperation);
-		return query.getElements().first();
+	default <T> Query<T> queryByPrimaryKeys(Class<T> entityClass, Object... primaryKeys) {
+		return queryByPrimaryKeys(TypeDescriptor.valueOf(entityClass), entityClass, primaryKeys);
 	}
 
 	default <R> Query<R> queryByPrimaryKeys(TypeDescriptor resultTypeDescriptor, Class<?> entityClass,
 			Object... primaryKeys) {
 		EntityRepository<?> repository = getMapper().getRepository(QueryOperationSymbol.QUERY, entityClass, null);
-		QueryOperation queryOperation = new QueryOperation(QueryOperationSymbol.QUERY, repository);
-		Elements<? extends Expression> columns = getMapper().getColumns(QueryOperationSymbol.QUERY, repository);
-		queryOperation.setColumns(columns);
+		return queryByPrimaryKeys(resultTypeDescriptor, QueryOperationSymbol.QUERY, repository, primaryKeys);
+	}
+
+	default <R> Query<R> queryByPrimaryKeys(TypeDescriptor resultTypeDescriptor, QueryOperationSymbol operationSymbol,
+			EntityRepository<?> repository, Object... primaryKeys) {
+		Elements<? extends Expression> columns = getMapper().getColumns(operationSymbol, repository);
+		QueryOperation queryOperation = new QueryOperation(operationSymbol, columns, repository);
 
 		List<Entry<Property, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
@@ -170,9 +274,8 @@ public interface EntityOperations extends RepositoryOperations {
 	default <K, R> PrimaryKeyQuery<K, R> queryInPrimaryKeys(TypeDescriptor resultTypeDescriptor, Class<?> entityClass,
 			Elements<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		EntityRepository<?> repository = getMapper().getRepository(QueryOperationSymbol.QUERY, entityClass, null);
-		QueryOperation queryOperation = new QueryOperation(QueryOperationSymbol.QUERY, repository);
 		Elements<? extends Expression> columns = getMapper().getColumns(QueryOperationSymbol.QUERY, repository);
-		queryOperation.setColumns(columns);
+		QueryOperation queryOperation = new QueryOperation(QueryOperationSymbol.QUERY, columns, repository);
 
 		Iterator<? extends Property> propertyIterator = repository.getEntityMapping().getPrimaryKeys().iterator();
 		List<Entry<Property, Parameter>> conditionEntries = getMapper().combineEntries(propertyIterator,
@@ -208,14 +311,38 @@ public interface EntityOperations extends RepositoryOperations {
 		Elements<? extends Expression> columns = getMapper().getColumns(updateOperationSymbol, repository);
 		Elements<? extends Condition> conditions = getMapper().getConditions(updateOperationSymbol,
 				conditionRepository);
-		return update(updateOperationSymbol, repository, columns, conditions);
+		UpdateOperation updateOperation = new UpdateOperation(updateOperationSymbol, repository, columns);
+		updateOperation.setConditions(conditions);
+		return update(updateOperation);
 	}
 
-	default <T> long updateByPrimaryKeys(Class<? extends T> entityClass, T entity) {
+	default <T> boolean updateById(Class<? extends T> entityClass, T entity) {
+		return updateById(UpdateOperationSymbol.UPDATE, entityClass, entity);
+	}
+
+	default <T> boolean updateById(Class<? extends T> entityClass, T entity, Object... ids) {
 		EntityRepository<T> repository = getMapper().getRepository(UpdateOperationSymbol.UPDATE, entityClass, entity);
+		Assert.isTrue(repository.getEntityMapping().getPrimaryKeys().count() != ids.length,
+				"Inconsistent number of primary keys and parameters");
+		return updateByPrimaryKeys(UpdateOperationSymbol.UPDATE, repository, ids) > 0;
+	}
+
+	default boolean updateById(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return updateById(entity.getClass(), entity);
+	}
+
+	default boolean updateById(Object entity, Object... ids) {
+		Assert.requiredArgument(entity != null, "entity");
+		return updateById(entity.getClass(), entity, ids);
+	}
+
+	default <T> boolean updateById(UpdateOperationSymbol updateOperationSymbol, Class<? extends T> entityClass,
+			T entity) {
+		EntityRepository<T> repository = getMapper().getRepository(updateOperationSymbol, entityClass, entity);
 		List<Entry<Property, Parameter>> columnEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getNotPrimaryKeys().iterator());
-		Elements<? extends Expression> columns = getMapper().toColumns(UpdateOperationSymbol.UPDATE, repository,
+		Elements<? extends Expression> columns = getMapper().toColumns(updateOperationSymbol, repository,
 				Elements.of(columnEntries));
 		List<Entry<Property, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
@@ -223,11 +350,39 @@ public interface EntityOperations extends RepositoryOperations {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
-		return update(repository, columns, Elements.of(conditions));
+
+		UpdateOperation updateOperation = new UpdateOperation(updateOperationSymbol, repository, columns);
+		updateOperation.setConditions(Elements.of(conditions));
+		return update(updateOperation) > 0;
 	}
 
-	default long updateByEntityPrimaryKeys(Object entity) {
+	default <T> long updateByPrimaryKeys(Class<? extends T> entityClass, T entity, Object... primaryKeys) {
+		EntityRepository<T> repository = getMapper().getRepository(UpdateOperationSymbol.UPDATE, entityClass, entity);
+		return updateByPrimaryKeys(UpdateOperationSymbol.UPDATE, repository, primaryKeys);
+	}
+
+	default long updateByPrimaryKeys(Object entity, Object... primaryKeys) {
 		Assert.requiredArgument(entity != null, "entity");
-		return updateByPrimaryKeys(entity.getClass(), entity);
+		return updateByPrimaryKeys(entity.getClass(), entity, primaryKeys);
+	}
+
+	default <T> long updateByPrimaryKeys(UpdateOperationSymbol updateOperationSymbol, EntityRepository<?> repository,
+			Object... primaryKeys) {
+		Assert.requiredArgument(repository.getEntity() != null, "repository#getEntity()");
+		List<Entry<Property, Parameter>> columnEntries = getMapper().getEntries(repository.getEntity(),
+				repository.getEntityMapping().getNotPrimaryKeys().iterator());
+		Elements<? extends Expression> columns = getMapper().toColumns(updateOperationSymbol, repository,
+				Elements.of(columnEntries));
+
+		List<Entry<Property, Parameter>> conditionEntries = getMapper().combineEntries(
+				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
+		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+					parameter.getTypeDescriptor());
+		}).collect(Collectors.toList());
+
+		UpdateOperation updateOperation = new UpdateOperation(updateOperationSymbol, repository, columns);
+		updateOperation.setConditions(Elements.of(conditions));
+		return update(updateOperation);
 	}
 }

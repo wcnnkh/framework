@@ -51,7 +51,7 @@ public class GeoTest {
 		}
 		String id = "test";
 		document.add(new StringField("id", id, Store.YES));
-		Long count = luceneTemplate.saveOrUpdate(new Term("id", id), document).get();
+		Long count = luceneTemplate.saveOrUpdate(new Term("id", id), document);
 		System.out.println("保存成功：" + count);
 		Shape shape = spatialContext.getShapeFactory().circle(116.409788d, 39.878674d,
 				DistanceUtils.dist2Degrees(1000000, DistanceUtils.EARTH_MEAN_RADIUS_KM));

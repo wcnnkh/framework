@@ -4,12 +4,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.ibatis.beans.annotation.MapperScan;
 
-@Provider
+@ConditionalOnParameters
 public class IbatisContextPostProcessor implements ContextPostProcessor {
 	@Override
 	public void postProcessContext(ConfigurableContext context) {

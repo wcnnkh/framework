@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.HttpServiceInterceptor;
 import io.basc.framework.web.HttpServiceRegistry;
@@ -15,7 +16,6 @@ public class DefaultHttpService extends AbstractHttpService {
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 
 	public DefaultHttpService(ServiceLoaderFactory factory) {
-		super(factory.getBean(HttpServiceRegistry.class));
 		if (factory.isInstance(CorsRegistry.class)) {
 			setCorsRegistry(factory.getInstance(CorsRegistry.class));
 		}
@@ -25,17 +25,9 @@ public class DefaultHttpService extends AbstractHttpService {
 		}
 
 		getServiceRegistry().add(new StaticResourceHttpService(factory));
-		if (factory.isInstance(StaticResourceRegistry.class)) {
-			getServiceRegistry().add(factory.getInstance(StaticResourceRegistry.class));
-		}
 
-		for (HttpServiceInterceptor interceptor : factory.getServiceLoader(HttpServiceInterceptor.class)) {
-			interceptors.add(interceptor);
-		}
-
-		for (HttpService handler : factory.getServiceLoader(HttpService.class)) {
-			getServiceRegistry().add(handler);
-		}
+		factory.getServiceLoader(HttpServiceInterceptor.class).getServices().forEach(interceptors::add);
+		factory.getServiceLoader(HttpService.class).getServices().forEach(getServiceRegistry()::add);
 	}
 
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {

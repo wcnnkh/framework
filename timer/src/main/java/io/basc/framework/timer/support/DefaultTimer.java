@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.basc.framework.beans.factory.Destroy;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
@@ -32,7 +32,7 @@ import io.basc.framework.util.StringUtils;
  * @author wcnnkh
  *
  */
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public final class DefaultTimer implements io.basc.framework.timer.Timer, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTimer.class);
 	private final ConcurrentHashMap<String, TaskContext> contextMap = new ConcurrentHashMap<String, TaskContext>();

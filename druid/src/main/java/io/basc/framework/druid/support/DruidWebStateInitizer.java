@@ -2,7 +2,7 @@ package io.basc.framework.druid.support;
 
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -17,7 +17,7 @@ import javax.servlet.ServletContext;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DruidWebStateInitizer implements ServletContextInitialization {
 	private static Logger logger = LoggerFactory.getLogger(DruidWebStateInitizer.class);
 

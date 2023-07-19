@@ -11,12 +11,14 @@ import org.apache.lucene.search.TopDocs;
 
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Processor;
+import lombok.Data;
 
+@Data
 public class SearchProcessor<T> implements Processor<IndexSearcher, SearchResults<T>, LuceneException> {
-	protected final ScoreDoc after;
-	protected final SearchParameters parameters;
-	protected final LuceneTemplate luceneTemplete;
-	protected final ScoreDocMapper<T> rowMapper;
+	private final ScoreDoc after;
+	private final SearchParameters parameters;
+	private final LuceneTemplate luceneTemplete;
+	private final ScoreDocMapper<T> rowMapper;
 
 	public SearchProcessor(LuceneTemplate luceneTemplete, ScoreDoc after, SearchParameters parameters,
 			ScoreDocMapper<T> rowMapper) {

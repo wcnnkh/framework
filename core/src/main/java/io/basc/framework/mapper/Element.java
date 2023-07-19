@@ -25,7 +25,7 @@ import io.basc.framework.util.Named;
  * @author wcnnkh
  *
  */
-public interface Field extends Named {
+public interface Element extends Named {
 
 	@Override
 	String getName();

@@ -2,12 +2,12 @@ package io.basc.framework.timer.extend;
 
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.db.DB;
 import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskLockFactory;
 
-@Provider
+@ConditionalOnParameters
 public class DBTaskLockFactory implements TaskLockFactory {
 	private DB db;
 

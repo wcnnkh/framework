@@ -1,6 +1,6 @@
 package io.basc.framework.security.limit;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.mapper.ParameterDescriptor;
@@ -10,7 +10,7 @@ import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Indexed;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultCountLimitFactory implements CountLimitFactory {
 
 	public String getKey(CountLimitSecurity countLimitSecurity, MethodInvoker invoker, Object[] args) {

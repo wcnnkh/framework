@@ -2,7 +2,7 @@ package io.basc.framework.mvc.result;
 
 import java.io.IOException;
 
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.transaction.ResultFactory;
 import io.basc.framework.execution.parameter.ParameterException;
 import io.basc.framework.lang.NestedExceptionUtils;
@@ -17,7 +17,7 @@ import io.basc.framework.security.authority.AuthorizationFailureException;
  * @author wcnnkh
  *
  */
-@Provider
+@ConditionalOnParameters
 public final class DefaultExceptionHandler implements ExceptionHandler {
 	private ResultFactory resultFactory;
 

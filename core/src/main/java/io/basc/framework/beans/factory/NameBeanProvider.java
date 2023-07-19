@@ -48,4 +48,13 @@ class NameBeanProvider<T> implements BeanProvider<T> {
 		return Optional.empty();
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return names.isEmpty();
+	}
+
+	@SuppressWarnings("unchecked")
+	public Optional<T> findFirst() {
+		return names.findFirst().map((e) -> (T) beanFactory.getBean(e));
+	}
 }

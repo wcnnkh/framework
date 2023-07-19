@@ -38,8 +38,8 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 		this.createTime = System.currentTimeMillis();
 		// 添加默认的类
 		registerSingleton(Application.class.getName(), this);
-		applicationPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
-		getServiceInjectorRegistry().register((bean) -> {
+		applicationPostProcessors.getServiceInjectors().register(getServiceInjectors());
+		getServiceInjectors().register((bean) -> {
 			if (bean instanceof ApplicationAware) {
 				((ApplicationAware) bean).setApplication(this);
 			}

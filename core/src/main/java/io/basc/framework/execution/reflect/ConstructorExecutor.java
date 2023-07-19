@@ -19,6 +19,10 @@ public class ConstructorExecutor extends ReflectionExecutable<Constructor<?>> im
 	private Class<?>[] aopInterfaces;
 	private ExecutionInterceptor executionInterceptor;
 
+	public ConstructorExecutor(Class<?> sourceClass, Constructor<?> target) {
+		this(TypeDescriptor.valueOf(sourceClass), target);
+	}
+
 	public ConstructorExecutor(TypeDescriptor source, Constructor<?> target) {
 		super(source, target);
 	}

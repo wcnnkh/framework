@@ -11,12 +11,8 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.Copy;
-import io.basc.framework.orm.repository.Conditions;
-import io.basc.framework.orm.repository.ConditionsBuilder;
-import io.basc.framework.sql.template.dialect.SqlDialect;
+import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.sqlite.SQLiteDB;
-import io.basc.framework.sqlite.SQLiteDialect;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionUtils;
@@ -37,7 +33,7 @@ public class OrmTest {
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
 			db.insert(table1);
-			assertFalse(db.saveIfAbsent(table1) == 0);
+			assertFalse(db.saveIfAbsent(table1));
 		}
 	}
 
@@ -50,10 +46,11 @@ public class OrmTest {
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
 			db.saveOrUpdate(table1);
-			TestTable1 query = db.queryByPrimaryKeys(TestTable1.class, i);
+			TestTable1 query = db.queryByPrimaryKeys(TestTable1.class, i).getElements().first();
 			assertTrue(query.getKey().equals(table1.getKey()));
 			// 使用queryAll的原因是为了测试全部
-			query = db.queryAll(TestTable1.class).getElements().filter((e) -> e.getId() == table1.getId()).findAny().get();
+			query = db.queryAll(TestTable1.class).getElements().filter((e) -> e.getId() == table1.getId()).findAny()
+					.get();
 			assertTrue(query.getKey().equals(table1.getKey()));
 		}
 	}
@@ -62,7 +59,8 @@ public class OrmTest {
 		for (int i = 0; i < 100; i++) {
 			int v = i;
 			new Thread(() -> {
-				System.out.println(JsonUtils.getSupport().toJsonString(db.getByIdList(TestTable1.class, v)));
+				System.out.println(JsonUtils.getSupport()
+						.toJsonString(db.queryByPrimaryKeys(TestTable1.class, v).getElements().toList()));
 			}).start();
 		}
 	}
@@ -78,22 +76,6 @@ public class OrmTest {
 	}
 
 	@Test
-	public void sqlTest() {
-		SqlDialect mapper = new SQLiteDialect();
-		ConditionsBuilder builder = mapper
-				.conditionsBuilder((e) -> e.name("permissionGroupId").greaterThan().value(0).build());
-		builder.and((e) -> e.name("permissionGroupId").in().value(1).build());
-
-		String search = "";
-		Conditions conditions = builder.newBuilder().and((e) -> e.name("uid").like().value(search).build())
-				.and((e) -> e.name("phone").like().value(search).build())
-				.and((e) -> e.name("username").like().value(search).build())
-				.and((e) -> e.name("nickname").like().value(search).build()).build();
-		builder.and(conditions);
-		System.out.println(mapper.toSelectSql(mapper.getStructure(OrmTest.class), builder.build(), null));
-	}
-
-	@Test
 	public void transactionTest() {
 		db.deleteAll(TestTable1.class);
 		TestTable1 table1 = new TestTable1();
@@ -106,7 +88,7 @@ public class OrmTest {
 		Transaction transaction = TransactionUtils.getTransaction(TransactionDefinition.DEFAULT);
 		TestTable1 updateBean = Copy.clone(bean);
 		updateBean.setValue(2);
-		db.update(updateBean);
+		db.updateById(updateBean);
 		// 直接回滚
 		transaction.rollback();
 		TestTable1 oldBean = db.getById(TestTable1.class, 1);

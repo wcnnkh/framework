@@ -1,8 +1,11 @@
 package io.basc.framework.lucene.test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.orm.annotation.PrimaryKey;
+import lombok.Data;
 
+@Data
 public class TestBean {
+	@PrimaryKey
 	private String name;
 	private String value;
 
@@ -20,10 +23,5 @@ public class TestBean {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-	
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

@@ -10,7 +10,7 @@ import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -90,7 +90,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
 		EntityMapping<? extends Property> fields = getMapper().getMapping(parameterDescriptor.getTypeDescriptor().getType()).all();
-		for (Field field : fields.getElements()) {
+		for (Element field : fields.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}

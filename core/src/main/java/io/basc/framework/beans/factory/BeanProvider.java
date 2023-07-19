@@ -8,4 +8,8 @@ public interface BeanProvider<T> extends ServiceLoader<T> {
 	boolean isUnique();
 
 	Optional<T> getUnique();
+
+	boolean isEmpty();
+
+	Optional<T> findFirst();
 }

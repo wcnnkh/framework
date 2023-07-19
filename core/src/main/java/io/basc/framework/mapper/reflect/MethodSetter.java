@@ -1,4 +1,4 @@
-package io.basc.framework.mapper.support;
+package io.basc.framework.mapper.reflect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.mapper.support.AbstractSetter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import lombok.Getter;

@@ -4,13 +4,13 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.Registration;
 
-@Provider(value = ActionResolver.class)
+@ConditionalOnParameters(value = ActionResolver.class)
 public class ConfigurableActiontResolver extends ConfigurableServices<ActionResolverExtend> implements ActionResolver {
 	private ActionResolver defaultResolver;
 

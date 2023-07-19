@@ -9,7 +9,7 @@ import java.util.Map;
 
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.annotation.KeyValuePair;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
@@ -29,7 +29,7 @@ import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.HttpPattern;
 
-@Provider
+@ConditionalOnParameters
 public class AnnotationActionResolverExtend implements ActionResolverExtend {
 	private static Logger logger = LoggerFactory.getLogger(AnnotationActionResolverExtend.class);
 	private static final Encoder<String, String> ID_ENCODER = CharsetCodec.UTF_8.toBase64();

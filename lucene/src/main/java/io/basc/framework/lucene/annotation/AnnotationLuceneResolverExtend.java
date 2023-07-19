@@ -16,7 +16,7 @@ import io.basc.framework.mapper.ParameterDescriptor;
 public class AnnotationLuceneResolverExtend extends SimpleLuceneResolverExtend {
 	@Override
 	protected boolean isStored(ParameterDescriptor descriptor) {
-		io.basc.framework.lucene.annotation.LuceneField annotation = descriptor
+		io.basc.framework.lucene.annotation.LuceneField annotation = descriptor.getTypeDescriptor()
 				.getAnnotation(io.basc.framework.lucene.annotation.LuceneField.class);
 		if (annotation != null) {
 			return annotation.stored();
@@ -26,7 +26,7 @@ public class AnnotationLuceneResolverExtend extends SimpleLuceneResolverExtend {
 
 	@Override
 	protected Collection<Field> resolveNonBasicType(Parameter parameter) {
-		io.basc.framework.lucene.annotation.LuceneField annotation = parameter
+		io.basc.framework.lucene.annotation.LuceneField annotation = parameter.getTypeDescriptor()
 				.getAnnotation(io.basc.framework.lucene.annotation.LuceneField.class);
 		if (annotation == null) {
 			return super.resolveNonBasicType(parameter);

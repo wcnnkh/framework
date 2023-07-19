@@ -103,6 +103,8 @@ public class SearchResults<T> extends TopFieldDocs implements Pageable<ScoreDoc,
 
 	@Override
 	public Pageable<ScoreDoc, T> jumpTo(ScoreDoc cursorId, long count) {
-		return luceneTemplete.searchAfter(cursorId, parameters.setTop((int) count), rowMapper);
+		SearchParameters parameters = this.parameters.clone();
+		parameters.setTop((int) count);
+		return luceneTemplete.searchAfter(cursorId, parameters, rowMapper);
 	}
 }

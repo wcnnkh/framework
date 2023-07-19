@@ -20,7 +20,7 @@ import io.basc.framework.data.repository.Sort;
 import io.basc.framework.dom.NodeListAccess;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
@@ -216,7 +216,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	@SuppressWarnings("unchecked")
 	@Override
 	public EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
-		Mapping<? extends Field> mapping = super.getMapping(entityClass);
+		Mapping<? extends Element> mapping = super.getMapping(entityClass);
 		if (mapping instanceof EntityMapping) {
 			return (EntityMapping<? extends Property>) mapping;
 		}

@@ -1,6 +1,6 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 
@@ -10,7 +10,7 @@ import io.basc.framework.util.Range;
  * @author wcnnkh
  *
  */
-public interface Property extends Field {
+public interface Property extends Element {
 
 	boolean isAutoIncrement();
 

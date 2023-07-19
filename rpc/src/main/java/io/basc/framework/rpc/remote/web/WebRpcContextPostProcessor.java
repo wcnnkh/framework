@@ -1,7 +1,7 @@
 package io.basc.framework.rpc.remote.web;
 
 import io.basc.framework.beans.factory.InstanceException;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.env.Environment;
@@ -9,7 +9,7 @@ import io.basc.framework.env.EnvironmentBeanDefinition;
 import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.SignerRemoteMessageCodec;
 
-@Provider
+@ConditionalOnParameters
 public class WebRpcContextPostProcessor implements ContextPostProcessor {
 	private static final String RPC_HTTP_SIGN_NAME = "rpc.http.sign";
 	private static final String RPC_HTTP_PATH = "mvc.http.rpc-path";

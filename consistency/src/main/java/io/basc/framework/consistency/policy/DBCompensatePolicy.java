@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.codec.support.Base64;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.db.DB;
 import io.basc.framework.db.locks.TableLockFactory;
@@ -18,7 +18,7 @@ import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.template.annotation.Table;
 import io.basc.framework.util.CollectionUtils;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DBCompensatePolicy extends StorageCompensatePolicy {
 	private static final String TABLE_NAME = "_compensat_table";
 	private final DB db;

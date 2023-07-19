@@ -2,15 +2,16 @@ package io.basc.framework.sql.template;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.data.repository.Operation;
+import io.basc.framework.data.repository.DeleteOperation;
+import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.RepositoryException;
+import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.sql.template.dialect.SqlDialect;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
 public interface SqlTemplate extends EntityOperations, SqlOperations {
@@ -36,12 +37,18 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 	}
 
 	@Override
-	default long execute(Operation operation) throws RepositoryException {
+	default long delete(DeleteOperation operation) throws RepositoryException {
 		Sql sql = getMapper().toSql(operation);
 		return update(sql);
 	}
 
 	SqlDialect getMapper();
+
+	@Override
+	default long insert(InsertOperation operation) throws RepositoryException {
+		Sql sql = getMapper().toSql(operation);
+		return update(sql);
+	}
 
 	@Override
 	default <T> Query<T> query(TypeDescriptor resultTypeDescriptor, QueryOperation operation)
@@ -50,21 +57,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 		return query(resultTypeDescriptor, sql);
 	}
 
-	default <T> long saveIfAbsent(Class<? extends T> entityClass, T entity) {
-		return insert(SqlInsertOperationSymbol.SAVE_IF_ABSENT, entityClass, entity);
-	}
-
-	default long saveIfAbsent(Object entity) {
-		Assert.requiredArgument(entity != null, "entity");
-		return saveIfAbsent(entity.getClass(), entity);
-	}
-
-	default <T> long saveOrUpdate(Class<? extends T> entityClass, T entity) {
-		return insert(SqlInsertOperationSymbol.SAVE_OR_UPDATE, entityClass, entity);
-	}
-
-	default long saveOrUpdate(Object entity) {
-		Assert.requiredArgument(entity != null, "entity");
-		return insert(entity.getClass(), entity);
+	@Override
+	default long update(UpdateOperation operation) throws RepositoryException {
+		Sql sql = getMapper().toSql(operation);
+		return update(sql);
 	}
 }

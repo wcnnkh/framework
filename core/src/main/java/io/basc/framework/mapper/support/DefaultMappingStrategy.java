@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.IdentityConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
@@ -55,7 +55,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 		targetAccess.set(parameter);
 	}
 
-	private String getName(MappingContext context, Field field) {
+	private String getName(MappingContext context, Element field) {
 		if (context == null) {
 			return field.getName();
 		}
@@ -63,12 +63,12 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				.collect(Collectors.joining("."));
 	}
 
-	private Elements<String> getAliasNames(MappingContext context, Field field) {
+	private Elements<String> getAliasNames(MappingContext context, Element field) {
 		if (context == null) {
 			return Elements.singleton(field.getName()).concat(field.getAliasNames());
 		}
 
-		Elements<Field> fields = context.getContextFields().reverse().concat(Elements.singleton(field));
+		Elements<Element> fields = context.getContextFields().reverse().concat(Elements.singleton(field));
 		// 组合出所有的名称
 		List<Elements<String>> recursionNames = CollectionUtils.recursiveComposition(
 				fields.map((e) -> Elements.singleton(e.getName()).concat(e.getAliasNames())).toList());
@@ -79,7 +79,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Field> targetMapping, Field targetField) throws MappingException {
+			Mapping<? extends Element> targetMapping, Element targetField) throws MappingException {
 		Elements<String> aliasNames = getAliasNames(targetContext, targetField);
 		Elements<Setter> setters = targetField.getSetters().flatMap((e) -> aliasNames.map((name) -> e.rename(name)));
 		for (Setter setter : setters) {
@@ -135,9 +135,9 @@ public class DefaultMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Field> targetMapping,
-			Field targetField) throws MappingException {
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Element> targetMapping,
+			Element targetField) throws MappingException {
 		Elements<String> aliasNames = getAliasNames(targetContext, targetField);
 		Elements<Setter> setters = targetField.getSetters().flatMap((e) -> aliasNames.map((name) -> e.rename(name)));
 		for (Setter setter : setters) {
@@ -148,8 +148,8 @@ public class DefaultMappingStrategy implements MappingStrategy {
 		}
 
 		for (String name : aliasNames) {
-			Elements<? extends Field> sourceFields = sourceMapping.getElements(name);
-			for (Field sourceField : sourceFields) {
+			Elements<? extends Element> sourceFields = sourceMapping.getElements(name);
+			for (Element sourceField : sourceFields) {
 				Elements<Getter> getters = sourceField.getGetters().map((e) -> e.rename(e.getName()));
 				if (!getters.anyMatch(predicateRegistry)) {
 					// 有一个不允许就忽略
@@ -174,7 +174,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Field sourceField,
+			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Element sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException {
 		String name = getName(sourceContext, sourceField);
 		for (Getter getter : sourceField.getGetters()) {

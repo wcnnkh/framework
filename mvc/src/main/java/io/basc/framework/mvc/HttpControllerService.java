@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.context.Context;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
@@ -32,7 +32,7 @@ import io.basc.framework.web.message.model.ModelAndViewRegistry;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
 public class HttpControllerService implements HttpService, ServerHttpRequestAccept, Configurable {
 	private final ConfigurableServices<HttpChannelInterceptor> httpChannelInterceptors = new ConfigurableServices<HttpChannelInterceptor>(
 			HttpChannelInterceptor.class);

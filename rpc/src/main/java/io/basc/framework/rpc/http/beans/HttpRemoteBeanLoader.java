@@ -5,7 +5,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoader;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.env.Environment;
 import io.basc.framework.rpc.http.DefaultHttpRemoteResolvers;
@@ -14,7 +14,7 @@ import io.basc.framework.rpc.http.HttpRemoteResolver;
 import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class HttpRemoteBeanLoader implements BeanDefinitionLoader {
 
 	@Override

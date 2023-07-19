@@ -3,13 +3,13 @@ package io.basc.framework.druid.beans;
 import javax.sql.DataSource;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.sql.ConnectionFactory;
 
-@Provider
+@ConditionalOnParameters
 public class DruidContextostProcessor implements ContextPostProcessor {
 
 	@Override

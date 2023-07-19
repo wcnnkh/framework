@@ -14,11 +14,11 @@ import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 import io.basc.framework.boot.servlet.FilterRegistration;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.netflix.eureka.EurekaConstants;
 import io.basc.framework.util.StringUtils;
 
-@Provider
+@ConditionalOnParameters
 public class EurekaServerFilterRegistration implements FilterRegistration {
 	/**
 	 * List of packages containing Jersey resources required by the Eureka server.
@@ -34,7 +34,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 		Set<Class<?>> classes = application.getClassScanner()
 				.scan(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES),
 						(e, m) -> e.getAnnotationMetadata().hasAnnotation(Path.class.getName())
-								|| e.getAnnotationMetadata().hasAnnotation(javax.ws.rs.ext.Provider.class.getName()))
+								|| e.getAnnotationMetadata().hasAnnotation(javax.ws.rs.ext.ConditionalOnParameters.class.getName()))
 				.getServices().toSet();
 		// Construct the Jersey ResourceConfig
 		Map<String, Object> propsAndFeatures = new HashMap<>();

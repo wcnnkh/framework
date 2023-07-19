@@ -1,14 +1,10 @@
 package io.basc.framework.lucene.test;
 
+import java.util.concurrent.ExecutionException;
+
 import io.basc.framework.lucene.DefaultLuceneTemplate;
 import io.basc.framework.lucene.LuceneTemplate;
 import io.basc.framework.lucene.LuceneWriteException;
-import io.basc.framework.lucene.SearchParameters;
-
-import java.util.concurrent.ExecutionException;
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.TermQuery;
 
 public class QueryTest {
 	public static void main(String[] args) throws LuceneWriteException, InterruptedException, ExecutionException {
@@ -22,13 +18,10 @@ public class QueryTest {
 		bean2.setName("a");
 		bean2.setValue("adsfdsfsf");
 
-		Term term = new Term("name", "a");
-		luceneTemplate.saveOrUpdate(term, bean2).get();
-		luceneTemplate.saveOrUpdate(term, bean1).get();
+		luceneTemplate.saveOrUpdate(bean2);
+		luceneTemplate.saveOrUpdate(bean1);
 
-		luceneTemplate.search(new SearchParameters(new TermQuery(term), 10), TestBean.class).getElements()
-				.forEach((b) -> {
-					System.out.println(b);
-				});
+		TestBean bean = luceneTemplate.getById(bean1);
+		System.out.println(bean);
 	}
 }

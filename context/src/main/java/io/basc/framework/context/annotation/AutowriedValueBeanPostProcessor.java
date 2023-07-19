@@ -3,7 +3,7 @@ package io.basc.framework.context.annotation;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.support.BeanRegistrationManager;
 import io.basc.framework.beans.factory.config.support.PropertyAutowiredBeanPostProcessor;
-import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.MappingFactory;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.Elements;
@@ -30,7 +30,7 @@ class AutowriedValueBeanPostProcessor extends PropertyAutowiredBeanPostProcessor
 	}
 
 	@Override
-	protected Elements<String> getPropertyNames(Field field) {
+	protected Elements<String> getPropertyNames(Element field) {
 		for (Setter setter : field.getSetters()) {
 			Value value = setter.getTypeDescriptor().getAnnotation(Value.class);
 			if (value == null) {
@@ -43,7 +43,7 @@ class AutowriedValueBeanPostProcessor extends PropertyAutowiredBeanPostProcessor
 	}
 
 	@Override
-	protected boolean canAutwired(Object bean, String beanName, Field field) {
+	protected boolean canAutwired(Object bean, String beanName, Element field) {
 		return field.getSetters().anyMatch((e) -> e.getTypeDescriptor().hasAnnotation(Value.class));
 	}
 

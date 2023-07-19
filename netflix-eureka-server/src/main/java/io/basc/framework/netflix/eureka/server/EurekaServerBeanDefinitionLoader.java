@@ -18,12 +18,12 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoader;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
-import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 
-@Provider
+@ConditionalOnParameters
 public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	@Override

@@ -20,7 +20,7 @@ public interface MappingFactory {
 	 * @return
 	 */
 	@Nullable
-	default Mapping<? extends Field> getMapping(Class<?> entityClass) {
+	default Mapping<? extends Element> getMapping(Class<?> entityClass) {
 		return DefaultObjectMapping.getMapping(entityClass).all();
 	}
 
@@ -31,5 +31,5 @@ public interface MappingFactory {
 	 * @param entityClass
 	 * @param mapping
 	 */
-	void registerMapping(Class<?> entityClass, Mapping<? extends Field> mapping);
+	void registerMapping(Class<?> entityClass, Mapping<? extends Element> mapping);
 }

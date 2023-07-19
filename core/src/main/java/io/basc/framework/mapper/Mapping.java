@@ -12,7 +12,7 @@ import io.basc.framework.util.StringUtils;
  *
  * @param <T>
  */
-public interface Mapping<T extends Field> extends Named {
+public interface Mapping<T extends Element> extends Named {
 	String getName();
 
 	Elements<String> getAliasNames();
@@ -20,7 +20,7 @@ public interface Mapping<T extends Field> extends Named {
 	/**
 	 * 可能存在多个重名的element
 	 * 
-	 * @see Field#getName()
+	 * @see Element#getName()
 	 * @param name
 	 * @return
 	 */

@@ -1,15 +1,13 @@
 package io.basc.framework.lucene.support;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongPoint;
-import org.apache.lucene.index.DocValuesType;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -25,19 +23,18 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.repository.Condition;
+import io.basc.framework.data.repository.ConditionSymbol;
+import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.Operation;
+import io.basc.framework.data.repository.RelationshipSymbol;
+import io.basc.framework.data.repository.SortSymbol;
 import io.basc.framework.lucene.DocumentAccess;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
-import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.Parameter;
-import io.basc.framework.orm.Property;
-import io.basc.framework.orm.repository.ConditionKeywords;
-import io.basc.framework.orm.repository.Conditions;
-import io.basc.framework.orm.repository.OrderColumn;
-import io.basc.framework.orm.repository.RelationshipKeywords;
-import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.NumberUtils;
 
 public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMapper {
@@ -65,124 +62,112 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 			return Collections.emptyList();
 		}
 
-		return LuceneResolverExtendChain.build(luceneResolverExtends.iterator()).resolve(parameter);
+		return LuceneResolverExtendChain.build(luceneResolverExtends.getServices().iterator()).resolve(parameter);
 	}
 
-	private Query parseQuery(Condition condition, ConditionKeywords conditionKeywords) {
-		Parameter column = condition.getParameter();
-		if (column == null || !column.isPresent()) {
-			return null;
+	private String toString(Condition condition) {
+		String value;
+		if (canConvert(condition.getTypeDescriptor(), String.class)) {
+			value = convert(condition.getSource(), condition.getTypeDescriptor(), String.class);
+		} else {
+			value = condition.getAsString();
 		}
+		return value;
+	}
 
-		if (conditionKeywords.getEqualKeywords().exists(condition.getCondition())) {
+	private Query toQuery(Operation operation, Condition condition) {
+		if (condition.getConditionSymbol().getName().equals(ConditionSymbol.EQU.getName())) {
 			// =
 			Term term;
-			if (column.getType() == byte[].class) {
-				term = new Term(column.getName(), new BytesRef((byte[]) column.getSource()));
+			if (condition.getTypeDescriptor().getType() == byte[].class) {
+				term = new Term(condition.getName(), new BytesRef((byte[]) condition.getSource()));
 			} else {
-				term = new Term(column.getName(), column.convert(String.class, getConversionService()));
+				String value = toString(condition);
+				term = new Term(condition.getName(), value);
 			}
 			return new TermQuery(term);
-		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
+		} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.IN.getName())) {
 			BooleanQuery.Builder builder = new BooleanQuery.Builder();
 			List<?> list;
 			TypeDescriptor elementTypeDescriptor;
-			if (column.getTypeDescriptor().isArray() || column.getTypeDescriptor().isCollection()) {
-				elementTypeDescriptor = column.getTypeDescriptor().getElementTypeDescriptor();
-				list = (List<?>) column.convert(TypeDescriptor.collection(List.class, elementTypeDescriptor),
-						getConversionService());
+			if (condition.getTypeDescriptor().isArray() || condition.getTypeDescriptor().isCollection()) {
+				elementTypeDescriptor = condition.getTypeDescriptor().getElementTypeDescriptor();
+				TypeDescriptor targetType = TypeDescriptor.collection(List.class, elementTypeDescriptor);
+				if (canConvert(condition.getTypeDescriptor(), targetType)) {
+					list = (List<?>) convert(condition.getSource(), condition.getTypeDescriptor(), targetType);
+				} else {
+					list = (List<?>) condition.getAsObject(targetType);
+				}
 			} else {
-				list = Arrays.asList(column.getSource());
-				elementTypeDescriptor = column.getTypeDescriptor();
+				list = Arrays.asList(condition.getSource());
+				elementTypeDescriptor = condition.getTypeDescriptor();
 			}
 
 			for (Object value : list) {
 				Term term;
 				if (elementTypeDescriptor.getType() == byte[].class) {
-					term = new Term(column.getName(), new BytesRef((byte[]) value));
+					term = new Term(condition.getName(), new BytesRef((byte[]) value));
 				} else {
-					term = new Term(column.getName(), (String) getConversionService().convert(value,
-							elementTypeDescriptor, TypeDescriptor.valueOf(String.class)));
+					term = new Term(condition.getName(), toString(condition));
 				}
 				// 或
 				builder.add(new TermQuery(term), Occur.SHOULD);
 			}
 			return builder.build();
 		} else {
-			if (NumberUtils.isInteger(column.getType())) {
+			if (NumberUtils.isInteger(condition.getTypeDescriptor().getType())) {
 				long min = 0;
 				long max = 0;
-				Long value = column.getAsLong();
-				if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
+				Long value = condition.getAsLong();
+				if (condition.getConditionSymbol().getName().equals(ConditionSymbol.GEQ.getName())) {
 					max = Long.MAX_VALUE;
 					min = value;
-				} else if (conditionKeywords.getGreaterThanKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.GTR.getName())) {
 					max = Long.MAX_VALUE;
 					min = value + 1;
-				} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.LEQ.getName())) {
 					min = Long.MIN_VALUE;
 					max = value;
-				} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.LSS.getName())) {
 					min = Long.MIN_VALUE;
 					max = value - 1;
-				} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.NEQ.getName())) {
 					max = value + 1;
 					min = value - 1;
 				}
-				return LongPoint.newRangeQuery(column.getName(), min, max);
+				return LongPoint.newRangeQuery(condition.getName(), min, max);
 			} else {
-				String value = column.convert(String.class, getConversionService());
+				String value = toString(condition);
 				String max = null;
 				String min = null;
 				boolean includeLower = false;
 				boolean includeUpper = false;
-				if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
+				if (condition.getConditionSymbol().getName().equals(ConditionSymbol.GEQ.getName())) {
 					min = value;
 					includeLower = true;
-				} else if (conditionKeywords.getGreaterThanKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.GTR.getName())) {
 					min = value;
-				} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.LEQ.getName())) {
 					max = value;
 					includeUpper = true;
-				} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.LSS.getName())) {
 					max = value;
-				} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
+				} else if (condition.getConditionSymbol().getName().equals(ConditionSymbol.NEQ.getName())) {
 					max = value;
 					min = value;
 				}
-				return new TermRangeQuery(column.getName(), min == null ? null : new BytesRef(min),
+				return new TermRangeQuery(condition.getName(), min == null ? null : new BytesRef(min),
 						max == null ? null : new BytesRef(max), includeLower, includeUpper);
 			}
 		}
 	}
 
-	private Query parseQuery(Conditions conditions, RelationshipKeywords relationshipKeywords,
-			ConditionKeywords conditionKeywords) {
-		if (conditions == null) {
-			return null;
-		}
-
-		Query firstQuery = null;
-		if (conditions.getCondition() != null && !conditions.getCondition().isInvalid()) {
-			firstQuery = parseQuery(conditions.getCondition(), conditionKeywords);
-		}
-
-		List<WithCondition> withConditions = conditions.getWiths();
-		if (CollectionUtils.isEmpty(withConditions)) {
-			return firstQuery;
-		}
-
+	@Override
+	public Query createQuery(Operation operation, Elements<? extends Condition> conditions) {
 		BooleanQuery.Builder builder = new BooleanQuery.Builder();
-		if (firstQuery != null) {
-			builder.add(firstQuery, Occur.MUST);
-		}
-
-		for (WithCondition condition : withConditions) {
-			Occur occur = parseOccur(relationshipKeywords, condition.getWith());
-			Query query = parseQuery(condition.getCondition(), relationshipKeywords, conditionKeywords);
-			if (query == null) {
-				continue;
-			}
+		for (Condition condition : conditions) {
+			Occur occur = parseOccur(condition.getRelationshipSymbol());
+			Query query = toQuery(operation, condition);
 			builder.add(query, occur);
 		}
 		return builder.build();
@@ -194,75 +179,57 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 	 * 4．SHOULD与MUST连用时，结果为MUST子句的检索结果,但是SHOULD可影响排序。
 	 * 5．SHOULD与SHOULD：表示“或”关系，最终检索结果为所有检索子句的并集。 6．MUST_NOT和MUST_NOT：无意义，检索无结果。
 	 * 
-	 * @param relationshipKeywords
+	 * @param relationshipSymbol
 	 * @param condition
 	 * @return
 	 */
-	private Occur parseOccur(RelationshipKeywords relationshipKeywords, String condition) {
-		if (relationshipKeywords.getAndKeywords().exists(condition)) {
+	private Occur parseOccur(RelationshipSymbol relationshipSymbol) {
+		if (relationshipSymbol == null) {
+			return null;
+		}
+		if (relationshipSymbol.getName().equals(RelationshipSymbol.AND.getName())) {
 			return Occur.MUST;
-		} else if (relationshipKeywords.getOrKeywords().exists(condition)) {
+		} else if (relationshipSymbol.getName().equals(RelationshipSymbol.OR.getName())) {
 			return Occur.SHOULD;
-		} else if (relationshipKeywords.getNotKeywords().exists(condition)) {
+		} else if (relationshipSymbol.getName().equals(RelationshipSymbol.NOT.getName())) {
 			return Occur.MUST_NOT;
 		}
-		return null;
+		return Occur.valueOf(relationshipSymbol.getName());
 	}
 
 	@Override
-	public Query parseQuery(Conditions conditions) {
-		return parseQuery(conditions, getRelationshipKeywords(), getConditionKeywords());
-	}
-
-	@Override
-	public Query parseQuery(Document document) {
-		BooleanQuery.Builder builder = new BooleanQuery.Builder();
-		for (IndexableField field : document) {
-			Term term;
-			if (field.fieldType().docValuesType() == DocValuesType.BINARY) {
-				term = new Term(field.name(), field.binaryValue());
-			} else {
-				term = new Term(field.name(), field.stringValue());
-			}
-
-			TermQuery query = new TermQuery(term);
-			builder.add(query, Occur.MUST);
-		}
-		return builder.build();
-	}
-
-	@Override
-	public Sort parseSort(Mapping<? extends Property> structure, List<? extends OrderColumn> orders) {
+	public Sort createSort(Operation operation, Elements<? extends io.basc.framework.data.repository.Sort> orders) {
 		if (CollectionUtils.isEmpty(orders)) {
 			return null;
 		}
 
-		List<SortField> sortFields = new ArrayList<SortField>();
-		appendSort(structure, sortFields, orders);
-		return new Sort(sortFields.toArray(new SortField[0]));
+		SortField[] sortFields = orders.map((e) -> toSortField(e)).toArray(new SortField[0]);
+		return new Sort(sortFields);
 	}
 
-	private void appendSort(Mapping<? extends Property> structure, List<SortField> sortFields,
-			List<? extends OrderColumn> orders) {
-		if (CollectionUtils.isEmpty(orders)) {
-			return;
-		}
-
-		for (OrderColumn column : orders) {
-			Property property = structure.getByName(column.getName());
-			if (NumberUtils.isNumber(property.getGetter().getType())) {
-				if (NumberUtils.isInteger(property.getGetter().getType())) {
-					sortFields.add(new SortField(column.getName(), Type.LONG,
-							column.getSort() == io.basc.framework.util.comparator.Sort.ASC));
-				} else {
-					sortFields.add(new SortField(column.getName(), Type.DOUBLE,
-							column.getSort() == io.basc.framework.util.comparator.Sort.ASC));
-				}
+	private SortField toSortField(io.basc.framework.data.repository.Sort sort) {
+		Parameter column = sort.getExpression();
+		Type type;
+		if (NumberUtils.isNumber(column.getTypeDescriptor().getType())) {
+			if (NumberUtils.isInteger(column.getTypeDescriptor().getType())) {
+				type = Type.LONG;
 			} else {
-				sortFields.add(new SortField(column.getName(), Type.STRING,
-						column.getSort() == io.basc.framework.util.comparator.Sort.ASC));
+				type = Type.DOUBLE;
 			}
-			appendSort(structure, sortFields, column.getWithOrders());
+		} else {
+			type = Type.STRING;
 		}
+		return new SortField(column.getName(), type, sort.getSymbol().getName().equals(SortSymbol.ASC.getName()));
+	}
+
+	@Override
+	public Document createDocument(Operation operation, Elements<? extends Expression> columns) {
+		Document document = new Document();
+		for (Expression expression : columns) {
+			for (Field field : resolve(expression)) {
+				document.add(field);
+			}
+		}
+		return document;
 	}
 }
