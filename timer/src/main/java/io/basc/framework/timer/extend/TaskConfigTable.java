@@ -2,7 +2,7 @@ package io.basc.framework.timer.extend;
 
 import java.io.Serializable;
 
-import io.basc.framework.sql.template.annotation.Table;
+import io.basc.framework.jdbc.template.annotation.Table;
 
 @Table
 public class TaskConfigTable implements Serializable {

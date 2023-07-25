@@ -1,13 +1,5 @@
 package io.basc.framework.druid.support;
 
-import io.basc.framework.boot.Application;
-import io.basc.framework.boot.servlet.ServletContextInitialization;
-import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.RandomUtils;
-
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -17,8 +9,15 @@ import javax.servlet.ServletContext;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 
-@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
-public class DruidWebStateInitizer implements ServletContextInitialization {
+import io.basc.framework.boot.Application;
+import io.basc.framework.boot.servlet.ServletContextInitialization;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.RandomUtils;
+
+@Component
+class DruidWebStateInitizer implements ServletContextInitialization {
 	private static Logger logger = LoggerFactory.getLogger(DruidWebStateInitizer.class);
 
 	@Override
@@ -34,7 +33,7 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 		servletDynamic.addMapping("/druid/*");
 
 		Dynamic filterDynamic = servletContext.addFilter("DruidWebStatFilter",
-				application.getInstance(WebStatFilter.class));
+				application.getBeanProvider(WebStatFilter.class).getUnique().orElse(new WebStatFilter()));
 		// 经常需要排除一些不必要的url，比如.js,/jslib/等等。配置在init-param中
 		filterDynamic.setInitParameter("exclusions", "/druid/*");
 		filterDynamic.setInitParameter("loginUsername", RandomUtils.randomString(10));

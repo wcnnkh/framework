@@ -6,11 +6,11 @@ import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DefaultElementRegistry;
-import io.basc.framework.util.ElementRegistry;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.Select;
-import io.basc.framework.util.Selector;
+import io.basc.framework.util.registry.DefaultElementRegistry;
+import io.basc.framework.util.registry.ElementRegistry;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.select.Select;
+import io.basc.framework.util.select.Selector;
 
 public class StandardEventDispatcher<T> implements EventDispatcher<T> {
 	private final ElementRegistry<EventListener<T>> registry;

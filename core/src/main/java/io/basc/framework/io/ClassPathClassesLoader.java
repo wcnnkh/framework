@@ -2,7 +2,7 @@ package io.basc.framework.io;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.function.StaticSupplier;
 
 /**
  * 扫描classpath下的类文件

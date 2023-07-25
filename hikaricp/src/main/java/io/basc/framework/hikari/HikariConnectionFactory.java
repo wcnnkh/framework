@@ -1,11 +1,11 @@
 package io.basc.framework.hikari;
 
-import io.basc.framework.sql.ConnectionFactory;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
+
+import io.basc.framework.jdbc.ConnectionFactory;
 
 public class HikariConnectionFactory implements ConnectionFactory {
 	private final HikariDataSource dataSource;

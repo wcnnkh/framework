@@ -1,7 +1,7 @@
 package io.basc.framework.http.client;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 
 public class ClientHttpRequestConfigAccessor {
 	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = Sys.getEnv().getProperties()

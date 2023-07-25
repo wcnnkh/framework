@@ -4,12 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
 
-public abstract class AbstractDataBase implements DataBase {
+public abstract class AbstractDataBase implements Database {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final String username;
 	private final String password;

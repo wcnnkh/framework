@@ -2,7 +2,7 @@ package io.basc.framework.data.domain;
 
 import java.io.Serializable;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.Values;
 
 /**

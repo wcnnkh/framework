@@ -3,6 +3,7 @@ package io.basc.framework.util;
 import java.util.stream.Collectors;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.element.Elements;
 
 public interface Name {
 

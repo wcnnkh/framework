@@ -12,8 +12,8 @@ import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.function.StaticSupplier;
+import io.basc.framework.util.registry.Registration;
 
 public class ResourceResolvers extends ConfigurableServices<ResourceResolver> implements ResourceResolver {
 	private static final TypeDescriptor PROPERTIES_TYPE = TypeDescriptor.valueOf(Properties.class);

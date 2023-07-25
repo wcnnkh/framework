@@ -1,8 +1,8 @@
 package io.basc.framework.beans.factory.config.support;
 
-import io.basc.framework.execution.parameter.ParameterExtractor;
+import io.basc.framework.execution.param.ParameterExtractor;
 import io.basc.framework.mapper.Element;
-import io.basc.framework.mapper.MappingFactory;
+import io.basc.framework.mapper.MappingRegistry;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.Setter;
 
@@ -15,7 +15,7 @@ import io.basc.framework.mapper.Setter;
 public class AutowiredParameterBeanPostProcessor extends AutowiredBeanPostProcessor {
 	private final ParameterExtractor parameterExtractor;
 
-	public AutowiredParameterBeanPostProcessor(MappingFactory mappingFactory, ParameterExtractor parameterExtractor) {
+	public AutowiredParameterBeanPostProcessor(MappingRegistry mappingFactory, ParameterExtractor parameterExtractor) {
 		super(mappingFactory);
 		this.parameterExtractor = parameterExtractor;
 	}

@@ -9,10 +9,10 @@ import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.Repository;
+import io.basc.framework.jdbc.Sql;
+import io.basc.framework.jdbc.template.dialect.SqlDialect;
 import io.basc.framework.mysql.MysqlDialect;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.template.dialect.SqlDialect;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class MysqlTest {
 	@Test

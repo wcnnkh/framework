@@ -4,7 +4,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.context.ClassScanner;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.spi.ServiceLoader;
 
 public class ConfigurableClassScanner extends ConfigurableServices<ClassScanner> implements ClassScanner {
 

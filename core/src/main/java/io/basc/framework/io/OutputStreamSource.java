@@ -5,8 +5,8 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Processor;
 
 public interface OutputStreamSource {
 	OutputStream getOutputStream() throws IOException;

@@ -7,14 +7,13 @@ import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.config.support.MethodHookBeanPostProcessor;
 import io.basc.framework.beans.factory.support.DefinitionFactoryBean;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
+import io.basc.framework.execution.param.ParameterExtractor;
 
 class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 	private final BeanFactory beanFactory;
 
-	public AnnotationHookBeanPostProcessor(ExecutionParametersExtractor executionParametersExtractor,
-			BeanFactory beanFactory) {
-		super(executionParametersExtractor);
+	public AnnotationHookBeanPostProcessor(ParameterExtractor parameterExtractor, BeanFactory beanFactory) {
+		super(parameterExtractor);
 		this.beanFactory = beanFactory;
 	}
 

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.FileSystemResourceLoader;
 import io.basc.framework.io.Resource;
@@ -15,7 +15,7 @@ import io.basc.framework.io.Resources;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 		implements ConfigurableEnvironmentResourceLoader {

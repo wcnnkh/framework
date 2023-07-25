@@ -14,8 +14,8 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Processor;
 import io.basc.framework.value.Value;
 
 public final class DomUtils {

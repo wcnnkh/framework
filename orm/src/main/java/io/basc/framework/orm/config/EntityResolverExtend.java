@@ -14,8 +14,8 @@ import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.Property;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
 
 public interface EntityResolverExtend {
 	default boolean isIgnore(Class<?> entityClass, EntityResolver chain) {

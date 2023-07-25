@@ -1,6 +1,6 @@
 package io.basc.framework.lang;
 
-import io.basc.framework.execution.parameter.ParameterException;
+import io.basc.framework.execution.param.ExtractParameterException;
 
 /**
  * 参数异常
@@ -8,7 +8,7 @@ import io.basc.framework.execution.parameter.ParameterException;
  * @author wcnnkh
  *
  */
-public class ParameterFormatException extends ParameterException {
+public class ParameterFormatException extends ExtractParameterException {
 	private static final long serialVersionUID = 1L;
 
 	public ParameterFormatException(String parameterName) {

@@ -4,19 +4,19 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.InstanceException;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.db.Configurable;
-import io.basc.framework.db.DB;
-import io.basc.framework.db.DataBase;
+import io.basc.framework.db.Database;
+import io.basc.framework.db.Database;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.db.DefaultDB;
+import io.basc.framework.jdbc.ConnectionFactory;
+import io.basc.framework.jdbc.template.dialect.SqlDialect;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.sql.template.dialect.SqlDialect;
 import io.basc.framework.util.StringUtils;
 
 public class DataBaseDefinition extends FactoryBeanDefinition {
 
 	public DataBaseDefinition(BeanFactory beanFactory) {
-		super(beanFactory, DB.class);
+		super(beanFactory, Database.class);
 	}
 
 	@Override
@@ -34,9 +34,9 @@ public class DataBaseDefinition extends FactoryBeanDefinition {
 		}
 
 		if (configurable.isAutoCreateDataBase()) {
-			DataBase dataBase = null;
-			if (getBeanFactory().isInstance(DataBase.class)) {
-				dataBase = getBeanFactory().getInstance(DataBase.class);
+			Database dataBase = null;
+			if (getBeanFactory().isInstance(Database.class)) {
+				dataBase = getBeanFactory().getInstance(Database.class);
 			} else if (StringUtils.isNotEmpty(configurable.getUrl())) {
 				if (getBeanFactory().isInstance(DataBaseResolver.class)) {
 					dataBase = getBeanFactory().getInstance(DataBaseResolver.class).resolve(
@@ -58,7 +58,7 @@ public class DataBaseDefinition extends FactoryBeanDefinition {
 			throw new UnsupportedException(SqlDialect.class.getName());
 		}
 
-		DB db = new DefaultDB(connectionFactory, sqlDialect);
+		Database db = new DefaultDB(connectionFactory, sqlDialect);
 		if (StringUtils.isNotEmpty(configurable.getAutoCreateTables())) {
 			db.createTables(configurable.getAutoCreateTables(), configurable.isRegisterManager());
 		}

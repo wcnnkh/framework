@@ -5,7 +5,7 @@ import java.io.OutputStream;
 
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public interface WritableResource extends Resource, OutputStreamSource {
 	/**

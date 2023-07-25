@@ -4,9 +4,9 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.AnyInheriterRegistry;
-import io.basc.framework.util.Source;
 import io.basc.framework.util.Status;
+import io.basc.framework.util.function.Source;
+import io.basc.framework.util.transmittable.AnyInheriterRegistry;
 
 public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLocal<T> implements Configurable {
 	private static Logger logger = LoggerFactory.getLogger(InheritableThreadLocalConfigurator.class);

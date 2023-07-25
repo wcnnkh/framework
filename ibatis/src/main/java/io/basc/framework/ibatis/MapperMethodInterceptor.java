@@ -10,7 +10,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public class MapperMethodInterceptor implements MethodInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();

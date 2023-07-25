@@ -11,8 +11,8 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.mapper.support.DefaultField;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.collect.LinkedMultiValueMap;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 默认的字段生成器

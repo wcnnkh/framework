@@ -9,8 +9,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
 
 public interface EntityResolver {
 	boolean isIgnore(Class<?> sourceClass);

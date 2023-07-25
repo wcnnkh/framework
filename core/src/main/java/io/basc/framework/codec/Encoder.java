@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Processor;
-import io.basc.framework.util.Validator;
+import io.basc.framework.util.check.Validator;
+import io.basc.framework.util.function.Processor;
 
 @FunctionalInterface
 public interface Encoder<D, E> extends Validator<D, E> {

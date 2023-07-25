@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
-import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.SpiServiceLoader;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.spi.SpiServiceLoader;
 
 public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
 	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();

@@ -6,7 +6,7 @@ import org.w3c.dom.Document;
 
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public interface DocumentParser {
 	boolean canParse(Resource resource);

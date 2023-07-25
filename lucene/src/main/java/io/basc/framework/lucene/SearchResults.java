@@ -12,7 +12,7 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.page.Pageable;
 import lombok.ToString;
 

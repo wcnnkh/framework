@@ -1,8 +1,8 @@
 package io.basc.framework.value;
 
-import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.util.Elements;
+import io.basc.framework.event.broadcast.BroadcastEventRegistry;
+import io.basc.framework.util.element.Elements;
 
 public interface DynamicValueFactory<K> extends ValueFactory<K> {
 

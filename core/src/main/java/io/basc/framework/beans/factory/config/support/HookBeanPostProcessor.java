@@ -4,13 +4,13 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.FatalBeanException;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.execution.param.ParameterExtractor;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
 public abstract class HookBeanPostProcessor implements BeanPostProcessor {
-	private final ExecutionParametersExtractor executionParametersExtractor;
+	private final ParameterExtractor parameterExtractor;
 
 	protected abstract Elements<? extends Executor> getInitializeExecutors(Object bean, String beanName);
 
@@ -19,11 +19,11 @@ public abstract class HookBeanPostProcessor implements BeanPostProcessor {
 	@Override
 	public void postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		for (Executor executor : getInitializeExecutors(bean, beanName)) {
-			if (!executionParametersExtractor.canExtractExecutionParameters(executor)) {
+			if (!parameterExtractor.canExtractParameters(executor)) {
 				throw new FatalBeanException("Unable to obtain the required parameters for this actuator " + executor);
 			}
 
-			Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
+			Elements<? extends Object> args = parameterExtractor.extractParameters(executor);
 			try {
 				executor.execute(args);
 			} catch (Throwable e) {
@@ -35,11 +35,11 @@ public abstract class HookBeanPostProcessor implements BeanPostProcessor {
 	@Override
 	public void postProcessBeforeDestroy(Object bean, String beanName) throws BeansException {
 		for (Executor executor : getDestroyExecutors(bean, beanName)) {
-			if (!executionParametersExtractor.canExtractExecutionParameters(executor)) {
+			if (!parameterExtractor.canExtractParameters(executor)) {
 				throw new FatalBeanException("Unable to obtain the required parameters for this actuator " + executor);
 			}
 
-			Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
+			Elements<? extends Object> args = parameterExtractor.extractParameters(executor);
 			try {
 				executor.execute(args);
 			} catch (Throwable e) {

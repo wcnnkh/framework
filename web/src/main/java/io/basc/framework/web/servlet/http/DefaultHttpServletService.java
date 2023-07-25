@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.env.Environment;
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.web.servlet.ServletService;
 import io.basc.framework.web.support.DefaultHttpService;

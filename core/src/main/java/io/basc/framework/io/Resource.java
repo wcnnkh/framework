@@ -7,14 +7,14 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistrationException;
+import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.Processor;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.registry.Registration;
 
 public interface Resource extends InputStreamSource, BroadcastEventRegistry<ChangeEvent<Resource>> {
 	/**

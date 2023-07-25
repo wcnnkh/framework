@@ -3,7 +3,7 @@ package io.basc.framework.beans.factory.config.support;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
 import io.basc.framework.mapper.Element;
-import io.basc.framework.mapper.MappingFactory;
+import io.basc.framework.mapper.MappingRegistry;
 import lombok.Data;
 
 /**
@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @Data
 public abstract class AutowiredBeanPostProcessor implements BeanPostProcessor {
-	private final MappingFactory mappingFactory;
+	private final MappingRegistry mappingFactory;
 
 	@Override
 	public void postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {

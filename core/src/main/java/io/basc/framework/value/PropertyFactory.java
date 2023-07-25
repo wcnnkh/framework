@@ -1,10 +1,10 @@
 package io.basc.framework.value;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringMatcher;
-import io.basc.framework.util.StringMatchers;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.match.StringMatcher;
+import io.basc.framework.util.match.StringMatchers;
 
 public interface PropertyFactory extends ValueFactory<String> {
 

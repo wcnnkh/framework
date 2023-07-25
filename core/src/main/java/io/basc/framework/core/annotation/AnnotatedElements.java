@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.UnsafeArrayList;
+import io.basc.framework.util.collect.UnsafeArrayList;
 
 public abstract class AnnotatedElements implements AnnotatedElement {
 	public static AnnotatedElement EMPTY = new EmptyAnnotatedElement();

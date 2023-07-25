@@ -13,7 +13,7 @@ import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.convert.MessageConvertException;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class MultipartMessageConverter extends MultipartMessageWriter {
 

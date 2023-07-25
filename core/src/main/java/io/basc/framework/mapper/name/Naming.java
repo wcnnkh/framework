@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 命名法

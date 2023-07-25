@@ -2,14 +2,14 @@ package io.basc.framework.db;
 
 import io.basc.framework.context.ClassScanner;
 import io.basc.framework.context.config.support.DefaultClassScanner;
-import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.sql.template.annotation.Table;
-import io.basc.framework.sql.template.dialect.SqlDialect;
-import io.basc.framework.sql.template.support.DefaultSqlTemplate;
+import io.basc.framework.jdbc.ConnectionFactory;
+import io.basc.framework.jdbc.template.annotation.Table;
+import io.basc.framework.jdbc.template.dialect.SqlDialect;
+import io.basc.framework.jdbc.template.support.DefaultSqlTemplate;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.spi.ServiceLoader;
 
-public class DefaultDB extends DefaultSqlTemplate implements DB {
+public class DefaultDB extends DefaultSqlTemplate implements Database {
 	private ClassScanner classScanner = new DefaultClassScanner();
 
 	public DefaultDB(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {

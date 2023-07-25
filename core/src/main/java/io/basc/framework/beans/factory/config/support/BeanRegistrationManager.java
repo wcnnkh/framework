@@ -6,8 +6,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.alias.AliasFactory;
+import io.basc.framework.util.registry.Registration;
 import lombok.Data;
 
 @Data

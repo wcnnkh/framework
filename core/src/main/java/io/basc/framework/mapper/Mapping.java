@@ -1,9 +1,9 @@
 package io.basc.framework.mapper;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Named;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 映射

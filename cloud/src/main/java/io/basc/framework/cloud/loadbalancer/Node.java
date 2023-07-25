@@ -1,7 +1,7 @@
 package io.basc.framework.cloud.loadbalancer;
 
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.util.Weighted;
+import io.basc.framework.util.select.Weighted;
 
 /**
  * 负载均衡节点

@@ -5,14 +5,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.InstanceException;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
-import io.basc.framework.db.DataBase;
+import io.basc.framework.db.Database;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.hikari.HikariUtils;
 
 public class DataBaseDefinition extends FactoryBeanDefinition {
 
 	public DataBaseDefinition(BeanFactory beanFactory) {
-		super(beanFactory, DataBase.class);
+		super(beanFactory, Database.class);
 	}
 
 	@Override

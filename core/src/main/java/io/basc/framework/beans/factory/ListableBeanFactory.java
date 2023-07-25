@@ -9,7 +9,7 @@ import java.util.Map;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public interface ListableBeanFactory extends BeanFactory {
 	Elements<String> getBeanNames();

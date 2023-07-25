@@ -6,7 +6,7 @@ import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionComparator;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class ConfigurableConversionService extends DefaultMapperRegistry<Object, ConversionException>
 		implements ConversionService, Comparable<Object> {

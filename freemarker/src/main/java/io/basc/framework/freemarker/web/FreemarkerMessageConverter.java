@@ -7,9 +7,11 @@ import java.io.PrintWriter;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.context.annotation.ConditionalOnMissingBean;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.annotation.Order;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpRequest;
@@ -29,7 +31,9 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.model.ModelAndView;
 import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
 
-@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
+@Component
+@ConditionalOnMissingBean(FreemarkerMessageConverter.class)
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class FreemarkerMessageConverter extends ModelAndViewMessageConverter implements MessageConverter {
 	private final Configuration configuration;
 

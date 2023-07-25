@@ -3,7 +3,7 @@ package io.basc.framework.io;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.function.StaticSupplier;
 
 public class PackageClassesLoader extends ClassPathClassesLoader {
 

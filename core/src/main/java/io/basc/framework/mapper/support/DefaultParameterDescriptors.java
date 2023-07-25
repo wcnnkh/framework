@@ -4,7 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

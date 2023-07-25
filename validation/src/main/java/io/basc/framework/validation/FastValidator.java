@@ -13,7 +13,7 @@ import io.basc.framework.context.annotation.Component;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Source;
 
 /**
  * 快速验证

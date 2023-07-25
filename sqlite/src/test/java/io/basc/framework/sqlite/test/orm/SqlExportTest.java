@@ -9,12 +9,12 @@ import java.util.List;
 import org.junit.Test;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
 import io.basc.framework.microsoft.ExcelTemplate;
 import io.basc.framework.orm.annotation.Entity;
 import io.basc.framework.orm.annotation.PrimaryKey;
 import io.basc.framework.orm.transfer.TransfColumn;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
 import io.basc.framework.sqlite.SQLiteDB;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.XUtils;

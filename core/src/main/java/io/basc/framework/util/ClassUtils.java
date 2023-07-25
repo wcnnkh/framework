@@ -20,6 +20,7 @@ import java.util.Set;
 
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.element.ElementList;
 import io.basc.framework.util.page.Browsable;
 import io.basc.framework.util.page.StandardCursor;
 import io.basc.framework.util.page.StandardBrowsable;

@@ -1,6 +1,6 @@
 package io.basc.framework.event;
 
-import io.basc.framework.util.RegistrationException;
+import io.basc.framework.util.registry.RegistrationException;
 
 /**
  * 事件注册异常

@@ -2,7 +2,7 @@ package io.basc.framework.security;
 
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public interface TokenFactory {
 

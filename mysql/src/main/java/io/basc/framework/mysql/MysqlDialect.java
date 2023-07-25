@@ -13,18 +13,18 @@ import java.util.Map.Entry;
 
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Repository;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
+import io.basc.framework.jdbc.template.Column;
+import io.basc.framework.jdbc.template.IndexInfo;
+import io.basc.framework.jdbc.template.SqlDialectException;
+import io.basc.framework.jdbc.template.TableMapping;
+import io.basc.framework.jdbc.template.dialect.AbstractSqlDialect;
+import io.basc.framework.jdbc.template.dialect.SqlType;
 import io.basc.framework.mapper.Getter;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.template.Column;
-import io.basc.framework.sql.template.IndexInfo;
-import io.basc.framework.sql.template.SqlDialectException;
-import io.basc.framework.sql.template.TableMapping;
-import io.basc.framework.sql.template.dialect.AbstractSqlDialect;
-import io.basc.framework.sql.template.dialect.SqlType;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 
 public class MysqlDialect extends AbstractSqlDialect {
 

@@ -1,8 +1,8 @@
 package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.alias.AliasFactory;
+import io.basc.framework.util.element.Elements;
 
 public interface BeanDefinitionFactory extends AliasFactory {
 	BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;

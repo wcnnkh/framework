@@ -3,9 +3,9 @@ package io.basc.framework.value;
 import java.util.Properties;
 
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ConvertibleIterator;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.element.ConvertibleIterator;
+import io.basc.framework.util.element.Elements;
 
 public class PropertiesPropertyFactory extends PropertiesValueFactory<String> implements PropertyFactory {
 

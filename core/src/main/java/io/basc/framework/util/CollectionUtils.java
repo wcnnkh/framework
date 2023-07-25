@@ -41,6 +41,13 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
+import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.collect.MultiValueMapWrapper;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.EnumerationToIterator;
+import io.basc.framework.util.element.IterationIterator;
+import io.basc.framework.util.element.IteratorToEnumeration;
+
 public abstract class CollectionUtils {
 	private static final class PreviousIterator<E> implements Iterator<E> {
 		private final ListIterator<E> listIterator;

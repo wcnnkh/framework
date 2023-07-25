@@ -4,9 +4,11 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.Encoder;
+import io.basc.framework.event.broadcast.BroadcastDelayableNamedEventDispatcher;
+import io.basc.framework.event.unicast.UnicastDelayableNamedEventDispatcher;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class ConvertibleNamedEventDispatcher<SK, K, ST, T>
 		implements UnicastDelayableNamedEventDispatcher<K, T>, BroadcastDelayableNamedEventDispatcher<K, T> {

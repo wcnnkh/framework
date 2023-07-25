@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class BrowsableWrapper<K, T, W extends Browsable<K, T>> extends CursorWrapper<K, T, W>
 		implements Browsable<K, T> {

@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.function.Optional;
 
 public interface Return<T> extends Optional<T>, Status {
 	static <U> Return<U> success() {

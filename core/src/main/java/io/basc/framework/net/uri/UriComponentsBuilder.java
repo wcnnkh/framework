@@ -5,10 +5,10 @@ import io.basc.framework.http.HttpRequest;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.HierarchicalUriComponents.PathComponent;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.LinkedMultiValueMap;
+import io.basc.framework.util.collect.MultiValueMap;
 
 import java.net.URI;
 import java.util.ArrayList;

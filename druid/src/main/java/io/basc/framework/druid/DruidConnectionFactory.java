@@ -1,11 +1,11 @@
 package io.basc.framework.druid;
 
-import io.basc.framework.sql.ConnectionFactory;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.alibaba.druid.pool.DruidDataSource;
+
+import io.basc.framework.jdbc.ConnectionFactory;
 
 public class DruidConnectionFactory implements ConnectionFactory {
 	private final DruidDataSource druidDataSource;

@@ -16,7 +16,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.function.ConsumeProcessor;
 
 public class StandardSessionManager<T> {
 	private static Logger logger = LoggerFactory.getLogger(StandardSessionManager.class);

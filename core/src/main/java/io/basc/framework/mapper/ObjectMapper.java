@@ -7,7 +7,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
 
-public interface ObjectMapper extends MapperRegistry<Object, ConversionException>, MappingFactory,
+public interface ObjectMapper extends MapperRegistry<Object, ConversionException>, MappingRegistry,
 		ObjectAccessFactoryRegistry, MappingStrategyFactory {
 
 	default boolean isEntity(TypeDescriptor source, ParameterDescriptor parameterDescriptor) {

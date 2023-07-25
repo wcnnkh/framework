@@ -5,17 +5,8 @@ import io.basc.framework.mapper.support.DefaultObjectMapping;
 
 public interface MappingFactory {
 	/**
-	 * 是否已注册此实体类的映射
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	boolean isMappingRegistred(Class<?> entityClass);
-
-	/**
 	 * 获取对应的结构
 	 * 
-	 * @see #isStructureRegistred(Class)
 	 * @param entityClass
 	 * @return
 	 */
@@ -23,13 +14,4 @@ public interface MappingFactory {
 	default Mapping<? extends Element> getMapping(Class<?> entityClass) {
 		return DefaultObjectMapping.getMapping(entityClass).all();
 	}
-
-	/**
-	 * 注册一个映射
-	 * 
-	 * @see #getStructure(Class)
-	 * @param entityClass
-	 * @param mapping
-	 */
-	void registerMapping(Class<?> entityClass, Mapping<? extends Element> mapping);
 }

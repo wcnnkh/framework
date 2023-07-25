@@ -2,11 +2,11 @@ package io.basc.framework.beans.factory.config.support;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.mapper.Element;
-import io.basc.framework.mapper.MappingFactory;
+import io.basc.framework.mapper.MappingRegistry;
 import io.basc.framework.mapper.Setter;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.registry.Registration;
 import io.basc.framework.value.DynamicPropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
@@ -19,7 +19,7 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 	private final PropertyFactory propertyFactory;
 	private final BeanRegistrationManager beanRegistrationManager;
 
-	public PropertyAutowiredBeanPostProcessor(MappingFactory mappingFactory, PropertyFactory propertyFactory,
+	public PropertyAutowiredBeanPostProcessor(MappingRegistry mappingFactory, PropertyFactory propertyFactory,
 			BeanRegistrationManager beanRegistrationManager) {
 		super(mappingFactory);
 		this.propertyFactory = propertyFactory;

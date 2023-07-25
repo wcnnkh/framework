@@ -8,7 +8,7 @@ import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 import io.basc.framework.value.Values;
 
 public class MethodInvokerExchange implements BinaryExchange {

@@ -5,8 +5,8 @@ import javax.sql.DataSource;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
-import io.basc.framework.db.DataBase;
-import io.basc.framework.sql.ConnectionFactory;
+import io.basc.framework.db.Database;
+import io.basc.framework.jdbc.ConnectionFactory;
 
 @ConditionalOnParameters
 public class HikariContextPostProcessor implements ContextPostProcessor {
@@ -36,7 +36,7 @@ public class HikariContextPostProcessor implements ContextPostProcessor {
 			}
 		}
 
-		if (!context.containsDefinition(DataBase.class.getName())) {
+		if (!context.containsDefinition(Database.class.getName())) {
 			context.registerDefinition(new DataBaseDefinition(context));
 		}
 	}

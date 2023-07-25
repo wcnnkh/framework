@@ -3,9 +3,11 @@ package io.basc.framework.event;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.codec.Codec;
+import io.basc.framework.event.broadcast.BroadcastDelayableEventDispatcher;
+import io.basc.framework.event.unicast.UnicastDelayableEventDispatcher;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class ConvertibleEventDispatcher<S, T>
 		implements UnicastDelayableEventDispatcher<T>, BroadcastDelayableEventDispatcher<T> {

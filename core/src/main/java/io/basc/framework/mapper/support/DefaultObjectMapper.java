@@ -23,8 +23,8 @@ import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.MappingStrategyFilter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Services;
 import io.basc.framework.util.comparator.TypeComparator;
+import io.basc.framework.util.spi.Services;
 import io.basc.framework.value.PropertyFactory;
 
 public class DefaultObjectMapper extends DefaultConversionService

@@ -11,7 +11,7 @@ import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public final class MicrosoftUtils {
 	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);

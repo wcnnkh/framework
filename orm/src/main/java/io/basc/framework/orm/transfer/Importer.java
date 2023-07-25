@@ -12,7 +12,7 @@ import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 导入

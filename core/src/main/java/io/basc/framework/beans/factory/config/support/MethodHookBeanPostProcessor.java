@@ -3,14 +3,14 @@ package io.basc.framework.beans.factory.config.support;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
+import io.basc.framework.execution.param.ParameterExtractor;
 import io.basc.framework.execution.reflect.MethodExecutor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public abstract class MethodHookBeanPostProcessor extends HookBeanPostProcessor {
 
-	public MethodHookBeanPostProcessor(ExecutionParametersExtractor executionParametersExtractor) {
-		super(executionParametersExtractor);
+	public MethodHookBeanPostProcessor(ParameterExtractor parameterExtractor) {
+		super(parameterExtractor);
 	}
 
 	protected Elements<? extends Executor> getExecutors(Object bean, String beanName) {

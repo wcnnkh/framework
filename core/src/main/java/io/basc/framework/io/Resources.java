@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.support.ObservableResourceRegistry;
+import io.basc.framework.event.observe.support.ObservableResourceRegistry;
 
 public class Resources extends ObservableResourceRegistry implements Resource {
 

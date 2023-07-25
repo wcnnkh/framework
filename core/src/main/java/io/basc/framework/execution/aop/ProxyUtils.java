@@ -3,7 +3,7 @@ package io.basc.framework.execution.aop;
 import java.lang.reflect.Method;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class ProxyUtils {
 	public static boolean isIgnoreMethod(Method method) {

@@ -7,13 +7,17 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
-import io.basc.framework.beans.factory.InstanceFactory;
-import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.context.annotation.ConditionalOnMissingBean;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.annotation.Order;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.netflix.hystrix.annotation.Hystrix;
+import io.basc.framework.util.InstanceFactory;
 
-@ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
+@Component
+@ConditionalOnMissingBean(HystrixCommandFactory.class)
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	private InstanceFactory instanceFactory;
 

@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
+import io.basc.framework.util.function.StaticSupplier;
+
 /**
  * 迭代分割字符串
  * 

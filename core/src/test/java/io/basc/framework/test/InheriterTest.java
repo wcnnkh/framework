@@ -7,8 +7,8 @@ import java.util.concurrent.Executor;
 
 import org.junit.Test;
 
-import io.basc.framework.util.AnyInheriterRegistry;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.transmittable.AnyInheriterRegistry;
 
 public class InheriterTest {
 	private ThreadLocal<Object> threadLocal = new ThreadLocal<>();

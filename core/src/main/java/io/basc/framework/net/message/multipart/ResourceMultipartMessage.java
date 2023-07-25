@@ -10,7 +10,7 @@ import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.Resource;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public class ResourceMultipartMessage extends AbstractMultipartMessage {
 	private final Resource resource;

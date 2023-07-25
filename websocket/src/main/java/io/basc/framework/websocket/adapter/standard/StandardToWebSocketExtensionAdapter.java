@@ -1,6 +1,6 @@
 package io.basc.framework.websocket.adapter.standard;
 
-import io.basc.framework.util.LinkedCaseInsensitiveMap;
+import io.basc.framework.util.collect.LinkedCaseInsensitiveMap;
 import io.basc.framework.websocket.WebSocketExtension;
 
 import java.util.List;

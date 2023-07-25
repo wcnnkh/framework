@@ -8,8 +8,8 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.match.StringMatchers;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.ValueFactory;
 

@@ -24,8 +24,8 @@ import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.data.repository.UpdateOperationSymbol;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
 
 public interface EntityOperations extends RepositoryOperations {
 	default <T> long delete(Class<? extends T> entityClass, T entity) {

@@ -1,8 +1,8 @@
 package io.basc.framework.context.annotation;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.execution.parameter.ParameterException;
-import io.basc.framework.execution.parameter.ParameterExtractor;
+import io.basc.framework.execution.param.ExtractParameterException;
+import io.basc.framework.execution.param.ParameterExtractor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.StringUtils;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class AutowriedParameterExtractor implements ParameterExtractor {
 	}
 
 	@Override
-	public Object extractParameter(ParameterDescriptor parameterDescriptor) throws ParameterException {
+	public Object extractParameter(ParameterDescriptor parameterDescriptor) throws ExtractParameterException {
 		Autowired autowired = parameterDescriptor.getTypeDescriptor().getAnnotation(Autowired.class);
 		String name = autowired.value();
 		if (StringUtils.isNotEmpty(name)) {

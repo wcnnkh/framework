@@ -16,8 +16,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Optional;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Optional;
+import io.basc.framework.util.function.Source;
 
 public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier, ConversionService {
 	static final Value EMPTY = new EmptyValue();

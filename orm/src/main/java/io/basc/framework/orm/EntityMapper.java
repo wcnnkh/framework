@@ -19,8 +19,8 @@ import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
 
 public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityResolver {
 	default <T> EntityRepository<T> getRepository(OperationSymbol operationSymbol, Class<? extends T> entityClass,

@@ -2,8 +2,8 @@ package io.basc.framework.redis;
 
 import java.io.Serializable;
 
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.comparator.Sort;
+import io.basc.framework.util.function.Processor;
 
 public class GeoRadiusArgs<K> implements Serializable {
 	private static final long serialVersionUID = 1L;

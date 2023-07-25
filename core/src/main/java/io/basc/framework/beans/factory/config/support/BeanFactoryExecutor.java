@@ -9,7 +9,7 @@ import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.reflect.DefaultMethod;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultParameterDescriptor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class BeanFactoryExecutor extends DefaultMethod implements Executor {
 	private static final ParameterDescriptor PARAMETER_DESCRIPTOR = new DefaultParameterDescriptor("beanFactory",

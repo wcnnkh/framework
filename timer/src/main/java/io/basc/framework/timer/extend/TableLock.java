@@ -2,18 +2,18 @@ package io.basc.framework.timer.extend;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.db.DB;
+import io.basc.framework.db.Database;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
 import io.basc.framework.locks.RenewableLock;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
 import io.basc.framework.timer.TaskConfig;
 
 class TableLock extends RenewableLock {
-	private DB db;
+	private Database db;
 	private TaskConfig taskConfig;
 	private long executionTime;
 
-	public TableLock(DB db, TaskConfig taskConfig, long executionTime) {
+	public TableLock(Database db, TaskConfig taskConfig, long executionTime) {
 		super(TimeUnit.MINUTES, 5);
 		this.db = db;
 		this.taskConfig = taskConfig;

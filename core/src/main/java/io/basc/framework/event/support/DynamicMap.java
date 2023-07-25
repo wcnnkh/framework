@@ -8,13 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.ChangeType;
-import io.basc.framework.event.ObservableChangeEvent;
+import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.event.observe.ObservableChangeEvent;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class DynamicMap<K, V> {
 	private final BroadcastEventDispatcher<ObservableChangeEvent<Map<K, V>>> eventDispatcher;

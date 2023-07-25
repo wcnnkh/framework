@@ -8,8 +8,8 @@ import java.net.URLEncoder;
 
 import io.basc.framework.lang.Constants;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.MultiValueMap;
 
 public class UriUtils {
 	public static final String QUERY_CONNECTOR = "?";

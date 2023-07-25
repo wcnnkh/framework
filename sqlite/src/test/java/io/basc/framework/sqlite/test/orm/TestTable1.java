@@ -1,7 +1,7 @@
 package io.basc.framework.sqlite.test.orm;
 
+import io.basc.framework.jdbc.template.annotation.Table;
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.sql.template.annotation.Table;
 import lombok.Data;
 
 @Table

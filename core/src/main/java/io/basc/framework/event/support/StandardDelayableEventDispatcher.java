@@ -6,8 +6,8 @@ import io.basc.framework.event.DelayableEventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Selector;
 import io.basc.framework.util.concurrent.DelayableExecutor;
+import io.basc.framework.util.select.Selector;
 
 public class StandardDelayableEventDispatcher<T> extends StandardEventDispatcher<T>
 		implements DelayableEventDispatcher<T> {

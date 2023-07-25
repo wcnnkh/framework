@@ -2,19 +2,19 @@ package io.basc.framework.db.locks;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.db.DB;
+import io.basc.framework.db.Database;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
 import io.basc.framework.locks.RenewableLock;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
 
 class TableLock extends RenewableLock {
 	public static final String TABLE_NAME = "lock_table";
 
-	private final DB db;
+	private final Database db;
 	private final String name;
 	private final String value;
 
-	public TableLock(DB db, String name, String value, TimeUnit timeUnit, long timeout) {
+	public TableLock(Database db, String name, String value, TimeUnit timeUnit, long timeout) {
 		super(timeUnit, timeout);
 		this.db = db;
 		this.name = name;

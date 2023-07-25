@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.db.DefaultDB;
 import io.basc.framework.env.Sys;
-import io.basc.framework.sql.config.DataSourceConnectionFactory;
+import io.basc.framework.jdbc.config.DataSourceConnectionFactory;
 
 public class SQLiteDB extends DefaultDB implements Configurable {
 

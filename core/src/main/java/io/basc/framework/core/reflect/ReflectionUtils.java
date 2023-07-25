@@ -23,11 +23,11 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Source;
 
 public abstract class ReflectionUtils {
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).getElements().filter((method) -> {

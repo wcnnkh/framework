@@ -13,8 +13,8 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Selector;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.select.Selector;
 
 public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> implements DiscoveryLoadBalancer {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDiscoveryLoadBalancer.class);

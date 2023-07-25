@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class StandardPageable<K, T> extends PageWrapper<K, T, Page<K, T>> implements Pageable<K, T> {
 	private final CursorProcessor<K, T> processor;

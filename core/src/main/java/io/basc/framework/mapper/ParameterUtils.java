@@ -18,7 +18,7 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public final class ParameterUtils {
 	private static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();

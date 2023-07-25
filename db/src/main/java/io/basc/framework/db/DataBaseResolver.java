@@ -4,5 +4,5 @@ import io.basc.framework.lang.Nullable;
 
 public interface DataBaseResolver {
 	@Nullable
-	DataBase resolve(String driverClassName, String url, String username, String password);
+	Database resolve(String driverClassName, String url, String username, String password);
 }

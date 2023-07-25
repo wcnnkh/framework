@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.function.StaticSupplier;
 
 public class ResourceToPropertiesConverter implements Function<Resource, Properties> {
 	private final PropertiesResolver propertiesResolver;

@@ -22,9 +22,9 @@ import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.ServiceInjectors;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.spi.ServiceInjectors;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		implements ConfigurableBeanFactory, InitializingBean, DisposableBean {

@@ -4,9 +4,9 @@ import io.basc.framework.execution.Executor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

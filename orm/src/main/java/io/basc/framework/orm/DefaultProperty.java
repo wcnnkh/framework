@@ -4,8 +4,8 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data

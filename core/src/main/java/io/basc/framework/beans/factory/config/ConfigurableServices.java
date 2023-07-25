@@ -7,9 +7,9 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.ParameterizedTypeReference;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.spi.ServiceLoader;
+import io.basc.framework.util.spi.Services;
 
 public class ConfigurableServices<T> extends Services<T> implements Configurable {
 	private Registration configurableRegistration;

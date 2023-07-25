@@ -13,8 +13,8 @@ import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.function.Processor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>

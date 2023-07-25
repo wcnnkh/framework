@@ -9,7 +9,7 @@ import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionUtils;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public final class MybatisUtils {
 	private MybatisUtils() {

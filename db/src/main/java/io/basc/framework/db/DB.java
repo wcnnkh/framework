@@ -1,8 +1,8 @@
 package io.basc.framework.db;
 
-import io.basc.framework.sql.template.SqlTemplate;
+import io.basc.framework.jdbc.template.JdbcTemplate;
 
-public interface DB extends SqlTemplate {
+public interface DB extends JdbcTemplate {
 	void createTable(Class<?> tableClass, boolean registerManager);
 
 	void createTable(Class<?> tableClass, String tableName, boolean registerManager);

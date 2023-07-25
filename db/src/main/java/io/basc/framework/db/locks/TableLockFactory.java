@@ -1,6 +1,6 @@
 package io.basc.framework.db.locks;
 
-import io.basc.framework.db.DB;
+import io.basc.framework.db.Database;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.locks.RenewableLockFactory;
 import io.basc.framework.util.XUtils;
@@ -8,9 +8,9 @@ import io.basc.framework.util.XUtils;
 import java.util.concurrent.TimeUnit;
 
 public class TableLockFactory extends RenewableLockFactory {
-	private final DB db;
+	private final Database db;
 
-	public TableLockFactory(DB db) {
+	public TableLockFactory(Database db) {
 		this.db = db;
 		db.createTable(LockTable.class);
 	}

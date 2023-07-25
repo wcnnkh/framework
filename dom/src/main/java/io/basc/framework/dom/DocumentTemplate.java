@@ -22,9 +22,9 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Processor;
 
 public class DocumentTemplate implements Configurable, DocumentParser, DocumentWriter, DocumentTransformer {
 	protected final ConfigurableServices<DocumentTransformer> transformers = new ConfigurableServices<DocumentTransformer>(

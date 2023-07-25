@@ -3,8 +3,8 @@ package io.basc.framework.microsoft;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.PositionIterator;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.PositionIterator;
 
 public interface Sheet {
 	String getName();

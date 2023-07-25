@@ -2,7 +2,7 @@ package io.basc.framework.sqlite;
 
 import java.sql.Blob;
 
-import io.basc.framework.sql.template.dialect.SqlType;
+import io.basc.framework.jdbc.template.dialect.SqlType;
 
 /**
  * sqlite中的数据类型

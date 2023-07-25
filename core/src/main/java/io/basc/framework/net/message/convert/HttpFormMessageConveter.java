@@ -11,8 +11,8 @@ import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.uri.QueryStringConverter;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.MultiValueMap;
 
 public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 	

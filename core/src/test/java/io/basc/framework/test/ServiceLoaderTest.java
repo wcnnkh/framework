@@ -3,8 +3,8 @@ package io.basc.framework.test;
 import org.junit.Test;
 
 import io.basc.framework.http.client.ClientHttpRequestFactory;
-import io.basc.framework.util.Services;
-import io.basc.framework.util.SpiServiceLoader;
+import io.basc.framework.util.spi.Services;
+import io.basc.framework.util.spi.SpiServiceLoader;
 
 public class ServiceLoaderTest {
 	@Test

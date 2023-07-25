@@ -11,8 +11,5 @@ public interface Message<T> {
 	 */
 	T getPayload();
 
-	/**
-	 * Return the number of bytes contained in the message.
-	 */
-	int getPayloadLength();
+	MessageHeaders getHeaders();
 }

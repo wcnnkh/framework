@@ -12,7 +12,7 @@ import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.Setter;
-import io.basc.framework.util.PredicateRegistry;
+import io.basc.framework.util.check.PredicateRegistry;
 
 /**
  * 通过参数描述来进行断言

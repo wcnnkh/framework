@@ -7,7 +7,7 @@ public class AnnotationContextPostProcessor extends AnnotationBeanDefinitionRegi
 	@Override
 	public void postProcessContext(ConfigurableContext context) throws Throwable {
 		context.getBeanPostProcessors()
-				.register(new AnnotationHookBeanPostProcessor(context.getParameterParser(), context));
+				.register(new AnnotationHookBeanPostProcessor(context.getParameterExtractors(), context));
 		context.getBeanPostProcessors().register(new AnnotationConfigurationPropertiesBeanPostProcessor(context));
 		super.postProcessContext(context);
 	}

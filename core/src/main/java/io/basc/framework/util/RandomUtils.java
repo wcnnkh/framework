@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.math.Addition;
 import io.basc.framework.math.NumberComparator;
+import io.basc.framework.util.function.Processor;
 
 public final class RandomUtils {
 	private RandomUtils() {

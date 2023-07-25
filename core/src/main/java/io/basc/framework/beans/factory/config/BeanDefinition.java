@@ -3,7 +3,7 @@ package io.basc.framework.beans.factory.config;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 /**
  * bean的定义

@@ -346,7 +346,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>sql</artifactId>
+				<artifactId>jdbc</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
@@ -467,11 +467,6 @@
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>hikaricp</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>hibernate</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
@@ -778,7 +773,6 @@
 		<module>web</module>
 		<module>memcached</module>
 		<module>redis</module>
-		<module>hibernate</module>
 		<module>ibatis</module>
 		<module>druid</module>
 		<module>hikaricp</module>
@@ -793,7 +787,6 @@
 		<module>rmi</module>
 		<module>transaction</module>
 		<module>boot</module>
-		<module>sql</module>
 		<module>tcc</module>
 		<module>messageing</module>
 		<module>context</module>
@@ -828,6 +821,7 @@
 		<module>activemq-client</module>
 		<module>spring-context</module>
 		<module>locks</module>
+		<module>jdbc</module>
 	</modules>
 	<profiles>
 		<profile>

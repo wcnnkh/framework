@@ -1,7 +1,7 @@
 package io.basc.framework.lang;
 
-import io.basc.framework.util.AnyInheriterRegistry;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.transmittable.AnyInheriterRegistry;
 
 /**
  * {@link InheritableThreadLocal} subclass that exposes a specified name as

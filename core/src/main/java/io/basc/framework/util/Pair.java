@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import io.basc.framework.util.function.Processor;
 import lombok.Data;
 
 @Data

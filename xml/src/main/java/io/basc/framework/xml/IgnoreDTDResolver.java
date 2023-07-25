@@ -8,7 +8,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 
 public class IgnoreDTDResolver implements EntityResolver {
 	private static final Observable<Boolean> IGNORE_DTD = Sys.getEnv().getProperties()

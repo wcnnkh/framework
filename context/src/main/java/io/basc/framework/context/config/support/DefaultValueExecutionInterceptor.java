@@ -9,7 +9,7 @@ import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

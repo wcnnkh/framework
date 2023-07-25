@@ -9,22 +9,22 @@ import java.util.concurrent.locks.Lock;
 import io.basc.framework.codec.support.Base64;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.db.DB;
+import io.basc.framework.db.Database;
 import io.basc.framework.db.locks.TableLockFactory;
 import io.basc.framework.io.SerializerException;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
+import io.basc.framework.jdbc.template.annotation.Table;
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.template.annotation.Table;
 import io.basc.framework.util.CollectionUtils;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DBCompensatePolicy extends StorageCompensatePolicy {
 	private static final String TABLE_NAME = "_compensat_table";
-	private final DB db;
+	private final Database db;
 	private final TableLockFactory tableLockFactory;
 
-	public DBCompensatePolicy(DB db) {
+	public DBCompensatePolicy(Database db) {
 		this.db = db;
 		this.tableLockFactory = new TableLockFactory(db);
 		db.createTable(CompensatTable.class, false);

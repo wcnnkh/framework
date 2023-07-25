@@ -7,8 +7,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Processor;
 
 /**
  * Simple interface for objects that are sources for an {@link InputStream}.

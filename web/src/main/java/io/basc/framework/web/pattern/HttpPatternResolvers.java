@@ -6,9 +6,9 @@ import java.util.LinkedHashSet;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.env.Sys;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
+import io.basc.framework.util.registry.Registration;
 
 public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver>
 		implements HttpPatternResolver, PlaceholderFormatAware {

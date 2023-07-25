@@ -3,7 +3,7 @@ package io.basc.framework.orm;
 import java.util.OptionalLong;
 
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public interface BaseEntity<T> {
 	OptionalLong insert();

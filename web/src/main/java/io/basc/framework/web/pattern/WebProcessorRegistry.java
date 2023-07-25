@@ -1,6 +1,6 @@
 package io.basc.framework.web.pattern;
 
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 import io.basc.framework.web.ServerHttpRequest;
 
 public class WebProcessorRegistry<T, E extends Throwable> extends HttpPatternMatcher<Processor<ServerHttpRequest, T, E>>

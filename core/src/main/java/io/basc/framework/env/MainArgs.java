@@ -7,9 +7,9 @@ import java.util.OptionalInt;
 
 import io.basc.framework.core.Ordered;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 

@@ -7,7 +7,7 @@ import io.basc.framework.convert.config.support.ConfigurableConversionService;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class DefaultMessageConverters extends MessageConverters {
 	private final ConfigurableConversionService conversionService;

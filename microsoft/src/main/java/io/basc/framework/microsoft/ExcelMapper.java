@@ -17,7 +17,7 @@ import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.RunnableProcessor;
+import io.basc.framework.util.function.RunnableProcessor;
 
 public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 	private final ExcelExport export;

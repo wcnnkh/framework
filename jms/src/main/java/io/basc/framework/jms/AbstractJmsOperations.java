@@ -3,9 +3,9 @@ package io.basc.framework.jms;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.Source;
-import io.basc.framework.util.StandardStreamOperations;
+import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.StandardStreamOperations;
+import io.basc.framework.util.registry.Registration;
 
 public abstract class AbstractJmsOperations<T, C extends AbstractJmsOperations<T, C>>
 		extends StandardStreamOperations<T, JMSException, C> implements JmsOperations {

@@ -13,9 +13,9 @@ import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.LinkedMultiValueMap;
+import io.basc.framework.util.collect.MultiValueMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

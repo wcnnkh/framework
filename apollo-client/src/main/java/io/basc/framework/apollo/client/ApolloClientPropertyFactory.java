@@ -8,9 +8,9 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
-import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 

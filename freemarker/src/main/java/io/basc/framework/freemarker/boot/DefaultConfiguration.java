@@ -1,43 +1,34 @@
 package io.basc.framework.freemarker.boot;
 
 import java.io.IOException;
+import java.util.Map.Entry;
 
-import freemarker.template.Configuration;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import io.basc.framework.context.Context;
-import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.context.annotation.ConditionalOnMissingBean;
 import io.basc.framework.freemarker.EnvConfiguration;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.StringUtils;
 
-@ConditionalOnParameters(value = Configuration.class)
+@Component
+@ConditionalOnMissingBean(DefaultConfiguration.class)
 public class DefaultConfiguration extends EnvConfiguration {
 	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
 
 	public DefaultConfiguration(Context context) throws IOException {
 		super(context);
-		for (Class<?> clz : context.getContextClasses()) {
-			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
-			if (sharedVariable == null) {
-				continue;
-			}
-
-			String name = sharedVariable.value();
-			if (StringUtils.isEmpty(name)) {
-				// 默认使用简写类名
-				name = clz.getSimpleName();
-			}
-
+		for (Entry<String, Object> entry : context.getBeansWithAnnotation(SharedVariable.class).entrySet()) {
+			String name = entry.getKey();
 			TemplateModel registred = getSharedVariable(name);
 			if (registred != null) {
 				logger.warn("already exist name={}, registred={}", name, registred);
 				continue;
 			}
 
-			Object veriable = context.getInstance(clz);
+			Object veriable = entry.getValue();
 			if (veriable instanceof TemplateModel) {
 				setSharedVariable(name, (TemplateModel) veriable);
 			} else {

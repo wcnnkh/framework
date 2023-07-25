@@ -1,8 +1,8 @@
 package io.basc.framework.db;
 
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.jdbc.Sql;
 import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.sql.Sql;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +17,12 @@ public final class DBManager {
 	private DBManager() {
 	};
 
-	private static final Map<Class<?>, DB> CLASS_TO_DB = new IdentityHashMap<Class<?>, DB>();
+	private static final Map<Class<?>, Database> CLASS_TO_DB = new IdentityHashMap<Class<?>, Database>();
 
-	public static void register(Class<?> clazz, DB db) {
+	public static void register(Class<?> clazz, Database db) {
 		synchronized (CLASS_TO_DB) {
 			if (CLASS_TO_DB.containsKey(clazz)) {
-				DB originDB = CLASS_TO_DB.get(clazz);
+				Database originDB = CLASS_TO_DB.get(clazz);
 				throw new AlreadyExistsException(clazz + "已经存在了:" + originDB.getClass().getName());
 			}
 
@@ -36,8 +36,8 @@ public final class DBManager {
 		}
 	}
 
-	public static DB getDB(Class<?> tableClass) {
-		DB db = CLASS_TO_DB.get(ProxyUtils.getFactory().getUserClass(tableClass));
+	public static Database getDB(Class<?> tableClass) {
+		Database db = CLASS_TO_DB.get(ProxyUtils.getFactory().getUserClass(tableClass));
 		if (db == null) {
 			throw new NullPointerException(tableClass + " not found db");
 		}
@@ -61,10 +61,10 @@ public final class DBManager {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Map<DB, List<Object>> getMap(Object... beans) {
-		Map<DB, List<Object>> map = new HashMap<DB, List<Object>>();
+	private static Map<Database, List<Object>> getMap(Object... beans) {
+		Map<Database, List<Object>> map = new HashMap<Database, List<Object>>();
 		for (Object obj : beans) {
-			DB db = getDB(obj.getClass());
+			Database db = getDB(obj.getClass());
 			List<Object> list = map.getOrDefault(db, new ArrayList<Object>());
 			if (obj instanceof Collection) {
 				list.addAll((Collection) obj);
@@ -79,7 +79,7 @@ public final class DBManager {
 	}
 
 	public static void save(Object... beans) {
-		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<Database, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
 			for (Object bean : list) {
 				entry.getKey().save(bean);
@@ -88,7 +88,7 @@ public final class DBManager {
 	}
 
 	public static void delete(Object... beans) {
-		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<Database, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
 			for (Object bean : list) {
 				entry.getKey().delete(bean);
@@ -97,7 +97,7 @@ public final class DBManager {
 	}
 
 	public static void update(Object... beans) {
-		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<Database, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
 			for (Object bean : list) {
 				entry.getKey().update(bean);
@@ -106,7 +106,7 @@ public final class DBManager {
 	}
 
 	public static void saveOrUpdate(Object... beans) {
-		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<Database, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
 			for (Object bean : list) {
 				entry.getKey().saveOrUpdate(bean);

@@ -9,7 +9,7 @@ import java.util.function.Function;
 import io.basc.framework.core.Members;
 import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.mapper.reflect.DefaultFieldsGenerator;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public final class DefaultObjectMapping extends ObjectMapping<DefaultField, DefaultObjectMapping> {
 	private final Function<? super ObjectMapping<DefaultField, DefaultObjectMapping>, ? extends DefaultObjectMapping> objectMappingDecorator = (

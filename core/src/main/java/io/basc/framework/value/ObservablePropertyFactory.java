@@ -7,13 +7,13 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.event.support.DynamicMap;
-import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 
 public class ObservablePropertyFactory extends ObservableValueFactory<String> implements DynamicPropertyFactory {
 	private static final Function<Properties, Map<String, Value>> CONVERTER = (properties) -> {

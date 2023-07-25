@@ -1,7 +1,7 @@
 package io.basc.framework.druid;
 
 import io.basc.framework.db.Configurable;
-import io.basc.framework.db.DataBase;
+import io.basc.framework.db.Database;
 import io.basc.framework.db.DataBaseResolver;
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -25,7 +25,7 @@ public final class DruidUtils {
 		}
 	}
 
-	public static DataBase resolve(DruidDataSource druidDataSource, DataBaseResolver dataBaseResolver) {
+	public static Database resolve(DruidDataSource druidDataSource, DataBaseResolver dataBaseResolver) {
 		return dataBaseResolver.resolve(druidDataSource.getDriverClassName(), druidDataSource.getUrl(),
 				druidDataSource.getUsername(), druidDataSource.getPassword());
 	}

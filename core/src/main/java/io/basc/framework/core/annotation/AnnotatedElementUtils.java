@@ -28,7 +28,7 @@ import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.collect.MultiValueMap;
 
 /**
  * General utility methods for finding annotations, meta-annotations, and

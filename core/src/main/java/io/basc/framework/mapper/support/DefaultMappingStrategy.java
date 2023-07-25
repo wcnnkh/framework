@@ -19,8 +19,8 @@ import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.PredicateRegistry;
+import io.basc.framework.util.check.PredicateRegistry;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data

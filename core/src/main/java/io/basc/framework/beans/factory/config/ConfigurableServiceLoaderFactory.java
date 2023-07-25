@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.spi.Services;
 
 public interface ConfigurableServiceLoaderFactory extends ServiceLoaderFactory {
 	@Override

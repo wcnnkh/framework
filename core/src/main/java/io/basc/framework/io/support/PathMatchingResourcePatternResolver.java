@@ -34,12 +34,12 @@ import io.basc.framework.io.VfsResource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.AntPathMatcher;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.PathMatcher;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.match.AntPathMatcher;
+import io.basc.framework.util.match.PathMatcher;
 
 /**
  * A {@link ResourcePatternResolver} implementation that is able to resolve a
@@ -47,7 +47,7 @@ import io.basc.framework.util.XUtils;
  * source path may be a simple path which has a one-to-one mapping to a target
  * {@link io.basc.framework.io.Resource}, or alternatively may contain the
  * special "{@code classpath*:}" prefix and/or internal Ant-style regular
- * expressions (matched using {@link io.basc.framework.util.AntPathMatcher}
+ * expressions (matched using {@link io.basc.framework.util.match.AntPathMatcher}
  * utility). Both of the latter are effectively wildcards.
  *
  * <p>
@@ -178,7 +178,7 @@ import io.basc.framework.util.XUtils;
  *
  * @author https://github.com/wcnnkh/framework/blob/master/core/src/main/java/io/basc/framework/io/support/PathMatchingResourcePatternResolver.java
  * @see #CLASSPATH_ALL_URL_PREFIX
- * @see io.basc.framework.util.AntPathMatcher
+ * @see io.basc.framework.util.match.AntPathMatcher
  * @see io.basc.framework.io.ResourceLoader#getResource(String)
  * @see ClassLoader#getResources(String)
  */
@@ -260,7 +260,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * Set the PathMatcher implementation to use for this resource pattern resolver.
 	 * Default is AntPathMatcher.
 	 * 
-	 * @see io.basc.framework.util.AntPathMatcher
+	 * @see io.basc.framework.util.match.AntPathMatcher
 	 */
 	public void setPathMatcher(PathMatcher pathMatcher) {
 		Assert.notNull(pathMatcher, "PathMatcher must not be null");
@@ -518,7 +518,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @throws IOException in case of I/O errors
 	 * @see #doFindPathMatchingJarResources
 	 * @see #doFindPathMatchingFileResources
-	 * @see io.basc.framework.util.PathMatcher
+	 * @see io.basc.framework.util.match.PathMatcher
 	 */
 	protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
 		String rootDirPath = determineRootDir(locationPattern);
@@ -619,7 +619,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @return a mutable Set of matching Resource instances
 	 * @throws IOException in case of I/O errors
 	 * @see java.net.JarURLConnection
-	 * @see io.basc.framework.util.PathMatcher
+	 * @see io.basc.framework.util.match.PathMatcher
 	 */
 	protected Set<Resource> doFindPathMatchingJarResources(Resource rootDirResource, URL rootDirURL, String subPattern)
 			throws IOException {
@@ -721,7 +721,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @return a mutable Set of matching Resource instances
 	 * @throws IOException in case of I/O errors
 	 * @see #retrieveMatchingFiles
-	 * @see io.basc.framework.util.PathMatcher
+	 * @see io.basc.framework.util.match.PathMatcher
 	 */
 	protected Set<Resource> doFindPathMatchingFileResources(Resource rootDirResource, String subPattern)
 			throws IOException {
@@ -753,7 +753,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @return a mutable Set of matching Resource instances
 	 * @throws IOException in case of I/O errors
 	 * @see #retrieveMatchingFiles
-	 * @see io.basc.framework.util.PathMatcher
+	 * @see io.basc.framework.util.match.PathMatcher
 	 */
 	protected Set<Resource> doFindMatchingFileSystemResources(File rootDir, String subPattern) throws IOException {
 		if (logger.isTraceEnabled()) {

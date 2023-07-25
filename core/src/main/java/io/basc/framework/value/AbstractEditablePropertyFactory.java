@@ -1,10 +1,10 @@
 package io.basc.framework.value;
 
-import io.basc.framework.event.BroadcastEventDispatcher;
-import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.util.Elements;
+import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
+import io.basc.framework.event.broadcast.BroadcastEventRegistry;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.util.element.Elements;
 
 public abstract class AbstractEditablePropertyFactory implements EditablePropertyFactory {
 	private final BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher = new StandardBroadcastEventDispatcher<>();

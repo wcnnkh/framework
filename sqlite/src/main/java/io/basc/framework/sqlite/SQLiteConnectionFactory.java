@@ -1,12 +1,12 @@
 package io.basc.framework.sqlite;
 
-import io.basc.framework.sql.ConnectionFactory;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.sqlite.SQLiteDataSource;
+
+import io.basc.framework.jdbc.ConnectionFactory;
 
 public class SQLiteConnectionFactory implements ConnectionFactory {
 	private final SQLiteDataSource dataSource;

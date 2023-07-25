@@ -13,7 +13,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.reflect.ConstructorExecutor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public abstract class BeanDefinitionRegistryContextPostProcessor implements ContextPostProcessor {
 	@Override

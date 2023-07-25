@@ -11,7 +11,7 @@ import java.util.TimeZone;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.config.support.DefaultReversibleConverterRegistry;
 import io.basc.framework.convert.lang.ResourceToString;
-import io.basc.framework.util.Optional;
+import io.basc.framework.util.function.Optional;
 import lombok.Getter;
 import lombok.Setter;
 

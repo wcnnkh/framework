@@ -7,7 +7,7 @@ import io.basc.framework.beans.factory.InstanceException;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 import io.basc.framework.redis.RedisConfiguration;
 import io.basc.framework.value.PropertiesPropertyFactory;

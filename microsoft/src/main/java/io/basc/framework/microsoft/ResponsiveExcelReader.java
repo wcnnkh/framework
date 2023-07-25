@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.ResponsiveIterator;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.ResponsiveIterator;
 
 public abstract class ResponsiveExcelReader implements ExcelReader {
 	private static Logger logger = LoggerFactory.getLogger(ResponsiveExcelReader.class);

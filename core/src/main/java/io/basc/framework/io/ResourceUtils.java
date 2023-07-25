@@ -25,8 +25,8 @@ import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 资源工具

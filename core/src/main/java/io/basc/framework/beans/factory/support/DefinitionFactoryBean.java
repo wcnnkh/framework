@@ -6,8 +6,8 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.execution.param.ParameterExtractor;
+import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	private final BeanDefinition beanDefinition;
-	private final ExecutionParametersExtractor executionParametersExtractor;
+	private final ParameterExtractor parameterExtractor;
 	private volatile Elements<? extends Object> singletonConstructionParameters;
 	private volatile Executor constructor;
 	private volatile Object singletonObject;
@@ -25,7 +25,7 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 			synchronized (this) {
 				if (constructor == null) {
 					for (Executor executor : beanDefinition.getConstructors()) {
-						if (executionParametersExtractor.canExtractExecutionParameters(executor)) {
+						if (parameterExtractor.canExtractParameters(executor)) {
 							this.constructor = executor;
 							break;
 						}
@@ -52,7 +52,7 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 
 	private Object createObject() {
 		Executor executor = getConstructor();
-		Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
+		Elements<? extends Object> args = parameterExtractor.extractParameters(executor);
 		if (isSingleton()) {
 			this.singletonConstructionParameters = args;
 		}

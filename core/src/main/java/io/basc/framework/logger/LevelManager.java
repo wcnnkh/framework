@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import io.basc.framework.event.support.ObservableMapRegistry;
+import io.basc.framework.event.observe.support.ObservableMapRegistry;
 import io.basc.framework.lang.Nullable;
 
 /**

@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Processor;
 
 public class InputStreamSourceWrapper<W extends InputStreamSource> extends Wrapper<W> implements InputStreamSource {
 

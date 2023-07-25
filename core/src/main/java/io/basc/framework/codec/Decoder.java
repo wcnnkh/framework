@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 @FunctionalInterface
 public interface Decoder<E, D> {

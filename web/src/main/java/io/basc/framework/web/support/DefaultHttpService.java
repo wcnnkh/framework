@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.spi.ServiceLoader;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.HttpServiceInterceptor;
 import io.basc.framework.web.HttpServiceRegistry;

@@ -4,8 +4,8 @@ import io.basc.framework.beans.factory.config.support.BeanRegistrationManager;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.config.support.EnvironmentConfigurationPropertiesBeanPostProcessor;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 
 class AnnotationConfigurationPropertiesBeanPostProcessor
 		extends EnvironmentConfigurationPropertiesBeanPostProcessor {

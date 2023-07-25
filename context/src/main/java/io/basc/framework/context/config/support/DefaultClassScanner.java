@@ -14,9 +14,9 @@ import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassLoaderProviderMap;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.spi.ServiceLoader;
+import io.basc.framework.util.spi.ServiceLoaders;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

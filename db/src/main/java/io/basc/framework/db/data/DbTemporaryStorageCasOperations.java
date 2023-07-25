@@ -8,13 +8,13 @@ import io.basc.framework.data.CAS;
 import io.basc.framework.data.DataException;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryDataCasOperations;
-import io.basc.framework.db.DB;
+import io.basc.framework.db.Database;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerException;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.template.TableStructure;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
+import io.basc.framework.jdbc.template.TableStructure;
 import io.basc.framework.util.Assert;
 
 /**
@@ -24,7 +24,7 @@ import io.basc.framework.util.Assert;
  *
  */
 public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperations, DataStorage {
-	private final DB db;
+	private final Database db;
 	private Serializer serializer = JavaSerializer.INSTANCE;
 	private final String tableName;
 	private final TableStructure tableStructure;
@@ -34,7 +34,7 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 	private final String expColumName;
 	private final String whereSql;
 
-	public DbTemporaryStorageCasOperations(DB db, String tableName) {
+	public DbTemporaryStorageCasOperations(Database db, String tableName) {
 		this.db = db;
 		this.tableName = tableName;
 		db.createTable(TemporaryData.class, tableName);

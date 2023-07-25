@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.concurrent.ThreadPerTaskExecutor;
+import io.basc.framework.util.function.RunnableProcessor;
 
 public final class XUtils {
 	private static final boolean ENABLE_COMMON_POOL = (ForkJoinPool.getCommonPoolParallelism() > 1);

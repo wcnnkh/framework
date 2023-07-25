@@ -4,11 +4,11 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.HierarchicalBeanFactory;
 import io.basc.framework.beans.factory.ListableBeanFactory;
-import io.basc.framework.execution.parameter.ParameterParser;
+import io.basc.framework.execution.param.ParameterExtractors;
 
 public interface ConfigurableBeanFactory
 		extends ListableBeanFactory, HierarchicalBeanFactory, SingletonBeanRegistry, BeanDefinitionRegistry {
-	ParameterParser getParameterParser();
+	ParameterExtractors getParameterExtractors();
 
 	void removeFactoryBean(String beanName) throws BeansException;
 

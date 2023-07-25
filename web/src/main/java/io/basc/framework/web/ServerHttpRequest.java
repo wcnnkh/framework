@@ -9,8 +9,8 @@ import java.security.Principal;
 import io.basc.framework.http.HttpInputMessage;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.security.session.Session;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.attribute.EditableAttributes;
+import io.basc.framework.util.collect.MultiValueMap;
 
 public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, EditableAttributes<String, Object> {
 	String getPath();

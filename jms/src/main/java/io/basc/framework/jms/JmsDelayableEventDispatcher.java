@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import io.basc.framework.event.BroadcastDelayableEventDispatcher;
 import io.basc.framework.event.DelayableEventDispatcher;
 import io.basc.framework.event.EventPushException;
-import io.basc.framework.event.UnicastDelayableEventDispatcher;
+import io.basc.framework.event.broadcast.BroadcastDelayableEventDispatcher;
+import io.basc.framework.event.unicast.UnicastDelayableEventDispatcher;
 
 /**
  * jms2.0开始支持延迟消息

@@ -8,7 +8,7 @@ import io.basc.framework.core.DecorationMembers;
 import io.basc.framework.core.Members;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public abstract class ReflectionMembers<E extends Member, R extends ReflectionMembers<E, R>>
 		extends DecorationMembers<E, R> {

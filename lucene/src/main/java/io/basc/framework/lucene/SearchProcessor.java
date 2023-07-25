@@ -10,7 +10,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 import lombok.Data;
 
 @Data

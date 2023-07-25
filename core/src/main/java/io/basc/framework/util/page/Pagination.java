@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;

@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.util.ElementList;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementList;
+import io.basc.framework.util.element.Elements;
 
 public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {
 	private static final long serialVersionUID = 1L;

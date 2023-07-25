@@ -4,9 +4,9 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.support.BeanRegistrationManager;
 import io.basc.framework.beans.factory.config.support.PropertyAutowiredBeanPostProcessor;
 import io.basc.framework.mapper.Element;
-import io.basc.framework.mapper.MappingFactory;
+import io.basc.framework.mapper.MappingRegistry;
 import io.basc.framework.mapper.Setter;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.PropertyFactory;
 
 /**
@@ -18,7 +18,7 @@ import io.basc.framework.value.PropertyFactory;
 class AutowriedValueBeanPostProcessor extends PropertyAutowiredBeanPostProcessor {
 	private final BeanFactory beanFactory;
 
-	public AutowriedValueBeanPostProcessor(MappingFactory mappingFactory, PropertyFactory propertyFactory,
+	public AutowriedValueBeanPostProcessor(MappingRegistry mappingFactory, PropertyFactory propertyFactory,
 			BeanRegistrationManager beanRegistrationManager, BeanFactory beanFactory) {
 		super(mappingFactory, propertyFactory, beanRegistrationManager);
 		this.beanFactory = beanFactory;

@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 逐行读取(内存消耗小)

@@ -4,8 +4,8 @@ import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 import lombok.ToString;
 
 @ToString

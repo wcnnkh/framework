@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory;
 
 import java.util.Optional;
 
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.spi.ServiceLoader;
 
 public interface BeanProvider<T> extends ServiceLoader<T> {
 	boolean isUnique();

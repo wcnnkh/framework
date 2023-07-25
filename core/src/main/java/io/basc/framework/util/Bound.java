@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import io.basc.framework.util.function.DefaultOptional;
+
 public final class Bound<T> extends DefaultOptional<T> {
 	private static final long serialVersionUID = 1L;
 

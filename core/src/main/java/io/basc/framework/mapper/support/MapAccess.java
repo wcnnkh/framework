@@ -8,8 +8,8 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class MapAccess implements ObjectAccess {

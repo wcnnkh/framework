@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory.support;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.util.SpiServiceLoader;
+import io.basc.framework.util.spi.SpiServiceLoader;
 
 public class BeanFactorySpiServiceLoader<S> extends SpiServiceLoader<S> {
 	private final BeanFactory beanFactory;

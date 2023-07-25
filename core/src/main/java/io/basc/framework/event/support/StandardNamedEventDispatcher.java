@@ -12,9 +12,9 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.NamedEventDispatcher;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Matcher;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.match.Matcher;
+import io.basc.framework.util.registry.Registration;
 
 public class StandardNamedEventDispatcher<K, T> implements NamedEventDispatcher<K, T> {
 	private volatile Map<K, EventDispatcher<T>> dispatcherMap;

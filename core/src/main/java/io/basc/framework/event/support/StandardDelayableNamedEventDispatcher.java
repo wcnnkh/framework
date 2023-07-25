@@ -7,8 +7,8 @@ import io.basc.framework.event.DelayableNamedEventDispatcher;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Matcher;
 import io.basc.framework.util.concurrent.DelayableExecutor;
+import io.basc.framework.util.match.Matcher;
 
 public class StandardDelayableNamedEventDispatcher<K, T> extends StandardNamedEventDispatcher<K, T>
 		implements DelayableNamedEventDispatcher<K, T> {

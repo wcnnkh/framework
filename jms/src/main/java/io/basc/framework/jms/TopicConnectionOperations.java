@@ -6,8 +6,8 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.Topic;
 
-import io.basc.framework.util.Processor;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.function.Source;
 
 public class TopicConnectionOperations extends ConnectionOperations<Connection, Session, Topic> {
 

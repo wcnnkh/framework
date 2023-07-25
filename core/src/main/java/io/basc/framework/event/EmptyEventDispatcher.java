@@ -1,6 +1,6 @@
 package io.basc.framework.event;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class EmptyEventDispatcher<T> implements EventDispatcher<T> {
 

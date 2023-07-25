@@ -30,8 +30,8 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 /**
  * Scanner to search for relevant annotations in the annotation hierarchy of an

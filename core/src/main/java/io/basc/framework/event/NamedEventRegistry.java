@@ -2,7 +2,7 @@ package io.basc.framework.event;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public interface NamedEventRegistry<K, T> {
 	Registration registerListener(K name, EventListener<T> eventListener) throws EventRegistrationException;

@@ -3,7 +3,7 @@ package io.basc.framework.mapper.support;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.EditablePropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;

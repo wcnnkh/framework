@@ -5,17 +5,17 @@ import java.util.Iterator;
 
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Repository;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.template.Column;
-import io.basc.framework.sql.template.SqlDialectException;
-import io.basc.framework.sql.template.TableMapping;
-import io.basc.framework.sql.template.dialect.AbstractSqlDialect;
-import io.basc.framework.sql.template.dialect.SqlType;
+import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.Sql;
+import io.basc.framework.jdbc.template.Column;
+import io.basc.framework.jdbc.template.SqlDialectException;
+import io.basc.framework.jdbc.template.TableMapping;
+import io.basc.framework.jdbc.template.dialect.AbstractSqlDialect;
+import io.basc.framework.jdbc.template.dialect.SqlType;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 
 public class SQLiteDialect extends AbstractSqlDialect {
 
@@ -48,7 +48,7 @@ public class SQLiteDialect extends AbstractSqlDialect {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.sql.template.dialect.SqlType sqlType = getSqlType(
+			io.basc.framework.jdbc.template.dialect.SqlType sqlType = getSqlType(
 					col.getGetters().first().getTypeDescriptor().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {

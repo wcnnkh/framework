@@ -5,8 +5,8 @@ import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionLifecycle;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.spi.Services;
 import lombok.Data;
 
 @Data

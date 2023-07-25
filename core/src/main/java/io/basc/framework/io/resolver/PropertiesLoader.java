@@ -1,6 +1,6 @@
 package io.basc.framework.io.resolver;
 
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 import io.basc.framework.lang.Nullable;
 
 import java.nio.charset.Charset;

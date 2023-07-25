@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class JacksonJsonObject extends AbstractJson<String> implements JsonObject, JsonSerializable {
 	private final ObjectNode objectNode;

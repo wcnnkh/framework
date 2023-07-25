@@ -2,19 +2,20 @@ package io.basc.framework.event.support;
 
 import java.util.Arrays;
 
-import io.basc.framework.event.BroadcastEventDispatcher;
-import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.DynamicElementRegistry;
+import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
+import io.basc.framework.event.broadcast.BroadcastEventRegistry;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DefaultElementRegistry;
-import io.basc.framework.util.ElementRegistration;
-import io.basc.framework.util.ElementRegistry;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.RegistrationException;
-import io.basc.framework.util.Registrations;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.registry.DefaultElementRegistry;
+import io.basc.framework.util.registry.ElementRegistration;
+import io.basc.framework.util.registry.ElementRegistry;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.registry.RegistrationException;
+import io.basc.framework.util.registry.Registrations;
 
 public class DefaultDynamicElementRegistry<E> implements DynamicElementRegistry<E> {
 	private final ElementRegistry<E> elementRegistry;

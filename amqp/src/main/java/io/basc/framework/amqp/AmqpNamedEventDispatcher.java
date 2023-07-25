@@ -3,14 +3,14 @@ package io.basc.framework.amqp;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import io.basc.framework.event.BroadcastDelayableNamedEventDispatcher;
 import io.basc.framework.event.DelayableNamedEventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventPushException;
 import io.basc.framework.event.EventRegistrationException;
-import io.basc.framework.event.UnicastDelayableNamedEventDispatcher;
+import io.basc.framework.event.broadcast.BroadcastDelayableNamedEventDispatcher;
+import io.basc.framework.event.unicast.UnicastDelayableNamedEventDispatcher;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class AmqpNamedEventDispatcher<T> implements UnicastDelayableNamedEventDispatcher<String, T>,
 		BroadcastDelayableNamedEventDispatcher<String, T>, DelayableNamedEventDispatcher<String, T> {

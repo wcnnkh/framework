@@ -3,12 +3,12 @@ package io.basc.framework.value;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
+import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.event.support.DynamicMap;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 
 public class MapValueFactory<K> extends DynamicMap<K, Value> implements DynamicValueFactory<K> {
 

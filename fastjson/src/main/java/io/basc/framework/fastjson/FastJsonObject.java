@@ -12,8 +12,8 @@ import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 
 public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;

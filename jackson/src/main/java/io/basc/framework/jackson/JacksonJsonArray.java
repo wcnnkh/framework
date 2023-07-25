@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
-import io.basc.framework.util.ConvertibleIterator;
+import io.basc.framework.util.element.ConvertibleIterator;
 
 public class JacksonJsonArray extends AbstractJson<Integer> implements JsonArray, JsonSerializable {
 	private final ArrayNode arrayNode;

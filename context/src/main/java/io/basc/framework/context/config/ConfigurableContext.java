@@ -4,8 +4,8 @@ import io.basc.framework.context.Context;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.util.ClassLoaderAccessor;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.spi.Services;
 
 public interface ConfigurableContext extends Context, ConfigurableEnvironment, ClassLoaderAccessor {
 

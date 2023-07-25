@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public abstract class AbstractTokenFactory implements TokenFactory {
 	private RetryOperations retryOperations = RetryTemplate.DEFAULT;

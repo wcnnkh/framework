@@ -3,7 +3,7 @@ package io.basc.framework.locks;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Source;
 
 @FunctionalInterface
 public interface LockFactory {

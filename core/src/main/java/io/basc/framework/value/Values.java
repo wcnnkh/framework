@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.ElementsWrapper;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.ElementsWrapper;
 
 public class Values extends ElementsWrapper<Value, Elements<Value>> implements Elements<Value> {
 	public static Values of(Object... args) {

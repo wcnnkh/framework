@@ -5,11 +5,11 @@ import java.util.Properties;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.convert.config.support.ConfigurableConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
-import io.basc.framework.event.Observable;
+import io.basc.framework.event.observe.Observable;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.spi.Services;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFactory {
 

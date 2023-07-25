@@ -1,6 +1,6 @@
 package io.basc.framework.memcached.config;
 
-import io.basc.framework.util.Weighted;
+import io.basc.framework.util.select.Weighted;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

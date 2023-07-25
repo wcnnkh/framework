@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 import lombok.Data;
 
 /**

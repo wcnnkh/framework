@@ -9,7 +9,7 @@ import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 实现方法级别的锁

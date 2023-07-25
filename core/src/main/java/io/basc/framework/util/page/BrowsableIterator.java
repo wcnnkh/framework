@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.function.StaticSupplier;
 
 public final class BrowsableIterator<E extends Browsable<?, ?>> implements Iterator<E> {
 	private E pageables;

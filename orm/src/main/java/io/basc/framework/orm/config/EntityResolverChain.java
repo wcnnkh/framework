@@ -17,8 +17,8 @@ import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
 
 public class EntityResolverChain implements EntityResolver {
 

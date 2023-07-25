@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 public class Option<K, V> extends Pair<K, V> {
 	private static final long serialVersionUID = 1L;

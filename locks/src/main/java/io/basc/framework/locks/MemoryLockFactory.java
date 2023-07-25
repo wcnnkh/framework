@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.CacheableSupplier;
+import io.basc.framework.util.function.CacheableSupplier;
 
 public abstract class MemoryLockFactory implements LockFactory {
 	private volatile ConcurrentHashMap<String, Supplier<Lock>> lockMap = new ConcurrentHashMap<String, Supplier<Lock>>();

@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 public class ConvertibleBrowsable<M extends Browsable<SK, ST>, SK, ST, K, T>
 		extends ConvertibleCursor<M, SK, ST, K, T> implements Browsable<K, T> {

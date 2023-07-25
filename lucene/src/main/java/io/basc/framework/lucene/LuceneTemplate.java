@@ -23,9 +23,9 @@ import io.basc.framework.data.repository.RepositoryException;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.function.Processor;
 
 @SuppressWarnings("unchecked")
 public interface LuceneTemplate extends EntityOperations {

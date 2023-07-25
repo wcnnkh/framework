@@ -7,8 +7,8 @@ import com.google.gson.Gson;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 
 public final class GsonObject extends AbstractJson<String> implements JsonObject {
 	private com.google.gson.JsonObject gsonJsonObject;

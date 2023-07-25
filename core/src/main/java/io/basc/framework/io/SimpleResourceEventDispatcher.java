@@ -8,11 +8,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.ObservableChangeEvent;
-import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.event.observe.ObservableChangeEvent;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatcher<ChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);

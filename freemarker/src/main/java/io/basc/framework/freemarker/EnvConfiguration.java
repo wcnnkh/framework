@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
@@ -18,6 +17,7 @@ import io.basc.framework.value.PropertyFactory;
 
 public class EnvConfiguration extends Configuration implements Configurable {
 	public static final String CONFIG_PROPERTY_PREFIX = "io.basc.freemarker.";
+	private final TemplateLoaders templateLoaders = new TemplateLoaders();
 
 	private final Environment env;
 
@@ -41,12 +41,9 @@ public class EnvConfiguration extends Configuration implements Configurable {
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (serviceLoaderFactory.isUnique(TemplateLoader.class)) {
-			setTemplateLoader(serviceLoaderFactory.getBean(TemplateLoader.class));
-		}
-		if (serviceLoaderFactory.isUnique(TemplateExceptionHandler.class)) {
-			setTemplateExceptionHandler(serviceLoaderFactory.getBean(TemplateExceptionHandler.class));
-		}
+		templateLoaders.configure(serviceLoaderFactory);
+		serviceLoaderFactory.getBeanProvider(TemplateExceptionHandler.class).getUnique()
+				.ifPresent(this::setTemplateExceptionHandler);
 		this.configured = true;
 	}
 

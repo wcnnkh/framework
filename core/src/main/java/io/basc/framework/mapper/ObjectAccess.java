@@ -5,8 +5,8 @@ import java.util.function.Function;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 
 public interface ObjectAccess {
 	TypeDescriptor getTypeDescriptor();

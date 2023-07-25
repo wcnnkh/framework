@@ -14,9 +14,9 @@ import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.beans.factory.Init;
 import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.util.DisposableRegistration;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.RegistrationException;
+import io.basc.framework.util.registry.DisposableRegistration;
+import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.registry.RegistrationException;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> implements BinaryExchange, Init {
 	static final String DIX_ROUTING_KEY = "io.basc.framework.dix.routingKey";

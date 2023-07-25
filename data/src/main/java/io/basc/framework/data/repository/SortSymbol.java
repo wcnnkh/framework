@@ -1,7 +1,7 @@
 package io.basc.framework.data.repository;
 
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Symbol;
+import io.basc.framework.util.element.Elements;
 
 public class SortSymbol extends Symbol {
 	private static final long serialVersionUID = 1L;

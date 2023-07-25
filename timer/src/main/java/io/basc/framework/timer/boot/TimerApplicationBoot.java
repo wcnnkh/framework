@@ -21,7 +21,7 @@ import io.basc.framework.timer.boot.annotation.Crontab;
 import io.basc.framework.timer.boot.annotation.Schedule;
 import io.basc.framework.timer.support.SimpleCrontabConfig;
 import io.basc.framework.timer.support.SimpleTimerTaskConfig;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.Elements;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public final class TimerApplicationBoot implements ApplicationPostProcessor {

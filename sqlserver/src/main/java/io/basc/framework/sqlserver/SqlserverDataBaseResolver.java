@@ -1,6 +1,6 @@
 package io.basc.framework.sqlserver;
 
-import io.basc.framework.db.DataBase;
+import io.basc.framework.db.Database;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.StringUtils;
@@ -8,7 +8,7 @@ import io.basc.framework.util.StringUtils;
 public class SqlserverDataBaseResolver implements DataBaseResolver {
 
 	@Override
-	public DataBase resolve(String driverClassName, String url,
+	public Database resolve(String driverClassName, String url,
 			String username, String password) {
 		if (StringUtils.isEmpty(driverClassName) && StringUtils.isEmpty(url)) {
 			throw new UnsupportedException("driverClassName和url至少要存在一个有效的参数");

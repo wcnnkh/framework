@@ -2,8 +2,8 @@ package io.basc.framework.value;
 
 import java.util.Map;
 
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 
 public class MapPropertyFactory extends MapValueFactory<String> implements DynamicPropertyFactory {
 

@@ -2,6 +2,9 @@ package io.basc.framework.util;
 
 import java.util.function.Supplier;
 
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Processor;
+
 public interface Pool<T> extends Supplier<T> {
 	T get();
 

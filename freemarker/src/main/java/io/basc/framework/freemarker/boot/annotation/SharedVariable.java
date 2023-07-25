@@ -5,7 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.annotation.Indexed;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.core.annotation.AliasFor;
 
 /**
  * 标识这是一个freemarker方法
@@ -15,7 +16,8 @@ import io.basc.framework.context.annotation.Indexed;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Indexed
+@Component
 public @interface SharedVariable {
+	@AliasFor(annotation = Component.class, attribute = "value")
 	String value() default "";
 }

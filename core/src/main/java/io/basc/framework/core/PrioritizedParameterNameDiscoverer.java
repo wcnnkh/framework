@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.SpiServiceLoader;
+import io.basc.framework.util.spi.SpiServiceLoader;
 
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {
 	private static final ParameterNameDiscoverer[] PARAMETER_NAME_DISCOVERERS = SpiServiceLoader

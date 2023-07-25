@@ -6,9 +6,9 @@ import java.util.function.Function;
 import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.collect.LinkedMultiValueMap;
+import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data

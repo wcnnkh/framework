@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.function.Processor;
 
 public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W> implements OutputStreamSource {
 

@@ -10,13 +10,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
+import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.registry.Registration;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing

@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.comparator.TypeComparator;
+import io.basc.framework.util.element.ElementList;
+import io.basc.framework.util.element.ElementSet;
+import io.basc.framework.util.element.Elements;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

@@ -25,7 +25,7 @@ import java.util.Map;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 /**
  * Provides a quick way to access the attribute methods of an {@link Annotation}

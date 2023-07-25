@@ -1,7 +1,7 @@
 package io.basc.framework.redis;
 
 import io.basc.framework.data.geo.Point;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.function.Processor;
 
 /**
  * Geo element within a certain radius. Contains:
