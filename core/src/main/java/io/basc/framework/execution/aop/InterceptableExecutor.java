@@ -12,16 +12,6 @@ public class InterceptableExecutor implements Executor {
 	private final ExecutionInterceptor executionInterceptor;
 
 	@Override
-	public TypeDescriptor getSource() {
-		return executor.getSource();
-	}
-
-	@Override
-	public String getName() {
-		return executor.getName();
-	}
-
-	@Override
 	public TypeDescriptor getReturnTypeDescriptor() {
 		return executor.getReturnTypeDescriptor();
 	}

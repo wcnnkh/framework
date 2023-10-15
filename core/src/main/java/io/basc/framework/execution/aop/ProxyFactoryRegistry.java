@@ -67,4 +67,14 @@ public class ProxyFactoryRegistry extends Services<ProxyFactory> implements Prox
 		return ClassUtils.forName(proxyClassName, classLoader);
 	}
 
+	@Override
+	public Class<?> getProxyClass(Class<?> sourceClass, Class<?>[] interfaces) {
+		for (ProxyFactory proxy : getServices()) {
+			if (proxy.canProxy(sourceClass)) {
+				return proxy.getProxyClass(sourceClass, interfaces);
+			}
+		}
+		throw new UnsupportedOperationException(sourceClass.getName());
+	}
+
 }

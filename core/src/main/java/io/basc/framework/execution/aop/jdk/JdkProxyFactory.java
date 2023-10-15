@@ -5,20 +5,20 @@ import java.util.Arrays;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
-import io.basc.framework.execution.aop.ProxyFactory;
+import io.basc.framework.execution.aop.ProxyFactoryRegistry;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 
-public class JdkProxyFactory implements ProxyFactory {
+public class JdkProxyFactory extends ProxyFactoryRegistry {
 
 	@Override
 	public boolean canProxy(Class<?> clazz) {
-		return clazz.isInterface();
+		return super.canProxy(clazz) || clazz.isInterface();
 	}
 
 	@Override
 	public boolean isProxy(Class<?> clazz) {
-		return java.lang.reflect.Proxy.isProxyClass(clazz);
+		return super.isProxy(clazz) || java.lang.reflect.Proxy.isProxyClass(clazz);
 	}
 
 	private final Class<?>[] mergeInterfaces(Class<?> clazz, Class<?>[] interfaces) {
@@ -50,12 +50,28 @@ public class JdkProxyFactory implements ProxyFactory {
 
 	@Override
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		return new JdkProxy(TypeDescriptor.valueOf(clazz), mergeInterfaces(clazz, interfaces),
-				executionInterceptor);
+		if (super.canProxy(clazz)) {
+			return super.getProxy(clazz, interfaces, executionInterceptor);
+		}
+		return new JdkProxy(TypeDescriptor.valueOf(clazz), mergeInterfaces(clazz, interfaces), executionInterceptor);
+	}
+
+	@Override
+	public Class<?> getProxyClass(Class<?> sourceClass, Class<?>[] interfaces) {
+		if (super.canProxy(sourceClass)) {
+			return super.getProxyClass(sourceClass, interfaces);
+		}
+
+		return java.lang.reflect.Proxy.getProxyClass(sourceClass.getClassLoader(),
+				mergeInterfaces(sourceClass, interfaces));
 	}
 
 	@Override
 	public Class<?> getUserClass(Class<?> clazz) {
+		if (super.isProxy(clazz)) {
+			return super.getUserClass(clazz);
+		}
+
 		return clazz.getInterfaces()[0];
 	}
 
@@ -63,11 +79,15 @@ public class JdkProxyFactory implements ProxyFactory {
 
 	@Override
 	public boolean isProxy(String className, ClassLoader classLoader) throws ClassNotFoundException {
-		return className.startsWith(PROXY_NAME_PREFIX);
+		return super.isProxy(className, classLoader) || className.startsWith(PROXY_NAME_PREFIX);
 	}
 
 	@Override
 	public Class<?> getUserClass(String className, ClassLoader classLoader) throws ClassNotFoundException {
+		if (super.isProxy(className, classLoader)) {
+			return super.getUserClass(className, classLoader);
+		}
+
 		return getUserClass(ClassUtils.forName(className, classLoader));
 	}
 }

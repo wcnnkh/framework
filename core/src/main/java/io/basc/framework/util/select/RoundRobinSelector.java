@@ -17,12 +17,12 @@ public class RoundRobinSelector<E> implements Selector<E> {
 	private final AtomicInteger position = new AtomicInteger();
 
 	@Override
-	public E apply(Elements<E> elements) {
+	public E apply(Elements<? extends E> elements) {
 		if (elements == null) {
 			return null;
 		}
 
-		List<E> list = elements.toList();
+		List<? extends E> list = elements.toList();
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}

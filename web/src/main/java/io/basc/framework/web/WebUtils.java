@@ -43,6 +43,7 @@ public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
 	private static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_lOCAL = new NamedThreadLocal<ServerHttpRequest>(
 			ServerHttpRequest.class.getName());
+
 	private static final String RESTFUL_PARAMETER_MAP = "io.basc.framework.web.restful.parameters";
 	public static final String PATH_SEPARATOR = "/";
 

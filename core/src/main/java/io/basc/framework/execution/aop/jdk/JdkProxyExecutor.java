@@ -4,15 +4,15 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ProxyUtils;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 
 @Getter
-public class JdkProxyExecutor extends MethodExecutor {
+public class JdkProxyExecutor extends ReflectionMethodExecutor {
 
 	public JdkProxyExecutor(TypeDescriptor source, Method method, Object proxy) {
-		super(source, method, proxy);
+		super(method, source, proxy);
 	}
 
 	@Override

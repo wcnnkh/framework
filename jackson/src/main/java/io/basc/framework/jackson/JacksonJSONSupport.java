@@ -24,7 +24,7 @@ public class JacksonJSONSupport extends AbstractJsonSupport {
 		if (mapper == null) {
 			synchronized (this) {
 				if (mapper == null) {
-					this.mapper = Sys.getEnv().getServiceLoader(ObjectMapper.class).first();
+					this.mapper = Sys.getEnv().getServiceLoader(ObjectMapper.class).getServices().first();
 					if (mapper == null) {
 						mapper = new ObjectMapper();
 						// 对于空的对象转json的时候不抛出错误

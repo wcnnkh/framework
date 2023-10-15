@@ -10,6 +10,8 @@ import io.basc.framework.util.StringUtils;
 public final class Annotations {
 	public static final Annotation[] EMPTY = new Annotation[0];
 
+	public static final AnnotatedElement EMPTY_ANNOTATED_ELEMENT = new EmptyAnnotatedElement();
+
 	/**
 	 * 获取一个注解，后面覆盖前面
 	 * 

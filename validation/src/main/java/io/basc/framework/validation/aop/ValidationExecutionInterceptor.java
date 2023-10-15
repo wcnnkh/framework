@@ -8,8 +8,8 @@ import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.execution.reflect.ConstructorExecutor;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionConstructor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.validation.FastValidator;
 
@@ -29,16 +29,16 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (executor instanceof MethodExecutor) {
-			return execute((MethodExecutor) executor, args);
-		} else if (executor instanceof ConstructorExecutor) {
-			return execute((ConstructorExecutor) executor, args);
+		if (executor instanceof ReflectionMethodExecutor) {
+			return execute((ReflectionMethodExecutor) executor, args);
+		} else if (executor instanceof ReflectionConstructor) {
+			return execute((ReflectionConstructor) executor, args);
 		} else {
 			return execute(executor, args);
 		}
 	}
 
-	private Object execute(MethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+	private Object execute(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
 		if (!args.isEmpty()) {
 			FastValidator.validate(() -> validator.forExecutables().validateParameters(executor.getTarget(),
 					executor.getExecutable(), args.toArray()));
@@ -49,7 +49,7 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 		return value;
 	}
 
-	private Object execute(ConstructorExecutor executor, Elements<? extends Object> args) throws Throwable {
+	private Object execute(ReflectionConstructor executor, Elements<? extends Object> args) throws Throwable {
 		if (!args.isEmpty()) {
 			FastValidator.validate(() -> validator.forExecutables()
 					.validateConstructorParameters(executor.getExecutable(), args.toArray()));

@@ -4,12 +4,16 @@ import java.util.Iterator;
 
 import io.basc.framework.execution.Executor;
 import io.basc.framework.util.element.Elements;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-final class ExecutionInterceptorChain implements ExecutionInterceptor {
+@AllArgsConstructor
+@Data
+public class ExecutionInterceptorChain implements ExecutionInterceptor {
 	private final Iterator<? extends ExecutionInterceptor> iterator;
-	private final Executor nextChain;
+	private Executor nextChain;
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {

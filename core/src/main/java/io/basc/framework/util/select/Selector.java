@@ -13,7 +13,7 @@ import io.basc.framework.util.element.Elements;
  * @param <E> 元素类型
  */
 @FunctionalInterface
-public interface Selector<E> extends Function<Elements<E>, E> {
+public interface Selector<E> extends Function<Elements<? extends E>, E> {
 	/**
 	 * 选择第一个
 	 * 
@@ -47,5 +47,5 @@ public interface Selector<E> extends Function<Elements<E>, E> {
 	}
 
 	@Nullable
-	E apply(Elements<E> elements);
+	E apply(Elements<? extends E> elements);
 }

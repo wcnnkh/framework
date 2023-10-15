@@ -14,7 +14,7 @@ import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerException;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.jdbc.template.TableStructure;
+import io.basc.framework.jdbc.template.TableMapping;
 import io.basc.framework.util.Assert;
 
 /**
@@ -24,21 +24,21 @@ import io.basc.framework.util.Assert;
  *
  */
 public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperations, DataStorage {
-	private final Database db;
+	private final Database database;
 	private Serializer serializer = JavaSerializer.INSTANCE;
 	private final String tableName;
-	private final TableStructure tableStructure;
+	private final TableMapping<?> tableMapping;
 	private final String casColumnName;
 	private final String keyColumnName;
 	private final String touchTimeColumnName;
 	private final String expColumName;
 	private final String whereSql;
 
-	public DbTemporaryStorageCasOperations(Database db, String tableName) {
-		this.db = db;
+	public DbTemporaryStorageCasOperations(Database database, String tableName) {
+		this.database = database;
 		this.tableName = tableName;
 		db.createTable(TemporaryData.class, tableName);
-		this.tableStructure = db.getMapper().getStructure(TemporaryData.class);
+		this.tableMapping = database.getMapper().getMapping(TemporaryData.class);
 		this.casColumnName = "`" + tableStructure.getByName("cas").getName() + "`";
 		this.keyColumnName = "`" + tableStructure.getByName("key").getName() + "`";
 		this.touchTimeColumnName = "`" + tableStructure.getByName("touchTime").getName() + "`";
@@ -81,6 +81,7 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 
 	@Override
 	public CAS<Object> gets(String key) {
+		
 		TemporaryData temporaryData = db.getById(tableName, TemporaryData.class, key);
 		if (temporaryData == null) {
 			return null;

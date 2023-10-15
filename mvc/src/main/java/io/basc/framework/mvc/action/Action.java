@@ -6,11 +6,11 @@ import java.util.Collection;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.mapper.MergedParameterDescriptor;
 import io.basc.framework.web.pattern.HttpPattern;
 
 public interface Action extends MethodInvoker, AnnotatedElement {
-	ParameterDescriptors getParameterDescriptors();
+	MergedParameterDescriptor getParameterDescriptors();
 
 	Collection<HttpPattern> getPatternts();
 

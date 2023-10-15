@@ -12,7 +12,7 @@ import io.basc.framework.core.annotation.AliasFor;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-@EnableAop
+@Aop
 public @interface Service {
 	@AliasFor(annotation = Component.class)
 	String value() default "";

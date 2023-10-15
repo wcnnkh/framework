@@ -4,7 +4,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.param.ParameterExtractor;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.util.element.Elements;
 
 public abstract class MethodHookBeanPostProcessor extends HookBeanPostProcessor {
@@ -16,7 +16,7 @@ public abstract class MethodHookBeanPostProcessor extends HookBeanPostProcessor 
 	protected Elements<? extends Executor> getExecutors(Object bean, String beanName) {
 		TypeDescriptor source = TypeDescriptor.forObject(bean);
 		return ReflectionUtils.getDeclaredMethods(bean.getClass()).all().getElements()
-				.map((method) -> new MethodExecutor(source, method, bean));
+				.map((method) -> new ReflectionMethodExecutor(method, source, bean));
 	}
 
 	@Override

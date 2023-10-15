@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class EmptyAnnotatedElement implements AnnotatedElement, Serializable {
+class EmptyAnnotatedElement implements AnnotatedElement, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Override

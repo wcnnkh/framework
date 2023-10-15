@@ -10,15 +10,15 @@ import io.basc.framework.util.element.Elements;
  * @author wcnnkh
  *
  */
-public abstract class MethodExecutionInterceptor implements ExecutionInterceptor {
+public interface MethodExecutionInterceptor extends ExecutionInterceptor {
 
 	@Override
-	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (executor instanceof MethodExecutor) {
-			return intercept((MethodExecutor) executor, args);
+	default Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
+		if (executor instanceof ReflectionMethodExecutor) {
+			return intercept((ReflectionMethodExecutor) executor, args);
 		}
 		return executor.execute(args);
 	}
 
-	public abstract Object intercept(MethodExecutor executor, Elements<? extends Object> args) throws Throwable;
+	Object intercept(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable;
 }

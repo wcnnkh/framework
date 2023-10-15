@@ -4,8 +4,8 @@ import java.io.File;
 
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ResourceClassesLoader;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.spi.ResourceClassesLoader;
 
 public class DirectoryClassesLoader extends ResourceClassesLoader {
 

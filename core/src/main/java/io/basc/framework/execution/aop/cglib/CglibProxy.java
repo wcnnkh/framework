@@ -30,7 +30,12 @@ public class CglibProxy implements Proxy {
 	}
 
 	@Override
-	public Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) throws Throwable {
+	public Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) {
 		return enhancer.create(types.toArray(new Class[0]), args.toArray());
+	}
+
+	@Override
+	public Object execute() {
+		return enhancer.create();
 	}
 }

@@ -11,7 +11,7 @@ import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.execution.reflect.ConstructorExecutor;
+import io.basc.framework.execution.reflect.ReflectionConstructor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.element.Elements;
 
@@ -89,9 +89,9 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 			Method method);
 
 	@Nullable
-	protected DefaultBeanDefinition<ConstructorExecutor> resolveBeanDefinition(ConfigurableContext context,
+	protected DefaultBeanDefinition<ReflectionConstructor> resolveBeanDefinition(ConfigurableContext context,
 			Class<?> clazz) {
-		DefaultBeanDefinition<ConstructorExecutor> beanDefinition = new DefaultBeanDefinition<>();
+		DefaultBeanDefinition<ReflectionConstructor> beanDefinition = new DefaultBeanDefinition<>();
 		return beanDefinition;
 	}
 

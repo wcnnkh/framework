@@ -1,5 +1,6 @@
 package io.basc.framework.execution;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -9,6 +10,14 @@ import io.basc.framework.util.element.Elements;
  *
  */
 public interface Method extends Executable {
+
+	TypeDescriptor getTargetTypeDescriptor();
+
+	/**
+	 * 名称
+	 */
+	String getName();
+
 	default Object execute(Object target) throws Throwable {
 		return execute(target, Elements.empty());
 	}

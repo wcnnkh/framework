@@ -9,12 +9,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.basc.framework.env.Environment;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.servlet.http.DefaultHttpServletService;
 
 public final class ServletUtils {
 	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext", null);// 是否支持异步处理
@@ -43,12 +41,5 @@ public final class ServletUtils {
 
 	public static HttpServletResponse getHttpServletResponse(ServerHttpResponse response) {
 		return XUtils.getDelegate(response, HttpServletResponse.class);
-	}
-
-	public static ServletService createServletService(Environment environment) {
-		if (environment.isUnique(ServletService.class)) {
-			return environment.getBean(ServletService.class);
-		}
-		return new DefaultHttpServletService(environment);
 	}
 }

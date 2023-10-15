@@ -132,8 +132,9 @@ public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequ
 		return wrappedTarget.isSupportAsyncControl();
 	}
 
-	public ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response) {
-		return wrappedTarget.getAsyncControl(response);
+	@Override
+	public ServerAsyncControl getAsyncControl(ServerResponse serverResponse) {
+		return wrappedTarget.getAsyncControl(serverResponse);
 	}
 
 	public String getIp() {
@@ -160,5 +161,15 @@ public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequ
 			return ObjectUtils.equals(wrappedTarget, ((ServerHttpRequestWrapper) obj).wrappedTarget);
 		}
 		return false;
+	}
+
+	@Override
+	public String getProtocol() {
+		return wrappedTarget.getProtocol();
+	}
+
+	@Override
+	public String getScheme() {
+		return wrappedTarget.getScheme();
 	}
 }

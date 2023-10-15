@@ -8,7 +8,7 @@ import io.basc.framework.context.annotation.Component;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.util.element.Elements;
 
 @Component
@@ -17,14 +17,14 @@ public class RmiClientExecutionInterceptor implements ExecutionInterceptor {
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (executor instanceof MethodExecutor) {
-			return execute((MethodExecutor) executor, args);
+		if (executor instanceof ReflectionMethodExecutor) {
+			return execute((ReflectionMethodExecutor) executor, args);
 		}
 
 		return executor.execute(args);
 	}
 
-	protected Object execute(MethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+	protected Object execute(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
 		RmiClient rmiClient = AnnotatedElementUtils.getMergedAnnotation(executor.getReturnTypeDescriptor(),
 				RmiClient.class);
 		if (rmiClient == null) {

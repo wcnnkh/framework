@@ -8,22 +8,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.session.SqlSession;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.execution.reflect.MethodExecutionInterceptor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 
-public class MapperMethodInterceptor implements MethodInterceptor {
+public class MapperMethodInterceptor extends MethodExecutionInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
-	private final Processor<? super MethodInvoker, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
+	private final Processor<? super ReflectionMethodExecutor, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
 	private final Class<?> mapperClass;
 
 	public MapperMethodInterceptor(Class<?> mapperClass,
-			Processor<? super MethodInvoker, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
+			Processor<? super ReflectionMethodExecutor, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
 		this.mapperClass = mapperClass;
 		this.openSessionProcessor = openSessionProcessor;
 	}
 
-	private SqlSession openSession(MethodInvoker invoker) throws Throwable {
+	private SqlSession openSession(ReflectionMethodExecutor invoker) throws Throwable {
 		return openSessionProcessor.process(invoker);
 	}
 
@@ -40,20 +41,20 @@ public class MapperMethodInterceptor implements MethodInterceptor {
 	}
 
 	@Override
-	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		if (Modifier.isAbstract(invoker.getMethod().getModifiers())) {
-			Method method = invoker.getMethod();
+	public Object intercept(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+		Method method = executor.getExecutable();
+		if (Modifier.isAbstract(method.getModifiers())) {
 			SqlSession sqlSession = null;
 			try {
-				sqlSession = openSession(invoker);
+				sqlSession = openSession(executor);
 				MapperMethod mapperMethod = cachedMapperMethod(method, sqlSession);
-				return mapperMethod.execute(sqlSession, args);
+				return mapperMethod.execute(sqlSession, args.toArray());
 			} finally {
 				if (sqlSession != null) {
 					sqlSession.close();
 				}
 			}
 		}
-		return invoker.invoke(args);
+		return executor.execute(args);
 	}
 }

@@ -18,22 +18,6 @@ public interface ProxyFactory {
 	boolean canProxy(Class<?> sourceClass);
 
 	/**
-	 * 是否是代理类
-	 * 
-	 * @param proxyClass
-	 * @return
-	 */
-	boolean isProxy(Class<?> proxyClass);
-
-	/**
-	 * 获取未被代理的原始类型
-	 * 
-	 * @param proxyClass
-	 * @return 原始类
-	 */
-	Class<?> getUserClass(Class<?> proxyClass);
-
-	/**
 	 * 获取执行后可获取代理的对象
 	 * 
 	 * @param sourceClass
@@ -44,14 +28,21 @@ public interface ProxyFactory {
 	Proxy getProxy(Class<?> sourceClass, @Nullable Class<?>[] interfaces, ExecutionInterceptor executionInterceptor);
 
 	/**
-	 * 是否是一个代理类
+	 * 获取代理类
 	 * 
-	 * @param proxyClassName proxy class name
-	 * @param classLoader    class load for name
-	 * @return 是否已被代理
-	 * @throws ClassNotFoundException 类不存在
+	 * @param sourceClass
+	 * @param interfaces
+	 * @return
 	 */
-	boolean isProxy(String proxyClassName, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
+	Class<?> getProxyClass(Class<?> sourceClass, Class<?>[] interfaces);
+
+	/**
+	 * 获取未被代理的原始类型
+	 * 
+	 * @param proxyClass
+	 * @return 原始类
+	 */
+	Class<?> getUserClass(Class<?> proxyClass);
 
 	/**
 	 * 获取用户类
@@ -62,4 +53,22 @@ public interface ProxyFactory {
 	 * @throws ClassNotFoundException 类不存在
 	 */
 	Class<?> getUserClass(String proxyClassName, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
+
+	/**
+	 * 是否是代理类
+	 * 
+	 * @param proxyClass
+	 * @return
+	 */
+	boolean isProxy(Class<?> proxyClass);
+
+	/**
+	 * 是否是一个代理类
+	 * 
+	 * @param proxyClassName proxy class name
+	 * @param classLoader    class load for name
+	 * @return 是否已被代理
+	 * @throws ClassNotFoundException 类不存在
+	 */
+	boolean isProxy(String proxyClassName, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
 }

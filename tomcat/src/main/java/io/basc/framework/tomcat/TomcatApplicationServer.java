@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.descriptor.JspConfigDescriptor;
@@ -26,8 +25,9 @@ import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.boot.servlet.support.ApplicationServletContainerInitializer;
-import io.basc.framework.boot.servlet.support.ServletContextUtils;
+import io.basc.framework.boot.servlet.ApplicationServletContainerInitializer;
+import io.basc.framework.boot.servlet.DispatcherServlet;
+import io.basc.framework.boot.servlet.ServletContextUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.http.HttpMethod;
@@ -148,7 +148,7 @@ public class TomcatApplicationServer implements ApplicationServer, DisposableBea
 
 	protected void configureServlet(Context context, Application application) throws Exception {
 		String servletName = application.getName().map((e) -> StringUtils.isEmpty(e) ? null : e).orElse("framework");
-		Servlet servlet = ServletContextUtils.createServlet(application);
+		DispatcherServlet servlet = new DispatcherServlet();
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		wrapper.setAsyncSupported(true);
 

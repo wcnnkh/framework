@@ -9,4 +9,12 @@ public class DatabaseProperties implements Cloneable {
 	private String username;
 	private String password;
 	private String driverClassName;
+	/**
+	 * 基础包路径
+	 */
+	private String basePackage;
+	/**
+	 * 是否自动创建表
+	 */
+	private boolean automaticallyCreateTables = false;
 }

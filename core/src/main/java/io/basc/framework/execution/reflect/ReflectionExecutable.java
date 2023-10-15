@@ -12,29 +12,13 @@ import lombok.Data;
 
 @Data
 public class ReflectionExecutable<T extends Executable> implements io.basc.framework.execution.Executable {
-	private final TypeDescriptor source;
 	private final T executable;
-	private volatile String name;
 	private volatile TypeDescriptor returnTypeDescriptor;
 	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
 
-	public ReflectionExecutable(TypeDescriptor source, T executable) {
-		Assert.requiredArgument(source != null, "source");
+	public ReflectionExecutable(T executable) {
 		Assert.requiredArgument(executable != null, "executable");
-		this.source = source;
 		this.executable = executable;
-	}
-
-	@Override
-	public String getName() {
-		if (name == null) {
-			synchronized (this) {
-				if (name == null) {
-					this.name = source.getName();
-				}
-			}
-		}
-		return name;
 	}
 
 	@Override
@@ -64,6 +48,6 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 
 	@Override
 	public String toString() {
-		return source.toString();
+		return executable.toString();
 	}
 }

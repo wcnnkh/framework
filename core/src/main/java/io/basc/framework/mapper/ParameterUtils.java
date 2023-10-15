@@ -16,7 +16,6 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.support.DefaultParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.Elements;
 
@@ -88,16 +87,6 @@ public final class ParameterUtils {
 			map.put(names[i], args[i]);
 		}
 		return map;
-	}
-
-	public static boolean isisAssignable(ParameterDescriptors parameterDescriptors, Class<?>[] types) {
-		// 异或运算，如果两个不同则结果为1
-		if (parameterDescriptors.getElements().count() == 0 ^ ArrayUtils.isEmpty(types)) {
-			return false;
-		}
-
-		return parameterDescriptors.getElements().equals(Elements.forArray(types),
-				(l, r) -> ClassUtils.isAssignable(l.getTypeDescriptor().getType(), r));
 	}
 
 	public static <T> Object invoke(Class<T> type, Object instance, String name, Map<String, Object> parameterMap)

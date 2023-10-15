@@ -11,7 +11,7 @@ import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.timer.Delayed;
 import io.basc.framework.timer.ScheduleTaskConfig;
 import io.basc.framework.timer.Task;
@@ -51,7 +51,7 @@ public final class TimerApplicationBoot implements ApplicationPostProcessor {
 	}
 
 	private Task getTask(Object bean, Class<?> clz, Method method) {
-		MethodExecutor methodExecutor = new MethodExecutor(clz, method, bean);
+		ReflectionMethodExecutor methodExecutor = new ReflectionMethodExecutor(clz, method, bean);
 		return new CrontabRunnable(methodExecutor, parameterType);
 	}
 

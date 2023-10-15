@@ -9,8 +9,13 @@ import io.basc.framework.util.element.Elements;
 public class MapCombiner<K, V> implements Selector<Map<K, V>> {
 	private static final MapCombiner<?, ?> SINGLETON = new MapCombiner<>();
 
+	@SuppressWarnings("unchecked")
+	public static <L, R> MapCombiner<L, R> getSingleton() {
+		return (MapCombiner<L, R>) SINGLETON;
+	}
+
 	@Override
-	public Map<K, V> apply(Elements<Map<K, V>> elements) {
+	public Map<K, V> apply(Elements<? extends Map<K, V>> elements) {
 		Map<K, V> target = null;
 		for (Map<K, V> map : elements) {
 			if (map == null || map.isEmpty()) {
@@ -24,10 +29,5 @@ public class MapCombiner<K, V> implements Selector<Map<K, V>> {
 			target.putAll(map);
 		}
 		return target == null ? Collections.emptyMap() : target;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <L, R> MapCombiner<L, R> getSingleton() {
-		return (MapCombiner<L, R>) SINGLETON;
 	}
 }

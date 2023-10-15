@@ -35,11 +35,15 @@ public class JdkProxy implements Proxy {
 	}
 
 	@Override
-	public Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) throws Throwable {
+	public Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) {
 		if (!args.isEmpty()) {
 			throw new UnsupportedException("Jdk proxy does not support calls with parameters");
 		}
+		return execute();
+	}
 
+	@Override
+	public Object execute() {
 		return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces == null ? new Class<?>[0] : interfaces,
 				invocationHandler);
 	}

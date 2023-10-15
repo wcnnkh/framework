@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.util.element.Elements;
 import io.seata.common.Constants;
 import io.seata.config.ConfigurationFactory;
@@ -48,7 +48,7 @@ public class TccActionInterceptor implements ExecutionInterceptor {
 	 * @param invoker the invocation
 	 * @return the action interface method
 	 */
-	protected Method getActionInterfaceMethod(MethodExecutor invoker) {
+	protected Method getActionInterfaceMethod(ReflectionMethodExecutor invoker) {
 		Class<?> interfaceType = null;
 		try {
 			if (remotingDesc == null) {
@@ -79,7 +79,7 @@ public class TccActionInterceptor implements ExecutionInterceptor {
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (!(executor instanceof MethodExecutor)) {
+		if (!(executor instanceof ReflectionMethodExecutor)) {
 			return executor.execute(args);
 		}
 
@@ -88,7 +88,7 @@ public class TccActionInterceptor implements ExecutionInterceptor {
 			return executor.execute(args);
 		}
 
-		MethodExecutor methodExecutor = (MethodExecutor) executor;
+		ReflectionMethodExecutor methodExecutor = (ReflectionMethodExecutor) executor;
 		Method method = getActionInterfaceMethod(methodExecutor);
 		TwoPhaseBusinessAction businessAction = method.getAnnotation(TwoPhaseBusinessAction.class);
 		// try method

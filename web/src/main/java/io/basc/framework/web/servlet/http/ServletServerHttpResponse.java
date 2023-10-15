@@ -10,95 +10,73 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.util.Decorator;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.servlet.ServletServerResponse;
 
-public class ServletServerHttpResponse implements ServerHttpResponse, Decorator {
-	private HttpServletResponse httpServletResponse;
+public class ServletServerHttpResponse extends ServletServerResponse<HttpServletResponse>
+		implements ServerHttpResponse {
 	private HttpServletResponseHeaders headers;
-	private boolean bodyUse = false;
 
 	public ServletServerHttpResponse(HttpServletResponse httpServletResponse) {
-		this.httpServletResponse = httpServletResponse;
+		super(httpServletResponse);
 		this.headers = new HttpServletResponseHeaders(httpServletResponse);
 	}
 
-	public <T> T getDelegate(Class<T> targetType) {
-		return XUtils.getDelegate(httpServletResponse, targetType);
-	}
-
 	public OutputStream getOutputStream() throws IOException {
-		bodyUse = true;
 		headers.write();
-		return httpServletResponse.getOutputStream();
+		return super.getOutputStream();
 	}
 
 	public PrintWriter getWriter() throws IOException {
-		bodyUse = true;
 		headers.write();
-		return httpServletResponse.getWriter();
+		return super.getWriter();
 	}
 
 	public HttpHeaders getHeaders() {
 		return headers;
 	}
 
-	public boolean isCommitted() {
-		return httpServletResponse.isCommitted();
-	}
-
 	public void sendError(int sc, String msg) throws IOException {
 		try {
-			httpServletResponse.sendError(sc, msg);
+			wrappedTarget.sendError(sc, msg);
 		} catch (IllegalStateException ex) {
 			// Possibly on Tomcat when called too late: fall back to silent
 			// setStatus
-			httpServletResponse.setStatus(sc);
+			wrappedTarget.setStatus(sc);
 		}
 	}
 
 	public void addCookie(HttpCookie cookie) {
-		httpServletResponse.addCookie(ServletCookieCodec.INSTANCE.decode(cookie));
+		wrappedTarget.addCookie(ServletCookieCodec.INSTANCE.decode(cookie));
 	}
 
 	public void addCookie(String name, String value) {
 		Cookie cookie = new Cookie(name, value);
-		httpServletResponse.addCookie(cookie);
+		wrappedTarget.addCookie(cookie);
 	}
 
 	public void sendError(int sc) throws IOException {
-		httpServletResponse.sendError(sc);
+		wrappedTarget.sendError(sc);
 	}
 
 	public void sendRedirect(String location) throws IOException {
-		httpServletResponse.sendRedirect(location);
+		wrappedTarget.sendRedirect(location);
 	}
 
 	public void setStatus(int sc) {
-		httpServletResponse.setStatus(sc);
+		wrappedTarget.setStatus(sc);
 	}
 
 	public void setStatusCode(HttpStatus httpStatus) {
-		httpServletResponse.setStatus(httpStatus.value());
+		wrappedTarget.setStatus(httpStatus.value());
 	}
 
 	public int getStatus() {
-		return httpServletResponse.getStatus();
-	}
-
-	public HttpServletResponse getHttpServletResponse() {
-		return httpServletResponse;
+		return wrappedTarget.getStatus();
 	}
 
 	public void flush() throws IOException {
 		headers.write();
-		if (bodyUse) {
-			httpServletResponse.flushBuffer();
-		}
-	}
-
-	public void close() throws IOException {
-		flush();
+		super.flush();
 	}
 }

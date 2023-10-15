@@ -14,11 +14,15 @@ import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.aop.ProxyUtils;
+import io.basc.framework.execution.aop.Aop;
+import io.basc.framework.execution.reflect.MethodExecutionInterceptor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
@@ -102,13 +106,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 					annotations, mediaType)) {
 				MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(response.getHeaders());
 				// 代理response output, 因为一些实现会在调用getOutputStream后无法再设置Headers
-				OutputStream proxyOutput = (OutputStream) ProxyUtils.getFactory()
-						.getProxy(OutputStream.class, null, (invoker, args) -> {
-							if (!response.getHeaders().isReadyOnly()) {
-								response.getHeaders().putAll(headerMap);
-							}
-							return invoker.getMethod().invoke(response.getOutputStream(), args);
-						}).create();
+				OutputStream proxyOutput = getProxyOutputStream(null, headerMap);
 				messageBodyWriter.writeTo(body, typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
 						annotations, mediaType, headerMap, proxyOutput);
 				return;
@@ -131,14 +129,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 			if (messageBodyWriter.isWriteable(parameterDescriptor.getTypeDescriptor().getType(),
 					parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType)) {
 				MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(request.getHeaders());
-				// 代理response output, 因为一些实现会在调用getOutputStream后无法再设置Headers
-				OutputStream proxyOutput = (OutputStream) ProxyUtils.getFactory()
-						.getProxy(OutputStream.class, null, (invoker, args) -> {
-							if (!request.getHeaders().isReadyOnly()) {
-								request.getHeaders().putAll(headerMap);
-							}
-							return invoker.getMethod().invoke(request.getOutputStream(), args);
-						}).create();
+				OutputStream proxyOutput = getProxyOutputStream(request, headerMap);
 				messageBodyWriter.writeTo(parameter, parameterDescriptor.getTypeDescriptor().getType(),
 						parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType,
 						headerMap, proxyOutput);
@@ -151,5 +142,53 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 	@Override
 	public boolean isConfigured() {
 		return configured;
+	}
+
+	protected OutputStream getProxyOutputStream(ClientHttpRequest request, MultivaluedMap<String, String> headerMap) {
+		return (OutputStream) Aop.global()
+				.getProxy(OutputStream.class, null, new OutputStreamMethodExecutionInterceptor(request, headerMap))
+				.execute();
+	}
+
+	/**
+	 * 代理output, 因为一些实现会在调用getOutputStream后无法再设置Headers
+	 * 
+	 * @author wcnnkh
+	 *
+	 */
+	private static class OutputStreamMethodExecutionInterceptor implements MethodExecutionInterceptor {
+		private final OutputMessage outputMessage;
+		private final MultivaluedMap<String, String> headerMap;
+		private volatile boolean headerTag;
+		private volatile OutputStream outputStream;
+
+		public OutputStreamMethodExecutionInterceptor(OutputMessage outputMessage,
+				MultivaluedMap<String, String> headerMap) {
+			this.outputMessage = outputMessage;
+			this.headerMap = headerMap;
+		}
+
+		@Override
+		public Object intercept(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+			if (!outputMessage.getHeaders().isReadyOnly()) {
+				if (!headerTag) {
+					synchronized (this) {
+						if (!headerTag) {
+							headerTag = true;
+							outputMessage.getHeaders().putAll(headerMap);
+						}
+					}
+				}
+			}
+
+			if (outputStream == null) {
+				synchronized (this) {
+					if (outputStream == null) {
+						outputStream = outputMessage.getOutputStream();
+					}
+				}
+			}
+			return executor.execute(outputStream, args);
+		}
 	}
 }

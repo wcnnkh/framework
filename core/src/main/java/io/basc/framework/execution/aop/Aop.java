@@ -1,6 +1,7 @@
 package io.basc.framework.execution.aop;
 
 import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.aop.cglib.CglibProxyFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
@@ -12,7 +13,20 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Aop extends ProxyFactoryRegistry {
+public class Aop extends CglibProxyFactory {
+	private static Aop global;
+
+	public static Aop global() {
+		if (global == null) {
+			synchronized (Aop.class) {
+				if (global == null) {
+					global = new Aop();
+				}
+			}
+		}
+		return global;
+	}
+
 	private final String id;
 	private final ExecutionInterceptorRegistry executionInterceptorRegistry = new ExecutionInterceptorRegistry();
 

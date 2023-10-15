@@ -11,16 +11,13 @@ import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.mapper.Element;
-import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.EntityMapping;
-import io.basc.framework.orm.ObjectRelational;
-import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
@@ -65,15 +62,17 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest
 				? (AbstractBufferingClientHttpRequest) request
 				: new BufferingClientHttpRequestWrapper(request);
-		EntityMapping<? extends Property> mapping = getMapper().getMapping(parameterDescriptor.getTypeDescriptor().getType());
+		EntityMapping<? extends Property> mapping = getMapper()
+				.getMapping(parameterDescriptor.getTypeDescriptor().getType());
 		for (Property field : mapping.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}
 
-			String name =  mapppe.getName(parameterDescriptor.getType(), field.getGetter());
-			Object fieldValue = field.get(parameter);
-			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
+			Getter getter = field.getGetters().first();
+			String name = field.getName();
+			Object fieldValue = getter.get(parameter);
+			String value = (String) getConversionService().convert(fieldValue, getter.getTypeDescriptor(),
 					TypeDescriptor.valueOf(String.class));
 			if (bufferingClientHttpRequest.getBufferedOutput().size() != 0) {
 				bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
@@ -89,7 +88,8 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		EntityMapping<? extends Property> fields = getMapper().getMapping(parameterDescriptor.getTypeDescriptor().getType()).all();
+		EntityMapping<? extends Property> fields = getMapper()
+				.getMapping(parameterDescriptor.getTypeDescriptor().getType()).all();
 		for (Element field : fields.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;

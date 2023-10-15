@@ -2,7 +2,7 @@ package io.basc.framework.db;
 
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.template.JdbcTemplate;
-import io.basc.framework.jdbc.template.dialect.SqlDialect;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.EntityRepositoryRegistry;
 
 /**
@@ -18,11 +18,32 @@ public class Database extends JdbcTemplate {
 		return databaseRegistry;
 	}
 
-	public Database getDatabase(Class<?> entityClass) {
+	public static Database getDatabase(Class<?> entityClass) {
 		return databaseRegistry.find(entityClass);
 	}
 
-	public Database(ConnectionFactory connectionFactory, SqlDialect dialect) {
+	private DatabaseProperties databaseProperties;
+
+	public Database(ConnectionFactory connectionFactory, DatabaseDialect dialect) {
+		this(connectionFactory, dialect, new DatabaseProperties());
+	}
+
+	public Database(ConnectionFactory connectionFactory, DatabaseDialect dialect,
+			@Nullable DatabaseProperties databaseProperties) {
 		super(connectionFactory, dialect);
+		this.databaseProperties = databaseProperties;
+	}
+
+	public DatabaseProperties getDatabaseProperties() {
+		return databaseProperties;
+	}
+
+	public void setDatabaseProperties(DatabaseProperties databaseProperties) {
+		this.databaseProperties = databaseProperties;
+	}
+
+	@Override
+	public DatabaseDialect getMapper() {
+		return (DatabaseDialect) super.getMapper();
 	}
 }

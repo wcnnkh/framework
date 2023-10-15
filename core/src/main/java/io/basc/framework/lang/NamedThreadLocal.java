@@ -22,6 +22,10 @@ public class NamedThreadLocal<T> extends ThreadLocal<T> {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public String toString() {
 		return this.name;

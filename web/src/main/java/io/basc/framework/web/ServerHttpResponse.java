@@ -1,15 +1,12 @@
 package io.basc.framework.web;
 
-import java.io.Closeable;
-import java.io.Flushable;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.HttpCookie;
 
 import io.basc.framework.http.HttpOutputMessage;
 import io.basc.framework.http.HttpStatus;
 
-public interface ServerHttpResponse extends HttpOutputMessage, Closeable, Flushable {
+public interface ServerHttpResponse extends HttpOutputMessage, ServerResponse {
 	void addCookie(HttpCookie cookie);
 
 	void addCookie(String name, String value);
@@ -25,8 +22,4 @@ public interface ServerHttpResponse extends HttpOutputMessage, Closeable, Flusha
 	void setStatus(int sc);
 
 	int getStatus();
-
-	PrintWriter getWriter() throws IOException;
-
-	boolean isCommitted();
 }

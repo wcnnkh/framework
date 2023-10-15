@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
@@ -55,7 +56,13 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 		return returnValue;
 	}
 
-	protected abstract Object getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor);
+	protected Object getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
+		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
+	}
 
-	protected abstract Object getDefaultReturnValue(Executor executor);
+	protected Object getDefaultReturnValue(Executor executor) {
+		return getDefaultValue(executor, executor.getReturnTypeDescriptor());
+	}
+
+	protected abstract Object getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
 }

@@ -12,7 +12,7 @@ import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.annotation.KeyValuePair;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
@@ -129,7 +129,7 @@ public class AnnotationActionResolverExtend implements ActionResolverExtend {
 			}
 		}
 
-		String parentId = getParentId(new MultiAnnotatedElement(action.getSourceClass(), action.getMethod()),
+		String parentId = getParentId(new MergedAnnotatedElement(action.getSourceClass(), action.getMethod()),
 				action.getSourceClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {

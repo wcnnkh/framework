@@ -13,7 +13,7 @@ import io.basc.framework.context.config.support.BeanDefinitionRegistryContextPos
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.ExecutionInterceptors;
-import io.basc.framework.execution.reflect.ConstructorExecutor;
+import io.basc.framework.execution.reflect.ReflectionConstructor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
 
@@ -39,7 +39,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 		return AnnotatedElementUtils.hasAnnotation(method, Bean.class);
 	}
 
-	private ExecutionInterceptor getExecutionInterceptor(ConfigurableContext context, EnableAop enableAop) {
+	private ExecutionInterceptor getExecutionInterceptor(ConfigurableContext context, Aop enableAop) {
 		Elements<ExecutionInterceptor> nameExecutionInterceptors = Elements.forArray(enableAop.interceptorNames())
 				.map((e) -> context.getBean(e, ExecutionInterceptor.class));
 		Elements<ExecutionInterceptor> classExecutionInterceptors = Elements.forArray(enableAop.interceptors())
@@ -50,14 +50,14 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
-	protected DefaultBeanDefinition<ConstructorExecutor> resolveBeanDefinition(ConfigurableContext context,
+	protected DefaultBeanDefinition<ReflectionConstructor> resolveBeanDefinition(ConfigurableContext context,
 			Class<?> clazz) {
-		DefaultBeanDefinition<ConstructorExecutor> beanDefinition = super.resolveBeanDefinition(context, clazz);
+		DefaultBeanDefinition<ReflectionConstructor> beanDefinition = super.resolveBeanDefinition(context, clazz);
 		beanDefinition.setSingleton(isSingleton(clazz));
 		beanDefinition.setScope(getScope(clazz, clazz, Scope.DEFAULT));
-		EnableAop enableAop = AnnotatedElementUtils.getMergedAnnotation(clazz, EnableAop.class);
+		Aop enableAop = AnnotatedElementUtils.getMergedAnnotation(clazz, Aop.class);
 		if (enableAop != null) {
-			Elements<? extends ConstructorExecutor> executors = beanDefinition.getExecutors();
+			Elements<? extends ReflectionConstructor> executors = beanDefinition.getExecutors();
 			executors = executors.peek((constructor) -> {
 				constructor.setAop(context.getAop());
 				constructor.setAopInterfaces(enableAop.interfaces());
@@ -80,7 +80,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 				originBeanName, originBeanDefinition, method);
 		beanDefinition.setSingleton(isSingleton(method));
 		beanDefinition.setScope(getScope(clazz, method, originBeanDefinition.getScope()));
-		EnableAop enableAop = AnnotatedElementUtils.getMergedAnnotation(clazz, EnableAop.class);
+		Aop enableAop = AnnotatedElementUtils.getMergedAnnotation(clazz, Aop.class);
 		if (enableAop != null) {
 			Elements<? extends BeanFactoryExecutor> executors = beanDefinition.getExecutors();
 			executors = executors.peek((constructor) -> {

@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
@@ -88,7 +88,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 			parameter = (Parameter) value;
 			parameter = parameter.rename(property.getName());
 		} else {
-			MultiAnnotatedElement annotatedElement = new MultiAnnotatedElement(
+			MergedAnnotatedElement annotatedElement = new MergedAnnotatedElement(
 					property.getGetters().map((e) -> e.getTypeDescriptor()));
 			TypeDescriptor typeDescriptor = new TypeDescriptor(ResolvableType.forClass(value.getClass()),
 					value.getClass(), annotatedElement);
@@ -117,7 +117,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 			F property = propertyIterator.next();
 			Getter getter = property.getGetters().first();
 			Object value = getter.get(entity);
-			MultiAnnotatedElement annotatedElement = new MultiAnnotatedElement(
+			MergedAnnotatedElement annotatedElement = new MergedAnnotatedElement(
 					property.getGetters().map((e) -> e.getTypeDescriptor()));
 			TypeDescriptor typeDescriptor = new TypeDescriptor(getter.getTypeDescriptor().getResolvableType(),
 					value.getClass(), annotatedElement);

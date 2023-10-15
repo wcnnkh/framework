@@ -14,7 +14,7 @@ import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.mapper.MergedParameterDescriptor;
 import io.basc.framework.util.Return;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
@@ -60,7 +60,7 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 		}
 
 		Return<Object> result = null;
-		for (final ParameterDescriptors parameterDescriptors : beanDefinition) {
+		for (final MergedParameterDescriptor parameterDescriptors : beanDefinition) {
 			if (isAccept(parameterDescriptors)) {
 				if (beanDefinition.isSingleton()) {
 					result = singletonRegistry.getSingleton(beanDefinition.getId(), () -> {
@@ -131,7 +131,7 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 			return true;
 		}
 
-		for (ParameterDescriptors parameterDescriptors : beanDefinition) {
+		for (MergedParameterDescriptor parameterDescriptors : beanDefinition) {
 			if (isAccept(parameterDescriptors)) {
 				return true;
 			}

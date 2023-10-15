@@ -17,11 +17,11 @@ public class WeightedRandomSelector<E> implements Selector<E> {
 	public static final WeightedRandomSelector<?> INSTANCE = new WeightedRandomSelector<>();
 
 	@Override
-	public E apply(Elements<E> elements) {
+	public E apply(Elements<? extends E> elements) {
 		if (elements == null) {
 			return null;
 		}
-		List<E> list = elements.toList();
+		List<? extends E> list = elements.toList();
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}

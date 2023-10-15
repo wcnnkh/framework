@@ -13,16 +13,16 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.HttpServiceInterceptor;
-import io.basc.framework.web.HttpServiceInterceptorChain;
 import io.basc.framework.web.HttpServiceRegistry;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.ServerHttpResponseCompleteAsyncListener;
+import io.basc.framework.web.ServerResponseCompleteAsyncListener;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.cors.Cors;
 import io.basc.framework.web.cors.CorsRegistry;
 import io.basc.framework.web.cors.CorsUtils;
+import io.basc.framework.web.intercept.HttpServiceInterceptorChain;
 import io.basc.framework.web.resource.StaticResourceHttpService;
 
 public abstract class AbstractHttpService implements HttpService, Configurable {
@@ -83,7 +83,7 @@ public abstract class AbstractHttpService implements HttpService, Configurable {
 					if (request.isSupportAsyncControl()) {
 						ServerHttpAsyncControl serverHttpAsyncControl = request.getAsyncControl(response);
 						if (serverHttpAsyncControl.isStarted()) {
-							serverHttpAsyncControl.addListener(new ServerHttpResponseCompleteAsyncListener(response));
+							serverHttpAsyncControl.addListener(new ServerResponseCompleteAsyncListener(response));
 							return;
 						}
 					}

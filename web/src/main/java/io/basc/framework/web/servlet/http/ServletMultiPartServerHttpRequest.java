@@ -24,7 +24,7 @@ public class ServletMultiPartServerHttpRequest extends ServletServerHttpRequest 
 	public Collection<MultipartMessage> getMultipartMessages() {
 		Collection<Part> parts;
 		try {
-			parts = getHttpServletRequest().getParts();
+			parts = wrappedTarget.getParts();
 		} catch (IOException | ServletException e) {
 			throw new WebException(e);
 		}

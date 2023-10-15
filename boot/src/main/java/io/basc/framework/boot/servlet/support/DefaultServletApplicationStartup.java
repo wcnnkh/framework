@@ -1,12 +1,17 @@
 package io.basc.framework.boot.servlet.support;
 
+import javax.servlet.FilterRegistration;
+import javax.servlet.Registration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.boot.Application;
+import io.basc.framework.boot.servlet.ServletApplication;
 import io.basc.framework.boot.servlet.ServletApplicationStartup;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
+import io.basc.framework.boot.servlet.ServletContextUtils;
+import io.basc.framework.boot.servlet.ServletRegistration;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Return;
@@ -46,6 +51,9 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 		}
 
 		servletContext.setAttribute(nameToUse, true);
+		
+		
+		
 		afterStarted(servletContext, application);
 		ServletContextUtils.startLogger(logger, servletContext, null, true);
 		return true;
@@ -55,6 +63,17 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 		for (ServletContextInitialization initialization : application
 				.getServiceLoader(ServletContextInitialization.class).getServices()) {
 			initialization.init(application, servletContext);
+		}
+	}
+
+	private void register(ServletContext servletContext, Application application) {
+		for(Registration registration : application.getServiceLoader(Registration.class).getServices()) {
+			if(registration instanceof FilterRegistration) {
+				FilterRegistration filterRegistration = (FilterRegistration) registration;
+				
+			} else if(registration instanceof ServletRegistration) {
+				
+			}
 		}
 	}
 }

@@ -1,10 +1,6 @@
 package io.basc.framework.web.servlet.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpCookie;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -28,38 +24,27 @@ import io.basc.framework.security.session.Session;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.collect.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.servlet.ServletServerRequest;
 
-public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
+public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRequest>
+		implements ServerHttpRequest, Decorator {
 	private HttpHeaders headers;
-	private HttpServletRequest httpServletRequest;
-	private HttpServletAsyncControl asyncControl;
 	private MultiValueMap<String, String> parameterMap;
 	private MultiValueMap<String, String> restfulParameterMap;
 
 	public ServletServerHttpRequest(HttpServletRequest httpServletRequest) {
-		this.httpServletRequest = httpServletRequest;
-	}
-
-	public HttpServletRequest getHttpServletRequest() {
-		return httpServletRequest;
+		super(httpServletRequest);
 	}
 
 	public String getPath() {
-		return httpServletRequest.getServletPath();
-	}
-
-	public <T> T getDelegate(Class<T> targetType) {
-		return XUtils.getDelegate(httpServletRequest, targetType);
+		return wrappedTarget.getServletPath();
 	}
 
 	public HttpCookie[] getCookies() {
-		javax.servlet.http.Cookie[] cookies = httpServletRequest.getCookies();
+		javax.servlet.http.Cookie[] cookies = wrappedTarget.getCookies();
 		if (cookies == null) {
 			return new HttpCookie[0];
 		}
@@ -72,45 +57,25 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	}
 
 	public Session getSession() {
-		HttpSession session = httpServletRequest.getSession();
+		HttpSession session = wrappedTarget.getSession();
 		return session == null ? null : new ServletHttpSession(session);
 	}
 
 	public Session getSession(boolean create) {
-		HttpSession httpSession = httpServletRequest.getSession(create);
+		HttpSession httpSession = wrappedTarget.getSession(create);
 		return httpSession == null ? null : new ServletHttpSession(httpSession);
 	}
 
 	public Principal getPrincipal() {
-		return httpServletRequest.getUserPrincipal();
-	}
-
-	private InetSocketAddress localAddress;
-
-	public InetSocketAddress getLocalAddress() {
-		if (localAddress == null) {
-			localAddress = new InetSocketAddress(this.httpServletRequest.getLocalName(),
-					this.httpServletRequest.getLocalPort());
-		}
-		return localAddress;
-	}
-
-	private InetSocketAddress remoteAddress;
-
-	public InetSocketAddress getRemoteAddress() {
-		if (remoteAddress == null) {
-			remoteAddress = new InetSocketAddress(this.httpServletRequest.getRemoteHost(),
-					this.httpServletRequest.getRemotePort());
-		}
-		return remoteAddress;
+		return wrappedTarget.getUserPrincipal();
 	}
 
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
-			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
+			for (Enumeration<?> names = wrappedTarget.getHeaderNames(); names.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
-				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues
+				for (Enumeration<?> headerValues = wrappedTarget.getHeaders(headerName); headerValues
 						.hasMoreElements();) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
@@ -122,7 +87,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 			try {
 				MediaType contentType = this.headers.getContentType();
 				if (contentType == null) {
-					String requestContentType = httpServletRequest.getContentType();
+					String requestContentType = wrappedTarget.getContentType();
 					if (StringUtils.isNotEmpty(requestContentType)) {
 						this.headers.set(HttpHeaders.CONTENT_TYPE, requestContentType);
 					}
@@ -144,7 +109,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 			}
 
 			if (this.headers.getContentLength() < 0) {
-				int requestContentLength = httpServletRequest.getContentLength();
+				int requestContentLength = wrappedTarget.getContentLength();
 				if (requestContentLength != -1) {
 					this.headers.setContentLength(requestContentLength);
 				}
@@ -158,15 +123,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	}
 
 	public URI getURI() {
-		return UriUtils.toUri(httpServletRequest.getRequestURI());
-	}
-
-	public BufferedReader getReader() throws IOException {
-		return httpServletRequest.getReader();
-	}
-
-	public InputStream getInputStream() throws IOException {
-		return httpServletRequest.getInputStream();
+		return UriUtils.toUri(wrappedTarget.getRequestURI());
 	}
 
 	private void initParameterMap() {
@@ -174,7 +131,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 			return;
 		}
 
-		Map<String, String[]> map = httpServletRequest.getParameterMap();
+		Map<String, String[]> map = wrappedTarget.getParameterMap();
 		if (map.isEmpty()) {
 			this.parameterMap = CollectionUtils.emptyMultiValueMap();
 			return;
@@ -201,58 +158,20 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	@Override
 	public String getCharacterEncoding() {
 		String charsetName = ServerHttpRequest.super.getCharacterEncoding();
-		return charsetName == null ? httpServletRequest.getCharacterEncoding() : charsetName;
+		return charsetName == null ? wrappedTarget.getCharacterEncoding() : charsetName;
 	}
 
 	public String getRawMethod() {
-		return httpServletRequest.getMethod();
+		return wrappedTarget.getMethod();
 	}
 
 	public String getContextPath() {
-		return httpServletRequest.getContextPath();
-	}
-
-	public void setAttribute(String name, Object o) {
-		httpServletRequest.setAttribute(name, o);
-	}
-
-	public void removeAttribute(String name) {
-		httpServletRequest.removeAttribute(name);
-	}
-
-	public Object getAttribute(String name) {
-		return httpServletRequest.getAttribute(name);
-	}
-
-	public Enumeration<String> getAttributeNames() {
-		return httpServletRequest.getAttributeNames();
-	}
-
-	@Override
-	public long getContentLength() {
-		return httpServletRequest.getContentLength();
-	}
-
-	public boolean isSupportAsyncControl() {
-		return httpServletRequest.isAsyncSupported();
-	}
-
-	public ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response) {
-		if (asyncControl == null) {
-			if (response instanceof ServletServerHttpResponse) {
-				this.asyncControl = new HttpServletAsyncControl(httpServletRequest,
-						((ServletServerHttpResponse) response).getHttpServletResponse());
-			} else {
-				throw new IllegalArgumentException(
-						"Response must be a ServletServerHttpResponse: " + response.getClass());
-			}
-		}
-		return this.asyncControl;
+		return wrappedTarget.getContextPath();
 	}
 
 	public String getIp() {
 		String ip = getHeaders().getIp();
-		return ip == null ? httpServletRequest.getRemoteHost() : ip;
+		return ip == null ? wrappedTarget.getRemoteHost() : ip;
 	}
 
 	public MultiValueMap<String, String> getRestfulParameterMap() {
@@ -270,11 +189,11 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(httpServletRequest.getMethod());
-		sb.append(" " + httpServletRequest.getServletPath());
-		sb.append(" " + httpServletRequest.getProtocol());
+		sb.append(wrappedTarget.getMethod());
+		sb.append(" " + wrappedTarget.getServletPath());
+		sb.append(" " + wrappedTarget.getProtocol());
 
-		String contentType = httpServletRequest.getContentType();
+		String contentType = wrappedTarget.getContentType();
 		if (StringUtils.isNotEmpty(contentType)) {
 			sb.append(" " + contentType);
 		}

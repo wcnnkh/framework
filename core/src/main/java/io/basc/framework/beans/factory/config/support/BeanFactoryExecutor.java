@@ -6,18 +6,18 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.reflect.DefaultMethod;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultParameterDescriptor;
 import io.basc.framework.util.element.Elements;
 
-public class BeanFactoryExecutor extends DefaultMethod implements Executor {
+public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
 	private static final ParameterDescriptor PARAMETER_DESCRIPTOR = new DefaultParameterDescriptor("beanFactory",
 			TypeDescriptor.valueOf(BeanFactory.class));
 	private final String targetBeanName;
 
-	public BeanFactoryExecutor(TypeDescriptor source, Method executable, String targetBeanName) {
-		super(source, executable);
+	public BeanFactoryExecutor(Method executable, TypeDescriptor source, String targetBeanName) {
+		super(executable, source);
 		this.targetBeanName = targetBeanName;
 	}
 

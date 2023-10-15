@@ -14,11 +14,11 @@ public abstract class ConstructorExecutionInterceptor implements ExecutionInterc
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (executor instanceof ConstructorExecutor) {
-			return intercept((ConstructorExecutor) executor, args);
+		if (executor instanceof ReflectionConstructor) {
+			return intercept((ReflectionConstructor) executor, args);
 		}
 		return executor.execute(args);
 	}
 
-	public abstract Object intercept(ConstructorExecutor executor, Elements<? extends Object> args) throws Throwable;
+	public abstract Object intercept(ReflectionConstructor executor, Elements<? extends Object> args) throws Throwable;
 }

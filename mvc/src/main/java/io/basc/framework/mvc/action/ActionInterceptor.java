@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.action;
+wpackage io.basc.framework.mvc.action;
 
 import io.basc.framework.mvc.HttpChannel;
 

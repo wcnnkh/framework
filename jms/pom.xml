@@ -11,7 +11,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>boot</artifactId>
+			<artifactId>messageing</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.jms</groupId>

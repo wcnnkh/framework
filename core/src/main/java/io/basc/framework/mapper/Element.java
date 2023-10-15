@@ -34,6 +34,14 @@ public interface Element extends Named {
 	 */
 	Elements<? extends Getter> getGetters();
 
+	default MergedGetter getter() {
+		return new MergedGetter(getName(), getGetters());
+	}
+
+	default MergedSetter setter() {
+		return new MergedSetter(getName(), getSetters());
+	}
+
 	default boolean isSupportSetter() {
 		return !getSetters().isEmpty();
 	}

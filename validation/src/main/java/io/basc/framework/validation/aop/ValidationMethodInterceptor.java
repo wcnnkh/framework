@@ -8,8 +8,8 @@ import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.execution.reflect.ConstructorExecutor;
-import io.basc.framework.execution.reflect.MethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionConstructor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.validation.FastValidator;
 
@@ -29,16 +29,16 @@ public class ValidationMethodInterceptor implements ExecutionInterceptor {
 
 	@Override
 	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (executor instanceof MethodExecutor) {
-			MethodExecutor methodExecutor = (MethodExecutor) executor;
+		if (executor instanceof ReflectionMethodExecutor) {
+			ReflectionMethodExecutor methodExecutor = (ReflectionMethodExecutor) executor;
 			FastValidator.validate(() -> validator.forExecutables().validateParameters(methodExecutor.getTarget(),
 					methodExecutor.getExecutable(), args.toArray()));
 			Object returnValue = executor.execute(args);
 			FastValidator.validate(() -> validator.forExecutables().validateReturnValue(methodExecutor.getTarget(),
 					methodExecutor.getExecutable(), returnValue));
 			return returnValue;
-		} else if (executor instanceof ConstructorExecutor) {
-			ConstructorExecutor constructorExecutor = (ConstructorExecutor) executor;
+		} else if (executor instanceof ReflectionConstructor) {
+			ReflectionConstructor constructorExecutor = (ReflectionConstructor) executor;
 			FastValidator.validate(() -> validator.forExecutables()
 					.validateConstructorParameters(constructorExecutor.getExecutable(), args.toArray()));
 			Object returnValue = executor.execute(args);

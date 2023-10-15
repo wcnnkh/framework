@@ -6,21 +6,19 @@ import java.util.Arrays;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
-import io.basc.framework.execution.aop.ProxyFactory;
+import io.basc.framework.execution.aop.jdk.JdkProxyFactory;
 import io.basc.framework.util.ClassUtils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
 
-public class CglibProxyFactory implements ProxyFactory {
+public class CglibProxyFactory extends JdkProxyFactory {
+
+	/** The CGLIB class separator: "$$" */
+	public static final String CGLIB_CLASS_SEPARATOR = "$$";
 
 	@Override
 	public boolean canProxy(Class<?> clazz) {
-		return !Modifier.isFinal(clazz.getModifiers());
-	}
-
-	@Override
-	public boolean isProxy(Class<?> clazz) {
-		return Enhancer.isEnhanced(clazz);
+		return super.canProxy(clazz) || !Modifier.isFinal(clazz.getModifiers());
 	}
 
 	private Class<?>[] getInterfaces(Class<?> clazz, Class<?>[] interfaces) {
@@ -40,20 +38,25 @@ public class CglibProxyFactory implements ProxyFactory {
 		return Arrays.copyOf(interfacesToUse, index);
 	}
 
+	@Override
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
+		return new CglibProxy(TypeDescriptor.valueOf(clazz), getInterfaces(clazz, interfaces), executionInterceptor);
+	}
+
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
+		if (super.canProxy(clazz)) {
+			return super.getProxyClass(clazz, interfaces);
+		}
 		Enhancer enhancer = CglibUtils.createEnhancer(clazz, getInterfaces(clazz, interfaces));
 		enhancer.setCallbackType(ExecutionInterceptorToMethodInterceptor.class);
 		return enhancer.createClass();
 	}
 
 	@Override
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		return new CglibProxy(TypeDescriptor.valueOf(clazz), getInterfaces(clazz, interfaces),
-				executionInterceptor);
-	}
-
-	@Override
 	public Class<?> getUserClass(Class<?> clazz) {
+		if (super.isProxy(clazz)) {
+			return super.getUserClass(clazz);
+		}
 		Class<?> clz = clazz.getSuperclass();
 		if (clz == null || clz == Object.class) {
 			return clazz;
@@ -61,8 +64,18 @@ public class CglibProxyFactory implements ProxyFactory {
 		return clz;
 	}
 
-	/** The CGLIB class separator: "$$" */
-	public static final String CGLIB_CLASS_SEPARATOR = "$$";
+	@Override
+	public Class<?> getUserClass(String className, ClassLoader classLoader) throws ClassNotFoundException {
+		if (isProxy(className, classLoader)) {
+			return super.getUserClass(className, classLoader);
+		}
+		return ClassUtils.forName(className.substring(0, className.indexOf(CGLIB_CLASS_SEPARATOR)), classLoader);
+	}
+
+	@Override
+	public boolean isProxy(Class<?> clazz) {
+		return super.isProxy(clazz) || Enhancer.isEnhanced(clazz);
+	}
 
 	@Override
 	public boolean isProxy(String className, ClassLoader classLoader) throws ClassNotFoundException {
@@ -70,11 +83,6 @@ public class CglibProxyFactory implements ProxyFactory {
 			return false;
 		}
 
-		return className.contains(CGLIB_CLASS_SEPARATOR);
-	}
-
-	@Override
-	public Class<?> getUserClass(String className, ClassLoader classLoader) throws ClassNotFoundException {
-		return ClassUtils.forName(className.substring(0, className.indexOf(CGLIB_CLASS_SEPARATOR)), classLoader);
+		return super.isProxy(className, classLoader) || className.contains(CGLIB_CLASS_SEPARATOR);
 	}
 }
