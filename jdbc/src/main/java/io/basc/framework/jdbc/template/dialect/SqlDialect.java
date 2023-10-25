@@ -30,4 +30,12 @@ public interface SqlDialect extends TableMapper, SqlTypeFactory {
 	Sql toLastInsertIdSql(Repository repository) throws SqlDialectException;
 
 	Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException;
+
+	/**
+	 * 获取创建指定数据库名称的语句
+	 * 
+	 * @param databaseName
+	 * @return
+	 */
+	Sql getCreateDatabaseSql(String databaseName);
 }

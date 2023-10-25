@@ -1,22 +1,22 @@
-package io.basc.framework.jdbc.config;
+package io.basc.framework.jdbc.template.support;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import io.basc.framework.jdbc.ConnectionFactory;
+import io.basc.framework.jdbc.support.DriverManagerConnectionFactory;
 import io.basc.framework.util.StringUtils;
 
-public class DriverManagerConnectionFactory implements ConnectionFactory {
+public class DriverManagerDatabaseConnectionFactory extends DriverManagerConnectionFactory {
 	private final String url;
 	private final Properties info;
 
-	public DriverManagerConnectionFactory(String url) {
+	public DriverManagerDatabaseConnectionFactory(String url) {
 		this(url, null, null);
 	}
 
-	public DriverManagerConnectionFactory(String url, String user, String password) {
+	public DriverManagerDatabaseConnectionFactory(String url, String user, String password) {
 		if (StringUtils.isEmpty(url)) {
 			throw new IllegalArgumentException("The url cannot be null");
 		}
@@ -33,7 +33,7 @@ public class DriverManagerConnectionFactory implements ConnectionFactory {
 		this.info = info;
 	}
 
-	public DriverManagerConnectionFactory(String url, Properties info) {
+	public DriverManagerDatabaseConnectionFactory(String url, Properties info) {
 		if (StringUtils.isEmpty(url)) {
 			throw new IllegalArgumentException("The url cannot be null");
 		}

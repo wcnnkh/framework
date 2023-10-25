@@ -327,4 +327,9 @@ public abstract class AbstractSqlDialect extends DefaultTableMapper implements S
 		appendWhere(sb, params, operation.getConditions());
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
+
+	@Override
+	public Sql getCreateDatabaseSql(String databaseName) {
+		return new SimpleSql("CREATE DATABASE `" + databaseName + "`");
+	}
 }
