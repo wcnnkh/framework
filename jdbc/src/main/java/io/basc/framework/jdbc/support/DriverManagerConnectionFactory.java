@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class DriverManagerConnectionFactory implements ConnectionFactory {
 	@NonNull
 	private String url;
-	private DriverConnectionProperties info;
+	private DriverConnectionInfo info;
 
 	public Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, info);

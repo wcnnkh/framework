@@ -5,6 +5,7 @@ import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.UpdateOperation;
+import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.template.SqlDialectException;
 import io.basc.framework.jdbc.template.TableMapper;
@@ -32,10 +33,10 @@ public interface SqlDialect extends TableMapper, SqlTypeFactory {
 	Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException;
 
 	/**
-	 * 获取创建指定数据库名称的语句
+	 * 获取所有的表名
 	 * 
-	 * @param databaseName
+	 * @param operations
 	 * @return
 	 */
-	Sql getCreateDatabaseSql(String databaseName);
+	Elements<String> getTableNames(ConnectionOperations operations);
 }

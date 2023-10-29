@@ -5,11 +5,11 @@ import java.util.Collection;
 
 import io.basc.framework.codec.support.URLCodec;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.strings.QueryStringConverter;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
-import io.basc.framework.net.uri.QueryStringConverter;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.MultiValueMap;

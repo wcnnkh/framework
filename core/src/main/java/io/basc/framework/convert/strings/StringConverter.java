@@ -13,6 +13,7 @@ import io.basc.framework.convert.config.support.DefaultReversibleConverterRegist
 import io.basc.framework.convert.lang.ResourceToString;
 import io.basc.framework.util.function.Optional;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Setter
@@ -92,26 +93,43 @@ public class StringConverter extends DefaultReversibleConverterRegistry<String, 
 		return value == null ? defaultValue : value.shortValue();
 	}
 
+	@NonNull
 	private ReaderConverter readerConverter = new ReaderConverter();
+	@NonNull
 	private EnumConverter enumConverter = new EnumConverter();
+	@NonNull
 	private CharsetConverter charsetConverter = new CharsetConverter();
+	@NonNull
 	private ClassConverter classConverter = new ClassConverter();
+	@NonNull
 	private TimeZoneConverter timeZoneConverter = new TimeZoneConverter();
+	@NonNull
 	private CurrencyConverter currencyConverter = new CurrencyConverter();
+	@NonNull
 	private LocaleConverter localeConverter = new LocaleConverter();
+	@NonNull
 	private BigDecimalConverter bigDecimalConverter = new BigDecimalConverter();
+	@NonNull
 	private BigIntegerConverter bigIntegerConverter = new BigIntegerConverter();
 
 	// 基本类型
+	@NonNull
 	private CharacterConverter characterConverter = new CharacterConverter();
+	@NonNull
 	private BooleanConverter booleanConverter = new BooleanConverter();
+	@NonNull
 	private DoubleConverter doubleConverter = new DoubleConverter();
+	@NonNull
 	private ByteConverter byteConverter = new ByteConverter();
+	@NonNull
 	private FloatConverter floatConverter = new FloatConverter();
+	@NonNull
 	private ShortConverter shortConverter = new ShortConverter();
+	@NonNull
 	private IntegerConverter integerConverter = new IntegerConverter();
+	@NonNull
 	private LongConverter longConverter = new LongConverter();
-
+	@NonNull
 	private ResourceToString resourceToString = ResourceToString.DEFAULT;
 
 	public StringConverter() {
