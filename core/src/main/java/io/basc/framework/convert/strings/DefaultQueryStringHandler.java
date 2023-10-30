@@ -2,21 +2,16 @@ package io.basc.framework.convert.strings;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.BiPredicate;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.function.ConsumeProcessor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
-@AllArgsConstructor
 public class DefaultQueryStringHandler implements QueryStringHandler {
 	private String connector;
 	private String keyValueConnector;
-	private Codec<CharSequence, CharSequence> codec;
+	private Codec<String, String> codec;
 
 	public DefaultQueryStringHandler() {
 		this("&", "?");
@@ -28,7 +23,7 @@ public class DefaultQueryStringHandler implements QueryStringHandler {
 	}
 
 	@Override
-	public void write(LongAdder writeCount, CharSequence key, CharSequence value, Appendable target)
+	public void write(LongAdder writeCount, String key, String value, Appendable target)
 			throws IOException {
 		if (writeCount.longValue() == 0) {
 			target.append(connector);
@@ -46,11 +41,8 @@ public class DefaultQueryStringHandler implements QueryStringHandler {
 	}
 
 	@Override
-	public <E extends Throwable> void read(LongAdder readCount, Readable source,
-			ConsumeProcessor<? super Pair<? extends CharSequence, ? extends CharSequence>, ? extends E> consumer)
-			throws IOException, E {
+	public void read(LongAdder readCount, Readable source, BiPredicate<String, String> predicate) throws IOException {
 		// TODO Auto-generated method stub
 		
 	}
-
 }
