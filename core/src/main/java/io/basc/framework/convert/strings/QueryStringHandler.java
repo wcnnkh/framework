@@ -2,7 +2,7 @@ package io.basc.framework.convert.strings;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.BiPredicate;
+import java.util.function.BiConsumer;
 
 public interface QueryStringHandler {
 	/**
@@ -21,8 +21,8 @@ public interface QueryStringHandler {
 	 * 
 	 * @param readCount 读取计数器
 	 * @param source
-	 * @param predicate 返回false则不再继续读取
+	 * @param consumer
 	 * @throws IOException
 	 */
-	void read(LongAdder readCount, Readable source, BiPredicate<String, String> predicate) throws IOException;
+	void read(LongAdder readCount, Readable source, BiConsumer<String, String> consumer) throws IOException;
 }

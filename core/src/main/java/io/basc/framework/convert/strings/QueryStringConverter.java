@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.BiPredicate;
+import java.util.function.BiConsumer;
 
 import io.basc.framework.codec.support.URLCodec;
 import io.basc.framework.convert.ConversionFailedException;
@@ -79,10 +79,7 @@ public class QueryStringConverter extends StringConverter {
 	public final MultiValueMap<String, Value> parseQueryString(Readable source, ConversionService conversionService,
 			QueryStringHandler handler) throws IOException {
 		MultiValueMap<String, Value> map = new LinkedMultiValueMap<>();
-		read(source, conversionService, handler, (key, value) -> {
-			map.add(key, value);
-			return true;
-		});
+		read(source, conversionService, handler, map::add);
 		return map;
 	}
 
@@ -117,49 +114,53 @@ public class QueryStringConverter extends StringConverter {
 		return parseQueryString(queryString, getConversionService(), handler);
 	}
 
-	public final void read(LongAdder readCount, Readable source, BiPredicate<String, ? super Value> predicate)
+	public final void read(LongAdder readCount, Readable source, BiConsumer<String, ? super Value> consumer)
 			throws IOException {
-		read(readCount, source, getConversionService(), getHandler(), predicate);
+		read(readCount, source, getConversionService(), getHandler(), consumer);
 	}
 
 	public final void read(LongAdder readCount, Readable source, ConversionService conversionService,
-			BiPredicate<String, ? super Value> predicate) throws IOException {
-		read(readCount, source, conversionService, getHandler(), predicate);
+			BiConsumer<String, ? super Value> consumer) throws IOException {
+		read(readCount, source, conversionService, getHandler(), consumer);
 	}
 
 	public final void read(LongAdder readCount, Readable source, ConversionService conversionService,
-			QueryStringHandler handler, BiPredicate<String, ? super Value> predicate) throws IOException {
+			QueryStringHandler handler, BiConsumer<String, ? super Value> consumer) throws IOException {
 		handler.read(readCount, source, (key, value) -> {
 			AnyValue anyValue = new AnyValue(value, conversionService);
 			anyValue.setStringConverter(this);
-			return predicate.test(key, anyValue);
+			consumer.accept(key, anyValue);
 		});
 	}
 
 	public final void read(LongAdder readCount, Readable source, QueryStringHandler handler,
-			BiPredicate<String, ? super Value> predicate) throws IOException {
-		read(readCount, source, getConversionService(), handler, predicate);
+			BiConsumer<String, ? super Value> consumer) throws IOException {
+		read(readCount, source, getConversionService(), handler, consumer);
 	}
 
-	public final long read(Readable source, BiPredicate<String, ? super Value> predicate) throws IOException {
-		return read(source, getConversionService(), getHandler(), predicate);
+	public final long read(Readable source, BiConsumer<String, ? super Value> consumer) throws IOException {
+		return read(source, getConversionService(), getHandler(), consumer);
 	}
 
 	public final long read(Readable source, ConversionService conversionService,
-			BiPredicate<String, ? super Value> predicate) throws IOException {
-		return read(source, conversionService, getHandler(), predicate);
+			BiConsumer<String, ? super Value> consumer) throws IOException {
+		return read(source, conversionService, getHandler(), consumer);
 	}
 
 	public final long read(Readable source, ConversionService conversionService, QueryStringHandler handler,
-			BiPredicate<String, ? super Value> predicate) throws IOException {
+			BiConsumer<String, ? super Value> consumer) throws IOException {
 		LongAdder readCount = new LongAdder();
-		read(readCount, source, conversionService, handler, predicate);
+		read(readCount, source, conversionService, handler, consumer);
 		return readCount.longValue();
 	}
 
-	public final long read(Readable source, QueryStringHandler handler, BiPredicate<String, ? super Value> predicate)
+	public final long read(Readable source, QueryStringHandler handler, BiConsumer<String, ? super Value> consumer)
 			throws IOException {
-		return read(source, getConversionService(), handler, predicate);
+		return read(source, getConversionService(), handler, consumer);
+	}
+
+	public final String toQueryString(Object source) {
+		return toQueryString(source, getConversionService(), getHandler());
 	}
 
 	public final String toQueryString(Object source, ConversionService conversionService) {
@@ -179,10 +180,6 @@ public class QueryStringConverter extends StringConverter {
 
 	public final String toQueryString(Object source, QueryStringHandler handler) {
 		return toQueryString(source, getConversionService(), handler);
-	}
-
-	public final String toString(Object source) {
-		return toQueryString(source, getConversionService(), getHandler());
 	}
 
 	public final String toUrlQueryString(Object source, Charset charset) {

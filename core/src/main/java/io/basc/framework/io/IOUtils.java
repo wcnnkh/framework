@@ -22,6 +22,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -2100,6 +2101,15 @@ public final class IOUtils {
 	public static OutputStream nonClosing(OutputStream out) {
 		Assert.notNull(out, "No OutputStream specified");
 		return new NonClosingOutputStream(out);
+	}
+
+	public static Stream<CharSequence> split(Readable source, String lineSeparator) {
+		return split(source, CharBuffer.allocate(DEFAULT_BUFFER_SIZE), lineSeparator);
+	}
+
+	public static Stream<CharSequence> split(Readable source, CharBuffer buffer, CharSequence lineSeparator) {
+		SplitReadableIterator iterator = new SplitReadableIterator(source, buffer, lineSeparator);
+		return Streams.stream(iterator);
 	}
 
 	private static class NonClosingInputStream extends FilterInputStream {

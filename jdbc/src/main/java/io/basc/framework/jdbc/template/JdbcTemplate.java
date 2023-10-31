@@ -25,6 +25,10 @@ public class JdbcTemplate extends DefaultSqlOperations implements EntityOperatio
 		return (SqlDialect) super.getMapper();
 	}
 
+	public Elements<String> getTableNames() {
+		return getMapper().getTableNames(operations());
+	}
+
 	public long count(Sql sql) {
 		Sql countSql = getMapper().toCountSql(sql);
 		return query(long.class, countSql).getElements().first();

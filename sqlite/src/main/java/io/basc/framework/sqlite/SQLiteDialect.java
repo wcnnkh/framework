@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Repository;
+import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.template.Column;
@@ -141,5 +142,11 @@ public class SQLiteDialect extends AbstractSqlDialect {
 			return "replace into";
 		}
 		return super.getInsertPrefix(operationSymbol);
+	}
+
+	@Override
+	public Elements<String> getTableNames(ConnectionOperations operations) {
+		return operations.prepare("select name from sqlite_master where type='table' order by name").query()
+				.rows((e) -> e.getString(1));
 	}
 }
