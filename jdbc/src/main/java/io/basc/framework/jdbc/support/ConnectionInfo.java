@@ -7,22 +7,22 @@ import io.basc.framework.util.StringUtils;
 /**
  * 驱动连接属性
  */
-public class DriverConnectionInfo extends Properties {
+public class ConnectionInfo extends Properties {
 	private static final long serialVersionUID = 1L;
 	public static final String USER_KEY = "user";
 	public static final String PASSWORD_KEY = "password";
 
-	public DriverConnectionInfo() {
+	public ConnectionInfo() {
 		super();
 	}
 
-	public DriverConnectionInfo(String user, String password) {
+	public ConnectionInfo(String user, String password) {
 		super();
 		setUser(user);
 		setPassword(password);
 	}
 
-	public DriverConnectionInfo(Properties properties) {
+	public ConnectionInfo(Properties properties) {
 		super(properties);
 	}
 

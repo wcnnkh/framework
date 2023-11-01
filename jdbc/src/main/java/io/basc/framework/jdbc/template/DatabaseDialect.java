@@ -28,5 +28,5 @@ public interface DatabaseDialect {
 	 * @param url
 	 * @return
 	 */
-	DatabaseURL resolve(String url);
+	DatabaseURL resolveUrl(String url);
 }

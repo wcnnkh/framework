@@ -9,13 +9,13 @@ import io.basc.framework.data.repository.RepositoryException;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.jdbc.support.DefaultSqlOperations;
+import io.basc.framework.jdbc.support.DefaultJdbcOperations;
 import io.basc.framework.jdbc.template.dialect.SqlDialect;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.util.element.Elements;
 
-public class JdbcTemplate extends DefaultSqlOperations implements EntityOperations {
+public class JdbcTemplate extends DefaultJdbcOperations implements EntityOperations {
 
 	public JdbcTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory, sqlDialect);

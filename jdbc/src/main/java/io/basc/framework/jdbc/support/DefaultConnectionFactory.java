@@ -6,20 +6,17 @@ import java.sql.SQLException;
 
 import io.basc.framework.jdbc.ConnectionFactory;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-/**
- * 使用原始驱动创建连接
- */
-@NoArgsConstructor
+@Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class DriverManagerConnectionFactory implements ConnectionFactory {
+public class DefaultConnectionFactory implements ConnectionFactory {
 	@NonNull
 	private String url;
-	private DriverConnectionInfo info;
+	private ConnectionInfo info;
 
 	public Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, info);

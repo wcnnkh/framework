@@ -30,4 +30,11 @@ public interface DatabaseConnectionFactory extends ConnectionFactory {
 	 * @throws UnsupportedException
 	 */
 	DatabaseConnectionFactory newDatabase(String databaseName) throws UnsupportedException;
+
+	/**
+	 * 获取数据库方言
+	 * 
+	 * @return
+	 */
+	DatabaseDialect getDatabaseDialect();
 }
