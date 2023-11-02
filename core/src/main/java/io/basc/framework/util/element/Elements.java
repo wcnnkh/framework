@@ -135,6 +135,11 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new ConvertibleElements<>(this, converter);
 	}
 
+	/**
+	 * 去重
+	 * 
+	 * @return
+	 */
 	default Elements<E> distinct() {
 		return convert((e) -> e.distinct());
 	}

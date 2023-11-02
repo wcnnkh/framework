@@ -9,16 +9,21 @@ import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.template.Column;
+import io.basc.framework.jdbc.template.DatabaseDialect;
+import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.jdbc.template.SqlDialectException;
+import io.basc.framework.jdbc.template.SqlType;
 import io.basc.framework.jdbc.template.TableMapping;
-import io.basc.framework.jdbc.template.dialect.AbstractSqlDialect;
-import io.basc.framework.jdbc.template.dialect.SqlType;
+import io.basc.framework.jdbc.template.support.AbstractSqlDialect;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
 
-public class SQLiteDialect extends AbstractSqlDialect {
+public class SQLiteDialect extends AbstractSqlDialect implements DatabaseDialect {
+	private static Logger logger = LoggerFactory.getLogger(SQLiteDialect.class);
 
 	@Override
 	public SqlType getSqlType(Class<?> type) {
@@ -49,7 +54,7 @@ public class SQLiteDialect extends AbstractSqlDialect {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.jdbc.template.dialect.SqlType sqlType = getSqlType(
+			io.basc.framework.jdbc.template.SqlType sqlType = getSqlType(
 					col.getGetters().first().getTypeDescriptor().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
@@ -148,5 +153,27 @@ public class SQLiteDialect extends AbstractSqlDialect {
 	public Elements<String> getTableNames(ConnectionOperations operations) {
 		return operations.prepare("select name from sqlite_master where type='table' order by name").query()
 				.rows((e) -> e.getString(1));
+	}
+
+	@Override
+	public Elements<String> getDatabaseNames(ConnectionOperations operations) {
+		logger.trace("不支持使用sql获取当前数据库名称");
+		return Elements.empty();
+	}
+
+	@Override
+	public String getSelectedDatabaseName(ConnectionOperations operations) {
+		logger.trace("不支持使用sql获取当前连接表名称");
+		return null;
+	}
+
+	@Override
+	public void createDatabase(ConnectionOperations operations, String databaseName) {
+		logger.trace("不支持使用sql创建数据库");
+	}
+
+	@Override
+	public DatabaseURL resolveUrl(String url) {
+		return new SQLiteURL(url);
 	}
 }

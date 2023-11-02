@@ -396,16 +396,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>oracle</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>sqlserver</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>sqlite</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -808,8 +798,6 @@
 		<module>dom</module>
 		<module>swagger</module>
 		<module>validation</module>
-		<module>oracle</module>
-		<module>sqlserver</module>
 		<module>xml</module>
 		<module>testing</module>
 		<module>zookeeper-server</module>

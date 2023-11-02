@@ -4,16 +4,15 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.db.Database;
-import io.basc.framework.env.Sys;
 import io.basc.framework.jdbc.SimpleSql;
+import io.basc.framework.jdbc.template.Database;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.sqlite.SQLiteDB;
+import io.basc.framework.sqlite.SQLiteFileDatabase;
 import io.basc.framework.util.XUtils;
 
 public class AutoIncrementTest {
-	private static Database db = new SQLiteDB(Sys.getEnv().getWorkPath() + "/auto_increment.db");
+	private static Database db = new SQLiteFileDatabase("auto_increment.db");
 
 	@Test
 	public void test() {

@@ -10,7 +10,6 @@ import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.support.DefaultJdbcOperations;
-import io.basc.framework.jdbc.template.dialect.SqlDialect;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.util.element.Elements;

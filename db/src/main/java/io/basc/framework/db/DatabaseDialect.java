@@ -1,6 +1,6 @@
 package io.basc.framework.db;
 
-import io.basc.framework.jdbc.template.dialect.SqlDialect;
+import io.basc.framework.jdbc.template.SqlDialect;
 import io.basc.framework.lang.Nullable;
 
 /**

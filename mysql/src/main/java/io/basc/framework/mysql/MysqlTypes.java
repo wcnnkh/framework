@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 import java.time.Year;
 import java.util.Set;
 
-import io.basc.framework.jdbc.template.dialect.SqlType;
+import io.basc.framework.jdbc.template.SqlType;
 
 /**
  * 一些常见的类型

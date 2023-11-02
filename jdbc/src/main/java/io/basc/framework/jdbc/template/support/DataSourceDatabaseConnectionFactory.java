@@ -1,16 +1,22 @@
 package io.basc.framework.jdbc.template.support;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
 import io.basc.framework.jdbc.support.DataSourceConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseDialect;
+import io.basc.framework.jdbc.template.DatabaseURL;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.function.Source;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,9 +26,10 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class DataSourceDatabaseConnectionFactory<D extends DataSource> extends DataSourceConnectionFactory<D>
 		implements DatabaseConnectionFactory {
-	private Map<String, D> datasourceMap;
 	private final DatabaseDialect databaseDialect;
 	private volatile String databaseName;
+	private volatile DatabaseURL databaseURL;
+	private volatile Map<String, D> dataSourceMap;
 
 	public DataSourceDatabaseConnectionFactory(D dataSource, DatabaseDialect databaseDialect) {
 		super(dataSource);
@@ -31,10 +38,21 @@ public class DataSourceDatabaseConnectionFactory<D extends DataSource> extends D
 
 	@Override
 	public String getDatabaseName() {
+		return getDatabaseName(true);
+	}
+
+	private String getDatabaseName(boolean force) {
 		if (databaseName == null) {
 			synchronized (this) {
 				if (databaseName == null) {
-					databaseName = databaseDialect.getSelectedDatabaseName(operations());
+					DatabaseURL databaseURL = getDatabaseURL();
+					if (databaseURL != null) {
+						this.databaseName = databaseURL.getDatabaseNmae();
+					}
+
+					if (force && this.databaseName == null) {
+						databaseName = databaseDialect.getSelectedDatabaseName(operations());
+					}
 				}
 			}
 		}
@@ -43,39 +61,65 @@ public class DataSourceDatabaseConnectionFactory<D extends DataSource> extends D
 
 	@Override
 	public Elements<String> getDatabaseNames() {
-		Elements<String> names = databaseDialect.getDatabaseNames(operations());
-		if (names.isEmpty() && datasourceMap != null) {
-			names = Elements.of(datasourceMap.keySet());
-			if (this.databaseName != null) {
-				names = names.concat(Elements.singleton(this.databaseName));
+		Set<String> registerNames = new LinkedHashSet<String>(8);
+		String databaseName = getDatabaseName();
+		if (databaseName != null) {
+			registerNames.add(databaseName);
+		}
+		if (this.dataSourceMap != null) {
+			synchronized (this) {
+				if (this.dataSourceMap != null) {
+					registerNames.addAll(dataSourceMap.keySet());
+				}
 			}
 		}
-		return names;
+
+		return Elements.of(registerNames).concat(databaseDialect.getDatabaseNames(operations())).distinct();
 	}
 
-	public D registerDataSource(String databaseName, D dataSource) {
-		synchronized (this) {
-			if (datasourceMap == null) {
-				datasourceMap = new HashMap<>();
-			}
-			return datasourceMap.put(databaseName, dataSource);
-		}
-	}
-
-	public D unregisterDataSource(String databaseName) {
-		synchronized (this) {
-			if (datasourceMap == null) {
-				return null;
-			}
-			return datasourceMap.remove(databaseName);
-		}
-	}
-
-	@Override
-	public DataSourceDatabaseConnectionFactory<D> newDatabase(String databaseName) throws UnsupportedException {
+	public <E extends Throwable> D getDataSource(String databaseName,
+			@Nullable Source<? extends D, ? extends E> defaultSource) throws E {
 		if (StringUtils.equals(getDatabaseName(), databaseName)) {
-			return this;
+			return getDataSource();
 		}
+
+		if (dataSourceMap == null && defaultSource != null) {
+			synchronized (this) {
+				if (dataSourceMap == null && defaultSource != null) {
+					D dataSource = defaultSource.get();
+					if (dataSource != null) {
+						dataSourceMap = new HashMap<String, D>();
+						dataSourceMap.put(databaseName, dataSource);
+					}
+				}
+			}
+		}
+		return dataSourceMap == null ? null : dataSourceMap.get(databaseName);
+	}
+
+	public <E extends Throwable, F extends DataSourceDatabaseConnectionFactory<D>> F getDataSourceDatabaseConnectionFactory(
+			String databaseName, @Nullable Source<? extends D, ? extends E> defaultSource,
+			Processor<? super D, ? extends F, ? extends E> newFactory) throws E {
+		D dataSource = getDataSource(databaseName, defaultSource);
+		if (dataSource == null) {
+			return null;
+		}
+
+		F factory = newFactory.process(dataSource);
+		factory.setDatabaseName(databaseName);
+		DatabaseURL databaseURL = getDatabaseURL();
+		if (databaseURL != null) {
+			databaseURL = databaseURL.clone();
+			databaseURL.setDatabaseName(databaseName);
+			factory.setDatabaseURL(databaseURL);
+			factory.setDataSourceMap(dataSourceMap);
+		}
+		return factory;
+	}
+
+	@Nullable
+	public <E extends Throwable> DataSourceDatabaseConnectionFactory<D> getDataSourceDatabaseConnectionFactory(
+			String databaseName) {
 
 		if (datasourceMap != null) {
 			D dataSource = datasourceMap.get(databaseName);
@@ -87,6 +131,23 @@ public class DataSourceDatabaseConnectionFactory<D extends DataSource> extends D
 				return connectionFactory;
 			}
 		}
-		throw new UnsupportedException(databaseName);
+		return null;
+	}
+
+	@Override
+	public DatabaseConnectionFactory newDatabaseConnectionFactory(String databaseName) throws UnsupportedException {
+		if (StringUtils.equals(getDatabaseName(), databaseName)) {
+			return this;
+		}
+		
+		return getDataSourceDatabaseConnectionFactory(databaseName, null, (e) -> new DataSourceDatabaseConnectionFactory<DataSource>(getDataSource(), databaseDialect))
+		
+		DataSourceDatabaseConnectionFactory<D> connectionFactory = getDataSourceDatabaseConnectionFactory(databaseName);
+		if (connectionFactory == null) {
+			throw new UnsupportedException(databaseName);
+		}
+		
+		
+		return connectionFactory;
 	}
 }

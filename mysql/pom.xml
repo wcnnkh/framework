@@ -13,7 +13,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>db</artifactId>
+			<artifactId>jdbc</artifactId>
 		</dependency>
 
 		<dependency>

@@ -1,7 +1,5 @@
 package io.basc.framework.jdbc.template;
 
-import java.util.OptionalInt;
-
 import io.basc.framework.lang.Nullable;
 
 /**
@@ -21,7 +19,7 @@ public interface DatabaseURL extends Cloneable {
 	 * 
 	 * @return -1表示无
 	 */
-	OptionalInt getProt();
+	int getProt();
 
 	@Nullable
 	String getDatabaseNmae();
@@ -37,4 +35,6 @@ public interface DatabaseURL extends Cloneable {
 	String getQuery();
 
 	DatabaseURL clone();
+
+	String getRawURL();
 }

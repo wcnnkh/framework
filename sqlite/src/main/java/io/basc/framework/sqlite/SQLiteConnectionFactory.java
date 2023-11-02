@@ -1,38 +1,35 @@
 package io.basc.framework.sqlite;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.sqlite.SQLiteDataSource;
 
-import io.basc.framework.jdbc.ConnectionFactory;
+import io.basc.framework.jdbc.template.DatabaseDialect;
+import io.basc.framework.jdbc.template.support.DataSourceDatabaseConnectionFactory;
+import lombok.NonNull;
 
-public class SQLiteConnectionFactory implements ConnectionFactory {
-	private final SQLiteDataSource dataSource;
+public class SQLiteConnectionFactory extends DataSourceDatabaseConnectionFactory<SQLiteDataSource> {
 
-	public SQLiteConnectionFactory(SQLiteDataSource dataSource) {
-		this.dataSource = dataSource;
+	/**
+	 * 使用内存数据库
+	 */
+	public SQLiteConnectionFactory() {
+		this(new SQLiteDataSource());
 	}
 
-	public SQLiteConnectionFactory(String databasePath) {
-		File file = new File(databasePath);
-		if (!file.exists()) {
-			File parent = file.getParentFile();
-			if (parent != null && !parent.exists()) {
-				parent.mkdirs();
-			}
-		}
-		this.dataSource = new SQLiteDataSource();
-		dataSource.setUrl("jdbc:sqlite:" + databasePath);
+	public SQLiteConnectionFactory(@NonNull SQLiteDataSource dataSource) {
+		this(dataSource, new SQLiteDialect());
+	}
+
+	protected SQLiteConnectionFactory(@NonNull SQLiteDataSource dataSource, DatabaseDialect databaseDialect) {
+		super(dataSource, databaseDialect);
 	}
 
 	@Override
-	public Connection getConnection() throws SQLException {
-		return dataSource.getConnection();
+	public String getDatabaseName() {
+		String databaseName = super.getDatabaseName();
+		if (databaseName == null) {
+			databaseName = getDataSource().getDatabaseName();
+		}
+		return databaseName;
 	}
 
-	public SQLiteDataSource getDataSource() {
-		return dataSource;
-	}
 }

@@ -15,7 +15,7 @@ import io.basc.framework.microsoft.ExcelTemplate;
 import io.basc.framework.orm.annotation.Entity;
 import io.basc.framework.orm.annotation.PrimaryKey;
 import io.basc.framework.orm.transfer.TransfColumn;
-import io.basc.framework.sqlite.SQLiteDB;
+import io.basc.framework.sqlite.SQLiteFileDatabase;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.XUtils;
 import lombok.Data;
@@ -23,7 +23,7 @@ import lombok.Data;
 public class SqlExportTest {
 	@Test
 	public void test() throws IOException {
-		SQLiteDB db = new SQLiteDB(Sys.getEnv().getWorkPath() + "/test.db");
+		SQLiteFileDatabase db = new SQLiteFileDatabase(Sys.getEnv().getWorkPath() + "/test.db");
 		db.createTable(SqlExportTestTable.class);
 
 		for (int i = 0; i < 10; i++) {

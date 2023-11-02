@@ -17,17 +17,27 @@ import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.template.Column;
+import io.basc.framework.jdbc.template.DatabaseDialect;
+import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.jdbc.template.IndexInfo;
 import io.basc.framework.jdbc.template.SqlDialectException;
+import io.basc.framework.jdbc.template.SqlType;
 import io.basc.framework.jdbc.template.TableMapping;
-import io.basc.framework.jdbc.template.dialect.AbstractSqlDialect;
-import io.basc.framework.jdbc.template.dialect.SqlType;
+import io.basc.framework.jdbc.template.support.AbstractSqlDialect;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-public class MysqlDialect extends AbstractSqlDialect {
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class MysqlDialect extends AbstractSqlDialect implements DatabaseDialect {
+	private String charsetName = "utf8";
+	private String collate = "utf8_general_ci";
 
 	public SqlType getSqlType(java.lang.Class<?> type) {
 		if (ClassUtils.isString(type) || type.isEnum()) {
@@ -198,5 +208,35 @@ public class MysqlDialect extends AbstractSqlDialect {
 	@Override
 	public Elements<String> getTableNames(ConnectionOperations operations) {
 		return operations.prepare("SHOW TABLES").query().rows((e) -> e.getString(1));
+	}
+
+	@Override
+	public Elements<String> getDatabaseNames(ConnectionOperations operations) {
+		return operations.prepare("SHOW DATABASES").query().rows((e) -> e.getString(1));
+	}
+
+	@Override
+	public String getSelectedDatabaseName(ConnectionOperations operations) {
+		return operations.prepare("SHOW DATABASE()").query().rows((e) -> e.getString(1)).first();
+	}
+
+	@Override
+	public void createDatabase(ConnectionOperations operations, String databaseName) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CREATE DATABASE IF NOT EXISTS `").append(databaseName).append("`");
+		if (!StringUtils.isEmpty(charsetName)) {
+			sb.append(" CHARACTER SET ").append(charsetName);
+		}
+
+		if (!StringUtils.isEmpty(collate)) {
+			sb.append(" COLLATE ").append(collate);
+		}
+
+		operations.prepare(sb.toString()).execute();
+	}
+
+	@Override
+	public DatabaseURL resolveUrl(String url) {
+		return new MysqlURL(url);
 	}
 }

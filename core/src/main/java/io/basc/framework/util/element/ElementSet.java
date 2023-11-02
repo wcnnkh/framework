@@ -35,4 +35,9 @@ public class ElementSet<E> extends SetWrapper<E> implements Elements<E> {
 	public boolean isSingleton() {
 		return wrappedTarget.size() == 1;
 	}
+
+	@Override
+	public Elements<E> distinct() {
+		return this;
+	}
 }

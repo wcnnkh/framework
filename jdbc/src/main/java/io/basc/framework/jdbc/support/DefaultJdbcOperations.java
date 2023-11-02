@@ -9,7 +9,9 @@ import io.basc.framework.jdbc.ResultSetMapper;
 import io.basc.framework.jdbc.transaction.SqlTransactionUtils;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.util.Assert;
+import lombok.Getter;
 
+@Getter
 public class DefaultJdbcOperations implements JdbcOperations {
 	private final ConnectionFactory connectionFactory;
 	private final EntityMapper mapper;

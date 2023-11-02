@@ -10,7 +10,7 @@ import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.jdbc.template.dialect.SqlDialect;
+import io.basc.framework.jdbc.template.SqlDialect;
 import io.basc.framework.mysql.MysqlDialect;
 import io.basc.framework.util.element.Elements;
 

@@ -6,20 +6,19 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.db.Database;
-import io.basc.framework.env.Sys;
+import io.basc.framework.jdbc.template.Database;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.support.Copy;
-import io.basc.framework.sqlite.SQLiteDB;
+import io.basc.framework.sqlite.SQLiteFileDatabase;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.XUtils;
 
 public class OrmTest {
-	private static Database db = new SQLiteDB(Sys.getEnv().getWorkPath() + "/orm_test.db");
+	private static Database db = new SQLiteFileDatabase("orm_test.db");
 
 	static {
 		db.createTable(TestTable1.class);

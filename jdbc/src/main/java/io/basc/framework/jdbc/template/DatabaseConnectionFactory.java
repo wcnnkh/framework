@@ -29,7 +29,7 @@ public interface DatabaseConnectionFactory extends ConnectionFactory {
 	 * @return
 	 * @throws UnsupportedException
 	 */
-	DatabaseConnectionFactory newDatabase(String databaseName) throws UnsupportedException;
+	DatabaseConnectionFactory newDatabaseConnectionFactory(String databaseName) throws UnsupportedException;
 
 	/**
 	 * 获取数据库方言

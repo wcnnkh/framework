@@ -1,4 +1,4 @@
-package io.basc.framework.jdbc.template.dialect;
+package io.basc.framework.jdbc.template.support;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +22,9 @@ import io.basc.framework.jdbc.EasySql;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.SqlUtils;
+import io.basc.framework.jdbc.template.SqlDialect;
 import io.basc.framework.jdbc.template.SqlDialectException;
-import io.basc.framework.jdbc.template.support.DefaultTableMapper;
+import io.basc.framework.jdbc.template.SqlType;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;

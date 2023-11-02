@@ -1,4 +1,4 @@
-package io.basc.framework.jdbc.template.dialect;
+package io.basc.framework.jdbc.template;
 
 import io.basc.framework.data.repository.DeleteOperation;
 import io.basc.framework.data.repository.InsertOperation;
@@ -7,9 +7,6 @@ import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.jdbc.template.SqlDialectException;
-import io.basc.framework.jdbc.template.TableMapper;
-import io.basc.framework.jdbc.template.TableMapping;
 import io.basc.framework.util.element.Elements;
 
 public interface SqlDialect extends TableMapper, SqlTypeFactory {

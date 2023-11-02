@@ -1,4 +1,4 @@
-package io.basc.framework.druid.support;
+package io.basc.framework.druid.stat;
 
 import java.util.EnumSet;
 
@@ -16,17 +16,15 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.RandomUtils;
 
+/**
+ * web监控
+ */
 @Component
 class DruidWebStateInitizer implements ServletContextInitialization {
 	private static Logger logger = LoggerFactory.getLogger(DruidWebStateInitizer.class);
 
 	@Override
 	public void init(Application application, ServletContext servletContext) {
-		String value = application.getProperties().getAsString("druid.filters");
-		if (value == null || !value.contains("stat")) {
-			return;
-		}
-
 		logger.info("Enable druid web stat!");
 		javax.servlet.ServletRegistration.Dynamic servletDynamic = servletContext.addServlet("DruidStatView",
 				StatViewServlet.class);

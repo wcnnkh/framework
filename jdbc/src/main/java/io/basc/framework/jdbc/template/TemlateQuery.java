@@ -9,7 +9,6 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.jdbc.template.dialect.SqlDialect;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.ElementsWrapper;
 import io.basc.framework.util.function.Processor;

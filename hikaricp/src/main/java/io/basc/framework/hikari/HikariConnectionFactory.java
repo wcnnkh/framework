@@ -1,25 +1,13 @@
 package io.basc.framework.hikari;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import com.zaxxer.hikari.HikariDataSource;
 
-import io.basc.framework.jdbc.ConnectionFactory;
+import io.basc.framework.jdbc.template.DatabaseDialect;
+import io.basc.framework.jdbc.template.support.DataSourceDatabaseConnectionFactory;
 
-public class HikariConnectionFactory implements ConnectionFactory {
-	private final HikariDataSource dataSource;
+public class HikariConnectionFactory extends DataSourceDatabaseConnectionFactory<HikariDataSource> {
 
-	public HikariConnectionFactory(HikariDataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
-	@Override
-	public Connection getConnection() throws SQLException {
-		return dataSource.getConnection();
-	}
-
-	public HikariDataSource getDataSource() {
-		return dataSource;
+	public HikariConnectionFactory(HikariDataSource dataSource, DatabaseDialect databaseDialect) {
+		super(dataSource, databaseDialect);
 	}
 }

@@ -1,4 +1,4 @@
-package io.basc.framework.jdbc.template.dialect;
+package io.basc.framework.jdbc.template;
 
 /**
  * sql类型

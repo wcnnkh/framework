@@ -3,7 +3,7 @@ package io.basc.framework.jdbc.template;
 import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.util.element.Elements;
 
-public interface DatabaseDialect {
+public interface DatabaseDialect extends SqlDialect {
 	Elements<String> getDatabaseNames(ConnectionOperations operations);
 
 	/**
@@ -23,7 +23,7 @@ public interface DatabaseDialect {
 	void createDatabase(ConnectionOperations operations, String databaseName);
 
 	/**
-	 * 解析
+	 * 解析url
 	 * 
 	 * @param url
 	 * @return
