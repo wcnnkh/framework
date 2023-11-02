@@ -6,4 +6,4 @@ io.basc.framework.orm.convert.NodeToObjectConversionService
 ## DOM ##
 
 io.basc.framework.orm.convert.CollectionToMapConversionService
-io.basc.framework.orm.support.DefaultObjectRelationalMapper
+io.basc.framework.orm.support.DefaultEntityMapper

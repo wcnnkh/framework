@@ -5,6 +5,7 @@ import java.io.File;
 import org.sqlite.JDBC;
 import org.sqlite.SQLiteDataSource;
 
+import io.basc.framework.jdbc.support.DataSourceConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
@@ -27,33 +28,29 @@ public class SQLiteFileConnectionFactory extends SQLiteConnectionFactory {
 		super();
 		Assert.isTrue(databaseFile.isFile(), "The database file path[" + databaseFile + "] type must be a file");
 		directory = databaseFile.getParentFile();
-		getDataSource().setUrl(JDBC.PREFIX + databaseFile.getPath());
-		getDataSource().setDatabaseName(databaseFile.getName());
+		getConnectionFactory().getDataSource().setUrl(JDBC.PREFIX + databaseFile.getPath());
+		getConnectionFactory().getDataSource().setDatabaseName(databaseFile.getName());
 		setDatabaseName(databaseFile.getName());
 	}
 
-	protected SQLiteFileConnectionFactory(@NonNull SQLiteDataSource dataSource, DatabaseDialect databaseDialect,
-			File directory) {
-		super(dataSource, databaseDialect);
+	protected SQLiteFileConnectionFactory(@NonNull DataSourceConnectionFactory<SQLiteDataSource> connectionFactory,
+			DatabaseDialect databaseDialect, File directory) {
+		super(connectionFactory, databaseDialect);
 		this.directory = directory;
 	}
 
 	@Override
-	public DatabaseConnectionFactory newDatabaseConnectionFactory(String databaseName) throws UnsupportedException {
-		DatabaseConnectionFactory connectionFactory = getDataSourceDatabaseConnectionFactory(databaseName);
-		if (connectionFactory == null) {
+	public DatabaseConnectionFactory getDatabaseConnectionFactory(String databaseName) throws UnsupportedException {
+		return getDatabaseConnectionFactory(databaseName, () -> {
 			SQLiteDataSource dataSource = new SQLiteDataSource();
-			Copy.copy(getDataSource(), dataSource);
+			Copy.copy(getConnectionFactory().getDataSource(), dataSource);
 			dataSource.setDatabaseName(databaseName);
 
-			DatabaseURL databaseURL = getDatabaseDialect().resolveUrl(getDataSource().getUrl());
+			DatabaseURL databaseURL = getDatabaseDialect().resolveUrl(getConnectionFactory().getDataSource().getUrl());
 			databaseURL.setDatabaseName(databaseName);
 			dataSource.setUrl(databaseURL.getRawURL());
-			connectionFactory = new SQLiteFileConnectionFactory(dataSource, getDatabaseDialect(), this.directory);
-			// 需要这样吗？
-			registerDataSource(databaseName, dataSource);
-		}
-		return connectionFactory;
+			return new DataSourceConnectionFactory<>(dataSource);
+		}, (e) -> new SQLiteFileConnectionFactory(e, getDatabaseDialect(), directory));
 	}
 
 	@Override

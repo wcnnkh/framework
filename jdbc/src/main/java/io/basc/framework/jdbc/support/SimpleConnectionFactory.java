@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class DefaultConnectionFactory implements ConnectionFactory {
+public class SimpleConnectionFactory implements ConnectionFactory {
 	@NonNull
 	private String url;
 	private ConnectionInfo info;

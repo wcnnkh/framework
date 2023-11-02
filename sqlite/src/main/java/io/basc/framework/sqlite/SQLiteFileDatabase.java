@@ -25,8 +25,9 @@ public class SQLiteFileDatabase extends SQLiteDatabase {
 		SQLiteFileDatabase database = new SQLiteFileDatabase(new File("D:\\sqlite_test"), "test.db");
 		System.out.println(database.getConnectionFactory().getDatabaseName());
 		System.out.println(database.getConnectionFactory().getDatabaseNames());
-		System.out.println(database.getConnectionFactory().getDataSource().getDatabaseName());
+		System.out.println(database.getConnectionFactory().getConnectionFactory().getDataSource().getDatabaseName());
 		System.out.println("------");
-		database.query(Object[].class, "select * from user").getElements().forEach((e) -> System.out.println(ObjectUtils.toString(e)));
+		database.query(Object[].class, "select * from user").getElements()
+				.forEach((e) -> System.out.println(ObjectUtils.toString(e)));
 	}
 }

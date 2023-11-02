@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
@@ -103,7 +104,7 @@ public class SpiServiceLoader<S> extends DefaultClassLoaderAccessor implements S
 	}
 
 	protected <T> T newInstance(Class<T> serviceClass) throws Throwable {
-		return serviceClass.newInstance();
+		return ReflectionUtils.newInstance(serviceClass);
 	}
 
 	// Parse the content of the given URL as a provider-configuration file.
