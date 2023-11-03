@@ -17,7 +17,7 @@ public class SQLiteConnectionFactory extends DataSourceDatabaseConnectionFactory
 	}
 
 	public SQLiteConnectionFactory(@NonNull SQLiteDataSource dataSource) {
-		super(dataSource, new SQLiteDialect());
+		this(new DataSourceConnectionFactory<>(dataSource), new SQLiteDialect());
 	}
 
 	protected SQLiteConnectionFactory(@NonNull DataSourceConnectionFactory<SQLiteDataSource> connectionFactory,
@@ -29,7 +29,7 @@ public class SQLiteConnectionFactory extends DataSourceDatabaseConnectionFactory
 	public String getDatabaseName() {
 		String databaseName = super.getDatabaseName();
 		if (databaseName == null) {
-			databaseName = getConnectionFactory().getDataSource().getDatabaseName();
+			databaseName = getDataSource().getDatabaseName();
 		}
 		return databaseName;
 	}

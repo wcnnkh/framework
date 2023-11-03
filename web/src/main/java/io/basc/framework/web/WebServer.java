@@ -5,19 +5,42 @@ import java.io.IOException;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.web.cors.Cors;
+import io.basc.framework.web.cors.CorsRegistry;
+import io.basc.framework.web.cors.CorsUtils;
 
 public class WebServer implements WebService, Configurable {
-	
+
+	/**
+	 * 高度服务
+	 */
 	private final ConfigurableServices<WebServiceDispatcher> dispatchers = new ConfigurableServices<>(
 			WebServiceDispatcher.class);
+	/**
+	 * 终止服务
+	 */
 	private final ConfigurableServices<WebServiceTerminator> terminators = new ConfigurableServices<>(
 			WebServiceTerminator.class);
+	/**
+	 * 拦截器
+	 */
 	private final ConfigurableServices<WebServiceInterceptor> interceptors = new ConfigurableServices<>(
 			WebServiceInterceptor.class);
+	private CorsRegistry corsRegistry;
+
 	private boolean configurabled;
+
+	public WebServer() {
+		getTerminators().registerLast(new HttpNotFoundHandler());
+	}
 
 	@Override
 	public void service(ServerRequest serverRequest, ServerResponse serverResponse) throws IOException, WebException {
+		if (corsRegistry != null && serverRequest instanceof ServerHttpRequest
+				&& serverResponse instanceof ServerHttpResponse) {
+			cors((ServerHttpRequest) serverRequest, (ServerHttpResponse) serverResponse);
+		}
+
 		WebService webService = dispatchers.getServices().filter((e) -> e.test(serverRequest)).first();
 		if (webService == null) {
 			webService = terminators.getServices().filter((e) -> e.test(serverRequest)).first();
@@ -40,6 +63,23 @@ public class WebServer implements WebService, Configurable {
 		}
 	}
 
+	protected void cors(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+		if (!CorsUtils.isCorsRequest(request)) {
+			return;
+		}
+
+		if (!corsRegistry.test(request)) {
+			return;
+		}
+
+		Cors cors = corsRegistry.process(request);
+		if (cors == null) {
+			return;
+		}
+
+		cors.write(request, response.getHeaders());
+	}
+
 	public ConfigurableServices<WebServiceDispatcher> getDispatchers() {
 		return dispatchers;
 	}
@@ -60,6 +100,10 @@ public class WebServer implements WebService, Configurable {
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		configurabled = true;
+		if (corsRegistry == null) {
+			corsRegistry = serviceLoaderFactory.getBeanProvider(CorsRegistry.class).getUnique().orElse(null);
+		}
+
 		if (!dispatchers.isConfigured()) {
 			dispatchers.configure(serviceLoaderFactory);
 		}

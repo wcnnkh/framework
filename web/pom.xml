@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>orm</artifactId>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->

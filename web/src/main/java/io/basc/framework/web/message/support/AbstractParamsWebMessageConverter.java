@@ -5,12 +5,12 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.strings.QueryStringConverter;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -88,19 +88,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		EntityMapping<? extends Property> fields = getMapper()
-				.getMapping(parameterDescriptor.getTypeDescriptor().getType()).all();
-		for (Element field : fields.getElements()) {
-			if (!field.isSupportGetter()) {
-				continue;
-			}
-
-			String name = mapping.getName(parameterDescriptor.getType(), field.getGetter());
-			Object fieldValue = field.get(parameter);
-			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
-					TypeDescriptor.valueOf(String.class));
-			builder.queryParam(name, value);
-		}
-		return builder;
+		String queryString = QueryStringConverter.getInstance().toQueryString(parameter);
+		return builder.query(queryString);
 	}
 }

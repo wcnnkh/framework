@@ -13,7 +13,7 @@ import lombok.Data;
  * TODO 创建了大量的buffer,待优化
  */
 @Data
-public class SplitReadableIterator implements Iterator<CharSequence> {
+class SplitReadableIterator implements Iterator<CharSequence> {
 	private final Readable readable;
 	private final CharBuffer buffer;
 	private final CharSequence separator;

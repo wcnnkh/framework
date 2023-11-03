@@ -16,11 +16,10 @@ import io.basc.framework.web.ServerRequest;
 import io.basc.framework.web.ServerResponse;
 import io.basc.framework.web.WebServer;
 import io.basc.framework.web.servlet.DispatchServletConverter;
-import io.basc.framework.web.support.DefaultWebServer;
 
 public class DispatcherServlet extends GenericServlet implements Configurable {
 	private static final long serialVersionUID = 1L;
-	private final WebServer webServer = new DefaultWebServer();
+	private final WebServer webServer = new WebServer();
 	private final DispatchServletConverter dispatchServletConverter = new DispatchServletConverter();
 	private boolean configurabled;
 	private String charsetName = Constants.UTF_8_NAME;

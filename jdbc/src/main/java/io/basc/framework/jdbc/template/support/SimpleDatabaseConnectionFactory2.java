@@ -49,7 +49,7 @@ public class SimpleDatabaseConnectionFactory2 extends DefaultDatabaseConnectionF
 
 			databaseURL = databaseURL.clone();
 			databaseURL.setDatabaseName(databaseName);
-			return new SimpleConnectionFactory(databaseURL.getRawURL(), getConnectionFactory().getInfo());
+			return new SimpleConnectionFactory(databaseURL.getRawURL(), getRawConnectionFactory().getInfo());
 		}, (e) -> new SimpleDatabaseConnectionFactory2(e, getDatabaseDialect()));
 	}
 }

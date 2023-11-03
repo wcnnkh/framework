@@ -1,15 +1,16 @@
-package io.basc.framework.io;
+package io.basc.framework.io.loader;
 
 import java.io.IOException;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.StaticSupplier;
-import io.basc.framework.util.spi.ResourceClassesLoader;
 
 public class LocationPatternClassesLoader extends ResourceClassesLoader {
 	private static Logger logger = LoggerFactory.getLogger(LocationPatternClassesLoader.class);

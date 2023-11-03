@@ -4,7 +4,7 @@ import javax.servlet.ServletContext;
 
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.boot.support.DefaultApplication;
-import io.basc.framework.io.DirectoryClassesLoader;
+import io.basc.framework.io.loader.DirectoryClassesLoader;
 import io.basc.framework.servlet.ServletContextPropertyFactory;
 import io.basc.framework.servlet.ServletContextResourceLoader;
 

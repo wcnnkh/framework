@@ -1,11 +1,11 @@
 package io.basc.framework.web.servlet.http;
 
-import io.basc.framework.security.session.Session;
-import io.basc.framework.util.ObjectUtils;
-
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpSession;
+
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.web.Session;
 
 public class ServletHttpSession implements Session {
 	private HttpSession httpSession;

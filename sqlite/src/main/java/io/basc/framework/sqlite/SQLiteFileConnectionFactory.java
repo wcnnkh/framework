@@ -28,9 +28,9 @@ public class SQLiteFileConnectionFactory extends SQLiteConnectionFactory {
 		super();
 		Assert.isTrue(databaseFile.isFile(), "The database file path[" + databaseFile + "] type must be a file");
 		directory = databaseFile.getParentFile();
-		getConnectionFactory().getDataSource().setUrl(JDBC.PREFIX + databaseFile.getPath());
-		getConnectionFactory().getDataSource().setDatabaseName(databaseFile.getName());
-		setDatabaseName(databaseFile.getName());
+		getDataSource().setUrl(JDBC.PREFIX + databaseFile.getPath());
+		getDataSource().setDatabaseName(databaseFile.getName());
+		setDatabaseURL(getDatabaseDialect().resolveUrl(getDataSource().getUrl()));
 	}
 
 	protected SQLiteFileConnectionFactory(@NonNull DataSourceConnectionFactory<SQLiteDataSource> connectionFactory,
@@ -43,10 +43,10 @@ public class SQLiteFileConnectionFactory extends SQLiteConnectionFactory {
 	public DatabaseConnectionFactory getDatabaseConnectionFactory(String databaseName) throws UnsupportedException {
 		return getDatabaseConnectionFactory(databaseName, () -> {
 			SQLiteDataSource dataSource = new SQLiteDataSource();
-			Copy.copy(getConnectionFactory().getDataSource(), dataSource);
+			Copy.copy(getDataSource(), dataSource);
 			dataSource.setDatabaseName(databaseName);
 
-			DatabaseURL databaseURL = getDatabaseDialect().resolveUrl(getConnectionFactory().getDataSource().getUrl());
+			DatabaseURL databaseURL = getDatabaseDialect().resolveUrl(getDataSource().getUrl());
 			databaseURL.setDatabaseName(databaseName);
 			dataSource.setUrl(databaseURL.getRawURL());
 			return new DataSourceConnectionFactory<>(dataSource);

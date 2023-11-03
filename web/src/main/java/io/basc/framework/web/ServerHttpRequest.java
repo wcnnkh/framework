@@ -4,7 +4,6 @@ import java.net.HttpCookie;
 
 import io.basc.framework.http.HttpInputMessage;
 import io.basc.framework.http.HttpRequest;
-import io.basc.framework.security.session.Session;
 import io.basc.framework.util.collect.MultiValueMap;
 
 public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, ServerRequest {

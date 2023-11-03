@@ -20,13 +20,13 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.InvalidMediaTypeException;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.security.session.Session;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.web.Session;
 import io.basc.framework.web.servlet.ServletServerRequest;
 
 public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRequest>

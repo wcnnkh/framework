@@ -1,6 +1,8 @@
 package io.basc.framework.jdbc.template.support;
 
 import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -12,7 +14,6 @@ import io.basc.framework.jdbc.template.DatabaseConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
@@ -20,30 +21,27 @@ import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.Source;
 
 public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> implements DatabaseConnectionFactory {
-	private final F connectionFactory;
+	private final F rawConnectionFactory;
 	@Nullable
 	private final DatabaseDialect databaseDialect;
-	private volatile DatabaseURL databaseURL;
+	private DatabaseURL databaseURL;
 	private volatile String databaseName;
 	private volatile Map<String, DefaultDatabaseConnectionFactory<F>> connectionFactoryMap;
+	private volatile String driverClassName;
 
-	public DefaultDatabaseConnectionFactory(F connectionFactory, @Nullable DatabaseDialect databaseDialect) {
-		Assert.requiredArgument(connectionFactory != null, "connectionFactory");
-		this.connectionFactory = connectionFactory;
+	public DefaultDatabaseConnectionFactory(F rawConnectionFactory, @Nullable DatabaseDialect databaseDialect) {
+		Assert.requiredArgument(rawConnectionFactory != null, "rawConnectionFactory");
+		this.rawConnectionFactory = rawConnectionFactory;
 		this.databaseDialect = databaseDialect;
 	}
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return connectionFactory.getConnection();
-	}
-
-	public F getConnectionFactory() {
-		return connectionFactory;
+		return rawConnectionFactory.getConnection();
 	}
 
 	@Override
-	public DatabaseConnectionFactory getDatabaseConnectionFactory(String databaseName) throws UnsupportedException {
+	public DatabaseConnectionFactory getDatabaseConnectionFactory(String databaseName) {
 		return getDatabaseConnectionFactory(databaseName, null,
 				(e) -> new DefaultDatabaseConnectionFactory<>(e, this.databaseDialect));
 	}
@@ -55,7 +53,7 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 			return this;
 		}
 
-		synchronized (connectionFactoryMap == null ? this : connectionFactory) {
+		synchronized (connectionFactoryMap == null ? this : rawConnectionFactory) {
 			DefaultDatabaseConnectionFactory<F> databaseConnectionFactory = connectionFactoryMap == null ? null
 					: connectionFactoryMap.get(databaseName);
 			if (databaseConnectionFactory != null) {
@@ -111,7 +109,7 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 					}
 
 					if (StringUtils.isEmpty(databaseName) && databaseDialect != null) {
-						this.databaseName = databaseDialect.getSelectedDatabaseName(connectionFactory.operations());
+						this.databaseName = databaseDialect.getSelectedDatabaseName(rawConnectionFactory.operations());
 					}
 				}
 			}
@@ -133,11 +131,34 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 				}
 			}
 		}
-		return Elements.of(names).concat(databaseDialect.getDatabaseNames(operations())).distinct();
+		return Elements.of(names).concat(databaseDialect.getDatabaseNames(rawConnectionFactory.operations()))
+				.distinct();
 	}
 
 	public DatabaseURL getDatabaseURL() {
 		return databaseURL;
+	}
+
+	public String getDriverClassName() {
+		if (driverClassName == null && databaseURL != null) {
+			synchronized (this) {
+				if (driverClassName == null) {
+					try {
+						Driver driver = DriverManager.getDriver(databaseURL.getRawURL());
+						if (driver != null) {
+							this.driverClassName = driver.getClass().getName();
+						}
+					} catch (SQLException e) {
+						// 找不到驱动
+					}
+				}
+			}
+		}
+		return driverClassName;
+	}
+
+	public F getRawConnectionFactory() {
+		return rawConnectionFactory;
 	}
 
 	public void setDatabaseName(String databaseName) {
@@ -146,5 +167,9 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 
 	public void setDatabaseURL(DatabaseURL databaseURL) {
 		this.databaseURL = databaseURL;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
 	}
 }

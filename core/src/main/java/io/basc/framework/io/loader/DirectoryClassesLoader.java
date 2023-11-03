@@ -1,11 +1,15 @@
-package io.basc.framework.io;
+package io.basc.framework.io.loader;
 
 import java.io.File;
 
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
+import io.basc.framework.io.DefaultResourceLoader;
+import io.basc.framework.io.FileSystemResource;
+import io.basc.framework.io.FileSystemResourceLoader;
+import io.basc.framework.io.FileUtils;
+import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.spi.ResourceClassesLoader;
 
 public class DirectoryClassesLoader extends ResourceClassesLoader {
 

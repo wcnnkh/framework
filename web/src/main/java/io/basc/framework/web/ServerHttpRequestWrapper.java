@@ -15,7 +15,6 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.net.message.InputMessageWrapper;
-import io.basc.framework.security.session.Session;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collect.MultiValueMap;
 

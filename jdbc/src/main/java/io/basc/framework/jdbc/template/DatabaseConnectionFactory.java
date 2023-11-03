@@ -37,4 +37,12 @@ public interface DatabaseConnectionFactory extends ConnectionFactory {
 	 * @return
 	 */
 	DatabaseDialect getDatabaseDialect();
+
+	/**
+	 * 获取驱动类名
+	 * 
+	 * @return
+	 */
+	@Nullable
+	String getDriverClassName();
 }
