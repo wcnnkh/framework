@@ -98,7 +98,7 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableContext context,
 			Class<?> clazz, String originBeanName, BeanDefinition originBeanDefinition, Method method) {
 		DefaultBeanDefinition<BeanFactoryExecutor> beanDefinition = new DefaultBeanDefinition<>();
-		BeanFactoryExecutor beanFactoryExecutor = new BeanFactoryExecutor(TypeDescriptor.valueOf(clazz), method,
+		BeanFactoryExecutor beanFactoryExecutor = new BeanFactoryExecutor(method, TypeDescriptor.valueOf(clazz),
 				originBeanName);
 		beanDefinition.setScope(originBeanDefinition.getScope());
 		beanDefinition.setExecutors(Elements.singleton(beanFactoryExecutor));

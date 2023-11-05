@@ -1,6 +1,8 @@
-package io.basc.framework.data.generator;
+package io.basc.framework.data.generator.distributed;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.basc.framework.data.generator.IdGenerator;
 
 /**
  * 生成一个int类型的ID

@@ -1,6 +1,7 @@
-package io.basc.framework.data.generator;
+package io.basc.framework.data.generator.counter;
 
 import io.basc.framework.data.Counter;
+import io.basc.framework.data.generator.IdGenerator;
 
 public final class CounterIntegerIdGenerator implements IdGenerator<Integer> {
 	private final Counter counter;

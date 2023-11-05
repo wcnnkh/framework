@@ -7,6 +7,6 @@ package io.basc.framework.data.generator;
  *
  * @param <T> id类型
  */
-public interface IdFactory<T> {
-	T generator(String name);
+public interface IdGeneratorFactory<T> {
+	IdGenerator<T> getIdGenerator(String name);
 }

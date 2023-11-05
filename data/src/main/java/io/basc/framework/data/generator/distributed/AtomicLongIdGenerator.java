@@ -1,6 +1,8 @@
-package io.basc.framework.data.generator;
+package io.basc.framework.data.generator.distributed;
 
 import java.util.concurrent.atomic.AtomicLong;
+
+import io.basc.framework.data.generator.IdGenerator;
 
 /**
  * 生成一个Long类型的ID
@@ -8,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author wcnnkh
  *
  */
-public final class AtomicLongIdGenerator implements LongIdGenerator {
+public final class AtomicLongIdGenerator implements IdGenerator<Long> {
 	private int serverId;
 	private int serverCount;
 	private AtomicLong maxId;

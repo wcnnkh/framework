@@ -1,4 +1,4 @@
-package io.basc.framework.data.generator;
+package io.basc.framework.data.generator.sequence;
 
 import java.io.Serializable;
 

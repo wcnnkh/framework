@@ -414,7 +414,7 @@ public class DubboRegistry {
 	}
 
 	public void loadXml(Context context) {
-		for (Resource resource : context.getResources()) {
+		for (Resource resource : context.getResources().getServices()) {
 			if (resource.exists() && resource.getName().endsWith(".xml")) {
 				loadXml(resource, context);
 			}

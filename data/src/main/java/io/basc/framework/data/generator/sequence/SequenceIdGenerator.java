@@ -1,6 +1,9 @@
-package io.basc.framework.data.generator;
+package io.basc.framework.data.generator.sequence;
 
 import io.basc.framework.data.Counter;
+import io.basc.framework.data.generator.IdGenerator;
+import io.basc.framework.data.generator.counter.CounterIdGenerator;
+import io.basc.framework.data.generator.distributed.AtomicLongIdGenerator;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.TimeUtils;

@@ -21,7 +21,6 @@
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>locks</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>

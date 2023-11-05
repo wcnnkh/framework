@@ -25,7 +25,7 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 				DefinitionFactoryBean definitionFactoryBean = (DefinitionFactoryBean) factoryBean;
 				Bean bean = definitionFactoryBean.getConstructor().getReturnTypeDescriptor().getAnnotation(Bean.class);
 				if (bean != null) {
-					if (Arrays.asList(bean.initMethod()).contains(executor.getName())) {
+					if (Arrays.asList(bean.initMethod()).contains(getName())) {
 						return true;
 					}
 				}
