@@ -44,14 +44,14 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public boolean canExtractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
+	public boolean canExtractParameters(ParameterDescriptor[] parameterDescriptors) {
 		for (ParameterExtractor extractor : getServices()) {
 			if (extractor.canExtractParameters(parameterDescriptors)) {
 				return true;
 			}
 		}
 
-		return parameterDescriptors.index().allMatch((index) -> {
+		return Elements.forArray(parameterDescriptors).index().allMatch((index) -> {
 			try {
 				boolean success = canExtractParameter(index.getElement());
 				Level level = success ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
@@ -67,14 +67,13 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public Elements<? extends Object> extractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors)
-			throws ExtractParameterException {
+	public Object[] extractParameters(ParameterDescriptor[] parameterDescriptors) throws ExtractParameterException {
 		for (ParameterExtractor extractor : getServices()) {
 			if (extractor.canExtractParameters(parameterDescriptors)) {
 				return extractor.extractParameters(parameterDescriptors);
 			}
 		}
-		return parameterDescriptors.index().map((row) -> {
+		return Elements.forArray(parameterDescriptors).index().map((row) -> {
 			try {
 				return extractParameter(row.getElement());
 			} catch (Throwable e) {
@@ -83,7 +82,7 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 				}
 				throw new ExtractParameterException(row.toString(), e);
 			}
-		});
+		}).toArray();
 	}
 
 	@Override
@@ -94,7 +93,7 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 			}
 		}
 
-		return executable.getParameterDescriptors().index().allMatch((index) -> {
+		return Elements.forArray(executable.getParameterDescriptors()).index().allMatch((index) -> {
 			try {
 				boolean success = canExtractParameter(index.getElement());
 				Level level = success ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
@@ -112,14 +111,14 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public Elements<? extends Object> extractParameters(Executable executable) throws ExtractParameterException {
+	public Object[] extractParameters(Executable executable) throws ExtractParameterException {
 		for (ParameterExtractor extractor : getServices()) {
 			if (extractor.canExtractParameters(executable)) {
 				return extractor.extractParameters(executable);
 			}
 		}
 
-		return executable.getParameterDescriptors().index().map((row) -> {
+		return Elements.forArray(executable.getParameterDescriptors()).index().map((row) -> {
 			ParameterDescriptor parameterDescriptor = row.getElement();
 			try {
 				return extractParameter(parameterDescriptor);
@@ -130,6 +129,6 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 				throw new ExtractParameterException(
 						executable + " parameter index " + row.getIndex() + " descriptor " + parameterDescriptor, e);
 			}
-		});
+		}).toArray();
 	}
 }

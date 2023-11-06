@@ -17,7 +17,6 @@ import io.basc.framework.mapper.support.DefaultParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.element.Elements;
 
 public final class ParameterUtils {
 	private static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
@@ -42,11 +41,11 @@ public final class ParameterUtils {
 		throw Assert.shouldNeverGetHere();
 	}
 
-	public static Elements<ParameterDescriptor> getParameters(ParameterNameDiscoverer parameterNameDiscoverer,
+	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer,
 			Executable executable) {
 		String[] names = getParameterNames(parameterNameDiscoverer, executable);
 		if (ArrayUtils.isEmpty(names)) {
-			return Elements.empty();
+			return new ParameterDescriptor[0];
 		}
 
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
@@ -54,10 +53,10 @@ public final class ParameterUtils {
 			MethodParameter parameter = MethodParameter.forExecutable(executable, i);
 			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], new TypeDescriptor(parameter));
 		}
-		return Elements.forArray(parameterDefinitions);
+		return parameterDefinitions;
 	}
 
-	public static Elements<ParameterDescriptor> getParameters(Executable executable) {
+	public static ParameterDescriptor[] getParameters(Executable executable) {
 		return getParameters(PARAMETER_NAME_DISCOVERER, executable);
 	}
 

@@ -1,14 +1,10 @@
 package io.basc.framework.env;
 
-import java.util.Properties;
-
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.event.observe.Observable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.function.Optional;
 import io.basc.framework.value.SystemPropertyFactory;
 
 /**
@@ -31,16 +27,6 @@ public final class Sys extends DefaultEnvironment {
 			env.init();
 		} finally {
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> env.destroySingletons()));
-		}
-
-		try {
-			String resourceName = Optional
-					.of(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
-					.orElse("/logger-level.properties");
-			Observable<Properties> observable = env.getProperties(resourceName);
-			LoggerFactory.getSource().getLevelManager().registerProperties(observable);
-		} catch (Throwable e) {
-			logger.error(e, "Initialization log level configuration exception");
 		}
 	}
 
@@ -74,17 +60,5 @@ public final class Sys extends DefaultEnvironment {
 		super._init();
 
 		getProperties().registerLast(SystemPropertyFactory.INSTANCE);
-
-		/**
-		 * 加载配置文件
-		 */
-		try {
-			source("system.properties");
-			String resourceName = Optional.of(getProperties().getAsString("io.basc.framework.properties"))
-					.orElse("/private.properties");
-			source(resourceName);
-		} catch (Throwable e) {
-			logger.error(e, "Initialization profile exception");
-		}
 	}
 }

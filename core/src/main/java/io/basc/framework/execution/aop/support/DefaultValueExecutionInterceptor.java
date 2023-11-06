@@ -1,8 +1,4 @@
-package io.basc.framework.context.config.support;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+package io.basc.framework.execution.aop.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
@@ -10,7 +6,7 @@ import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.ArrayUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,27 +22,22 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 	private ConversionService conversionService;
 
 	@Override
-	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (args.isEmpty()) {
+	public Object intercept(Executor executor, Object[] args) throws Throwable {
+		if (ArrayUtils.isEmpty(args)) {
 			return executor.execute(args);
 		}
 
-		List<Object> newArgs = new ArrayList<>(8);
-		Iterator<? extends Object> argIterator = args.iterator();
-		Iterator<? extends ParameterDescriptor> descriptorIterator = executor.getParameterDescriptors().iterator();
-		while (argIterator.hasNext() && descriptorIterator.hasNext()) {
-			Object arg = argIterator.next();
-			ParameterDescriptor parameterDescriptor = descriptorIterator.next();
-			if (arg == null) {
-				arg = getDefaultParameterValue(executor, parameterDescriptor);
-				if (arg != null) {
-					arg = conversionService.convert(arg, parameterDescriptor.getTypeDescriptor());
-				}
+		ParameterDescriptor[] parameterDescriptors = executor.getParameterDescriptors();
+		for (int i = 0; i < parameterDescriptors.length && i < args.length; i++) {
+			Object arg = args[i];
+			if (arg != null) {
+				continue;
 			}
-			newArgs.add(arg);
+
+			args[i] = getDefaultParameterValue(executor, parameterDescriptors[i]);
 		}
 
-		Object returnValue = executor.execute(Elements.of(newArgs));
+		Object returnValue = executor.execute(args);
 		if (returnValue == null) {
 			returnValue = getDefaultReturnValue(executor);
 			if (returnValue != null) {

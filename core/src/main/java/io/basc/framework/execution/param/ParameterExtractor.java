@@ -29,20 +29,19 @@ public interface ParameterExtractor {
 	 */
 	Object extractParameter(ParameterDescriptor parameterDescriptor) throws ExtractParameterException;
 
-	default boolean canExtractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
-		return parameterDescriptors.allMatch(this::canExtractParameter);
+	default boolean canExtractParameters(ParameterDescriptor[] parameterDescriptors) {
+		return Elements.forArray(parameterDescriptors).allMatch(this::canExtractParameter);
 	}
 
-	default Elements<? extends Object> extractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors)
-			throws ExtractParameterException {
-		return parameterDescriptors.map(this::extractParameter);
+	default Object[] extractParameters(ParameterDescriptor[] parameterDescriptors) throws ExtractParameterException {
+		return Elements.forArray(parameterDescriptors).map(this::extractParameter).toArray();
 	}
 
 	default boolean canExtractParameters(Executable executable) {
 		return canExtractParameters(executable.getParameterDescriptors());
 	}
 
-	default Elements<? extends Object> extractParameters(Executable executable) throws ExtractParameterException {
+	default Object[] extractParameters(Executable executable) throws ExtractParameterException {
 		return extractParameters(executable.getParameterDescriptors());
 	}
 }

@@ -2,7 +2,6 @@ package io.basc.framework.execution.reflect;
 
 import java.lang.reflect.Constructor;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.Aop;
@@ -24,12 +23,13 @@ public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>> 
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
+	public Object execute(Object[] args) throws Throwable {
 		if (aop == null) {
-			return ReflectionUtils.newInstance(getExecutable(), args.toArray());
+			return ReflectionUtils.newInstance(getExecutable(), args);
 		} else {
 			Proxy proxy = aop.getProxy(getReturnTypeDescriptor().getType(), aopInterfaces, executionInterceptor);
-			Elements<? extends TypeDescriptor> types = getParameterDescriptors().map((e) -> e.getTypeDescriptor());
+			Class<?>[] types = Elements.forArray(getParameterDescriptors()).map((e) -> e.getTypeDescriptor().getType())
+					.toArray(Class[]::new);
 			return proxy.execute(types, args);
 		}
 	}

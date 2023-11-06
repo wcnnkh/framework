@@ -1,7 +1,7 @@
 package io.basc.framework.web.message.support;
 
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 import io.basc.framework.convert.TypeDescriptor;
@@ -11,18 +11,17 @@ import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.orm.EntityMapper;
-import io.basc.framework.orm.EntityMapping;
-import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessageConverter {
+	private QueryStringConverter queryStringConverter = QueryStringConverter.getInstance();
+
 	private EntityMapper mapper;
 
 	public EntityMapper getMapper() {
@@ -62,26 +61,9 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest
 				? (AbstractBufferingClientHttpRequest) request
 				: new BufferingClientHttpRequestWrapper(request);
-		EntityMapping<? extends Property> mapping = getMapper()
-				.getMapping(parameterDescriptor.getTypeDescriptor().getType());
-		for (Property field : mapping.getElements()) {
-			if (!field.isSupportGetter()) {
-				continue;
-			}
-
-			Getter getter = field.getGetters().first();
-			String name = field.getName();
-			Object fieldValue = getter.get(parameter);
-			String value = (String) getConversionService().convert(fieldValue, getter.getTypeDescriptor(),
-					TypeDescriptor.valueOf(String.class));
-			if (bufferingClientHttpRequest.getBufferedOutput().size() != 0) {
-				bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
-			}
-			bufferingClientHttpRequest.getOutputStream().write(name.getBytes(charset));
-			bufferingClientHttpRequest.getOutputStream().write("=".getBytes(charset));
-			bufferingClientHttpRequest.getOutputStream()
-					.write(URLEncoder.encode(value, charset.name()).getBytes(charset));
-		}
+		OutputStreamWriter osw = new OutputStreamWriter(request.getOutputStream(), charset);
+		Long writeCount = new Long(bufferingClientHttpRequest.getBufferedOutput().size());
+		queryStringConverter.write(parameter, osw);
 		return bufferingClientHttpRequest;
 	}
 

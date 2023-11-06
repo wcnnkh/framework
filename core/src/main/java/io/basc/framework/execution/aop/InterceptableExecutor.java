@@ -3,7 +3,6 @@ package io.basc.framework.execution.aop;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
@@ -17,12 +16,12 @@ public class InterceptableExecutor implements Executor {
 	}
 
 	@Override
-	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
+	public ParameterDescriptor[] getParameterDescriptors() {
 		return executor.getParameterDescriptors();
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
+	public Object execute(Object[] args) throws Throwable {
 		return executionInterceptor.intercept(executor, args);
 	}
 

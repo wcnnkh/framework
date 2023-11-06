@@ -6,7 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.mapper.ParameterDescriptor;
@@ -18,7 +17,6 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.model.ModelAndView;
 import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
 
-@Component
 public class JspMessageConverter extends ModelAndViewMessageConverter {
 
 	@Override
@@ -27,28 +25,23 @@ public class JspMessageConverter extends ModelAndViewMessageConverter {
 	}
 
 	@Override
-	protected void writePage(TypeDescriptor type, ModelAndView page,
-			ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException, WebMessagelConverterException {
-		HttpServletRequest servletRequest = XUtils.getDelegate(request,
-				HttpServletRequest.class);
-		HttpServletResponse servletResponse = XUtils.getDelegate(response,
-				HttpServletResponse.class);
+	protected void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request,
+			ServerHttpResponse response) throws IOException, WebMessagelConverterException {
+		HttpServletRequest servletRequest = XUtils.getDelegate(request, HttpServletRequest.class);
+		HttpServletResponse servletResponse = XUtils.getDelegate(response, HttpServletResponse.class);
 		if (servletRequest == null || servletResponse == null) {
 			throw new WebMessagelConverterException(type, page, request, null);
 		}
 
 		try {
-			ServletUtils.forward(servletRequest, servletResponse,
-					page.getName());
+			ServletUtils.forward(servletRequest, servletResponse, page.getName());
 		} catch (ServletException e) {
 			throw new WebMessagelConverterException(type, page, request, e);
 		}
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
 		return request;
 	}

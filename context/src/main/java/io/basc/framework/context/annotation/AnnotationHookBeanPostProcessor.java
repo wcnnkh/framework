@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.config.support.MethodHookBeanPostProcessor;
 import io.basc.framework.beans.factory.support.DefinitionFactoryBean;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.MethodExecutor;
 import io.basc.framework.execution.param.ParameterExtractor;
 
 class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
@@ -18,14 +18,14 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 	}
 
 	@Override
-	protected boolean isInitializeExecutor(Executor executor, String beanName) {
+	protected boolean isInitializeExecutor(MethodExecutor executor, String beanName) {
 		if (beanFactory.isFactoryBean(beanName)) {
 			FactoryBean<?> factoryBean = beanFactory.getFactoryBean(beanName);
 			if (factoryBean instanceof DefinitionFactoryBean) {
 				DefinitionFactoryBean definitionFactoryBean = (DefinitionFactoryBean) factoryBean;
 				Bean bean = definitionFactoryBean.getConstructor().getReturnTypeDescriptor().getAnnotation(Bean.class);
 				if (bean != null) {
-					if (Arrays.asList(bean.initMethod()).contains(getName())) {
+					if (Arrays.asList(bean.initMethod()).contains(executor.getName())) {
 						return true;
 					}
 				}
@@ -35,7 +35,7 @@ class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 	}
 
 	@Override
-	protected boolean isDestoryExecutor(Executor executor, String beanName) {
+	protected boolean isDestoryExecutor(MethodExecutor executor, String beanName) {
 		if (beanFactory.isFactoryBean(beanName)) {
 			FactoryBean<?> factoryBean = beanFactory.getFactoryBean(beanName);
 			if (factoryBean instanceof DefinitionFactoryBean) {

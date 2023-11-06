@@ -3,7 +3,7 @@ package io.basc.framework.execution.aop;
 import java.lang.reflect.Method;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.ArrayUtils;
 
 public class ProxyUtils {
 	public static boolean isIgnoreMethod(Method method) {
@@ -19,15 +19,15 @@ public class ProxyUtils {
 		return instance.getClass().getName() + "@" + Integer.toHexString(invokeHashCode(instance, method));
 	}
 
-	public static boolean invokeEquals(Object instance, Method method, Elements<? extends Object> args) {
-		Object value = args.first();
+	public static boolean invokeEquals(Object instance, Method method, Object[] args) {
+		Object value = ArrayUtils.isEmpty(args) ? null : args[0];
 		if (value == null) {
 			return false;
 		}
 		return value.equals(instance);
 	}
 
-	public static Object invokeIgnoreMethod(Object instance, Method method, Elements<? extends Object> args) {
+	public static Object invokeIgnoreMethod(Object instance, Method method, Object[] args) {
 		if (ReflectionUtils.isHashCodeMethod(method)) {
 			return invokeHashCode(instance, method);
 		}

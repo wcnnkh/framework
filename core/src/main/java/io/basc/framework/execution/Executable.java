@@ -1,6 +1,5 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.element.Elements;
 
@@ -16,10 +15,10 @@ public interface Executable extends Constructable {
 	 * 
 	 * @return
 	 */
-	Elements<? extends ParameterDescriptor> getParameterDescriptors();
+	ParameterDescriptor[] getParameterDescriptors();
 
-	default boolean isExecuted(Elements<? extends TypeDescriptor> types) {
-		return getParameterDescriptors().map((e) -> e.getTypeDescriptor()).equals(types,
-				TypeDescriptor::isAssignableTo);
+	default boolean isExecuted(Class<?>[] types) {
+		return Elements.forArray(getParameterDescriptors()).map((e) -> e.getTypeDescriptor().getType())
+				.equals(Elements.forArray(types), Class::isAssignableFrom);
 	}
 }

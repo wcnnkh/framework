@@ -4,7 +4,6 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executable;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class DefaultExecutable implements Executable {
 	@NonNull
 	private volatile TypeDescriptor returnTypeDescriptor;
 	@NonNull
-	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
+	private volatile ParameterDescriptor[] parameterDescriptors;
 
 	public DefaultExecutable(DefaultExecutable defaultExecutable) {
 		Assert.requiredArgument(defaultExecutable != null, "defaultExecutable");
@@ -29,5 +28,9 @@ public class DefaultExecutable implements Executable {
 		this.name = defaultExecutable.name;
 		this.returnTypeDescriptor = defaultExecutable.returnTypeDescriptor;
 		this.parameterDescriptors = defaultExecutable.parameterDescriptors;
+	}
+
+	public ParameterDescriptor[] getParameterDescriptors() {
+		return parameterDescriptors == null ? null : parameterDescriptors.clone();
 	}
 }

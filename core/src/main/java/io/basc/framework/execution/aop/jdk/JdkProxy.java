@@ -6,7 +6,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.ArrayUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -30,13 +30,13 @@ public class JdkProxy implements Proxy {
 	}
 
 	@Override
-	public boolean isExecuted(Elements<? extends TypeDescriptor> types) {
-		return types.isEmpty();
+	public boolean isExecuted(Class<?>[] types) {
+		return ArrayUtils.isEmpty(types);
 	}
 
 	@Override
-	public Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) {
-		if (!args.isEmpty()) {
+	public Object execute(Class<?>[] types, Object[] args) {
+		if (!ArrayUtils.isEmpty(args)) {
 			throw new UnsupportedException("Jdk proxy does not support calls with parameters");
 		}
 		return execute();

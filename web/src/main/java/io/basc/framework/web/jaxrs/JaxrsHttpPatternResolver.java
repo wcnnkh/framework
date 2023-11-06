@@ -12,7 +12,6 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.CollectionUtils;
@@ -20,7 +19,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 import io.basc.framework.web.pattern.HttpPattern;
 
-@Component
 public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
 
 	@Override

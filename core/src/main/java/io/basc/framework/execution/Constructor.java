@@ -1,8 +1,5 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.element.Elements;
-
 /**
  * 构造器
  * 
@@ -12,8 +9,8 @@ import io.basc.framework.util.element.Elements;
 public interface Constructor extends Constructable {
 
 	default Object execute() throws Throwable {
-		return execute(Elements.empty(), Elements.empty());
+		return execute(new Class<?>[0], new Object[0]);
 	}
 
-	Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) throws Throwable;
+	Object execute(Class<?>[] types, Object[] args) throws Throwable;
 }

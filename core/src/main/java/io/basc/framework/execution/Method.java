@@ -1,7 +1,6 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.element.Elements;
 
 /**
  * 方法
@@ -19,7 +18,7 @@ public interface Method extends Executable {
 	String getName();
 
 	default Object execute(Object target) throws Throwable {
-		return execute(target, Elements.empty());
+		return execute(target, new Object[0]);
 	}
 
 	/**
@@ -30,5 +29,5 @@ public interface Method extends Executable {
 	 * @return
 	 * @throws Throwable
 	 */
-	Object execute(Object target, Elements<? extends Object> args) throws Throwable;
+	Object execute(Object target, Object[] args) throws Throwable;
 }

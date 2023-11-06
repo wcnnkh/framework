@@ -1,6 +1,7 @@
 package io.basc.framework.beans.factory.config.support;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
@@ -9,7 +10,7 @@ import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultParameterDescriptor;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.ArrayUtils;
 
 public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
 	private static final ParameterDescriptor PARAMETER_DESCRIPTOR = new DefaultParameterDescriptor("beanFactory",
@@ -22,14 +23,14 @@ public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
 	}
 
 	@Override
-	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
-		return Elements.singleton(PARAMETER_DESCRIPTOR).concat(super.getParameterDescriptors());
+	public ParameterDescriptor[] getParameterDescriptors() {
+		return ArrayUtils.merge(new ParameterDescriptor[] { PARAMETER_DESCRIPTOR }, super.getParameterDescriptors());
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
-		BeanFactory beanFactory = (BeanFactory) args.first();
-		Object[] params = args.skip(1).toArray();
+	public Object execute(Object[] args) throws Throwable {
+		BeanFactory beanFactory = (BeanFactory) args[0];
+		Object[] params = Arrays.copyOfRange(args, 1, args.length);
 		Object target = beanFactory.getBean(targetBeanName);
 		return ReflectionUtils.invoke(getExecutable(), target, params);
 	}

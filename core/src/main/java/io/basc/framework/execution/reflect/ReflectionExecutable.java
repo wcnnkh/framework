@@ -7,14 +7,13 @@ import io.basc.framework.core.MethodParameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
 public class ReflectionExecutable<T extends Executable> implements io.basc.framework.execution.Executable {
 	private final T executable;
 	private volatile TypeDescriptor returnTypeDescriptor;
-	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
+	private volatile ParameterDescriptor[] parameterDescriptors;
 
 	public ReflectionExecutable(T executable) {
 		Assert.requiredArgument(executable != null, "executable");
@@ -35,7 +34,7 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 	}
 
 	@Override
-	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
+	public ParameterDescriptor[] getParameterDescriptors() {
 		if (parameterDescriptors == null) {
 			synchronized (this) {
 				if (parameterDescriptors == null) {
@@ -43,7 +42,7 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 				}
 			}
 		}
-		return parameterDescriptors;
+		return parameterDescriptors.clone();
 	}
 
 	@Override

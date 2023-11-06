@@ -6,7 +6,6 @@ import io.basc.framework.execution.Method;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
-import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,8 +24,8 @@ public class ReflectionMethod extends ReflectionExecutable<java.lang.reflect.Met
 	}
 
 	@Override
-	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
-		Object value = ReflectionUtils.invoke(getExecutable(), target, args.toArray());
+	public Object execute(Object target, Object[] args) throws Throwable {
+		Object value = ReflectionUtils.invoke(getExecutable(), target, args);
 		if (aop == null) {
 			return value;
 		}

@@ -7,7 +7,6 @@ import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.param.ParameterExtractor;
-import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	private final BeanDefinition beanDefinition;
 	private final ParameterExtractor parameterExtractor;
-	private volatile Elements<? extends Object> singletonConstructionParameters;
+	private volatile Object[] singletonConstructionParameters;
 	private volatile Executor constructor;
 	private volatile Object singletonObject;
 
@@ -52,7 +51,7 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 
 	private Object createObject() {
 		Executor executor = getConstructor();
-		Elements<? extends Object> args = parameterExtractor.extractParameters(executor);
+		Object[] args = parameterExtractor.extractParameters(executor);
 		if (isSingleton()) {
 			this.singletonConstructionParameters = args;
 		}

@@ -1,7 +1,6 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.element.Elements;
 
 /**
  * 可构造的
@@ -23,7 +22,7 @@ public interface Constructable {
 	 * @return
 	 */
 	default boolean isExecuted() {
-		return isExecuted(Elements.empty());
+		return isExecuted(new Class<?>[0]);
 	}
 
 	/**
@@ -32,5 +31,5 @@ public interface Constructable {
 	 * @param types
 	 * @return
 	 */
-	boolean isExecuted(Elements<? extends TypeDescriptor> types);
+	boolean isExecuted(Class<?>[] types);
 }

@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.MethodExecutor;
-import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,7 @@ public class ReflectionMethodExecutor extends ReflectionMethod implements Method
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
+	public Object execute(Object[] args) throws Throwable {
 		return execute(target, args);
 	}
 

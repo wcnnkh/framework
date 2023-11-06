@@ -1,8 +1,5 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.element.Elements;
-
 /**
  * 执行器
  * 
@@ -17,14 +14,14 @@ public interface Executor extends Executable, Constructor {
 	 * @return
 	 * @throws Throwable
 	 */
-	Object execute(Elements<? extends Object> args) throws Throwable;
+	Object execute(Object[] args) throws Throwable;
 
 	default Object execute() throws Throwable {
-		return execute(Elements.empty());
+		return execute(new Object[0]);
 	}
 
 	@Override
-	default Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) throws Throwable {
+	default Object execute(Class<?>[] types, Object[] args) throws Throwable {
 		// TODO 是否需要根据类型重新整理参数顺序
 		return execute(args);
 	}

@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
-import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.sf.cglib.proxy.MethodProxy;
@@ -20,7 +19,7 @@ public class CglibProxyExecutor extends ReflectionMethodExecutor {
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
-		return methodProxy.invokeSuper(getTarget(), args.toArray());
+	public Object execute(Object[] args) throws Throwable {
+		return methodProxy.invokeSuper(getTarget(), args);
 	}
 }
