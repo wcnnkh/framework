@@ -3,8 +3,6 @@ package io.basc.framework.web.message.support;
 import java.io.IOException;
 import java.net.HttpCookie;
 
-import javax.ws.rs.core.Cookie;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.ClientHttpRequest;
@@ -24,8 +22,7 @@ public abstract class AbstractCookieWebMessageConverter extends AbstractWebMessa
 		}
 
 		Object value = httpCookie.getValue();
-		return getConversionService().convert(value, TypeDescriptor.forObject(value),
-				parameterDescriptor.getTypeDescriptor());
+		return getConversionService().convert(value, parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override
@@ -33,7 +30,7 @@ public abstract class AbstractCookieWebMessageConverter extends AbstractWebMessa
 			throws IOException, WebMessagelConverterException {
 		String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class));
-		Cookie cookie = new Cookie(parameterDescriptor.getName(), value);
+		HttpCookie cookie = new HttpCookie(parameterDescriptor.getName(), value);
 		request.getHeaders().set(HttpHeaders.COOKIE, cookie.toString());
 		return request;
 	}

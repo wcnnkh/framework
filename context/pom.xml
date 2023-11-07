@@ -18,16 +18,25 @@
 			<artifactId>transaction</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>io.basc.framework</groupId>
-            <artifactId>locks</artifactId>
-        </dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>locks</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>orm</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<!-- 如果不想支持jax-rs也可以排队该依赖 -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+		</dependency>
+
+		<!-- web支持-->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>web</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -14,7 +14,6 @@ public class DefaultQueryStringHandler implements QueryStringHandler {
 	private String connector;
 	private String keyValueConnector;
 	private Codec<String, String> codec;
-	private int readBufferSize = 256;
 
 	public DefaultQueryStringHandler() {
 		this("&", "=");
@@ -26,10 +25,22 @@ public class DefaultQueryStringHandler implements QueryStringHandler {
 	}
 
 	@Override
-	public void write(LongAdder writeCount, String key, String value, Appendable target) throws IOException {
-		if (writeCount.longValue() == 0) {
+	public void read(LongAdder readSize, Readable source, BiConsumer<String, String> consumer) throws IOException {
+		IOUtils.split(source, connector).forEach((e) -> {
+			readSize.increment();
+			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
+			if (kv.length == 0) {
+				return;
+			}
+			// 忽略多余的分割，只使用两个
+			consumer.accept(kv[0], kv.length == 1 ? null : kv[1]);
+		});
+	}
+
+	@Override
+	public void write(LongAdder writtenSize, String key, String value, Appendable target) throws IOException {
+		if (writtenSize.longValue() == 0) {
 			target.append(connector);
-			writeCount.increment();
 		}
 
 		if (codec != null) {
@@ -40,17 +51,6 @@ public class DefaultQueryStringHandler implements QueryStringHandler {
 		target.append(key);
 		target.append(keyValueConnector);
 		target.append(value);
-	}
-
-	@Override
-	public void read(LongAdder readCount, Readable source, BiConsumer<String, String> consumer) throws IOException {
-		IOUtils.split(source, connector).forEach((e) -> {
-			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
-			if (kv.length == 0) {
-				return;
-			}
-			// 忽略多余的分割，只使用两个
-			consumer.accept(kv[0], kv.length == 1 ? null : kv[1]);
-		});
+		writtenSize.increment();
 	}
 }

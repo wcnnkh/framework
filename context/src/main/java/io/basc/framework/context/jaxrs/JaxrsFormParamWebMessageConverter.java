@@ -1,9 +1,10 @@
-package io.basc.framework.web.jaxrs;
+package io.basc.framework.context.jaxrs;
 
 import java.io.IOException;
 
-import javax.ws.rs.HeaderParam;
+import javax.ws.rs.FormParam;
 
+import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
@@ -11,19 +12,20 @@ import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.support.AbstractHeaderWebMessageConverter;
+import io.basc.framework.web.message.support.AbstractParamWebMessageConverter;
 
-public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageConverter {
+@Component
+public class JaxrsFormParamWebMessageConverter extends AbstractParamWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
-		return descriptor.isAnnotationPresent(HeaderParam.class);
+		return descriptor.isAnnotationPresent(FormParam.class);
 	}
 
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
+		FormParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(FormParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -32,13 +34,13 @@ public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageCo
 
 	@Override
 	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
-		return typeDescriptor.isAnnotationPresent(HeaderParam.class);
+		return typeDescriptor.isAnnotationPresent(FormParam.class);
 	}
 
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
+		FormParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(FormParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(request, parameterDescriptor, parameter);
 		}

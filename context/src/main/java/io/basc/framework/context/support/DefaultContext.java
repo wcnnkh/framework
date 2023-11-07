@@ -16,8 +16,6 @@ import io.basc.framework.context.config.ConfigurableTypeFilter;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.context.config.ContextPostProcessors;
 import io.basc.framework.context.config.support.DefaultClassScanner;
-import io.basc.framework.context.jaxrs.JaxrsTypeFilterExtend;
-import io.basc.framework.context.websocket.WebSocketTypeFilterExtend;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.env.DefaultEnvironment;
@@ -55,8 +53,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		});
 
 		configurableTypeFilter.register(new AnnotationTypeFilterExtend());
-		configurableTypeFilter.register(new WebSocketTypeFilterExtend());
-		configurableTypeFilter.register(new JaxrsTypeFilterExtend());
 
 		contextClassesLoader.getServiceLoaders().register(sourceClasses);
 

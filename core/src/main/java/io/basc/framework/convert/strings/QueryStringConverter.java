@@ -17,6 +17,7 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
@@ -31,6 +32,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class QueryStringConverter extends StringConverter {
+	private static final TypeDescriptor MAP_TYPE = TypeDescriptor.map(Map.class, String.class, Object.class);
+
 	private static volatile QueryStringConverter instance;
 
 	public static QueryStringConverter getInstance() {
@@ -48,6 +51,18 @@ public class QueryStringConverter extends StringConverter {
 	private QueryStringHandler handler = new DefaultQueryStringHandler();
 	@NonNull
 	private ConversionService conversionService = Sys.getEnv().getConversionService();
+
+	private Object convert(String source, TypeDescriptor targetType, ConversionService conversionService) {
+		if (canConvert(String.class, targetType)) {
+			return convert(source, targetType);
+		}
+
+		if (conversionService.canConvert(String.class, targetType)) {
+			return conversionService.convert(source, targetType);
+		}
+
+		return StringConverter.DEFAULT.convert(source, targetType);
+	}
 
 	private String convertToString(Object value, ConversionService conversionService) {
 		if (value == null) {
@@ -67,42 +82,42 @@ public class QueryStringConverter extends StringConverter {
 		}
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(Readable source) throws IOException {
-		return parseQueryString(source, getConversionService(), getHandler());
+	public final MultiValueMap<String, Value> parseMultiValueMap(Readable source) throws IOException {
+		return parseMultiValueMap(source, getConversionService(), getHandler());
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(Readable source, ConversionService conversionService)
+	public final MultiValueMap<String, Value> parseMultiValueMap(Readable source, ConversionService conversionService)
 			throws IOException {
-		return parseQueryString(source, conversionService, getHandler());
+		return parseMultiValueMap(source, conversionService, getHandler());
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(Readable source, ConversionService conversionService,
+	public final MultiValueMap<String, Value> parseMultiValueMap(Readable source, ConversionService conversionService,
 			QueryStringHandler handler) throws IOException {
 		MultiValueMap<String, Value> map = new LinkedMultiValueMap<>();
 		read(source, conversionService, handler, map::add);
 		return map;
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(Readable source, QueryStringHandler handler)
+	public final MultiValueMap<String, Value> parseMultiValueMap(Readable source, QueryStringHandler handler)
 			throws IOException {
-		return parseQueryString(source, getConversionService(), handler);
+		return parseMultiValueMap(source, getConversionService(), handler);
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(String queryString) {
-		return parseQueryString(queryString, getConversionService(), getHandler());
+	public final MultiValueMap<String, Value> parseMultiValueMap(String queryString) {
+		return parseMultiValueMap(queryString, getConversionService(), getHandler());
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(String queryString,
+	public final MultiValueMap<String, Value> parseMultiValueMap(String queryString,
 			ConversionService conversionService) {
-		return parseQueryString(queryString, conversionService, getHandler());
+		return parseMultiValueMap(queryString, conversionService, getHandler());
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(String queryString, ConversionService conversionService,
-			QueryStringHandler handler) {
+	public final MultiValueMap<String, Value> parseMultiValueMap(String queryString,
+			ConversionService conversionService, QueryStringHandler handler) {
 		Assert.requiredArgument(queryString != null, "queryString");
 		StringReader reader = new StringReader(queryString);
 		try {
-			return parseQueryString(reader, conversionService, handler);
+			return parseMultiValueMap(reader, conversionService, handler);
 		} catch (IOException e) {
 			throw new IllegalStateException("Should never get here", e);
 		} finally {
@@ -110,32 +125,103 @@ public class QueryStringConverter extends StringConverter {
 		}
 	}
 
-	public final MultiValueMap<String, Value> parseQueryString(String queryString, QueryStringHandler handler) {
-		return parseQueryString(queryString, getConversionService(), handler);
+	public final MultiValueMap<String, Value> parseMultiValueMap(String queryString, QueryStringHandler handler) {
+		return parseMultiValueMap(queryString, getConversionService(), handler);
 	}
 
-	public final void read(LongAdder readCount, Readable source, BiConsumer<String, ? super Value> consumer)
+	public final Object parseObject(LongAdder readSize, Readable readable, TypeDescriptor targetType)
 			throws IOException {
-		read(readCount, source, getConversionService(), getHandler(), consumer);
+		return parseObject(readSize, readable, targetType, getConversionService(), getHandler());
 	}
 
-	public final void read(LongAdder readCount, Readable source, ConversionService conversionService,
+	public final Object parseObject(LongAdder readSize, Readable readable, TypeDescriptor targetType,
+			ConversionService conversionService) throws IOException {
+		return parseObject(readSize, readable, targetType, conversionService, getHandler());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final Object parseObject(LongAdder readSize, Readable readable, TypeDescriptor targetType,
+			ConversionService conversionService, QueryStringHandler handler) throws IOException {
+		if (targetType.isMap()) {
+			Map map = CollectionFactory.createMap(targetType.getType(), targetType.getMapKeyTypeDescriptor().getType(),
+					16);
+			read(readSize, readable, conversionService, handler, (k, v) -> {
+				map.put(convert(k, targetType.getMapKeyTypeDescriptor(), conversionService),
+						convert(v.getAsString(), targetType.getMapValueTypeDescriptor(), conversionService));
+			});
+			return map;
+		}
+
+		if (conversionService.canConvert(MAP_TYPE, targetType)) {
+			// 可以通过map转换为对象
+			MultiValueMap<String, Value> multiValueMap = parseMultiValueMap(readable, conversionService, handler);
+			return conversionService.convert(multiValueMap, MAP_TYPE, targetType);
+		}
+
+		// TODO 无法通过conversionService转换，使用反射实现
+		return null;
+	}
+
+	public final Object parseObject(LongAdder readSize, Readable readable, TypeDescriptor targetType,
+			QueryStringHandler handler) throws IOException {
+		return parseObject(readSize, readable, targetType, getConversionService(), handler);
+	}
+
+	public final Object parseObject(String queryString, TypeDescriptor targetType) {
+		return parseObject(queryString, targetType, getConversionService(), getHandler());
+	}
+
+	public final Object parseObject(String queryString, TypeDescriptor targetType,
+			ConversionService conversionService) {
+		return parseObject(queryString, targetType, conversionService, getHandler());
+	}
+
+	public final Object parseObject(String queryString, TypeDescriptor targetType, ConversionService conversionService,
+			QueryStringHandler handler) {
+		StringReader stringReader = new StringReader(queryString);
+		try {
+			return parseObject(new LongAdder(), stringReader, targetType, conversionService);
+		} catch (IOException e) {
+			throw new IllegalStateException("Should never get here", e);
+		}
+	}
+
+	public final Object parseObject(String queryString, TypeDescriptor targetType, QueryStringHandler handler) {
+		return parseObject(queryString, targetType, getConversionService(), handler);
+	}
+
+	public final void read(LongAdder readSize, Readable source, BiConsumer<String, ? super Value> consumer)
+			throws IOException {
+		read(readSize, source, getConversionService(), getHandler(), consumer);
+	}
+
+	public final void read(LongAdder readSize, Readable source, ConversionService conversionService,
 			BiConsumer<String, ? super Value> consumer) throws IOException {
-		read(readCount, source, conversionService, getHandler(), consumer);
+		read(readSize, source, conversionService, getHandler(), consumer);
 	}
 
-	public final void read(LongAdder readCount, Readable source, ConversionService conversionService,
+	/**
+	 * 已读取的大小
+	 * 
+	 * @param readSize
+	 * @param source
+	 * @param conversionService
+	 * @param handler
+	 * @param consumer
+	 * @throws IOException
+	 */
+	public final void read(LongAdder readSize, Readable source, ConversionService conversionService,
 			QueryStringHandler handler, BiConsumer<String, ? super Value> consumer) throws IOException {
-		handler.read(readCount, source, (key, value) -> {
+		handler.read(readSize, source, (key, value) -> {
 			AnyValue anyValue = new AnyValue(value, conversionService);
 			anyValue.setStringConverter(this);
 			consumer.accept(key, anyValue);
 		});
 	}
 
-	public final void read(LongAdder readCount, Readable source, QueryStringHandler handler,
+	public final void read(LongAdder readSize, Readable source, QueryStringHandler handler,
 			BiConsumer<String, ? super Value> consumer) throws IOException {
-		read(readCount, source, getConversionService(), handler, consumer);
+		read(readSize, source, getConversionService(), handler, consumer);
 	}
 
 	public final long read(Readable source, BiConsumer<String, ? super Value> consumer) throws IOException {
@@ -149,9 +235,9 @@ public class QueryStringConverter extends StringConverter {
 
 	public final long read(Readable source, ConversionService conversionService, QueryStringHandler handler,
 			BiConsumer<String, ? super Value> consumer) throws IOException {
-		LongAdder readCount = new LongAdder();
-		read(readCount, source, conversionService, handler, consumer);
-		return readCount.longValue();
+		LongAdder readSize = new LongAdder();
+		read(readSize, source, conversionService, handler, consumer);
+		return readSize.longValue();
 	}
 
 	public final long read(Readable source, QueryStringHandler handler, BiConsumer<String, ? super Value> consumer)
@@ -168,10 +254,10 @@ public class QueryStringConverter extends StringConverter {
 	}
 
 	public final String toQueryString(Object source, ConversionService conversionService, QueryStringHandler handler) {
-		LongAdder writeCount = new LongAdder();
+		LongAdder writtenSize = new LongAdder();
 		StringBuilder sb = new StringBuilder();
 		try {
-			write(writeCount, source, sb, conversionService, handler);
+			write(writtenSize, source, sb, conversionService, handler);
 		} catch (IOException e) {
 			throw new IllegalStateException("Should never get here", e);
 		}
@@ -191,48 +277,58 @@ public class QueryStringConverter extends StringConverter {
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private void write(LongAdder writeCount, Appendable append, Object name, Object value,
+	private void write(LongAdder writtenSize, Appendable append, Object name, Object value,
 			ConversionService conversionService, QueryStringHandler handler) throws IOException {
 		if (value.getClass().isArray()) {
 			int len = Array.getLength(value);
 			for (int i = 0; i < len; i++) {
 				Object item = Array.get(value, i);
-				write(writeCount, append, name, item, conversionService, handler);
+				write(writtenSize, append, name, item, conversionService, handler);
 			}
 		} else if (Collection.class.isAssignableFrom(value.getClass())) {
 			Collection collection = (Collection) value;
 			for (Object item : collection) {
-				write(writeCount, append, name, item, conversionService, handler);
+				write(writtenSize, append, name, item, conversionService, handler);
 			}
 		} else {
 			String key = convertToString(name, conversionService);
 			if (Map.class.isAssignableFrom(value.getClass())) {
 				Map map = (Map) value;
-				writeMap(writeCount, append, key, map, conversionService, handler);
+				writeMap(writtenSize, append, key, map, conversionService, handler);
 			} else {
 				if (conversionService.canConvert(value.getClass(), Map.class)) {
 					Map map = conversionService.convert(value, Map.class);
-					writeMap(writeCount, append, key, map, conversionService, handler);
+					writeMap(writtenSize, append, key, map, conversionService, handler);
 				} else {
 					String v = convertToString(value, conversionService);
-					handler.write(writeCount, key, v, append);
+					handler.write(writtenSize, key, v, append);
 				}
 			}
 		}
 	}
 
-	public final void write(LongAdder writeCount, Object source, Appendable target) throws IOException {
-		write(writeCount, source, target, getConversionService(), getHandler());
+	public final void write(LongAdder writtenSize, Object source, Appendable target) throws IOException {
+		write(writtenSize, source, target, getConversionService(), getHandler());
 	}
 
-	public final void write(LongAdder writeCount, Object source, Appendable target, ConversionService conversionService)
-			throws IOException {
-		write(writeCount, source, target, conversionService, getHandler());
+	public final void write(LongAdder writtenSize, Object source, Appendable target,
+			ConversionService conversionService) throws IOException {
+		write(writtenSize, source, target, conversionService, getHandler());
 	}
 
+	/**
+	 * 写入
+	 * 
+	 * @param writtenSize       已写入大小
+	 * @param source
+	 * @param target
+	 * @param conversionService
+	 * @param handler
+	 * @throws IOException
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public final void write(LongAdder writeCount, Object source, Appendable target, ConversionService conversionService,
-			QueryStringHandler handler) throws IOException {
+	public final void write(LongAdder writtenSize, Object source, Appendable target,
+			ConversionService conversionService, QueryStringHandler handler) throws IOException {
 		Assert.requiredArgument(source != null, "source");
 		Map map;
 		if (source instanceof Map) {
@@ -246,13 +342,13 @@ public class QueryStringConverter extends StringConverter {
 
 		Set<Entry<Object, Object>> entries = map.entrySet();
 		for (Entry<Object, Object> entry : entries) {
-			write(writeCount, target, entry.getKey(), entry.getValue(), conversionService, handler);
+			write(writtenSize, target, entry.getKey(), entry.getValue(), conversionService, handler);
 		}
 	}
 
-	public final void write(LongAdder writeCount, Object source, Appendable target, QueryStringHandler handler)
+	public final void write(LongAdder writtenSize, Object source, Appendable target, QueryStringHandler handler)
 			throws IOException {
-		write(writeCount, source, target, getConversionService(), handler);
+		write(writtenSize, source, target, getConversionService(), handler);
 	}
 
 	public final long write(Object source, Appendable target) throws IOException {
@@ -265,9 +361,9 @@ public class QueryStringConverter extends StringConverter {
 
 	public final long write(Object source, Appendable target, ConversionService conversionService,
 			QueryStringHandler handler) throws IOException {
-		LongAdder writeCount = new LongAdder();
-		write(writeCount, source, target, conversionService, handler);
-		return writeCount.longValue();
+		LongAdder writtenSize = new LongAdder();
+		write(writtenSize, source, target, conversionService, handler);
+		return writtenSize.longValue();
 	}
 
 	public final long write(Object source, Appendable target, QueryStringHandler handler) throws IOException {
@@ -275,13 +371,13 @@ public class QueryStringConverter extends StringConverter {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void writeMap(LongAdder writeCount, Appendable append, String name, Map map,
+	private void writeMap(LongAdder writtenSize, Appendable append, String name, Map map,
 			ConversionService conversionService, QueryStringHandler handler) throws IOException {
 		Set<Entry<Object, Object>> entrys = map.entrySet();
 		for (Entry<Object, Object> entry : entrys) {
 			String key = convertToString(entry.getKey(), conversionService);
 			key = StringUtils.isEmpty(name) ? key : (name + "." + key);
-			write(writeCount, append, key, entry.getValue(), conversionService, handler);
+			write(writtenSize, append, key, entry.getValue(), conversionService, handler);
 		}
 	}
 }

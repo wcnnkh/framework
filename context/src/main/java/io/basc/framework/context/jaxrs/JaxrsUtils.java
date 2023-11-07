@@ -1,4 +1,4 @@
-package io.basc.framework.web.jaxrs;
+package io.basc.framework.context.jaxrs;
 
 import java.util.List;
 import java.util.Map.Entry;

@@ -9,6 +9,9 @@ import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.value.Value;
 import lombok.Data;
 
+/**
+ * 递归转换
+ */
 @Data
 public class RecursiveConversionService implements ConversionService {
 	private final ConversionService objectConversionService;

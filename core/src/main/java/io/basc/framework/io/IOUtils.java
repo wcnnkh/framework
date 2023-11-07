@@ -2103,12 +2103,27 @@ public final class IOUtils {
 		return new NonClosingOutputStream(out);
 	}
 
-	public static Stream<CharSequence> split(Readable source, String lineSeparator) {
-		return split(source, CharBuffer.allocate(DEFAULT_BUFFER_SIZE), lineSeparator);
+	/**
+	 * 分割读取
+	 * 
+	 * @param source
+	 * @param separator
+	 * @return
+	 */
+	public static Stream<CharSequence> split(Readable source, String separator) {
+		return split(source, CharBuffer.allocate(DEFAULT_BUFFER_SIZE), separator);
 	}
 
-	public static Stream<CharSequence> split(Readable source, CharBuffer buffer, CharSequence lineSeparator) {
-		SplitReadableIterator iterator = new SplitReadableIterator(source, buffer, lineSeparator);
+	/**
+	 * 分割读取
+	 * 
+	 * @param source
+	 * @param buffer
+	 * @param separator
+	 * @return
+	 */
+	public static Stream<CharSequence> split(Readable source, CharBuffer buffer, CharSequence separator) {
+		SplitReadableIterator iterator = new SplitReadableIterator(source, buffer, separator);
 		return Streams.stream(iterator);
 	}
 
