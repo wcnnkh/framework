@@ -15,7 +15,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.Aop;
-import io.basc.framework.execution.reflect.MethodExecutionInterceptor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
 import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
@@ -155,7 +155,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 	 * @author wcnnkh
 	 *
 	 */
-	private static class OutputStreamMethodExecutionInterceptor implements MethodExecutionInterceptor {
+	private static class OutputStreamMethodExecutionInterceptor implements ReflectionMethodExecutionInterceptor {
 		private final OutputMessage outputMessage;
 		private final MultivaluedMap<String, String> headerMap;
 		private volatile boolean headerTag;

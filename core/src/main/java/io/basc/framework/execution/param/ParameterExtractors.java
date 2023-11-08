@@ -3,7 +3,7 @@ package io.basc.framework.execution.param;
 import java.util.logging.Level;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -44,14 +44,14 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public boolean canExtractParameters(ParameterDescriptor[] parameterDescriptors) {
+	public boolean canExtractParameters(Elements<ParameterDescriptor> parameterDescriptors) {
 		for (ParameterExtractor extractor : getServices()) {
 			if (extractor.canExtractParameters(parameterDescriptors)) {
 				return true;
 			}
 		}
 
-		return Elements.forArray(parameterDescriptors).index().allMatch((index) -> {
+		return parameterDescriptors.index().allMatch((index) -> {
 			try {
 				boolean success = canExtractParameter(index.getElement());
 				Level level = success ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
@@ -67,13 +67,14 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public Object[] extractParameters(ParameterDescriptor[] parameterDescriptors) throws ExtractParameterException {
+	public Elements<Object> extractParameters(Elements<ParameterDescriptor> parameterDescriptors)
+			throws ExtractParameterException {
 		for (ParameterExtractor extractor : getServices()) {
 			if (extractor.canExtractParameters(parameterDescriptors)) {
 				return extractor.extractParameters(parameterDescriptors);
 			}
 		}
-		return Elements.forArray(parameterDescriptors).index().map((row) -> {
+		return parameterDescriptors.index().map((row) -> {
 			try {
 				return extractParameter(row.getElement());
 			} catch (Throwable e) {
@@ -82,43 +83,43 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 				}
 				throw new ExtractParameterException(row.toString(), e);
 			}
-		}).toArray();
+		});
 	}
 
 	@Override
-	public boolean canExtractParameters(Executable executable) throws ExtractParameterException {
+	public boolean canExtractParameters(Executor executor) throws ExtractParameterException {
 		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameters(executable)) {
+			if (extractor.canExtractParameters(executor)) {
 				return true;
 			}
 		}
 
-		return Elements.forArray(executable.getParameterDescriptors()).index().allMatch((index) -> {
+		return executor.getParameterDescriptors().index().allMatch((index) -> {
 			try {
 				boolean success = canExtractParameter(index.getElement());
 				Level level = success ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
 				if (logger.isLoggable(level)) {
-					logger.log(level, "{} parameter index {} matching: {}", executable, index.getIndex(),
+					logger.log(level, "{} parameter index {} matching: {}", executor, index.getIndex(),
 							success ? "success" : "fail");
 				}
 				return success;
 			} catch (StackOverflowError e) {
 				logger.error(e, "There are circular references parameterName [{}] in [{}]",
-						index.getElement().getName(), executable);
+						index.getElement().getName(), executor);
 				return false;
 			}
 		});
 	}
 
 	@Override
-	public Object[] extractParameters(Executable executable) throws ExtractParameterException {
+	public Elements<Object> extractParameters(Executor executor) throws ExtractParameterException {
 		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameters(executable)) {
-				return extractor.extractParameters(executable);
+			if (extractor.canExtractParameters(executor)) {
+				return extractor.extractParameters(executor);
 			}
 		}
 
-		return Elements.forArray(executable.getParameterDescriptors()).index().map((row) -> {
+		return executor.getParameterDescriptors().index().map((row) -> {
 			ParameterDescriptor parameterDescriptor = row.getElement();
 			try {
 				return extractParameter(parameterDescriptor);
@@ -127,8 +128,8 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 					throw e;
 				}
 				throw new ExtractParameterException(
-						executable + " parameter index " + row.getIndex() + " descriptor " + parameterDescriptor, e);
+						executor + " parameter index " + row.getIndex() + " descriptor " + parameterDescriptor, e);
 			}
-		}).toArray();
+		});
 	}
 }

@@ -1,28 +1,38 @@
 package io.basc.framework.execution;
 
-/**
- * 执行器
- * 
- * @author wcnnkh
- *
- */
-public interface Executor extends Executable, Constructor {
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.util.element.Elements;
+
+public interface Executor extends Executable {
+	/**
+	 * 名称
+	 * 
+	 * @return
+	 */
+	String getName();
+
+	/**
+	 * 执行需要的参数描述
+	 * 
+	 * @return
+	 */
+	Elements<ParameterDescriptor> getParameterDescriptors();
+
+	@Override
+	default boolean canExecuted() {
+		return getParameterDescriptors().isEmpty();
+	}
+
+	@Override
+	default Object execute() throws Throwable {
+		return execute(Elements.empty());
+	}
+
 	/**
 	 * 执行
 	 * 
 	 * @param args
 	 * @return
-	 * @throws Throwable
 	 */
-	Object execute(Object[] args) throws Throwable;
-
-	default Object execute() throws Throwable {
-		return execute(new Object[0]);
-	}
-
-	@Override
-	default Object execute(Class<?>[] types, Object[] args) throws Throwable {
-		// TODO 是否需要根据类型重新整理参数顺序
-		return execute(args);
-	}
+	Object execute(Elements<Object> args) throws Throwable;
 }

@@ -1,6 +1,6 @@
 package io.basc.framework.execution.param;
 
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.element.Elements;
 
@@ -29,19 +29,20 @@ public interface ParameterExtractor {
 	 */
 	Object extractParameter(ParameterDescriptor parameterDescriptor) throws ExtractParameterException;
 
-	default boolean canExtractParameters(ParameterDescriptor[] parameterDescriptors) {
-		return Elements.forArray(parameterDescriptors).allMatch(this::canExtractParameter);
+	default boolean canExtractParameters(Elements<ParameterDescriptor> parameterDescriptors) {
+		return parameterDescriptors.allMatch(this::canExtractParameter);
 	}
 
-	default Object[] extractParameters(ParameterDescriptor[] parameterDescriptors) throws ExtractParameterException {
-		return Elements.forArray(parameterDescriptors).map(this::extractParameter).toArray();
+	default Elements<Object> extractParameters(Elements<ParameterDescriptor> parameterDescriptors)
+			throws ExtractParameterException {
+		return parameterDescriptors.map(this::extractParameter);
 	}
 
-	default boolean canExtractParameters(Executable executable) {
-		return canExtractParameters(executable.getParameterDescriptors());
+	default boolean canExtractParameters(Executor executor) {
+		return canExtractParameters(executor.getParameterDescriptors());
 	}
 
-	default Object[] extractParameters(Executable executable) throws ExtractParameterException {
-		return extractParameters(executable.getParameterDescriptors());
+	default Elements<Object> extractParameters(Executor executor) throws ExtractParameterException {
+		return extractParameters(executor.getParameterDescriptors());
 	}
 }

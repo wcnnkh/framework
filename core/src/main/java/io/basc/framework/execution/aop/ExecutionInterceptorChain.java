@@ -3,6 +3,7 @@ package io.basc.framework.execution.aop;
 import java.util.Iterator;
 
 import io.basc.framework.execution.Executor;
+import io.basc.framework.util.element.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class ExecutionInterceptorChain implements ExecutionInterceptor {
 	private Executor nextChain;
 
 	@Override
-	public Object intercept(Executor executor, Object[] args) throws Throwable {
+	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		if (iterator.hasNext()) {
 			return iterator.next().intercept(executor, args);
 		}

@@ -2,6 +2,7 @@ package io.basc.framework.execution.reflect;
 
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 对构造方法的拦截
@@ -9,15 +10,15 @@ import io.basc.framework.execution.aop.ExecutionInterceptor;
  * @author wcnnkh
  *
  */
-public abstract class ConstructorExecutionInterceptor implements ExecutionInterceptor {
+public interface ReflectionConstructorExecutionInterceptor extends ExecutionInterceptor {
 
 	@Override
-	public Object intercept(Executor executor, Object[] args) throws Throwable {
+	default Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		if (executor instanceof ReflectionConstructor) {
 			return intercept((ReflectionConstructor) executor, args);
 		}
 		return executor.execute(args);
 	}
 
-	public abstract Object intercept(ReflectionConstructor executor, Object[] args) throws Throwable;
+	Object intercept(ReflectionConstructor executor, Elements<Object> args) throws Throwable;
 }

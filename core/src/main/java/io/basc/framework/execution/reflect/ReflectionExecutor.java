@@ -4,18 +4,24 @@ import java.lang.reflect.Executable;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.MethodParameter;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Assert;
-import lombok.Data;
+import io.basc.framework.util.element.Elements;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-@Data
-public class ReflectionExecutable<T extends Executable> implements io.basc.framework.execution.Executable {
+@Getter
+@EqualsAndHashCode(of = "executable")
+@ToString(of = "executable")
+public abstract class ReflectionExecutor<T extends Executable> implements Executor {
 	private final T executable;
 	private volatile TypeDescriptor returnTypeDescriptor;
 	private volatile ParameterDescriptor[] parameterDescriptors;
 
-	public ReflectionExecutable(T executable) {
+	public ReflectionExecutor(T executable) {
 		Assert.requiredArgument(executable != null, "executable");
 		this.executable = executable;
 	}
@@ -34,7 +40,7 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 	}
 
 	@Override
-	public ParameterDescriptor[] getParameterDescriptors() {
+	public Elements<ParameterDescriptor> getParameterDescriptors() {
 		if (parameterDescriptors == null) {
 			synchronized (this) {
 				if (parameterDescriptors == null) {
@@ -42,11 +48,11 @@ public class ReflectionExecutable<T extends Executable> implements io.basc.frame
 				}
 			}
 		}
-		return parameterDescriptors.clone();
+		return Elements.forArray(parameterDescriptors);
 	}
 
 	@Override
-	public String toString() {
-		return executable.toString();
+	public String getName() {
+		return executable.getName();
 	}
 }

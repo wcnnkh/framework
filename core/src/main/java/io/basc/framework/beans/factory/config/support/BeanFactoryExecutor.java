@@ -7,12 +7,12 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.reflect.ReflectionMethod;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 
-public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
+public class BeanFactoryExecutor extends ReflectionMethodExecutor implements Executor {
 	private static final ParameterDescriptor PARAMETER_DESCRIPTOR = new DefaultParameterDescriptor("beanFactory",
 			TypeDescriptor.valueOf(BeanFactory.class));
 	private final String targetBeanName;

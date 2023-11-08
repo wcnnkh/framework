@@ -10,7 +10,7 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.context.annotation.ConditionalOnMissingBean;
-import io.basc.framework.execution.reflect.MethodExecutionInterceptor;
+import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
 import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
 import io.basc.framework.feign.FeignDecoder;
 import io.basc.framework.feign.FeignEncoder;
@@ -19,7 +19,7 @@ import io.basc.framework.util.element.Elements;
 
 @Component
 @ConditionalOnMissingBean(FeginMethodExecutionInterceptor.class)
-public class FeginMethodExecutionInterceptor extends MethodExecutionInterceptor implements Configurable {
+public class FeginMethodExecutionInterceptor extends ReflectionMethodExecutionInterceptor implements Configurable {
 	private final DefaultMessageConverters messageConverters = new DefaultMessageConverters();
 	private boolean configured;
 	private volatile Map<Class<?>, Object> proxyMap = new HashMap<>();

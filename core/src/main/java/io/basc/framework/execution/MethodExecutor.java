@@ -1,12 +1,23 @@
 package io.basc.framework.execution;
 
-public interface MethodExecutor extends Method, Executor {
+import io.basc.framework.util.element.Elements;
+
+/**
+ * 一个方法的执行器
+ */
+public interface MethodExecutor extends Executor, Method {
 	Object getTarget();
 
 	void setTarget(Object target);
 
-	@Override
-	default Object execute(Object[] args) throws Throwable {
-		return execute(getTarget(), args);
+	/**
+	 * 执行无参的调用
+	 * 
+	 * @param target
+	 * @return
+	 * @throws Throwable
+	 */
+	default Object execute(Object target) throws Throwable {
+		return execute(target, Elements.empty());
 	}
 }

@@ -1,24 +1,31 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.convert.TypeDescriptor;
 
 /**
- * 可执行的
- * 
- * @author wcnnkh
- *
+ * 一个可执行的定义
  */
-public interface Executable extends Constructable {
+public interface Executable {
+
 	/**
-	 * 执行需要的参数类型
+	 * 返回类型
 	 * 
 	 * @return
 	 */
-	ParameterDescriptor[] getParameterDescriptors();
+	TypeDescriptor getReturnTypeDescriptor();
 
-	default boolean isExecuted(Class<?>[] types) {
-		return Elements.forArray(getParameterDescriptors()).map((e) -> e.getTypeDescriptor().getType())
-				.equals(Elements.forArray(types), Class::isAssignableFrom);
-	}
+	/**
+	 * 是否能执行
+	 * 
+	 * @return
+	 */
+	boolean canExecuted();
+
+	/**
+	 * 执行
+	 * 
+	 * @return
+	 * @throws Throwable
+	 */
+	Object execute() throws Throwable;
 }

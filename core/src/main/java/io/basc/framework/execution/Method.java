@@ -1,33 +1,18 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.util.element.Elements;
 
 /**
- * 方法
- * 
- * @author wcnnkh
- *
+ * 对一个实例方法的定义
  */
 public interface Method extends Executable {
-
+	/**
+	 * 执行实例的类型描述
+	 * 
+	 * @return
+	 */
 	TypeDescriptor getTargetTypeDescriptor();
 
-	/**
-	 * 名称
-	 */
-	String getName();
-
-	default Object execute(Object target) throws Throwable {
-		return execute(target, new Object[0]);
-	}
-
-	/**
-	 * 执行
-	 * 
-	 * @param target
-	 * @param args
-	 * @return
-	 * @throws Throwable
-	 */
-	Object execute(Object target, Object[] args) throws Throwable;
+	Object execute(Object target, Elements<Object> args) throws Throwable;
 }

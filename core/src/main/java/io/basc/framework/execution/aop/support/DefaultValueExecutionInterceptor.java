@@ -7,6 +7,7 @@ import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +23,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 	private ConversionService conversionService;
 
 	@Override
-	public Object intercept(Executor executor, Object[] args) throws Throwable {
+	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		if (ArrayUtils.isEmpty(args)) {
 			return executor.execute(args);
 		}

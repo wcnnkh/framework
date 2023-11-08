@@ -10,7 +10,7 @@ public class ExecutionInterceptors implements ExecutionInterceptor {
 	private Executor nextChain;
 
 	@Override
-	public Object intercept(Executor executor, Object[] args) throws Throwable {
+	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(executionInterceptors.iterator(), nextChain);
 		return chain.intercept(executor, args);
 	}
