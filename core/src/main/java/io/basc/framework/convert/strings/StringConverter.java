@@ -19,77 +19,77 @@ import lombok.Setter;
 @Setter
 @Getter
 public class StringConverter extends DefaultReversibleConverterRegistry<String, ConversionException> {
-	public static final StringConverter DEFAULT = new StringConverter();
+	public static final StringConverter DEFAULT_STRING_CONVERTER = new StringConverter();
 
 	public static <T> Optional<T> parse(String source, Class<T> type) {
-		T value = DEFAULT.convert(source, type);
+		T value = DEFAULT_STRING_CONVERTER.convert(source, type);
 		return Optional.of(value);
 	}
 
 	public static boolean parseBoolean(String source) {
-		return DEFAULT.convert(source, boolean.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, boolean.class);
 	}
 
 	public static boolean parseBoolean(String source, boolean defaultValue) {
-		Boolean value = DEFAULT.convert(source, Boolean.class);
+		Boolean value = DEFAULT_STRING_CONVERTER.convert(source, Boolean.class);
 		return value == null ? defaultValue : value.booleanValue();
 	}
 
 	public static byte parseByte(String source) {
-		return DEFAULT.convert(source, byte.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, byte.class);
 	}
 
 	public static byte parseByte(String source, byte defaultValue) {
-		Byte value = DEFAULT.convert(source, Byte.class);
+		Byte value = DEFAULT_STRING_CONVERTER.convert(source, Byte.class);
 		return value == null ? defaultValue : value.byteValue();
 	}
 
 	public static char parseChar(String source) {
-		return DEFAULT.convert(source, char.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, char.class);
 	}
 
 	public static double parseDouble(String source) {
-		return DEFAULT.convert(source, double.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, double.class);
 	}
 
 	public static double parseDouble(String source, double defaultValue) {
-		Double value = DEFAULT.convert(source, Double.class);
+		Double value = DEFAULT_STRING_CONVERTER.convert(source, Double.class);
 		return value == null ? defaultValue : value.doubleValue();
 	}
 
 	public static float parseFloat(String source) {
-		return DEFAULT.convert(source, float.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, float.class);
 	}
 
 	public static float parseFloat(String source, float defaultValue) {
-		Float value = DEFAULT.convert(source, Float.class);
+		Float value = DEFAULT_STRING_CONVERTER.convert(source, Float.class);
 		return value == null ? defaultValue : value.floatValue();
 	}
 
 	public static int parseInt(String source) {
-		return DEFAULT.convert(source, int.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, int.class);
 	}
 
 	public static int parseInt(String source, int defaultValue) {
-		Integer value = DEFAULT.convert(source, Integer.class);
+		Integer value = DEFAULT_STRING_CONVERTER.convert(source, Integer.class);
 		return value == null ? defaultValue : value.intValue();
 	}
 
 	public static long parseLong(String source) {
-		return DEFAULT.convert(source, long.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, long.class);
 	}
 
 	public static long parseLong(String source, long defaultValue) {
-		Long value = DEFAULT.convert(source, Long.class);
+		Long value = DEFAULT_STRING_CONVERTER.convert(source, Long.class);
 		return value == null ? defaultValue : value.longValue();
 	}
 
 	public static short parseShort(String source) {
-		return DEFAULT.convert(source, short.class);
+		return DEFAULT_STRING_CONVERTER.convert(source, short.class);
 	}
 
 	public static short parseShort(String source, short defaultValue) {
-		Short value = DEFAULT.convert(source, Short.class);
+		Short value = DEFAULT_STRING_CONVERTER.convert(source, Short.class);
 		return value == null ? defaultValue : value.shortValue();
 	}
 

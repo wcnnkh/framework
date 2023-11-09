@@ -7,13 +7,13 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.util.Assert;
 
-public class StringConversionService implements ConversionService {
+public final class StringConversionService implements ConversionService {
 	public static final StringConversionService DEFAULT = new StringConversionService();
 
 	private final StringConverter stringConverter;
 
 	public StringConversionService() {
-		this(StringConverter.DEFAULT);
+		this(StringConverter.DEFAULT_STRING_CONVERTER);
 	}
 
 	public StringConversionService(StringConverter stringConverter) {
