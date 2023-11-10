@@ -1,105 +1,162 @@
 package io.basc.framework.text;
 
 import java.io.IOException;
-import java.text.FieldPosition;
-import java.util.List;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.strings.StringConverter;
-import io.basc.framework.env.Sys;
-import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.LinkedMultiValueMap;
+import io.basc.framework.util.collect.MultiValueMap;
 
 /**
  * 键值对格式化
  * 
- * @author wcnnkh
- *
+ * @param <K>
  * @param <V>
  */
-@Getter
-@Setter
-public abstract class PairFormat<V> extends StringConverter implements Format<Stream<Pair<String, V>>> {
-	private static final TypeDescriptor MAP_TYPE = TypeDescriptor.map(Map.class, String.class, Object.class);
+public interface PairFormat<K, V> extends Format<Stream<Pair<K, V>>> {
 
-	@NonNull
-	private ConversionService conversionService = Sys.getEnv().getConversionService();
+	default String formatMap(Map<? extends K, ? extends V> sourceMap) {
+		return formatMap(sourceMap, new FormatPosition(0));
+	}
 
-	@Override
-	public final void format(Stream<Pair<String, V>> source, Appendable target, FieldPosition position)
+	default FormatPosition formatMap(Map<? extends K, ? extends V> sourceMap, Appendable target) throws IOException {
+		FormatPosition position = new FormatPosition(0);
+		formatMap(sourceMap, target, position);
+		return position;
+	}
+
+	default void formatMap(Map<? extends K, ? extends V> sourceMap, Appendable target, FormatPosition position)
 			throws IOException {
-		format(source, target, position, getConversionService());
+		if (CollectionUtils.isEmpty(sourceMap)) {
+			return;
+		}
+
+		format(sourceMap.entrySet().stream().map((e) -> new Pair<>(e.getKey(), e.getValue())), target, position);
 	}
 
-	public final String format(Stream<Pair<String, V>> source, ConversionService conversionService) {
-		return format(source, new FieldPosition(0), conversionService);
-	}
-
-	public final String format(Stream<Pair<String, V>> source, FieldPosition position,
-			ConversionService conversionService) {
+	default String formatMap(Map<? extends K, ? extends V> sourceMap, FormatPosition position) {
 		StringBuilder sb = new StringBuilder();
 		try {
-			format(source, sb, position, conversionService);
+			formatMap(sourceMap, sb, position);
 		} catch (IOException e) {
 			throw new IllegalStateException("Should never get here", e);
 		}
 		return sb.toString();
 	}
 
-	public final void format(Stream<Pair<String, V>> source, Appendable target, ConversionService conversionService)
-			throws IOException {
-		format(source, target, new FieldPosition(0), conversionService);
+	default String formatMultiValueMap(Map<? extends K, ? extends Collection<? extends V>> sourceMap) {
+		return formatMultiValueMap(sourceMap, new FormatPosition(0));
 	}
 
-	public abstract void format(Stream<Pair<String, V>> source, Appendable target, FieldPosition position,
-			ConversionService conversionService) throws IOException;
-
-	public void format(Map<String, ?> sourceMap, Appendable target, FieldPosition position,
-			ConversionService conversionService) throws IOException {
-
+	default FormatPosition formatMultiValueMap(Map<? extends K, ? extends Collection<? extends V>> sourceMap,
+			Appendable target) throws IOException {
+		FormatPosition position = new FormatPosition(0);
+		formatMultiValueMap(sourceMap, target, position);
+		return position;
 	}
 
-	public final Object parseObject(Stream<Pair<String, V>> source, TypeDescriptor targetType) {
-		return parseObject(source, targetType, getConversionService());
-	}
-
-	public final Object parseObject(Map<String, ?> sourceMap, TypeDescriptor targetType) {
-		return parseObject(sourceMap, targetType, getConversionService());
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object parseObject(Map<String, ?> sourceMap, TypeDescriptor targetType,
-			ConversionService conversionService) {
-		if (conversionService.canConvert(MAP_TYPE, targetType)) {
-			return conversionService.convert(sourceMap, targetType);
+	default void formatMultiValueMap(Map<? extends K, ? extends Collection<? extends V>> sourceMap, Appendable target,
+			FormatPosition position) throws IOException {
+		if (CollectionUtils.isEmpty(sourceMap)) {
+			return;
 		}
 
-		if (targetType.isMap()) {
-			Map map = CollectionFactory.createMap(targetType.getType(), targetType.getMapKeyTypeDescriptor().getType(),
-					16);
-			for (Entry<String, ?> entry : sourceMap.entrySet()) {
-				Object value = conversionService.convert(entry.getValue(), targetType.getMapValueTypeDescriptor());
-				map.put(entry.getKey(), value);
-			}
-			return map;
-		}
-
-		// TODO 无法通过conversionService转换，使用反射实现
-		return null;
+		Stream<Pair<K, V>> stream = sourceMap.entrySet().stream()
+				.flatMap((e) -> e.getValue().stream().map((v) -> new Pair<>(e.getKey(), v)));
+		format(stream, target, position);
 	}
 
-	public Object parseObject(Stream<Pair<String, V>> source, TypeDescriptor targetType,
-			ConversionService conversionService) {
-		Map<String, List<V>> sourceMap = source
-				.collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toList())));
-		return parseObject(sourceMap, targetType, conversionService);
+	default String formatMultiValueMap(Map<? extends K, ? extends Collection<? extends V>> sourceMap,
+			FormatPosition position) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			formatMultiValueMap(sourceMap, sb, position);
+		} catch (IOException e) {
+			throw new IllegalStateException("Should never get here", e);
+		}
+		return sb.toString();
+	}
+
+	default Map<K, V> parseMap(Readable source) throws IOException, ParseException {
+		ParsePosition pos = new ParsePosition(0);
+		Map<K, V> result = parseMap(source, pos);
+		if (pos.getIndex() == 0) {
+			throw new ParseException("PairFormat.parseMap(Readable) failed", pos.getErrorIndex());
+		}
+		return result;
+	}
+
+	default Map<K, V> parseMap(Readable source, ParsePosition position) throws IOException {
+		Stream<Pair<K, V>> stream = parse(source, position);
+		return stream.collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
+	}
+
+	default Map<K, V> parseMap(String source) throws ParseException {
+		ParsePosition pos = new ParsePosition(0);
+		Map<K, V> result = parseMap(source, pos);
+		if (pos.getIndex() == 0) {
+			throw new ParseException("PairFormat.parseMap(String) failed", pos.getErrorIndex());
+		}
+		return result;
+	}
+
+	default Map<K, V> parseMap(String source, ParsePosition position) {
+		if (StringUtils.isEmpty(source)) {
+			return Collections.emptyMap();
+		}
+
+		StringReader reader = new StringReader(source);
+		try {
+			return parseMap(reader, position);
+		} catch (IOException e) {
+			throw new IllegalStateException("Should never get here", e);
+		} finally {
+			reader.close();
+		}
+	}
+
+	default MultiValueMap<K, V> parseMultiValueMap(Readable source) throws IOException, ParseException {
+		ParsePosition pos = new ParsePosition(0);
+		MultiValueMap<K, V> result = parseMultiValueMap(source, pos);
+		if (pos.getIndex() == 0) {
+			throw new ParseException("PairFormat.parseMultiValueMap(Readable) failed", pos.getErrorIndex());
+		}
+		return result;
+	}
+
+	default MultiValueMap<K, V> parseMultiValueMap(Readable source, ParsePosition position) throws IOException {
+		Stream<Pair<K, V>> stream = parse(source, position);
+		MultiValueMap<K, V> map = new LinkedMultiValueMap<K, V>();
+		stream.forEach((e) -> map.add(e.getKey(), e.getValue()));
+		return map;
+	}
+
+	default MultiValueMap<K, V> parseMultiValueMap(String source) throws ParseException {
+		ParsePosition pos = new ParsePosition(0);
+		MultiValueMap<K, V> result = parseMultiValueMap(source, pos);
+		if (pos.getIndex() == 0) {
+			throw new ParseException("PairFormat.parseMultiValueMap(Readable) failed", pos.getErrorIndex());
+		}
+		return result;
+	}
+
+	default MultiValueMap<K, V> parseMultiValueMap(String source, ParsePosition position) {
+		StringReader reader = new StringReader(source);
+		try {
+			return parseMultiValueMap(reader, position);
+		} catch (IOException e) {
+			throw new IllegalStateException("Should never get here", e);
+		} finally {
+			reader.close();
+		}
 	}
 }

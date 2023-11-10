@@ -555,7 +555,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 	Object getSource();
 
 	default StringConverter getStringConverter() {
-		return StringConverter.DEFAULT;
+		return StringConverter.DEFAULT_STRING_CONVERTER;
 	}
 
 	default TypeDescriptor getTypeDescriptor() {

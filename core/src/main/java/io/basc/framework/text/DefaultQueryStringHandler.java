@@ -1,4 +1,4 @@
-package io.basc.framework.convert.strings;
+package io.basc.framework.text;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.LongAdder;

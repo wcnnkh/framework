@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.LongAdder;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.strings.QueryStringConverter;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
@@ -15,13 +14,14 @@ import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.text.QueryStringFormat;
 import io.basc.framework.util.Assert;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessageConverter {
-	private QueryStringConverter queryStringConverter = new QueryStringConverter();
+	private QueryStringFormat queryStringConverter = new QueryStringFormat();
 
 	@Override
 	public void setConversionService(ConversionService conversionService) {
@@ -29,11 +29,11 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 		super.setConversionService(conversionService);
 	}
 
-	public QueryStringConverter getQueryStringConverter() {
+	public QueryStringFormat getQueryStringConverter() {
 		return queryStringConverter;
 	}
 
-	public void setQueryStringConverter(QueryStringConverter queryStringConverter) {
+	public void setQueryStringConverter(QueryStringFormat queryStringConverter) {
 		Assert.requiredArgument(queryStringConverter != null, "queryStringConverter");
 		this.queryStringConverter = queryStringConverter;
 	}

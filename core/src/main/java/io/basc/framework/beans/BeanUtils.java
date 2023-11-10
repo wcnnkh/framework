@@ -3,6 +3,8 @@ package io.basc.framework.beans;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import io.basc.framework.lang.Nullable;
@@ -10,6 +12,7 @@ import io.basc.framework.util.Assert;
 
 public class BeanUtils {
 	private static final ServiceLoader<BeaninfoFactory> BEANINFO_FACTORIES = ServiceLoader.load(BeaninfoFactory.class);
+	private static volatile Map<Class<?>, BeanMapping> beanMappingCacheMap = new HashMap<>();
 
 	/**
 	 * Introspect on a Java Bean and learn about all its properties, exposed
@@ -34,6 +37,26 @@ public class BeanUtils {
 			}
 		}
 		return Introspector.getBeanInfo(beanClass);
+	}
+
+	public BeanMapping getBeanMapping(Class<?> beanClass) throws BeansException {
+		BeanMapping beanMapping = beanMappingCacheMap.get(beanClass);
+		if (beanMapping == null) {
+			synchronized (beanMappingCacheMap) {
+				beanMapping = beanMappingCacheMap.get(beanClass);
+				if (beanMapping == null) {
+					try {
+						BeanInfo beanInfo = getBeanInfo(beanClass);
+						beanMapping = new BeanMapping(beanClass, beanInfo);
+						beanMappingCacheMap.put(beanClass, beanMapping);
+					} catch (IntrospectionException e) {
+						throw new FatalBeanException(
+								"Failed to obtain BeanInfo for class [" + beanClass.getName() + "]", e);
+					}
+				}
+			}
+		}
+		return beanMapping;
 	}
 
 	/**

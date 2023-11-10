@@ -2,23 +2,24 @@ package io.basc.framework.text;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.ParsePosition;
 
 public interface Format<T> {
 
 	default String format(T source) {
-		return format(source, new FieldPosition(0));
+		return format(source, new FormatPosition(0));
 	}
 
-	default void format(T source, Appendable target) throws IOException {
-		format(source, target, new FieldPosition(0));
+	default FormatPosition format(T source, Appendable target) throws IOException {
+		FormatPosition position = new FormatPosition(0);
+		format(source, target, position);
+		return position;
 	}
 
-	void format(T source, Appendable target, FieldPosition position) throws IOException;
+	void format(T source, Appendable target, FormatPosition position) throws IOException;
 
-	default String format(T source, FieldPosition position) {
+	default String format(T source, FormatPosition position) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			format(source, sb, position);
@@ -32,7 +33,7 @@ public interface Format<T> {
 		ParsePosition pos = new ParsePosition(0);
 		T result = parse(source, pos);
 		if (pos.getIndex() == 0) {
-			throw new ParseException("Format.parseObject(String) failed", pos.getErrorIndex());
+			throw new ParseException("Format.parse(Readable) failed", pos.getErrorIndex());
 		}
 		return result;
 	}
@@ -43,7 +44,7 @@ public interface Format<T> {
 		ParsePosition pos = new ParsePosition(0);
 		T result = parse(source, pos);
 		if (pos.getIndex() == 0) {
-			throw new ParseException("Format.parseObject(String) failed", pos.getErrorIndex());
+			throw new ParseException("Format.parse(String) failed", pos.getErrorIndex());
 		}
 		return result;
 	}
