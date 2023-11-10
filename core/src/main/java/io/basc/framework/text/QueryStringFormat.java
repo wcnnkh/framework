@@ -1,7 +1,6 @@
 package io.basc.framework.text;
 
 import java.io.IOException;
-import java.text.ParsePosition;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -22,6 +21,7 @@ public class QueryStringFormat extends ObjectFormat {
 	private final String connector;
 	private final String keyValueConnector;
 	private Codec<String, String> codec;
+	private long formatIndex;
 
 	public QueryStringFormat() {
 		this("&", "=");
@@ -33,15 +33,10 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public void format(Stream<Pair<String, Value>> source, Appendable target, FormatPosition position)
-			throws IOException {
+	public void format(Stream<Pair<String, Value>> source, Appendable target) throws IOException {
 		Iterator<Pair<String, Value>> iterator = source.iterator();
 		while (iterator.hasNext()) {
 			Pair<String, Value> pair = iterator.next();
-			if (pair == null || pair.getValue() == null) {
-				continue;
-			}
-
 			String key = pair.getKey();
 			String value = pair.getValue().getAsString();
 			if (codec != null) {
@@ -49,21 +44,17 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.encode(value);
 			}
 
-			if ((position.getEndIndex() == 0 && position.hasParent()) || position.getEndIndex() > 0) {
-				target.append(connector);
-			}
-
 			target.append(key);
 			target.append(keyValueConnector);
 			target.append(value);
-			position.setEndIndex(position.getEndIndex() + 1);
+			if (iterator.hasNext()) {
+				target.append(connector);
+			}
 		}
 	}
 
 	@Override
-	public Stream<Pair<String, Value>> parse(Readable source, ParsePosition position) throws IOException {
-		// 始终认为成功
-		position.setIndex(position.getIndex() + 1);
+	public Stream<Pair<String, Value>> parse(Readable source) throws IOException {
 		return IOUtils.split(source, connector).map((e) -> {
 			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
 			if (kv.length == 0) {

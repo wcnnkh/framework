@@ -56,7 +56,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 			synchronized (this) {
 				structure = mappingMap.get(entityClass);
 				if (structure == null) {
-					structure = ObjectMapper.super.getMapping(entityClass);
+					structure = DefaultObjectMapping.getMapping(entityClass).all();
 					mappingMap.put(entityClass, structure);
 				}
 			}

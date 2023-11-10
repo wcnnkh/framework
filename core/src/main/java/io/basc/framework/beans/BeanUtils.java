@@ -39,7 +39,7 @@ public class BeanUtils {
 		return Introspector.getBeanInfo(beanClass);
 	}
 
-	public BeanMapping getBeanMapping(Class<?> beanClass) throws BeansException {
+	public static BeanMapping getBeanMapping(Class<?> beanClass) throws BeansException {
 		BeanMapping beanMapping = beanMappingCacheMap.get(beanClass);
 		if (beanMapping == null) {
 			synchronized (beanMappingCacheMap) {
