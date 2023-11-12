@@ -1,4 +1,4 @@
-package io.basc.framework.context.jaxrs;
+package io.basc.framework.web.jaxrs;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,6 +22,7 @@ import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
@@ -168,7 +169,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 		}
 
 		@Override
-		public Object intercept(ReflectionMethodExecutor executor, Object[] args) throws Throwable {
+		public Object intercept(ReflectionMethodExecutor executor, Elements<Object> args) throws Throwable {
 			if (!outputMessage.getHeaders().isReadyOnly()) {
 				if (!headerTag) {
 					synchronized (this) {

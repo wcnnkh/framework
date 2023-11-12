@@ -8,6 +8,13 @@ import io.basc.framework.util.element.Elements;
  */
 public interface Method extends Executable {
 	/**
+	 * 名称
+	 * 
+	 * @return
+	 */
+	String getName();
+
+	/**
 	 * 执行实例的类型描述
 	 * 
 	 * @return

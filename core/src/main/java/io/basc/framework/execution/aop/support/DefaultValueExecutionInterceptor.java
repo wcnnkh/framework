@@ -6,7 +6,6 @@ import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,21 +23,19 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 
 	@Override
 	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
-		if (ArrayUtils.isEmpty(args)) {
+		if (args.isEmpty()) {
 			return executor.execute(args);
 		}
 
-		ParameterDescriptor[] parameterDescriptors = executor.getParameterDescriptors();
-		for (int i = 0; i < parameterDescriptors.length && i < args.length; i++) {
-			Object arg = args[i];
-			if (arg != null) {
-				continue;
-			}
-
-			args[i] = getDefaultParameterValue(executor, parameterDescriptors[i]);
-		}
-
-		Object returnValue = executor.execute(args);
+		Elements<Object> newArgs = executor.getParameterDescriptors().parallel(args).filter((e) -> e.isPresent())
+				.map((e) -> {
+					if (e.getRightValue() != null) {
+						return e.getRightValue();
+					} else {
+						return getDefaultParameterValue(executor, e.getLeftValue());
+					}
+				});
+		Object returnValue = executor.execute(newArgs);
 		if (returnValue == null) {
 			returnValue = getDefaultReturnValue(executor);
 			if (returnValue != null) {

@@ -5,13 +5,6 @@ import io.basc.framework.util.element.Elements;
 
 public interface Executor extends Executable {
 	/**
-	 * 名称
-	 * 
-	 * @return
-	 */
-	String getName();
-
-	/**
 	 * 执行需要的参数描述
 	 * 
 	 * @return

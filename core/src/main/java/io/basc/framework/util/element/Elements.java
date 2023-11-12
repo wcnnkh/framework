@@ -131,6 +131,15 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new MultiElements<>(Arrays.asList(this, elements));
 	}
 
+	default <R> Elements<ParallelElement<E, R>> parallel(Elements<? extends R> elements) {
+		Assert.requiredArgument(elements != null, "elements");
+		return new ParallelElements<>(this, elements);
+	}
+
+	default Elements<IterativeElement<E>> iterative() {
+		return new IterativeElements<>(this);
+	}
+
 	default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
 		return new ConvertibleElements<>(this, converter);
 	}

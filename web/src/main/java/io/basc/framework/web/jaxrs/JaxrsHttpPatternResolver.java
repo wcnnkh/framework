@@ -1,4 +1,4 @@
-package io.basc.framework.context.jaxrs;
+package io.basc.framework.web.jaxrs;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;

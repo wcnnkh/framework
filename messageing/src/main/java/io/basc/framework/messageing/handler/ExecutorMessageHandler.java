@@ -15,7 +15,7 @@ public class ExecutorMessageHandler implements MessageHandler {
 
 	@Override
 	public void handleMessage(Message<?> message) throws MessagingException {
-		Elements<? extends Object> args = executor.getParameterDescriptors()
+		Elements<Object> args = executor.getParameterDescriptors()
 				.map((e) -> handleMessageConverter.convert(message, e));
 		try {
 			executor.execute(args);

@@ -23,7 +23,7 @@ public abstract class HookBeanPostProcessor implements BeanPostProcessor {
 				throw new FatalBeanException("Unable to obtain the required parameters for this actuator " + executor);
 			}
 
-			Object[] args = parameterExtractor.extractParameters(executor);
+			Elements<Object> args = parameterExtractor.extractParameters(executor);
 			try {
 				executor.execute(args);
 			} catch (Throwable e) {
@@ -39,7 +39,7 @@ public abstract class HookBeanPostProcessor implements BeanPostProcessor {
 				throw new FatalBeanException("Unable to obtain the required parameters for this actuator " + executor);
 			}
 
-			Object[] args = parameterExtractor.extractParameters(executor);
+			Elements<Object> args = parameterExtractor.extractParameters(executor);
 			try {
 				executor.execute(args);
 			} catch (Throwable e) {

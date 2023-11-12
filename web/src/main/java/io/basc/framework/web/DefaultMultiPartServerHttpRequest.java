@@ -18,8 +18,7 @@ import io.basc.framework.util.CollectionUtils;
  * @see MediaType#MULTIPART_FORM_DATA
  *
  */
-public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper
-		implements MultiPartServerHttpRequest, AutoCloseable {
+public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper implements MultiPartServerHttpRequest {
 	private static Logger logger = LoggerFactory.getLogger(DefaultMultiPartServerHttpRequest.class);
 	private final MultipartMessageResolver multipartMessageResolver;
 
@@ -46,13 +45,5 @@ public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper
 			}
 		}
 		return multipartMessages;
-	}
-
-	public void close() throws IOException {
-		if (!CollectionUtils.isEmpty(multipartMessages)) {
-			for (MultipartMessage message : multipartMessages) {
-				message.close();
-			}
-		}
 	}
 }

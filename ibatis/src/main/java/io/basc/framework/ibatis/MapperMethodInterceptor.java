@@ -41,7 +41,7 @@ public class MapperMethodInterceptor implements ReflectionMethodExecutionInterce
 	}
 
 	@Override
-	public Object intercept(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(ReflectionMethodExecutor executor, Elements<Object> args) throws Throwable {
 		Method method = executor.getExecutable();
 		if (Modifier.isAbstract(method.getModifiers())) {
 			SqlSession sqlSession = null;

@@ -50,9 +50,4 @@ public abstract class ReflectionExecutor<T extends Executable> implements Execut
 		}
 		return Elements.forArray(parameterDescriptors);
 	}
-
-	@Override
-	public String getName() {
-		return executable.getName();
-	}
 }

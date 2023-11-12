@@ -1,11 +1,14 @@
 package io.basc.framework.text;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
 import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.support.URLCodec;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
@@ -21,7 +24,7 @@ public class QueryStringFormat extends ObjectFormat {
 	private final String connector;
 	private final String keyValueConnector;
 	private Codec<String, String> codec;
-	private long formatIndex;
+	private long formatCount;
 
 	public QueryStringFormat() {
 		this("&", "=");
@@ -30,6 +33,14 @@ public class QueryStringFormat extends ObjectFormat {
 	public QueryStringFormat(String connector, String keyValueConnector) {
 		this.connector = connector;
 		this.keyValueConnector = keyValueConnector;
+	}
+
+	public void setCharset(@Nullable Charset charset) {
+		this.codec = charset == null ? null : new URLCodec(charset);
+	}
+
+	public void reset() {
+		formatCount = 0;
 	}
 
 	@Override
@@ -44,6 +55,10 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.encode(value);
 			}
 
+			if (formatCount > 0) {
+				target.append(connector);
+			}
+			formatCount++;
 			target.append(key);
 			target.append(keyValueConnector);
 			target.append(value);

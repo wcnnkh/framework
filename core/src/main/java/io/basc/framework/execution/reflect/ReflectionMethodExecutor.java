@@ -40,4 +40,9 @@ public class ReflectionMethodExecutor extends ReflectionExecutor<Method> impleme
 	public final Object execute(Elements<Object> args) throws Throwable {
 		return execute(getTarget(), args);
 	}
+
+	@Override
+	public String getName() {
+		return getExecutable().getName();
+	}
 }

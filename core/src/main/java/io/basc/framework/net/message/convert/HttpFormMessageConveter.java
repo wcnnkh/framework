@@ -40,7 +40,9 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 	@Override
 	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
-		String queryString = QueryStringFormat.getInstance().toUrlQueryString(body, getCharset(outputMessage));
+		QueryStringFormat queryStringFormat = new QueryStringFormat();
+		queryStringFormat.setCharset(getCharset(outputMessage));
+		String queryString = queryStringFormat.formatObject(body, type);
 		writeTextBody(queryString, contentType, outputMessage);
 	}
 

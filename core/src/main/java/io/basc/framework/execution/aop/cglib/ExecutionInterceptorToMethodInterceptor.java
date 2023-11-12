@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import net.sf.cglib.proxy.MethodProxy;
 
@@ -20,7 +21,8 @@ final class ExecutionInterceptorToMethodInterceptor implements net.sf.cglib.prox
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-		CglibProxyExecutor executor = new CglibProxyExecutor(source, method, obj, methodProxy);
-		return executionInterceptor.intercept(executor, args);
+		CglibProxyExecutor executor = new CglibProxyExecutor(source, method, methodProxy);
+		executor.setTarget(obj);
+		return executionInterceptor.intercept(executor, Elements.forArray(args));
 	}
 }

@@ -27,18 +27,7 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 		this.validator = validator;
 	}
 
-	@Override
-	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
-		if (executor instanceof ReflectionMethodExecutor) {
-			return execute((ReflectionMethodExecutor) executor, args);
-		} else if (executor instanceof ReflectionConstructor) {
-			return execute((ReflectionConstructor) executor, args);
-		} else {
-			return execute(executor, args);
-		}
-	}
-
-	private Object execute(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+	private Object execute(ReflectionMethodExecutor executor, Elements<Object> args) throws Throwable {
 		if (!args.isEmpty()) {
 			FastValidator.validate(() -> validator.forExecutables().validateParameters(executor.getTarget(),
 					executor.getExecutable(), args.toArray()));
@@ -49,7 +38,7 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 		return value;
 	}
 
-	private Object execute(ReflectionConstructor executor, Elements<? extends Object> args) throws Throwable {
+	private Object execute(ReflectionConstructor executor, Elements<Object> args) throws Throwable {
 		if (!args.isEmpty()) {
 			FastValidator.validate(() -> validator.forExecutables()
 					.validateConstructorParameters(executor.getExecutable(), args.toArray()));
@@ -60,7 +49,18 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 		return value;
 	}
 
-	protected Object execute(Executor executor, Elements<? extends Object> args) throws Throwable {
+	protected Object execute(Executor executor, Elements<Object> args) throws Throwable {
 		return executor.execute(args);
+	}
+
+	@Override
+	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
+		if (executor instanceof ReflectionMethodExecutor) {
+			return execute((ReflectionMethodExecutor) executor, args);
+		} else if (executor instanceof ReflectionConstructor) {
+			return execute((ReflectionConstructor) executor, args);
+		} else {
+			return execute(executor, args);
+		}
 	}
 }

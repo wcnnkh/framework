@@ -1,4 +1,4 @@
-package io.basc.framework.context.jaxrs;
+package io.basc.framework.web.jaxrs;
 
 import java.io.IOException;
 

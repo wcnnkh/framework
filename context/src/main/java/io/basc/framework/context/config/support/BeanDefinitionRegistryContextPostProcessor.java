@@ -99,7 +99,7 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 			Class<?> clazz, String originBeanName, BeanDefinition originBeanDefinition, Method method) {
 		DefaultBeanDefinition<BeanFactoryExecutor> beanDefinition = new DefaultBeanDefinition<>();
 		BeanFactoryExecutor beanFactoryExecutor = new BeanFactoryExecutor(method, TypeDescriptor.valueOf(clazz),
-				originBeanName);
+				context, originBeanName);
 		beanDefinition.setScope(originBeanDefinition.getScope());
 		beanDefinition.setExecutors(Elements.singleton(beanFactoryExecutor));
 		return beanDefinition;

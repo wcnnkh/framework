@@ -13,7 +13,7 @@ public class StringUtilsTest {
 
 	@Test
 	public void test() {
-		Number value = StringConverter.DEFAULT.convert("-111", Number.class);
+		Number value = StringConverter.DEFAULT_STRING_CONVERTER.convert("-111", Number.class);
 		assertTrue(BigDecimal.class.isAssignableFrom(value.getClass()));
 		Assert.assertTrue(-111 == StringConverter.parseByte("-111"));
 	}

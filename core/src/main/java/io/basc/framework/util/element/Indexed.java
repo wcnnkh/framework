@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(of = "element")
 @AllArgsConstructor
-public class Indexed<E> implements Serializable {
+public final class Indexed<E> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 索引，从0开始

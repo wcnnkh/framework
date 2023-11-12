@@ -16,8 +16,11 @@ public abstract class MethodHookBeanPostProcessor extends HookBeanPostProcessor 
 
 	protected Elements<? extends MethodExecutor> getExecutors(Object bean, String beanName) {
 		TypeDescriptor source = TypeDescriptor.forObject(bean);
-		return ReflectionUtils.getDeclaredMethods(bean.getClass()).all().getElements()
-				.map((method) -> new ReflectionMethodExecutor(method, source, bean));
+		return ReflectionUtils.getDeclaredMethods(bean.getClass()).all().getElements().map((method) -> {
+			ReflectionMethodExecutor executor = new ReflectionMethodExecutor(method, source);
+			executor.setTarget(bean);
+			return executor;
+		});
 	}
 
 	@Override

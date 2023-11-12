@@ -1,33 +1,18 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.element.Elements;
-import lombok.Data;
 
-@Data
-public class InterceptableExecutor implements Executor {
-	private final Executor executor;
+public class InterceptableExecutor extends ExecutorWrapper {
 	private final ExecutionInterceptor executionInterceptor;
 
-	@Override
-	public TypeDescriptor getReturnTypeDescriptor() {
-		return executor.getReturnTypeDescriptor();
-	}
-
-	@Override
-	public Elements<ParameterDescriptor> getParameterDescriptors() {
-		return executor.getParameterDescriptors();
+	public InterceptableExecutor(Executor executor, ExecutionInterceptor executionInterceptor) {
+		super(executor);
+		this.executionInterceptor = executionInterceptor;
 	}
 
 	@Override
 	public Object execute(Elements<Object> args) throws Throwable {
-		return executionInterceptor.intercept(executor, args);
-	}
-
-	@Override
-	public String getName() {
-		return executor.getName();
+		return executionInterceptor.intercept(wrappedTarget, args);
 	}
 }

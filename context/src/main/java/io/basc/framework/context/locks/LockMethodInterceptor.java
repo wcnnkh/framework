@@ -7,6 +7,7 @@ import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 实现方法级别的锁
@@ -26,7 +27,7 @@ public final class LockMethodInterceptor implements ExecutionInterceptor {
 	}
 
 	@Override
-	public Object intercept(Executor executor, Object[] args) throws Throwable {
+	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, executor.getReturnTypeDescriptor());
 		if (lockConfig == null) {
 			return executor.execute(args);
@@ -34,10 +35,9 @@ public final class LockMethodInterceptor implements ExecutionInterceptor {
 
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(executor.toString());
-		ParameterDescriptor[] parameterDescriptors = executor.getParameterDescriptors();
-		for (int i = 0; i < args.length; i++) {
-			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
-			Object arg = args[i];
+		executor.getParameterDescriptors().parallel(args).filter((e) -> e.isPresent()).forEach((e) -> {
+			ParameterDescriptor parameterDescriptor = e.getLeftValue();
+			Object arg = e.getRightValue();
 			boolean b = lockConfig.all();
 			LockParameter lockParameter = parameterDescriptor.getTypeDescriptor().getAnnotation(LockParameter.class);
 			if (lockParameter != null) {
@@ -50,7 +50,7 @@ public final class LockMethodInterceptor implements ExecutionInterceptor {
 				sb.append("=");
 				sb.append(JsonUtils.getSupport().toJsonString(arg));
 			}
-		}
+		});
 		return lockFactory.process(sb.toString(), lockConfig.tryLockTime(), lockConfig.tryLockTimeUnit(),
 				() -> executor.execute(args));
 	}

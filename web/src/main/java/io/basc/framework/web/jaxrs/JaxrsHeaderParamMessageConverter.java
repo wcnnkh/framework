@@ -1,31 +1,31 @@
-package io.basc.framework.context.jaxrs;
+package io.basc.framework.web.jaxrs;
 
 import java.io.IOException;
 
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.HeaderParam;
 
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.support.AbstractParamWebMessageConverter;
+import io.basc.framework.web.message.support.AbstractHeaderWebMessageConverter;
 
 @Component
-public class JaxrsQueryParamWebMessageConverter extends AbstractParamWebMessageConverter {
+public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
-		return descriptor.isAnnotationPresent(QueryParam.class);
+		return descriptor.isAnnotationPresent(HeaderParam.class);
 	}
 
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		QueryParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(QueryParam.class);
+		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -34,21 +34,16 @@ public class JaxrsQueryParamWebMessageConverter extends AbstractParamWebMessageC
 
 	@Override
 	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
-		return false;
+		return typeDescriptor.isAnnotationPresent(HeaderParam.class);
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor typeDescriptor, Object parameter) {
-		return typeDescriptor.isAnnotationPresent(QueryParam.class);
-	}
-
-	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException {
-		QueryParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(QueryParam.class);
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
+			throws IOException, WebMessagelConverterException {
+		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
-			return super.write(builder, parameterDescriptor, parameter);
+			return super.write(request, parameterDescriptor, parameter);
 		}
-		return super.write(builder, parameterDescriptor.rename(param.value()), parameter);
+		return super.write(request, parameterDescriptor.rename(param.value()), parameter);
 	}
 }

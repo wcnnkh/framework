@@ -9,6 +9,7 @@ import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
+import io.basc.framework.util.element.Elements;
 
 /**
  * 以aop的方式管理事务
@@ -41,7 +42,7 @@ public final class TransactionMethodInterceptor implements ExecutionInterceptor 
 	}
 
 	@Override
-	public Object intercept(Executor executor, Object[] args) throws Throwable {
+	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
 		Transactional tx = executor.getReturnTypeDescriptor().getAnnotation(Transactional.class);
 		if (tx == null && transactionManager.hasTransaction()) {
