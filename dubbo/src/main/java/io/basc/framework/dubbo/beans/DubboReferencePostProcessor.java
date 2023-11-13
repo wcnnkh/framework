@@ -4,7 +4,7 @@ import org.apache.dubbo.config.ReferenceConfig;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.dubbo.DubboReferenceRegistry;
 
@@ -13,7 +13,7 @@ import io.basc.framework.dubbo.DubboReferenceRegistry;
 public class DubboReferencePostProcessor implements ContextPostProcessor {
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		if (context.isInstance(DubboReferenceRegistry.class)) {
 			DubboReferenceRegistry referenceRegistry = context.getInstance(DubboReferenceRegistry.class);
 			for (ReferenceConfig<?> config : referenceRegistry.getReferences()) {

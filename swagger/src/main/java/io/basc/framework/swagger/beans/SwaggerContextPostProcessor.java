@@ -2,7 +2,7 @@ package io.basc.framework.swagger.beans;
 
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.env.Environment;
 import io.basc.framework.logger.Logger;
@@ -16,7 +16,7 @@ public class SwaggerContextPostProcessor implements ContextPostProcessor {
 	private static Logger logger = LoggerFactory.getLogger(SwaggerContextPostProcessor.class);
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) {
+	public void postProcessContext(ConfigurableApplicationContext context) {
 		context.registerListener((info) -> {
 			if (info.getBean() != null && info.getStep() == Step.AFTER_DEPENDENCE) {
 				if (isEnableSwagger(context)) {

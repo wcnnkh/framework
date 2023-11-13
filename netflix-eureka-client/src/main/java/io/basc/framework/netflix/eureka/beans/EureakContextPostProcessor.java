@@ -3,7 +3,7 @@ package io.basc.framework.netflix.eureka.beans;
 import com.netflix.discovery.EurekaClientConfig;
 
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.netflix.eureka.EurekaClientConfigBean;
@@ -12,7 +12,7 @@ import io.basc.framework.netflix.eureka.EurekaClientConfigBean;
 public class EureakContextPostProcessor implements ContextPostProcessor {
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		EurekaClientDefinition eurekaClientDefinition = new EurekaClientDefinition(context);
 		if (!context.containsDefinition(eurekaClientDefinition.getId())) {
 			context.registerDefinition(eurekaClientDefinition);

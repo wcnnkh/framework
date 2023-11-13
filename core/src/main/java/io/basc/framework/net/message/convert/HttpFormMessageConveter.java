@@ -9,7 +9,7 @@ import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.text.QueryStringFormat;
+import io.basc.framework.text.query.QueryStringFormat;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.MultiValueMap;
 

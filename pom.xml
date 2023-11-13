@@ -466,11 +466,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>db</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>amqp</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -746,7 +741,6 @@
 		<module>upload</module>
 		<module>freemarker</module>
 		<module>timer</module>
-		<module>db</module>
 		<module>data</module>
 		<module>mvc</module>
 		<module>websocket</module>

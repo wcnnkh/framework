@@ -2,7 +2,7 @@ package io.basc.framework.rpc.remote.web;
 
 import io.basc.framework.beans.factory.InstanceException;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
@@ -19,7 +19,7 @@ public class WebRpcContextPostProcessor implements ContextPostProcessor {
 	private static final String DEFAULT_RPC_PATH = "/rpc";
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		RemoteHttpServiceHandlerDefinition httpServiceDefinition = new RemoteHttpServiceHandlerDefinition(context);
 		if (!context.containsDefinition(httpServiceDefinition.getId())) {
 			context.registerDefinition(httpServiceDefinition);

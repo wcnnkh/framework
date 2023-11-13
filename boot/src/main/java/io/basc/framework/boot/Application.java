@@ -4,13 +4,13 @@ import java.util.OptionalInt;
 
 import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.beans.factory.config.InitializingBean;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.function.Optional;
 
-public interface Application extends Context, DisposableBean, InitializingBean {
+public interface Application extends ApplicationContext, DisposableBean, InitializingBean {
 	public static final String APPLICATION_NAME_PROPERTY = "application.name";
 	public static final String APPLICATION_PORT_PROPERTY = "application.port";
 

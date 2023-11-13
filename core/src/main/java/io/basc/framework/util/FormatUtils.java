@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.text.placeholder.PlaceholderFormat;
 
 public final class FormatUtils {
 	private static final String DEFAULT_PLACEHOLDER = "{}";

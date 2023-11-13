@@ -3,14 +3,14 @@ package io.basc.framework.ibatis.beans;
 import org.apache.ibatis.session.Configuration;
 
 import io.basc.framework.beans.factory.InstanceException;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.StringUtils;
 
 public class ConfigurationDefinition extends ContextBeanDefinition {
 
-	public ConfigurationDefinition(Context context) {
+	public ConfigurationDefinition(ApplicationContext context) {
 		super(context, Configuration.class);
 	}
 

@@ -16,7 +16,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoader;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
@@ -42,7 +42,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 			return loaderChain.load(beanFactory, classLoader, name);
 		}
 
-		Context context = beanFactory.getInstance(Context.class);
+		ApplicationContext context = beanFactory.getInstance(ApplicationContext.class);
 		if (sourceClass == ConnectionFactory.class) {
 			return new ConnectionFactoryBeanBuilder(context, sourceClass);
 		} else if (sourceClass == Connection.class) {
@@ -109,7 +109,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class ExchangeBeanBuilder extends ContextBeanDefinition {
 
-		public ExchangeBeanBuilder(Context context, Class<?> sourceClass) {
+		public ExchangeBeanBuilder(ApplicationContext context, Class<?> sourceClass) {
 			super(context, sourceClass);
 		}
 
@@ -125,7 +125,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private final class ExchangeDeclareBeanBuilder extends ContextBeanDefinition {
 
-		public ExchangeDeclareBeanBuilder(Context context, Class<?> sourceClass) {
+		public ExchangeDeclareBeanBuilder(ApplicationContext context, Class<?> sourceClass) {
 			super(context, sourceClass);
 		}
 

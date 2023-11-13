@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.text.placeholder.PlaceholderFormat;
+import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
 public abstract class AbstractHttpPatternResolver implements HttpPatternResolver, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;

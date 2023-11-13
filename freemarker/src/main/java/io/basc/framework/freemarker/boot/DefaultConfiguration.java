@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.context.annotation.ConditionalOnMissingBean;
 import io.basc.framework.freemarker.EnvConfiguration;
@@ -18,7 +18,7 @@ import io.basc.framework.logger.LoggerFactory;
 public class DefaultConfiguration extends EnvConfiguration {
 	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
 
-	public DefaultConfiguration(Context context) throws IOException {
+	public DefaultConfiguration(ApplicationContext context) throws IOException {
 		super(context);
 		for (Entry<String, Object> entry : context.getBeansWithAnnotation(SharedVariable.class).entrySet()) {
 			String name = entry.getKey();

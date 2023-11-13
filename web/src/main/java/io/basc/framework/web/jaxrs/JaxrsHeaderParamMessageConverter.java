@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.ws.rs.HeaderParam;
 
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
@@ -14,7 +13,6 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.support.AbstractHeaderWebMessageConverter;
 
-@Component
 public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageConverter {
 
 	@Override

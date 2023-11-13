@@ -35,11 +35,11 @@ import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend
 import io.basc.framework.orm.annotation.IgnoreConfigurationProperty;
 import io.basc.framework.orm.config.EntityResolverChain;
 import io.basc.framework.orm.config.EntityResolverExtend;
+import io.basc.framework.text.placeholder.PlaceholderFormat;
+import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

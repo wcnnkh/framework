@@ -8,7 +8,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.support.BeanFactoryExecutor;
 import io.basc.framework.beans.factory.config.support.DefaultBeanDefinition;
 import io.basc.framework.context.config.Condition;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.support.BeanDefinitionRegistryContextPostProcessor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
@@ -20,7 +20,7 @@ import io.basc.framework.util.element.Elements;
 class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitionRegistryContextPostProcessor {
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		if (!context.getBeanProvider(OnBeanCondition.class).isEmpty()) {
 			// 不存在那么注册一个默认的
 			OnBeanCondition onBeanCondition = new OnBeanCondition();
@@ -39,7 +39,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 		return AnnotatedElementUtils.hasAnnotation(method, Bean.class);
 	}
 
-	private ExecutionInterceptor getExecutionInterceptor(ConfigurableContext context, Aop enableAop) {
+	private ExecutionInterceptor getExecutionInterceptor(ConfigurableApplicationContext context, Aop enableAop) {
 		Elements<ExecutionInterceptor> nameExecutionInterceptors = Elements.forArray(enableAop.interceptorNames())
 				.map((e) -> context.getBean(e, ExecutionInterceptor.class));
 		Elements<ExecutionInterceptor> classExecutionInterceptors = Elements.forArray(enableAop.interceptors())
@@ -50,7 +50,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
-	protected DefaultBeanDefinition<ReflectionConstructor> resolveBeanDefinition(ConfigurableContext context,
+	protected DefaultBeanDefinition<ReflectionConstructor> resolveBeanDefinition(ConfigurableApplicationContext context,
 			Class<?> clazz) {
 		DefaultBeanDefinition<ReflectionConstructor> beanDefinition = super.resolveBeanDefinition(context, clazz);
 		beanDefinition.setSingleton(isSingleton(clazz));
@@ -74,7 +74,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
-	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableContext context,
+	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableApplicationContext context,
 			Class<?> clazz, String originBeanName, BeanDefinition originBeanDefinition, Method method) {
 		DefaultBeanDefinition<BeanFactoryExecutor> beanDefinition = super.resolveBeanDefinition(context, clazz,
 				originBeanName, originBeanDefinition, method);
@@ -128,7 +128,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
-	protected Elements<? extends Condition> getConditions(ConfigurableContext context,
+	protected Elements<? extends Condition> getConditions(ConfigurableApplicationContext context,
 			AnnotatedElement annotatedElement) {
 		Conditional conditional = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Conditional.class);
 		if (conditional == null) {

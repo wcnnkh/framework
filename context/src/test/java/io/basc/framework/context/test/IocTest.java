@@ -9,12 +9,12 @@ import org.junit.Test;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.context.annotation.Value;
-import io.basc.framework.context.support.DefaultContext;
+import io.basc.framework.context.support.DefaultApplicationContext;
 import io.basc.framework.orm.annotation.PrimaryKey;
 
 @Component
 public class IocTest {
-	private static DefaultContext context = new DefaultContext(Scope.DEFAULT);
+	private static DefaultApplicationContext context = new DefaultApplicationContext(Scope.DEFAULT);
 
 	static {
 		try {

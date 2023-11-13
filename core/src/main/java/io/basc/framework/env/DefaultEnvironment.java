@@ -16,6 +16,9 @@ import io.basc.framework.convert.resolve.ResourceResolverConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.env.config.EnvironmentPostProcessors;
+import io.basc.framework.env.properties.ConfigurableEnvironmentProperties;
+import io.basc.framework.env.resource.ConfigurableEnvironmentResourceLoader;
+import io.basc.framework.env.resource.DefaultEnvironmentResourceLoader;
 import io.basc.framework.event.observe.Observable;
 import io.basc.framework.event.observe.support.ObservableResource;
 import io.basc.framework.io.Resource;
@@ -75,8 +78,6 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 			return Registration.EMPTY;
 		});
 
-		// 注册一个默认的参数解析
-		properties.setConversionService(conversionService);
 		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
@@ -193,7 +194,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 		this.parentEnvironment = environment;
 		if (environment != null) {
 			conversionService.registerLast(environment.getConversionService());
-			properties.setParentProperties(environment.getProperties());
+			properties.setParentEnvironmentProperties(environment.getProperties());
 			environmentResourceLoader.getResourceLoaders().registerLast(environment.getResourceLoader());
 			resourceResolvers.registerLast(environment.getResourceResolver());
 			propertiesResolvers.registerLast(environment.getPropertiesResolver());

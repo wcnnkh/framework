@@ -7,7 +7,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.support.BeanFactoryExecutor;
 import io.basc.framework.beans.factory.config.support.DefaultBeanDefinition;
 import io.basc.framework.context.config.Condition;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
@@ -17,7 +17,7 @@ import io.basc.framework.util.element.Elements;
 
 public abstract class BeanDefinitionRegistryContextPostProcessor implements ContextPostProcessor {
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		for (Class<?> clazz : context.getContextClasses().getServices()) {
 			if (!canResolveBeanDefinition(clazz)) {
 				continue;
@@ -74,7 +74,7 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 	}
 
 	@Nullable
-	protected Elements<? extends Condition> getConditions(ConfigurableContext context,
+	protected Elements<? extends Condition> getConditions(ConfigurableApplicationContext context,
 			AnnotatedElement annotatedElement) {
 		return Elements.empty();
 	}
@@ -89,13 +89,13 @@ public abstract class BeanDefinitionRegistryContextPostProcessor implements Cont
 			Method method);
 
 	@Nullable
-	protected DefaultBeanDefinition<ReflectionConstructor> resolveBeanDefinition(ConfigurableContext context,
+	protected DefaultBeanDefinition<ReflectionConstructor> resolveBeanDefinition(ConfigurableApplicationContext context,
 			Class<?> clazz) {
 		DefaultBeanDefinition<ReflectionConstructor> beanDefinition = new DefaultBeanDefinition<>();
 		return beanDefinition;
 	}
 
-	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableContext context,
+	protected DefaultBeanDefinition<BeanFactoryExecutor> resolveBeanDefinition(ConfigurableApplicationContext context,
 			Class<?> clazz, String originBeanName, BeanDefinition originBeanDefinition, Method method) {
 		DefaultBeanDefinition<BeanFactoryExecutor> beanDefinition = new DefaultBeanDefinition<>();
 		BeanFactoryExecutor beanFactoryExecutor = new BeanFactoryExecutor(method, TypeDescriptor.valueOf(clazz),

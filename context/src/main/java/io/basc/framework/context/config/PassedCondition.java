@@ -5,7 +5,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 final class PassedCondition implements Condition {
 
 	@Override
-	public boolean matches(ConfigurableContext context, String beanName, BeanDefinition beanDefinition) {
+	public boolean matches(ConfigurableApplicationContext context, String beanName, BeanDefinition beanDefinition) {
 		return true;
 	}
 

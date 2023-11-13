@@ -1,7 +1,8 @@
 package io.basc.framework.util.placeholder.support;
 
-import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.placeholder.PlaceholderResolver;
+import io.basc.framework.text.placeholder.PlaceholderFormat;
+import io.basc.framework.text.placeholder.PlaceholderResolver;
+import io.basc.framework.text.placeholder.support.DefaultPlaceholderReplacer;
 
 public class DefaultPlaceholderFormat extends DefaultPlaceholderReplacer implements PlaceholderFormat {
 	private PlaceholderResolver placeholderResolver;

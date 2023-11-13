@@ -1,10 +1,10 @@
 package io.basc.framework.boot;
 
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
-public interface ConfigurableApplication extends Application, ConfigurableContext {
+public interface ConfigurableApplication extends Application, ConfigurableApplicationContext {
 
 	default void setPort(int port) {
 		getProperties().put(APPLICATION_PORT_PROPERTY, port);

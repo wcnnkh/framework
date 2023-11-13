@@ -7,14 +7,14 @@ import java.util.Properties;
 import org.junit.Test;
 
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.context.support.DefaultContext;
+import io.basc.framework.context.support.DefaultApplicationContext;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
 import io.basc.framework.util.XUtils;
 
 @SuppressWarnings("unused")
 public class ContextTests {
-	private static DefaultContext environment = new DefaultContext(Scope.DEFAULT);
+	private static DefaultApplicationContext environment = new DefaultApplicationContext(Scope.DEFAULT);
 
 	static {
 		environment.init();

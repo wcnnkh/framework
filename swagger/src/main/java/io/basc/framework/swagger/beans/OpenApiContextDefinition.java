@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.basc.framework.beans.factory.InstanceException;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.swagger.OpenAPIExtensionsReload;
 import io.basc.framework.swagger.WebOpenApiContextBuilder;
@@ -17,7 +17,7 @@ import io.swagger.v3.oas.integration.api.OpenApiContextBuilder;
 
 public class OpenApiContextDefinition extends ContextBeanDefinition {
 
-	public OpenApiContextDefinition(Context context) {
+	public OpenApiContextDefinition(ApplicationContext context) {
 		super(context, OpenApiContext.class);
 	}
 

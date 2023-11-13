@@ -12,7 +12,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
@@ -28,7 +27,6 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-@Component
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class JaxrsWebMessageConverter implements WebMessageConverter, Configurable {
 	private final ConfigurableServices<MessageBodyReader> messageBodyReaders = new ConfigurableServices<>(

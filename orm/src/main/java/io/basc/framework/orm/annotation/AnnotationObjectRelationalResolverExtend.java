@@ -27,12 +27,12 @@ import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.config.EntityResolverExtend;
+import io.basc.framework.text.placeholder.PlaceholderFormat;
+import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Symbol;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
 public class AnnotationObjectRelationalResolverExtend implements EntityResolverExtend, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;

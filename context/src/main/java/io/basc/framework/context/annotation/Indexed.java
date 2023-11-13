@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.core.annotation.AliasFor;
 import io.basc.framework.core.annotation.Order;
 
@@ -14,7 +14,7 @@ import io.basc.framework.core.annotation.Order;
  * 上下文扫描时会允许加入上下文
  * 
  * @author wcnnkh
- * @see Context#getContextClasses()
+ * @see ApplicationContext#getContextClasses()
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

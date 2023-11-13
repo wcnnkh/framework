@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.dubbo.config.ServiceConfig;
 
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.io.Resource;
 
@@ -41,7 +41,7 @@ public class DefaultDubboServiceRegistry extends DefaultDubboReferenceRegistry i
 	}
 
 	@Override
-	public void loadXml(Resource resource, Context context) {
+	public void loadXml(Resource resource, ApplicationContext context) {
 		super.loadXml(resource, context);
 
 		List<ServiceConfig<?>> serviceConfigs = XmlBeanUtils

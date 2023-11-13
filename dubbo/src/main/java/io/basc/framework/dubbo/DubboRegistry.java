@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.ClassScanner;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.dom.DomUtils;
@@ -254,7 +254,7 @@ public class DubboRegistry {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static List<ServiceConfig> parseServiceConfigList(final Context context, NodeList nodeList,
+	public static List<ServiceConfig> parseServiceConfigList(final ApplicationContext context, NodeList nodeList,
 			ServiceConfig<?> defaultConfig) {
 		return parseConfigList(ServiceConfig.class, context, nodeList, defaultConfig,
 				new ConfigFilter<ServiceConfig>() {
@@ -413,7 +413,7 @@ public class DubboRegistry {
 		return registryConfigs;
 	}
 
-	public void loadXml(Context context) {
+	public void loadXml(ApplicationContext context) {
 		for (Resource resource : context.getResources().getServices()) {
 			if (resource.exists() && resource.getName().endsWith(".xml")) {
 				loadXml(resource, context);
@@ -421,7 +421,7 @@ public class DubboRegistry {
 		}
 	}
 
-	public void loadXml(Resource resource, Context context) {
+	public void loadXml(Resource resource, ApplicationContext context) {
 		List<ApplicationConfig> applicationConfigs = XmlBeanUtils.parse(context.getResourceLoader(), resource,
 				(nodeList) -> parseApplicationConfigList(context, nodeList, null));
 		if (applicationConfigs != null) {

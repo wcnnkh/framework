@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dom.DomUtils;
@@ -27,7 +27,7 @@ import io.basc.framework.util.StringUtils;
 public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 	private static final String TAG_NAME = "http:reference";
 
-	private void resolve(ConfigurableContext context, NodeList rootNodeList) {
+	private void resolve(ConfigurableApplicationContext context, NodeList rootNodeList) {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {
@@ -70,7 +70,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 	}
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		for (Resource resource : context.getResources()) {
 			if (resource.exists() && resource.getName().endsWith(".xml")) {
 				XmlBeanUtils.read(context.getResourceLoader(), resource, (nodeList) -> resolve(context, nodeList));
@@ -83,7 +83,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 		private RemoteMessageCodec codec;
 		private String url;
 
-		public void config(Node node, Context context) {
+		public void config(Node node, ApplicationContext context) {
 			String address = XmlBeanUtils.getAddress(context, node);
 			if (StringUtils.isNotEmpty(address)) {
 				this.url = address;

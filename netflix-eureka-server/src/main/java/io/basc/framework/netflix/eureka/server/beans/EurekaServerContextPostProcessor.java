@@ -3,7 +3,7 @@ package io.basc.framework.netflix.eureka.server.beans;
 import com.netflix.eureka.EurekaServerConfig;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 
@@ -11,7 +11,7 @@ import io.basc.framework.core.Ordered;
 public class EurekaServerContextPostProcessor implements ContextPostProcessor {
 
 	@Override
-	public void postProcessContext(ConfigurableContext context) throws Throwable {
+	public void postProcessContext(ConfigurableApplicationContext context) throws Throwable {
 		EurekaServerConfigDefinition eurekaServerConfigDefinition = new EurekaServerConfigDefinition(context);
 		if (!context.containsDefinition(EurekaServerConfig.class.getName())) {
 			context.registerDefinition(EurekaServerConfig.class.getName(), eurekaServerConfigDefinition);

@@ -16,7 +16,7 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
-import io.basc.framework.context.Context;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.ibatis.IbatisException;
 import io.basc.framework.ibatis.beans.annotation.MapperResources;
 import io.basc.framework.ibatis.beans.annotation.MapperScan;
@@ -52,7 +52,7 @@ public class ConfigurationUtils {
 		}
 	}
 
-	public static void configuration(Configuration configuration, Context context) {
+	public static void configuration(Configuration configuration, ApplicationContext context) {
 		PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver(
 				context.getResourceLoader());
 		TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
