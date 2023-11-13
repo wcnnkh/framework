@@ -3,7 +3,6 @@ package io.basc.framework.env1;
 import java.util.Properties;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.env.properties.EnvironmentProperties;
 import io.basc.framework.event.observe.Observable;
 import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
 import io.basc.framework.util.registry.Registration;
@@ -29,8 +28,8 @@ public class DefaultPropertyResolver extends ConfigurationCenter implements Conf
 	}
 
 	private final HierarchicalPlaceholderReplacer configurablePlaceholderReplacer = new HierarchicalPlaceholderReplacer();
-	private EnvironmentProperties parentEnvironmentProperties;
-	private Registration parentEnvironmentPropertiesRegistration;
+	private PropertyResolver parentPropertyResolver;
+	private Registration parentPropertyResolverRegistration;
 
 	@Override
 	public void configure(Class<PropertyFactory> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
@@ -45,29 +44,32 @@ public class DefaultPropertyResolver extends ConfigurationCenter implements Conf
 		return configurablePlaceholderReplacer;
 	}
 
-	public EnvironmentProperties getParentEnvironmentProperties() {
-		return parentEnvironmentProperties;
-	}
-
-	public synchronized void setParentEnvironmentProperties(EnvironmentProperties parentEnvironmentProperties) {
-		if (parentEnvironmentProperties == this.parentEnvironmentProperties) {
-			return;
-		}
-
-		if (parentEnvironmentPropertiesRegistration != null) {
-			parentEnvironmentPropertiesRegistration.unregister();
-			parentEnvironmentPropertiesRegistration = null;
-		}
-
-		this.parentEnvironmentProperties = parentEnvironmentProperties;
-		if (this.parentEnvironmentProperties != null) {
-			configurablePlaceholderReplacer
-					.setParentPlaceholderReplacer(this.parentEnvironmentProperties.getPlaceholderReplacer());
-			this.parentEnvironmentPropertiesRegistration = registerLast(parentEnvironmentProperties);
+	public PropertyResolver getParentPropertyResolver() {
+		synchronized (this) {
+			return parentPropertyResolver;
 		}
 	}
 
-	@Override
+	public synchronized void setParentPropertyResolver(PropertyResolver parentPropertyResolver) {
+		synchronized (this) {
+			if (parentPropertyResolver == this.parentPropertyResolver) {
+				return;
+			}
+
+			if (parentPropertyResolverRegistration != null) {
+				parentPropertyResolverRegistration.unregister();
+				parentPropertyResolverRegistration = null;
+			}
+
+			this.parentPropertyResolver = parentPropertyResolver;
+			if (this.parentPropertyResolver != null) {
+				configurablePlaceholderReplacer
+						.setParentPlaceholderReplacer(this.parentPropertyResolver.getPlaceholderReplacer());
+				this.parentPropertyResolverRegistration = registerLast(parentPropertyResolver);
+			}
+		}
+	}
+
 	public Value get(String key) {
 		Value value = super.get(key);
 		if (value == null || !value.isPresent()) {
