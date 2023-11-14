@@ -2,8 +2,8 @@ package io.basc.framework.context.servlet;
 
 import javax.servlet.ServletContext;
 
+import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ApplicationContextInitializer;
-import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.io.loader.DirectoryClassesLoader;
 import io.basc.framework.servlet.ServletContextPropertyFactory;
 import io.basc.framework.servlet.ServletContextResourceLoader;

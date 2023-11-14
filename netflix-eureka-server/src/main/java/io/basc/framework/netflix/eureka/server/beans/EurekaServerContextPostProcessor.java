@@ -2,8 +2,8 @@ package io.basc.framework.netflix.eureka.server.beans;
 
 import com.netflix.eureka.EurekaServerConfig;
 
+import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 

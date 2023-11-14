@@ -1,6 +1,6 @@
 package io.basc.framework.context.annotation;
 
-import io.basc.framework.context.config.ConfigurableApplicationContext;
+import io.basc.framework.context.ConfigurableApplicationContext;
 
 public class AnnotationContextPostProcessor extends AnnotationBeanDefinitionRegistryContextPostProcessor {
 

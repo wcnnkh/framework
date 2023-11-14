@@ -1,13 +1,15 @@
-package io.basc.framework.context.config;
+package io.basc.framework.context;
 
-import io.basc.framework.context.ApplicationContext;
-import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.context.config.ConfigurableClassScanner;
+import io.basc.framework.env1.ConfigurableEnvironment;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.registry.Registration;
 import io.basc.framework.util.spi.Services;
 
-public interface ConfigurableApplicationContext extends ApplicationContext, ConfigurableEnvironment, ClassLoaderAccessor {
+public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor {
+	@Override
+	ConfigurableEnvironment getEnvironment();
 
 	Aop getAop();
 

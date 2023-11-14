@@ -3,7 +3,10 @@ package io.basc.framework.context.support;
 import java.util.Set;
 
 import io.basc.framework.beans.factory.Scope;
+import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
+import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextAware;
+import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.annotation.AnnotationContextPostProcessor;
 import io.basc.framework.context.annotation.AnnotationTypeFilterExtend;
 import io.basc.framework.context.annotation.ComponentScan;
@@ -11,13 +14,12 @@ import io.basc.framework.context.annotation.ComponentScans;
 import io.basc.framework.context.annotation.Import;
 import io.basc.framework.context.annotation.ImportResource;
 import io.basc.framework.context.config.ApplicationContextInitializers;
-import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ConfigurableTypeFilter;
 import io.basc.framework.context.config.support.DefaultClassScanner;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.env.Sys;
+import io.basc.framework.env1.DefaultEnvironment;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
@@ -28,8 +30,10 @@ import io.basc.framework.util.registry.Registration;
 import io.basc.framework.util.spi.ServiceLoader;
 import io.basc.framework.util.spi.Services;
 
-public class DefaultApplicationContext extends DefaultEnvironment implements ConfigurableApplicationContext {
+public class DefaultApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultApplicationContext.class);
+	private final DefaultEnvironment environment = new DefaultEnvironment();
+	private ApplicationContext parent;
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final Services<Class<?>> contextClassesLoader = new Services<>();
 	private final ApplicationContextInitializers applicationContextInitializers = new ApplicationContextInitializers();

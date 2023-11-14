@@ -1,12 +1,13 @@
 package io.basc.framework.context;
 
-import io.basc.framework.env.Environment;
+import io.basc.framework.env1.EnvironmentCapable;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.spi.ServiceLoader;
 
-public interface ApplicationContext extends Environment, ClassLoaderProvider, ParentDiscover<ApplicationContext> {
+public interface ApplicationContext
+		extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext> {
 	ServiceLoader<Class<?>> getSourceClasses();
 
 	ServiceLoader<Class<?>> getContextClasses();

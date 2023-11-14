@@ -1,5 +1,7 @@
 package io.basc.framework.context.config;
 
+import io.basc.framework.context.ConfigurableApplicationContext;
+
 /**
  * 应用上下文初始化
  */

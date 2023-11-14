@@ -110,5 +110,6 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 
 	public void setParentEnvironment(Environment parentEnvironment) {
 		this.parentEnvironment = parentEnvironment;
+		setParentPropertyResolver(parentEnvironment);
 	}
 }

@@ -4,8 +4,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.ibatis.beans.annotation.MapperScan;
 
