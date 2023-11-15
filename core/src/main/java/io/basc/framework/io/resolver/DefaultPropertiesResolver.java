@@ -19,11 +19,26 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 
-public class DefaultPropertiesResolver implements PropertiesResolver {
+public class DefaultPropertiesResolver extends PropertiesResolvers {
 	private static Logger logger = LoggerFactory.getLogger(DefaultPropertiesResolver.class.getName());
-	public static final DefaultPropertiesResolver INSTANCE = new DefaultPropertiesResolver();
+	private static volatile DefaultPropertiesResolver instance;
+
+	public static DefaultPropertiesResolver getInstance() {
+		if (instance == null) {
+			synchronized (DefaultPropertiesResolver.class) {
+				if (instance == null) {
+					instance = new DefaultPropertiesResolver();
+				}
+			}
+		}
+		return instance;
+	}
 
 	public boolean canResolveProperties(Resource resource) {
+		if (super.canResolveProperties(resource)) {
+			return true;
+		}
+
 		if (!resource.exists()) {
 			return false;
 		}
@@ -32,6 +47,11 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 	}
 
 	public void resolveProperties(Properties properties, Resource resource, Charset charset) {
+		if (super.canResolveProperties(resource)) {
+			super.resolveProperties(properties, resource, charset);
+			return;
+		}
+
 		if (!resource.exists()) {
 			return;
 		}
@@ -74,6 +94,11 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 
 	@Override
 	public void persistenceProperties(Properties properties, WritableResource resource, Charset charset) {
+		if (super.canResolveProperties(resource)) {
+			super.persistenceProperties(properties, resource, charset);
+			return;
+		}
+
 		try {
 			resource.produce((output) -> {
 				if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {

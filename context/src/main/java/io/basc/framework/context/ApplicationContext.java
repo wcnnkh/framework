@@ -1,16 +1,17 @@
 package io.basc.framework.context;
 
 import io.basc.framework.env1.EnvironmentCapable;
+import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ParentDiscover;
-import io.basc.framework.util.spi.ServiceLoader;
+import io.basc.framework.util.element.Elements;
 
 public interface ApplicationContext
-		extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext> {
-	ServiceLoader<Class<?>> getSourceClasses();
+		extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext>, ResourcePatternResolver {
+	Elements<Class<?>> getSourceClasses();
 
-	ServiceLoader<Class<?>> getContextClasses();
+	Elements<Class<?>> getContextClasses();
 
 	ClassScanner getClassScanner();
 

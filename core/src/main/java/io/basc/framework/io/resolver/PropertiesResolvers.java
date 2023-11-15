@@ -12,7 +12,6 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 
 	public PropertiesResolvers() {
 		super(PropertiesResolver.class);
-		registerLast(DefaultPropertiesResolver.INSTANCE);
 	}
 
 	public boolean canResolveProperties(Resource resource) {

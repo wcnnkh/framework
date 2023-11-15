@@ -170,7 +170,7 @@ public class DefaultApplicationContext extends DefaultServiceLoaderFactory imple
 					continue;
 				}
 
-				String path = getProperties().replacePlaceholders(location);
+				String path = getEnvironment().replacePlaceholders(location);
 				registration = registration.and(source(path));
 			}
 		}
