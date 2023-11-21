@@ -1,5 +1,5 @@
 package io.basc.framework.context;
 
 public interface ApplicationContextAware {
-	void setContext(ApplicationContext applicationContext);
+	void setApplicationContext(ApplicationContext applicationContext);
 }

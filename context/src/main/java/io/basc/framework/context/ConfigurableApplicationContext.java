@@ -1,11 +1,13 @@
 package io.basc.framework.context;
 
+import java.io.Closeable;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.env1.ConfigurableEnvironment;
 import io.basc.framework.event.observe.Observable;
-import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.lang.Nullable;
@@ -13,13 +15,13 @@ import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.registry.Registration;
 
-public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle {
-	Aop getAop();
-
+public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable {
 	@Override
 	default ClassLoader getClassLoader() {
 		return ClassLoaderAccessor.super.getClassLoader();
 	}
+
+	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor);
 
 	@Override
 	ConfigurableEnvironment getEnvironment();
@@ -49,4 +51,9 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Clas
 	 * @see #close()
 	 */
 	Registration registerShutdownHook();
+
+	void refresh() throws BeansException, IllegalStateException;
+
+	@Override
+	void close();
 }

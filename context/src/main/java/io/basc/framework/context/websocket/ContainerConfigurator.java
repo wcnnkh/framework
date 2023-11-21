@@ -1,4 +1,4 @@
-package io.basc.framework.websocket.adapter.standard;
+package io.basc.framework.context.websocket;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
@@ -11,7 +11,7 @@ import io.basc.framework.context.support.ContextLoader;
  * @author wcnnkh
  *
  */
-public class StandardContainerConfigurator extends Configurator {
+public class ContainerConfigurator extends Configurator {
 
 	@Override
 	public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {

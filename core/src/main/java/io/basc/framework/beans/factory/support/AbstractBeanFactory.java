@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.beans.BeansException;
@@ -14,7 +13,6 @@ import io.basc.framework.beans.factory.BeanFactoryAware;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
 import io.basc.framework.beans.factory.config.BeanPostProcessors;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.DisposableBean;
@@ -27,18 +25,15 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.registry.Registration;
 import io.basc.framework.util.spi.ServiceInjectors;
 
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
-		implements ConfigurableBeanFactory, InitializingBean, DisposableBean {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();
 	private final BeanPostProcessors beanPostProcessors = new BeanPostProcessors();
-	private final BeanFactoryPostProcessors beanFactoryPostProcessors = new BeanFactoryPostProcessors();
 	private final Set<String> initializedSingletonSet = new HashSet<>();
 	private final ServiceInjectors<Object> serviceInjectors = new ServiceInjectors<>();
 
 	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
-		beanFactoryPostProcessors.getServiceInjectors().register(serviceInjectors);
 		beanPostProcessors.getServiceInjectors().register(serviceInjectors);
 
 		serviceInjectors.register((bean) -> {
@@ -55,10 +50,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 
 	public BeanPostProcessors getBeanPostProcessors() {
 		return beanPostProcessors;
-	}
-
-	public BeanFactoryPostProcessors getBeanFactoryPostProcessors() {
-		return beanFactoryPostProcessors;
 	}
 
 	public FactoryBean<? extends Object> getFactoryBean(String beanName) throws NoSuchBeanDefinitionException {
@@ -438,74 +429,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		}
 	}
 
-	private AtomicBoolean running = new AtomicBoolean();
-	private AtomicBoolean active = new AtomicBoolean();
-
-	@Override
-	public boolean isRunning() {
-		return running.get();
-	}
-
-	protected void postProcessBeanFactory() {
-		beanFactoryPostProcessors.postProcessBeanFactory(this);
-	}
-
-	@Override
-	public boolean isActive() {
-		return active.get();
-	}
-
-	@Override
-	public void refresh() throws BeansException, IllegalStateException {
-		// 1.先执行销毁
-		stop();
-		if (active.compareAndSet(false, true)) {
-			onRefresh();
-		}
-		start();
-	}
-
-	protected void onRefresh() {
-		postProcessBeanFactory();
-	}
-
-	protected void onClose() {
-		clearAliasMap();
-		factoryBeanMap.clear();
-	}
-
-	@Override
-	public void close() {
-		stop();
-		if (active.compareAndSet(true, false)) {
-			onClose();
-		}
-	}
-
-	@Override
-	public void start() throws BeansException {
-		if (active.compareAndSet(false, true)) {
-			onRefresh();
-		}
-
-		if (running.compareAndSet(false, true)) {
-			onStart();
-		}
-	}
-
-	protected void onStart() {
-		// 初始化单例
-		prepareAllSingletons();
-	}
-
-	protected void onStop() {
-		destroySingletons();
-	}
-
-	@Override
-	public void stop() throws BeansException {
-		if (running.compareAndSet(true, false)) {
-			onStop();
+	public void clearFactoryBeans() {
+		synchronized (factoryBeanMap) {
+			factoryBeanMap.clear();
 		}
 	}
 }

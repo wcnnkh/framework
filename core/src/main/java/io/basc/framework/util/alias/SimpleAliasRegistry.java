@@ -58,7 +58,10 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 		}
 	}
 
-	public void clearAliasMap() {
+	/**
+	 * 清除的所有的别名
+	 */
+	public void clearAllAlias() {
 		synchronized (this.aliasMap) {
 			this.aliasMap.clear();
 		}

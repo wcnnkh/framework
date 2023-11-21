@@ -16,5 +16,10 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>context</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
