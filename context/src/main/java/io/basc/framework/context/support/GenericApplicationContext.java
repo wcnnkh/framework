@@ -1,31 +1,30 @@
 package io.basc.framework.context.support;
 
+import java.io.IOException;
+
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ApplicationContextInitializers;
-import io.basc.framework.context.config.ConfigurableClassScanner;
-import io.basc.framework.context.config.ConfigurableTypeFilter;
-import io.basc.framework.context.config.support.DefaultClassScanner;
-import io.basc.framework.env1.DefaultEnvironment;
+import io.basc.framework.env1.support.DefaultEnvironment;
 import io.basc.framework.execution.aop.Aop;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourcePatternResolver;
+import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.registry.Registration;
-import io.basc.framework.util.spi.Services;
 
-public class GenerApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
+public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
 	private final DefaultEnvironment environment = new DefaultEnvironment();
 	private ApplicationContext parent;
 	private ClassLoaderProvider classLoaderProvider;
 	private final Aop aop = new Aop();
-	private final DefaultClassScanner classScanner = new DefaultClassScanner();
-	private final Services<Class<?>> contextClassesLoader = new Services<>();
 	private final ApplicationContextInitializers applicationContextInitializers = new ApplicationContextInitializers();
-	private final ConfigurableTypeFilter configurableTypeFilter = new ConfigurableTypeFilter();
-	private final Services<Class<?>> sourceClasses = new Services<Class<?>>();
+	private final ConfigurablePropertiesResolver propertiesResolver = new ConfigurablePropertiesResolver();
+	private ResourcePatternResolver resourcePatternResolver;
 
-	public GenerApplicationContext(Scope scope) {
+	public GenericApplicationContext(Scope scope) {
 		super(scope);
 	}
 
@@ -56,31 +55,39 @@ public class GenerApplicationContext extends DefaultServiceLoaderFactory impleme
 	}
 
 	@Override
-	public Registration componentScan(String packageName) {
-		// TODO Auto-generated method stub
-		return null;
+	public ConfigurablePropertiesResolver getPropertiesResolver() {
+		return propertiesResolver;
 	}
 
 	@Override
-	public Services<Class<?>> getContextClasses() {
-		// TODO Auto-generated method stub
-		return null;
+	public Resource[] getResources(String locationPattern) throws IOException {
+		return resourcePatternResolver.getResources(locationPattern);
 	}
 
 	@Override
-	public Services<Class<?>> getSourceClasses() {
-		// TODO Auto-generated method stub
-		return null;
+	public Resource getResource(String location) {
+		return resourcePatternResolver.getResource(location);
 	}
 
 	@Override
-	public Registration source(Class<?> sourceClass) {
-		// TODO Auto-generated method stub
-		return null;
+	public void start() {
+		applicationContextInitializers.initialize(this);
 	}
 
 	@Override
-	public ConfigurableClassScanner getClassScanner() {
+	public void stop() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Registration registerShutdownHook() {
 		// TODO Auto-generated method stub
 		return null;
 	}

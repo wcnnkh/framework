@@ -1,49 +1,22 @@
-package io.basc.framework.context;
+package io.basc.framework.env1;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.beans.factory.HierarchicalBeanFactory;
-import io.basc.framework.beans.factory.ListableBeanFactory;
-import io.basc.framework.env1.EnvironmentCapable;
 import io.basc.framework.event.observe.Observable;
 import io.basc.framework.event.observe.support.ObservablePropertiesRegistry;
 import io.basc.framework.event.observe.support.ObservableResource;
 import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
 
-public interface ApplicationContext extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext>,
-		ResourcePatternResolver, ListableBeanFactory, HierarchicalBeanFactory {
-
-	/**
-	 * Return the parent context, or {@code null} if there is no parent and this is
-	 * the root of the context hierarchy.
-	 * 
-	 * @return the parent context, or {@code null} if there is no parent
-	 */
-	@Nullable
-	ApplicationContext getParent();
-
-	default Elements<Resource> getProfileResources(String location) {
-		Resource rootResource = getResource(location);
-		Elements<Resource> root = Elements.singleton(rootResource);
-		Elements<String> profiles = getEnvironment().getProfiles(location);
-		if (profiles.isEmpty()) {
-			return root;
-		}
-
-		Elements<Resource> resourceProfiles = profiles.map((name) -> getResource(name));
-		return root.concat(resourceProfiles);
-	}
+public interface EnvironmentResources extends EnvironmentCapable {
+	Elements<Resource> getProfileResources(String location);
 
 	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location)
 			throws IOException {

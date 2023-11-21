@@ -33,7 +33,7 @@ import io.basc.framework.util.StringValueResolver;
 public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	/** Map from alias to canonical name */
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<String, String>(16);
-	
+
 	public void registerAlias(String name, String alias) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
@@ -55,6 +55,12 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 				checkForAliasCircle(name, alias);
 				this.aliasMap.put(alias, name);
 			}
+		}
+	}
+
+	public void clearAliasMap() {
+		synchronized (this.aliasMap) {
+			this.aliasMap.clear();
 		}
 	}
 

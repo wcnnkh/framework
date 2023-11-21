@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.beans.BeansException;
@@ -437,42 +438,74 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 		}
 	}
 
-	private volatile boolean initialized = false;
+	private AtomicBoolean running = new AtomicBoolean();
+	private AtomicBoolean active = new AtomicBoolean();
 
-	public boolean isInitialized() {
-		return initialized;
+	@Override
+	public boolean isRunning() {
+		return running.get();
 	}
 
-	public final void init() {
-		synchronized (this) {
-			if (initialized) {
-				throw new IllegalStateException("Already initialized [" + this + "]");
-			}
+	protected void postProcessBeanFactory() {
+		beanFactoryPostProcessors.postProcessBeanFactory(this);
+	}
 
-			try {
-				_init();
-			} finally {
-				initialized = true;
-			}
+	@Override
+	public boolean isActive() {
+		return active.get();
+	}
+
+	@Override
+	public void refresh() throws BeansException, IllegalStateException {
+		// 1.先执行销毁
+		stop();
+		if (active.compareAndSet(false, true)) {
+			onRefresh();
+		}
+		start();
+	}
+
+	protected void onRefresh() {
+		postProcessBeanFactory();
+	}
+
+	protected void onClose() {
+		clearAliasMap();
+		factoryBeanMap.clear();
+	}
+
+	@Override
+	public void close() {
+		stop();
+		if (active.compareAndSet(true, false)) {
+			onClose();
 		}
 	}
 
 	@Override
-	public void destroy() {
-		synchronized (this) {
-			if (!initialized) {
-				throw new IllegalStateException("Not initialized yet [" + this + "]");
-			}
+	public void start() throws BeansException {
+		if (active.compareAndSet(false, true)) {
+			onRefresh();
+		}
 
-			_destory();
+		if (running.compareAndSet(false, true)) {
+			onStart();
 		}
 	}
 
-	protected void _init() {
-		beanFactoryPostProcessors.postProcessBeanFactory(this);
+	protected void onStart() {
+		// 初始化单例
+		prepareAllSingletons();
 	}
 
-	protected void _destory() {
+	protected void onStop() {
 		destroySingletons();
+	}
+
+	@Override
+	public void stop() throws BeansException {
+		if (running.compareAndSet(true, false)) {
+			onStop();
+		}
 	}
 }

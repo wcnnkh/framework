@@ -1,8 +1,10 @@
-package io.basc.framework.env1;
+package io.basc.framework.env1.support;
 
 import java.util.Properties;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.env1.ConfigurablePropertyResolver;
+import io.basc.framework.env1.PropertyResolver;
 import io.basc.framework.event.observe.Observable;
 import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
 import io.basc.framework.util.registry.Registration;
@@ -88,7 +90,7 @@ public class DefaultPropertyResolver extends ConfigurationCenter implements Conf
 	}
 
 	@Override
-	public Registration source(Observable<Properties> properties) {
+	public Registration registerProperties(Observable<Properties> properties) {
 		return getArchive().registerProperties(properties);
 	}
 }

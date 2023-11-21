@@ -12,5 +12,5 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 
 	void put(String key, Object value);
 
-	Registration source(Observable<Properties> properties);
+	Registration registerProperties(Observable<Properties> properties);
 }

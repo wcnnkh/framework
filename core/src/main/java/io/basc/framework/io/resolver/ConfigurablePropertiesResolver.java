@@ -7,7 +7,7 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.WritableResource;
 import io.basc.framework.lang.UnsupportedException;
 
-public class ConfigurablePropertiesResolvers extends PropertiesResolvers {
+public class ConfigurablePropertiesResolver extends PropertiesResolvers {
 	private PropertiesResolver parentPropertiesResolver = DefaultPropertiesResolver.getInstance();
 
 	public PropertiesResolver getParentPropertiesResolver() {
