@@ -173,7 +173,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	public void destroySingletons() {
 		// 获取注册时顺序的倒序，先注册的后销毁
 		for (String singletonName : getRegistrationOrderSingletonNames().reverse()) {
-			if (!isFactoryBean(singletonName)) {
+			if (!isFactoryBean(singletonName) && containsLocalBean(singletonName)) {
 				// 非工厂bean不销毁
 				continue;
 			}
@@ -415,23 +415,5 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			return definitionFactoryBean.getConstructor().getReturnTypeDescriptor().getAnnotation(annotationType);
 		}
 		return null;
-	}
-
-	/**
-	 * 准备好所有单例
-	 */
-	public void prepareAllSingletons() throws BeansException {
-		for (String name : getBeanNames()) {
-			if (isSingleton(name)) {
-				// 获取单例
-				getSingleton(name);
-			}
-		}
-	}
-
-	public void clearFactoryBeans() {
-		synchronized (factoryBeanMap) {
-			factoryBeanMap.clear();
-		}
 	}
 }

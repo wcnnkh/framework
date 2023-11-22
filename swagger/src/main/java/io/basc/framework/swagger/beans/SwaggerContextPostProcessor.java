@@ -1,8 +1,8 @@
 package io.basc.framework.swagger.beans;
 
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.env.Environment;
 import io.basc.framework.logger.Logger;

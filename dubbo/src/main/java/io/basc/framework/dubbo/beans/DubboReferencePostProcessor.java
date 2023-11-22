@@ -3,8 +3,8 @@ package io.basc.framework.dubbo.beans;
 import org.apache.dubbo.config.ReferenceConfig;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.dubbo.DubboReferenceRegistry;
 

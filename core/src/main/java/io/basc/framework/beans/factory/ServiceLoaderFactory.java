@@ -8,7 +8,7 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.spi.CachedServiceLoader;
 import io.basc.framework.util.spi.ServiceLoader;
 
-public interface ServiceLoaderFactory extends BeanFactory, InstanceFactory {
+public interface ServiceLoaderFactory extends BeanFactory {
 
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);
 
@@ -17,7 +17,7 @@ public interface ServiceLoaderFactory extends BeanFactory, InstanceFactory {
 		ServiceLoader<S> serviceLoader = getServiceLoader(serviceClass);
 		if (defaultClasses != null) {
 			Elements<S> defaultElements = Elements.forArray(defaultClasses)
-					.filter((e) -> e != null && canInstantiated(e)).map((e) -> newInstance(e)).map((e) -> (S) e);
+					.filter((e) -> e != null && getbeanpro canInstantiated(e)).map((e) -> newInstance(e)).map((e) -> (S) e);
 			CachedServiceLoader<S> defaultServiceLoader = new CachedServiceLoader<>(defaultElements);
 			return serviceLoader.concat(defaultServiceLoader);
 		}

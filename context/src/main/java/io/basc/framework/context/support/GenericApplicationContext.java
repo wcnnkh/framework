@@ -10,7 +10,8 @@ import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextAware;
-import io.basc.framework.context.ConfigurableApplicationContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
+import io.basc.framework.env1.ConfigurableEnvironment;
 import io.basc.framework.env1.support.DefaultEnvironment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourcePatternResolver;
@@ -19,7 +20,7 @@ import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.registry.Registration;
 
 public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
-	private final DefaultEnvironment environment = new DefaultEnvironment();
+	private ConfigurableEnvironment environment = new DefaultEnvironment();
 	private ApplicationContext parent;
 	private ClassLoaderProvider classLoaderProvider;
 	private final ConfigurablePropertiesResolver propertiesResolver = new ConfigurablePropertiesResolver();
@@ -36,10 +37,9 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 		});
 		beanFactoryPostProcessors.getServiceInjectors().register(getServiceInjectors());
 		propertiesResolver.getServiceInjectors().register(getServiceInjectors());
-		environment.getServiceInjectors().register(getServiceInjectors());
 	}
 
-	public DefaultEnvironment getEnvironment() {
+	public ConfigurableEnvironment getEnvironment() {
 		return environment;
 	}
 
@@ -49,7 +49,11 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 
 	public void setParent(ApplicationContext parent) {
 		this.parent = parent;
-		environment.setParentEnvironment(parent == null ? null : parent.getEnvironment());
+	}
+
+	@Override
+	public void setEnvironment(ConfigurableEnvironment environment) {
+		this.environment = environment;
 	}
 
 	public ClassLoaderProvider getClassLoaderProvider() {
@@ -114,7 +118,6 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 
 	protected void onClose() {
 		clearAllAlias();
-		clearFactoryBeans();
 	}
 
 	@Override
@@ -152,7 +155,11 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 
 	protected void onStart() {
 		// 初始化单例
-		prepareAllSingletons();
+		for (String beanName : getBeanNames()) {
+			if (isSingleton(beanName) && isFactoryBean(beanName) && containsLocalBean(beanName)) {
+				getBean(beanName);
+			}
+		}
 	}
 
 	protected void onStop() {

@@ -1,8 +1,8 @@
 package io.basc.framework.context.annotation;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.config.Condition;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 
 class OnBeanCondition implements Condition {
 

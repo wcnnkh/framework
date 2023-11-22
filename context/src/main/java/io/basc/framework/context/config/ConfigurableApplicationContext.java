@@ -1,4 +1,4 @@
-package io.basc.framework.context;
+package io.basc.framework.context.config;
 
 import java.io.Closeable;
 import java.nio.charset.Charset;
@@ -6,8 +6,12 @@ import java.util.Properties;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
+import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
+import io.basc.framework.context.ApplicationContext;
+import io.basc.framework.context.Lifecycle;
 import io.basc.framework.env1.ConfigurableEnvironment;
 import io.basc.framework.event.observe.Observable;
+import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.lang.Nullable;
@@ -15,19 +19,29 @@ import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.registry.Registration;
 
-public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable {
+public interface ConfigurableApplicationContext
+		extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable, ConfigurableBeanFactory {
+	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor);
+
+	void addProtocolResolver(ProtocolResolver protocolResolver);
+
+	@Override
+	void close();
+
 	@Override
 	default ClassLoader getClassLoader() {
 		return ClassLoaderAccessor.super.getClassLoader();
 	}
-
-	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor);
 
 	@Override
 	ConfigurableEnvironment getEnvironment();
 
 	@Override
 	ConfigurablePropertiesResolver getPropertiesResolver();
+
+	boolean isActive();
+
+	void refresh() throws BeansException, IllegalStateException;
 
 	default Registration registerProfileResources(Elements<? extends Resource> profileResources,
 			@Nullable Charset charset) {
@@ -52,8 +66,21 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Clas
 	 */
 	Registration registerShutdownHook();
 
-	void refresh() throws BeansException, IllegalStateException;
+	/**
+	 * Set the {@code Environment} for this application context.
+	 * 
+	 * @param environment the new environment
+	 */
+	void setEnvironment(ConfigurableEnvironment environment);
 
-	@Override
-	void close();
+	/**
+	 * Set the parent of this application context.
+	 * <p>
+	 * Note that the parent shouldn't be changed: It should only be set outside a
+	 * constructor if it isn't available when an object of this class is created,
+	 * for example in case of WebApplicationContext setup.
+	 * 
+	 * @param parent the parent context
+	 */
+	void setParent(@Nullable ApplicationContext parent);
 }

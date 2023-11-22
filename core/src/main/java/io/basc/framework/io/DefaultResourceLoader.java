@@ -5,7 +5,6 @@ import java.net.URL;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.DefaultClassLoaderAccessor;
@@ -13,10 +12,7 @@ import io.basc.framework.util.StringUtils;
 
 public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 		implements ConfigurableResourceLoader, Configurable {
-	private final ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(
-			ProtocolResolver.class);
-	private final ConfigurableServices<ResourceLoader> resourceLoaders = new ConfigurableServices<>(
-			ResourceLoader.class);
+	private final ConfigurableProtocolResolver protocolResolver = new ConfigurableProtocolResolver();
 
 	public DefaultResourceLoader() {
 	}
@@ -33,34 +29,21 @@ public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		protocolResolvers.configure(serviceLoaderFactory);
-		resourceLoaders.configure(serviceLoaderFactory);
+		protocolResolver.configure(serviceLoaderFactory);
 		configured = true;
 	}
 
-	public ConfigurableServices<ProtocolResolver> getProtocolResolvers() {
-		return protocolResolvers;
-	}
-
-	public ConfigurableServices<ResourceLoader> getResourceLoaders() {
-		return resourceLoaders;
+	@Override
+	public ConfigurableProtocolResolver getProtocolResolver() {
+		return protocolResolver;
 	}
 
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
 
-		for (ProtocolResolver protocolResolver : getProtocolResolvers().getServices()) {
-			Resource resource = protocolResolver.resolve(location, this);
-			if (resource != null) {
-				return resource;
-			}
-		}
-
-		for (ResourceLoader resourceLoader : getResourceLoaders().getServices()) {
-			Resource resource = resourceLoader.getResource(location);
-			if (resource != null) {
-				return resource;
-			}
+		Resource resource = protocolResolver.resolve(location, this);
+		if (resource != null) {
+			return resource;
 		}
 
 		if (location.startsWith("/")) {

@@ -6,8 +6,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.ApplicationContext;
-import io.basc.framework.context.ConfigurableApplicationContext;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dom.DomUtils;

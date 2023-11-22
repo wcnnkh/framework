@@ -3,7 +3,7 @@ package io.basc.framework.boot;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import io.basc.framework.context.ConfigurableApplicationContext;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.env1.ConfigurableEnvironment;
 import io.basc.framework.event.observe.Observable;
 import io.basc.framework.io.Resource;

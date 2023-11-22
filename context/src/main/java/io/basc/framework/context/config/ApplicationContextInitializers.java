@@ -1,7 +1,6 @@
 package io.basc.framework.context.config;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.context.ConfigurableApplicationContext;
 
 public class ApplicationContextInitializers extends ConfigurableServices<ApplicationContextInitializer>
 		implements ApplicationContextInitializer {

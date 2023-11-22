@@ -7,8 +7,6 @@ import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.registry.Registration;
 import io.basc.framework.util.spi.ServiceLoader;
 import io.basc.framework.util.spi.Services;
@@ -55,29 +53,5 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 		spiServiceLoader = spiServiceLoader
 				.convert((elements) -> elements.peek((e) -> getServiceInjectors().inject(e)));
 		serviceRegistry.getServiceLoaders().register(spiServiceLoader);
-	}
-
-	@Override
-	protected void _init() {
-		if (getBeanFactoryPostProcessors().isConfigured()) {
-			getBeanFactoryPostProcessors().configure(this);
-		}
-
-		if (getBeanPostProcessors().isConfigured()) {
-			getBeanPostProcessors().configure(this);
-		}
-		super._init();
-	}
-
-	@Override
-	public boolean canInstantiated(ResolvableType type) {
-		return ReflectionUtils.isInstance(type.getRawClass());
-	}
-
-	@Override
-	public Object newInstance(ResolvableType type) {
-		Object instance = ReflectionUtils.newInstance(type.getRawClass());
-		getServiceInjectors().inject(instance);
-		return instance;
 	}
 }
