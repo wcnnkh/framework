@@ -1,9 +1,9 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.execution.Service;
+import io.basc.framework.execution.Constructable;
 import io.basc.framework.util.element.Elements;
 
-public interface Proxy extends Service {
+public interface Proxy extends Constructable {
 	@Override
 	default Object execute() {
 		return execute(Elements.empty(), Elements.empty());

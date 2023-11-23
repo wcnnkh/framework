@@ -1,8 +1,6 @@
 package io.basc.framework.beans.factory;
 
-import java.util.function.Supplier;
-
-import io.basc.framework.core.ResolvableType;
+import io.basc.framework.execution.Executor;
 
 /**
  * BeanFactory生成的bean
@@ -11,16 +9,11 @@ import io.basc.framework.core.ResolvableType;
  *
  * @param <T>
  */
-public interface FactoryBean<T> extends Supplier<T> {
-	ResolvableType getType();
-
+public interface FactoryBean<T> extends Executor {
 	/**
 	 * 是否是单例
 	 * 
 	 * @return
 	 */
 	boolean isSingleton();
-
-	@Override
-	T get();
 }

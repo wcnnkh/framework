@@ -20,4 +20,14 @@ public interface MethodExecutor extends Executor, Method {
 	default Object execute(Object target) throws Throwable {
 		return execute(target, Elements.empty());
 	}
+
+	@Override
+	default Object process(Elements<Parameter> parameters) throws Throwable {
+		return process(getTarget(), parameters);
+	}
+
+	default Object process(Object target, Elements<Parameter> parameters) throws Throwable {
+		Elements<Object> args = Invocation.accept(getParameterDescriptors(), parameters);
+		return execute(target, args);
+	}
 }

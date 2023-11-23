@@ -2,6 +2,7 @@ package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Service;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.element.Elements;
 
@@ -11,7 +12,7 @@ import io.basc.framework.util.element.Elements;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends BeanDefinitionLifecycle {
+public interface BeanDefinition extends Service<Executor> {
 	String getResourceDescription();
 
 	/**
