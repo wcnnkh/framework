@@ -9,22 +9,22 @@ import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.session.SqlSession;
 
 import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 
 public class MapperMethodInterceptor implements ReflectionMethodExecutionInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
-	private final Processor<? super ReflectionMethodExecutor, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
+	private final Processor<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
 	private final Class<?> mapperClass;
 
 	public MapperMethodInterceptor(Class<?> mapperClass,
-			Processor<? super ReflectionMethodExecutor, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
+			Processor<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
 		this.mapperClass = mapperClass;
 		this.openSessionProcessor = openSessionProcessor;
 	}
 
-	private SqlSession openSession(ReflectionMethodExecutor invoker) throws Throwable {
+	private SqlSession openSession(ReflectionMethod invoker) throws Throwable {
 		return openSessionProcessor.process(invoker);
 	}
 
@@ -41,7 +41,7 @@ public class MapperMethodInterceptor implements ReflectionMethodExecutionInterce
 	}
 
 	@Override
-	public Object intercept(ReflectionMethodExecutor executor, Elements<Object> args) throws Throwable {
+	public Object intercept(ReflectionMethod executor, Elements<Object> args) throws Throwable {
 		Method method = executor.getExecutable();
 		if (Modifier.isAbstract(method.getModifiers())) {
 			SqlSession sqlSession = null;

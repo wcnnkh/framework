@@ -15,7 +15,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
@@ -167,7 +167,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 		}
 
 		@Override
-		public Object intercept(ReflectionMethodExecutor executor, Elements<Object> args) throws Throwable {
+		public Object intercept(ReflectionMethod executor, Elements<Object> args) throws Throwable {
 			if (!outputMessage.getHeaders().isReadyOnly()) {
 				if (!headerTag) {
 					synchronized (this) {

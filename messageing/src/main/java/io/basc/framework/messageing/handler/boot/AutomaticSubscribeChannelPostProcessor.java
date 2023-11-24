@@ -7,7 +7,7 @@ import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.messageing.MessageHandler;
 import io.basc.framework.messageing.SubscribableChannel;
 import io.basc.framework.messageing.handler.ExecutorMessageHandler;
@@ -52,7 +52,7 @@ class AutomaticSubscribeChannelPostProcessor implements ApplicationPostProcessor
 				: beanFactory.getBean(messageListener.handleMessageConverter(), HandleMessageConverter.class);
 
 		Object bean = beanFactory.getBean(beanName);
-		ReflectionMethodExecutor methodExecutor = new ReflectionMethodExecutor(method,
+		ReflectionMethod methodExecutor = new ReflectionMethod(method,
 				TypeDescriptor.valueOf(beanType));
 		methodExecutor.setTarget(bean);
 		ExecutorMessageHandler executorMessageHandler = new ExecutorMessageHandler(methodExecutor,

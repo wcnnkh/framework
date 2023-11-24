@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.execution.MethodExecutor;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
@@ -14,14 +13,14 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ReflectionMethodExecutor extends ReflectionExecutor<Method> implements MethodExecutor {
+public class ReflectionMethod extends ReflectionExecutor<Method> implements io.basc.framework.execution.Method {
 	private Aop aop;
 	private Class<?>[] aopInterfaces;
 	private ExecutionInterceptor executionInterceptor;
 	private final TypeDescriptor targetTypeDescriptor;
 	private Object target;
 
-	public ReflectionMethodExecutor(Method executable, TypeDescriptor targetTypeDescriptor) {
+	public ReflectionMethod(Method executable, TypeDescriptor targetTypeDescriptor) {
 		super(executable);
 		this.targetTypeDescriptor = targetTypeDescriptor;
 	}

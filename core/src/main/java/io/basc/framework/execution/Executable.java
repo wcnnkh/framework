@@ -3,10 +3,9 @@ package io.basc.framework.execution;
 import io.basc.framework.convert.TypeDescriptor;
 
 /**
- * 一个可执行的定义
+ * 一个可执行的定义，所有可执行的基类
  */
 public interface Executable {
-
 	/**
 	 * 返回类型
 	 * 

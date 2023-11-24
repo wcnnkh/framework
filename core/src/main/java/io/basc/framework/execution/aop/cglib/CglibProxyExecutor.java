@@ -3,7 +3,7 @@ package io.basc.framework.execution.aop.cglib;
 import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.util.element.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +11,7 @@ import net.sf.cglib.proxy.MethodProxy;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CglibProxyExecutor extends ReflectionMethodExecutor {
+public class CglibProxyExecutor extends ReflectionMethod {
 	private final MethodProxy methodProxy;
 
 	public CglibProxyExecutor(TypeDescriptor source, Method method, MethodProxy methodProxy) {

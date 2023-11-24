@@ -11,7 +11,7 @@ import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.context.annotation.ConditionalOnMissingBean;
 import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.feign.FeignDecoder;
 import io.basc.framework.feign.FeignEncoder;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
@@ -54,7 +54,7 @@ public class FeginMethodExecutionInterceptor extends ReflectionMethodExecutionIn
 	}
 
 	@Override
-	public Object intercept(ReflectionMethodExecutor executor, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(ReflectionMethod executor, Elements<? extends Object> args) throws Throwable {
 		FeignClient feignClient = executor.getSource().getType().getAnnotation(FeignClient.class);
 		if (feignClient == null) {
 			return executor.execute(args);

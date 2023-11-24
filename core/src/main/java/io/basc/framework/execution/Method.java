@@ -1,18 +1,39 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.param.ParameterMatchingResults;
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.util.element.Elements;
 
 /**
  * 对一个实例方法的定义
  */
-public interface Method extends Executable {
+public interface Method extends Executor {
+
+	default Object execute(Object target) throws Throwable {
+		return execute(target, getParameters());
+	}
+
+	Object execute(Object target, Elements<Object> args) throws Throwable;
+
+	default Object execute(Object target, Parameters parameters) throws Throwable {
+		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
+		if (!results.isSuccessful()) {
+			throw new IllegalArgumentException("Parameter mismatch");
+		}
+
+		Elements<Object> args = results.getParameters();
+		return execute(target, args);
+	}
+
 	/**
 	 * 名称
 	 * 
 	 * @return
 	 */
 	String getName();
+
+	Object getTarget();
 
 	/**
 	 * 执行实例的类型描述
@@ -21,5 +42,5 @@ public interface Method extends Executable {
 	 */
 	TypeDescriptor getTargetTypeDescriptor();
 
-	Object execute(Object target, Elements<Object> args) throws Throwable;
+	void setTarget(Object target);
 }

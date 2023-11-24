@@ -9,7 +9,7 @@ import io.basc.framework.core.annotation.Order;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.reflect.ReflectionConstructor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.validation.FastValidator;
 
@@ -27,7 +27,7 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 		this.validator = validator;
 	}
 
-	private Object execute(ReflectionMethodExecutor executor, Elements<Object> args) throws Throwable {
+	private Object execute(ReflectionMethod executor, Elements<Object> args) throws Throwable {
 		if (!args.isEmpty()) {
 			FastValidator.validate(() -> validator.forExecutables().validateParameters(executor.getTarget(),
 					executor.getExecutable(), args.toArray()));
@@ -55,8 +55,8 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 
 	@Override
 	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
-		if (executor instanceof ReflectionMethodExecutor) {
-			return execute((ReflectionMethodExecutor) executor, args);
+		if (executor instanceof ReflectionMethod) {
+			return execute((ReflectionMethod) executor, args);
 		} else if (executor instanceof ReflectionConstructor) {
 			return execute((ReflectionConstructor) executor, args);
 		} else {

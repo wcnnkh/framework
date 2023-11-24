@@ -5,7 +5,7 @@ import java.lang.reflect.Executable;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Assert;
@@ -21,7 +21,7 @@ public abstract class ReflectionExecutor<T extends Executable> implements Execut
 	private final T executable;
 	private volatile TypeDescriptor returnTypeDescriptor;
 	private volatile ParameterDescriptor[] parameterDescriptors;
-	private Elements<Parameter> parameters;
+	private Parameters parameters;
 
 	public ReflectionExecutor(T executable) {
 		Assert.requiredArgument(executable != null, "executable");
@@ -53,7 +53,7 @@ public abstract class ReflectionExecutor<T extends Executable> implements Execut
 		return Elements.forArray(parameterDescriptors);
 	}
 
-	public void setParameters(Elements<Parameter> parameters) {
+	public void setParameters(Parameters parameters) {
 		Assert.requiredArgument(parameters != null, "parameters");
 		this.parameters = parameters;
 	}

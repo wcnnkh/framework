@@ -2,7 +2,7 @@ package io.basc.framework.execution.aop;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.element.Elements;
@@ -29,23 +29,13 @@ public class ExecutorWrapper extends Wrapper<Executor> implements Executor {
 	}
 
 	@Override
-	public Elements<Parameter> getParameters() {
+	public Parameters getParameters() {
 		return wrappedTarget.getParameters();
 	}
 
 	@Override
-	public void setParameters(Elements<Parameter> parameters) {
+	public void setParameters(Parameters parameters) {
 		wrappedTarget.setParameters(parameters);
-	}
-
-	@Override
-	public boolean test(Elements<Parameter> parameters) {
-		return wrappedTarget.test(parameters);
-	}
-
-	@Override
-	public Object process(Elements<Parameter> parameters) throws Throwable {
-		return wrappedTarget.process(parameters);
 	}
 
 	@Override
@@ -56,5 +46,15 @@ public class ExecutorWrapper extends Wrapper<Executor> implements Executor {
 	@Override
 	public boolean canExecuted() {
 		return wrappedTarget.canExecuted();
+	}
+
+	@Override
+	public boolean canExecuted(Elements<Class<?>> parameterTypes) {
+		return wrappedTarget.canExecuted(parameterTypes);
+	}
+
+	@Override
+	public Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args) throws Throwable {
+		return wrappedTarget.execute(parameterTypes, args);
 	}
 }

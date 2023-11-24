@@ -6,9 +6,9 @@ import java.lang.reflect.Modifier;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutor;
+import io.basc.framework.execution.reflect.ReflectionMethod;
 
-public class BeanFactoryExecutor extends ReflectionMethodExecutor implements Executor {
+public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
 	private final String targetBeanName;
 	private final BeanFactory beanFactory;
 
