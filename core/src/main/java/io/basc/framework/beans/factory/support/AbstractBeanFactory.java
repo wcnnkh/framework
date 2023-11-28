@@ -136,7 +136,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 					factoryBean = getFactoryBean(name);
 					if (factoryBean != null && factoryBean.isSingleton()) {
-						singleton = factoryBean.get();
+						singleton = factoryBean.execute();
 						registerSingleton(name, singleton);
 						newSingleton = true;
 					}
@@ -216,7 +216,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(beanName);
 		}
 
-		Object bean = factoryBean.get();
+		Object bean = factoryBean.execute();
 		initializationBean(beanName, bean);
 		return bean;
 	}
@@ -239,7 +239,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(name);
 		}
 
-		return factoryBean.getType().isAssignableFrom(typeToMatch);
+		return factoryBean.getReturnTypeDescriptor().getResolvableType().isAssignableFrom(typeToMatch);
 	}
 
 	@Override
@@ -256,7 +256,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(name);
 		}
 
-		return factoryBean.getType().isAssignableFrom(typeToMatch);
+		return factoryBean.getReturnTypeDescriptor().getResolvableType().isAssignableFrom(typeToMatch);
 	}
 
 	@Override
@@ -271,7 +271,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(name);
 		}
 
-		return factoryBean.getType().getRawClass();
+		return factoryBean.getReturnTypeDescriptor().getResolvableType().getRawClass();
 	}
 
 	@Override

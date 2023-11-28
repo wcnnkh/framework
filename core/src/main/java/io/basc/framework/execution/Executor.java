@@ -8,16 +8,16 @@ import io.basc.framework.util.element.Elements;
 /**
  * 所有执行器的基类
  */
-public interface Executor extends Constructable, Invocation {
-	default boolean canExecuted(Parameters parameters) {
-		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
-		return results.isSuccessful();
-	}
-
+public interface Executor extends Constructor {
 	@Override
 	default boolean canExecuted(Elements<Class<?>> parameterTypes) {
 		return getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()).equals(parameterTypes,
 				Class::isAssignableFrom);
+	}
+
+	default boolean canExecuted(Parameters parameters) {
+		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
+		return results.isSuccessful();
 	}
 
 	@Override
@@ -53,14 +53,4 @@ public interface Executor extends Constructable, Invocation {
 	 * @return
 	 */
 	Elements<ParameterDescriptor> getParameterDescriptors();
-
-	@Override
-	default boolean canExecuted() {
-		return Invocation.super.canExecuted();
-	}
-
-	@Override
-	default Object execute() throws Throwable {
-		return Invocation.super.execute();
-	}
 }

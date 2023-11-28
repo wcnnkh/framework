@@ -1,17 +1,14 @@
 package io.basc.framework.execution;
 
-import java.util.NoSuchElementException;
-
 import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.util.element.Elements;
 
-//TODO 自定义一个NoSuchElementException
-public interface Service<E extends Executor> extends Constructable, Invocation {
-	Elements<E> getElements();
+public interface Service<E extends Constructor> extends Constructor {
+	Elements<E> getConstructors();
 
 	@Override
 	default boolean canExecuted(Elements<Class<?>> parameterTypes) {
-		for (Executor executor : getElements()) {
+		for (E executor : getConstructors()) {
 			if (executor.canExecuted(parameterTypes)) {
 				return true;
 			}
@@ -21,17 +18,17 @@ public interface Service<E extends Executor> extends Constructable, Invocation {
 
 	@Override
 	default Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args)
-			throws Throwable, NoSuchElementException {
-		for (Executor executor : getElements()) {
+			throws Throwable, NoSuchConstructorException {
+		for (E executor : getConstructors()) {
 			if (executor.canExecuted(parameterTypes)) {
 				return executor.execute(parameterTypes, args);
 			}
 		}
-		throw new NoSuchElementException("Unable to match to executor");
+		throw new NoSuchConstructorException(parameterTypes);
 	}
 
 	default boolean canExecuted(Parameters parameters) {
-		for (Executor executor : getElements()) {
+		for (E executor : getConstructors()) {
 			if (executor.canExecuted(parameters)) {
 				return true;
 			}
@@ -39,22 +36,18 @@ public interface Service<E extends Executor> extends Constructable, Invocation {
 		return false;
 	}
 
-	default Object execute(Parameters parameters) throws Throwable, NoSuchElementException {
-		for (Executor executor : getElements()) {
+	default Object execute(Parameters parameters) throws Throwable, NoSuchConstructorException {
+		for (E executor : getConstructors()) {
 			if (executor.canExecuted(parameters)) {
 				return executor.execute(parameters);
 			}
 		}
-		throw new NoSuchElementException("Unable to match to executor");
+		throw new NoSuchConstructorException(parameters);
 	}
 
 	@Override
-	default boolean canExecuted() {
-		return Invocation.super.canExecuted();
+	default Object execute() throws Throwable, NoSuchConstructorException {
+		return Constructor.super.execute();
 	}
 
-	@Override
-	default Object execute() throws Throwable {
-		return Invocation.super.execute();
-	}
 }

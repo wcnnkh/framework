@@ -3,12 +3,13 @@ package io.basc.framework.execution;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.param.ParameterMatchingResults;
 import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.util.Named;
 import io.basc.framework.util.element.Elements;
 
 /**
  * 对一个实例方法的定义
  */
-public interface Method extends Executor {
+public interface Method extends Executor, Named {
 
 	default Object execute(Object target) throws Throwable {
 		return execute(target, getParameters());
@@ -25,13 +26,6 @@ public interface Method extends Executor {
 		Elements<Object> args = results.getParameters();
 		return execute(target, args);
 	}
-
-	/**
-	 * 名称
-	 * 
-	 * @return
-	 */
-	String getName();
 
 	Object getTarget();
 

@@ -3,9 +3,9 @@ package io.basc.framework.execution;
 import io.basc.framework.execution.param.Parameters;
 
 /**
- * 一个调用的定义
+ * 构造器抽象定义
  */
-public interface Invocation extends Executable {
+public interface Constructor extends Constructable {
 	@Override
 	default boolean canExecuted() {
 		return canExecuted(getParameters());
