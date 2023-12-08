@@ -32,7 +32,7 @@ public interface ListableBeanFactory extends BeanFactory {
 			throw new NoSuchBeanDefinitionException(requiredType);
 		}
 
-		if (!beanNames.isSingleton()) {
+		if (!beanNames.isUnique()) {
 			throw new NoUniqueBeanDefinitionException(requiredType, beanNames.toList());
 		}
 
@@ -58,7 +58,7 @@ public interface ListableBeanFactory extends BeanFactory {
 			throw new NoSuchBeanDefinitionException(requiredType);
 		}
 
-		if (!beanNames.isSingleton()) {
+		if (!beanNames.isUnique()) {
 			throw new NoUniqueBeanDefinitionException(requiredType, beanNames.toList());
 		}
 
@@ -116,7 +116,11 @@ public interface ListableBeanFactory extends BeanFactory {
 	@Nullable
 	default <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
 			throws NoSuchBeanDefinitionException {
-		Class<?> type = getType(beanName);
-		return type.getAnnotation(annotationType);
+		FactoryBean<?> factoryBean = getFactoryBean(beanName);
+		A annotation = factoryBean.getReturnTypeDescriptor().getAnnotation(annotationType);
+		if (annotation == null) {
+			annotation = factoryBean.getReturnTypeDescriptor().getType().getAnnotation(annotationType);
+		}
+		return annotation;
 	}
 }

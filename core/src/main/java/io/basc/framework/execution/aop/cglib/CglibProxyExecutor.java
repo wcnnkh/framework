@@ -20,7 +20,7 @@ public class CglibProxyExecutor extends ReflectionMethod {
 	}
 
 	@Override
-	public Object execute(Object target, Elements<Object> args) throws Throwable {
+	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
 		return methodProxy.invokeSuper(target, args.toArray());
 	}
 }

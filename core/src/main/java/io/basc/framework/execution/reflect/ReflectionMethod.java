@@ -26,7 +26,7 @@ public class ReflectionMethod extends ReflectionExecutor<Method> implements io.b
 	}
 
 	@Override
-	public Object execute(Object target, Elements<Object> args) throws Throwable {
+	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
 		Object value = ReflectionUtils.invoke(getExecutable(), target, args);
 		if (aop == null) {
 			return value;
@@ -36,7 +36,7 @@ public class ReflectionMethod extends ReflectionExecutor<Method> implements io.b
 	}
 
 	@Override
-	public final Object execute(Elements<Object> args) throws Throwable {
+	public final Object execute(Elements<? extends Object> args) throws Throwable {
 		return execute(getTarget(), args);
 	}
 

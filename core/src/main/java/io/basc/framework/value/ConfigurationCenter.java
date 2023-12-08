@@ -1,12 +1,12 @@
 package io.basc.framework.value;
 
-import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.event.support.DynamicMap;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.concurrent.TaskQueue;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.value.observe.support.ObservableMap;
 
 /**
  * 配置中心实现
@@ -23,7 +23,7 @@ public class ConfigurationCenter extends PropertyFactories {
 		this(new StandardBroadcastEventDispatcher<>(new TaskQueue()));
 	}
 
-	public ConfigurationCenter(BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher) {
+	public ConfigurationCenter(BroadcastEventDispatcher<ObservableEvent<Elements<String>>> keyEventDispatcher) {
 		super(keyEventDispatcher);
 		register(master);
 		register(archive);
@@ -43,7 +43,7 @@ public class ConfigurationCenter extends PropertyFactories {
 	 * 
 	 * @return
 	 */
-	public DynamicMap<String, Value> getMaster() {
+	public ObservableMap<String, Value> getMaster() {
 		return master;
 	}
 

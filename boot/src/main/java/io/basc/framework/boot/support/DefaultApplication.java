@@ -21,8 +21,8 @@ import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.SplitLine;
-import io.basc.framework.util.registry.Registration;
 
 public class DefaultApplication extends DefaultApplicationContext implements ConfigurableApplication, DisposableBean {
 	private static final String SERVER_PORT_PROPERTY = "server.port";

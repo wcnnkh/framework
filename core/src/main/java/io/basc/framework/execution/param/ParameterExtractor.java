@@ -10,39 +10,47 @@ import io.basc.framework.util.element.Elements;
  * @author wcnnkh
  *
  */
-public interface ParameterExtractor {
+public interface ParameterExtractor<S> {
 
 	/**
 	 * 是否能获取参数
 	 * 
+	 * @param source
 	 * @param parameterDescriptor
 	 * @return
 	 */
-	boolean canExtractParameter(ParameterDescriptor parameterDescriptor);
+	boolean canExtractParameter(S source, ParameterDescriptor parameterDescriptor);
 
 	/**
 	 * 获取参数
 	 * 
+	 * @param source
 	 * @param parameterDescriptor
 	 * @return
 	 * @throws ExtractParameterException
 	 */
-	Object extractParameter(ParameterDescriptor parameterDescriptor) throws ExtractParameterException;
+	Parameter extractParameter(S source, ParameterDescriptor parameterDescriptor) throws ExtractParameterException;
 
-	default boolean canExtractParameters(Elements<ParameterDescriptor> parameterDescriptors) {
-		return parameterDescriptors.allMatch(this::canExtractParameter);
+	default boolean canExtractParameters(S source, Elements<? extends ParameterDescriptor> parameterDescriptors) {
+		return parameterDescriptors.allMatch((e) -> canExtractParameter(source, e));
 	}
 
-	default Elements<Object> extractParameters(Elements<ParameterDescriptor> parameterDescriptors)
-			throws ExtractParameterException {
-		return parameterDescriptors.map(this::extractParameter);
+	default Elements<Parameter> extractParameters(S source,
+			Elements<? extends ParameterDescriptor> parameterDescriptors) throws ExtractParameterException {
+		return parameterDescriptors.index().map((e) -> {
+			Parameter parameter = extractParameter(source, e.getElement());
+			parameter.setIndex((int) e.getIndex());
+			return parameter;
+		});
 	}
 
-	default boolean canExtractParameters(Executor executor) {
-		return canExtractParameters(executor.getParameterDescriptors());
+	default boolean canExtractParameters(S source, Executor executor) {
+		return canExtractParameters(source, executor.getParameterDescriptors());
 	}
 
-	default Elements<Object> extractParameters(Executor executor) throws ExtractParameterException {
-		return extractParameters(executor.getParameterDescriptors());
+	default Parameters extractParameters(S source, Executor executor) throws ExtractParameterException {
+		Parameters parameters = new Parameters();
+		parameters.setElements(extractParameters(source, executor.getParameterDescriptors()));
+		return parameters;
 	}
 }

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.json.JsonSupportAccessor;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
@@ -18,7 +18,7 @@ import io.basc.framework.net.message.OutputMessage;
 
 public abstract class AbstractMessageConverter<T> extends JsonSupportAccessor implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
-	private Charset charset;
+	private Charset charset = Constants.UTF_8;
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 	private boolean supportBytes = false;
 
@@ -35,7 +35,7 @@ public abstract class AbstractMessageConverter<T> extends JsonSupportAccessor im
 	}
 
 	public Charset getCharset() {
-		return charset == null ? Sys.getEnv().getCharset() : charset;
+		return charset;
 	}
 
 	public void setCharset(Charset charset) {

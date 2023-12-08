@@ -1,9 +1,9 @@
 package io.basc.framework.util.check;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.Registrations;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.registry.Registration;
-import io.basc.framework.util.registry.Registrations;
 
 public class NestingCheckers<E> implements NestingChecker<E> {
 	private final Elements<NestingChecker<E>> elements;

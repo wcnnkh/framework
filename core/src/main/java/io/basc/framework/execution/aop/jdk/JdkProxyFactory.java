@@ -5,11 +5,11 @@ import java.util.Arrays;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
-import io.basc.framework.execution.aop.ProxyFactoryRegistry;
+import io.basc.framework.execution.aop.ProxyFactories;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 
-public class JdkProxyFactory extends ProxyFactoryRegistry {
+public class JdkProxyFactory extends ProxyFactories {
 
 	@Override
 	public boolean canProxy(Class<?> clazz) {

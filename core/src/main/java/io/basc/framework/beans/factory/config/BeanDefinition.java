@@ -4,7 +4,7 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.execution.Constructor;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.Method;
 import io.basc.framework.execution.Service;
 import io.basc.framework.lang.Nullable;
@@ -18,7 +18,7 @@ import io.basc.framework.value.Value;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends Service<Constructor>, Named {
+public interface BeanDefinition extends Service<Executor>, Named {
 	String getResourceDescription();
 
 	/**

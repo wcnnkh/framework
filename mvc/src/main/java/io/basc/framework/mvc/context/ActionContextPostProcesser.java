@@ -11,7 +11,6 @@ import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.ActionResolver;
@@ -19,6 +18,7 @@ import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.BeanAction;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 

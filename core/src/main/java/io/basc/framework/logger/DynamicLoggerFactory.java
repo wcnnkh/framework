@@ -6,13 +6,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
-import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.event.support.DefaultBroadcastEventDispatcher;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.registry.Registration;
-import io.basc.framework.util.spi.SpiServiceLoader;
 
-public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
+public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
 	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();
 	public static final LevelManager GLOBAL_LEVEL_MANAGER = new LevelManager();
 
@@ -35,7 +35,7 @@ public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<Level
 
 		ILoggerFactory loggerFactory = null;
 		try {
-			loggerFactory = SpiServiceLoader.getServiceLoader(ILoggerFactory.class).getServices().first();
+			loggerFactory = SPI.getServices(ILoggerFactory.class).first();
 		} catch (Throwable e) {
 			// 解决循环依赖问题,如果出现异常继续使用旧的日志工厂,待初始化完成后会被动态替换
 			logger.debug(e, "Configuration log factory exception");

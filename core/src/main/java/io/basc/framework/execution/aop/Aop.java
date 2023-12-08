@@ -1,5 +1,6 @@
 package io.basc.framework.execution.aop;
 
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.cglib.CglibProxyFactory;
 import io.basc.framework.lang.Nullable;
@@ -14,13 +15,14 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Aop extends CglibProxyFactory {
-	private static Aop global;
+	private static volatile Aop global;
 
 	public static Aop global() {
 		if (global == null) {
 			synchronized (Aop.class) {
 				if (global == null) {
 					global = new Aop();
+					global.configure(SPI.global());
 				}
 			}
 		}

@@ -10,5 +10,5 @@ import io.basc.framework.util.element.Elements;
  *
  */
 public interface ExecutionInterceptor {
-	Object intercept(Executor executor, Elements<Object> args) throws Throwable;
+	Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable;
 }

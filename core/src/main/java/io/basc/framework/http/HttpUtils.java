@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 
 import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
-import io.basc.framework.env.Sys;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;
@@ -22,7 +22,7 @@ import io.basc.framework.util.StringUtils;
 public final class HttpUtils {
 	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
 			HttpClient.class)
-			.ifAbsentDefaultService(() -> Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class)
+			.ifAbsentDefaultService(() -> SPI.global().getServiceLoader(HttpClient.class, DefaultHttpClient.class)
 					.getServices().first());
 
 	public static HttpClient getClient() {

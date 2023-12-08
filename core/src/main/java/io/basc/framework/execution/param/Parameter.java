@@ -9,15 +9,13 @@ import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Indexed;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.ToString;
 
 /**
  * 执行参数的定义
  */
-@Getter
-@ToString
+@Data
 public class Parameter implements Serializable, Predicate<Indexed<? extends ParameterDescriptor>> {
 	private static final long serialVersionUID = 1L;
 	/**

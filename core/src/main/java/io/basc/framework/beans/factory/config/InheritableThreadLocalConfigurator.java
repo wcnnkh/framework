@@ -1,6 +1,7 @@
 package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -15,10 +16,11 @@ public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLoca
 	private volatile T defaultService;
 
 	public InheritableThreadLocalConfigurator(Class<T> serviceClass) {
-		this(serviceClass, null);
+		this(serviceClass, SPI.global());
 	}
 
-	public InheritableThreadLocalConfigurator(Class<T> serviceClass, @Nullable ServiceLoaderFactory serviceLoaderFactory) {
+	public InheritableThreadLocalConfigurator(Class<T> serviceClass,
+			@Nullable ServiceLoaderFactory serviceLoaderFactory) {
 		this.serviceClass = serviceClass;
 		if (serviceLoaderFactory != null) {
 			configure(serviceLoaderFactory);
@@ -33,7 +35,8 @@ public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLoca
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (setDefaultService(() -> serviceLoaderFactory.getServiceLoader(serviceClass).getServices().first()).isSuccess()) {
+		if (setDefaultService(() -> serviceLoaderFactory.getServiceLoader(serviceClass).getServices().first())
+				.isSuccess()) {
 			this.configured = true;
 		}
 	}
@@ -67,7 +70,8 @@ public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLoca
 	 * @param source 服务来源
 	 * @return this
 	 */
-	public InheritableThreadLocalConfigurator<T> ifAbsentDefaultService(Source<? extends T, ? extends Throwable> source) {
+	public InheritableThreadLocalConfigurator<T> ifAbsentDefaultService(
+			Source<? extends T, ? extends Throwable> source) {
 		setDefaultService(source);
 		return this;
 	}

@@ -10,7 +10,7 @@ import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.broadcast.BroadcastDelayableNamedEventDispatcher;
 import io.basc.framework.event.unicast.UnicastDelayableNamedEventDispatcher;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public class AmqpNamedEventDispatcher<T> implements UnicastDelayableNamedEventDispatcher<String, T>,
 		BroadcastDelayableNamedEventDispatcher<String, T>, DelayableNamedEventDispatcher<String, T> {

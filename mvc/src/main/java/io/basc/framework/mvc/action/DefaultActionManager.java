@@ -6,20 +6,20 @@ import java.util.Iterator;
 import java.util.Map;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.registry.DisposableRegistration;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.ChangeType;
+import io.basc.framework.util.DisposableRegistration;
+import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 @ConditionalOnParameters
-public class DefaultActionManager extends StandardBroadcastEventDispatcher<ChangeEvent<Action>>
+public class DefaultActionManager extends StandardBroadcastEventDispatcher<ObservableEvent<Action>>
 		implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private HttpPatternMatcher<Action> registry = new HttpPatternMatcher<Action>();
@@ -63,9 +63,9 @@ public class DefaultActionManager extends StandardBroadcastEventDispatcher<Chang
 			}
 		}
 
-		publishEvent(new ChangeEvent<>(ChangeType.CREATE, action));
+		publishEvent(new ObservableEvent<>(ChangeType.CREATE, action));
 		return registration.and(() -> {
-			publishEvent(new ChangeEvent<>(ChangeType.DELETE, action));
+			publishEvent(new ObservableEvent<>(ChangeType.DELETE, action));
 		});
 	}
 

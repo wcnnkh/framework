@@ -1,7 +1,7 @@
 package io.basc.framework.http.client;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.env.Sys;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.util.ClassUtils;
@@ -13,7 +13,7 @@ public class DefaultHttpClient extends AbstractHttpClient {
 	/**
 	 * 默认的requestFactory
 	 */
-	private static final ClientHttpRequestFactory REQUEST_FACTORY = Sys.getEnv()
+	private static final ClientHttpRequestFactory REQUEST_FACTORY = SPI.global()
 			.getServiceLoader(ClientHttpRequestFactory.class, SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS).getServices()
 			.first();
 

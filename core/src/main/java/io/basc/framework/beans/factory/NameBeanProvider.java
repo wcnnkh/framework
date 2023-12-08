@@ -35,7 +35,7 @@ class NameBeanProvider<T> implements BeanProvider<T> {
 
 	@Override
 	public boolean isUnique() {
-		return names.isSingleton();
+		return names.isUnique();
 	}
 
 	@SuppressWarnings("unchecked")

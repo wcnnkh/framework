@@ -10,5 +10,5 @@ public interface Proxy extends Constructable {
 	}
 
 	@Override
-	Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args);
+	Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args);
 }

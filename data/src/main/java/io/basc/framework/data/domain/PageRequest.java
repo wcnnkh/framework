@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 import io.basc.framework.env.Sys;
-import io.basc.framework.event.observe.Observable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
+import io.basc.framework.value.observe.Observable;
 import lombok.Data;
 
 /**

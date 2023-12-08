@@ -20,6 +20,11 @@ public class ElementCollection<E> extends CollectionWrapper<E, Collection<E>> im
 	}
 
 	@Override
+	public boolean isUnique() {
+		return wrappedTarget.size() == 1;
+	}
+
+	@Override
 	public boolean isEmpty() {
 		return wrappedTarget.isEmpty();
 	}

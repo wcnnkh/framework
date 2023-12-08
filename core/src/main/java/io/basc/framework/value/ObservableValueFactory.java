@@ -4,22 +4,22 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.event.observe.support.ObservableMapRegistry;
-import io.basc.framework.event.support.DynamicMap;
+import io.basc.framework.observe.ObservableEvent;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.observe.support.ObservableMap;
+import io.basc.framework.value.observe.support.ObservableMapRegistry;
 
 public class ObservableValueFactory<K> extends ObservableMapRegistry<K, Value> implements DynamicValueFactory<K> {
 
 	public ObservableValueFactory(Function<? super Properties, ? extends Map<K, Value>> propertiesMapper) {
-		this(new DynamicMap<>(), new StandardBroadcastEventDispatcher<>(), propertiesMapper);
+		this(new ObservableMap<>(), new StandardBroadcastEventDispatcher<>(), propertiesMapper);
 	}
 
-	public ObservableValueFactory(DynamicMap<K, Value> master,
-			BroadcastEventDispatcher<ChangeEvent<Elements<K>>> keyEventDispatcher,
+	public ObservableValueFactory(ObservableMap<K, Value> master,
+			BroadcastEventDispatcher<ObservableEvent<Elements<K>>> keyEventDispatcher,
 			Function<? super Properties, ? extends Map<K, Value>> propertiesMapper) {
 		super(master, keyEventDispatcher, propertiesMapper);
 	}
@@ -34,7 +34,7 @@ public class ObservableValueFactory<K> extends ObservableMapRegistry<K, Value> i
 	}
 
 	@Override
-	public BroadcastEventRegistry<ChangeEvent<Elements<K>>> getKeyEventRegistry() {
+	public BroadcastEventRegistry<ObservableEvent<Elements<K>>> getKeyEventRegistry() {
 		return getKeyEventDispatcher();
 	}
 }

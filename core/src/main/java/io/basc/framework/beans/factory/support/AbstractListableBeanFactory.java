@@ -4,13 +4,40 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
+import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionOverrideException;
+import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
 import io.basc.framework.util.element.Elements;
 
-public abstract class AbstractListableBeanFactory extends AbstractBeanFactory {
+public abstract class AbstractListableBeanFactory extends AbstractBeanFactory
+		implements ConfigurableListableBeanFactory {
 	private final Map<String, BeanDefinition> definitionMap = new ConcurrentHashMap<String, BeanDefinition>();
+
+	public AbstractListableBeanFactory(Scope scope) {
+		super(scope);
+	}
+
+	@Override
+	public boolean containsBeanDefinition(String beanName) {
+		if (definitionMap.containsKey(beanName)) {
+			return true;
+		}
+
+		for (String alias : getAliases(beanName)) {
+			if (definitionMap.containsKey(alias)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Elements<String> getBeanDefinitionNames() {
+		return Elements.of(definitionMap.keySet());
+	}
 
 	protected BeanDefinition getBeanDefinitionOfCache(String beanName) {
 		BeanDefinition beanDefinition = definitionMap.get(beanName);
@@ -23,6 +50,26 @@ public abstract class AbstractListableBeanFactory extends AbstractBeanFactory {
 			}
 		}
 		return beanDefinition;
+	}
+
+	@Override
+	public Elements<String> getBeanNames() {
+		return getRegistrationOrderSingletonNames().concat(getFactoryBeanNames()).concat(getBeanDefinitionNames())
+				.distinct();
+	}
+
+	@Override
+	public boolean isFactoryBean(String beanName) {
+		return super.isFactoryBean(beanName) || containsBeanDefinition(beanName);
+	}
+
+	@Override
+	public boolean isSingleton(String beanName) throws BeansException {
+		BeanDefinition beanDefinition = getBeanDefinition(beanName);
+		if (beanDefinition != null) {
+			return beanDefinition.isSingleton();
+		}
+		return super.isSingleton(beanName);
 	}
 
 	@Override
@@ -47,24 +94,5 @@ public abstract class AbstractListableBeanFactory extends AbstractBeanFactory {
 		if (old == null) {
 			throw new NoSuchBeanDefinitionException(beanName);
 		}
-	}
-
-	@Override
-	public boolean containsBeanDefinition(String beanName) {
-		if (definitionMap.containsKey(beanName)) {
-			return true;
-		}
-
-		for (String alias : getAliases(beanName)) {
-			if (definitionMap.containsKey(alias)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public Elements<String> getBeanDefinitionNames() {
-		return Elements.of(definitionMap.keySet());
 	}
 }

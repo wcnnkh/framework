@@ -746,7 +746,7 @@ public final class ResourceUtils {
 	}
 
 	@Nullable
-	public static UnsafeByteArrayInputStream getInputStream(Resource resource) {
+	public static UnsafeByteArrayInputStream getByteArrayInputStream(Resource resource) {
 		byte[] data = getBytes(resource);
 		if (data == null) {
 			return null;

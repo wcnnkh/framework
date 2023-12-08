@@ -1,16 +1,12 @@
 package io.basc.framework.io;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.lang.Nullable;
-
-public class ListFileIterator implements Iterator<IterationFile<File>> {
+public class ListFileIterator implements Iterator<File> {
 	private final File directory;
-	private final FileFilter fileFilter;
 	private final int depth;// 当前深度
 	private final int maxDepth;// 最大迭代深度
 
@@ -19,23 +15,18 @@ public class ListFileIterator implements Iterator<IterationFile<File>> {
 	 * @param fileFilter
 	 * @param maxDepth   迭代最大深度, -1不限制深度
 	 */
-	public ListFileIterator(File directory, @Nullable FileFilter fileFilter, int maxDepth) {
-		this(directory, fileFilter, maxDepth, 0);
+	public ListFileIterator(File directory, int maxDepth) {
+		this(directory, maxDepth, 0);
 	}
 
-	private ListFileIterator(File directory, FileFilter fileFilter, int maxDepth, int depth) {
+	private ListFileIterator(File directory, int maxDepth, int depth) {
 		this.directory = directory;
-		this.fileFilter = fileFilter;
 		this.maxDepth = maxDepth;
 		this.depth = depth;
 	}
 
 	public File getDirectory() {
 		return directory;
-	}
-
-	public FileFilter getFileFilter() {
-		return fileFilter;
 	}
 
 	public int getDepth() {
@@ -65,7 +56,7 @@ public class ListFileIterator implements Iterator<IterationFile<File>> {
 	/**
 	 * 当前目录下的文件
 	 */
-	private Iterator<IterationFile<File>> iterator;
+	private Iterator<File> iterator;
 
 	@Override
 	public boolean hasNext() {
@@ -74,12 +65,11 @@ public class ListFileIterator implements Iterator<IterationFile<File>> {
 		}
 
 		if (files == null) {
-			files = fileFilter == null ? directory.listFiles() : directory.listFiles(fileFilter);
+			files = directory.listFiles();
 		}
 
 		if (iterator == null) {
-			iterator = Arrays.asList(files).stream().map((file) -> new IterationFile<File>(depth, file, directory))
-					.iterator();
+			iterator = Arrays.asList(files).iterator();
 		}
 
 		if (iterator.hasNext()) {
@@ -95,7 +85,7 @@ public class ListFileIterator implements Iterator<IterationFile<File>> {
 		}
 
 		if (directoryIterator.hasNext()) {
-			iterator = new ListFileIterator(directoryIterator.next(), fileFilter, maxDepth, depth + 1);
+			iterator = new ListFileIterator(directoryIterator.next(), maxDepth, depth + 1);
 			return hasNext();
 		}
 		// 如果当前目录下没有子目录了就无法迭代了
@@ -103,7 +93,7 @@ public class ListFileIterator implements Iterator<IterationFile<File>> {
 	}
 
 	@Override
-	public IterationFile<File> next() {
+	public File next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException(toString());
 		}

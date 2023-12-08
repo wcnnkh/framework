@@ -6,7 +6,7 @@ import java.util.Collection;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public interface ActionResolver {
 	String getControllerId(Class<?> sourceClass, Method method);

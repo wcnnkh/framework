@@ -6,9 +6,9 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.Source;
-import io.basc.framework.util.registry.Registration;
 
 public class ConnectionOperations<T extends Connection, S extends Session, D extends Destination>
 		extends AbstractJmsOperations<T, ConnectionOperations<T, S, D>> {

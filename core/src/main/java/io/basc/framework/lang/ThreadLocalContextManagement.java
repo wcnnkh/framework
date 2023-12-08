@@ -2,7 +2,7 @@ package io.basc.framework.lang;
 
 import java.util.LinkedList;
 
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 /**
  * 线程上下文管理

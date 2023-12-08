@@ -9,7 +9,7 @@ public class SwitchableTargetExecutionInterceptor implements MethodExecutionInte
 	private final Object target;
 
 	@Override
-	public Object intercept(Method executor, Elements<Object> args) throws Throwable {
+	public Object intercept(Method executor, Elements<? extends Object> args) throws Throwable {
 		executor.setTarget(target);
 		return executor.execute(args);
 	}

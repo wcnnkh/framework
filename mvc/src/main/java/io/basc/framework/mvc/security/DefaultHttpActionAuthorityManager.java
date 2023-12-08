@@ -10,7 +10,7 @@ import io.basc.framework.mvc.action.Action;
 import io.basc.framework.security.authority.http.DefaultHttpAuthorityManager;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 import io.basc.framework.web.pattern.HttpPattern;
 
 @ConditionalOnParameters(value = HttpActionAuthorityManager.class)

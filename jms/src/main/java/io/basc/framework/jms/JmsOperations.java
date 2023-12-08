@@ -3,7 +3,7 @@ package io.basc.framework.jms;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public interface JmsOperations {
 	Registration bind(MessageListener messageListener) throws JMSException;

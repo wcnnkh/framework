@@ -1,6 +1,7 @@
 package io.basc.framework.util.element;
 
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Function;
@@ -19,8 +20,28 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 	}
 
 	@Override
+	public Elements<E> concat(Elements<? extends E> elements) {
+		return wrappedTarget.concat(elements);
+	}
+
+	@Override
 	public <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
 		return wrappedTarget.convert(converter);
+	}
+
+	@Override
+	public Elements<E> distinct() {
+		return wrappedTarget.distinct();
+	}
+
+	@Override
+	public Enumeration<E> enumeration() {
+		return wrappedTarget.enumeration();
+	}
+
+	@Override
+	public Elements<E> exclude(Predicate<? super E> predicate) {
+		return wrappedTarget.exclude(predicate);
 	}
 
 	@Override
@@ -31,6 +52,16 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 	@Override
 	public <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
 		return wrappedTarget.flatMap(mapper);
+	}
+
+	@Override
+	public Elements<Indexed<E>> index() {
+		return wrappedTarget.index();
+	}
+
+	@Override
+	public Elements<IterativeElement<E>> iterative() {
+		return wrappedTarget.iterative();
 	}
 
 	@Override
@@ -83,4 +114,8 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 		return wrappedTarget.toSet();
 	}
 
+	@Override
+	public Elements<E> unordered() {
+		return wrappedTarget.unordered();
+	}
 }

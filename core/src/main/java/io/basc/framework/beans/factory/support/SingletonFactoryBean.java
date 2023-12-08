@@ -1,12 +1,18 @@
 package io.basc.framework.beans.factory.support;
 
 import io.basc.framework.beans.factory.FactoryBean;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
 
-@Getter
+@Data
+@AllArgsConstructor
 public class SingletonFactoryBean<T> implements FactoryBean<T> {
-	private final ResolvableType type;
+	@NonNull
+	private final TypeDescriptor returnTypeDescriptor;
+	@NonNull
 	private final T bean;
 
 	public SingletonFactoryBean(T bean) {
@@ -18,8 +24,7 @@ public class SingletonFactoryBean<T> implements FactoryBean<T> {
 	}
 
 	public SingletonFactoryBean(ResolvableType type, T bean) {
-		this.type = type;
-		this.bean = bean;
+		this(TypeDescriptor.valueOf(type), bean);
 	}
 
 	@Override
@@ -28,8 +33,12 @@ public class SingletonFactoryBean<T> implements FactoryBean<T> {
 	}
 
 	@Override
-	public T get() {
+	public T execute() {
 		return bean;
 	}
 
+	@Override
+	public boolean canExecuted() {
+		return true;
+	}
 }

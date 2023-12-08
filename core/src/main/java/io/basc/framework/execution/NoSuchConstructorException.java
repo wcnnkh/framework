@@ -12,7 +12,7 @@ public class NoSuchConstructorException extends NoSuchElementException {
 		super(message);
 	}
 
-	public NoSuchConstructorException(Elements<Class<?>> parameterTypes) {
+	public NoSuchConstructorException(Elements<? extends Class<?>> parameterTypes) {
 		this("Unable to match " + parameterTypes + " to constructor");
 	}
 

@@ -10,10 +10,10 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionComparator;
 import io.basc.framework.convert.config.ConverterRegistry;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
 import io.basc.framework.util.comparator.TypeComparator;
-import io.basc.framework.util.registry.Registration;
 
 public class DefaultConverterRegistry<S, E extends Throwable> extends ConfigurableServices<ConversionService>
 		implements ConverterRegistry<S, E> {

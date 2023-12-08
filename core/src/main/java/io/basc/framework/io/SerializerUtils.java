@@ -1,14 +1,14 @@
 package io.basc.framework.io;
 
 import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
-import io.basc.framework.env.Sys;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.json.JsonSerializer;
 
 public final class SerializerUtils {
 	private static final InheritableThreadLocalConfigurator<CrossLanguageSerializer> CROSS_LANGUAGE_SERIALIZER_CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
-			CrossLanguageSerializer.class, Sys.getEnv()).ifAbsentDefaultService(() -> JsonSerializer.INSTANCE);
-	private static final InheritableThreadLocalConfigurator<Serializer> SERIALIZER_CONFIGURATOR = new InheritableThreadLocalConfigurator<>(Serializer.class,
-			Sys.getEnv()).ifAbsentDefaultService(() -> JavaSerializer.INSTANCE);
+			CrossLanguageSerializer.class, SPI.global()).ifAbsentDefaultService(() -> JsonSerializer.INSTANCE);
+	private static final InheritableThreadLocalConfigurator<Serializer> SERIALIZER_CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
+			Serializer.class, SPI.global()).ifAbsentDefaultService(() -> JavaSerializer.INSTANCE);
 
 	public static <T> T clone(Serializer serializer, T source) {
 		if (source == null) {

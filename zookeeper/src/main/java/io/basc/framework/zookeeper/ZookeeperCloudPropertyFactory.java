@@ -9,13 +9,13 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -134,7 +134,7 @@ public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFacto
 		}
 
 		try {
-			getKeyEventDispatcher().publishEvent(new ChangeEvent<>(changeType, Elements.singleton(key)));
+			getKeyEventDispatcher().publishEvent(new ObservableEvent<>(changeType, Elements.singleton(key)));
 		} catch (Exception e) {
 			logger.error(e, "zookeeper config publish error");
 		}
@@ -172,7 +172,7 @@ public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFacto
 	}
 
 	@Override
-	public BroadcastEventRegistry<ChangeEvent<Elements<String>>> getKeyEventRegistry() {
+	public BroadcastEventRegistry<ObservableEvent<Elements<String>>> getKeyEventRegistry() {
 		// TODO Auto-generated method stub
 		return null;
 	}

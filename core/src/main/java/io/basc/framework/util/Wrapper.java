@@ -1,15 +1,27 @@
 package io.basc.framework.util;
 
+import java.util.Objects;
+
 public class Wrapper<W> implements Decorator {
 	protected final W wrappedTarget;
+	private Object equalsAndHashCode;
 
 	public Wrapper(W wrappedTarget) {
 		Assert.requiredArgument(wrappedTarget != null, "wrappedTarget");
 		this.wrappedTarget = wrappedTarget;
+		this.equalsAndHashCode = wrappedTarget;
 	}
-	
+
 	public W getDelegateSource() {
 		return wrappedTarget;
+	}
+
+	public Object getEqualsAndHashCode() {
+		return equalsAndHashCode;
+	}
+
+	public void setEqualsAndHashCode(Object equalsAndHashCode) {
+		this.equalsAndHashCode = equalsAndHashCode;
 	}
 
 	@Override
@@ -29,13 +41,13 @@ public class Wrapper<W> implements Decorator {
 		}
 
 		if (obj instanceof Wrapper) {
-			return ObjectUtils.equals(wrappedTarget, ((Wrapper<?>) obj).wrappedTarget);
+			return ObjectUtils.equals(equalsAndHashCode, ((Wrapper<?>) obj).equalsAndHashCode);
 		}
-		return obj.equals(wrappedTarget);
+		return obj.equals(equalsAndHashCode);
 	}
 
 	@Override
 	public int hashCode() {
-		return wrappedTarget.hashCode();
+		return Objects.hashCode(equalsAndHashCode);
 	}
 }

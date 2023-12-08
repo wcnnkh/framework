@@ -11,7 +11,6 @@ import java.net.URLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
-import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.io.Resource;
@@ -20,7 +19,6 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
-import io.basc.framework.util.StringUtils;
 
 public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor
 		implements ClientHttpRequestFactory {
@@ -81,25 +79,24 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 		this.sslSocketFactory = sslSocketFactory;
 	}
 
-	public boolean setSSLSocketFactory(String certTrustFile, String storePassword, String keyPassword) {
-		if (StringUtils.isEmpty(certTrustFile)) {
+	public boolean setSSLSocketFactory(Resource certTrustResource, String storePassword, String keyPassword) {
+		if (certTrustResource == null) {
 			return false;
 		}
 
-		Resource resource = Sys.getEnv().getResourceLoader().getResource(certTrustFile);
-		if (!resource.exists()) {
-			logger.warn("not found certTrustFile: {}", certTrustFile);
+		if (!certTrustResource.exists()) {
+			logger.warn("not found certTrustFile: {}", certTrustResource);
 			return false;
 		}
 
-		InputStream is = ResourceUtils.getInputStream(resource);
+		InputStream is = ResourceUtils.getByteArrayInputStream(certTrustResource);
 		try {
 			this.sslSocketFactory = SSLContexts.custom()
 					.loadKeyMaterial(is, storePassword.toCharArray(), keyPassword.toCharArray()).build()
 					.getSocketFactory();
 		} catch (Exception e) {
-			logger.error(e, "certTrustFile [{}], storePassword [{}], keyPassword [{}]", certTrustFile, storePassword,
-					keyPassword);
+			logger.error(e, "certTrustFile [{}], storePassword [{}], keyPassword [{}]", certTrustResource,
+					storePassword, keyPassword);
 			return false;
 		}
 		return true;

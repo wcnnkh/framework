@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,7 +31,7 @@ import java.util.zip.Checksum;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Streams;
+import io.basc.framework.util.element.Elements;
 
 public final class FileUtils {
 
@@ -2257,35 +2256,23 @@ public final class FileUtils {
 	}
 
 	/**
-	 * 迭代目录下的所有文件
+	 * 递归迭代目录下的所有文件
 	 * 
 	 * @param directory
 	 * @return
 	 */
-	public static Stream<IterationFile<File>> stream(File directory) {
-		return stream(directory, (FileFilter) null);
+	public static Elements<File> listAllFiles(File directory) {
+		return listFiles(directory, -1);
 	}
 
 	/**
-	 * 迭代目录下的文件
+	 * 迭代目录下的文件，不进行递归
 	 * 
 	 * @param directory
-	 * @param filter
 	 * @return
 	 */
-	public static Stream<IterationFile<File>> stream(File directory, @Nullable FileFilter filter) {
-		return stream(directory, -1, filter);
-	}
-
-	/**
-	 * 迭代目录下的文件
-	 * 
-	 * @param directory
-	 * @param filter
-	 * @return
-	 */
-	public static Stream<IterationFile<String>> stream(File directory, @Nullable FilenameFilter filter) {
-		return stream(directory, -1, filter);
+	public static Elements<File> listFiles(File directory) {
+		return listFiles(directory, 0);
 	}
 
 	/**
@@ -2293,27 +2280,11 @@ public final class FileUtils {
 	 * 
 	 * @param directory
 	 * @param maxDepth  迭代最大深度, -1不限制深度
-	 * @param filter
 	 * @return
 	 */
-	public static Stream<IterationFile<File>> stream(File directory, int maxDepth, @Nullable FileFilter filter) {
+	public static Elements<File> listFiles(File directory, int maxDepth) {
 		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
-		ListFileIterator iterator = new ListFileIterator(directory, filter, maxDepth);
-		return Streams.stream(iterator);
-	}
-
-	/**
-	 * 迭代目录下的文件
-	 * 
-	 * @param directory
-	 * @param maxDepth  迭代最大深度, -1不限制深度
-	 * @param filter
-	 * @return
-	 */
-	public static Stream<IterationFile<String>> stream(File directory, int maxDepth, @Nullable FilenameFilter filter) {
-		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
-		ListFilenameIterator iterator = new ListFilenameIterator(directory, filter, maxDepth);
-		return Streams.stream(iterator);
+		return Elements.of(() -> new ListFileIterator(directory, maxDepth));
 	}
 
 	public static long write(Iterator<? extends byte[]> sourceIterator, File target) throws IOException {

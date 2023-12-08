@@ -7,13 +7,13 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.event.support.DynamicMap;
+import io.basc.framework.observe.ObservableEvent;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.ElementSet;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.observe.support.ObservableMap;
 
 public class ObservablePropertyFactory extends ObservableValueFactory<String> implements DynamicPropertyFactory {
 	private static final Function<Properties, Map<String, Value>> CONVERTER = (properties) -> {
@@ -32,8 +32,8 @@ public class ObservablePropertyFactory extends ObservableValueFactory<String> im
 		this(new StandardBroadcastEventDispatcher<>());
 	}
 
-	public ObservablePropertyFactory(BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher) {
-		super(new DynamicMap<>(), keyEventDispatcher, CONVERTER);
+	public ObservablePropertyFactory(BroadcastEventDispatcher<ObservableEvent<Elements<String>>> keyEventDispatcher) {
+		super(new ObservableMap<>(), keyEventDispatcher, CONVERTER);
 	}
 
 	@Override

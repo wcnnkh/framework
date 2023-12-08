@@ -10,13 +10,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.lang.NestedIOException;
+import io.basc.framework.observe.ObservableEvent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing
@@ -28,14 +29,14 @@ import io.basc.framework.util.registry.Registration;
  * and "toString" will return the description.
  *
  */
-public abstract class AbstractResource implements Resource, BroadcastEventDispatcher<ChangeEvent<Resource>> {
-	private static final Constructor<BroadcastEventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
+public abstract class AbstractResource implements Resource, EventDispatcher<ObservableEvent<Resource>> {
+	private static final Constructor<EventDispatcher<ObservableEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.getDeclaredConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher", null,
 					AbstractResource.class);
 
-	private volatile BroadcastEventDispatcher<ChangeEvent<Resource>> eventDispatcher;
+	private volatile BroadcastEventDispatcher<ObservableEvent<Resource>> eventDispatcher;
 
-	private BroadcastEventDispatcher<ChangeEvent<Resource>> getEventDispatcher() {
+	private BroadcastEventDispatcher<ObservableEvent<Resource>> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
 				if (eventDispatcher == null) {
@@ -74,7 +75,7 @@ public abstract class AbstractResource implements Resource, BroadcastEventDispat
 	}
 
 	@Override
-	public Registration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
+	public Registration registerListener(EventListener<ObservableEvent<Resource>> eventListener) {
 		if (!isObservable()) {
 			return Registration.EMPTY;
 		}
@@ -82,7 +83,7 @@ public abstract class AbstractResource implements Resource, BroadcastEventDispat
 	}
 
 	@Override
-	public void publishEvent(ChangeEvent<Resource> event) {
+	public void publishEvent(ObservableEvent<Resource> event) {
 		getEventDispatcher().publishEvent(event);
 	}
 

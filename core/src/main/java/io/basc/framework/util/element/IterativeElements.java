@@ -23,5 +23,4 @@ public class IterativeElements<E> implements Elements<IterativeElement<E>>, Seri
 	public Iterator<IterativeElement<E>> iterator() {
 		return new IterativeElementIterator<>(source.iterator());
 	}
-
 }

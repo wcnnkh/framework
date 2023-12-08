@@ -1,10 +1,10 @@
 package io.basc.framework.value;
 
-import io.basc.framework.event.observe.support.ObservableValue;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
+import io.basc.framework.value.observe.support.DefaultObservable;
 
-public class DynamicValue<K> extends ObservableValue<Value> implements AutoCloseable {
+public class DynamicValue<K> extends DefaultObservable<Value> implements AutoCloseable {
 	private final K key;
 	private final DynamicValueFactory<K> valueFactory;
 	private final Registration registration;

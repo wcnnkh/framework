@@ -12,7 +12,7 @@ public class InterceptableExecutor extends ExecutorWrapper {
 	}
 
 	@Override
-	public Object execute(Elements<Object> args) throws Throwable {
+	public Object execute(Elements<? extends Object> args) throws Throwable {
 		return executionInterceptor.intercept(wrappedTarget, args);
 	}
 }

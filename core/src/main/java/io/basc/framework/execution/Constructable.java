@@ -16,7 +16,7 @@ public interface Constructable extends Executable {
 		return execute(Elements.empty(), Elements.empty());
 	}
 
-	boolean canExecuted(Elements<Class<?>> parameterTypes);
+	boolean canExecuted(Elements<? extends Class<?>> parameterTypes);
 
-	Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args) throws Throwable;
+	Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args) throws Throwable;
 }

@@ -15,7 +15,7 @@ public interface Method extends Executor, Named {
 		return execute(target, getParameters());
 	}
 
-	Object execute(Object target, Elements<Object> args) throws Throwable;
+	Object execute(Object target, Elements<? extends Object> args) throws Throwable;
 
 	default Object execute(Object target, Parameters parameters) throws Throwable {
 		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public interface AuthorityManager<T extends Authority> {
 	Registration register(T authority);

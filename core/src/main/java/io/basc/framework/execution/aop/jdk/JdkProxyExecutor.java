@@ -16,7 +16,7 @@ public class JdkProxyExecutor extends ReflectionMethod {
 	}
 
 	@Override
-	public Object execute(Object target, Elements<Object> args) throws Throwable {
+	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
 		return ProxyUtils.invokeIgnoreMethod(target, getExecutable(), args.toArray());
 	}
 }

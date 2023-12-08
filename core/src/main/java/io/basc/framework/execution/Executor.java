@@ -10,7 +10,7 @@ import io.basc.framework.util.element.Elements;
  */
 public interface Executor extends Constructor {
 	@Override
-	default boolean canExecuted(Elements<Class<?>> parameterTypes) {
+	default boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
 		return getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()).equals(parameterTypes,
 				Class::isAssignableFrom);
 	}
@@ -21,7 +21,8 @@ public interface Executor extends Constructor {
 	}
 
 	@Override
-	default Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args) throws Throwable {
+	default Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
+			throws Throwable {
 		if (!canExecuted(parameterTypes)) {
 			throw new IllegalArgumentException("Parameter type mismatch");
 		}
@@ -35,7 +36,7 @@ public interface Executor extends Constructor {
 	 * @param args
 	 * @return
 	 */
-	Object execute(Elements<Object> args) throws Throwable;
+	Object execute(Elements<? extends Object> args) throws Throwable;
 
 	default Object execute(Parameters parameters) throws Throwable {
 		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());

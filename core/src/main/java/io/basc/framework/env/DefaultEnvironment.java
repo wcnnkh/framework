@@ -1,139 +1,61 @@
 package io.basc.framework.env;
 
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.stream.Collectors;
 
-import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
-import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.config.support.ConfigurableConversionService;
-import io.basc.framework.convert.lang.ConverterConversionService;
-import io.basc.framework.convert.lang.ResourceToPropertiesConverter;
-import io.basc.framework.convert.resolve.ResourceResolverConversionService;
-import io.basc.framework.convert.resolve.ResourceResolvers;
-import io.basc.framework.convert.support.DefaultConversionService;
-import io.basc.framework.env.config.EnvironmentPostProcessors;
-import io.basc.framework.env.properties.ConfigurableEnvironmentProperties;
-import io.basc.framework.env.resource.ConfigurableEnvironmentResourceLoader;
-import io.basc.framework.env.resource.DefaultEnvironmentResourceLoader;
-import io.basc.framework.event.observe.Observable;
-import io.basc.framework.event.observe.support.ObservableResource;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.resolver.PropertiesResolver;
-import io.basc.framework.io.resolver.PropertiesResolvers;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.registry.Registration;
-import io.basc.framework.util.spi.CachedServiceLoader;
-import io.basc.framework.util.spi.ServiceLoader;
-import io.basc.framework.util.spi.Services;
 
-public class DefaultEnvironment extends DefaultServiceLoaderFactory implements ConfigurableEnvironment, Configurable {
-	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
-	private boolean configured = false;
+public class DefaultEnvironment extends DefaultPropertyResolver implements ConfigurableEnvironment {
+	private static final String ACTIVE_PROFILES_PROPERTY_NAME = System.getProperty("basc.profiles.active.property.name",
+			"basc.profiles.active");
+	private static final String DEFAULT_PROFILES_PROPERTY_NAME = System
+			.getProperty("basc.profiles.default.property.name", "basc.profiles.default");
+	private String connector = "-";
 
-	private final DefaultConversionService conversionService = new DefaultConversionService();
-	private final EnvironmentPostProcessors environmentPostProcessors = new EnvironmentPostProcessors();
-	private final DefaultEnvironmentResourceLoader environmentResourceLoader = new DefaultEnvironmentResourceLoader(
-			this);
-
-	private volatile boolean initialized = false;
+	private boolean ignoreCase = true;
 
 	private Environment parentEnvironment;
 
-	// properties和environmentResourceLoader不能更换顺序
-	private final ConfigurableEnvironmentProperties properties = new ConfigurableEnvironmentProperties();
-	private final PropertiesResolvers propertiesResolvers = new PropertiesResolvers();
-
-	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
-			getObservableCharset());
-
-	private final Services<Resource> resources = new Services<>();
-
-	public DefaultEnvironment(Scope scope) {
-		super(scope);
-		conversionService.getServiceInjectors().register(getServiceInjectors());
-		environmentPostProcessors.getServiceInjectors().register(getServiceInjectors());
-		environmentResourceLoader.getProtocolResolvers().getServiceInjectors().register(getServiceInjectors());
-		environmentResourceLoader.getResourceLoaders().getServiceInjectors().register(getServiceInjectors());
-		properties.getServiceInjectors().register(getServiceInjectors());
-
-		getServiceInjectors().register((bean) -> {
-			if (bean instanceof EnvironmentAware) {
-				((EnvironmentAware) bean).setEnvironment(this);
-			}
-
-			if (bean instanceof ConversionServiceAware) {
-				((ConversionServiceAware) bean).setConversionService(getConversionService());
-			}
-
-			return Registration.EMPTY;
-		});
-
-		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
-				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
-		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
+	@Override
+	public void addActiveProfile(String profile) {
+		Elements<String> activeProfiles = getActiveProfilesInProperties();
+		activeProfiles = activeProfiles.concat(Elements.singleton(profile));
+		String value = activeProfiles.collect(Collectors.joining(","));
+		put(ACTIVE_PROFILES_PROPERTY_NAME, value);
 	}
 
 	@Override
-	public synchronized void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		configured = true;
+	public Elements<String> getActiveProfiles() {
+		return getDefaultProfiles().concat(getActiveProfilesInProperties()).distinct();
+	}
 
-		if (!environmentResourceLoader.isConfigured()) {
-			environmentResourceLoader.configure(serviceLoaderFactory);
+	public Elements<String> getActiveProfilesInProperties() {
+		String values = getAsString(ACTIVE_PROFILES_PROPERTY_NAME);
+		if (StringUtils.isEmpty(values)) {
+			return Elements.empty();
 		}
+		return StringUtils.split(values).map((e) -> e.getSource().toString());
+	}
 
-		if (!conversionService.isConfigured()) {
-			conversionService.configure(serviceLoaderFactory);
-		}
-
-		if (!properties.isConfigured()) {
-			properties.configure(serviceLoaderFactory);
-		}
-
-		if (!environmentPostProcessors.isConfigured()) {
-			environmentPostProcessors.configure(serviceLoaderFactory);
-		}
-
-		if (!resourceResolvers.isConfigured()) {
-			resourceResolvers.configure(serviceLoaderFactory);
-		}
-
-		if (!propertiesResolvers.isConfigured()) {
-			propertiesResolvers.configure(serviceLoaderFactory);
-		}
+	public String getConnector() {
+		return connector == null ? "" : connector;
 	}
 
 	@Override
-	protected <S> void postProcessorServiceRegistry(Services<S> serviceRegistry, Class<S> serviceClass) {
-		ServiceLoader<S> serviceLoader = new CachedServiceLoader<>(Elements.of(() -> {
-			String services = properties.getAsString(serviceClass.getName());
-			if (StringUtils.isEmpty(services)) {
-				return Collections.emptyIterator();
-			}
-
-			String[] array = StringUtils.splitToArray(services);
-			return Elements.forArray(array).map((e) -> getBean(e, serviceClass)).iterator();
-		}));
-		serviceRegistry.getServiceLoaders().register(serviceLoader);
-		super.postProcessorServiceRegistry(serviceRegistry, serviceClass);
+	public Elements<String> getDefaultProfiles() {
+		Elements<String> profiles = getDefaultProfilesInProperties();
+		if (profiles.isEmpty() && parentEnvironment != null) {
+			return parentEnvironment.getDefaultProfiles();
+		}
+		return profiles;
 	}
 
-	@Override
-	public ConfigurableConversionService getConversionService() {
-		return conversionService;
-	}
-
-	public EnvironmentPostProcessors getEnvironmentPostProcessors() {
-		return environmentPostProcessors;
+	public Elements<String> getDefaultProfilesInProperties() {
+		String values = getAsString(DEFAULT_PROFILES_PROPERTY_NAME);
+		if (StringUtils.isEmpty(values)) {
+			return Elements.empty();
+		}
+		return StringUtils.split(values).map((e) -> e.getSource().toString()).distinct();
 	}
 
 	public Environment getParentEnvironment() {
@@ -141,95 +63,53 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	}
 
 	@Override
-	public ConfigurableEnvironmentProperties getProperties() {
-		return this.properties;
-	}
-
-	@Override
-	public PropertiesResolvers getPropertiesResolver() {
-		return propertiesResolvers;
-	}
-
-	@Override
-	public ConfigurableEnvironmentResourceLoader getResourceLoader() {
-		return environmentResourceLoader;
-	}
-
-	@Override
-	public ResourceResolvers getResourceResolver() {
-		return resourceResolvers;
-	}
-
-	@Override
-	public Services<Resource> getResources() {
-		return resources;
-	}
-
-	@Override
-	protected void _init() {
-		super._init();
-
-		logger.debug("Start initializing environment[{}]!", this);
-
-		if (!isConfigured()) {
-			configure(this);
+	public Elements<String> getProfiles(String source) {
+		Elements<String> profiles = getActiveProfiles();
+		if (profiles.isEmpty()) {
+			return Elements.singleton(source);
 		}
 
-		environmentPostProcessors.postProcessEnvironment(this);
-		logger.debug("Started environment[{}]!", this);
+		String connector = getConnector();
+		return profiles.map((profile) -> {
+			return resolve(source, connector, profile);
+		});
 	}
 
-	@Override
-	public boolean isConfigured() {
-		return configured;
+	public boolean isIgnoreCase() {
+		return ignoreCase;
 	}
 
-	@Override
-	public boolean isInitialized() {
-		return super.isInitialized() && initialized;
-	}
-
-	public void setParentEnvironment(Environment environment) {
-		setParentBeanFactory(environment);
-		this.parentEnvironment = environment;
-		if (environment != null) {
-			conversionService.registerLast(environment.getConversionService());
-			properties.setParentEnvironmentProperties(environment.getProperties());
-			environmentResourceLoader.getResourceLoaders().registerLast(environment.getResourceLoader());
-			resourceResolvers.registerLast(environment.getResourceResolver());
-			propertiesResolvers.registerLast(environment.getPropertiesResolver());
+	protected String resolve(String name, String connector, String profile) {
+		int index = name.lastIndexOf(".");
+		if (index == -1) {// 不存在
+			return name + connector + profile;
+		} else {
+			return name.substring(0, index) + connector + profile + name.substring(index);
 		}
 	}
 
-	public Registration source(Observable<Properties> properties) {
-		return this.getProperties().getArchive().registerProperties(properties);
+	@Override
+	public void setActiveProfiles(Elements<String> profiles) {
+		String value = profiles == null ? "" : profiles.collect(Collectors.joining(","));
+		put(ACTIVE_PROFILES_PROPERTY_NAME, value);
+	}
+
+	public void setConnector(String connector) {
+		this.connector = connector;
 	}
 
 	@Override
-	public Registration source(Resource resource) {
-		return source(resource, getCharset());
+	public void setDefaultProfiles(Elements<String> profiles) {
+		String value = profiles == null ? "" : profiles.collect(Collectors.joining(","));
+		put(DEFAULT_PROFILES_PROPERTY_NAME, value);
 	}
 
-	public Registration source(Resource resource, @Nullable Charset charset) {
-		return source(resource, getPropertiesResolver(), charset);
-	}
+	public void setIgnoreCase(boolean ignoreCase) {
+		this.ignoreCase = ignoreCase;
+	};
 
-	public Registration source(Resource resource, PropertiesResolver propertiesResolver, @Nullable Charset charset) {
-		if (resource == null || !resource.exists()) {
-			return Registration.EMPTY;
-		}
-
-		Registration registration = resources.register(resource);
-		if (registration.isEmpty()) {
-			return registration;
-		}
-
-		logger.info("Import resource {}", resource);
-		if (propertiesResolver.canResolveProperties(resource)) {
-			Observable<Properties> observable = new ObservableResource(resource)
-					.map(ResourceUtils.toPropertiesConverter(getPropertiesResolver()));
-			registration = registration.and(source(observable));
-		}
-		return registration;
+	public void setParentEnvironment(Environment parentEnvironment) {
+		this.parentEnvironment = parentEnvironment;
+		setParentPropertyResolver(parentEnvironment);
 	}
 }

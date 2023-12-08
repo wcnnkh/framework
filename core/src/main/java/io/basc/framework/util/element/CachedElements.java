@@ -19,6 +19,16 @@ public class CachedElements<E> implements Elements<E>, Serializable {
 		this.elements = elements;
 	}
 
+	public void reload() {
+		if (elements != null && list != null) {
+			synchronized (this) {
+				if (elements != null && list != null) {
+					list = elements.toList();
+				}
+			}
+		}
+	}
+
 	@Override
 	public long count() {
 		return toList().count();

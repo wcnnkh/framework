@@ -22,7 +22,7 @@ public class ReflectionConstructor extends ReflectionExecutor<Constructor<?>> {
 	}
 
 	@Override
-	public Object execute(Elements<Object> args) throws Throwable {
+	public Object execute(Elements<? extends Object> args) throws Throwable {
 		if (aop == null) {
 			return ReflectionUtils.newInstance(getExecutable(), args);
 		} else {

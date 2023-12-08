@@ -1,13 +1,13 @@
 package io.basc.framework.orm;
 
+import io.basc.framework.observe.register.ElementRegistry;
+import io.basc.framework.observe.register.Registry;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.TypeRegistry;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.registry.DefaultElementRegistry;
-import io.basc.framework.util.registry.ElementRegistry;
-import io.basc.framework.util.registry.Registration;
 
 public class EntityRepositoryRegistry<T extends EntityOperations> extends TypeRegistry<Object, T> {
-	private static ElementRegistry<EntityRepositoryRegistry<?>> repositoryRegistry = new DefaultElementRegistry<>();
+	private static Registry<EntityRepositoryRegistry<?>> repositoryRegistry = new ElementRegistry<>();
 
 	/**
 	 * 维护全局所有的注册

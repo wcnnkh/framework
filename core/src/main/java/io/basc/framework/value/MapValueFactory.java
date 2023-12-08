@@ -3,14 +3,14 @@ package io.basc.framework.value;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.broadcast.BroadcastEventRegistry;
-import io.basc.framework.event.support.DynamicMap;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.element.ElementSet;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.observe.support.ObservableMap;
 
-public class MapValueFactory<K> extends DynamicMap<K, Value> implements DynamicValueFactory<K> {
+public class MapValueFactory<K> extends ObservableMap<K, Value> implements DynamicValueFactory<K> {
 
 	public MapValueFactory() {
 	}
@@ -25,13 +25,13 @@ public class MapValueFactory<K> extends DynamicMap<K, Value> implements DynamicV
 	}
 
 	@Override
-	public BroadcastEventRegistry<ChangeEvent<Elements<K>>> getKeyEventRegistry() {
+	public BroadcastEventRegistry<ObservableEvent<Elements<K>>> getKeyEventRegistry() {
 		return (listener) -> {
 			return getEventDispatcher().registerListener((event) -> {
 				Set<K> changeKeys = event.getChangeType() == ChangeType.DELETE ? event.getOldSource().keySet()
 						: event.getSource().keySet();
 				Elements<K> keys = new ElementSet<>(changeKeys);
-				ChangeEvent<Elements<K>> changeEvent = new ChangeEvent<>(event, keys);
+				ObservableEvent<Elements<K>> changeEvent = new ObservableEvent<>(event, keys);
 				listener.onEvent(changeEvent);
 			});
 		};

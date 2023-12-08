@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -84,6 +85,43 @@ public interface Streamable<E> {
 		}
 	}
 
+	default <T> boolean equals(Streamable<? extends T> streamable, BiPredicate<? super E, ? super T> predicate) {
+		Assert.requiredArgument(streamable != null, "streamable");
+		Assert.requiredArgument(predicate != null, "predicate");
+		Stream<E> stream = stream();
+		try {
+			Stream<? extends T> targetStream = streamable.stream();
+			try {
+				Iterator<E> sourceIterator = stream.iterator();
+				Iterator<? extends T> targetIterator = targetStream.iterator();
+				while (sourceIterator.hasNext() && targetIterator.hasNext()) {
+					E source = sourceIterator.next();
+					T target = targetIterator.next();
+					if (source == target) {
+						continue;
+					}
+
+					// 如果都为空已经在上一步拦截了
+					if (source == null || target == null) {
+						return false;
+					}
+
+					if (predicate.test(source, target)) {
+						continue;
+					}
+					return false;
+				}
+
+				// 都没有了才算相等
+				return !sourceIterator.hasNext() && !targetIterator.hasNext();
+			} finally {
+				targetStream.close();
+			}
+		} finally {
+			stream.close();
+		}
+	}
+
 	default <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
 			throws X {
 		Stream<E> stream = stream();
@@ -134,8 +172,76 @@ public interface Streamable<E> {
 		transfer((stream) -> stream.forEachOrdered(action));
 	}
 
+	/**
+	 * 获取唯一的元素， 默认使用迭代器实现
+	 * 
+	 * @see #isUnique()
+	 * @return
+	 * @throws NoSuchElementException   没有元素
+	 * @throws NoUniqueElementException 存在多个元素
+	 */
+	default E getUnique() throws NoSuchElementException, NoUniqueElementException {
+		return export((stream) -> {
+			Iterator<E> iterator = stream.iterator();
+			if (!iterator.hasNext()) {
+				throw new NoSuchElementException();
+			}
+
+			// 向后迭代一次
+			E element = iterator.next();
+			if (iterator.hasNext()) {
+				// 如果还有说明不是只有一个
+				throw new NoUniqueElementException();
+			}
+			return element;
+		});
+	}
+
+	default int hashCode(ToIntFunction<? super E> hash) {
+		Assert.requiredArgument(hash != null, "hash");
+		Stream<E> stream = stream();
+		try {
+			Iterator<E> iterator = stream.iterator();
+			if (!iterator.hasNext()) {
+				return 0;
+			}
+
+			int result = 1;
+			while (iterator.hasNext()) {
+				E element = iterator.next();
+				result = 31 * result + (element == null ? 0 : hash.applyAsInt(element));
+			}
+			return result;
+		} finally {
+			stream.close();
+		}
+	}
+
 	default boolean isEmpty() {
 		return !findAny().isPresent();
+	}
+
+	/**
+	 * 是否只有一个元素
+	 * 
+	 * @see #getUnique()
+	 * @return
+	 */
+	default boolean isUnique() {
+		return test((stream) -> {
+			Iterator<E> iterator = stream.iterator();
+			if (iterator.hasNext()) {
+				return false;
+			}
+
+			// 向后迭代一次
+			iterator.next();
+			if (iterator.hasNext()) {
+				// 如果还有说明不是只有一个
+				return false;
+			}
+			return true;
+		});
 	}
 
 	default E last() {
@@ -285,84 +391,5 @@ public interface Streamable<E> {
 		} finally {
 			stream.close();
 		}
-	}
-
-	default int hashCode(ToIntFunction<? super E> hash) {
-		Assert.requiredArgument(hash != null, "hash");
-		Stream<E> stream = stream();
-		try {
-			Iterator<E> iterator = stream.iterator();
-			if (!iterator.hasNext()) {
-				return 0;
-			}
-
-			int result = 1;
-			while (iterator.hasNext()) {
-				E element = iterator.next();
-				result = 31 * result + (element == null ? 0 : hash.applyAsInt(element));
-			}
-			return result;
-		} finally {
-			stream.close();
-		}
-	}
-
-	default <T> boolean equals(Streamable<? extends T> streamable, BiPredicate<? super E, ? super T> predicate) {
-		Assert.requiredArgument(streamable != null, "streamable");
-		Assert.requiredArgument(predicate != null, "predicate");
-		Stream<E> stream = stream();
-		try {
-			Stream<? extends T> targetStream = streamable.stream();
-			try {
-				Iterator<E> sourceIterator = stream.iterator();
-				Iterator<? extends T> targetIterator = targetStream.iterator();
-				while (sourceIterator.hasNext() && targetIterator.hasNext()) {
-					E source = sourceIterator.next();
-					T target = targetIterator.next();
-					if (source == target) {
-						continue;
-					}
-
-					// 如果都为空已经在上一步拦截了
-					if (source == null || target == null) {
-						return false;
-					}
-
-					if (predicate.test(source, target)) {
-						continue;
-					}
-					return false;
-				}
-
-				// 都没有了才算相等
-				return !sourceIterator.hasNext() && !targetIterator.hasNext();
-			} finally {
-				targetStream.close();
-			}
-		} finally {
-			stream.close();
-		}
-	}
-
-	/**
-	 * 是否只有一个元素
-	 * 
-	 * @return
-	 */
-	default boolean isSingleton() {
-		return test((stream) -> {
-			Iterator<E> iterator = stream.iterator();
-			if (iterator.hasNext()) {
-				return false;
-			}
-
-			// 向后迭代一次
-			iterator.next();
-			if (iterator.hasNext()) {
-				// 如果还有说明不是只有一个
-				return false;
-			}
-			return true;
-		});
 	}
 }

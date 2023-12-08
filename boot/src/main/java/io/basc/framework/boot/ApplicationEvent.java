@@ -1,8 +1,8 @@
 package io.basc.framework.boot;
 
-import io.basc.framework.event.ObjectEvent;
+import io.basc.framework.event.Event;
 
-public class ApplicationEvent extends ObjectEvent<Object> {
+public class ApplicationEvent extends Event {
 	private static final long serialVersionUID = 1L;
 
 	public ApplicationEvent(Object source) {

@@ -21,10 +21,10 @@ import io.basc.framework.mapper.ObjectAccessFactory;
 import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.MappingStrategyFilter;
+import io.basc.framework.observe.register.ServiceRegistry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.comparator.TypeComparator;
-import io.basc.framework.util.spi.Services;
 import io.basc.framework.value.PropertyFactory;
 
 public class DefaultObjectMapper extends DefaultConversionService
@@ -32,7 +32,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
 	private final Map<Class<?>, Mapping<? extends Element>> mappingMap = new ConcurrentHashMap<>();
 	private Set<ConvertiblePair> convertiblePairs;
-	private final Services<MappingStrategyFilter> filterRegistry = new Services<>();
+	private final ServiceRegistry<MappingStrategyFilter> filterRegistry = new ServiceRegistry<>();
 	private final DefaultMappingStrategy mappingStrategy = new DefaultMappingStrategy();
 
 	public DefaultObjectMapper() {
@@ -45,7 +45,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 		return convertiblePairs == null ? Collections.emptySet() : convertiblePairs;
 	}
 
-	public Services<MappingStrategyFilter> getFilterRegistry() {
+	public ServiceRegistry<MappingStrategyFilter> getFilterRegistry() {
 		return filterRegistry;
 	}
 

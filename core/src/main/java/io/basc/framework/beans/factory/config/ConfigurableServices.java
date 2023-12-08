@@ -7,11 +7,11 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.ParameterizedTypeReference;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.registry.Registration;
-import io.basc.framework.util.spi.ServiceLoader;
-import io.basc.framework.util.spi.Services;
+import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.element.ServiceLoader;
 
-public class ConfigurableServices<T> extends Services<T> implements Configurable {
+public class ConfigurableServices<T> extends ServiceRegistry<T> implements Configurable {
 	private Registration configurableRegistration;
 	private Class<T> serviceClass;
 
@@ -52,7 +52,7 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 			if (configurableRegistration != null) {
 				configurableRegistration.unregister();
 			}
-			configurableRegistration = getServiceLoaders().register(serviceLoader);
+			configurableRegistration = getServiceLoaderRegistry().register(serviceLoader);
 		}
 	}
 

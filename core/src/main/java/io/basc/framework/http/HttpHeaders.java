@@ -16,28 +16,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.event.observe.support.ObservableMapRegistry;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.message.Headers;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.match.StringMatchers;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -62,7 +54,6 @@ import io.basc.framework.util.match.StringMatchers;
  *
  */
 public class HttpHeaders extends Headers {
-	private static Logger logger = LoggerFactory.getLogger(HttpHeaders.class);
 	private static final long serialVersionUID = -8578554704772377436L;
 
 	public static final HttpHeaders EMPTY = new HttpHeaders(Collections.emptyMap());
@@ -501,54 +492,6 @@ public class HttpHeaders extends Headers {
 	public static final String X_REAL_IP = "X-Real-Ip";
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
-
-	private static final Function<Properties, Map<String, String[]>> CONVERTER = new Function<Properties, Map<String, String[]>>() {
-		public java.util.Map<String, String[]> apply(Properties properties) {
-			if (CollectionUtils.isEmpty(properties)) {
-				return Collections.emptyMap();
-			}
-
-			LinkedHashMap<String, String[]> map = new LinkedHashMap<String, String[]>();
-			for (Entry<Object, Object> entry : properties.entrySet()) {
-				Object key = entry.getKey();
-				Object value = entry.getValue();
-				if (key == null || value == null) {
-					continue;
-				}
-
-				String[] values = StringUtils.splitToArray(String.valueOf(value));
-				if (ArrayUtils.isEmpty(values)) {
-					continue;
-				}
-
-				map.put(String.valueOf(key), values);
-			}
-
-			if (map.isEmpty()) {
-				return Collections.emptyMap();
-			}
-
-			return Collections.unmodifiableMap(map);
-		};
-	};
-
-	private static final ObservableMapRegistry<String, String[]> AJAX_HEADERS = new ObservableMapRegistry<>(CONVERTER);
-
-	static {
-		try {
-			AJAX_HEADERS.registerProperties(
-					Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties"));
-		} catch (Throwable e) {
-			logger.error(e, "Failed to load ajax.headers.properties file");
-		}
-
-		try {
-			AJAX_HEADERS.registerProperties(Sys.getEnv().getProperties(Sys.getEnv().getProperties()
-					.get("io.basc.framework.net.ajax.headers").or("/ajax-headers.properties").getAsString()));
-		} catch (Exception e) {
-			logger.error(e, "Failed to load {io.basc.framework.net.ajax.headers} file");
-		}
-	}
 
 	public HttpHeaders() {
 		super(false);
@@ -1362,49 +1305,6 @@ public class HttpHeaders extends Headers {
 			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
 		}
 		return singleValueMap;
-	}
-
-	public boolean isAjax() {
-		for (Entry<String, String[]> entry : AJAX_HEADERS.get().entrySet()) {
-			String key = entry.getKey();
-			if (ArrayUtils.isEmpty(entry.getValue())) {
-				continue;
-			}
-
-			if (matchHeaders(key, get(key), entry.getValue())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean matchHeaders(String name, List<String> values, String[] matchs) {
-		for (String match : matchs) {
-			if (match == null) {
-				continue;
-			}
-
-			if (values == null) {
-				if (matchHeader(name, null, match)) {
-					return true;
-				}
-			} else {
-				for (String value : values) {
-					if (matchHeader(name, value, match)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean matchHeader(String name, String value, String match) {
-		boolean b = StringMatchers.SIMPLE.match(match, value);
-		if (logger.isDebugEnabled()) {
-			logger.debug("check ajax header name={}, value={}, match={}, result={}", name, value, match, b);
-		}
-		return b;
 	}
 
 	public boolean isFormContentType() {

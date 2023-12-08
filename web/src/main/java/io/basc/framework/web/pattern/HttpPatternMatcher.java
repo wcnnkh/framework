@@ -1,6 +1,6 @@
 package io.basc.framework.web.pattern;
 
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 
 public class HttpPatternMatcher<T> extends ServerHttpRequestMatcher<T> {

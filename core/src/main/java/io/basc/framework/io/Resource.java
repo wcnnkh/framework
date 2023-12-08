@@ -7,16 +7,17 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistrationException;
-import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.Observable;
+import io.basc.framework.observe.Observer;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.registry.Registration;
 
-public interface Resource extends InputStreamSource, BroadcastEventRegistry<ChangeEvent<Resource>> {
+public interface Resource extends InputStreamSource, Observable, Observer<Resource> {
 	/**
 	 * 是否存在
 	 * 
@@ -55,8 +56,6 @@ public interface Resource extends InputStreamSource, BroadcastEventRegistry<Chan
 
 	long contentLength() throws IOException;
 
-	long lastModified() throws IOException;
-
 	Resource createRelative(String relativePath) throws IOException;
 
 	/**
@@ -72,7 +71,7 @@ public interface Resource extends InputStreamSource, BroadcastEventRegistry<Chan
 	 * 监听资源修改
 	 */
 	@Override
-	default Registration registerListener(EventListener<ChangeEvent<Resource>> eventListener)
+	default Registration registerListener(EventListener<ObservableEvent<Resource>> eventListener)
 			throws EventRegistrationException {
 		return Registration.EMPTY;
 	}

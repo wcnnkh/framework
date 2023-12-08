@@ -3,9 +3,9 @@ package io.basc.framework.beans.factory;
 import java.util.Optional;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.element.CachedServiceLoader;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.spi.CachedServiceLoader;
-import io.basc.framework.util.spi.ServiceLoader;
+import io.basc.framework.util.element.ServiceLoader;
 
 public interface ServiceLoaderFactory extends BeanFactory {
 
@@ -16,7 +16,7 @@ public interface ServiceLoaderFactory extends BeanFactory {
 		ServiceLoader<S> serviceLoader = getServiceLoader(serviceClass);
 		if (defaultClasses != null) {
 			Elements<S> defaultElements = Elements.forArray(defaultClasses).filter((e) -> e != null)
-					.map((e) -> getBeanProvider(e)).flatMap((e) -> e.getServices());
+					.map((e) -> getBeanProvider(e)).flatMap((e) -> e.getServices().map((v) -> (S) v));
 			CachedServiceLoader<S> defaultServiceLoader = new CachedServiceLoader<>(defaultElements);
 			return serviceLoader.concat(defaultServiceLoader);
 		}

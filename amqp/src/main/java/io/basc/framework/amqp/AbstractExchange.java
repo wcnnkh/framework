@@ -17,8 +17,8 @@ import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.registry.Registration;
 
 /**
  * 此实现通过重试来保证消息的可靠消费

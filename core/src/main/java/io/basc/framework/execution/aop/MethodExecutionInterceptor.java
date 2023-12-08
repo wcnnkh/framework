@@ -9,12 +9,12 @@ import io.basc.framework.util.element.Elements;
  */
 public interface MethodExecutionInterceptor extends ExecutionInterceptor {
 	@Override
-	default Object intercept(Executor executor, Elements<Object> args) throws Throwable {
+	default Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
 		if (executor instanceof Method) {
 			return intercept((Method) executor, args);
 		}
 		return intercept(executor, args);
 	}
 
-	Object intercept(Method executor, Elements<Object> args) throws Throwable;
+	Object intercept(Method executor, Elements<? extends Object> args) throws Throwable;
 }

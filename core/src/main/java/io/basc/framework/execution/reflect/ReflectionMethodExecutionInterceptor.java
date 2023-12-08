@@ -11,7 +11,7 @@ import io.basc.framework.util.element.Elements;
 public interface ReflectionMethodExecutionInterceptor extends ReflectionExecutionInterceptor {
 
 	@Override
-	default Object intercept(ReflectionConstructor executor, Elements<Object> args) throws Throwable {
+	default Object intercept(ReflectionConstructor executor, Elements<? extends Object> args) throws Throwable {
 		return executor.execute(args);
 	}
 }

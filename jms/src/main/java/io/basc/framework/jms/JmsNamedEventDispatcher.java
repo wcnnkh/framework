@@ -11,7 +11,7 @@ import io.basc.framework.event.NamedEventDispatcher;
 import io.basc.framework.event.broadcast.BroadcastNamedEventDispatcher;
 import io.basc.framework.event.unicast.UnicastNamedEventDispatcher;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public class JmsNamedEventDispatcher<K, T>
 		implements UnicastNamedEventDispatcher<K, T>, BroadcastNamedEventDispatcher<K, T>, NamedEventDispatcher<K, T> {

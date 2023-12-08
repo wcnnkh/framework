@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory.config.support;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
+import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
 import io.basc.framework.value.PropertyFactory;
 
 public abstract class BeanFactoryConfigurationPropertiesBeanPostProcessor
@@ -9,7 +9,7 @@ public abstract class BeanFactoryConfigurationPropertiesBeanPostProcessor
 	private final BeanFactory beanFactory;
 
 	public BeanFactoryConfigurationPropertiesBeanPostProcessor(PropertyFactory propertyFactory,
-			ConfigurableBeanFactory configurableBeanFactory) {
+			ConfigurableListableBeanFactory configurableBeanFactory) {
 		this(propertyFactory, new BeanRegistrationManager(configurableBeanFactory), configurableBeanFactory);
 	}
 

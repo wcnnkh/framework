@@ -16,7 +16,7 @@ public class ExecutionInterceptorChain implements ExecutionInterceptor {
 	private Executor nextChain;
 
 	@Override
-	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
 		if (iterator.hasNext()) {
 			return iterator.next().intercept(executor, args);
 		}

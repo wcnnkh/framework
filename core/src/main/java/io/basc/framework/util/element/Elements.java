@@ -28,16 +28,6 @@ import io.basc.framework.util.Assert;
  */
 public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
-	@Override
-	default Enumeration<E> enumeration() {
-		Iterator<E> iterator = iterator();
-		if (iterator == null) {
-			// 理论上不会为空
-			return null;
-		}
-		return new IteratorToEnumeration<>(iterator, Function.identity());
-	}
-
 	/**
 	 * @see MultiElements
 	 * @param <T>
@@ -131,15 +121,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new MultiElements<>(Arrays.asList(this, elements));
 	}
 
-	default <R> Elements<ParallelElement<E, R>> parallel(Elements<? extends R> elements) {
-		Assert.requiredArgument(elements != null, "elements");
-		return new ParallelElements<>(this, elements);
-	}
-
-	default Elements<IterativeElement<E>> iterative() {
-		return new IterativeElements<>(this);
-	}
-
 	default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
 		return new ConvertibleElements<>(this, converter);
 	}
@@ -153,14 +134,24 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return convert((e) -> e.distinct());
 	}
 
-	default Elements<E> filter(Predicate<? super E> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
-		return convert((stream) -> stream.filter(predicate));
+	@Override
+	default Enumeration<E> enumeration() {
+		Iterator<E> iterator = iterator();
+		if (iterator == null) {
+			// 理论上不会为空
+			return null;
+		}
+		return new IteratorToEnumeration<>(iterator, Function.identity());
 	}
 
 	default Elements<E> exclude(Predicate<? super E> predicate) {
 		Assert.requiredArgument(predicate != null, "predicate");
 		return filter(predicate.negate());
+	}
+
+	default Elements<E> filter(Predicate<? super E> predicate) {
+		Assert.requiredArgument(predicate != null, "predicate");
+		return convert((stream) -> stream.filter(predicate));
 	}
 
 	default <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
@@ -181,6 +172,17 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		Streamable.super.forEach(action);
 	}
 
+	default Elements<Indexed<E>> index() {
+		return Elements.of(() -> {
+			AtomicLong lineNumber = new AtomicLong();
+			return stream().sequential().map((e) -> new Indexed<>(lineNumber.getAndIncrement(), e));
+		});
+	}
+
+	default Elements<IterativeElement<E>> iterative() {
+		return new IterativeElements<>(this);
+	}
+
 	@Override
 	Iterator<E> iterator();
 
@@ -195,6 +197,11 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	default Elements<E> parallel() {
 		return convert((e) -> e.parallel());
+	}
+
+	default <R> Elements<ParallelElement<E, R>> parallel(Elements<? extends R> elements) {
+		Assert.requiredArgument(elements != null, "elements");
+		return new ParallelElements<>(this, elements);
 	}
 
 	default Elements<E> peek(Consumer<? super E> action) {
@@ -242,12 +249,5 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	default Elements<E> unordered() {
 		return convert((e) -> e.unordered());
-	}
-
-	default Elements<Indexed<E>> index() {
-		return Elements.of(() -> {
-			AtomicLong lineNumber = new AtomicLong();
-			return stream().sequential().map((e) -> new Indexed<>(lineNumber.getAndIncrement(), e));
-		});
 	}
 }

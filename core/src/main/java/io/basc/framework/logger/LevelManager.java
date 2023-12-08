@@ -9,8 +9,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import io.basc.framework.event.observe.support.ObservableMapRegistry;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.value.observe.support.ObservableMapRegistry;
 
 /**
  * 动态管理日志等级管理

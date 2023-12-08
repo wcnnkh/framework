@@ -24,7 +24,7 @@ public class ExecutorWrapper extends Wrapper<Executor> implements Executor {
 	}
 
 	@Override
-	public Object execute(Elements<Object> args) throws Throwable {
+	public Object execute(Elements<? extends Object> args) throws Throwable {
 		return wrappedTarget.execute(args);
 	}
 
@@ -49,12 +49,13 @@ public class ExecutorWrapper extends Wrapper<Executor> implements Executor {
 	}
 
 	@Override
-	public boolean canExecuted(Elements<Class<?>> parameterTypes) {
+	public boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
 		return wrappedTarget.canExecuted(parameterTypes);
 	}
 
 	@Override
-	public Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args) throws Throwable {
+	public Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
+			throws Throwable {
 		return wrappedTarget.execute(parameterTypes, args);
 	}
 }

@@ -7,7 +7,7 @@ public interface Service<E extends Constructor> extends Constructor {
 	Elements<E> getConstructors();
 
 	@Override
-	default boolean canExecuted(Elements<Class<?>> parameterTypes) {
+	default boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
 		for (E executor : getConstructors()) {
 			if (executor.canExecuted(parameterTypes)) {
 				return true;
@@ -17,7 +17,7 @@ public interface Service<E extends Constructor> extends Constructor {
 	}
 
 	@Override
-	default Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args)
+	default Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
 			throws Throwable, NoSuchConstructorException {
 		for (E executor : getConstructors()) {
 			if (executor.canExecuted(parameterTypes)) {

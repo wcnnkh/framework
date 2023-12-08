@@ -11,13 +11,13 @@ import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextAware;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
-import io.basc.framework.env1.ConfigurableEnvironment;
-import io.basc.framework.env1.support.DefaultEnvironment;
+import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
 	private ConfigurableEnvironment environment = new DefaultEnvironment();

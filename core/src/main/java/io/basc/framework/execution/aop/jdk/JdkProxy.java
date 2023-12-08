@@ -30,12 +30,12 @@ public class JdkProxy implements Proxy {
 	}
 
 	@Override
-	public boolean canExecuted(Elements<Class<?>> parameterTypes) {
+	public boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
 		return parameterTypes.isEmpty();
 	}
 
 	@Override
-	public final Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args) {
+	public final Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args) {
 		if (!args.isEmpty() || !parameterTypes.isEmpty()) {
 			throw new UnsupportedException("Jdk proxy does not support calls with parameters");
 		}

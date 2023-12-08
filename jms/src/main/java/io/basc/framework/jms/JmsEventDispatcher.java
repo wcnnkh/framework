@@ -10,7 +10,7 @@ import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.event.unicast.UnicastEventDispatcher;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public class JmsEventDispatcher<T>
 		implements UnicastEventDispatcher<T>, BroadcastEventDispatcher<T>, EventDispatcher<T> {

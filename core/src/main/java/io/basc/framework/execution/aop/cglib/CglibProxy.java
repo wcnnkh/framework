@@ -25,12 +25,12 @@ public class CglibProxy implements Proxy {
 	}
 
 	@Override
-	public boolean canExecuted(Elements<Class<?>> parameterTypes) {
+	public boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
 		return ReflectionUtils.getDeclaredConstructor(source.getType(), parameterTypes.toArray(Class[]::new)) != null;
 	}
 
 	@Override
-	public Object execute(Elements<Class<?>> parameterTypes, Elements<Object> args) {
+	public Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args) {
 		return enhancer.create(parameterTypes.toArray(Class[]::new), args.toArray());
 	}
 

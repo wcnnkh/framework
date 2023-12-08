@@ -3,6 +3,7 @@ package io.basc.framework.util.element;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -13,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
@@ -57,6 +59,11 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
+	public <T> boolean equals(Streamable<? extends T> streamable, BiPredicate<? super E, ? super T> predicate) {
+		return wrappedTarget.equals(streamable, predicate);
+	}
+
+	@Override
 	public <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
 			throws X {
 		return wrappedTarget.export(processor);
@@ -88,8 +95,18 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
+	public E getUnique() throws NoSuchElementException, NoUniqueElementException {
+		return wrappedTarget.getUnique();
+	}
+
+	@Override
 	public boolean isEmpty() {
 		return wrappedTarget.isEmpty();
+	}
+
+	@Override
+	public boolean isUnique() {
+		return wrappedTarget.isUnique();
 	}
 
 	@Override
@@ -182,5 +199,10 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	@Override
 	public <X extends Throwable> void transfer(ConsumeProcessor<? super Stream<E>, ? extends X> processor) throws X {
 		wrappedTarget.transfer(processor);
+	}
+
+	@Override
+	public int hashCode(ToIntFunction<? super E> hash) {
+		return wrappedTarget.hashCode(hash);
 	}
 }

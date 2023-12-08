@@ -2,12 +2,12 @@ package io.basc.framework.execution.param;
 
 import java.util.logging.Level;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.observe.register.ServiceRegistry;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -16,17 +16,14 @@ import io.basc.framework.util.element.Elements;
  * @author wcnnkh
  *
  */
-public class ParameterExtractors extends ConfigurableServices<ParameterExtractor> implements ParameterExtractor {
+public class ParameterExtractors<S> extends ServiceRegistry<ParameterExtractor<? super S>>
+		implements ParameterExtractor<S> {
 	private static Logger logger = LoggerFactory.getLogger(ParameterExtractors.class);
 
-	public ParameterExtractors() {
-		super(ParameterExtractor.class);
-	}
-
 	@Override
-	public boolean canExtractParameter(ParameterDescriptor parameterDescriptor) {
-		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameter(parameterDescriptor)) {
+	public boolean canExtractParameter(S source, ParameterDescriptor parameterDescriptor) {
+		for (ParameterExtractor<? super S> extractor : getServices()) {
+			if (extractor.canExtractParameter(source, parameterDescriptor)) {
 				return true;
 			}
 		}
@@ -34,26 +31,16 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public Object extractParameter(ParameterDescriptor parameterDescriptor) throws ExtractParameterException {
-		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameter(parameterDescriptor)) {
-				return extractor.extractParameter(parameterDescriptor);
-			}
-		}
-		throw new ExtractParameterException(parameterDescriptor.toString());
-	}
-
-	@Override
-	public boolean canExtractParameters(Elements<ParameterDescriptor> parameterDescriptors) {
-		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameters(parameterDescriptors)) {
+	public boolean canExtractParameters(S source, Elements<? extends ParameterDescriptor> parameterDescriptors) {
+		for (ParameterExtractor<? super S> extractor : getServices()) {
+			if (extractor.canExtractParameters(source, parameterDescriptors)) {
 				return true;
 			}
 		}
 
 		return parameterDescriptors.index().allMatch((index) -> {
 			try {
-				boolean success = canExtractParameter(index.getElement());
+				boolean success = canExtractParameter(source, index.getElement());
 				Level level = success ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
 				if (logger.isLoggable(level)) {
 					logger.log(level, "parameter {} matching: {}", index, success ? "success" : "fail");
@@ -67,36 +54,16 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public Elements<Object> extractParameters(Elements<ParameterDescriptor> parameterDescriptors)
-			throws ExtractParameterException {
-		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameters(parameterDescriptors)) {
-				return extractor.extractParameters(parameterDescriptors);
-			}
-		}
-		return parameterDescriptors.index().map((row) -> {
-			try {
-				return extractParameter(row.getElement());
-			} catch (Throwable e) {
-				if (e instanceof ExtractParameterException) {
-					throw e;
-				}
-				throw new ExtractParameterException(row.toString(), e);
-			}
-		});
-	}
-
-	@Override
-	public boolean canExtractParameters(Executor executor) throws ExtractParameterException {
-		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameters(executor)) {
+	public boolean canExtractParameters(S source, Executor executor) throws ExtractParameterException {
+		for (ParameterExtractor<? super S> extractor : getServices()) {
+			if (extractor.canExtractParameters(source, executor)) {
 				return true;
 			}
 		}
 
 		return executor.getParameterDescriptors().index().allMatch((index) -> {
 			try {
-				boolean success = canExtractParameter(index.getElement());
+				boolean success = canExtractParameter(source, index.getElement());
 				Level level = success ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
 				if (logger.isLoggable(level)) {
 					logger.log(level, "{} parameter index {} matching: {}", executor, index.getIndex(),
@@ -112,17 +79,53 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 	}
 
 	@Override
-	public Elements<Object> extractParameters(Executor executor) throws ExtractParameterException {
-		for (ParameterExtractor extractor : getServices()) {
-			if (extractor.canExtractParameters(executor)) {
-				return extractor.extractParameters(executor);
+	public Parameter extractParameter(S source, ParameterDescriptor parameterDescriptor)
+			throws ExtractParameterException {
+		for (ParameterExtractor<? super S> extractor : getServices()) {
+			if (extractor.canExtractParameter(source, parameterDescriptor)) {
+				return extractor.extractParameter(source, parameterDescriptor);
+			}
+		}
+		throw new ExtractParameterException(parameterDescriptor.toString());
+	}
+
+	@Override
+	public Elements<Parameter> extractParameters(S source, Elements<? extends ParameterDescriptor> parameterDescriptors)
+			throws ExtractParameterException {
+		for (ParameterExtractor<? super S> extractor : getServices()) {
+			if (extractor.canExtractParameters(source, parameterDescriptors)) {
+				return extractor.extractParameters(source, parameterDescriptors);
+			}
+		}
+		return parameterDescriptors.index().map((row) -> {
+			Parameter parameter;
+			try {
+				parameter = extractParameter(source, row.getElement());
+			} catch (Throwable e) {
+				if (e instanceof ExtractParameterException) {
+					throw e;
+				}
+				throw new ExtractParameterException(row.toString(), e);
+			}
+			parameter.setIndex((int) row.getIndex());
+			return parameter;
+		});
+	}
+
+	@Override
+	public Parameters extractParameters(S source, Executor executor) throws ExtractParameterException {
+		for (ParameterExtractor<? super S> extractor : getServices()) {
+			if (extractor.canExtractParameters(source, executor)) {
+				return extractor.extractParameters(source, executor);
 			}
 		}
 
-		return executor.getParameterDescriptors().index().map((row) -> {
+		Parameters parameters = new Parameters();
+		parameters.setElements(executor.getParameterDescriptors().index().map((row) -> {
 			ParameterDescriptor parameterDescriptor = row.getElement();
+			Parameter parameter;
 			try {
-				return extractParameter(parameterDescriptor);
+				parameter = extractParameter(source, parameterDescriptor);
 			} catch (Throwable e) {
 				if (e instanceof ExtractParameterException) {
 					throw e;
@@ -130,6 +133,9 @@ public class ParameterExtractors extends ConfigurableServices<ParameterExtractor
 				throw new ExtractParameterException(
 						executor + " parameter index " + row.getIndex() + " descriptor " + parameterDescriptor, e);
 			}
-		});
+			parameter.setIndex((int) row.getIndex());
+			return parameter;
+		}));
+		return parameters;
 	}
 }

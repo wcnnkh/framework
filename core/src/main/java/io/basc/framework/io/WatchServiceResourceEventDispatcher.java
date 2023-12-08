@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
-import io.basc.framework.event.observe.ObservableChangeEvent;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.ChangeType;
+import io.basc.framework.observe.value.ValueChangeEvent;
 
 /**
  * 使用WatchService实现resource监听 需要jdk7(包含)以上 事件可能会重复触发，这与操作系统的实现有关
@@ -128,7 +128,7 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 	}
 
 	@Override
-	public void publishEvent(ChangeEvent<Resource> event) {
+	public void publishEvent(ObservableEvent<Resource> event) {
 		if (event.getChangeType() == ChangeType.CREATE) {
 			// 如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {
@@ -233,7 +233,7 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 
 					for (ResourceItem item : resources) {
 						if (file.getName().equals(item.getName())) {
-							ObservableChangeEvent<Resource> resourceEvent = new ObservableChangeEvent<Resource>(
+							ValueChangeEvent<Resource> resourceEvent = new ValueChangeEvent<Resource>(
 									eventType, item.getResource(), item.getResource());
 							if (logger.isDebugEnabled()) {
 								logger.debug(resourceEvent.toString());

@@ -8,7 +8,7 @@ import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 @ConditionalOnParameters(value = ActionResolver.class)
 public class ConfigurableActiontResolver extends ConfigurableServices<ActionResolverExtend> implements ActionResolver {

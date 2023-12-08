@@ -101,7 +101,7 @@ public abstract class AbstractLoadBalancer<T extends Node> implements LoadBalanc
 		 */
 		long time = 1;
 		if (environment != null) {
-			Value period = environment.getProperties().get("basc.loadbalancer.refresh.period");
+			Value period = environment.get("basc.loadbalancer.refresh.period");
 			if (period.isPresent() && period.getAsLong() == 0) {
 				// 不启动
 				return false;

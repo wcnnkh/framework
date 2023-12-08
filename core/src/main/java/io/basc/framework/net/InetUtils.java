@@ -19,12 +19,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.message.Headers;
 import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.OutputMessage;
-import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
@@ -47,13 +45,6 @@ public final class InetUtils {
 	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
-	private static final MultipartMessageResolver MULTIPART_MESSAGE_RESOLVER = Sys.getEnv()
-			.getServiceLoader(MultipartMessageResolver.class).getServices().first();
-
-	@Nullable
-	public static MultipartMessageResolver getMultipartMessageResolver() {
-		return MULTIPART_MESSAGE_RESOLVER;
-	}
 
 	public static BalancedInetSocketAddress parseInetSocketAddress(String addressTemplate, int defaultPort) {
 		Assert.requiredArgument(StringUtils.hasText(addressTemplate), "addressTemplate");

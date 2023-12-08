@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import org.junit.Test;
 
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.util.Registration;
 
 public class LambdaTest {
 	@Test

@@ -16,7 +16,6 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 	private volatile Map<String, Object> singletonObjects = new LinkedHashMap<>();
 
-	@Override
 	public ReadWriteLock getReadWriteLock() {
 		return readWriteLock;
 	}

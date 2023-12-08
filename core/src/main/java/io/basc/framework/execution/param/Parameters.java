@@ -28,10 +28,18 @@ public class Parameters implements Function<Elements<? extends ParameterDescript
 		this(Elements.forArray(parameters));
 	}
 
+	public Elements<Object> getArgs() {
+		return elements == null ? Elements.empty() : elements.map(Parameter::getValue);
+	}
+
+	public boolean isEmpty() {
+		return elements == null || elements.isEmpty();
+	}
+
 	@Override
 	public ParameterMatchingResults apply(Elements<? extends ParameterDescriptor> parameterDescriptors) {
 		ParameterMatchingResults matchingResults = new ParameterMatchingResults();
-		if (parameterDescriptors.isEmpty() && elements.isEmpty()) {
+		if (parameterDescriptors.isEmpty() && isEmpty()) {
 			matchingResults.setSuccessful(true);
 			return matchingResults;
 		}

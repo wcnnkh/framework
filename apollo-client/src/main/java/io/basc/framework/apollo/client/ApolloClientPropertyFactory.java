@@ -6,15 +6,15 @@ import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.element.ElementSet;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
-public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatcher<ChangeEvent<Collection<String>>>
+public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatcher<ObservableEvent<Collection<String>>>
 		implements PropertyFactory, ConfigChangeListener {
 	private final Config config;
 
@@ -36,6 +36,6 @@ public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatche
 
 	@Override
 	public void onChange(ConfigChangeEvent changeEvent) {
-		publishEvent(new ChangeEvent<Collection<String>>(ChangeType.UPDATE, changeEvent.changedKeys()));
+		publishEvent(new ObservableEvent<Collection<String>>(ChangeType.UPDATE, changeEvent.changedKeys()));
 	}
 }

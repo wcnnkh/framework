@@ -2,10 +2,10 @@ package io.basc.framework.value;
 
 import java.util.Set;
 
-import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
 import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.observe.ObservableEvent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.ElementSet;
 import io.basc.framework.util.element.Elements;
@@ -17,24 +17,24 @@ import io.basc.framework.util.element.Elements;
  *
  */
 public class PropertyFactories extends ValueFactories<String, PropertyFactory> implements DynamicPropertyFactory {
-	private final BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher;
+	private final BroadcastEventDispatcher<ObservableEvent<Elements<String>>> keyEventDispatcher;
 
 	public PropertyFactories() {
 		this(new StandardBroadcastEventDispatcher<>());
 	}
 
-	public PropertyFactories(BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher) {
+	public PropertyFactories(BroadcastEventDispatcher<ObservableEvent<Elements<String>>> keyEventDispatcher) {
 		Assert.requiredArgument(keyEventDispatcher != null, "keyEventDispatcher");
 		this.keyEventDispatcher = keyEventDispatcher;
 		setServiceClass(PropertyFactory.class);
 		getElementEventDispatcher().registerListener((e) -> {
 			Set<String> registerKeys = e.getSource().flatMap((p) -> p.keys()).toSet();
 			ElementSet<String> changeKeys = new ElementSet<>(registerKeys);
-			keyEventDispatcher.publishEvent(new ChangeEvent<>(e, changeKeys));
+			keyEventDispatcher.publishEvent(new ObservableEvent<>(e, changeKeys));
 		});
 	}
 
-	public BroadcastEventDispatcher<ChangeEvent<Elements<String>>> getKeyEventDispatcher() {
+	public BroadcastEventDispatcher<ObservableEvent<Elements<String>>> getKeyEventDispatcher() {
 		return keyEventDispatcher;
 	}
 
@@ -58,7 +58,7 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 	}
 
 	@Override
-	public BroadcastEventRegistry<ChangeEvent<Elements<String>>> getKeyEventRegistry() {
+	public BroadcastEventRegistry<ObservableEvent<Elements<String>>> getKeyEventRegistry() {
 		return keyEventDispatcher;
 	}
 }

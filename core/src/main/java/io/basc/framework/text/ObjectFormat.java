@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
@@ -35,7 +35,7 @@ import lombok.Setter;
 @Setter
 public abstract class ObjectFormat implements PairFormat<String, Value> {
 	@NonNull
-	private ConversionService conversionService = Sys.getEnv().getConversionService();
+	private ConversionService conversionService = GlobalConversionService.getInstance();
 	@NonNull
 	private MappingFactory mappingFactory = BeanUtils::getBeanMapping;
 

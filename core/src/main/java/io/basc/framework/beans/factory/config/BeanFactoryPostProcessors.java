@@ -10,7 +10,7 @@ public final class BeanFactoryPostProcessors extends ConfigurableServices<BeanFa
 	}
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		for (BeanFactoryPostProcessor postProcessor : getServices()) {
 			postProcessor.postProcessBeanFactory(beanFactory);
 		}

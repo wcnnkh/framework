@@ -5,9 +5,9 @@ import java.util.Map;
 
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
+import io.basc.framework.util.DisposableRegistration;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.registry.DisposableRegistration;
-import io.basc.framework.util.registry.Registration;
 
 public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends DefaultAuthorityManager<T>
 		implements HttpAuthorityManager<T> {

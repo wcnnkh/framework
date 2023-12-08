@@ -5,16 +5,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.broadcast.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.event.observe.ObservableChangeEvent;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.registry.Registration;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.ChangeType;
+import io.basc.framework.observe.value.ValueChangeEvent;
+import io.basc.framework.util.Registration;
 
-public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatcher<ChangeEvent<Resource>> {
+public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatcher<ObservableEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
@@ -61,7 +61,7 @@ public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatc
 	}
 
 	@Override
-	public void publishEvent(ChangeEvent<Resource> event) {
+	public void publishEvent(ObservableEvent<Resource> event) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(event.toString());
 		}
@@ -69,7 +69,7 @@ public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatc
 	}
 
 	@Override
-	public Registration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
+	public Registration registerListener(EventListener<ObservableEvent<Resource>> eventListener) {
 		if (!lock.get() && lock.compareAndSet(false, true)) {
 			listener();
 		}
@@ -106,11 +106,11 @@ public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatc
 				if (exist != this.exist) {
 					this.last = last;
 					this.exist = exist;
-					publishEvent(new ObservableChangeEvent<Resource>(exist ? ChangeType.CREATE : ChangeType.DELETE,
+					publishEvent(new ValueChangeEvent<Resource>(exist ? ChangeType.CREATE : ChangeType.DELETE,
 							resource, resource));
 				} else if (this.last != last) {
 					this.last = last;
-					publishEvent(new ObservableChangeEvent<Resource>(ChangeType.UPDATE, resource, resource));
+					publishEvent(new ValueChangeEvent<Resource>(ChangeType.UPDATE, resource, resource));
 				}
 			} catch (Exception e) {
 				logger.error(e, resource.toString());

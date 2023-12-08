@@ -22,7 +22,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 	private ConversionService conversionService;
 
 	@Override
-	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
 		if (args.isEmpty()) {
 			return executor.execute(args);
 		}
