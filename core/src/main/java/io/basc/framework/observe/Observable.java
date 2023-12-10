@@ -1,11 +1,13 @@
 package io.basc.framework.observe;
 
+import io.basc.framework.event.batch.BatchEventRegistry;
+
 /**
- * 可观察的(推拉结合)
+ * 可观察的定义
  * 
- * @author wcnnkh
+ * @author shuchaowen
  *
- * @param <E> 事件类型
+ * @param <E>
  */
-public interface Observable<E> extends Push<E>, Pull {
+public interface Observable<E> extends BatchEventRegistry<E> {
 }

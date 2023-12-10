@@ -1,5 +1,6 @@
 package io.basc.framework.observe.value;
 
+import io.basc.framework.observe.register.ObservableRegistry;
 import io.basc.framework.observe.register.Registry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.select.Selector;
@@ -9,7 +10,7 @@ public class MergedObservableValue<V> extends AtomicObservableValue<V> {
 	private Selector<V> selector = Selector.first();
 
 	public MergedObservableValue() {
-		this(new ObservableValueRegistry<>());
+		this(new ObservableRegistry<>());
 	}
 
 	public MergedObservableValue(Registry<? extends ObservableValue<V>> registry) {

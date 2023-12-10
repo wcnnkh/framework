@@ -30,7 +30,7 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 		getElementEventDispatcher().registerListener((e) -> {
 			Set<String> registerKeys = e.getSource().flatMap((p) -> p.keys()).toSet();
 			ElementSet<String> changeKeys = new ElementSet<>(registerKeys);
-			keyEventDispatcher.publishEvent(new ObservableEvent<>(e, changeKeys));
+			keyEventDispatcher.publishEvent(new PayloadChangeEvent<>(e, changeKeys));
 		});
 	}
 

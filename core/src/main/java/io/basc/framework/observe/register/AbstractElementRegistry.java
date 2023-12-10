@@ -4,6 +4,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.element.Elements;
 
 public abstract class AbstractElementRegistry<E> extends AbstractRegistry<E> {
@@ -69,17 +70,17 @@ public abstract class AbstractElementRegistry<E> extends AbstractRegistry<E> {
 					return;
 				} else {
 					this.firstService = firstService;
-					publishEvent(new RegistryEvent<>(this, RegistryEventType.REGISTER, firstService));
+					publishEvent(new RegistryEvent<>(this, ChangeType.CREATE, firstService));
 				}
 			} else {
 				if (firstService == null) {
 					E oldService = this.firstService;
 					this.firstService = null;
-					publishEvent(new RegistryEvent<>(this, RegistryEventType.UNREGISTER, oldService));
+					publishEvent(new RegistryEvent<>(this, ChangeType.DELETE, oldService));
 				} else {
 					E oldService = this.firstService;
 					this.firstService = firstService;
-					publishEvent(new RegistryEvent<>(this, RegistryEventType.UPDATE, oldService));
+					publishEvent(new RegistryEvent<>(this, ChangeType.UPDATE, oldService));
 				}
 			}
 		} finally {
@@ -97,17 +98,17 @@ public abstract class AbstractElementRegistry<E> extends AbstractRegistry<E> {
 					return;
 				} else {
 					this.lastService = lastService;
-					publishEvent(new RegistryEvent<>(this, RegistryEventType.REGISTER, firstService));
+					publishEvent(new RegistryEvent<>(this, ChangeType.CREATE, firstService));
 				}
 			} else {
 				if (lastService == null) {
 					E oldService = this.lastService;
 					this.lastService = null;
-					publishEvent(new RegistryEvent<>(this, RegistryEventType.UNREGISTER, oldService));
+					publishEvent(new RegistryEvent<>(this, ChangeType.DELETE, oldService));
 				} else {
 					E oldService = this.lastService;
 					this.lastService = lastService;
-					publishEvent(new RegistryEvent<>(this, RegistryEventType.UPDATE, oldService));
+					publishEvent(new RegistryEvent<>(this, ChangeType.UPDATE, oldService));
 				}
 			}
 		} finally {

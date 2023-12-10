@@ -7,17 +7,12 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.observe.ObservableEvent;
-import io.basc.framework.observe.Observable;
-import io.basc.framework.observe.Observer;
-import io.basc.framework.util.Registration;
+import io.basc.framework.observe.Variable;
 import io.basc.framework.util.function.Processor;
 
-public interface Resource extends InputStreamSource, Observable, Observer<Resource> {
+public interface Resource extends InputStreamSource, Variable {
 	/**
 	 * 是否存在
 	 * 
@@ -66,15 +61,6 @@ public interface Resource extends InputStreamSource, Observable, Observer<Resour
 	String getName();
 
 	String getDescription();
-
-	/**
-	 * 监听资源修改
-	 */
-	@Override
-	default Registration registerListener(EventListener<ObservableEvent<Resource>> eventListener)
-			throws EventRegistrationException {
-		return Registration.EMPTY;
-	}
 
 	@Override
 	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)

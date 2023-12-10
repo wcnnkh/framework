@@ -31,7 +31,7 @@ public class MapValueFactory<K> extends ObservableMap<K, Value> implements Dynam
 				Set<K> changeKeys = event.getChangeType() == ChangeType.DELETE ? event.getOldSource().keySet()
 						: event.getSource().keySet();
 				Elements<K> keys = new ElementSet<>(changeKeys);
-				ObservableEvent<Elements<K>> changeEvent = new ObservableEvent<>(event, keys);
+				PayloadChangeEvent<Elements<K>> changeEvent = new PayloadChangeEvent<>(event, keys);
 				listener.onEvent(changeEvent);
 			});
 		};

@@ -35,7 +35,7 @@ public class ValueFactories<K, F extends ValueFactory<K>> extends ConfigurableSe
 			registration = registration
 					.and(((DynamicValueFactory<?>) element).getKeyEventRegistry().registerListener((event) -> {
 						getElementEventDispatcher()
-								.publishEvent(new ObservableEvent<>(ChangeType.UPDATE, Elements.singleton(element)));
+								.publishEvent(new PayloadChangeEvent<>(ChangeType.UPDATE, Elements.singleton(element)));
 					}));
 		}
 		return registration;

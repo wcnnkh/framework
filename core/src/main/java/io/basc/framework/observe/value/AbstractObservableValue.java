@@ -1,12 +1,13 @@
 package io.basc.framework.observe.value;
 
-import io.basc.framework.observe.Observer;
-import io.basc.framework.observe.mode.ChangeEvent;
+import io.basc.framework.observe.ChangeEvent;
+import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.observe.VariableObserver;
 
-public abstract class AbstractObservableValue<V> extends Observer<ChangeEvent> implements ObservableValue<V> {
+public abstract class AbstractObservableValue<V> extends VariableObserver<ChangeEvent> implements ObservableValue<V> {
 
 	protected void modifyLastModified(long oldValue, long newValue) {
-		publishEvent(new ChangeEvent(this, newValue));
+		publishEvent(new ObservableEvent<>(this, oldValue, newValue));
 	}
 
 	public long setLastModified(long lastModified) {

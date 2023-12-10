@@ -1,20 +1,58 @@
-package io.basc.framework.observe.mode;
+package io.basc.framework.observe.register;
 
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
-import io.basc.framework.observe.register.ElementRegistration;
-import io.basc.framework.observe.register.ElementRegistry;
-import io.basc.framework.observe.register.RegistryEvent;
+import io.basc.framework.observe.Polling;
 import io.basc.framework.util.Registration;
 
-public abstract class ElementViewer<E> extends ElementRegistry<E> implements Viewer {
+public abstract class PollingRegistry<E extends Polling> extends ElementRegistry<E> implements Polling {
+
+	public boolean startEndlessLoop() {
+		return startEndlessLoop(() -> {
+			try {
+				await();
+			} catch (InterruptedException e) {
+				return;
+			}
+			run();
+		});
+	}
+
+	public boolean startScheduled(ScheduledExecutorService scheduledExecutorService) {
+		return startScheduled(scheduledExecutorService, this);
+	}
+
+	public boolean startTimerTask() {
+		return startTimerTask(this);
+	}
+
+	@Override
+	public void run() {
+		getServices().forEach(Polling::run);
+	}
 
 	@Override
 	public void await() throws InterruptedException {
-		while (!await(getListenerCount(), getRefreshTimeUnit()))
+		while (!await(getRefreshTimeCycle(), getRefreshTimeUnit()))
 			;
+	}
+
+	@Override
+	public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+		List<E> list = getServices().toList();
+		long time = unit.toMillis(timeout);
+		time = Math.max(1, time / list.size());
+		for (E polling : list) {
+			if (polling.await(time, TimeUnit.MILLISECONDS)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -72,4 +110,5 @@ public abstract class ElementViewer<E> extends ElementRegistry<E> implements Vie
 			writeLock.unlock();
 		}
 	}
+
 }

@@ -17,21 +17,11 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.observe.mode.ObserverMode;
-import io.basc.framework.observe.register.ElementRegistration;
-import io.basc.framework.observe.register.ElementRegistry;
-import io.basc.framework.observe.register.Registry;
+import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 
-/**
- * 使用Watch实现观察者
- * 
- * @author shuchaowen
- *
- * @param <T>
- */
-public class Watcher<T> extends ObserverMode<WatchEvent<T>> {
+public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 	private static volatile WatchService defaultWatchService;
 	private static Logger logger = LoggerFactory.getLogger(Watcher.class);
 	private static volatile boolean newDefaultWatchServieError = false;
@@ -83,6 +73,13 @@ public class Watcher<T> extends ObserverMode<WatchEvent<T>> {
 				if (defaultWatchService == null) {
 					try {
 						defaultWatchService = FileSystems.getDefault().newWatchService();
+						Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+							try {
+								defaultWatchService.close();
+							} catch (IOException e) {
+								logger.error(e, "Closing defaultWatchService exception");
+							}
+						}));
 					} catch (IOException e) {
 						newDefaultWatchServieError = true;
 						logger.error(e, "Unable to obtain default WatchService");
@@ -94,85 +91,72 @@ public class Watcher<T> extends ObserverMode<WatchEvent<T>> {
 	}
 
 	private final Class<T> contextType;
-	private final Registry<WatchKey> registry;
-
-	private Elements<? extends WatchEvent.Kind<?>> watchEventKinds = getAllWatchEventKinds();
-
 	private final WatchService watchService;
 
 	public Watcher(Class<T> contextType) {
 		this(getDefaultWatchService(), contextType);
 	}
 
-	public Watcher(Registry<WatchKey> registry, Class<T> contextType) {
-		this(registry, getDefaultWatchService(), contextType);
-	}
-
-	public Watcher(Registry<WatchKey> registry, WatchService watchService, Class<T> contextType) {
-		Assert.requiredArgument(registry != null, "registry");
+	public Watcher(WatchService watchService, Class<T> contextType) {
 		Assert.requiredArgument(watchService != null, "watchService");
 		Assert.requiredArgument(contextType != null, "contextType");
-		this.registry = registry;
 		this.watchService = watchService;
 		this.contextType = contextType;
 	}
 
-	public Watcher(WatchService watchService, Class<T> contextType) {
-		this(new ElementRegistry<>(), watchService, contextType);
-	}
-
-	public Registry<WatchKey> getRegistry() {
-		return registry;
-	}
-
-	public Elements<? extends WatchEvent.Kind<?>> getWatchEventKinds() {
-		return watchEventKinds;
-	}
-
-	public Elements<WatchKey> getWatchKeys() {
-		return registry.getServices().filter((e) -> e.isValid());
-	}
-
-	public final ElementRegistration<WatchKey> register(Watchable watchable) throws IOException {
-		return register(watchable, getWatchEventKinds().toArray(WatchEvent.Kind<?>[]::new));
-	}
-
-	public final ElementRegistration<WatchKey> register(Watchable watchable, WatchEvent.Kind<?>... events)
-			throws IOException {
-		WatchKey watchKey = watchable.register(watchService, events);
-		return register(watchKey);
-	}
-
-	public final ElementRegistration<WatchKey> register(Watchable watchable, WatchEvent.Kind<?>[] events,
-			WatchEvent.Modifier... modifiers) throws IOException {
-		WatchKey watchKey = watchable.register(watchService, events, modifiers);
-		return register(watchKey);
-	}
-
-	public ElementRegistration<WatchKey> register(WatchKey watchKey) {
-		return new ElementRegistration<WatchKey>(watchKey, registry.register(watchKey));
-	}
-
-	@Override
-	public void run() {
-		WatchKeyObserver<WatchKey, T> watchKeysObserver = new WatchKeyObserver<>(getWatchKeys(), contextType);
-		watchKeysObserver.registerBatchListener((e) -> publishBatchEvent(e));
-		watchKeysObserver.run();
-	}
-
-	public void setWatchEventKinds(Elements<? extends WatchEvent.Kind<?>> watchEventKinds) {
-		Assert.requiredArgument(watchEventKinds != null, "watchEventKinds");
-		this.watchEventKinds = watchEventKinds;
-	}
-
 	@Override
 	public void await() throws InterruptedException {
-		watchService.take();
+		WatchKey watchKey = watchService.take();
+		if (watchKey == null) {
+			return;
+		}
+
+		PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(watchKey, contextType);
+		try {
+			publishBatchEvent(watchKeyObserver.pollEvents());
+		} finally {
+			watchKeyObserver.reset();
+		}
 	}
 
 	@Override
 	public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
-		return watchService.poll(timeout, unit) != null;
+		WatchKey watchKey = watchService.poll(timeout, unit);
+		if (watchKey == null) {
+			return false;
+		}
+
+		PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(watchKey, contextType);
+		try {
+			publishBatchEvent(watchKeyObserver.pollEvents());
+		} finally {
+			watchKeyObserver.reset();
+		}
+		return true;
+	}
+
+	public WatchKey register(Watchable watchable, WatchEvent.Kind<?>... events) throws IOException {
+		return watchable.register(watchService, events);
+	}
+
+	public WatchKey register(Watchable watchable, WatchEvent.Kind<?>[] events, WatchEvent.Modifier... modifiers)
+			throws IOException {
+		return watchable.register(watchService, events, modifiers);
+	}
+
+	@Override
+	public void run() {
+		WatchKey watchKey = watchService.poll();
+		if (watchKey == null) {
+			return;
+		}
+
+		PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(watchKey, contextType);
+		try {
+			publishBatchEvent(watchKeyObserver.pollEvents());
+		} finally {
+			watchKeyObserver.reset();
+		}
 	}
 
 }

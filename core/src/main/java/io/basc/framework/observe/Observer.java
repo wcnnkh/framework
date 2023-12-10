@@ -10,14 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.basc.framework.event.support.DefaultBroadcastEventDispatcher;
 import io.basc.framework.util.Assert;
 
-/**
- * 观察者实现
- * 
- * @author shuchaowen
- *
- * @param <E>
- */
-public class Observer<E> extends DefaultBroadcastEventDispatcher<E> implements Observable<E> {
+public class Observer<E> extends DefaultBroadcastEventDispatcher<E> implements PublishService<E> {
 	private static volatile Timer defaultTimer;
 
 	private static Timer getDefaultTimer() {
@@ -77,19 +70,6 @@ public class Observer<E> extends DefaultBroadcastEventDispatcher<E> implements O
 		synchronized (this) {
 			return timerTask != null || scheduledFuture != null || endlessLoopThread != null;
 		}
-	}
-
-	@Override
-	public long lastModified() {
-		return atomicLastModified.get();
-	}
-
-	public long setLastModified(long lastModified) {
-		return this.atomicLastModified.getAndSet(lastModified);
-	}
-
-	public boolean setLastModified(long oldValue, long newValue) {
-		return this.atomicLastModified.compareAndSet(oldValue, newValue);
 	}
 
 	public void setRefreshTimeCycle(long refreshTimeCycle) {

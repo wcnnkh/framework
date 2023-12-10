@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.RegistrationException;
@@ -29,7 +30,7 @@ public class ElementRegistry<E> extends AbstractElementRegistry<E> {
 			this.version++;
 			List<ElementRegistration<E>> registrations = elements.stream().map((e) -> {
 				VersionRegistration versionRegistration = new VersionRegistration(() -> this.version,
-						() -> unregister(e, RegistryEventType.REGISTER));
+						() -> unregister(e, ChangeType.CREATE));
 				return new ElementRegistration<E>(e.getDelegateSource(), versionRegistration);
 			}).collect(Collectors.toList());
 			return new Registrations<>(Elements.of(registrations));
@@ -64,11 +65,11 @@ public class ElementRegistry<E> extends AbstractElementRegistry<E> {
 			wrapper.setEqualsAndHashCode(UUID.randomUUID().toString());
 			wrappers.add(wrapper);
 			Registration registration = new VersionRegistration(() -> this.version,
-					() -> unregister(wrapper, RegistryEventType.UNREGISTER));
+					() -> unregister(wrapper, ChangeType.DELETE));
 			return new ElementRegistration<E>(element, registration);
 		} finally {
 			writeLock.unlock();
-			publishEvent(new RegistryEvent<>(this, RegistryEventType.REGISTER, element));
+			publishEvent(new RegistryEvent<>(this, ChangeType.CREATE, element));
 		}
 	}
 
@@ -97,17 +98,17 @@ public class ElementRegistry<E> extends AbstractElementRegistry<E> {
 	@Override
 	public void reload() {
 		if (wrappers != null) {
-			publishBatchEvent(loadServices().map((e) -> new RegistryEvent<>(this, RegistryEventType.UPDATE, e)));
+			publishBatchEvent(loadServices().map((e) -> new RegistryEvent<>(this, ChangeType.UPDATE, e)));
 		}
 	}
 
-	private void unregister(Wrapper<E> element, RegistryEventType eventType) {
+	private void unregister(Wrapper<E> element, ChangeType eventType) {
 		Lock writeLock = getReadWriteLock().writeLock();
 		writeLock.lock();
 		try {
-			if (eventType == RegistryEventType.UNREGISTER) {
+			if (eventType == ChangeType.DELETE) {
 				this.wrappers.remove(element);
-			} else if (eventType == RegistryEventType.REGISTER) {
+			} else if (eventType == ChangeType.CREATE) {
 				this.wrappers.add(element);
 			}
 		} finally {

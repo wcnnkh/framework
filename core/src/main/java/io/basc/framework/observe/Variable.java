@@ -1,12 +1,12 @@
 package io.basc.framework.observe;
 
 /**
- * 拉模式
+ * 变量
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
-public interface Pull {
+public interface Variable {
 	/**
 	 * 最后一次修改标识
 	 * 

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Registration;
@@ -67,7 +68,7 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 					.entrySet()) {
 				entry.getValue().unregister();
 				ElementRegistration<ServiceLoader<? extends S>> registration = new ElementRegistration<ServiceLoader<? extends S>>(
-						entry.getKey().getElement(), () -> unregister(entry.getKey(), RegistryEventType.REGISTER));
+						entry.getKey().getElement(), () -> unregister(entry.getKey(), ChangeType.CREATE));
 				registrations.add(registration.version(() -> this.version));
 			}
 			changed = true;
@@ -133,13 +134,13 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 		Registration registration = Registration.EMPTY;
 		if (element instanceof Registry) {
 			registration = registration.and(((Registry<?>) element).registerListener((event) -> {
-				publishEvent(new RegistryEvent<>(this, RegistryEventType.UPDATE, element));
+				publishEvent(new RegistryEvent<>(this, ChangeType.UPDATE, element));
 				changed = true;
 			}));
 		}
 
-		return new VersionRegistration(() -> this.version,
-				() -> unregister(weightElement, RegistryEventType.UNREGISTER)).and(registration);
+		return new VersionRegistration(() -> this.version, () -> unregister(weightElement, ChangeType.DELETE))
+				.and(registration);
 	}
 
 	public Registration registerFirst(ServiceLoader<? extends S> element) {
@@ -207,13 +208,13 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 		}
 	}
 
-	private void unregister(WeightedElement<ServiceLoader<? extends S>> serviceLoader, RegistryEventType eventType) {
+	private void unregister(WeightedElement<ServiceLoader<? extends S>> serviceLoader, ChangeType eventType) {
 		WriteLock writeLock = lock.writeLock();
 		try {
 			writeLock.lock();
-			if (eventType == RegistryEventType.REGISTER) {
+			if (eventType == ChangeType.CREATE) {
 				map.putIfAbsent(serviceLoader, Registrations.empty());
-			} else if (eventType == RegistryEventType.UNREGISTER) {
+			} else if (eventType == ChangeType.DELETE) {
 				Registrations<ElementRegistration<S>> registrations = map.remove(serviceLoader);
 				if (registrations != null && registrations != EMPTY) {
 					registrations.unregister();

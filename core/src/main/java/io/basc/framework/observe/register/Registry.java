@@ -1,7 +1,6 @@
 package io.basc.framework.observe.register;
 
-import io.basc.framework.event.batch.BatchEventRegistry;
-import io.basc.framework.observe.Push;
+import io.basc.framework.observe.Observable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.RegistrationException;
@@ -9,13 +8,13 @@ import io.basc.framework.util.Registrations;
 import io.basc.framework.util.element.ServiceLoader;
 
 /**
- * 注册表,典型的推模式
+ * 注册表
  * 
  * @author shuchaowen
  *
  * @param <E>
  */
-public interface Registry<E> extends BatchEventRegistry<RegistryEvent<E>>, Push<RegistryEvent<E>>, ServiceLoader<E> {
+public interface Registry<E> extends ServiceLoader<E>, Observable<RegistryEvent<E>> {
 
 	Registration register(E element) throws RegistrationException;
 

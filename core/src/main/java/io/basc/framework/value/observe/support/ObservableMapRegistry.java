@@ -54,7 +54,7 @@ public class ObservableMapRegistry<K, V> extends MergedObservable<Map<K, V>> {
 		master.getEventDispatcher().registerListener((e) -> {
 			Set<K> changeKeys = e.getChangeType() == ChangeType.DELETE ? e.getOldSource().keySet()
 					: e.getSource().keySet();
-			keyEventDispatcher.publishEvent(new ObservableEvent<>(e, new ElementSet<>(changeKeys)));
+			keyEventDispatcher.publishEvent(new PayloadChangeEvent<>(e, new ElementSet<>(changeKeys)));
 			// 这里只触发更新，不触发节点变更，以防止出现事件循环
 			touchValue();
 		});
@@ -69,7 +69,7 @@ public class ObservableMapRegistry<K, V> extends MergedObservable<Map<K, V>> {
 
 				keys.addAll(map.keySet());
 			}
-			keyEventDispatcher.publishEvent(new ObservableEvent<>(e, new ElementSet<>(keys)));
+			keyEventDispatcher.publishEvent(new PayloadChangeEvent<>(e, new ElementSet<>(keys)));
 		});
 	}
 

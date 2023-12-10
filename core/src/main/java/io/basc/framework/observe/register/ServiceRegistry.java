@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Registration;
@@ -61,11 +62,11 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 		});
 	}
 
-	private void change(WeightedElement<S> element, RegistryEventType eventType) {
+	private void change(WeightedElement<S> element, ChangeType eventType) {
 		WriteLock writeLock = this.lock.writeLock();
 		try {
 			writeLock.lock();
-			if (eventType == RegistryEventType.UNREGISTER) {
+			if (eventType == ChangeType.DELETE) {
 				Map<ServiceInjector<? super S>, Registration> map = serviceMap.remove(element);
 				if (map == null) {
 					return;
@@ -74,7 +75,7 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 				for (Entry<ServiceInjector<? super S>, Registration> entry : map.entrySet()) {
 					entry.getValue().unregister();
 				}
-			} else if (eventType == RegistryEventType.REGISTER) {
+			} else if (eventType == ChangeType.CREATE) {
 				Map<ServiceInjector<? super S>, Registration> map = serviceMap.get(element);
 				if (map == null) {
 					map = new LinkedHashMap<>();
@@ -111,11 +112,11 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 					}
 				}
 				list.add(new ElementRegistration<S>(entry.getKey().getElement(),
-						() -> change(entry.getKey(), RegistryEventType.REGISTER)).version(() -> this.version));
+						() -> change(entry.getKey(), ChangeType.CREATE)).version(() -> this.version));
 			}
 			serviceMap.clear();
-			publishBatchEvent(Elements.of(list)
-					.map((e) -> new RegistryEvent<>(this, RegistryEventType.UNREGISTER, e.getElement())));
+			publishBatchEvent(
+					Elements.of(list).map((e) -> new RegistryEvent<>(this, ChangeType.DELETE, e.getElement())));
 			return new Registrations<>(Elements.of(list)).and(registration);
 		} finally {
 			writeLock.unlock();
@@ -155,17 +156,17 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 				return ElementRegistration.empty();
 			}
 
-			change(weightedElement, RegistryEventType.REGISTER);
+			change(weightedElement, ChangeType.CREATE);
 		} finally {
 			writeLock.unlock();
 		}
 
 		Registration registration = new ElementRegistration<S>(element,
-				() -> change(weightedElement, RegistryEventType.UNREGISTER)).version(() -> this.version);
+				() -> change(weightedElement, ChangeType.DELETE)).version(() -> this.version);
 		// 判断是否是动态的，如果是要关联一下
 		if (element != this && element instanceof Registry) {
-			registration = registration.and(
-					((Registry<?>) element).registerListener((e) -> change(weightedElement, RegistryEventType.UPDATE)));
+			registration = registration
+					.and(((Registry<?>) element).registerListener((e) -> change(weightedElement, ChangeType.UPDATE)));
 		}
 		return registration;
 	}
@@ -195,8 +196,8 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 	private void updateInjector(Elements<RegistryEvent<ServiceInjector<? super S>>> events) {
 		List<S> update = new ArrayList<>();
 		for (RegistryEvent<ServiceInjector<? super S>> event : events) {
-			ServiceInjector<? super S> injector = event.getElement();
-			if (event.getType() == RegistryEventType.REGISTER) {
+			ServiceInjector<? super S> injector = event.getPayload();
+			if (event.getType() == ChangeType.CREATE) {
 				for (Entry<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> entry : serviceMap
 						.entrySet()) {
 					if (entry.getValue() == null) {
@@ -213,7 +214,7 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 					entry.getValue().put(injector, registration);
 					update.add(entry.getKey().getElement());
 				}
-			} else if (event.getType() == RegistryEventType.UPDATE) {
+			} else if (event.getType() == ChangeType.UPDATE) {
 				for (Entry<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> entry : serviceMap
 						.entrySet()) {
 					if (entry.getValue() == null) {
@@ -232,7 +233,7 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 					entry.getValue().put(injector, registration);
 					update.add(entry.getKey().getElement());
 				}
-			} else if (event.getType() == RegistryEventType.UNREGISTER) {
+			} else if (event.getType() == ChangeType.DELETE) {
 				for (Entry<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> entry : serviceMap
 						.entrySet()) {
 					if (entry.getValue() == null) {
@@ -250,7 +251,6 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 				}
 			}
 		}
-		publishBatchEvent(
-				Elements.of(update).map((e) -> new RegistryEvent<>(this, RegistryEventType.UPDATE, e)).toList());
+		publishBatchEvent(Elements.of(update).map((e) -> new RegistryEvent<>(this, ChangeType.UPDATE, e)).toList());
 	}
 }

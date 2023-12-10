@@ -1,5 +1,6 @@
 package io.basc.framework.observe.register;
 
+import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.Observer;
 import io.basc.framework.util.RegistrationException;
 import io.basc.framework.util.Registrations;
@@ -17,6 +18,6 @@ public abstract class AbstractRegistry<E> extends Observer<RegistryEvent<E>> imp
 	 */
 	@Override
 	public void reload() {
-		publishBatchEvent(getServices().map((e) -> new RegistryEvent<>(this, RegistryEventType.UPDATE, e)));
+		publishBatchEvent(getServices().map((e) -> new RegistryEvent<>(this, ChangeType.UPDATE, e)));
 	}
 }
