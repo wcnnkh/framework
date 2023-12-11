@@ -9,7 +9,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.Elements;
 
-public class PollingWatchKeyObserver<T> extends PollingObserver<WatchEvent<T>> {
+public class WatchKeyPollingObserver<T> extends PollingObserver<WatchEvent<T>> {
 	@SuppressWarnings("unchecked")
 	public static <T> Elements<WatchEvent<T>> pollEvents(WatchKey watchKey, Class<T> contextType) {
 		if (!watchKey.isValid()) {
@@ -29,7 +29,7 @@ public class PollingWatchKeyObserver<T> extends PollingObserver<WatchEvent<T>> {
 
 	private final WatchKey watchKey;
 
-	public PollingWatchKeyObserver(WatchKey watchKey, Class<T> contextType) {
+	public WatchKeyPollingObserver(WatchKey watchKey, Class<T> contextType) {
 		Assert.requiredArgument(watchKey != null, "watchKey");
 		Assert.requiredArgument(contextType != null, "contextType");
 		this.watchKey = watchKey;

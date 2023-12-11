@@ -3,14 +3,15 @@ package io.basc.framework.logger;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.value.observe.support.ObservableMapRegistry;
+import io.basc.framework.observe.properties.DynamicPropertyManager;
+import io.basc.framework.observe.value.ObservableValue;
+import io.basc.framework.util.Registration;
 
 /**
  * 动态管理日志等级管理
@@ -18,7 +19,7 @@ import io.basc.framework.value.observe.support.ObservableMapRegistry;
  * @author wcnnkh
  *
  */
-public class LevelManager extends ObservableMapRegistry<String, Level> {
+public class LevelManager extends DynamicPropertyManager<String, Level> {
 	private static final Function<Properties, Map<String, Level>> CONVERTER = (properties) -> {
 		Map<String, Level> map = new HashMap<>();
 		for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -57,11 +58,11 @@ public class LevelManager extends ObservableMapRegistry<String, Level> {
 	}
 
 	public boolean exists(String name) {
-		if (getReadonlyMap().containsKey(name)) {
+		if (containsKey(name)) {
 			return true;
 		}
 
-		for (String key : getReadonlyMap().keySet()) {
+		for (String key : keySet()) {
 			if (name.startsWith(key)) {
 				return true;
 			}
@@ -69,14 +70,18 @@ public class LevelManager extends ObservableMapRegistry<String, Level> {
 		return false;
 	}
 
+	public Registration registerObservableProperties(ObservableValue<? extends Properties> observableValue) {
+		return registerObservableValue(observableValue, CONVERTER);
+	}
+
 	@Nullable
 	public Level getLevel(String name) {
-		Level level = getReadonlyMap().get(name);
+		Level level = get(name);
 		if (level != null) {
 			return level;
 		}
 
-		for (Entry<String, Level> entry : getReadonlyMap().entrySet()) {
+		for (Entry<String, Level> entry : entrySet()) {
 			if (name.startsWith(entry.getKey())) {
 				return entry.getValue();
 			}

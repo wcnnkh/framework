@@ -58,57 +58,37 @@ public abstract class PollingRegistry<E extends Polling> extends ElementRegistry
 	@Override
 	public ElementRegistration<E> register(E element) {
 		ElementRegistration<E> registration = super.register(element);
-		Lock writeLock = getReadWriteLock().writeLock();
-		writeLock.lock();
-		try {
-			if (!isRunning() && getListenerCount() != 0) {
-				// 如果有观察者尝试启动
-				start();
-			}
-		} finally {
-			writeLock.unlock();
-		}
-		return registration.and(() -> unregisterElement(element));
+		refresh();
+		return registration.and(() -> refresh());
 	}
 
 	@Override
 	public Registration registerBatchListener(BatchEventListener<RegistryEvent<E>> batchEventListener)
 			throws EventRegistrationException {
 		Registration registration = super.registerBatchListener(batchEventListener);
-		Lock writeLock = getReadWriteLock().writeLock();
-		writeLock.lock();
+		refresh();
+		return registration.and(() -> refresh());
+	}
+
+	public void refresh() {
+		Lock readLock = getReadWriteLock().readLock();
+		readLock.lock();
 		try {
-			// 注册时尝试启动观察者
-			if (!isRunning() && getSize() != 0) {
-				// 如果存在元素，启动
+			if (getSize() == 0 || getListenerCount() == 0) {
+				stop();
+				return;
+			}
+
+			if (getSize() > 0 && getListenerCount() > 0) {
 				start();
+				return;
 			}
 		} finally {
-			writeLock.unlock();
+			readLock.unlock();
 		}
-		return registration.and(() -> {
-			if (isRunning() && getListenerCount() == 0) {
-				// 没有观察者了，停止
-				stop();
-			}
-		});
 	}
 
 	public abstract boolean start();
 
 	public abstract boolean stop();
-
-	private void unregisterElement(E element) {
-		Lock writeLock = getReadWriteLock().writeLock();
-		writeLock.lock();
-		try {
-			// 取消注册，判断是否还有元素需要观察，如果没有停止线程
-			if (isRunning() && getSize() == 0) {
-				stop();
-			}
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
 }

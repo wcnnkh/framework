@@ -111,7 +111,7 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 			return;
 		}
 
-		PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(watchKey, contextType);
+		WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, contextType);
 		try {
 			publishBatchEvent(watchKeyObserver.pollEvents());
 		} finally {
@@ -126,7 +126,7 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 			return false;
 		}
 
-		PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(watchKey, contextType);
+		WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, contextType);
 		try {
 			publishBatchEvent(watchKeyObserver.pollEvents());
 		} finally {
@@ -151,7 +151,7 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 			return;
 		}
 
-		PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(watchKey, contextType);
+		WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, contextType);
 		try {
 			publishBatchEvent(watchKeyObserver.pollEvents());
 		} finally {

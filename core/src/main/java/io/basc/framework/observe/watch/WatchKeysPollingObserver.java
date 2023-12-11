@@ -7,11 +7,11 @@ import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 
-public class PollingWatchKeysObserver<T> extends PollingObserver<WatchEvent<T>> {
+public class WatchKeysPollingObserver<T> extends PollingObserver<WatchEvent<T>> {
 	private final Class<T> contextType;
 	private final Elements<? extends WatchKey> watchKeys;
 
-	public PollingWatchKeysObserver(Elements<? extends WatchKey> watchKeys, Class<T> contextType) {
+	public WatchKeysPollingObserver(Elements<? extends WatchKey> watchKeys, Class<T> contextType) {
 		Assert.requiredArgument(watchKeys != null, "watchKeys");
 		Assert.requiredArgument(contextType != null, "contextType");
 		this.watchKeys = watchKeys;
@@ -25,7 +25,7 @@ public class PollingWatchKeysObserver<T> extends PollingObserver<WatchEvent<T>> 
 	@Override
 	public void run() {
 		Elements<WatchEvent<T>> events = watchKeys.flatMap((e) -> {
-			PollingWatchKeyObserver<T> watchKeyObserver = new PollingWatchKeyObserver<>(e, contextType);
+			WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(e, contextType);
 			try {
 				return watchKeyObserver.pollEvents();
 			} finally {
