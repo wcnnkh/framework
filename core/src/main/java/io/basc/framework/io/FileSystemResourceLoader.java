@@ -26,29 +26,10 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {
-		FileSystemResource fileSystemResource = new FileSystemContextResource(path);
-		if (ignoreClassPathResource(fileSystemResource)) {
-			return fileSystemResource;
-		}
-
-		if (path != null && path.startsWith("/")) {
+		if (path.startsWith("/")) {
 			path = path.substring(1);
 		}
-		Resource resource = super.getResourceByPath(path);
-		Resources resources = new Resources();
-		resources.registerResource(fileSystemResource);
-		resources.registerResource(resource);
-		return resources;
-	}
-
-	/**
-	 * 是否应该忽略查找classpath resource
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	protected boolean ignoreClassPathResource(FileSystemResource resource) {
-		return resource.exists();
+		return new FileSystemContextResource(path);
 	}
 
 	/**

@@ -5,9 +5,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 
-import io.basc.framework.event.EventRegistrationException;
-import io.basc.framework.event.batch.BatchEventListener;
-import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.register.ObservableRegistry;
 import io.basc.framework.observe.value.ConvertibleObservableValue;
 import io.basc.framework.observe.value.ObservableValue;
@@ -17,25 +14,6 @@ import io.basc.framework.util.select.MapCombiner;
 import io.basc.framework.util.select.Selector;
 
 public class MergedObservableMap<K, V> extends StandardObservableMap<K, V> {
-	private static class ObservableMapWrapper<K, V> implements ObservableValue<Map<K, V>> {
-		private final ObservableMap<K, V> observableMap;
-
-		public ObservableMapWrapper(ObservableMap<K, V> observableMap) {
-			this.observableMap = observableMap;
-		}
-
-		@Override
-		public Map<K, V> orElse(Map<K, V> other) {
-			return observableMap;
-		}
-
-		@Override
-		public Registration registerBatchListener(BatchEventListener<ChangeEvent> batchEventListener)
-				throws EventRegistrationException {
-			return observableMap.registerBatchListener((events) -> batchEventListener.onEvent(events.map((e) -> e)));
-		}
-	}
-
 	private final ObservableRegistry<ObservableValue<? extends Map<K, V>>> registry = new ObservableRegistry<>();
 
 	private Selector<Map<K, V>> selector = MapCombiner.getSingleton();
@@ -70,22 +48,22 @@ public class MergedObservableMap<K, V> extends StandardObservableMap<K, V> {
 		return selector;
 	}
 
-	public Registration registerObservableMap(ObservableMap<K, V> observableMap) {
-		return registerObservableValue(new ObservableMapWrapper<>(observableMap));
+	public Registration registerMap(ObservableMap<K, V> observableMap) {
+		return registerValue(observableMap.asObservableValue());
 	}
 
-	public Registration registerObservableValue(ObservableValue<? extends Map<K, V>> observableValue) {
+	public Registration registerValue(ObservableValue<? extends Map<K, V>> observableValue) {
 		return registry.register(observableValue);
 	}
 
-	public <S> Registration registerObservableValue(ObservableValue<? extends S> observableValue,
+	public <S> Registration registerValue(ObservableValue<? extends S> observableValue,
 			Function<? super S, ? extends Map<K, V>> converter) {
 		ConvertibleObservableValue<S, Map<K, V>> convertibleObservableValue = new ConvertibleObservableValue<>(
 				observableValue, converter);
-		return registerObservableValue(convertibleObservableValue);
+		return registerValue(convertibleObservableValue);
 	}
 
-	public void reload() {
+	public void rfreshMap() {
 		if (Selector.first().equals(selector)) {
 			return;
 		}
@@ -102,6 +80,6 @@ public class MergedObservableMap<K, V> extends StandardObservableMap<K, V> {
 
 	public void setSelector(Selector<Map<K, V>> selector) {
 		this.selector = selector == null ? MapCombiner.getSingleton() : selector;
-		reload();
+		rfreshMap();
 	}
 }

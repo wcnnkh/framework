@@ -9,7 +9,7 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.strings.StringConverter;
-import io.basc.framework.env.Sys;
+import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.json.JsonSupport;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.Nullable;
@@ -146,7 +146,7 @@ public class AnyValue implements Value, Cloneable {
 	}
 
 	public Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
-		return converter == null ? Sys.getEnv().getConversionService() : converter;
+		return converter == null ? GlobalConversionService.getInstance() : converter;
 	}
 
 	public JsonSupport getJsonSupport() {

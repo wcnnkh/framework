@@ -13,13 +13,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.observe.ChangeType;
-import io.basc.framework.observe.Observer;
-import io.basc.framework.observe.PayloadChangeEvent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 
-public class StandardObservableMap<K, V> extends Observer<PayloadChangeEvent<Map<? extends K, ? extends V>>>
-		implements ObservableMap<K, V> {
+public class StandardObservableMap<K, V> extends AbstractObservableMap<K, V> {
 	private final ReadWriteLock readWriteLock;
 	private final Map<K, V> targetMap;
 
@@ -44,7 +41,11 @@ public class StandardObservableMap<K, V> extends Observer<PayloadChangeEvent<Map
 		try {
 			Map<K, V> backMap = new LinkedHashMap<>(targetMap);
 			targetMap.clear();
-			publishEvent(new PayloadChangeEvent<>(this, ChangeType.DELETE, backMap));
+			List<PropertyChangeEvent<K, V>> changeEvents = new ArrayList<>(backMap.size());
+			for (Entry<K, V> entry : backMap.entrySet()) {
+				changeEvents.add(new PropertyChangeEvent<>(this, ChangeType.DELETE, entry.getKey(), entry.getValue()));
+			}
+			publishBatchEvent(Elements.of(changeEvents));
 		} finally {
 			lock.unlock();
 		}
@@ -138,8 +139,8 @@ public class StandardObservableMap<K, V> extends Observer<PayloadChangeEvent<Map
 		try {
 			ChangeType changeType = getPutChangeType(key);
 			V oldValue = targetMap.put(key, value);
-			publishEvent(new PayloadChangeEvent<>(this, changeType,
-					Collections.singletonMap(key, changeType == ChangeType.UPDATE ? oldValue : value)));
+			publishEvent(new PropertyChangeEvent<>(this, changeType, key,
+					changeType == ChangeType.UPDATE ? oldValue : value));
 			return oldValue;
 		} finally {
 			lock.unlock();
@@ -150,12 +151,12 @@ public class StandardObservableMap<K, V> extends Observer<PayloadChangeEvent<Map
 	public void putAll(Map<? extends K, ? extends V> m) {
 		Lock lock = readWriteLock.writeLock();
 		try {
-			List<PayloadChangeEvent<Map<? extends K, ? extends V>>> events = new ArrayList<>(m.size());
+			List<PropertyChangeEvent<K, V>> events = new ArrayList<>(m.size());
 			for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
 				ChangeType changeType = getPutChangeType(entry.getKey());
 				V oldValue = targetMap.put(entry.getKey(), entry.getValue());
-				events.add(new PayloadChangeEvent<>(this, changeType, Collections.singletonMap(entry.getKey(),
-						changeType == ChangeType.UPDATE ? oldValue : entry.getValue())));
+				events.add(new PropertyChangeEvent<>(this, changeType, entry.getKey(),
+						changeType == ChangeType.UPDATE ? oldValue : entry.getValue()));
 			}
 			publishBatchEvent(Elements.of(events));
 		} finally {
@@ -173,8 +174,7 @@ public class StandardObservableMap<K, V> extends Observer<PayloadChangeEvent<Map
 			Set<K> newKeys = targetMap.keySet();
 			changeKeys.removeAll(newKeys);
 			for (K changeKey : changeKeys) {
-				publishEvent(new PayloadChangeEvent<>(this, ChangeType.DELETE,
-						Collections.singletonMap(changeKey, oldValue)));
+				publishEvent(new PropertyChangeEvent<>(this, ChangeType.DELETE, changeKey, oldValue));
 			}
 			return oldValue;
 		} finally {

@@ -1,4 +1,4 @@
-package io.basc.framework.io.loader;
+package io.basc.framework.io.support;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,13 +17,13 @@ import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.spi.Services;
+import io.basc.framework.observe.register.ServiceRegistry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * MetadataReader注册
@@ -31,13 +31,15 @@ import lombok.EqualsAndHashCode;
  * @author wcnnkh
  *
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class MetadataReaders extends Services<MetadataReader> {
-	private static Logger logger = LoggerFactory.getLogger(MetadataReaders.class);
-	private TypeFilter includeTypeFilter;
 
-	public MetadataReaders andIncludeTypeFilter(TypeFilter includeTypeFilter) {
+@Getter
+@Setter
+public class MetadataReaderRegistry extends ServiceRegistry<MetadataReader> {
+	private static Logger logger = LoggerFactory.getLogger(MetadataReaderRegistry.class);
+	private TypeFilter includeTypeFilter;
+	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+
+	public MetadataReaderRegistry andIncludeTypeFilter(TypeFilter includeTypeFilter) {
 		Assert.requiredArgument(includeTypeFilter != null, "includeTypeFilter");
 		if (this.includeTypeFilter == null) {
 			this.includeTypeFilter = includeTypeFilter;
@@ -67,6 +69,10 @@ public class MetadataReaders extends Services<MetadataReader> {
 				typeFilter);
 	}
 
+	public Registration includeLocation(String location) {
+		return includeLocation(getResourcePatternResolver(), location, null);
+	}
+
 	public Registration includeLocationPattern(ResourcePatternResolver resourcePatternResolver, String locationPattern,
 			@Nullable TypeFilter typeFilter) {
 		Assert.requiredArgument(resourcePatternResolver != null, "resourcePatternResolver");
@@ -88,10 +94,18 @@ public class MetadataReaders extends Services<MetadataReader> {
 		}), typeFilter);
 	}
 
+	public Registration includeLocationPattern(String locationPattern) {
+		return includeLocationPattern(getResourcePatternResolver(), locationPattern, null);
+	}
+
 	public final Registration includePackage(ResourcePatternResolver resourcePatternResolver, String packageName,
 			@Nullable TypeFilter typeFilter) {
 		return includeLocation(resourcePatternResolver, ClassUtils.convertClassNameToResourcePath(packageName),
 				typeFilter);
+	}
+
+	public Registration includePackage(String packageName) {
+		return includePackage(getResourcePatternResolver(), packageName, null);
 	}
 
 	public Registration includeResources(MetadataReaderFactory metadataReaderFactory,
@@ -109,10 +123,27 @@ public class MetadataReaders extends Services<MetadataReader> {
 
 		MetadataReaderLoader metadataReaderLoader = new MetadataReaderLoader(metadataReaderFactory, resources,
 				typeFilterToUse);
-		return getServiceLoaders().register(metadataReaderLoader);
+		return registerServiceLoader(metadataReaderLoader);
 	}
 
-	public MetadataReaders orIncludeTypeFilter(TypeFilter includeTypeFilter) {
+	public Elements<Class<?>> load() {
+		return load(ClassUtils.getDefaultClassLoader());
+	}
+
+	public Elements<Class<?>> load(ClassLoader classLoader) {
+		Assert.requiredArgument(classLoader != null, "classLoader");
+		Elements<Class<?>> classes = getServices().map((e) -> {
+			try {
+				return ClassUtils.forName(e.getClassMetadata().getClassName(), classLoader);
+			} catch (ClassNotFoundException e1) {
+				logger.error(e1, "{} cannot load {}", classLoader, e.getClassMetadata().getClassName());
+				return null;
+			}
+		});
+		return classes.filter((e) -> e != null);
+	}
+
+	public MetadataReaderRegistry orIncludeTypeFilter(TypeFilter includeTypeFilter) {
 		Assert.requiredArgument(includeTypeFilter != null, "includeTypeFilter");
 		if (this.includeTypeFilter == null) {
 			this.includeTypeFilter = includeTypeFilter;

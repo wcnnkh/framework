@@ -1,5 +1,7 @@
 package io.basc.framework.observe;
 
+import java.io.IOException;
+
 /**
  * 变量
  * 
@@ -12,5 +14,5 @@ public interface Variable {
 	 * 
 	 * @return
 	 */
-	long lastModified();
+	long lastModified() throws IOException;
 }

@@ -4,7 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.spi.SpiServiceLoader;
+import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.util.element.ServiceLoader;
 
 public class SpiTest implements SpiTestInterface {
 	private static final String TEST_TEXT = "hello";
@@ -16,8 +17,7 @@ public class SpiTest implements SpiTestInterface {
 
 	@Test
 	public void run() {
-		SpiServiceLoader<SpiTestInterface> spiServiceLoader = new SpiServiceLoader<SpiTestInterface>(
-				SpiTestInterface.class);
+		ServiceLoader<SpiTestInterface> spiServiceLoader = SPI.global().getServiceLoader(SpiTestInterface.class);
 		SpiTestInterface spiTestInterface = spiServiceLoader.getServices().first();
 		String text = spiTestInterface.test();
 		assertTrue(TEST_TEXT.equals(text));

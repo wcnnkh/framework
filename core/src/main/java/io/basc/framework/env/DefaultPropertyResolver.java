@@ -1,17 +1,16 @@
 package io.basc.framework.env;
 
-import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.observe.properties.DynamicPropertyFactory;
 import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
-import io.basc.framework.util.Registration;
 import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.ConfigurationCenter;
-import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
-import io.basc.framework.value.observe.Observable;
 
-public class DefaultPropertyResolver extends ConfigurationCenter implements ConfigurablePropertyResolver {
+public class DefaultPropertyResolver extends DynamicPropertyFactory
+		implements ConfigurablePropertyResolver, Configurable {
 
 	private static interface FinalProperty {
 	}
@@ -29,14 +28,27 @@ public class DefaultPropertyResolver extends ConfigurationCenter implements Conf
 
 	private final HierarchicalPlaceholderReplacer configurablePlaceholderReplacer = new HierarchicalPlaceholderReplacer();
 	private PropertyResolver parentPropertyResolver;
-	private Registration parentPropertyResolverRegistration;
+
+	private AtomicBoolean configured = new AtomicBoolean();
 
 	@Override
-	public void configure(Class<PropertyFactory> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		if (!configured.compareAndSet(false, true)) {
+			return;
+		}
+
 		if (!configurablePlaceholderReplacer.isConfigured()) {
 			configurablePlaceholderReplacer.configure(serviceLoaderFactory);
 		}
-		super.configure(serviceClass, serviceLoaderFactory);
+
+		if (!getFactories().isConfigured()) {
+			getFactories().configure(serviceLoaderFactory);
+		}
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured.get();
 	}
 
 	@Override
@@ -56,16 +68,10 @@ public class DefaultPropertyResolver extends ConfigurationCenter implements Conf
 				return;
 			}
 
-			if (parentPropertyResolverRegistration != null) {
-				parentPropertyResolverRegistration.unregister();
-				parentPropertyResolverRegistration = null;
-			}
-
 			this.parentPropertyResolver = parentPropertyResolver;
 			if (this.parentPropertyResolver != null) {
 				configurablePlaceholderReplacer
 						.setParentPlaceholderReplacer(this.parentPropertyResolver.getPlaceholderReplacer());
-				this.parentPropertyResolverRegistration = registerLast(parentPropertyResolver);
 			}
 		}
 	}
@@ -81,14 +87,5 @@ public class DefaultPropertyResolver extends ConfigurationCenter implements Conf
 		}
 
 		return new AnyFormatValue(value);
-	}
-
-	public void put(String key, Object value) {
-		getMaster().put(key, Value.of(value));
-	}
-
-	@Override
-	public Registration registerProperties(Observable<Properties> properties) {
-		return getArchive().registerProperties(properties);
 	}
 }

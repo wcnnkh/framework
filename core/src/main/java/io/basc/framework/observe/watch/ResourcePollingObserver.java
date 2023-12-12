@@ -33,7 +33,12 @@ public class ResourcePollingObserver extends PollingObserver<ChangeEvent> {
 	public ResourcePollingObserver(Resource resource) {
 		Assert.requiredArgument(resource != null, "resource");
 		this.resource = resource;
-		this.lastModified = resource.exists() ? resource.lastModified() : null;
+		try {
+			this.lastModified = resource.exists() ? resource.lastModified() : null;
+		} catch (IOException e) {
+			// 忽略，不做空处理，因为已经判断过资源是否存在
+			logger.trace(e, "Initialize acquisition lastModified");
+		}
 	}
 
 	public Resource getResource() {
@@ -117,7 +122,14 @@ public class ResourcePollingObserver extends PollingObserver<ChangeEvent> {
 		synchronized (this) {
 			if (this.watchKey == null) {
 				// 无法注册watch，使用兜底方案
-				Long lastModified = resource.exists() ? resource.lastModified() : null;
+				Long lastModified;
+				try {
+					lastModified = resource.exists() ? resource.lastModified() : null;
+				} catch (IOException e) {
+					// 忽略，不做空处理，因为已经判断过资源是否存在
+					logger.trace(e, "Unable to obtain lastModified");
+					return;
+				}
 				Changed<Long> changed = new Changed<Long>(this.lastModified, lastModified);
 				this.lastModified = lastModified;
 				publishEvent(new ObservableEvent<>(this, changed));

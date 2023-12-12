@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.junit.runner.JUnitCore;
 
-import io.basc.framework.io.loader.PackageClassesLoader;
+import io.basc.framework.io.support.MetadataReaderRegistry;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
@@ -17,7 +17,9 @@ public class TestRunner {
 
 	public static void main(String[] args) throws IOException {
 		long t = System.currentTimeMillis();
-		Set<Class<?>> classes = PackageClassesLoader.scan(ClassUtils.getPackageName(TestRunner.class), null).toSet();
+		MetadataReaderRegistry metadataReaderRegistry = new MetadataReaderRegistry();
+		metadataReaderRegistry.includePackage(ClassUtils.getPackageName(TestRunner.class));
+		Set<Class<?>> classes = metadataReaderRegistry.load().toSet();
 		logger.info((System.currentTimeMillis() - t) + "ms");
 		assertTrue(!classes.isEmpty());
 		JUnitCore.runClasses(classes.toArray(new Class<?>[0]));

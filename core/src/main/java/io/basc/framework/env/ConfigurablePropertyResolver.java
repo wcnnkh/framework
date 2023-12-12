@@ -2,15 +2,14 @@ package io.basc.framework.env;
 
 import java.util.Properties;
 
+import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.text.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.Registration;
-import io.basc.framework.value.observe.Observable;
+import io.basc.framework.value.EditablePropertyFactory;
 
-public interface ConfigurablePropertyResolver extends PropertyResolver {
+public interface ConfigurablePropertyResolver extends PropertyResolver, EditablePropertyFactory {
 	@Override
 	ConfigurablePlaceholderReplacer getPlaceholderReplacer();
 
-	void put(String key, Object value);
-
-	Registration registerProperties(Observable<Properties> properties);
+	Registration registerProperties(ObservableValue<? extends Properties> properties);
 }

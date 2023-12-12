@@ -1,4 +1,6 @@
-package io.basc.framework.value;
+package io.basc.framework.observe.properties;
+
+import io.basc.framework.value.Value;
 
 @FunctionalInterface
 public interface PropertyWrapper {

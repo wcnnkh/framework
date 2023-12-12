@@ -49,6 +49,9 @@ public class ElementRegistry<E> extends AbstractElementRegistry<E> {
 
 	@Override
 	protected Elements<E> loadServices() {
+		if (wrappers == null) {
+			return Elements.empty();
+		}
 		return Elements.of(wrappers.stream().map((e) -> e.getDelegateSource()).collect(Collectors.toList()));
 	}
 

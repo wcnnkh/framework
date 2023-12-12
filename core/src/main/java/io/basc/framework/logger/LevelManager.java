@@ -9,9 +9,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.observe.properties.DynamicPropertyManager;
-import io.basc.framework.observe.value.ObservableValue;
-import io.basc.framework.util.Registration;
+import io.basc.framework.observe.properties.DynamicMap;
 
 /**
  * 动态管理日志等级管理
@@ -19,7 +17,7 @@ import io.basc.framework.util.Registration;
  * @author wcnnkh
  *
  */
-public class LevelManager extends DynamicPropertyManager<String, Level> {
+public class LevelManager extends DynamicMap<String, Level> {
 	private static final Function<Properties, Map<String, Level>> CONVERTER = (properties) -> {
 		Map<String, Level> map = new HashMap<>();
 		for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -67,11 +65,8 @@ public class LevelManager extends DynamicPropertyManager<String, Level> {
 				return true;
 			}
 		}
-		return false;
-	}
 
-	public Registration registerObservableProperties(ObservableValue<? extends Properties> observableValue) {
-		return registerObservableValue(observableValue, CONVERTER);
+		return false;
 	}
 
 	@Nullable

@@ -4,10 +4,10 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.MappingRegistry;
 import io.basc.framework.mapper.Setter;
+import io.basc.framework.observe.properties.ObservablePropertyFactory;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.DynamicPropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 import lombok.Data;
@@ -55,10 +55,10 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 		Elements<String> setterNames = getPropertyNames(field);
 		if (isSingleton(beanName)) {
 			Registration registration = Registration.EMPTY;
-			if (propertyFactory instanceof DynamicPropertyFactory) {
-				DynamicPropertyFactory dynamicPropertyFactory = (DynamicPropertyFactory) propertyFactory;
-				registration = dynamicPropertyFactory.registerListener((event) -> {
-					if (event.getSource().anyMatch(setterNames, StringUtils::equals)) {
+			if (propertyFactory instanceof ObservablePropertyFactory) {
+				ObservablePropertyFactory dynamicPropertyFactory = (ObservablePropertyFactory) propertyFactory;
+				registration = dynamicPropertyFactory.registerKeysListener((keys) -> {
+					if (keys.anyMatch(setterNames, StringUtils::equals)) {
 						setProperty(bean, beanName, field, setterNames);
 					}
 				});
