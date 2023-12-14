@@ -17,7 +17,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingFactory;
 import io.basc.framework.util.CollectionFactory;
@@ -25,7 +25,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.ObjectValue;
 import io.basc.framework.value.Value;
 import lombok.Getter;
 import lombok.NonNull;
@@ -119,7 +119,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 
 		// 兜底
 		Mapping<?> mapping = mappingFactory.getMapping(sourceType.getType());
-		for (Element element : mapping.getElements()) {
+		for (Member element : mapping.getElements()) {
 			String key = element.getName();
 			Object value = element.getter().get(source);
 			formatValue(key, value, sourceType, target);
@@ -136,7 +136,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 		} else if (sourceType.isArray()) {
 			formatArray(sourceKey, source, sourceType, target);
 		} else {
-			Value value = new AnyValue(source, sourceType);
+			Value value = new ObjectValue(source, sourceType);
 			Pair<String, Value> pair = new Pair<>(sourceKey, value);
 			Stream<Pair<String, Value>> stream = Stream.of(pair);
 			// 开始format
@@ -211,7 +211,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 		Object target = ReflectionUtils.newInstance(targetType.getType());
 		Mapping<?> mapping = mappingFactory.getMapping(targetType.getType());
 		for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
-			Element element = mapping.getElements(entry.getKey()).first();
+			Member element = mapping.getElements(entry.getKey()).first();
 			if (element == null) {
 				continue;
 			}

@@ -5,7 +5,7 @@ import java.util.function.Function;
 import io.basc.framework.jdbc.template.config.TableResolver;
 import io.basc.framework.orm.DefaultEntityMapping;
 import io.basc.framework.orm.EntityMapping;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.Assert;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +20,7 @@ public class DefaultTableMapping<T extends Column> extends DefaultEntityMapping<
 	public DefaultTableMapping() {
 	}
 
-	public <S extends Property> DefaultTableMapping(EntityMapping<? extends S> mapping,
+	public <S extends PropertyDescriptor> DefaultTableMapping(EntityMapping<? extends S> mapping,
 			Function<? super S, ? extends T> converter, Class<?> sourceClass, TableResolver tableResolver) {
 		super(mapping, converter);
 		Assert.requiredArgument(sourceClass != null, "sourceClass");

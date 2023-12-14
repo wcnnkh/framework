@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.CAS;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryDataCasOperations;
+import io.basc.framework.data.memory.CAS;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;

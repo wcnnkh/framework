@@ -11,7 +11,7 @@ import io.basc.framework.util.element.Elements;
  *
  * @param <T>
  */
-public interface EntityMapping<T extends Property> extends Mapping<T> {
+public interface EntityMapping<T extends PropertyDescriptor> extends Mapping<T> {
 
 	default Elements<T> getPrimaryKeys() {
 		return columns().filter((e) -> e.isPrimaryKey());

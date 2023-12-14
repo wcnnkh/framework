@@ -1,5 +1,6 @@
 package io.basc.framework.execution.param;
 
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import lombok.Data;
 

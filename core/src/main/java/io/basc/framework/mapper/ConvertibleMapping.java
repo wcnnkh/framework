@@ -7,7 +7,7 @@ import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
-public class ConvertibleMapping<S extends Element, T extends Element> implements Mapping<T> {
+public class ConvertibleMapping<S extends Member, T extends Member> implements Mapping<T> {
 	private String name;
 	private Elements<String> aliasNames;
 	private final Mapping<S> sourceMapping;

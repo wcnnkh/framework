@@ -2,25 +2,26 @@ package io.basc.framework.context.config;
 
 import java.io.Closeable;
 import java.nio.charset.Charset;
-import java.util.Properties;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.context.ApplicationContext;
+import io.basc.framework.context.ApplicationContextEvent;
 import io.basc.framework.context.Lifecycle;
 import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.event.batch.BatchEventDispatcher;
 import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.observe.properties.ObservablePropertyFactory;
 import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.observe.Observable;
 
-public interface ConfigurableApplicationContext
-		extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable, ConfigurableBeanFactory {
+public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable,
+		ConfigurableBeanFactory, BatchEventDispatcher<ApplicationContextEvent> {
 	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor);
 
 	void addProtocolResolver(ProtocolResolver protocolResolver);
@@ -45,8 +46,9 @@ public interface ConfigurableApplicationContext
 
 	default Registration registerProfileResources(Elements<? extends Resource> profileResources,
 			@Nullable Charset charset) {
-		Observable<Properties> observable = toObservableProperties(profileResources, getPropertiesResolver(), charset);
-		return getEnvironment().registerProperties(observable);
+		ObservablePropertyFactory observable = toObservableProperties(profileResources, getPropertiesResolver(),
+				charset);
+		return getEnvironment().register(observable);
 	}
 
 	default Registration registerProfileResources(String location, @Nullable Charset charset) {

@@ -1,22 +1,36 @@
 package io.basc.framework.mapper;
 
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.util.element.Indexed;
+import io.basc.framework.value.Value;
+import lombok.Getter;
+import lombok.Setter;
 
-public class Parameter extends AnyValue implements ParameterDescriptor {
+@Getter
+@Setter
+public class Parameter extends ObjectProperty {
+	private static final long serialVersionUID = 1L;
+	private int index;
 
-	/**
-	 * 无效的
-	 */
-	public static final Parameter INVALID = new Parameter(null);
+	public Parameter(int index, Object value) {
+		this(index, value, null);
+	}
 
-	private final String name;
+	public Parameter(int index, Object value, @Nullable TypeDescriptor typeDescriptor) {
+		this(index, null, value, typeDescriptor, null);
+	}
 
-	public Parameter(String name) {
-		this(name, null, null);
+	public Parameter(int index, String name, Object value, @Nullable TypeDescriptor typeDescriptor,
+			Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+		super(name, value, typeDescriptor, converter);
+		this.index = index;
+	}
+
+	public Parameter(int index, String name, Value value) {
+		super(name, value);
+		this.index = index;
 	}
 
 	public Parameter(String name, Object value) {
@@ -24,22 +38,34 @@ public class Parameter extends AnyValue implements ParameterDescriptor {
 	}
 
 	public Parameter(String name, Object value, @Nullable TypeDescriptor typeDescriptor) {
-		super(value, typeDescriptor);
-		this.name = name;
+		this(-1, name, value, typeDescriptor, null);
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public Parameter clone() {
+		return new Parameter(index, getName(), this);
+	}
+
+	@Override
+	public Value createRelative(Object value, TypeDescriptor type) {
+		return new Parameter(index, getName(), value, type, getConverter());
+	}
+
+	@Override
+	public boolean isValid() {
+		return index > 0 || super.isValid();
 	}
 
 	public Parameter rename(String name) {
-		Assert.requiredArgument(StringUtils.isNotEmpty(name), "name");
-		return new Parameter(name, this);
+		return new Parameter(index, name, this);
 	}
 
-	@Override
-	public boolean isPresent() {
-		return !StringUtils.isEmpty(name) && super.isPresent();
+	public boolean test(Indexed<? extends ParameterDescriptor> indexed) {
+		if (getValue() == null && !indexed.getElement().isNullable()) {
+			// 不能为空
+			return false;
+		}
+
+		return (indexed.getIndex() == this.index) || test(indexed.getElement());
 	}
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.CAS;
+import io.basc.framework.data.memory.CAS;
 import io.basc.framework.memcached.Memcached;
 import io.basc.framework.memcached.config.MemcachedNodeProperties;
 import io.basc.framework.memcached.config.MemcachedProperties;

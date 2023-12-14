@@ -18,11 +18,11 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.dom.NodeListAccess;
-import io.basc.framework.env.Sys;
+import io.basc.framework.env.SystemProperties;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
@@ -30,7 +30,7 @@ import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
 import io.basc.framework.orm.annotation.IgnoreConfigurationProperty;
 import io.basc.framework.orm.config.EntityResolverChain;
@@ -51,8 +51,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	/**
 	 * 默认对象主键的连接符
 	 */
-	private static final String ENTITY_KEY_CONNECTOR = Sys.getEnv().getProperties()
-			.get("io.basc.framework.orm.key.connector").or(":").getAsString();
+	private static final String ENTITY_KEY_CONNECTOR = SystemProperties
+			.getProperty("io.basc.framework.orm.key.connector").or(":").getAsString();
 
 	private final AnnotationObjectRelationalResolverExtend annotationObjectRelationalResolverExtend = new AnnotationObjectRelationalResolverExtend();
 	/**
@@ -158,7 +158,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	@Override
 	public <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, Property property) {
+			Parameter parameter, PropertyDescriptor property) {
 		Expression expression = EntityResolverChain.build(entityResolverExtendServices.getServices().iterator())
 				.getColumn(operationSymbol, repository, parameter, property);
 		if (expression == null) {
@@ -169,7 +169,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, Property property) {
+			Parameter parameter, PropertyDescriptor property) {
 		Condition condition = EntityResolverChain.build(entityResolverExtendServices.getServices().iterator())
 				.getCondition(operationSymbol, repository, parameter, property);
 		if (condition == null) {
@@ -181,7 +181,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	@Override
 	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			Property property) {
+			PropertyDescriptor property) {
 		return EntityResolverChain.build(entityResolverExtendServices.getServices().iterator()).getSort(operationSymbol,
 				repository, parameter, property);
 	}
@@ -215,19 +215,19 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
-		Mapping<? extends Element> mapping = super.getMapping(entityClass);
+	public EntityMapping<? extends PropertyDescriptor> getMapping(Class<?> entityClass) {
+		Mapping<? extends Member> mapping = super.getMapping(entityClass);
 		if (mapping instanceof EntityMapping) {
-			return (EntityMapping<? extends Property>) mapping;
+			return (EntityMapping<? extends PropertyDescriptor>) mapping;
 		}
 		// 不会为空
 		synchronized (this) {
 			mapping = super.getMapping(entityClass);
 			if (mapping instanceof EntityMapping) {
-				return (EntityMapping<? extends Property>) mapping;
+				return (EntityMapping<? extends PropertyDescriptor>) mapping;
 			}
 
-			EntityMapping<? extends Property> entityMapping = EntityMapper.super.getMapping(entityClass);
+			EntityMapping<? extends PropertyDescriptor> entityMapping = EntityMapper.super.getMapping(entityClass);
 			registerMapping(entityClass, entityMapping);
 			return entityMapping;
 		}
@@ -371,7 +371,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 		this.annotationObjectRelationalResolverExtend.setPlaceholderFormat(placeholderFormat);
 	}
 
-	private void appendObjectKeyByValue(StringBuilder appendable, Property property, Object value) {
+	private void appendObjectKeyByValue(StringBuilder appendable, PropertyDescriptor property, Object value) {
 		appendable.append(entityKeyConnector);
 		appendable.append(property.getName());
 		appendable.append(entityKeyConnector);
@@ -381,12 +381,12 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
-	public String getEntityKey(EntityRepository<?> repository, Iterator<? extends Property> propertyIterator,
+	public String getEntityKey(EntityRepository<?> repository, Iterator<? extends PropertyDescriptor> propertyIterator,
 			Iterator<? extends Object> valueIterator) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(repository.getName());
 		while (propertyIterator.hasNext() && valueIterator.hasNext()) {
-			Property property = propertyIterator.next();
+			PropertyDescriptor property = propertyIterator.next();
 			Object value = valueIterator.next();
 			appendObjectKeyByValue(sb, property, value);
 		}

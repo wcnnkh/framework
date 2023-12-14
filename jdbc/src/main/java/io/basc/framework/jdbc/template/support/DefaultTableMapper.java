@@ -10,7 +10,7 @@ import io.basc.framework.jdbc.template.TableMapping;
 import io.basc.framework.jdbc.template.annotation.AnnotationTableResolverExtend;
 import io.basc.framework.jdbc.template.config.TableResolverExtend;
 import io.basc.framework.jdbc.template.config.TableResolverExtendChain;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.util.element.Elements;
@@ -59,7 +59,7 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	@SuppressWarnings("unchecked")
 	@Override
 	public TableMapping<? extends Column> getMapping(Class<?> entityClass) {
-		EntityMapping<? extends Element> mapping = super.getMapping(entityClass);
+		EntityMapping<? extends Member> mapping = super.getMapping(entityClass);
 		if (mapping instanceof TableMapping) {
 			return (TableMapping<? extends Column>) mapping;
 		}

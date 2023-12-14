@@ -1,11 +1,11 @@
 package io.basc.framework.orm.support;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.EntityMapper;
 
 public final class OrmUtils {
-	private static final EntityMapper MAPPER = Sys.getEnv()
+	private static final EntityMapper MAPPER = SPI.global()
 			.getServiceLoader(EntityMapper.class, DefaultEntityMapper.class).getServices().first();
 
 	private OrmUtils() {

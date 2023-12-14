@@ -1,5 +1,6 @@
 package io.basc.framework.observe.properties;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -7,6 +8,7 @@ import java.util.function.Function;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.DefaultPropertiesResolver;
 import io.basc.framework.io.resolver.PropertiesResolver;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.observe.watch.ResourceWatcher;
 import io.basc.framework.util.Assert;
@@ -48,11 +50,19 @@ public class DynamicMap<K, V> extends MergedObservableMap<K, V> {
 	}
 
 	public final Registration registerResource(Resource resource) {
-		return registerResource(resource, DefaultPropertiesResolver.getInstance());
+		return registerResource(resource, null);
 	}
 
-	public final Registration registerResource(Resource resource, PropertiesResolver propertiesResolver) {
+	public final Registration registerResource(Resource resource, @Nullable Charset charset) {
+		return registerResource(resource, DefaultPropertiesResolver.getInstance(), charset);
+	}
+
+	public final Registration registerResource(Resource resource, PropertiesResolver propertiesResolver,
+			@Nullable Charset charset) {
 		ObservableProperties observableProperties = new ObservableProperties();
+		if (charset != null) {
+			observableProperties.setCharset(charset);
+		}
 		Registration registration = observableProperties.bind(resource, resourceWatcher);
 		return registration.and(registerObservableProperties(observableProperties));
 	}

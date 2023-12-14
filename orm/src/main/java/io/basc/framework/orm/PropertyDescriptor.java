@@ -1,6 +1,6 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 
@@ -10,7 +10,7 @@ import io.basc.framework.util.element.Elements;
  * @author wcnnkh
  *
  */
-public interface Property extends Element {
+public interface PropertyDescriptor extends Member {
 
 	boolean isAutoIncrement();
 

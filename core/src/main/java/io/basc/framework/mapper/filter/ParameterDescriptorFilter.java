@@ -1,7 +1,7 @@
 package io.basc.framework.mapper.filter;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
@@ -45,7 +45,7 @@ public class ParameterDescriptorFilter implements MappingStrategyFilter {
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Element> targetMapping, Element targetField, MappingStrategy mappingStrategy)
+			Mapping<? extends Member> targetMapping, Member targetField, MappingStrategy mappingStrategy)
 			throws MappingException {
 		for (Setter setter : targetField.getSetters()) {
 			if (!predicateRegistry.test(setter)) {
@@ -59,7 +59,7 @@ public class ParameterDescriptorFilter implements MappingStrategyFilter {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Element sourceField,
+			MappingContext sourceContext, Mapping<? extends Member> sourceMapping, Member sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext, MappingStrategy mappingStrategy)
 			throws MappingException {
 		for (Getter getter : sourceField.getGetters()) {
@@ -74,9 +74,9 @@ public class ParameterDescriptorFilter implements MappingStrategyFilter {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Element> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Element> targetMapping,
-			Element targetField, MappingStrategy mappingStrategy) throws MappingException {
+			MappingContext sourceContext, Mapping<? extends Member> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Member> targetMapping,
+			Member targetField, MappingStrategy mappingStrategy) throws MappingException {
 		for (Setter setter : targetField.getSetters()) {
 			if (!predicateRegistry.test(setter)) {
 				return;

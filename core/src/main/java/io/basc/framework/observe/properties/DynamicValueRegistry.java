@@ -6,9 +6,9 @@ import java.util.function.Function;
 
 import io.basc.framework.value.Value;
 
-public class DynamicValueFactory<K> extends DynamicMap<K, Value> implements ObservableValueFactory<K> {
+public class DynamicValueRegistry<K> extends DynamicMap<K, Value> implements ObservableValueFactory<K> {
 
-	public DynamicValueFactory(Map<K, Value> targetMap,
+	public DynamicValueRegistry(Map<K, Value> targetMap,
 			Function<? super Properties, ? extends Map<K, Value>> propertiesMapper) {
 		super(targetMap, propertiesMapper);
 	}

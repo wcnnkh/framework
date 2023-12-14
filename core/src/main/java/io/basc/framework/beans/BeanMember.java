@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.mapper.reflect.FieldGetter;
@@ -18,14 +18,14 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 
 @lombok.Getter
-public final class BeanElemenet implements Element {
+public final class BeanMember implements Member {
 	private final Class<?> beanClass;
 	private final PropertyDescriptor propertyDescriptor;
 	private Field field;
 	private Elements<? extends Getter> getters;
 	private Elements<? extends Setter> setters;
 
-	public BeanElemenet(Class<?> beanClass, PropertyDescriptor propertyDescriptor) {
+	public BeanMember(Class<?> beanClass, PropertyDescriptor propertyDescriptor) {
 		Assert.requiredArgument(beanClass != null, "beanClass");
 		Assert.requiredArgument(propertyDescriptor != null, "propertyDescriptor");
 		this.beanClass = beanClass;

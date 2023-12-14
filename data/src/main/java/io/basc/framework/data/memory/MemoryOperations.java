@@ -3,7 +3,6 @@ package io.basc.framework.data.memory;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.CAS;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryDataCasOperations;

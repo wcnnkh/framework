@@ -42,7 +42,7 @@ public final class TransactionMethodInterceptor implements ExecutionInterceptor 
 	}
 
 	@Override
-	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
 		Transactional tx = executor.getReturnTypeDescriptor().getAnnotation(Transactional.class);
 		if (tx == null && transactionManager.hasTransaction()) {

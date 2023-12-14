@@ -13,7 +13,7 @@ import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 
@@ -123,19 +123,19 @@ public interface EntityResolverExtend {
 
 	@Nullable
 	default <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, @Nullable Property property, EntityResolver chain) {
+			Parameter parameter, @Nullable PropertyDescriptor property, EntityResolver chain) {
 		return chain.getColumn(operationSymbol, repository, parameter, property);
 	}
 
 	@Nullable
 	default <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, @Nullable Property property, EntityResolver chain) {
+			Parameter parameter, @Nullable PropertyDescriptor property, EntityResolver chain) {
 		return chain.getCondition(operationSymbol, repository, parameter, property);
 	}
 
 	@Nullable
 	default <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable Property property, EntityResolver chain) {
+			@Nullable PropertyDescriptor property, EntityResolver chain) {
 		return chain.getSort(operationSymbol, repository, parameter, property);
 	}
 }

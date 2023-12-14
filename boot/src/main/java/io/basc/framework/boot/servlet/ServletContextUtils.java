@@ -3,9 +3,9 @@ package io.basc.framework.boot.servlet;
 import javax.servlet.ServletContext;
 
 import io.basc.framework.beans.factory.Scope;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.boot.Application;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.util.ClassUtils;
@@ -21,7 +21,7 @@ public abstract class ServletContextUtils {
 					+ ".support.DefaultServletApplicationStartup", null)
 			.filter((e) -> ReflectionUtils.isAvailable(e)).orElse(null);
 
-	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.getEnv()
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = SPI.global()
 			.getServiceLoader(ServletApplicationStartup.class, SERVLET3_APPLICATION_STARTUP_CLASS,
 					SERVLET_APPLICATION_STARTUP_CLASS)
 			.getServices().first();

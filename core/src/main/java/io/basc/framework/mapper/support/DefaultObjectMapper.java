@@ -14,7 +14,7 @@ import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.support.DefaultConversionService;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.ObjectAccessFactory;
@@ -30,7 +30,7 @@ import io.basc.framework.value.PropertyFactory;
 public class DefaultObjectMapper extends DefaultConversionService
 		implements ObjectMapper, ConditionalConversionService {
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
-	private final Map<Class<?>, Mapping<? extends Element>> mappingMap = new ConcurrentHashMap<>();
+	private final Map<Class<?>, Mapping<? extends Member>> mappingMap = new ConcurrentHashMap<>();
 	private Set<ConvertiblePair> convertiblePairs;
 	private final ServiceRegistry<MappingStrategyFilter> filterRegistry = new ServiceRegistry<>();
 	private final DefaultMappingStrategy mappingStrategy = new DefaultMappingStrategy();
@@ -50,8 +50,8 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public Mapping<? extends Element> getMapping(Class<?> entityClass) {
-		Mapping<? extends Element> structure = mappingMap.get(entityClass);
+	public Mapping<? extends Member> getMapping(Class<?> entityClass) {
+		Mapping<? extends Member> structure = mappingMap.get(entityClass);
 		if (structure == null) {
 			synchronized (this) {
 				structure = mappingMap.get(entityClass);
@@ -113,7 +113,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public void registerMapping(Class<?> entityClass, Mapping<? extends Element> mapping) {
+	public void registerMapping(Class<?> entityClass, Mapping<? extends Member> mapping) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (mapping == null) {
 			mappingMap.remove(entityClass);

@@ -15,7 +15,7 @@ import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
@@ -235,7 +235,7 @@ public class EntityResolverChain implements EntityResolver {
 
 	@Override
 	public <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, Property property) {
+			Parameter parameter, PropertyDescriptor property) {
 		if (iterator.hasNext()) {
 			return iterator.next().getColumn(operationSymbol, repository, parameter, property, this);
 		}
@@ -244,7 +244,7 @@ public class EntityResolverChain implements EntityResolver {
 
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, Property property) {
+			Parameter parameter, PropertyDescriptor property) {
 		if (iterator.hasNext()) {
 			return iterator.next().getCondition(operationSymbol, repository, parameter, property, this);
 		}
@@ -253,7 +253,7 @@ public class EntityResolverChain implements EntityResolver {
 
 	@Override
 	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			Property property) {
+			PropertyDescriptor property) {
 		if (iterator.hasNext()) {
 			return iterator.next().getSort(operationSymbol, repository, parameter, property, this);
 		}

@@ -2,7 +2,7 @@ package io.basc.framework.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.support.DefaultMapping;
 import io.basc.framework.util.Assert;
@@ -11,14 +11,14 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class DefaultEntityMapping<T extends Property> extends DefaultMapping<T> implements EntityMapping<T> {
+public class DefaultEntityMapping<T extends PropertyDescriptor> extends DefaultMapping<T> implements EntityMapping<T> {
 	private String comment;
 	private String charsetName;
 
 	public DefaultEntityMapping() {
 	}
 
-	public <S extends Element> DefaultEntityMapping(Mapping<? extends S> mapping,
+	public <S extends Member> DefaultEntityMapping(Mapping<? extends S> mapping,
 			Function<? super S, ? extends T> converter, Class<?> sourceClass,
 			EntityResolver relationalResolver) {
 		super(mapping, converter);
@@ -28,7 +28,7 @@ public class DefaultEntityMapping<T extends Property> extends DefaultMapping<T> 
 		setComment(relationalResolver.getComment(sourceClass));
 	}
 
-	public <S extends Property> DefaultEntityMapping(EntityMapping<? extends S> mapping,
+	public <S extends PropertyDescriptor> DefaultEntityMapping(EntityMapping<? extends S> mapping,
 			Function<? super S, ? extends T> converter) {
 		super(mapping, converter);
 		this.comment = mapping.getComment();

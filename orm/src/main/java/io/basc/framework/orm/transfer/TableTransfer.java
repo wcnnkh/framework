@@ -19,13 +19,12 @@ import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.codec.support.ListRecordCodec;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.core.reflect.ReflectionApi;
-import io.basc.framework.env.Sys;
 import io.basc.framework.io.FileRecords;
 import io.basc.framework.mapper.Mapping;
-import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pair;
@@ -43,7 +42,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 
 	public TableTransfer() {
 		this.mapper = TransfMapper.INSTANCE;
-		this.conversionService = Sys.getEnv().getConversionService();
+		this.conversionService = GlobalConversionService.getInstance();
 	}
 
 	protected TableTransfer(TableTransfer source) {
@@ -143,13 +142,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				});
 			}
 		} else {
-			Mapping<? extends Property> structure = mapper.getMapping(targetType.getType());
+			Mapping<? extends PropertyDescriptor> structure = mapper.getMapping(targetType.getType());
 			return mapEntity(source, structure);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> Stream<T> mapEntity(Stream<String[]> source, Mapping<? extends Property> structure) {
+	public final <T> Stream<T> mapEntity(Stream<String[]> source, Mapping<? extends PropertyDescriptor> structure) {
 		Assert.requiredArgument(structure != null, "structure");
 		Assert.requiredArgument(source != null, "source");
 		if (isHeader()) {
@@ -165,7 +164,8 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				}
 			}
 
-			Elements<? extends Property> properties = structure.getElements().filter((e) -> e.isSupportSetter());
+			Elements<? extends PropertyDescriptor> properties = structure.getElements()
+					.filter((e) -> e.isSupportSetter());
 			// 映射
 			return Streams.stream(iterator).map((contents) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
@@ -192,10 +192,10 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			return source.map((e) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				int i = 0;
-				Iterator<? extends Property> iterator = structure.filter((p) -> p.isSupportSetter()).getElements()
-						.iterator();
+				Iterator<? extends PropertyDescriptor> iterator = structure.filter((p) -> p.isSupportSetter())
+						.getElements().iterator();
 				while (iterator.hasNext() && i < e.length) {
-					Property property = iterator.next();
+					PropertyDescriptor property = iterator.next();
 					property.getSetter().set(instance, e[i++], conversionService);
 				}
 				return instance;
@@ -245,12 +245,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			return new TransfColumns<String, String>(values);
 		} else {
 			// ORM
-			ObjectRelational<? extends Property> structure = mapper.getStructure(type.getType());
+			ObjectRelational<? extends PropertyDescriptor> structure = mapper.getStructure(type.getType());
 			return mapColumns(source, structure);
 		}
 	}
 
-	public final TransfColumns<String, String> mapColumns(Object source, Mapping<? extends Property> structure) {
+	public final TransfColumns<String, String> mapColumns(Object source,
+			Mapping<? extends PropertyDescriptor> structure) {
 		return structure.getElements().filter((e) -> e.isSupportGetter()).map((property) -> {
 			Object value = property.get(source);
 			if (value == null) {

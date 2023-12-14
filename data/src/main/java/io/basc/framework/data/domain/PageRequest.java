@@ -3,10 +3,9 @@ package io.basc.framework.data.domain;
 import java.io.Serializable;
 
 import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
-import io.basc.framework.env.Sys;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
-import io.basc.framework.value.observe.Observable;
 import lombok.Data;
 
 /**
@@ -18,9 +17,7 @@ import lombok.Data;
 @Data
 public class PageRequest implements Serializable {
 	private static final InheritableThreadLocalConfigurator<PageRequest> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
-			PageRequest.class, Sys.getEnv());
-	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.getEnv().getProperties()
-			.getObservable("data.page.request.size").map((e) -> e.or(10L).getAsLong());
+			PageRequest.class, SPI.global());
 
 	private static final long serialVersionUID = 1L;
 
@@ -55,7 +52,7 @@ public class PageRequest implements Serializable {
 	 * 默认的分页策略
 	 */
 	public PageRequest() {
-		this(1, DEFAULT_PAGE_SIZE.get());
+		this(1, Long.getLong("data.page.request.size", 10));
 	}
 
 	public PageRequest(long pageNum, long pageSize) {

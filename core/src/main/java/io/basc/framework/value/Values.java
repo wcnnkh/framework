@@ -12,7 +12,7 @@ public class Values extends ElementsWrapper<Value, Elements<Value>> implements E
 		Assert.requiredArgument(args != null, "args");
 		Value[] values = new Value[args.length];
 		for (int i = 0; i < args.length; i++) {
-			values[i] = new AnyValue(args[i]);
+			values[i] = new ObjectValue(args[i]);
 		}
 		return new Values(values);
 	}
@@ -23,7 +23,7 @@ public class Values extends ElementsWrapper<Value, Elements<Value>> implements E
 		Assert.requiredArgument(typeDescriptors.length != args.length, "The number of parameters is inconsistent");
 		Value[] values = new Value[typeDescriptors.length];
 		for (int i = 0; i < typeDescriptors.length; i++) {
-			values[i] = new AnyValue(args[i], typeDescriptors[i]);
+			values[i] = new ObjectValue(args[i], typeDescriptors[i]);
 		}
 		return new Values(values);
 	}

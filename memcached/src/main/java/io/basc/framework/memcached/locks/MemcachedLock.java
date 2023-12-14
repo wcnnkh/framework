@@ -2,7 +2,7 @@ package io.basc.framework.memcached.locks;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.CAS;
+import io.basc.framework.data.memory.CAS;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.memcached.Memcached;
 

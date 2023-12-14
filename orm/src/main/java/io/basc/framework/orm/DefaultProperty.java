@@ -1,7 +1,7 @@
 package io.basc.framework.orm;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.Range;
@@ -9,8 +9,8 @@ import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
-public class DefaultProperty implements Property {
-	private final Element field;
+public class DefaultProperty implements PropertyDescriptor {
+	private final Member field;
 	private String name;
 	private Elements<String> aliasNames;
 	private boolean autoIncrement;
@@ -24,11 +24,11 @@ public class DefaultProperty implements Property {
 	private boolean unique;
 	private boolean version;
 
-	public DefaultProperty(Element field) {
+	public DefaultProperty(Member field) {
 		this.field = field;
 	}
 
-	public DefaultProperty(Property property) {
+	public DefaultProperty(PropertyDescriptor property) {
 		this.field = property;
 		this.name = property.getName();
 		this.aliasNames = property.getAliasNames();
@@ -44,7 +44,7 @@ public class DefaultProperty implements Property {
 		this.version = property.isVersion();
 	}
 
-	public DefaultProperty(Element field, Class<?> sourceClass, EntityResolver resolver) {
+	public DefaultProperty(Member field, Class<?> sourceClass, EntityResolver resolver) {
 		this(field);
 		this.autoIncrement = field.getSetters().map((e) -> resolver.isAutoIncrement(sourceClass, e))
 				.filter((e) -> e != null).anyMatch((e) -> e);

@@ -11,13 +11,14 @@ import io.basc.framework.mapper.Parameter;
  *
  */
 public class Expression extends Parameter {
+	private static final long serialVersionUID = 1L;
 
 	public Expression(String name) {
-		super(name);
+		this(name, null);
 	}
 
 	public Expression(String name, Object value) {
-		super(name, value);
+		this(name, value, null);
 	}
 
 	public Expression(String name, Object value, @Nullable TypeDescriptor typeDescriptor) {

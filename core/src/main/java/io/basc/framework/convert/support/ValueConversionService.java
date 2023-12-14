@@ -2,6 +2,7 @@ package io.basc.framework.convert.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.value.ObjectValue;
 import io.basc.framework.value.Value;
 
 class ValueConversionService implements ConversionService {
@@ -12,8 +13,8 @@ class ValueConversionService implements ConversionService {
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		Value value = Value.of(source, sourceType, conversionService);
-		if(targetType.getType() == Value.class) {
+		Value value = new ObjectValue(source, sourceType, conversionService);
+		if (targetType.getType() == Value.class) {
 			return value;
 		}
 
@@ -21,11 +22,11 @@ class ValueConversionService implements ConversionService {
 	}
 
 	private boolean isValueType(Class<?> type, boolean isAssignableFrom) {
-		//用来处理基本数据类型之前的转换 如：int->long
+		// 用来处理基本数据类型之前的转换 如：int->long
 		if (Value.isBaseType(type)) {
 			return true;
 		}
-		
+
 		if (isAssignableFrom) {
 			return Value.class.isAssignableFrom(type);
 		} else {

@@ -1,10 +1,10 @@
 package io.basc.framework.jdbc.template;
 
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.Elements;
 
-public interface Column extends Property {
+public interface Column extends PropertyDescriptor {
 
 	Elements<IndexInfo> getIndexs();
 

@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
-import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.io.IOUtils;
 
-public interface JsonSupport extends ConversionService {
+public interface JsonSupport extends Converter<Object, Object, JsonException> {
 	String toJsonString(Object obj) throws JsonException;
 
 	JsonElement parseJson(String text) throws JsonException;
@@ -103,11 +103,6 @@ public interface JsonSupport extends ConversionService {
 			return (T) parseObject(reader, (Class<?>) type);
 		}
 		return parseObject(new String(IOUtils.toCharArray(reader)), type);
-	}
-
-	@Override
-	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return true;
 	}
 
 	@Override

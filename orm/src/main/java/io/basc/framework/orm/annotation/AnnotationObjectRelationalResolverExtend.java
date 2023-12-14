@@ -25,7 +25,7 @@ import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.ParameterDescriptorFilter;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.orm.config.EntityResolverExtend;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
 import io.basc.framework.text.placeholder.PlaceholderFormatAware;
@@ -293,7 +293,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityResolverE
 
 	@Override
 	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			Property property, EntityResolver chain) {
+			PropertyDescriptor property, EntityResolver chain) {
 		SortType sortType = AnnotatedElementUtils.getMergedAnnotation(parameter.getTypeDescriptor(), SortType.class);
 		if (sortType != null) {
 			SortSymbol sortSymbol = Symbol.getOrCreate(() -> SortSymbol.getSortSymbols(sortType.value()).first(),
@@ -305,7 +305,7 @@ public class AnnotationObjectRelationalResolverExtend implements EntityResolverE
 
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, Property property, EntityResolver chain) {
+			Parameter parameter, PropertyDescriptor property, EntityResolver chain) {
 		io.basc.framework.orm.annotation.Condition condition = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), io.basc.framework.orm.annotation.Condition.class);
 		if (condition != null) {

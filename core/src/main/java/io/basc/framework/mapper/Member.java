@@ -4,12 +4,12 @@ import io.basc.framework.util.Named;
 import io.basc.framework.util.element.Elements;
 
 /**
- * 一个映射元素的定义
+ * 一个映射成员的定义
  * 
  * @author wcnnkh
  *
  */
-public interface Element extends Named {
+public interface Member extends Named {
 
 	@Override
 	String getName();

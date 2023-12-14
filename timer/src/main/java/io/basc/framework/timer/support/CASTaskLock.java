@@ -1,7 +1,7 @@
 package io.basc.framework.timer.support;
 
-import io.basc.framework.data.CAS;
 import io.basc.framework.data.DataCasOperations;
+import io.basc.framework.data.memory.CAS;
 import io.basc.framework.locks.AbstractLock;
 
 public class CASTaskLock extends AbstractLock {

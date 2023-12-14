@@ -16,6 +16,10 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 
 	private Environment parentEnvironment;
 
+	public DefaultEnvironment() {
+		getFactories().setLastService(SystemProperties.getInstance());
+	}
+
 	@Override
 	public void addActiveProfile(String profile) {
 		Elements<String> activeProfiles = getActiveProfilesInProperties();
@@ -96,7 +100,7 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 
 	public void setConnector(String connector) {
 		this.connector = connector;
-	}
+	};
 
 	@Override
 	public void setDefaultProfiles(Elements<String> profiles) {
@@ -106,7 +110,7 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 
 	public void setIgnoreCase(boolean ignoreCase) {
 		this.ignoreCase = ignoreCase;
-	};
+	}
 
 	public void setParentEnvironment(Environment parentEnvironment) {
 		this.parentEnvironment = parentEnvironment;

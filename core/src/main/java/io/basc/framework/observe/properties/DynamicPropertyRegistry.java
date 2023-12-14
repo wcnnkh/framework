@@ -14,16 +14,16 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.EditablePropertyFactory;
 import io.basc.framework.value.Value;
 
-public class DynamicPropertyFactory extends DynamicValueFactory<String>
+public class DynamicPropertyRegistry extends DynamicValueRegistry<String>
 		implements ObservablePropertyFactory, EditablePropertyFactory {
 	private final PropertyFactories factories = new PropertyFactories();
 	private final PropertyWrapper propertyWrapper;
 
-	public DynamicPropertyFactory() {
+	public DynamicPropertyRegistry() {
 		this(PropertyWrapper.CREATOR);
 	}
 
-	public DynamicPropertyFactory(PropertyWrapper propertyWrapper) {
+	public DynamicPropertyRegistry(PropertyWrapper propertyWrapper) {
 		super(new LinkedHashMap<>(), (properties) -> {
 			if (properties.isEmpty()) {
 				return Collections.emptyMap();

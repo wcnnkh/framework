@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory.config.support;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.MappingRegistry;
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public abstract class AutowiredBeanPostProcessor implements BeanPostProcessor {
 
 	@Override
 	public void postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		for (Element field : mappingFactory.getMapping(bean.getClass()).getElements()) {
+		for (Member field : mappingFactory.getMapping(bean.getClass()).getElements()) {
 			if (!canAutwired(bean, beanName, field)) {
 				continue;
 			}
@@ -27,7 +27,7 @@ public abstract class AutowiredBeanPostProcessor implements BeanPostProcessor {
 		}
 	}
 
-	protected abstract boolean canAutwired(Object bean, String beanName, Element field);
+	protected abstract boolean canAutwired(Object bean, String beanName, Member field);
 
-	protected abstract void autowired(Object bean, String beanName, Element field);
+	protected abstract void autowired(Object bean, String beanName, Member field);
 }

@@ -15,7 +15,7 @@ import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.orm.EntityMapper;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.element.Elements;
@@ -64,13 +64,13 @@ public class CollectionToMapConversionService extends AbstractConversionService
 			}
 
 			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
-			Elements<? extends Property> primaryKeys = getMapper().getMapping(itemType.getType()).getPrimaryKeys();
-			Iterator<? extends Property> primaryKeyIterator = primaryKeys.iterator();
+			Elements<? extends PropertyDescriptor> primaryKeys = getMapper().getMapping(itemType.getType()).getPrimaryKeys();
+			Iterator<? extends PropertyDescriptor> primaryKeyIterator = primaryKeys.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();
 			TypeDescriptor valueType = targetType.getMapValueTypeDescriptor();
 			while (primaryKeyIterator.hasNext()) {
-				Property primaryKeyField = primaryKeyIterator.next();
+				PropertyDescriptor primaryKeyField = primaryKeyIterator.next();
 				Getter getter = primaryKeyField.getGetters().first();
 				Object key = getter.get(value);
 				key = getConversionService().convert(key, getter.getTypeDescriptor(), keyType);

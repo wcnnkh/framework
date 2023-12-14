@@ -66,13 +66,13 @@ public interface EntityResolver {
 
 	@Nullable
 	<T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable Property property);
+			@Nullable PropertyDescriptor property);
 
 	@Nullable
 	<T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable Property property);
+			@Nullable PropertyDescriptor property);
 
 	@Nullable
 	<T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable Property property);
+			@Nullable PropertyDescriptor property);
 }

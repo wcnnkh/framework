@@ -10,7 +10,6 @@ import java.util.function.LongSupplier;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -19,10 +18,20 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.function.Optional;
 import io.basc.framework.util.function.Source;
 
-public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier, ConversionService {
+public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier {
 	static final Value EMPTY = new EmptyValue();
 
 	static final Value[] EMPTY_ARRAY = new Value[0];
+
+	/**
+	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isBaseType(Type type) {
+		return isUnconvertibleType(type) || Number.class == type;
+	}
 
 	/**
 	 * 不可以发生转换的类型
@@ -46,57 +55,24 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 				|| type == BigInteger.class || type == Class.class;
 	}
 
-	/**
-	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isBaseType(Type type) {
-		return isUnconvertibleType(type) || Number.class == type;
-	}
-
 	static Value of(@Nullable Object value) {
-		return of(value, null, null);
-	}
-
-	static Value of(@Nullable Object value,
-			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
-		return of(value, null, converter);
+		return of(value, null);
 	}
 
 	static Value of(@Nullable Object value, @Nullable TypeDescriptor type) {
-		return of(value, type, null);
-	}
-
-	static Value of(@Nullable Object value, @Nullable TypeDescriptor type,
-			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
-		if (converter == null) {
-			if (type == null) {
-				if (value == null) {
-					return EMPTY;
-				}
-
-				if (value instanceof Value) {
-					return (Value) value;
-				}
-
-				return new AnyValue(value);
-			}
-
-			// 使用默认的转换行为
-			return new AnyValue(value, type);
+		if (value == null && type == null) {
+			return EMPTY;
 		}
-		return new AnyValue(value, type, converter);
+
+		if (type == null && value instanceof Value) {
+			return (Value) value;
+		}
+
+		return new ObjectValue(value, type, null);
 	}
 
 	default <T> Optional<T> as(Class<? extends T> type) {
 		return map((e) -> getAsObject(type));
-	}
-
-	@Override
-	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return !isBaseType(targetType.getType());
 	}
 
 	@Nullable
@@ -104,6 +80,11 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 	default <T, E extends Throwable> T convert(Class<? extends T> targetType,
 			Converter<? super Object, ? extends Object, E> converter) throws E {
 		return (T) convert(TypeDescriptor.valueOf(targetType), converter);
+	}
+
+	default <E extends Throwable> Object convert(Type targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return convert(TypeDescriptor.valueOf(targetType), converter);
 	}
 
 	@Nullable
@@ -171,7 +152,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigDecimal();
 		}
 
-		return getStringConverter().convert(getAsString(), BigDecimal.class);
+		return getConverter().convert(getAsString(), BigDecimal.class);
 	}
 
 	@Nullable
@@ -193,7 +174,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigInteger();
 		}
 
-		return getStringConverter().convert(getAsString(), BigInteger.class);
+		return getConverter().convert(getAsString(), BigInteger.class);
 	}
 
 	default boolean getAsBoolean() {
@@ -213,7 +194,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		if (value instanceof Value) {
 			return ((Value) value).getAsBoolean();
 		}
-		return getStringConverter().convert(getAsString(), boolean.class);
+		return getConverter().convert(getAsString(), boolean.class);
 	}
 
 	default byte getAsByte() {
@@ -234,7 +215,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsByte();
 		}
 
-		return getStringConverter().convert(getAsString(), byte.class);
+		return getConverter().convert(getAsString(), byte.class);
 	}
 
 	default char getAsChar() {
@@ -251,7 +232,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsChar();
 		}
 
-		return getStringConverter().convert(getAsString(), char.class);
+		return getConverter().convert(getAsString(), char.class);
 	}
 
 	@Nullable
@@ -269,7 +250,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsClass();
 		}
 
-		return getStringConverter().convert(getAsString(), Class.class);
+		return getConverter().convert(getAsString(), Class.class);
 	}
 
 	@Override
@@ -291,7 +272,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsDouble();
 		}
 
-		return getStringConverter().convert(getAsString(), double.class);
+		return getConverter().convert(getAsString(), double.class);
 	}
 
 	@Nullable
@@ -309,7 +290,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsEnum(enumType);
 		}
 
-		return (Enum<?>) getStringConverter().convert(getAsString(), enumType);
+		return (Enum<?>) getConverter().convert(getAsString(), enumType);
 	}
 
 	default float getAsFloat() {
@@ -330,7 +311,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsFloat();
 		}
 
-		return getStringConverter().convert(getAsString(), float.class);
+		return getConverter().convert(getAsString(), float.class);
 	}
 
 	@Override
@@ -352,7 +333,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsInt();
 		}
 
-		return getStringConverter().convert(getAsString(), int.class);
+		return getConverter().convert(getAsString(), int.class);
 	}
 
 	@Override
@@ -374,7 +355,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsLong();
 		}
 
-		return getStringConverter().convert(getAsString(), long.class);
+		return getConverter().convert(getAsString(), long.class);
 	}
 
 	@Nullable
@@ -392,7 +373,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsNumber();
 		}
 
-		return getStringConverter().convert(getAsString(), Number.class);
+		return getConverter().convert(getAsString(), Number.class);
 	}
 
 	@Nullable
@@ -446,7 +427,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = getAsObject(TypeDescriptor.valueOf(type));
+			v = convert(type, getConverter());
 		}
 		return (T) v;
 	}
@@ -469,43 +450,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return getAsObject(type.getType());
 		}
 
-		Object value = getSource();
-		if (value == null) {
-			return null;
-		}
-
-		Class<?> rawClass = type.getType();
-		if (rawClass == Object.class || rawClass == null) {
-			return value;
-		}
-
-		if (!type.isGeneric() && type.getType().isInstance(value)) {
-			return value;
-		}
-
-		TypeDescriptor sourceType = getTypeDescriptor();
-		while (true) {
-			if (canConvert(sourceType, type)) {
-				return convert(value, sourceType, type);
-			}
-
-			if (value instanceof Value) {
-				Value sourceValue = (Value) value;
-				if (sourceValue.canConvert(sourceType, type)) {
-					return sourceValue.convert(value, sourceType, type);
-				}
-				value = sourceValue.getSource();
-				sourceType = sourceValue.getTypeDescriptor();
-			}
-			break;
-		}
-
-		value = getSource();
-		sourceType = getTypeDescriptor();
-		if (value instanceof Value) {
-			return ((Value) value).getAsObject(type);
-		}
-		return convert(value, sourceType, type);
+		return convert(type, getConverter());
 	}
 
 	default short getAsShort() {
@@ -526,7 +471,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsShort();
 		}
 
-		return getStringConverter().convert(getAsString(), short.class);
+		return getConverter().convert(getAsString(), short.class);
 	}
 
 	@Nullable
@@ -548,15 +493,15 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsString();
 		}
 
-		return convert(value, getTypeDescriptor(), String.class);
+		return convert(String.class, getConverter());
+	}
+
+	default Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
+		return ValueConverter.getInstance();
 	}
 
 	@Nullable
 	Object getSource();
-
-	default StringConverter getStringConverter() {
-		return StringConverter.DEFAULT_STRING_CONVERTER;
-	}
 
 	default TypeDescriptor getTypeDescriptor() {
 		Object value = getSource();
@@ -619,6 +564,10 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return true;
 	}
 
+	default Value or(Object other) {
+		return orElse(other instanceof Value ? (Value) other : createRelative(other, null));
+	}
+
 	@Override
 	default Value orElse(Value other) {
 		Object value = getSource();
@@ -630,18 +579,14 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).orElse(other);
 		}
 
-		return transform(value, getTypeDescriptor());
+		return this;
 	}
 
-	default Value or(Object other) {
-		return orElse(other instanceof Value ? (Value) other : transform(other, null));
+	default <E extends Throwable> Value orElse(Source<? extends Object, ? extends E> other) throws E {
+		return orElseGet(() -> createRelative(other.get(), null));
 	}
 
-	default <E extends Throwable> Value orGet(Source<? extends Object, ? extends E> other) throws E {
-		return orElseGet(() -> transform(other.get(), null));
-	}
-
-	default Value transform(Object value, @Nullable TypeDescriptor type) {
-		return new AnyValue(value, type);
+	default Value createRelative(Object value, @Nullable TypeDescriptor type) {
+		return new ObjectValue(value, type, getConverter());
 	}
 }

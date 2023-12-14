@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.data.CAS;
+import io.basc.framework.data.memory.CAS;
 import io.basc.framework.util.CollectionUtils;
 
 public interface KeyValueCasOperationsWrapper<K, V>

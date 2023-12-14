@@ -1,6 +1,7 @@
 package io.basc.framework.execution.param;
 
 import io.basc.framework.execution.Executor;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.element.Elements;
 

@@ -21,7 +21,11 @@ import io.basc.framework.util.element.ConvertibleIterator;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.EditablePropertyFactory;
 import io.basc.framework.value.Value;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ObservableProperties extends Observer<PropertyChangeEvent<String, Value>>
 		implements ObservablePropertyFactory, EditablePropertyFactory {
 	private Charset charset = Constants.UTF_8;

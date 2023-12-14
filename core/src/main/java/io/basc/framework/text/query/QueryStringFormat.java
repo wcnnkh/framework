@@ -12,7 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.ObjectFormat;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.ObjectValue;
 import io.basc.framework.value.Value;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -84,7 +84,7 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.decode(value);
 			}
 
-			return new Pair<>(key, new AnyValue(value, getConversionService()));
+			return new Pair<>(key, new ObjectValue(value, null, getConversionService()));
 		});
 	}
 }

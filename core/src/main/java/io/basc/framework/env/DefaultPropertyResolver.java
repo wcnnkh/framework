@@ -4,21 +4,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.observe.properties.DynamicPropertyFactory;
+import io.basc.framework.observe.properties.DynamicPropertyRegistry;
 import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.util.Registration;
+import io.basc.framework.value.ObjectValue;
+import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
-public class DefaultPropertyResolver extends DynamicPropertyFactory
+public class DefaultPropertyResolver extends DynamicPropertyRegistry
 		implements ConfigurablePropertyResolver, Configurable {
 
 	private static interface FinalProperty {
 	}
 
-	private class AnyFormatValue extends AnyValue implements FinalProperty {
+	private class AnyFormatValue extends ObjectValue implements FinalProperty {
+		private static final long serialVersionUID = 1L;
 
 		public AnyFormatValue(Value value) {
-			super(value.getSource(), value.getTypeDescriptor(), value);
+			super(value.getSource(), value.getTypeDescriptor(), value.getConverter());
 		}
 
 		public String getAsString() {
@@ -68,6 +71,7 @@ public class DefaultPropertyResolver extends DynamicPropertyFactory
 				return;
 			}
 
+			getFactories().setLastService(parentPropertyResolver);
 			this.parentPropertyResolver = parentPropertyResolver;
 			if (this.parentPropertyResolver != null) {
 				configurablePlaceholderReplacer
@@ -87,5 +91,9 @@ public class DefaultPropertyResolver extends DynamicPropertyFactory
 		}
 
 		return new AnyFormatValue(value);
+	}
+
+	public Registration register(PropertyFactory propertyFactory) {
+		return getFactories().register(propertyFactory);
 	}
 }

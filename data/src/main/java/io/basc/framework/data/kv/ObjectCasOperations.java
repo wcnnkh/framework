@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.CAS;
+import io.basc.framework.data.memory.CAS;
 import io.basc.framework.util.CollectionUtils;
 
 public interface ObjectCasOperations<K> extends ObjectOperations<K>, KeyValueCasOperations<K, Object> {

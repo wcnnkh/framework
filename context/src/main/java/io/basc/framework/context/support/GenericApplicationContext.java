@@ -10,22 +10,35 @@ import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextAware;
+import io.basc.framework.context.ApplicationContextEvent;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.DefaultEnvironment;
+import io.basc.framework.event.EventPushException;
+import io.basc.framework.event.EventRegistrationException;
+import io.basc.framework.event.batch.BatchEventDispatcher;
+import io.basc.framework.event.batch.BatchEventListener;
+import io.basc.framework.event.support.DefaultBroadcastEventDispatcher;
+import io.basc.framework.io.DefaultResourceLoader;
+import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
+import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.element.Elements;
 
 public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
 	private ConfigurableEnvironment environment = new DefaultEnvironment();
 	private ApplicationContext parent;
 	private ClassLoaderProvider classLoaderProvider;
 	private final ConfigurablePropertiesResolver propertiesResolver = new ConfigurablePropertiesResolver();
-	private ResourcePatternResolver resourcePatternResolver;
+	private final DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader();
+	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this);
 	private final BeanFactoryPostProcessors beanFactoryPostProcessors = new BeanFactoryPostProcessors();
+	private ResourceLoader resourceLoader;
 
 	public GenericApplicationContext(Scope scope) {
 		super(scope);
@@ -71,6 +84,9 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
+		if (resourceLoader instanceof ResourcePatternResolver) {
+			return ((ResourcePatternResolver) resourceLoader).getResources(locationPattern);
+		}
 		return resourcePatternResolver.getResources(locationPattern);
 	}
 
@@ -85,7 +101,16 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 
 	@Override
 	public Resource getResource(String location) {
-		return resourcePatternResolver.getResource(location);
+		if (resourceLoader != null) {
+			for (ProtocolResolver protocolResolver : defaultResourceLoader.getProtocolResolver().getServices()) {
+				Resource resource = protocolResolver.resolve(location, this);
+				if (resource != null) {
+					return resource;
+				}
+			}
+			return resourceLoader.getResource(location);
+		}
+		return defaultResourceLoader.getResource(location);
 	}
 
 	private AtomicBoolean running = new AtomicBoolean();
@@ -191,5 +216,23 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 			}
 		}
 		return shutdownHookRegistration;
+	}
+
+	@Override
+	public void addProtocolResolver(ProtocolResolver protocolResolver) {
+		defaultResourceLoader.getProtocolResolver().register(protocolResolver);
+	}
+
+	private final BatchEventDispatcher<ApplicationContextEvent> eventDispatcher = new DefaultBroadcastEventDispatcher<>();
+
+	@Override
+	public Registration registerBatchListener(BatchEventListener<ApplicationContextEvent> batchEventListener)
+			throws EventRegistrationException {
+		return eventDispatcher.registerBatchListener(batchEventListener);
+	}
+
+	@Override
+	public void publishBatchEvent(Elements<ApplicationContextEvent> events) throws EventPushException {
+		eventDispatcher.publishBatchEvent(events);
 	}
 }

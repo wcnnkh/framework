@@ -18,8 +18,8 @@ public class Configurator extends DefaultEntityMapper {
 	}
 
 	public Configurator(Environment environment) {
-		this(environment.getProperties(), TypeDescriptor.valueOf(PropertyFactory.class));
-		setPlaceholderFormat(environment.getProperties());
+		this(environment, TypeDescriptor.valueOf(PropertyFactory.class));
+		setPlaceholderFormat(environment);
 	}
 
 	public Configurator(Object source, @Nullable TypeDescriptor sourceType) {

@@ -13,12 +13,13 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Element;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.support.DefaultObjectMapping;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 
@@ -36,13 +37,13 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 			return Elements.empty();
 		}
 
-		List<Entry<Property, Parameter>> entries = getEntries(repository.getEntity(),
+		List<Entry<PropertyDescriptor, Parameter>> entries = getEntries(repository.getEntity(),
 				repository.getEntityMapping().columns().iterator());
 		return toConditions(operationSymbol, repository, Elements.of(entries));
 	}
 
 	default <T> Elements<? extends Sort> getOrders(OperationSymbol operationSymbol, EntityRepository<T> repository) {
-		Elements<Entry<Property, Parameter>> entries;
+		Elements<Entry<PropertyDescriptor, Parameter>> entries;
 		if (repository.getEntity() == null) {
 			entries = repository.getEntityMapping().columns().map((property) -> {
 				Parameter parameter = createParameter(property, null);
@@ -61,7 +62,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 			return repository.getEntityMapping().columns().map((e) -> new Expression(e.getName()));
 		}
 
-		List<Entry<Property, Parameter>> entries = getEntries(repository.getEntity(),
+		List<Entry<PropertyDescriptor, Parameter>> entries = getEntries(repository.getEntity(),
 				repository.getEntityMapping().columns().iterator());
 		return toColumns(operationSymbol, repository, Elements.of(entries));
 	}
@@ -77,12 +78,12 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 	}
 
 	@Override
-	default EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
-		Mapping<? extends Element> mapping = ObjectMapper.super.getMapping(entityClass);
+	default EntityMapping<? extends PropertyDescriptor> getMapping(Class<?> entityClass) {
+		Mapping<? extends Member> mapping = DefaultObjectMapping.getMapping(entityClass).all();
 		return new DefaultEntityMapping<>(mapping, (e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
 	}
 
-	default Parameter createParameter(Property property, Object value) {
+	default Parameter createParameter(PropertyDescriptor property, Object value) {
 		Parameter parameter;
 		if (value instanceof Parameter) {
 			parameter = (Parameter) value;
@@ -97,7 +98,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return parameter;
 	}
 
-	default <F extends Property> List<Entry<F, Parameter>> combineEntries(Iterator<? extends F> properties,
+	default <F extends PropertyDescriptor> List<Entry<F, Parameter>> combineEntries(Iterator<? extends F> properties,
 			Iterator<? extends Object> args) {
 		List<Entry<F, Parameter>> entries = new ArrayList<>(8);
 		while (properties.hasNext() && args.hasNext()) {
@@ -110,7 +111,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return entries;
 	}
 
-	default <F extends Property> List<Entry<F, Parameter>> getEntries(Object entity,
+	default <F extends PropertyDescriptor> List<Entry<F, Parameter>> getEntries(Object entity,
 			Iterator<? extends F> propertyIterator) {
 		List<Entry<F, Parameter>> entries = new ArrayList<>();
 		while (propertyIterator.hasNext()) {
@@ -132,7 +133,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return entries;
 	}
 
-	default boolean hasEffectiveValue(Object entity, Property property) {
+	default boolean hasEffectiveValue(Object entity, PropertyDescriptor property) {
 		if (!property.isSupportGetter()) {
 			return false;
 		}
@@ -161,13 +162,13 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 	}
 
 	default <T> Elements<? extends Expression> toColumns(OperationSymbol operationSymbol,
-			EntityRepository<T> repository, Elements<? extends Entry<Property, Parameter>> elements) {
+			EntityRepository<T> repository, Elements<? extends Entry<PropertyDescriptor, Parameter>> elements) {
 		return elements.filter((e) -> hasEffectiveValue(e.getValue()))
 				.map((e) -> getColumn(operationSymbol, repository, e.getValue(), e.getKey()));
 	}
 
 	default <T> Elements<? extends Condition> toConditions(OperationSymbol operationSymbol,
-			EntityRepository<T> repository, Elements<? extends Entry<Property, Parameter>> elements) {
+			EntityRepository<T> repository, Elements<? extends Entry<PropertyDescriptor, Parameter>> elements) {
 		return elements.filter((e) -> hasEffectiveValue(e.getValue()))
 				.map((e) -> getCondition(operationSymbol, repository, e.getValue(), e.getKey()));
 	}

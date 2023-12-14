@@ -2,13 +2,13 @@ package io.basc.framework.jdbc.template;
 
 import io.basc.framework.jdbc.template.config.TableResolver;
 import io.basc.framework.orm.DefaultProperty;
-import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.element.Elements;
 
 public class DefaultColumn extends DefaultProperty implements Column {
 	private Elements<IndexInfo> indexs;
 
-	public DefaultColumn(Property property) {
+	public DefaultColumn(PropertyDescriptor property) {
 		super(property);
 	}
 
@@ -17,7 +17,7 @@ public class DefaultColumn extends DefaultProperty implements Column {
 		this.indexs = column.getIndexs();
 	}
 
-	public DefaultColumn(Property property, Class<?> sourceClass, TableResolver tableResolver) {
+	public DefaultColumn(PropertyDescriptor property, Class<?> sourceClass, TableResolver tableResolver) {
 		super(property);
 		this.indexs = property.getSetters().map((e) -> tableResolver.getIndexs(sourceClass, e)).first();
 	}

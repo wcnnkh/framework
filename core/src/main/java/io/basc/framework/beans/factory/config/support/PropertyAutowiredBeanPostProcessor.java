@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory.config.support;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.mapper.Element;
+import io.basc.framework.mapper.Member;
 import io.basc.framework.mapper.MappingRegistry;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.observe.properties.ObservablePropertyFactory;
@@ -51,7 +51,7 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 	}
 
 	@Override
-	protected void autowired(Object bean, String beanName, Element field) {
+	protected void autowired(Object bean, String beanName, Member field) {
 		Elements<String> setterNames = getPropertyNames(field);
 		if (isSingleton(beanName)) {
 			Registration registration = Registration.EMPTY;
@@ -69,7 +69,7 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 		setProperty(bean, beanName, field, setterNames);
 	}
 
-	protected void setProperty(Object bean, String beanName, Element field, Elements<String> setterNames) {
+	protected void setProperty(Object bean, String beanName, Member field, Elements<String> setterNames) {
 		for (String name : setterNames) {
 			if (propertyFactory.containsKey(name)) {
 				Value value = propertyFactory.get(name);
@@ -79,7 +79,7 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 		}
 	}
 
-	protected void setProperty(Object bean, String beanName, Element field, Elements<String> setterNames,
+	protected void setProperty(Object bean, String beanName, Member field, Elements<String> setterNames,
 			String propertyName, Value value) {
 		Setter setter = field.getSetters().first();
 		Object setValue = value.getAsObject(setter.getTypeDescriptor());
@@ -92,5 +92,5 @@ public abstract class PropertyAutowiredBeanPostProcessor extends AutowiredBeanPo
 	 * @param field
 	 * @return
 	 */
-	protected abstract Elements<String> getPropertyNames(Element field);
+	protected abstract Elements<String> getPropertyNames(Member field);
 }

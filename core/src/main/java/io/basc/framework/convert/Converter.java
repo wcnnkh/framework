@@ -13,10 +13,8 @@ public interface Converter<S, T, E extends Throwable> {
 		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
-	@SuppressWarnings("unchecked")
-	default <R extends T> R convert(@Nullable S source, @Nullable Class<? extends S> sourceType,
-			TypeDescriptor targetType) throws E {
-		return (R) convert(source, TypeDescriptor.valueOf(sourceType), targetType);
+	default T convert(@Nullable S source, @Nullable Class<? extends S> sourceType, TypeDescriptor targetType) throws E {
+		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
 	default T convert(@Nullable S source, TypeDescriptor targetType) throws E {
