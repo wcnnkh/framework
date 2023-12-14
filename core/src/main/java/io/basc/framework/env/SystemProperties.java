@@ -1,5 +1,6 @@
 package io.basc.framework.env;
 
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.mapper.Property;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.ConvertibleEnumeration;
@@ -16,6 +17,7 @@ public class SystemProperties extends DefaultPropertyResolver {
 			synchronized (SystemProperties.class) {
 				if (instance == null) {
 					instance = new SystemProperties();
+					instance.configure(SPI.global());
 				}
 			}
 		}
