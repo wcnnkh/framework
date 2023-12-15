@@ -11,24 +11,6 @@ public interface ConfigurableBeanFactory
 	void registerFactoryBean(String beanName, FactoryBean<? extends Object> factoryBean) throws BeansException;
 
 	/**
-	 * 初始化一个bean
-	 * 
-	 * @param beanName
-	 * @param bean
-	 * @throws BeansException
-	 */
-	void initializationBean(String beanName, Object bean) throws BeansException;
-
-	/**
-	 * 销毁一个bean
-	 * 
-	 * @param beanName
-	 * @param bean
-	 * @throws BeansException
-	 */
-	void destroyBean(String beanName, Object bean) throws BeansException;
-
-	/**
 	 * 销毁所有单例
 	 */
 	void destroySingletons();
