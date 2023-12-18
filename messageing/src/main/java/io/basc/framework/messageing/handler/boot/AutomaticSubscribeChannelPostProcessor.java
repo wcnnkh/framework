@@ -2,10 +2,10 @@ package io.basc.framework.messageing.handler.boot;
 
 import java.lang.reflect.Method;
 
+import io.basc.framework.beans.factory.annotation.Component;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.messageing.MessageHandler;

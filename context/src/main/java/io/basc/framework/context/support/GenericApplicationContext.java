@@ -40,8 +40,7 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 	private final BeanFactoryPostProcessors beanFactoryPostProcessors = new BeanFactoryPostProcessors();
 	private ResourceLoader resourceLoader;
 
-	public GenericApplicationContext(Scope scope) {
-		super(scope);
+	public GenericApplicationContext() {
 		getServiceInjectors().register((bean) -> {
 			if (bean instanceof ApplicationContextAware) {
 				((ApplicationContextAware) bean).setApplicationContext(this);

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.annotation.Configuration;
+import io.basc.framework.beans.factory.annotation.Configuration;
 
 /**
  * 启动类

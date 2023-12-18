@@ -6,12 +6,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
+import io.basc.framework.beans.factory.annotation.Bean;
+import io.basc.framework.beans.factory.annotation.Component;
+import io.basc.framework.beans.factory.annotation.ImportResource;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.annotation.BootApplication;
 import io.basc.framework.boot.support.MainApplication;
-import io.basc.framework.context.annotation.Bean;
-import io.basc.framework.context.annotation.Component;
-import io.basc.framework.context.annotation.ImportResource;
 
 @Component
 @ImportResource("test.properties")

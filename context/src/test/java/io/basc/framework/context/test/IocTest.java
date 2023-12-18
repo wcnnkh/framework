@@ -7,8 +7,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.context.annotation.Component;
-import io.basc.framework.context.annotation.Value;
+import io.basc.framework.beans.factory.annotation.Component;
+import io.basc.framework.beans.factory.annotation.Value;
 import io.basc.framework.context.support.DefaultApplicationContext;
 import io.basc.framework.orm.annotation.PrimaryKey;
 

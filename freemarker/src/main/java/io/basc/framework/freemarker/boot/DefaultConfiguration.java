@@ -5,9 +5,9 @@ import java.util.Map.Entry;
 
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import io.basc.framework.beans.factory.annotation.Component;
+import io.basc.framework.beans.factory.annotation.ConditionalOnMissingBean;
 import io.basc.framework.context.ApplicationContext;
-import io.basc.framework.context.annotation.Component;
-import io.basc.framework.context.annotation.ConditionalOnMissingBean;
 import io.basc.framework.freemarker.EnvConfiguration;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 import io.basc.framework.logger.Logger;

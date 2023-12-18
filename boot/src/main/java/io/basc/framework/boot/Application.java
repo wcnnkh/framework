@@ -1,48 +1,68 @@
 package io.basc.framework.boot;
 
-import java.util.OptionalInt;
-
-import io.basc.framework.beans.factory.config.DisposableBean;
-import io.basc.framework.beans.factory.config.InitializingBean;
 import io.basc.framework.context.ApplicationContext;
-import io.basc.framework.event.broadcast.BroadcastEventDispatcher;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.net.InetUtils;
-import io.basc.framework.util.function.Optional;
+import io.basc.framework.context.config.ConfigurableApplicationContext;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
-public interface Application extends ApplicationContext, DisposableBean, InitializingBean {
-	public static final String APPLICATION_NAME_PROPERTY = "application.name";
-	public static final String APPLICATION_PORT_PROPERTY = "application.port";
+@Getter
+@Setter
+public class Application {
+	@NonNull
+	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
 
-	public static final int DEFAULT_PORT = Integer.getInteger("io.basc.framework.application.default.port", 8080);
+	@NonNull
+	private ApplicationType applicationType = null;
 
-	BroadcastEventDispatcher<ApplicationEvent> getEventDispatcher();
+	private Class<?> mainApplicationClass;
 
-	Logger getLogger();
-
-	long getCreateTime();
-
-	default Optional<String> getName() {
-		return getProperties().getObservable(APPLICATION_NAME_PROPERTY).convert((e) -> e.getAsString());
+	public Application(Class<?>... primarySources) {
+		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
-	default OptionalInt getPort() {
-		Integer port = getProperties().getAsObject(APPLICATION_PORT_PROPERTY, Integer.class);
-		return port == null ? OptionalInt.empty() : OptionalInt.of(port);
+	protected ConfigurableApplicationContext createApplicationContext() {
+		return getApplicationContextFactory().create(getApplicationType());
 	}
 
-	@Override
-	void init();
-
-	boolean isInitialized();
-
-	@Override
-	void destroy();
-
-	static int getAvailablePort() {
-		if (InetUtils.isAvailablePort(DEFAULT_PORT)) {
-			return DEFAULT_PORT;
+	private Class<?> deduceMainApplicationClass() {
+		try {
+			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+			for (StackTraceElement stackTraceElement : stackTrace) {
+				if ("main".equals(stackTraceElement.getMethodName())) {
+					return Class.forName(stackTraceElement.getClassName());
+				}
+			}
+		} catch (ClassNotFoundException ex) {
+			// Swallow and continue
 		}
-		return InetUtils.getAvailablePort();
+		return null;
+	}
+
+	/**
+	 * Refresh the underlying {@link ApplicationContext}.
+	 * 
+	 * @param applicationContext the application context to refresh
+	 */
+	protected void refresh(ConfigurableApplicationContext applicationContext) {
+		applicationContext.refresh();
+	}
+
+	public ConfigurableApplicationContext run(String... args) {
+		ConfigurableApplicationContext context = createApplicationContext();
+		refresh(context);
+		return context;
+	}
+
+	public static ConfigurableApplicationContext main(String[] args) {
+		return run(new Class<?>[0], args);
+	}
+
+	public static ConfigurableApplicationContext run(Class<?> primarySource, String[] args) {
+		return run(new Class<?>[] { primarySource }, args);
+	}
+
+	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+		return new Application(primarySources).run(args);
 	}
 }

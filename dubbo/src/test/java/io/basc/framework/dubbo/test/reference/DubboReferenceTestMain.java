@@ -2,9 +2,9 @@ package io.basc.framework.dubbo.test.reference;
 
 import java.util.concurrent.ExecutionException;
 
+import io.basc.framework.beans.factory.annotation.ImportResource;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
-import io.basc.framework.context.annotation.ImportResource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.XUtils;

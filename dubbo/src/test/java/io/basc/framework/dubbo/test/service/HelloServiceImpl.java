@@ -1,6 +1,6 @@
 package io.basc.framework.dubbo.test.service;
 
-import io.basc.framework.context.annotation.Service;
+import io.basc.framework.beans.factory.annotation.Service;
 import io.basc.framework.dubbo.test.reference.HelloService;
 
 @Service

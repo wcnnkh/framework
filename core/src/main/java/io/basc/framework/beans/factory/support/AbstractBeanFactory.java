@@ -12,7 +12,6 @@ import io.basc.framework.beans.factory.BeanFactoryAware;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.HierarchicalBeanFactory;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
-import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanPostProcessors;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.DisposableBean;
@@ -28,7 +27,6 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.observe.register.ServiceInjectors;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
 
@@ -39,12 +37,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	private final Set<String> initializedSingletonSet = new HashSet<>();
 	private final ParameterExtractors<BeanFactory> parameterExtractors = new ParameterExtractors<>();
 	private BeanFactory parentBeanFactory;
-	private final Scope scope;
 	private final ServiceInjectors<Object> serviceInjectors = new ServiceInjectors<>();
 
-	public AbstractBeanFactory(Scope scope) {
-		Assert.requiredArgument(scope != null, "scope");
-		this.scope = scope;
+	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
 		beanPostProcessors.getServiceInjectors().register(serviceInjectors);
 
@@ -217,11 +212,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	public BeanFactory getParentBeanFactory() {
 		return parentBeanFactory;
-	}
-
-	@Override
-	public Scope getScope() {
-		return scope;
 	}
 
 	public ServiceInjectors<Object> getServiceInjectors() {

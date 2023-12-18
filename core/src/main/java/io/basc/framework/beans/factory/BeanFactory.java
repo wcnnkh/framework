@@ -4,8 +4,6 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
 
 public interface BeanFactory {
-	Scope getScope();
-
 	boolean containsBean(String name);
 
 	boolean isFactoryBean(String name);

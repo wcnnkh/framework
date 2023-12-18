@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.annotation.Indexed;
+import io.basc.framework.beans.factory.annotation.Indexed;
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)

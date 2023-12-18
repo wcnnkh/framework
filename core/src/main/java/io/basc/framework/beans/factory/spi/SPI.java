@@ -2,7 +2,6 @@ package io.basc.framework.beans.factory.spi;
 
 import java.util.ServiceLoader;
 
-import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.observe.register.ServiceRegistry;
 import io.basc.framework.util.element.Elements;
@@ -38,17 +37,13 @@ public class SPI extends DefaultServiceLoaderFactory {
 		if (global == null) {
 			synchronized (SPI.class) {
 				if (global == null) {
-					global = new SPI(Scope.DEFAULT);
+					global = new SPI();
 					Thread thread = new Thread(() -> global.destroySingletons());
 					Runtime.getRuntime().addShutdownHook(thread);
 				}
 			}
 		}
 		return global;
-	}
-
-	public SPI(Scope scope) {
-		super(scope);
 	}
 
 	@Override

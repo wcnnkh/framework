@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.basc.framework.beans.factory.BeanProvider;
-import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
 import io.basc.framework.observe.register.ServiceRegistry;
@@ -14,8 +13,7 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 
 	private volatile Map<Class<?>, ServiceRegistry<?>> serviceLoaderMap = new HashMap<>();
 
-	public DefaultServiceLoaderFactory(Scope scope) {
-		super(scope);
+	public DefaultServiceLoaderFactory() {
 		getServiceInjectors().register((bean) -> {
 			if (bean instanceof Configurable) {
 				Configurable configurable = (Configurable) bean;

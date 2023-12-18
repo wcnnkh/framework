@@ -18,10 +18,11 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.observe.PollingObserver;
+import io.basc.framework.observe.PollingService;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 
-public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
+public class Watcher<T> extends PollingObserver<WatchEvent<T>> implements PollingService<Elements<WatchEvent<T>>> {
 	private static volatile WatchService defaultWatchService;
 	private static Logger logger = LoggerFactory.getLogger(Watcher.class);
 	private static volatile boolean newDefaultWatchServieError = false;
@@ -106,17 +107,7 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 
 	@Override
 	public void await() throws InterruptedException {
-		WatchKey watchKey = watchService.take();
-		if (watchKey == null) {
-			return;
-		}
-
-		WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, contextType);
-		try {
-			publishBatchEvent(watchKeyObserver.pollEvents());
-		} finally {
-			watchKeyObserver.reset();
-		}
+		take();
 	}
 
 	@Override
@@ -126,12 +117,7 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 			return false;
 		}
 
-		WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, contextType);
-		try {
-			publishBatchEvent(watchKeyObserver.pollEvents());
-		} finally {
-			watchKeyObserver.reset();
-		}
+		publishWatchKey(watchKey);
 		return true;
 	}
 
@@ -146,17 +132,40 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> {
 
 	@Override
 	public void run() {
+		poll();
+	}
+
+	@Override
+	public Elements<WatchEvent<T>> poll() {
 		WatchKey watchKey = watchService.poll();
+		return publishWatchKey(watchKey);
+	}
+
+	public Elements<WatchEvent<T>> publishWatchKey(WatchKey watchKey) {
 		if (watchKey == null) {
-			return;
+			return Elements.empty();
 		}
 
 		WatchKeyPollingObserver<T> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, contextType);
 		try {
-			publishBatchEvent(watchKeyObserver.pollEvents());
+			Elements<WatchEvent<T>> elements = watchKeyObserver.pollEvents();
+			publishBatchEvent(elements);
+			return elements;
 		} finally {
 			watchKeyObserver.reset();
 		}
+	}
+
+	@Override
+	public Elements<WatchEvent<T>> poll(long timeout, TimeUnit unit) throws InterruptedException {
+		WatchKey watchKey = watchService.poll(timeout, unit);
+		return publishWatchKey(watchKey);
+	}
+
+	@Override
+	public Elements<WatchEvent<T>> take() throws InterruptedException {
+		WatchKey watchKey = watchService.take();
+		return publishWatchKey(watchKey);
 	}
 
 }

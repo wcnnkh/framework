@@ -3,6 +3,7 @@ package io.basc.framework.boot.support;
 import java.util.OptionalInt;
 
 import io.basc.framework.beans.factory.Scope;
+import io.basc.framework.beans.factory.annotation.ImportResource;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.boot.Application;
@@ -14,7 +15,6 @@ import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.boot.annotation.ApplicationResource;
 import io.basc.framework.boot.config.ApplicationPostProcessors;
-import io.basc.framework.context.annotation.ImportResource;
 import io.basc.framework.context.support.DefaultApplicationContext;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.event.broadcast.BroadcastEventDispatcher;

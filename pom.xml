@@ -431,6 +431,16 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
+				<artifactId>beans-annotation</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>beans-annotation-processor</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
 				<artifactId>memcached</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -804,6 +814,8 @@
 		<module>spring-context</module>
 		<module>locks</module>
 		<module>jdbc</module>
+		<module>beans-annotation</module>
+		<module>beans-annotation-processor</module>
 	</modules>
 	<profiles>
 		<profile>

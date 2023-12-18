@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 
 import io.basc.framework.beans.factory.HierarchicalBeanFactory;
 import io.basc.framework.beans.factory.ListableBeanFactory;
+import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.env.EnvironmentCapable;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourcePatternResolver;
@@ -18,8 +19,9 @@ import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
 
-public interface ApplicationContext extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext>,
-		ResourcePatternResolver, ListableBeanFactory, HierarchicalBeanFactory, Observable<ApplicationContextEvent> {
+public interface ApplicationContext
+		extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext>, ResourcePatternResolver,
+		ListableBeanFactory, HierarchicalBeanFactory, Observable<ApplicationContextEvent>, AutowireCapableBeanFactory {
 
 	/**
 	 * Return the unique id of this application context.

@@ -13,7 +13,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.Observer;
 import io.basc.framework.observe.value.ObservableValue;
-import io.basc.framework.observe.watch.ResourceWatcher;
+import io.basc.framework.observe.watch.ResourceObserver;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Registration;
@@ -46,7 +46,7 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, V
 		this(new Properties(), propertyWrapper);
 	}
 
-	public Registration bind(Resource resource, ResourceWatcher resourceWatcher) {
+	public Registration bind(Resource resource, ResourceObserver resourceWatcher) {
 		load(resource);
 		Registration registration = resourceWatcher.register(resource);
 		registration = registration.and(resourceWatcher.registerBatchListener((events) -> {

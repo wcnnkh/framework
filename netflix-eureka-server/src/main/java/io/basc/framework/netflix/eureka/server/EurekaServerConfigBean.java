@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.aws.AwsBindingStrategy;
 
-import io.basc.framework.context.annotation.Autowired;
+import io.basc.framework.beans.factory.annotation.Autowired;
 import io.basc.framework.env.Environment;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
 import lombok.Data;

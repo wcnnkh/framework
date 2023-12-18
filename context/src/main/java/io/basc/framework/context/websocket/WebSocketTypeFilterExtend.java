@@ -3,7 +3,7 @@ package io.basc.framework.context.websocket;
 import java.io.IOException;
 import java.util.Set;
 
-import io.basc.framework.context.annotation.Component;
+import io.basc.framework.beans.factory.annotation.Component;
 import io.basc.framework.context.config.TypeFilterExtend;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;

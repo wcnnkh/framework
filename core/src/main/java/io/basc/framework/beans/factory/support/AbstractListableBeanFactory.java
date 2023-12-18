@@ -6,7 +6,6 @@ import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
-import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionOverrideException;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -15,10 +14,6 @@ import io.basc.framework.util.element.Elements;
 public abstract class AbstractListableBeanFactory extends AbstractBeanFactory
 		implements ConfigurableListableBeanFactory {
 	private final Map<String, BeanDefinition> definitionMap = new ConcurrentHashMap<String, BeanDefinition>();
-
-	public AbstractListableBeanFactory(Scope scope) {
-		super(scope);
-	}
 
 	@Override
 	public boolean containsBeanDefinition(String beanName) {

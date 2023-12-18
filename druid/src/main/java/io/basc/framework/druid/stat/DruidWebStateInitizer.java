@@ -9,9 +9,9 @@ import javax.servlet.ServletContext;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 
+import io.basc.framework.beans.factory.annotation.Component;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
-import io.basc.framework.context.annotation.Component;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.RandomUtils;

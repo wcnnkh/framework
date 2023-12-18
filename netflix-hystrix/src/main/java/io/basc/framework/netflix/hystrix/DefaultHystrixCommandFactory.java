@@ -7,8 +7,8 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
-import io.basc.framework.context.annotation.Component;
-import io.basc.framework.context.annotation.ConditionalOnMissingBean;
+import io.basc.framework.beans.factory.annotation.Component;
+import io.basc.framework.beans.factory.annotation.ConditionalOnMissingBean;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.core.reflect.MethodInvoker;

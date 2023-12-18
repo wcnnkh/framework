@@ -10,7 +10,7 @@ import io.basc.framework.io.resolver.DefaultPropertiesResolver;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.value.ObservableValue;
-import io.basc.framework.observe.watch.ResourceWatcher;
+import io.basc.framework.observe.watch.ResourceObserver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 
@@ -25,7 +25,7 @@ import io.basc.framework.util.Registration;
 public class DynamicMap<K, V> extends MergedObservableMap<K, V> {
 	private final Function<? super Properties, ? extends Map<K, V>> propertiesMapper;
 
-	private final ResourceWatcher resourceWatcher = new ResourceWatcher();
+	private final ResourceObserver resourceWatcher = new ResourceObserver();
 
 	public DynamicMap(Map<K, V> targetMap, Function<? super Properties, ? extends Map<K, V>> propertiesMapper) {
 		super(targetMap);
@@ -37,7 +37,7 @@ public class DynamicMap<K, V> extends MergedObservableMap<K, V> {
 		return propertiesMapper;
 	}
 
-	public ResourceWatcher getResourceWatcher() {
+	public ResourceObserver getResourceWatcher() {
 		return resourceWatcher;
 	}
 
