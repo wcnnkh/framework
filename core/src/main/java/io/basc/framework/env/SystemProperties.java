@@ -10,7 +10,7 @@ import io.basc.framework.value.Value;
 import lombok.Data;
 
 public class SystemProperties extends DefaultPropertyResolver {
-	public static volatile SystemProperties instance;
+	private static volatile SystemProperties instance;
 
 	public static SystemProperties getInstance() {
 		if (instance == null) {

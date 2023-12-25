@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory.annotation.procesor;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.beans.factory.annotation.ComponentResolver;
+import io.basc.framework.beans.factory.component.ComponentResolver;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.element.Elements;

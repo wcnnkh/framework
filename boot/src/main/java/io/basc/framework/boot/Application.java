@@ -1,6 +1,7 @@
 package io.basc.framework.boot;
 
 import io.basc.framework.context.ApplicationContext;
+import io.basc.framework.context.config.ApplicationContextInitializers;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import lombok.Getter;
 import lombok.NonNull;
@@ -11,7 +12,8 @@ import lombok.Setter;
 public class Application {
 	@NonNull
 	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
-
+	private final ApplicationContextInitializers applicationContextInitializers = new ApplicationContextInitializers();
+	
 	@NonNull
 	private ApplicationType applicationType = null;
 
@@ -50,8 +52,13 @@ public class Application {
 
 	public ConfigurableApplicationContext run(String... args) {
 		ConfigurableApplicationContext context = createApplicationContext();
-		refresh(context);
+		run(context);
 		return context;
+	}
+	
+	protected void run(ConfigurableApplicationContext applicationContext) {
+		getApplicationContextInitializers().initialize(applicationContext);
+		refresh(applicationContext);
 	}
 
 	public static ConfigurableApplicationContext main(String[] args) {

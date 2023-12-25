@@ -9,7 +9,7 @@ import javax.validation.Validator;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
-import io.basc.framework.beans.factory.annotation.Component;
+import io.basc.framework.beans.factory.component.Component;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.util.CollectionUtils;

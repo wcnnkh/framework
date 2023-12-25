@@ -1,4 +1,4 @@
-package io.basc.framework.core.type.classreading.share;
+package io.basc.framework.core.type.share;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

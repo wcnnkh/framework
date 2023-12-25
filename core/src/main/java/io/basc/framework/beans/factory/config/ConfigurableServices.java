@@ -13,7 +13,7 @@ import io.basc.framework.util.element.ServiceLoader;
 
 public class ConfigurableServices<T> extends ServiceRegistry<T> implements Configurable {
 	private Registration configurableRegistration;
-	private Class<T> serviceClass;
+	private Class<? extends T> serviceClass;
 
 	public ConfigurableServices() {
 	}
@@ -42,13 +42,13 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 		}
 	}
 
-	public void configure(Class<T> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
+	public void configure(Class<? extends T> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
 		if (serviceLoaderFactory == null || serviceClass == null) {
 			return;
 		}
 
 		synchronized (this) {
-			ServiceLoader<T> serviceLoader = serviceLoaderFactory.getServiceLoader(serviceClass);
+			ServiceLoader<? extends T> serviceLoader = serviceLoaderFactory.getServiceLoader(serviceClass);
 			if (configurableRegistration != null) {
 				configurableRegistration.unregister();
 			}
@@ -70,11 +70,11 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 	}
 
 	@Nullable
-	public Class<T> getServiceClass() {
+	public Class<? extends T> getServiceClass() {
 		return serviceClass;
 	}
 
-	public void setServiceClass(Class<T> serviceClass) {
+	public void setServiceClass(Class<? extends T> serviceClass) {
 		this.serviceClass = serviceClass;
 	}
 

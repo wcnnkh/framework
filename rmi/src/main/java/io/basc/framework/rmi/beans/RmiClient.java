@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.beans.factory.annotation.Aop;
-import io.basc.framework.beans.factory.annotation.Component;
+import io.basc.framework.beans.factory.component.Aop;
+import io.basc.framework.beans.factory.component.Component;
 import io.basc.framework.core.annotation.AliasFor;
 
 @Target({ ElementType.TYPE })

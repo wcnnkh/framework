@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;

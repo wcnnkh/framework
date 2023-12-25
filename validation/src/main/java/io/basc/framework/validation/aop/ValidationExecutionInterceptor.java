@@ -2,8 +2,8 @@ package io.basc.framework.validation.aop;
 
 import javax.validation.Validator;
 
-import io.basc.framework.beans.factory.annotation.Component;
-import io.basc.framework.beans.factory.annotation.ConditionalOnMissingBean;
+import io.basc.framework.beans.factory.component.Component;
+import io.basc.framework.beans.factory.component.ConditionalOnMissingBean;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.execution.Executor;

@@ -30,10 +30,16 @@ public interface TypeFilter {
 	boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException;
 
 	default TypeFilter and(TypeFilter typeFilter) {
+		if (typeFilter == null) {
+			return this;
+		}
 		return (m, f) -> this.match(m, f) && typeFilter.match(m, f);
 	}
 
 	default TypeFilter or(TypeFilter typeFilter) {
+		if (typeFilter == null) {
+			return this;
+		}
 		return (m, f) -> this.match(m, f) || typeFilter.match(m, f);
 	}
 }
