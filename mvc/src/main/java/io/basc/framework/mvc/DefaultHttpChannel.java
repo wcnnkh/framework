@@ -5,16 +5,16 @@ import java.io.IOException;
 import io.basc.framework.context.Context;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.execution.StandardParameterDescriptor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.support.DefaultParameterDescriptor;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.mvc.view.View;
 import io.basc.framework.security.login.UserToken;
 import io.basc.framework.security.session.UserSession;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -80,7 +80,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	}
 
 	public final Value get(String name) {
-		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name,
+		ParameterDescriptor parameterDescriptor = new StandardParameterDescriptor(name,
 				TypeDescriptor.valueOf(Value.class));
 		try {
 			return (Value) getMessageConverters().read(getRequest(), parameterDescriptor);

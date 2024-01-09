@@ -7,9 +7,9 @@ import javax.ws.rs.PathParam;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.support.AbstractPathParamWebMessageConverter;

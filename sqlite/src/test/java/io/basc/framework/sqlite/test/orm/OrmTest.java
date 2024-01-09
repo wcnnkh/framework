@@ -6,11 +6,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.jdbc.template.Database;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.sqlite.SQLiteFileDatabase;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
@@ -85,7 +85,7 @@ public class OrmTest {
 
 		TestTable1 bean = db.getById(TestTable1.class, 1);
 		Transaction transaction = TransactionUtils.getTransaction(TransactionDefinition.DEFAULT);
-		TestTable1 updateBean = Copy.clone(bean);
+		TestTable1 updateBean = BeanUtils.clone(bean, true);
 		updateBean.setValue(2);
 		db.updateById(updateBean);
 		// 直接回滚

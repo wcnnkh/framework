@@ -117,9 +117,9 @@ public interface ListableBeanFactory extends BeanFactory {
 	default <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
 			throws NoSuchBeanDefinitionException {
 		FactoryBean<?> factoryBean = getFactoryBean(beanName);
-		A annotation = factoryBean.getReturnTypeDescriptor().getAnnotation(annotationType);
+		A annotation = factoryBean.getTypeDescriptor().getAnnotation(annotationType);
 		if (annotation == null) {
-			annotation = factoryBean.getReturnTypeDescriptor().getType().getAnnotation(annotationType);
+			annotation = factoryBean.getTypeDescriptor().getType().getAnnotation(annotationType);
 		}
 		return annotation;
 	}

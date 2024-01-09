@@ -3,6 +3,7 @@ package io.basc.framework.execution.aop.jdk;
 import java.lang.reflect.InvocationHandler;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.lang.UnsupportedException;
@@ -24,9 +25,9 @@ public class JdkProxy implements Proxy {
 	private final Class<?>[] interfaces;
 	private final InvocationHandler invocationHandler;
 
-	public JdkProxy(TypeDescriptor source, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		this(source, source.getType().getClassLoader(), interfaces,
-				new ExecutionInterceptorToInvocationHandler(source, executionInterceptor));
+	public JdkProxy(Class<?> targetClass, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
+		this(TypeDescriptor.valueOf(targetClass), targetClass.getClassLoader(), interfaces,
+				new ExecutionInterceptorToInvocationHandler(executionInterceptor));
 	}
 
 	@Override
@@ -41,5 +42,10 @@ public class JdkProxy implements Proxy {
 		}
 		return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces == null ? new Class<?>[0] : interfaces,
 				invocationHandler);
+	}
+	
+	@Override
+	public MergedAnnotations getAnnotations() {
+		return MergedAnnotations.from(returnTypeDescriptor);
 	}
 }

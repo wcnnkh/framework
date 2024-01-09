@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.util.element.Elements;
 import lombok.Data;
@@ -12,16 +11,14 @@ import lombok.Data;
 @Data
 final class ExecutionInterceptorToInvocationHandler implements InvocationHandler, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final TypeDescriptor source;
 	private final ExecutionInterceptor executionInterceptor;
 
-	public ExecutionInterceptorToInvocationHandler(TypeDescriptor source, ExecutionInterceptor executionInterceptor) {
-		this.source = source;
+	public ExecutionInterceptorToInvocationHandler(ExecutionInterceptor executionInterceptor) {
 		this.executionInterceptor = executionInterceptor;
 	}
 
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		JdkProxyExecutor executable = new JdkProxyExecutor(source, method);
+		JdkProxyExecutor executable = new JdkProxyExecutor(method);
 		executable.setTarget(proxy);
 		return executionInterceptor.intercept(executable, Elements.forArray(args));
 	}

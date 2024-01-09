@@ -4,17 +4,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.reflect.ReflectionMethod;
 
-public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
+public class BeanFactoryExecutor extends ReflectionMethod {
 	private final String targetBeanName;
 	private final BeanFactory beanFactory;
 
-	public BeanFactoryExecutor(Method executable, TypeDescriptor source, BeanFactory beanFactory,
+	public BeanFactoryExecutor(Method executable, BeanFactory beanFactory,
 			String targetBeanName) {
-		super(executable, source);
+		super(executable);
 		this.beanFactory = beanFactory;
 		this.targetBeanName = targetBeanName;
 	}
@@ -22,7 +20,7 @@ public class BeanFactoryExecutor extends ReflectionMethod implements Executor {
 	@Override
 	public Object getTarget() {
 		Object target = super.getTarget();
-		if (target == null && !Modifier.isStatic(getExecutable().getModifiers())) {
+		if (target == null && !Modifier.isStatic(getMember().getModifiers())) {
 			target = beanFactory.getBean(targetBeanName);
 		}
 		return target;

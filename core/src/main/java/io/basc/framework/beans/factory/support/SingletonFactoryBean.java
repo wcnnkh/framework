@@ -11,7 +11,7 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class SingletonFactoryBean<T> implements FactoryBean<T> {
 	@NonNull
-	private final TypeDescriptor returnTypeDescriptor;
+	private final TypeDescriptor typeDescriptor;
 	@NonNull
 	private final T bean;
 
@@ -33,12 +33,7 @@ public class SingletonFactoryBean<T> implements FactoryBean<T> {
 	}
 
 	@Override
-	public T execute() {
+	public T getObject() {
 		return bean;
-	}
-
-	@Override
-	public boolean canExecuted() {
-		return true;
 	}
 }

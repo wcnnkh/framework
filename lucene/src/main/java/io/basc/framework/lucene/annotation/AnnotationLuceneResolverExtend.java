@@ -9,9 +9,9 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lucene.support.SimpleLuceneResolverExtend;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.value.ParameterDescriptor;
 
 public class AnnotationLuceneResolverExtend extends SimpleLuceneResolverExtend {
 	@Override

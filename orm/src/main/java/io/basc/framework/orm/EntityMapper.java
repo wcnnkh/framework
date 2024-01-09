@@ -12,16 +12,16 @@ import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
-import io.basc.framework.mapper.Member;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultObjectMapping;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 
 public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityResolver {
 	default <T> EntityRepository<T> getRepository(OperationSymbol operationSymbol, Class<? extends T> entityClass,
@@ -79,7 +79,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 
 	@Override
 	default EntityMapping<? extends PropertyDescriptor> getMapping(Class<?> entityClass) {
-		Mapping<? extends Member> mapping = DefaultObjectMapping.getMapping(entityClass).all();
+		Mapping<? extends Item> mapping = DefaultObjectMapping.getMapping(entityClass).all();
 		return new DefaultEntityMapping<>(mapping, (e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
 	}
 

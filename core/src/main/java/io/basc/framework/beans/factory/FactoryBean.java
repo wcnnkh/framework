@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.convert.TypeDescriptor;
 
 /**
  * BeanFactory生成的bean
@@ -10,7 +10,8 @@ import io.basc.framework.execution.Executable;
  *
  * @param <T>
  */
-public interface FactoryBean<T> extends Executable {
+public interface FactoryBean<T> {
+
 	/**
 	 * 是否是单例
 	 * 
@@ -18,6 +19,7 @@ public interface FactoryBean<T> extends Executable {
 	 */
 	boolean isSingleton();
 
-	@Override
-	T execute() throws BeansException;
+	T getObject() throws BeansException;
+
+	TypeDescriptor getTypeDescriptor();
 }

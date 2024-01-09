@@ -128,7 +128,7 @@ class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitio
 	}
 
 	@Override
-	protected Elements<? extends Condition> getConditions(ConfigurableApplicationContext context,
+	protected Elements<? extends Executed> getConditions(ConfigurableApplicationContext context,
 			AnnotatedElement annotatedElement) {
 		Conditional conditional = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Conditional.class);
 		if (conditional == null) {

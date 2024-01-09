@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import org.apache.lucene.document.Field;
 
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lucene.LuceneResolver;
-import io.basc.framework.mapper.Parameter;
 
 public interface LuceneResolverExtend {
 	default Collection<Field> resolve(Parameter parameter, LuceneResolver chain) {

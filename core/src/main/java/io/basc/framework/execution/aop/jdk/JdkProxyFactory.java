@@ -2,7 +2,6 @@ package io.basc.framework.execution.aop.jdk;
 
 import java.util.Arrays;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.execution.aop.ProxyFactories;
@@ -53,7 +52,7 @@ public class JdkProxyFactory extends ProxyFactories {
 		if (super.canProxy(clazz)) {
 			return super.getProxy(clazz, interfaces, executionInterceptor);
 		}
-		return new JdkProxy(TypeDescriptor.valueOf(clazz), mergeInterfaces(clazz, interfaces), executionInterceptor);
+		return new JdkProxy(clazz, mergeInterfaces(clazz, interfaces), executionInterceptor);
 	}
 
 	@Override

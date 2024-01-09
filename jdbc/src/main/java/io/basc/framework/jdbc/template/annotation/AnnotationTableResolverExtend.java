@@ -5,11 +5,11 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.jdbc.template.IndexInfo;
 import io.basc.framework.jdbc.template.config.TableResolver;
 import io.basc.framework.jdbc.template.config.TableResolverExtend;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.config.EntityResolverExtend;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 
 public class AnnotationTableResolverExtend implements EntityResolverExtend, TableResolverExtend, Ordered {
 

@@ -1,15 +1,16 @@
 package io.basc.framework.beans.factory.annotation;
 
-import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.context.config.Condition;
-import io.basc.framework.context.config.ConfigurableApplicationContext;
+import io.basc.framework.beans.factory.component.ComponentCondition;
+import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
+import io.basc.framework.core.type.AnnotatedTypeMetadata;
+import io.basc.framework.env.EnvironmentCapable;
 
-class OnBeanCondition implements Condition {
+class OnBeanCondition implements ComponentCondition {
 
 	@Override
-	public boolean matches(ConfigurableApplicationContext context, String beanName, BeanDefinition beanDefinition) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean matchs(EnvironmentCapable context, BeanDefinitionRegistry registry,
+			AnnotatedTypeMetadata annotatedTypeMetadata) {
+		return true;
 	}
 
 }

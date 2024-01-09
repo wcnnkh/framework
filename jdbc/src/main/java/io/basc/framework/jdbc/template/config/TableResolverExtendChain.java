@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 import io.basc.framework.jdbc.template.IndexInfo;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 
 public class TableResolverExtendChain implements TableResolver {
 	private final Iterator<TableResolverExtend> iterator;

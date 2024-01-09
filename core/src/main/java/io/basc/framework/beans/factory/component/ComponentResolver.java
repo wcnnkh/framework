@@ -1,11 +1,9 @@
 package io.basc.framework.beans.factory.component;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.env.EnvironmentCapable;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -14,7 +12,7 @@ import io.basc.framework.util.element.Elements;
  * @author shuchaowen
  *
  */
-public interface ComponentResolver {
+public interface ComponentResolver extends ComponentCondition{
 	/**
 	 * 是否是一个组件
 	 * 
@@ -49,6 +47,4 @@ public interface ComponentResolver {
 	 * @return
 	 */
 	BeanDefinition createComponent(BeanDefinition component, MethodMetadata methodMetadata);
-	
-	boolean matchs(EnvironmentCapable context, BeanDefinitionRegistry registry, AnnotatedTypeMetadata annotatedTypeMetadata);
 }

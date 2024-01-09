@@ -3,7 +3,7 @@ package io.basc.framework.mapper.support;
 import java.util.List;
 import java.util.function.Function;
 
-import io.basc.framework.mapper.Member;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
@@ -12,7 +12,7 @@ import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
-public class DefaultMapping<T extends Member> implements Mapping<T> {
+public class DefaultMapping<T extends Item> implements Mapping<T> {
 	private String name;
 	private Elements<String> aliasNames;
 	private MultiValueMap<String, T> elementMap;
@@ -20,7 +20,7 @@ public class DefaultMapping<T extends Member> implements Mapping<T> {
 	public DefaultMapping() {
 	}
 
-	public <S extends Member> DefaultMapping(Mapping<? extends S> mapping, Function<? super S, ? extends T> converter) {
+	public <S extends Item> DefaultMapping(Mapping<? extends S> mapping, Function<? super S, ? extends T> converter) {
 		Assert.requiredArgument(mapping != null, "mapping");
 		Assert.requiredArgument(converter != null, "converter");
 		this.name = mapping.getName();

@@ -6,11 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.config.Condition;
+import io.basc.framework.beans.factory.component.ComponentCondition;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Conditional {
-	Class<? extends Condition>[] value();
+	Class<? extends ComponentCondition>[] value();
 }

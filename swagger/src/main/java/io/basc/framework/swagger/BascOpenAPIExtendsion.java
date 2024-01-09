@@ -14,7 +14,7 @@ import io.basc.framework.core.Ordered;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
-import io.basc.framework.mapper.Member;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.orm.support.OrmUtils;
@@ -64,7 +64,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 			Set<Type> typesToSkip, javax.ws.rs.Consumes classConsumes, javax.ws.rs.Consumes methodConsumes,
 			Components components, boolean includeRequestBody, JsonView jsonViewAnnotation) {
 		EntityMapping<? extends PropertyDescriptor> fields = OrmUtils.getMapper().getMapping(constructType(type).getRawClass());
-		for (final Member field : fields.getElements()) {
+		for (final Item field : fields.getElements()) {
 			final Iterator<OpenAPIExtension> extensions = OpenAPIExtensions.chain();
 			// skip hidden properties
 			boolean hidden = field.getGetters()
@@ -131,7 +131,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 
 	@SuppressWarnings("deprecation")
 	private Parameter requestBodyToQueryParameter(List<Annotation> paramAnnotations, Type type, Parameter source,
-			Member field) {
+			Item field) {
 		Parameter target = new Parameter();
 		if (source.getSchema() != null) {
 			Copy.copy(source.getSchema(), target);

@@ -5,6 +5,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.MapperRegistry;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.value.Value;
 
 public interface ObjectMapper extends MapperRegistry<Object, ConversionException>, MappingRegistry,
@@ -12,6 +13,15 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 
 	default boolean isEntity(TypeDescriptor source, ParameterDescriptor parameterDescriptor) {
 		return isEntity(parameterDescriptor.getTypeDescriptor());
+	}
+
+	default void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
+			MappingStrategy mappingStrategy) {
+		transform(source, sourceType, null, target, targetType, null, mappingStrategy);
+	}
+
+	default void transform(Object source, Object target, MappingStrategy mappingStrategy) {
+		transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target), mappingStrategy);
 	}
 
 	/**
@@ -33,7 +43,7 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 			ObjectAccess targetAccess = getObjectAccess(target, targetType);
 			transform(sourceAccess, sourceContext, targetAccess, targetContext, mappingStrategy);
 		} else {
-			Mapping<? extends Member> targetMapping = getMapping(targetType.getType());
+			Mapping<? extends Item> targetMapping = getMapping(targetType.getType());
 			transform(sourceAccess, sourceContext, target, targetType, targetContext, targetMapping, mappingStrategy);
 		}
 	}
@@ -45,7 +55,7 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 			ObjectAccess sourceAccess = getObjectAccess(source, sourceType);
 			transform(sourceAccess, sourceContext, targetAccess, targetContext, mappingStrategy);
 		} else {
-			Mapping<? extends Member> sourceMapping = getMapping(sourceType.getType());
+			Mapping<? extends Item> sourceMapping = getMapping(sourceType.getType());
 			transform(source, sourceType, sourceContext, sourceMapping, targetAccess, targetContext, mappingStrategy);
 		}
 	}
@@ -60,18 +70,18 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 			ObjectAccess targetAccess = getObjectAccess(target, targetType);
 			transform(source, sourceType, sourceContext, targetAccess, targetContext, mappingStrategy);
 		} else {
-			Mapping<? extends Member> sourceMapping = getMapping(sourceType.getType());
-			Mapping<? extends Member> targetMapping = getMapping(targetType.getType());
+			Mapping<? extends Item> sourceMapping = getMapping(sourceType.getType());
+			Mapping<? extends Item> targetMapping = getMapping(targetType.getType());
 			transform(source, sourceType, sourceContext, sourceMapping, target, targetType, targetContext,
 					targetMapping, mappingStrategy);
 		}
 	}
 
-	default <S extends Member, T extends Member> void transform(Object source, TypeDescriptor sourceType,
+	default <S extends Item, T extends Item> void transform(Object source, TypeDescriptor sourceType,
 			@Nullable MappingContext sourceContext, Mapping<? extends S> sourceMapping, Object target,
 			TypeDescriptor targetType, @Nullable MappingContext targetContext, Mapping<? extends T> targetMapping,
 			MappingStrategy strategy) throws MappingException {
-		for (Member targetField : targetMapping.getElements()) {
+		for (Item targetField : targetMapping.getElements()) {
 			if (targetField.isSupportSetter()) {
 				strategy.transform(this, source, sourceType, sourceContext, sourceMapping, target, targetType,
 						targetContext, targetMapping, targetField);
@@ -79,7 +89,7 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 		}
 	}
 
-	default <T extends Member> void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext,
+	default <T extends Item> void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, @Nullable MappingContext targetContext,
 			Mapping<? extends T> targetMapping, MappingStrategy strategy) throws MappingException {
 		for (T targetField : targetMapping.getElements()) {
@@ -90,10 +100,10 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 		}
 	}
 
-	default <T extends Member> void transform(Object source, TypeDescriptor sourceType,
+	default <T extends Item> void transform(Object source, TypeDescriptor sourceType,
 			@Nullable MappingContext sourceContext, Mapping<? extends T> sourceMapping, ObjectAccess targetAccess,
 			@Nullable MappingContext targetContext, MappingStrategy strategy) throws MappingException {
-		for (Member sourceField : sourceMapping.getElements()) {
+		for (Item sourceField : sourceMapping.getElements()) {
 			if (sourceField.isSupportGetter()) {
 				strategy.transform(this, source, sourceType, sourceContext, sourceMapping, sourceField, targetAccess,
 						targetContext);

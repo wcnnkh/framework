@@ -1,7 +1,7 @@
 package io.basc.framework.mvc;
 
 import io.basc.framework.beans.factory.ParameterFactory;
-import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;

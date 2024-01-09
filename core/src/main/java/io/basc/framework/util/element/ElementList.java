@@ -27,6 +27,14 @@ public class ElementList<E> extends ListWrapper<E> implements Elements<E> {
 	}
 
 	@Override
+	public E get(long index) throws IndexOutOfBoundsException {
+		if (index > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException("index out of range: " + index);
+		}
+		return get((int) index);
+	}
+
+	@Override
 	public E getUnique() throws NoSuchElementException, NoUniqueElementException {
 		if (wrappedTarget.isEmpty()) {
 			throw new NoSuchElementException();

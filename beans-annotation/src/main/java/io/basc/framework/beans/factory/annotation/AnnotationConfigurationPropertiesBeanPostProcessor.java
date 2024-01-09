@@ -1,6 +1,6 @@
 package io.basc.framework.beans.factory.annotation;
 
-import io.basc.framework.beans.factory.config.support.BeanRegistrationManager;
+import io.basc.framework.beans.factory.ioc.BeanRegistrationManager;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.config.support.EnvironmentConfigurationPropertiesBeanPostProcessor;

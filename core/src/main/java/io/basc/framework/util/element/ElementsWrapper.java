@@ -118,4 +118,9 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 	public Elements<E> unordered() {
 		return wrappedTarget.unordered();
 	}
+	
+	@Override
+	public E get(long index) throws IndexOutOfBoundsException {
+		return wrappedTarget.get(index);
+	}
 }

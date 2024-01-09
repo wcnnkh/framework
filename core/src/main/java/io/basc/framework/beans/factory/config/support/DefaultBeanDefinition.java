@@ -5,17 +5,20 @@ import java.util.Map;
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.ExecutorRegistry;
+import io.basc.framework.execution.Function;
 import io.basc.framework.execution.Method;
-import io.basc.framework.execution.support.DefaultService;
+import io.basc.framework.execution.Parameters;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.Value;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class DefaultBeanDefinition extends DefaultService<Executor> implements BeanDefinition {
+public class DefaultBeanDefinition extends ExecutorRegistry<Function> implements BeanDefinition {
 	private String resourceDescription;
 	// 默认使用单例
 	private boolean singleton = true;
@@ -26,6 +29,12 @@ public class DefaultBeanDefinition extends DefaultService<Executor> implements B
 	private Map<String, Value> properties;
 	private Elements<Method> initMethods;
 	private Elements<Method> destroyMethods;
+	@NonNull
+	private Parameters parameters = new Parameters();
+
+	public DefaultBeanDefinition(TypeDescriptor returnTypeDescriptor) {
+		super(returnTypeDescriptor);
+	}
 
 	@Override
 	public String toString() {

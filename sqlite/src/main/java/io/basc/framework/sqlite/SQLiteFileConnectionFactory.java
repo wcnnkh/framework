@@ -5,12 +5,12 @@ import java.io.File;
 import org.sqlite.JDBC;
 import org.sqlite.SQLiteDataSource;
 
+import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.jdbc.support.DataSourceConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 import lombok.Getter;
@@ -43,7 +43,7 @@ public class SQLiteFileConnectionFactory extends SQLiteConnectionFactory {
 	public DatabaseConnectionFactory getDatabaseConnectionFactory(String databaseName) throws UnsupportedException {
 		return getDatabaseConnectionFactory(databaseName, () -> {
 			SQLiteDataSource dataSource = new SQLiteDataSource();
-			Copy.copy(getDataSource(), dataSource);
+			BeanUtils.copy(getDataSource(), dataSource);
 			dataSource.setDatabaseName(databaseName);
 
 			DatabaseURL databaseURL = getDatabaseDialect().resolveUrl(getDataSource().getUrl());

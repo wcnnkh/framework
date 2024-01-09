@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.BeanFactoryAware;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
@@ -20,8 +19,8 @@ public class ConfigurationMethodExecutor extends ReflectionMethod implements Bea
 	private BeanFactory beanFactory;
 	private boolean enableAop;
 
-	public ConfigurationMethodExecutor(Method executable, TypeDescriptor targetTypeDescriptor) {
-		super(executable, targetTypeDescriptor);
+	public ConfigurationMethodExecutor(Method executable) {
+		super(executable);
 	}
 
 	@Override

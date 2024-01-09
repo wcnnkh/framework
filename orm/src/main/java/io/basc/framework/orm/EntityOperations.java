@@ -22,7 +22,7 @@ import io.basc.framework.data.repository.RepositoryOperations;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.data.repository.UpdateOperationSymbol;
-import io.basc.framework.mapper.Parameter;
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;

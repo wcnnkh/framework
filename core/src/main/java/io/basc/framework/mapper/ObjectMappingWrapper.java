@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import io.basc.framework.core.Members;
 
-final class ObjectMappingWrapper<T extends Member, R extends ObjectMapping<T, R>> extends ObjectMapping<T, R> {
+final class ObjectMappingWrapper<T extends Item, R extends ObjectMapping<T, R>> extends ObjectMapping<T, R> {
 	private final Function<? super ObjectMapping<T, R>, ? extends R> objectMappingDecorator;
 
 	public ObjectMappingWrapper(Members<T> members,

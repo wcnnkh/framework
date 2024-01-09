@@ -17,7 +17,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Member;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingFactory;
 import io.basc.framework.util.CollectionFactory;
@@ -37,7 +37,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 	@NonNull
 	private ConversionService conversionService = GlobalConversionService.getInstance();
 	@NonNull
-	private MappingFactory mappingFactory = BeanUtils::getBeanMapping;
+	private MappingFactory mappingFactory = BeanUtils.getMapper();
 
 	@Override
 	public final String format(Stream<Pair<String, Value>> source) {
@@ -119,9 +119,14 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 
 		// 兜底
 		Mapping<?> mapping = mappingFactory.getMapping(sourceType.getType());
-		for (Member element : mapping.getElements()) {
+		for (Item element : mapping.getElements()) {
 			String key = element.getName();
-			Object value = element.getter().get(source);
+			Object value;
+			try {
+				value = element.getter().get(source);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			}
 			formatValue(key, value, sourceType, target);
 		}
 	}
@@ -211,7 +216,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 		Object target = ReflectionUtils.newInstance(targetType.getType());
 		Mapping<?> mapping = mappingFactory.getMapping(targetType.getType());
 		for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
-			Member element = mapping.getElements(entry.getKey()).first();
+			Item element = mapping.getElements(entry.getKey()).first();
 			if (element == null) {
 				continue;
 			}
@@ -219,7 +224,11 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 			Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
 					: entry.getValue();
 			value = conversionService.convert(value, element.setter().getTypeDescriptor());
-			element.setter().set(target, value);
+			try {
+				element.setter().set(target, value);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			}
 		}
 		return target;
 	}

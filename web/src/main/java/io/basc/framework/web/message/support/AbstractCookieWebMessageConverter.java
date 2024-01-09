@@ -6,7 +6,7 @@ import java.net.HttpCookie;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.ClientHttpRequest;
-import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;

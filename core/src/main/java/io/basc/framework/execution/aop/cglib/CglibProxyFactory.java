@@ -3,7 +3,6 @@ package io.basc.framework.execution.aop.cglib;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.execution.aop.jdk.JdkProxyFactory;
@@ -40,7 +39,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 
 	@Override
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		return new CglibProxy(TypeDescriptor.valueOf(clazz), getInterfaces(clazz, interfaces), executionInterceptor);
+		return new CglibProxy(clazz, getInterfaces(clazz, interfaces), executionInterceptor);
 	}
 
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {

@@ -12,7 +12,7 @@ import java.util.function.Function;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.collect.UnsafeArrayList;
 
-public class MergedAnnotatedElement implements AnnotatedElement {
+public class MergedAnnotatedElement implements AnnotatedElement{
 
 	public static AnnotatedElement forAnnotatedElements(AnnotatedElement... annotatedElements) {
 		return new MergedAnnotatedElement(annotatedElements);

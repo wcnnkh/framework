@@ -1,40 +1,39 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.ParameterMatchingResults;
-import io.basc.framework.execution.param.Parameters;
-import io.basc.framework.util.Named;
 import io.basc.framework.util.element.Elements;
 
 /**
- * 对一个实例方法的定义
+ * 方法的定义
+ * 
+ * @author wcnnkh
+ *
  */
-public interface Method extends Executor, Named {
+public interface Method extends Function, Invoker {
+	@Override
+	default Object execute(Elements<? extends Object> args) throws Throwable {
+		return execute(getTarget(), args);
+	}
 
 	default Object execute(Object target) throws Throwable {
-		return execute(target, getParameters());
+		return execute(target, Elements.empty(), Elements.empty());
+	}
+
+	default Object execute(Object target, Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
+			throws Throwable {
+		if (!canExecuted(parameterTypes)) {
+			throw new IllegalArgumentException("Parameter type mismatch");
+		}
+
+		return execute(target, args);
 	}
 
 	Object execute(Object target, Elements<? extends Object> args) throws Throwable;
 
 	default Object execute(Object target, Parameters parameters) throws Throwable {
-		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
-		if (!results.isSuccessful()) {
-			throw new IllegalArgumentException("Parameter mismatch");
-		}
-
-		Elements<Object> args = results.getParameters();
-		return execute(target, args);
+		return execute(target, parameters.getTypes(), parameters.getArgs());
 	}
 
 	Object getTarget();
-
-	/**
-	 * 执行实例的类型描述
-	 * 
-	 * @return
-	 */
-	TypeDescriptor getTargetTypeDescriptor();
 
 	void setTarget(Object target);
 }

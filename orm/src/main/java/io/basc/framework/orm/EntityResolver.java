@@ -5,12 +5,12 @@ import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MappingStrategy;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 
 public interface EntityResolver {
 	boolean isIgnore(Class<?> sourceClass);

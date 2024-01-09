@@ -1,18 +1,18 @@
 package io.basc.framework.mapper.filter;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Member;
-import io.basc.framework.mapper.Getter;
+import io.basc.framework.execution.Getter;
+import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.Setter;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
 import io.basc.framework.mapper.MappingException;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.check.PredicateRegistry;
+import io.basc.framework.value.ParameterDescriptor;
 
 /**
  * 通过参数描述来进行断言
@@ -45,9 +45,9 @@ public class ParameterDescriptorFilter implements MappingStrategyFilter {
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Member> targetMapping, Member targetField, MappingStrategy mappingStrategy)
+			Mapping<? extends Item> targetMapping, Item targetField, MappingStrategy mappingStrategy)
 			throws MappingException {
-		for (Setter setter : targetField.getSetters()) {
+		for (Setter setter : targetField.getAliasNames().map((e) -> targetField.setter().rename(e))) {
 			if (!predicateRegistry.test(setter)) {
 				return;
 			}
@@ -59,13 +59,12 @@ public class ParameterDescriptorFilter implements MappingStrategyFilter {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Member> sourceMapping, Member sourceField,
+			MappingContext sourceContext, Mapping<? extends Item> sourceMapping, Item sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext, MappingStrategy mappingStrategy)
 			throws MappingException {
-		for (Getter getter : sourceField.getGetters()) {
-			if (!predicateRegistry.test(getter)) {
-				return;
-			}
+		Getter getter = sourceField.getter().rename(sourceField.getName());
+		if (!predicateRegistry.test(getter)) {
+			return;
 		}
 
 		mappingStrategy.transform(objectMapper, source, sourceType, sourceContext, sourceMapping, sourceField,
@@ -74,10 +73,10 @@ public class ParameterDescriptorFilter implements MappingStrategyFilter {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Member> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Member> targetMapping,
-			Member targetField, MappingStrategy mappingStrategy) throws MappingException {
-		for (Setter setter : targetField.getSetters()) {
+			MappingContext sourceContext, Mapping<? extends Item> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Item> targetMapping,
+			Item targetField, MappingStrategy mappingStrategy) throws MappingException {
+		for (Setter setter : targetField.getAliasNames().map((e) -> targetField.setter().rename(e))) {
 			if (!predicateRegistry.test(setter)) {
 				return;
 			}

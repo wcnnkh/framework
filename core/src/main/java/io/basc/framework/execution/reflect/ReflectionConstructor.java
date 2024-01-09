@@ -2,23 +2,18 @@ package io.basc.framework.execution.reflect;
 
 import java.lang.reflect.Constructor;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.execution.Function;
 import io.basc.framework.util.element.Elements;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class ReflectionConstructor extends ReflectionExecutor<Constructor<?>> {
-	private Class<?>[] aopInterfaces;
-
-	public ReflectionConstructor(Constructor<?> target) {
-		super(target);
+public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>> implements Function {
+	public ReflectionConstructor(@NonNull Constructor<?> member) {
+		super(member);
 	}
 
 	@Override
 	public Object execute(Elements<? extends Object> args) throws Throwable {
-		return ReflectionUtils.newInstance(getExecutable(), args);
+		return getMember().newInstance(args);
 	}
 
 }

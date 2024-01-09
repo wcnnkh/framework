@@ -19,12 +19,11 @@ import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.dom.NodeListAccess;
 import io.basc.framework.env.SystemProperties;
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
-import io.basc.framework.mapper.Member;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.EntityMapping;
@@ -40,6 +39,7 @@ import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -216,7 +216,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	@SuppressWarnings("unchecked")
 	@Override
 	public EntityMapping<? extends PropertyDescriptor> getMapping(Class<?> entityClass) {
-		Mapping<? extends Member> mapping = super.getMapping(entityClass);
+		Mapping<? extends Item> mapping = super.getMapping(entityClass);
 		if (mapping instanceof EntityMapping) {
 			return (EntityMapping<? extends PropertyDescriptor>) mapping;
 		}

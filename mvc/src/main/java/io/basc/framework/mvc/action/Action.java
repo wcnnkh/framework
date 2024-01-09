@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.mapper.MergedParameterDescriptor;
+import io.basc.framework.execution.MergedParameterDescriptor;
+import io.basc.framework.execution.test.Executor;
 import io.basc.framework.web.pattern.HttpPattern;
 
 public interface Action extends MethodInvoker, AnnotatedElement {

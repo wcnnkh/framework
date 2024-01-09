@@ -26,8 +26,9 @@ import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.element.Elements;
 
-public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>> {
+public interface MergedAnnotations extends Elements<MergedAnnotation<Annotation>> {
 
 	<A extends Annotation> boolean isPresent(Class<A> annotationType);
 
@@ -87,6 +88,10 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		return from(element, SearchStrategy.DIRECT);
 	}
 
+	static MergedAnnotations from(Elements<? extends AnnotatedElement> elements) {
+		return from(elements, SearchStrategy.DIRECT);
+	}
+
 	/**
 	 * Create a new {@link MergedAnnotations} instance containing all annotations
 	 * and meta-annotations from the specified element and, depending on the
@@ -99,6 +104,10 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	 */
 	static MergedAnnotations from(AnnotatedElement element, SearchStrategy searchStrategy) {
 		return from(element, searchStrategy, RepeatableContainers.standardRepeatables());
+	}
+
+	static MergedAnnotations from(Elements<? extends AnnotatedElement> elements, SearchStrategy searchStrategy) {
+		return from(elements, searchStrategy, RepeatableContainers.standardRepeatables());
 	}
 
 	/**
@@ -117,6 +126,12 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 			RepeatableContainers repeatableContainers) {
 
 		return from(element, searchStrategy, repeatableContainers, AnnotationFilter.PLAIN);
+	}
+
+	static MergedAnnotations from(Elements<? extends AnnotatedElement> elements, SearchStrategy searchStrategy,
+			RepeatableContainers repeatableContainers) {
+
+		return from(elements, searchStrategy, repeatableContainers, AnnotationFilter.PLAIN);
 	}
 
 	/**
@@ -139,6 +154,16 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		Assert.notNull(repeatableContainers, "RepeatableContainers must not be null");
 		Assert.notNull(annotationFilter, "AnnotationFilter must not be null");
 		return TypeMappedAnnotations.from(element, searchStrategy, repeatableContainers, annotationFilter);
+	}
+
+	static MergedAnnotations from(Elements<? extends AnnotatedElement> elements, SearchStrategy searchStrategy,
+			RepeatableContainers repeatableContainers, AnnotationFilter annotationFilter) {
+		Assert.notNull(elements, "Elements must not be null");
+		Assert.notNull(repeatableContainers, "RepeatableContainers must not be null");
+		Assert.notNull(annotationFilter, "AnnotationFilter must not be null");
+		Elements<MergedAnnotations> es = elements
+				.map((e) -> from(e, searchStrategy, repeatableContainers, annotationFilter));
+		return new MergedAnnotationsElements(es);
 	}
 
 	/**

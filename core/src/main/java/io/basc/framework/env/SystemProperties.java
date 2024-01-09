@@ -1,11 +1,11 @@
 package io.basc.framework.env;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.mapper.Property;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.ConvertibleEnumeration;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.MultiIterator;
+import io.basc.framework.value.Property;
 import io.basc.framework.value.Value;
 import lombok.Data;
 

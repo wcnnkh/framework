@@ -1,7 +1,7 @@
 package io.basc.framework.execution.aop;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Function;
 import io.basc.framework.execution.aop.cglib.CglibProxyFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
@@ -74,12 +74,12 @@ public class Aop extends CglibProxyFactory {
 		return getProxy(sourceClass, null, null);
 	}
 
-	public final Executor getProxyExecutor(Executor executor) {
-		return getProxyExecutor(executor, null);
+	public final Function getProxyFunction(Function function) {
+		return getProxyFunction(function, null);
 	}
 
-	public Executor getProxyExecutor(Executor executor, @Nullable ExecutionInterceptor executionInterceptor) {
-		Assert.requiredArgument(executor != null, "executor");
+	public Function getProxyFunction(Function function, @Nullable ExecutionInterceptor executionInterceptor) {
+		Assert.requiredArgument(function != null, "function");
 		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
 				this.id);
 		Elements<? extends ExecutionInterceptor> executionInterceptors;
@@ -91,7 +91,7 @@ public class Aop extends CglibProxyFactory {
 					getExecutionInterceptorRegistry(), executionInterceptor);
 		}
 		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
-		return new InterceptableExecutor(executor, useExecutionInterceptor);
+		return new InterceptableFunction(function, useExecutionInterceptor);
 	}
 
 	public final <T> Proxy getProxy(Class<? extends T> sourceClass, T source) {

@@ -4,9 +4,10 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Executors;
+import io.basc.framework.execution.Function;
 import io.basc.framework.execution.Method;
-import io.basc.framework.execution.Service;
+import io.basc.framework.execution.Parameters;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Named;
 import io.basc.framework.util.element.Elements;
@@ -18,7 +19,7 @@ import io.basc.framework.value.Value;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends Service<Executor>, Named {
+public interface BeanDefinition extends Executors<Function>, Named {
 	String getResourceDescription();
 
 	/**
@@ -38,6 +39,8 @@ public interface BeanDefinition extends Service<Executor>, Named {
 	 * @return
 	 */
 	Scope getScope();
+	
+	Parameters getParameters();
 
 	/**
 	 * 是否是一个单例

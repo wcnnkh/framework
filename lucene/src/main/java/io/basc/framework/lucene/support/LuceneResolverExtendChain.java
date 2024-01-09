@@ -6,9 +6,9 @@ import java.util.Iterator;
 
 import org.apache.lucene.document.Field;
 
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lucene.LuceneResolver;
-import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
 
 public class LuceneResolverExtendChain implements LuceneResolver {

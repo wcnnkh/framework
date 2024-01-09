@@ -7,7 +7,7 @@ import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.config.support.MethodHookBeanPostProcessor;
 import io.basc.framework.beans.factory.support.DefinitionFactoryBean;
 import io.basc.framework.execution.MethodExecutor;
-import io.basc.framework.execution.param.ParameterExtractor;
+import io.basc.framework.execution.ParameterExtractor;
 
 class AnnotationHookBeanPostProcessor extends MethodHookBeanPostProcessor {
 	private final BeanFactory beanFactory;

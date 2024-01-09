@@ -1,36 +1,33 @@
 package io.basc.framework.beans.factory.config.support;
 
+import java.util.NoSuchElementException;
+
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Function;
 import io.basc.framework.execution.Method;
-import io.basc.framework.execution.NoSuchConstructorException;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.execution.Parameters;
 
 public class DefinitionFactoryBean implements FactoryBean<Object> {
 	private AutowireCapableBeanFactory autowireCapableBeanFactory;
 	private final BeanDefinition beanDefinition;
-	private volatile Executor executor;
+	private volatile Function function;
 	private volatile Object singleton;
 
 	public DefinitionFactoryBean(BeanDefinition beanDefinition) {
 		this.beanDefinition = beanDefinition;
 	}
 
-	@Override
-	public boolean canExecuted() {
-		return getExecutor(false) != null;
-	}
-
 	public Object create() throws BeansException {
-		Executor constructor = getExecutor(true);
+		Function constructor = getConstructor(true);
 		try {
 			if (autowireCapableBeanFactory != null) {
-				if (autowireCapableBeanFactory.canExtractParameters(constructor)) {
-					Parameters parameters = autowireCapableBeanFactory.extractParameters(constructor);
+				if (autowireCapableBeanFactory.canExtractExecutionParameters(constructor)) {
+					Parameters parameters = autowireCapableBeanFactory.extractExecutionParameters(constructor);
 					return create(constructor, parameters);
 				}
 			}
@@ -47,7 +44,7 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 			BeanDefinition originBeanDefinition = beanDefinition.getOriginatingBeanDefinition();
 			if (originBeanDefinition != null) {
 				Object target = autowireCapableBeanFactory.getBean(originBeanDefinition.getName(),
-						method.getTargetTypeDescriptor().getType());
+						method.getDeclaringTypeDescriptor().getType());
 				return method.execute(target, parameters);
 			}
 		}
@@ -55,7 +52,7 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 	}
 
 	@Override
-	public Object execute() throws BeansException {
+	public Object getObject() throws BeansException {
 		if (isSingleton()) {
 			if (singleton == null) {
 				synchronized (this) {
@@ -78,23 +75,23 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 		return beanDefinition;
 	}
 
-	public Executor getExecutor(boolean required) throws NoSuchConstructorException {
-		if (executor == null) {
+	public Function getConstructor(boolean required) {
+		if (function == null) {
 			synchronized (this) {
-				if (executor == null) {
+				if (function == null) {
 					if (autowireCapableBeanFactory != null && beanDefinition.getParameters().isEmpty()) {
-						for (Executor constructor : beanDefinition.getConstructors()) {
-							if (autowireCapableBeanFactory.canExtractParameters(constructor)) {
-								this.executor = constructor;
+						for (Function constructor : beanDefinition.getServices()) {
+							if (autowireCapableBeanFactory.canExtractExecutionParameters(constructor)) {
+								this.function = constructor;
 								break;
 							}
 						}
 					}
 
-					if (executor == null) {
-						for (Executor constructor : beanDefinition.getConstructors()) {
+					if (function == null) {
+						for (Function constructor : beanDefinition.getServices()) {
 							if (constructor.canExecuted(beanDefinition.getParameters())) {
-								this.executor = constructor;
+								this.function = constructor;
 								break;
 							}
 						}
@@ -103,15 +100,15 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 			}
 		}
 
-		if (required && executor == null) {
-			throw new NoSuchConstructorException("Unable to match to constructor");
+		if (required && function == null) {
+			throw new NoSuchElementException("Unable to match to constructor");
 		}
-		return executor;
+		return function;
 	}
 
 	@Override
-	public TypeDescriptor getReturnTypeDescriptor() {
-		return getExecutor(true).getReturnTypeDescriptor();
+	public TypeDescriptor getTypeDescriptor() {
+		return getConstructor(true).getReturnTypeDescriptor();
 	}
 
 	@Override

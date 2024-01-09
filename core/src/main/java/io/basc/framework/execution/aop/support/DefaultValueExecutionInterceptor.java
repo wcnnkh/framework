@@ -4,9 +4,10 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Function;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,24 +23,24 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 	private ConversionService conversionService;
 
 	@Override
-	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
 		if (args.isEmpty()) {
-			return executor.execute(args);
+			return function.execute(args);
 		}
 
-		Elements<Object> newArgs = executor.getParameterDescriptors().parallel(args).filter((e) -> e.isPresent())
+		Elements<Object> newArgs = function.getParameterDescriptors().parallel(args).filter((e) -> e.isPresent())
 				.map((e) -> {
 					if (e.getRightValue() != null) {
 						return e.getRightValue();
 					} else {
-						return getDefaultParameterValue(executor, e.getLeftValue());
+						return getDefaultParameterValue(function, e.getLeftValue());
 					}
 				});
-		Object returnValue = executor.execute(newArgs);
+		Object returnValue = function.execute(newArgs);
 		if (returnValue == null) {
-			returnValue = getDefaultReturnValue(executor);
+			returnValue = getDefaultReturnValue(function);
 			if (returnValue != null) {
-				returnValue = conversionService.convert(returnValue, executor.getReturnTypeDescriptor());
+				returnValue = conversionService.convert(returnValue, function.getReturnTypeDescriptor());
 			}
 		}
 		return returnValue;
@@ -49,8 +50,8 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
 	}
 
-	protected Object getDefaultReturnValue(Executor executor) {
-		return getDefaultValue(executor, executor.getReturnTypeDescriptor());
+	protected Object getDefaultReturnValue(Function function) {
+		return getDefaultValue(function, function.getReturnTypeDescriptor());
 	}
 
 	protected abstract Object getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);

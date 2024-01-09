@@ -2,7 +2,7 @@ package io.basc.framework.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.mapper.Member;
+import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.support.DefaultMapping;
 import io.basc.framework.util.Assert;
@@ -18,7 +18,7 @@ public class DefaultEntityMapping<T extends PropertyDescriptor> extends DefaultM
 	public DefaultEntityMapping() {
 	}
 
-	public <S extends Member> DefaultEntityMapping(Mapping<? extends S> mapping,
+	public <S extends Item> DefaultEntityMapping(Mapping<? extends S> mapping,
 			Function<? super S, ? extends T> converter, Class<?> sourceClass,
 			EntityResolver relationalResolver) {
 		super(mapping, converter);

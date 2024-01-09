@@ -250,4 +250,12 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	default Elements<E> unordered() {
 		return convert((e) -> e.unordered());
 	}
+
+	default E get(long index) throws IndexOutOfBoundsException {
+		Indexed<E> indexed = index == 0 ? index().first() : index().filter((e) -> e.getIndex() == index).first();
+		if (indexed == null) {
+			throw new IndexOutOfBoundsException("index out of range: " + index);
+		}
+		return indexed.getElement();
+	}
 }

@@ -17,25 +17,26 @@ import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.beans.factory.config.InitializingBean;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
+import io.basc.framework.beans.factory.ioc.AutowireParameterExtractors;
+import io.basc.framework.beans.factory.ioc.DefaultAutowireParameterExtractors;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.param.ExtractParameterException;
-import io.basc.framework.execution.param.ParameterExtractors;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.ParameterExtractors;
+import io.basc.framework.execution.Parameters;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.observe.register.ServiceInjectors;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.value.ParameterDescriptor;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
+	private final AutowireParameterExtractors autowireParameterExtractors = new DefaultAutowireParameterExtractors();
 	private final BeanPostProcessors beanPostProcessors = new BeanPostProcessors();
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();
 	private final Set<String> initializedSingletonSet = new HashSet<>();
-	private final ParameterExtractors<BeanFactory> parameterExtractors = new ParameterExtractors<>();
 	private BeanFactory parentBeanFactory;
 	private final ServiceInjectors<Object> serviceInjectors = new ServiceInjectors<>();
 
@@ -66,18 +67,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	@Override
+	public boolean canExtractExecutionParameters(Executable executable) {
+		return autowireParameterExtractors.canExtractExecutionParameters(this, executable);
+	}
+
+	@Override
 	public boolean canExtractParameter(ParameterDescriptor parameterDescriptor) {
-		return parameterExtractors.canExtractParameter(this, parameterDescriptor);
+		return autowireParameterExtractors.canExtractParameter(this, parameterDescriptor);
 	}
 
 	@Override
 	public boolean canExtractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
-		return parameterExtractors.canExtractParameters(this, parameterDescriptors);
-	}
-
-	@Override
-	public boolean canExtractParameters(Executor executor) {
-		return parameterExtractors.canExtractParameters(this, executor);
+		return autowireParameterExtractors.canExtractParameters(this, parameterDescriptors);
 	}
 
 	@Override
@@ -149,19 +150,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	@Override
-	public Parameter extractParameter(ParameterDescriptor parameterDescriptor) throws ExtractParameterException {
-		return parameterExtractors.extractParameter(this, parameterDescriptor);
+	public Parameters extractExecutionParameters(Executable executable) {
+		return autowireParameterExtractors.extractExecutionParameters(this, executable);
 	}
 
 	@Override
-	public Elements<Parameter> extractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors)
-			throws ExtractParameterException {
-		return parameterExtractors.extractParameters(this, parameterDescriptors);
+	public Object extractParameter(ParameterDescriptor parameterDescriptor) {
+		return autowireParameterExtractors.extractParameter(this, parameterDescriptor);
 	}
 
 	@Override
-	public Parameters extractParameters(Executor executor) throws ExtractParameterException {
-		return parameterExtractors.extractParameters(this, executor);
+	public Elements<Parameter> extractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
+		return autowireParameterExtractors.extractParameters(this, parameterDescriptors);
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(beanName);
 		}
 
-		Object bean = factoryBean.execute();
+		Object bean = factoryBean.getObject();
 		initializationBean(beanName, bean);
 		return bean;
 	}
@@ -207,7 +207,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	public ParameterExtractors<BeanFactory> getParameterExtractors() {
-		return parameterExtractors;
+		return autowireParameterExtractors;
 	}
 
 	public BeanFactory getParentBeanFactory() {
@@ -243,7 +243,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 					factoryBean = getFactoryBean(name);
 					if (factoryBean != null && factoryBean.isSingleton()) {
-						singleton = factoryBean.execute();
+						singleton = factoryBean.getObject();
 						registerSingleton(name, singleton);
 						newSingleton = true;
 					}
@@ -272,7 +272,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(name);
 		}
 
-		return factoryBean.getReturnTypeDescriptor().getResolvableType().getRawClass();
+		return factoryBean.getTypeDescriptor().getResolvableType().getRawClass();
 	}
 
 	protected void init(Object bean, String beanName) throws BeansException {
@@ -369,7 +369,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(name);
 		}
 
-		return factoryBean.getReturnTypeDescriptor().getResolvableType().isAssignableFrom(typeToMatch);
+		return factoryBean.getTypeDescriptor().getResolvableType().isAssignableFrom(typeToMatch);
 	}
 
 	@Override
@@ -386,7 +386,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(name);
 		}
 
-		return factoryBean.getReturnTypeDescriptor().getResolvableType().isAssignableFrom(typeToMatch);
+		return factoryBean.getTypeDescriptor().getResolvableType().isAssignableFrom(typeToMatch);
 	}
 
 	@Override

@@ -24,7 +24,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.function.IntPredicate;
 
-import io.basc.framework.execution.param.ExtractParameterException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.function.Processor;
 
@@ -62,7 +61,7 @@ public abstract class NumberUtils {
 		} else if (ClassUtils.isChar(targetClass)) {
 			return (char) number.intValue();
 		} else {
-			throw new ExtractParameterException(targetClass.getName() + "不是一个基本数据类型");
+			throw new IllegalArgumentException(targetClass.getName() + "不是一个基本数据类型");
 		}
 	}
 

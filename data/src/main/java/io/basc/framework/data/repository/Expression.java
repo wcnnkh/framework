@@ -1,8 +1,8 @@
 package io.basc.framework.data.repository;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Parameter;
 
 /**
  * 表达式

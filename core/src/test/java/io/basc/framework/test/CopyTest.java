@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.util.StopWatch;
 import lombok.ToString;
 
@@ -27,7 +27,7 @@ public class CopyTest {
 		System.out.println(source);
 		StopWatch stopWatch = new StopWatch("copy test");
 		stopWatch.start("first copy");
-		Copy.copy(source, target);
+		BeanUtils.copy(source, target);
 		stopWatch.stop();
 		System.out.println(stopWatch.toString());
 
@@ -40,7 +40,7 @@ public class CopyTest {
 		deepList.add("b");
 		source.setList(deepList);
 		stopWatch.start();
-		Copy.DEEP.transform(source, Source.class, target, Target.class);
+		BeanUtils.copy(source, target, true);
 		stopWatch.stop();
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());
