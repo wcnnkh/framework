@@ -12,6 +12,7 @@ import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.StringUtils;
 
@@ -25,9 +26,14 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		String json = JSON.toJSONString(source);
-		return JSON.parseObject(json, targetType.getResolvableType().getType(), Feature.SupportNonPublicField);
+			throws JsonException, ConversionException {
+		String text;
+		if (source instanceof String) {
+			text = (String) source;
+		} else {
+			text = JSON.toJSONString(source);
+		}
+		return JSON.parseObject(text, targetType.getResolvableType().getType(), Feature.SupportNonPublicField);
 	}
 
 	public JsonArray getAsJsonArray() {

@@ -8,11 +8,13 @@ import io.basc.framework.observe.properties.ObservablePropertyFactory;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.PropertyFactory;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@RequiredArgsConstructor
 public abstract class ConfigurationPropertiesBeanPostProcessor extends BeanMapper implements BeanPostProcessor {
 	private final PropertyFactory propertyFactory;
 	private final BeanRegistrationManager beanRegistrationManager;

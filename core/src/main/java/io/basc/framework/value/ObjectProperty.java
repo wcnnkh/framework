@@ -1,6 +1,5 @@
 package io.basc.framework.value;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.StringUtils;
 import lombok.Getter;
@@ -17,16 +16,11 @@ public class ObjectProperty extends ObjectValue implements Property, Cloneable {
 	}
 
 	public ObjectProperty(String name, Value value) {
-		this(name, value.getSource(), value.getTypeDescriptor(), value.getConverter());
+		this(name, value.getSource(), value.getTypeDescriptor());
 	}
 
 	public ObjectProperty(String name, Object value, TypeDescriptor typeDescriptor) {
-		this(name, value, typeDescriptor, null);
-	}
-
-	public ObjectProperty(String name, Object value, TypeDescriptor typeDescriptor,
-			Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
-		super(value, typeDescriptor, converter);
+		super(value, typeDescriptor);
 		this.name = name;
 	}
 
@@ -43,10 +37,5 @@ public class ObjectProperty extends ObjectValue implements Property, Cloneable {
 	@Override
 	public boolean isValid() {
 		return StringUtils.isNotEmpty(name);
-	}
-
-	@Override
-	public Value createRelative(Object value, TypeDescriptor type) {
-		return new ObjectProperty(name, value, type, getConverter());
 	}
 }

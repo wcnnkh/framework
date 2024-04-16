@@ -8,15 +8,15 @@ import io.basc.framework.data.repository.Repository;
 import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.jdbc.template.Column;
 import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.jdbc.template.SqlDialectException;
 import io.basc.framework.jdbc.template.SqlType;
-import io.basc.framework.jdbc.template.TableMapping;
 import io.basc.framework.jdbc.template.support.AbstractSqlDialect;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.orm.ColumnDescriptor;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
@@ -41,21 +41,20 @@ public class SQLiteDialect extends AbstractSqlDialect implements DatabaseDialect
 	}
 
 	@Override
-	public Elements<Sql> toCreateTableSql(TableMapping<?> tableMapping, String tableName) throws SqlDialectException {
-		Elements<? extends Column> primaryKeys = tableMapping.getPrimaryKeys();
+	public Elements<Sql> toCreateTableSql(EntityMapping<?> tableMapping, String tableName) throws SqlDialectException {
+		Elements<? extends ColumnDescriptor> primaryKeys = tableMapping.getPrimaryKeys();
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
 		keywordProcessing(sb, tableName);
 		sb.append(" (");
 
-		Iterator<? extends Column> iterator = tableMapping.columns().iterator();
+		Iterator<? extends ColumnDescriptor> iterator = tableMapping.columns().iterator();
 		while (iterator.hasNext()) {
-			Column col = iterator.next();
+			ColumnDescriptor col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.jdbc.template.SqlType sqlType = getSqlType(
-					col.getGetters().first().getTypeDescriptor().getType());
+			io.basc.framework.jdbc.template.SqlType sqlType = getSqlType(col.getter().getTypeDescriptor().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
 				sb.append("(" + sqlType.getLength() + ")");
@@ -95,7 +94,7 @@ public class SQLiteDialect extends AbstractSqlDialect implements DatabaseDialect
 			sb.append(",primary key(");
 			iterator = primaryKeys.iterator();
 			while (iterator.hasNext()) {
-				Column column = iterator.next();
+				ColumnDescriptor column = iterator.next();
 				keywordProcessing(sb, column.getName());
 				if (iterator.hasNext()) {
 					sb.append(",");
@@ -114,7 +113,7 @@ public class SQLiteDialect extends AbstractSqlDialect implements DatabaseDialect
 	}
 
 	@Override
-	public Sql toCopyTableStructureSql(TableMapping<?> tableMapping, String newTableName, String oldTableName)
+	public Sql toCopyTableStructureSql(EntityMapping<?> tableMapping, String newTableName, String oldTableName)
 			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());

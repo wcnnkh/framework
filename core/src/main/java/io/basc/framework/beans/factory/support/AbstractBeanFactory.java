@@ -351,7 +351,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
 		if (factoryBean == null) {
-			throw new NoSuchBeanDefinitionException(beanName);
+			return false;
+			//throw new NoSuchBeanDefinitionException(beanName);
 		}
 
 		return factoryBean.isSingleton();

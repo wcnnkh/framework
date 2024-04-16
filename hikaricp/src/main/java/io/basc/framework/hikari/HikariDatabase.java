@@ -8,5 +8,5 @@ public class HikariDatabase extends Database {
 	public HikariDatabase(DatabaseConnectionFactory databaseConnectionFactory) {
 		super(databaseConnectionFactory);
 	}
-
+	
 }

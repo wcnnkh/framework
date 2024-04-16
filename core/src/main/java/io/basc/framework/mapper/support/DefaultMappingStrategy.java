@@ -9,23 +9,25 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Getter;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Setter;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
 import io.basc.framework.mapper.MappingException;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.filter.ConfigurableParameterDescriptorMatcher;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.check.PredicateRegistry;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
-public class DefaultMappingStrategy implements MappingStrategy {
-	private final PredicateRegistry<ParameterDescriptor> predicateRegistry = new PredicateRegistry<>();
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class DefaultMappingStrategy extends ConfigurableParameterDescriptorMatcher implements MappingStrategy {
 	private boolean ignoreNull;
 	private ConversionService conversionService = new IdentityConversionService();
 
@@ -47,7 +49,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 			return;
 		}
 
-		if (!predicateRegistry.test(parameter)) {
+		if (!test(sourceAccess.getTypeDescriptor(), parameter)) {
 			// 不通过
 			return;
 		}
@@ -55,7 +57,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 		targetAccess.set(parameter);
 	}
 
-	private String getName(MappingContext context, Item field) {
+	private String getName(MappingContext context, FieldDescriptor field) {
 		if (context == null) {
 			return field.getName();
 		}
@@ -63,12 +65,12 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				.collect(Collectors.joining("."));
 	}
 
-	private Elements<String> getAliasNames(MappingContext context, Item field) {
+	private Elements<String> getAliasNames(MappingContext context, FieldDescriptor field) {
 		if (context == null) {
 			return Elements.singleton(field.getName()).concat(field.getAliasNames());
 		}
 
-		Elements<Item> fields = context.getContextFields().reverse().concat(Elements.singleton(field));
+		Elements<FieldDescriptor> fields = context.getContextFields().reverse().concat(Elements.singleton(field));
 		// 组合出所有的名称
 		List<Elements<String>> recursionNames = CollectionUtils.recursiveComposition(
 				fields.map((e) -> Elements.singleton(e.getName()).concat(e.getAliasNames())).toList());
@@ -79,12 +81,12 @@ public class DefaultMappingStrategy implements MappingStrategy {
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Object target, TypeDescriptor targetType, MappingContext targetContext,
-			Mapping<? extends Item> targetMapping, Item targetField) throws MappingException {
+			Mapping<? extends FieldDescriptor> targetMapping, FieldDescriptor targetField) throws MappingException {
 		Elements<String> aliasNames = getAliasNames(targetContext, targetField);
 		Elements<Setter> setters = targetField.isSupportSetter() ? aliasNames.map((e) -> targetField.setter().rename(e))
 				: Elements.empty();
 		for (Setter setter : setters) {
-			if (!predicateRegistry.test(setter)) {
+			if (!test(targetType, setter)) {
 				// 只要有一个校验不通过就直接return
 				return;
 			}
@@ -97,11 +99,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				MappingStrategy strategy = objectMapper.getMappingStrategy(setter.getTypeDescriptor());
 				objectMapper.transform(sourceAccess, sourceContext, entity, setter.getTypeDescriptor(), entityContext,
 						strategy);
-				try {
-					setter.set(target, entity);
-				} catch (Throwable ex) {
-					throw new MappingException(ex);
-				}
+				setter.set(target, entity);
 				return;
 			}
 		}
@@ -120,7 +118,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				continue;
 			}
 
-			if (!predicateRegistry.test(parameter)) {
+			if (!test(sourceAccess.getTypeDescriptor(), parameter)) {
 				// 有一个验证不通过就忽略全部
 				parameter = null;
 				// TODO continue还是return
@@ -131,11 +129,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				if (conversionService.canConvert(parameter.getTypeDescriptor(), setter.getTypeDescriptor())) {
 					Object value = conversionService.convert(parameter.getSource(), parameter.getTypeDescriptor(),
 							setter.getTypeDescriptor());
-					try {
-						setter.set(target, value);
-					} catch (Throwable ex) {
-						throw new MappingException(ex);
-					}
+					setter.set(target, value);
 					return;
 				}
 			}
@@ -144,42 +138,33 @@ public class DefaultMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Item> sourceMapping, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Item> targetMapping,
-			Item targetField) throws MappingException {
+			MappingContext sourceContext, Mapping<? extends FieldDescriptor> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends FieldDescriptor> targetMapping,
+			FieldDescriptor targetField) throws MappingException {
 		Elements<String> aliasNames = getAliasNames(targetContext, targetField);
 		Elements<Setter> setters = aliasNames.map((e) -> targetField.setter().rename(e));
 		for (Setter setter : setters) {
-			if (!predicateRegistry.test(setter)) {
+			if (!test(targetType, setter)) {
 				// 只要有一个校验不通过就直接return
 				return;
 			}
 		}
 
 		for (String name : aliasNames) {
-			Elements<? extends Item> sourceFields = sourceMapping.getElements(name);
-			for (Item sourceField : sourceFields) {
+			Elements<? extends FieldDescriptor> sourceFields = sourceMapping.getElements(name);
+			for (FieldDescriptor sourceField : sourceFields) {
 				Getter getter = sourceField.getter().rename(sourceField.getName());
-				if (!predicateRegistry.test(getter)) {
+				if (!test(sourceType, getter)) {
 					continue;
 				}
 
 				// 自动匹配类型
 				for (Setter setter : setters) {
 					if (conversionService.canConvert(getter.getTypeDescriptor(), setter.getTypeDescriptor())) {
-						Object value;
-						try {
-							value = getter.get(source);
-						} catch (Throwable ex) {
-							throw new MappingException(ex);
-						}
+						Object value = getter.get(source);
 						Object convertedValue = conversionService.convert(value, getter.getTypeDescriptor(),
 								setter.getTypeDescriptor());
-						try {
-							setter.set(target, convertedValue);
-						} catch (Throwable ex) {
-							throw new MappingException(ex);
-						}
+						setter.set(target, convertedValue);
 						return;
 					}
 				}
@@ -189,20 +174,15 @@ public class DefaultMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
-			MappingContext sourceContext, Mapping<? extends Item> sourceMapping, Item sourceField,
+			MappingContext sourceContext, Mapping<? extends FieldDescriptor> sourceMapping, FieldDescriptor sourceField,
 			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException {
 		String name = getName(sourceContext, sourceField);
 		Getter getter = sourceField.getter().rename(name);
-		if (!predicateRegistry.test(getter)) {
+		if (!test(sourceType, getter)) {
 			return;
 		}
 
-		Object value;
-		try {
-			value = getter.get(source);
-		} catch (Throwable e) {
-			throw new MappingException(e);
-		}
+		Object value = getter.get(source);
 
 		if (isIgnoreNull() && value != null) {
 			return;

@@ -15,7 +15,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.env.SystemProperties;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
@@ -47,7 +47,8 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 	}
 
 	public DefaultLuceneTemplate(IndexWriterConfig config, String... more) {
-		this(Paths.get(Paths.get(new File(Sys.getEnv().getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
+		this(Paths.get(
+				Paths.get(new File(SystemProperties.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
 				checkAndReturnMore(more)), config);
 	}
 

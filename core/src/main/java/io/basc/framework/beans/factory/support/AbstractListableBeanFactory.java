@@ -60,9 +60,11 @@ public abstract class AbstractListableBeanFactory extends AbstractBeanFactory
 
 	@Override
 	public boolean isSingleton(String beanName) throws BeansException {
-		BeanDefinition beanDefinition = getBeanDefinition(beanName);
-		if (beanDefinition != null) {
-			return beanDefinition.isSingleton();
+		if(containsBeanDefinition(beanName)) {
+			BeanDefinition beanDefinition = getBeanDefinition(beanName);
+			if (beanDefinition != null) {
+				return beanDefinition.isSingleton();
+			}
 		}
 		return super.isSingleton(beanName);
 	}

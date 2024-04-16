@@ -16,7 +16,7 @@ public interface Setter extends Executable, ParameterDescriptor {
 		return Elements.singleton(this);
 	}
 
-	void set(Object target, Object value) throws Throwable;
+	void set(Object target, Object value);
 
 	@Override
 	Setter rename(String name);

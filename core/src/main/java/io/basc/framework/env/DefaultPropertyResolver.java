@@ -21,7 +21,7 @@ public class DefaultPropertyResolver extends DynamicPropertyRegistry
 		private static final long serialVersionUID = 1L;
 
 		public AnyFormatValue(Value value) {
-			super(value.getSource(), value.getTypeDescriptor(), value.getConverter());
+			super(value.getSource(), value.getTypeDescriptor());
 		}
 
 		public String getAsString() {

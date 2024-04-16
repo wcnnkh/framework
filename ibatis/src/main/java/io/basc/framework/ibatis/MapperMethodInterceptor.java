@@ -8,12 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.session.SqlSession;
 
-import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
+import io.basc.framework.execution.Function;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 
-public class MapperMethodInterceptor implements ReflectionMethodExecutionInterceptor {
+public class MapperMethodInterceptor implements ExecutionInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
 	private final Processor<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
 	private final Class<?> mapperClass;
@@ -40,9 +41,8 @@ public class MapperMethodInterceptor implements ReflectionMethodExecutionInterce
 		return mapperMethod;
 	}
 
-	@Override
-	public Object intercept(ReflectionMethod executor, Elements<Object> args) throws Throwable {
-		Method method = executor.getExecutable();
+	public Object intercept(ReflectionMethod executor, Elements<? extends Object> args) throws Throwable {
+		Method method = executor.getMember();
 		if (Modifier.isAbstract(method.getModifiers())) {
 			SqlSession sqlSession = null;
 			try {
@@ -56,5 +56,14 @@ public class MapperMethodInterceptor implements ReflectionMethodExecutionInterce
 			}
 		}
 		return executor.execute(args);
+	}
+
+	@Override
+	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
+		if (function instanceof ReflectionMethod) {
+			ReflectionMethod reflectionMethod = (ReflectionMethod) function;
+			return intercept(reflectionMethod, args);
+		}
+		return function.execute(args);
 	}
 }

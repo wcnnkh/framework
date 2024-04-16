@@ -46,7 +46,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return (Elements<T>) ElementList.EMPTY;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SafeVarargs
 	public static <T> Elements<T> forArray(T... elements) {
 		if (elements == null || elements.length == 0) {
 			return empty();

@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>boot</artifactId>
+			<artifactId>core</artifactId>
 		</dependency>
 
 		<!-- 测试 -->

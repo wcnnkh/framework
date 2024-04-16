@@ -8,12 +8,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.env.Sys;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.microsoft.ExcelTemplate;
-import io.basc.framework.orm.annotation.Entity;
-import io.basc.framework.orm.annotation.PrimaryKey;
+import io.basc.framework.orm.stereotype.Entity;
+import io.basc.framework.orm.stereotype.PrimaryKey;
 import io.basc.framework.orm.transfer.TransfColumn;
 import io.basc.framework.sqlite.SQLiteFileDatabase;
 import io.basc.framework.util.CollectionUtils;
@@ -23,7 +22,7 @@ import lombok.Data;
 public class SqlExportTest {
 	@Test
 	public void test() throws IOException {
-		SQLiteFileDatabase db = new SQLiteFileDatabase(Sys.getEnv().getWorkPath() + "/test.db");
+		SQLiteFileDatabase db = new SQLiteFileDatabase("test.db");
 		db.createTable(SqlExportTestTable.class);
 
 		for (int i = 0; i < 10; i++) {

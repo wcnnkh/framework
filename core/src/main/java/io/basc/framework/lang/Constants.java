@@ -17,10 +17,10 @@ public class Constants {
 
 	public static final Charset US_ASCII = Charset.forName(US_ASCII_NAME);
 
+	public static final String ASM_VERSION_NAME = "io.basc.framework.asm.version";
+
 	/**
 	 * The ASM version used internally throughout the framework.
 	 */
-	public static final int ASM_VERSION = Integer.getInteger("io.basc.framework.asm.version", Opcodes.ASM7);
-
-	public static final String SYSTEM_PACKAGE_NAME = "io.basc.";
+	public static final int ASM_VERSION = Integer.getInteger(ASM_VERSION_NAME, Opcodes.ASM7);
 }

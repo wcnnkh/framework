@@ -1,6 +1,6 @@
 package io.basc.framework.orm.test;
 
-import io.basc.framework.orm.annotation.Entity;
+import io.basc.framework.orm.stereotype.Entity;
 
 @Entity
 public class TestnEntity {

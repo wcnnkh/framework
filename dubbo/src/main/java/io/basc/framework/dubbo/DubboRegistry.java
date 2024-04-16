@@ -25,21 +25,21 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.context.ClassScanner;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.core.reflect.ReflectionApi;
+import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
+import io.basc.framework.io.scan.TypeScanner;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.Copy;
-import io.basc.framework.mapper.Item;
-import io.basc.framework.mapper.Item;
-import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.util.StringUtils;
 
 public class DubboRegistry {
@@ -77,7 +77,7 @@ public class DubboRegistry {
 			}
 
 			value = environment.getProperties().replacePlaceholders(value);
-			Item field = fields.getBySetterName(name, null);
+			FieldDescriptor field = fields.getBySetterName(name, null);
 			if (field == null) {
 				logger.warn("{} ignore attribute name={}, value={}", instance.getClass(), name, value);
 				continue;
@@ -213,17 +213,16 @@ public class DubboRegistry {
 
 	@SuppressWarnings("rawtypes")
 	public static List<ReferenceConfig> parseReferenceConfigList(final Environment environment, NodeList nodeList,
-			ReferenceConfig<?> defaultConfig, final ClassScanner classScanner) {
+			ReferenceConfig<?> defaultConfig, final TypeScanner typeScanner) {
 		return parseConfigList(ReferenceConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ReferenceConfig>() {
 					@Override
 					public boolean doFilter(List<ReferenceConfig> list, Node node, ReferenceConfig config) {
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classScanner.scan(packageName,
-									(e, m) -> e.getClassMetadata().isInterface())) {
+							for (MetadataReader metadataReader : typeScanner.scan(Package.getPackage(packageName), null, (e, m) -> e.getClassMetadata().isInterface())) {
 								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
-								referenceConfig.setInterface(clazz);
+								referenceConfig.setInterface(metadataReader.getClassMetadata().getClassName());
 								if (referenceConfig.isValid()) {
 									list.add(referenceConfig);
 								}

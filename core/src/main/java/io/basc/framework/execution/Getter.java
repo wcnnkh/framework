@@ -15,8 +15,8 @@ public interface Getter extends Executable, ParameterDescriptor {
 		return getTypeDescriptor();
 	}
 
-	Object get(Object target) throws Throwable;
-	
+	Object get(Object target);
+
 	@Override
 	Getter rename(String name);
 }

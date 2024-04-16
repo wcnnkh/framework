@@ -27,7 +27,7 @@ import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.RelationshipSymbol;
-import io.basc.framework.data.repository.SortSymbol;
+import io.basc.framework.data.repository.SortOrder;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.lucene.DocumentAccess;
 import io.basc.framework.lucene.LuceneMapper;
@@ -219,7 +219,7 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 		} else {
 			type = Type.STRING;
 		}
-		return new SortField(column.getName(), type, sort.getSymbol().getName().equals(SortSymbol.ASC.getName()));
+		return new SortField(column.getName(), type, sort.getOrder().getName().equals(SortOrder.ASC.getName()));
 	}
 
 	@Override

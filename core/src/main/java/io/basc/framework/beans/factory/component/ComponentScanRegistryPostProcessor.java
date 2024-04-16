@@ -4,8 +4,8 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.env.EnvironmentCapable;
-import io.basc.framework.io.scan.ClassScanner;
-import io.basc.framework.io.scan.MetadataReaderScanner;
+import io.basc.framework.io.scan.PackagePatternMetadataReaderScanner;
+import io.basc.framework.io.scan.TypeScanner;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.element.Elements;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class ComponentScanRegistryPostProcessor extends ComponentRegistryPostProcessor {
-	private ClassScanner classScanner;
+	private TypeScanner typeScanner;
 	private ClassLoader classLoader;
 
 	@Override
@@ -33,28 +33,28 @@ public abstract class ComponentScanRegistryPostProcessor extends ComponentRegist
 
 	public final void postProcessBeanDefinitionRegistry(ComponentResolver componentResolver, EnvironmentCapable context,
 			BeanDefinitionRegistry registry, ClassLoader classLoader) throws BeansException {
-		ClassScanner classScanner = null;
-		if (context instanceof ClassScanner) {
-			classScanner = (ClassScanner) context;
+		TypeScanner typeScanner = null;
+		if (context instanceof TypeScanner) {
+			typeScanner = (TypeScanner) context;
 		}
 
-		if (classScanner == null) {
-			classScanner = getClassScanner();
+		if (typeScanner == null) {
+			typeScanner = getTypeScanner();
 		}
 
-		if (classScanner == null) {
-			classScanner = new MetadataReaderScanner();
+		if (typeScanner == null) {
+			typeScanner = new PackagePatternMetadataReaderScanner();
 		}
 
-		postProcessBeanDefinitionRegistry(componentResolver, context, registry, classScanner, classLoader);
+		postProcessBeanDefinitionRegistry(componentResolver, context, registry, typeScanner, classLoader);
 	}
 
 	public void postProcessBeanDefinitionRegistry(ComponentResolver componentResolver, EnvironmentCapable context,
-			BeanDefinitionRegistry registry, ClassScanner classScanner, ClassLoader classLoader) throws BeansException {
-		for (AnnotationMetadata annotationMetadata : scan(context, classScanner)) {
+			BeanDefinitionRegistry registry, TypeScanner typeScanner, ClassLoader classLoader) throws BeansException {
+		for (AnnotationMetadata annotationMetadata : scan(context, typeScanner)) {
 			registerComponent(componentResolver, context, registry, annotationMetadata, classLoader);
 		}
 	}
 
-	protected abstract Elements<AnnotationMetadata> scan(EnvironmentCapable context, ClassScanner classScanner);
+	protected abstract Elements<AnnotationMetadata> scan(EnvironmentCapable context, TypeScanner classScanner);
 }

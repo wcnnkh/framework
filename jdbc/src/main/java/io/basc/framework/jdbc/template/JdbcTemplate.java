@@ -11,6 +11,7 @@ import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.support.DefaultJdbcOperations;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.util.element.Elements;
 
@@ -38,11 +39,11 @@ public class JdbcTemplate extends DefaultJdbcOperations implements EntityOperati
 	}
 
 	public void createTable(Class<?> entityClass, @Nullable String tableName) {
-		TableMapping<?> tableMapping = getMapper().getMapping(entityClass);
+		EntityMapping<?> tableMapping = getMapper().getMapping(entityClass);
 		createTable(tableMapping, tableName);
 	}
 
-	public void createTable(TableMapping<?> tableMapping, String tableName) {
+	public void createTable(EntityMapping<?> tableMapping, String tableName) {
 		Elements<Sql> sqls = getMapper().toCreateTableSql(tableMapping, tableName);
 		for (Sql sql : sqls) {
 			execute(sql);

@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.orm.EntityMapper;
-import io.basc.framework.orm.annotation.AutoIncrement;
-import io.basc.framework.orm.annotation.InvalidBaseTypeValue;
+import io.basc.framework.orm.stereotype.AutoIncrement;
+import io.basc.framework.orm.stereotype.InvalidBaseTypeValue;
 import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.orm.support.OrmUtils;
 

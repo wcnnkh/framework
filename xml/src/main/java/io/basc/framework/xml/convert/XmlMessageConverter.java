@@ -45,7 +45,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 		String text = readTextBody(inputMessage);
 		if (ClassUtils.isPrimitiveOrWrapper(type.getType()) || String.class == type.getType()
 				|| Value.class == type.getType()) {
-			return Value.of(text, getJsonSupport()).getAsObject(type);
+			return Value.of(text).getAsObject(type);
 		}
 
 		Document document = XmlUtils.getTemplate().getParser().parse(text);

@@ -11,7 +11,7 @@ import com.netflix.eureka.aws.AwsBindingStrategy;
 
 import io.basc.framework.beans.factory.annotation.Autowired;
 import io.basc.framework.env.Environment;
-import io.basc.framework.orm.annotation.ConfigurationProperties;
+import io.basc.framework.orm.stereotype.ConfigurationProperties;
 import lombok.Data;
 
 @ConfigurationProperties(EurekaServerConfigBean.PREFIX)

@@ -15,7 +15,7 @@ import io.basc.framework.io.SerializerException;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.template.annotation.Table;
-import io.basc.framework.orm.annotation.PrimaryKey;
+import io.basc.framework.orm.stereotype.PrimaryKey;
 import io.basc.framework.util.CollectionUtils;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)

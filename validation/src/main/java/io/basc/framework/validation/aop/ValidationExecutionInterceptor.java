@@ -1,21 +1,18 @@
 package io.basc.framework.validation.aop;
 
+import javax.validation.Valid;
 import javax.validation.Validator;
+import javax.validation.constraints.Max;
 
-import io.basc.framework.beans.factory.component.Component;
-import io.basc.framework.beans.factory.component.ConditionalOnMissingBean;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.Order;
+import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Function;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.reflect.ReflectionConstructor;
 import io.basc.framework.execution.reflect.ReflectionMethod;
-import io.basc.framework.execution.test.Executor;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.validation.FastValidator;
+import lombok.NonNull;
 
-@Component
-@Order(Ordered.LOWEST_PRECEDENCE)
-@ConditionalOnMissingBean(ValidationExecutionInterceptor.class)
 public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 	private Validator validator;
 
@@ -25,6 +22,18 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 
 	public ValidationExecutionInterceptor(Validator validator) {
 		this.validator = validator;
+	}
+
+	@Override
+	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
+		if(function instanceof ReflectionConstructor) {
+			ReflectionConstructor reflectionConstructor = (ReflectionConstructor) function;
+			validator.forExecutables().validateConstructorParameters(reflectionConstructor.getMember(), null, null)
+		}
+		
+		if (!args.isEmpty()) {
+			
+		}
 	}
 
 	private Object execute(ReflectionMethod executor, Elements<Object> args) throws Throwable {
@@ -53,7 +62,6 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 		return executor.execute(args);
 	}
 
-	@Override
 	public Object intercept(Executor executor, Elements<Object> args) throws Throwable {
 		if (executor instanceof ReflectionMethod) {
 			return execute((ReflectionMethod) executor, args);
@@ -63,4 +71,5 @@ public class ValidationExecutionInterceptor implements ExecutionInterceptor {
 			return execute(executor, args);
 		}
 	}
+
 }

@@ -12,15 +12,15 @@ public interface MappingStrategy {
 			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException;
 
 	void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext, Object target,
-			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Item> targetMapping,
-			Item targetField) throws MappingException;
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends FieldDescriptor> targetMapping,
+			FieldDescriptor targetField) throws MappingException;
 
 	void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType, MappingContext sourceContext,
-			Mapping<? extends Item> sourceMapping, Item sourceField, ObjectAccess targetAccess,
+			Mapping<? extends FieldDescriptor> sourceMapping, FieldDescriptor sourceField, ObjectAccess targetAccess,
 			MappingContext targetContext) throws MappingException;
 
 	void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType, MappingContext sourceContext,
-			Mapping<? extends Item> sourceMapping, Object target, TypeDescriptor targetType,
-			MappingContext targetContext, Mapping<? extends Item> targetMapping, Item targetField)
+			Mapping<? extends FieldDescriptor> sourceMapping, Object target, TypeDescriptor targetType,
+			MappingContext targetContext, Mapping<? extends FieldDescriptor> targetMapping, FieldDescriptor targetField)
 			throws MappingException;
 }

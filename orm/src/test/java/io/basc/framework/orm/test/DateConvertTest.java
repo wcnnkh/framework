@@ -9,7 +9,7 @@ import org.junit.Test;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.env.Sys;
-import io.basc.framework.orm.annotation.Entity;
+import io.basc.framework.orm.stereotype.Entity;
 
 public class DateConvertTest {
 

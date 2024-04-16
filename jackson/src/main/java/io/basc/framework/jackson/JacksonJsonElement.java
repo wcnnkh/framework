@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,17 +15,17 @@ import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonObject;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class JacksonJsonElement extends AbstractJsonElement implements JsonSerializable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final JsonNode jsonNode;
-	private final ObjectMapper mapper;
-
-	public JacksonJsonElement(JsonNode jsonNode, ObjectMapper mapper) {
-		this.mapper = mapper;
-		this.jsonNode = jsonNode;
-	}
+	private final JacksonConverter converter;
 
 	@Override
 	public Object getSource() {
@@ -36,12 +34,12 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 
 	@Override
 	public JsonArray getAsJsonArray() {
-		return new JacksonJsonArray(mapper, (ArrayNode) jsonNode);
+		return new JacksonJsonArray((ArrayNode) jsonNode, converter);
 	}
 
 	@Override
 	public JsonObject getAsJsonObject() {
-		return new JacksonJsonObject(mapper, (ObjectNode) jsonNode);
+		return new JacksonJsonObject((ObjectNode) jsonNode, converter);
 	}
 
 	@Override
@@ -65,13 +63,6 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		JavaType javaType = mapper.constructType(targetType.getResolvableType().getType());
-		return mapper.convertValue(source, javaType);
-	}
-
-	@Override
 	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		jsonNode.serialize(gen, serializers);
 	}
@@ -85,5 +76,11 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 	@Override
 	public boolean isEmpty() {
 		return jsonNode.isEmpty() || super.isEmpty();
+	}
+
+	@Override
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws JsonException, ConversionException {
+		return converter.convert(source, sourceType, targetType);
 	}
 }

@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.env.SystemProperties;
 import io.basc.framework.util.ObjectUtils;
 
 public class SQLiteFileDatabase extends SQLiteDatabase {
 
 	public SQLiteFileDatabase(String databaseName) {
-		this(new File(Sys.getEnv().getWorkPath()), databaseName);
+		this(new File(SystemProperties.getWorkPath()), databaseName);
 	}
 
 	public SQLiteFileDatabase(File directory, String databaseName) {

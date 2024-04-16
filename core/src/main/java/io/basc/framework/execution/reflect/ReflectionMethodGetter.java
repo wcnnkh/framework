@@ -3,7 +3,9 @@ package io.basc.framework.execution.reflect;
 import java.lang.reflect.Method;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Getter;
+import io.basc.framework.util.Assert;
 
 public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 	private String name;
@@ -23,8 +25,13 @@ public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 	}
 
 	@Override
-	public Object get(Object target) throws Throwable {
-		return execute(target);
+	public Object get(Object target) {
+		try {
+			return execute(target);
+		} catch (Throwable e) {
+			ReflectionUtils.handleThrowable(e);
+			throw Assert.shouldNeverGetHere();
+		}
 	}
 
 	@Override

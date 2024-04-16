@@ -6,14 +6,9 @@ import io.basc.framework.value.ObjectValue;
 import io.basc.framework.value.Value;
 
 class ValueConversionService implements ConversionService {
-	private final ConversionService conversionService;
-
-	public ValueConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		Value value = new ObjectValue(source, sourceType, conversionService);
+		Value value = new ObjectValue(source, sourceType);
 		if (targetType.getType() == Value.class) {
 			return value;
 		}

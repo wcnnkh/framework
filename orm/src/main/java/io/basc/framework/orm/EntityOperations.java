@@ -69,7 +69,7 @@ public interface EntityOperations extends RepositoryOperations {
 	default <T> boolean deleteById(DeleteOperationSymbol deleteOperationSymbol, Class<? extends T> entityClass,
 			T entity) {
 		EntityRepository<?> repository = getMapper().getRepository(deleteOperationSymbol, entityClass, entity);
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
@@ -100,7 +100,7 @@ public interface EntityOperations extends RepositoryOperations {
 
 	default long deleteByPrimaryKeys(DeleteOperationSymbol operationSymbol, EntityRepository<?> repository,
 			Object... primaryKeys) {
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
@@ -128,7 +128,7 @@ public interface EntityOperations extends RepositoryOperations {
 		EntityRepository<T> repository = getMapper().getRepository(queryOperationSymbol, entityClass, entity);
 		Elements<? extends Expression> columns = getMapper().getColumns(queryOperationSymbol, repository);
 
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
@@ -177,7 +177,7 @@ public interface EntityOperations extends RepositoryOperations {
 		InsertOperation operation = new InsertOperation(insertOperationSymbol, repository, columns);
 
 		if (insertOperationSymbol.isIncludeConditions()) {
-			List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
+			List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 					repository.getEntityMapping().getPrimaryKeys().iterator());
 			List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 				return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
@@ -261,7 +261,7 @@ public interface EntityOperations extends RepositoryOperations {
 		Elements<? extends Expression> columns = getMapper().getColumns(operationSymbol, repository);
 		QueryOperation queryOperation = new QueryOperation(operationSymbol, columns, repository);
 
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
@@ -277,11 +277,11 @@ public interface EntityOperations extends RepositoryOperations {
 		Elements<? extends Expression> columns = getMapper().getColumns(QueryOperationSymbol.QUERY, repository);
 		QueryOperation queryOperation = new QueryOperation(QueryOperationSymbol.QUERY, columns, repository);
 
-		Iterator<? extends PropertyDescriptor> propertyIterator = repository.getEntityMapping().getPrimaryKeys().iterator();
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(propertyIterator,
+		Iterator<? extends ColumnDescriptor> propertyIterator = repository.getEntityMapping().getPrimaryKeys().iterator();
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(propertyIterator,
 				Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = new ArrayList<>(conditionEntries.size() + 1);
-		for (Entry<PropertyDescriptor, Parameter> entry : conditionEntries) {
+		for (Entry<ColumnDescriptor, Parameter> entry : conditionEntries) {
 			Parameter parameter = entry.getValue();
 			conditions.add(new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
 					parameter.getTypeDescriptor()));
@@ -291,7 +291,7 @@ public interface EntityOperations extends RepositoryOperations {
 			throw new OrmException("The number of primary key parameters must be less than the primary key");
 		}
 
-		PropertyDescriptor property = propertyIterator.next();
+		ColumnDescriptor property = propertyIterator.next();
 		conditions.add(new Condition(property.getName(), ConditionSymbol.EQU, inPrimaryKeys.toArray(), null));
 		queryOperation.setConditions(Elements.of(conditions));
 		Query<R> query = query(resultTypeDescriptor, queryOperation);
@@ -340,11 +340,11 @@ public interface EntityOperations extends RepositoryOperations {
 	default <T> boolean updateById(UpdateOperationSymbol updateOperationSymbol, Class<? extends T> entityClass,
 			T entity) {
 		EntityRepository<T> repository = getMapper().getRepository(updateOperationSymbol, entityClass, entity);
-		List<Entry<PropertyDescriptor, Parameter>> columnEntries = getMapper().getEntries(entity,
+		List<Entry<ColumnDescriptor, Parameter>> columnEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getNotPrimaryKeys().iterator());
 		Elements<? extends Expression> columns = getMapper().toColumns(updateOperationSymbol, repository,
 				Elements.of(columnEntries));
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
@@ -369,12 +369,12 @@ public interface EntityOperations extends RepositoryOperations {
 	default <T> long updateByPrimaryKeys(UpdateOperationSymbol updateOperationSymbol, EntityRepository<?> repository,
 			Object... primaryKeys) {
 		Assert.requiredArgument(repository.getEntity() != null, "repository#getEntity()");
-		List<Entry<PropertyDescriptor, Parameter>> columnEntries = getMapper().getEntries(repository.getEntity(),
+		List<Entry<ColumnDescriptor, Parameter>> columnEntries = getMapper().getEntries(repository.getEntity(),
 				repository.getEntityMapping().getNotPrimaryKeys().iterator());
 		Elements<? extends Expression> columns = getMapper().toColumns(updateOperationSymbol, repository,
 				Elements.of(columnEntries));
 
-		List<Entry<PropertyDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
+		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
 			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),

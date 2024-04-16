@@ -2,6 +2,8 @@ package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.MergedAnnotatedElement;
+import io.basc.framework.core.annotation.MergedAnnotations;
+import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.select.Selector;
@@ -15,7 +17,8 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @RequiredArgsConstructor
-public class MergedParameterDescriptor<E extends ParameterDescriptor> implements ParameterDescriptor {
+public class MergedParameterDescriptor<E extends ParameterDescriptor>
+		implements ParameterDescriptor, AnnotatedTypeMetadata {
 	private final Elements<? extends E> elements;
 	private volatile E master;
 	private volatile String name;
@@ -94,5 +97,10 @@ public class MergedParameterDescriptor<E extends ParameterDescriptor> implements
 			Assert.isTrue(master != null, "Master has already been selected, cannot set selector again");
 		}
 		this.selector = selector;
+	}
+
+	@Override
+	public MergedAnnotations getAnnotations() {
+		return MergedAnnotations.from(elements);
 	}
 }

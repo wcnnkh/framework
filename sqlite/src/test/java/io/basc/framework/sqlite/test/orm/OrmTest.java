@@ -38,7 +38,7 @@ public class OrmTest {
 
 	private static void saveOrUpdate() {
 		System.out.println("------------------saveOrUpdate");
-		LoggerFactory.getSource().getLevelManager().getMaster().put("io.basc.framework.sql", Levels.DEBUG.getValue());
+		LoggerFactory.getSource().getLevelManager().put("io.basc.framework.sql", Levels.DEBUG.getValue());
 		for (int i = 0; i < 5; i++) {
 			TestTable1 table1 = new TestTable1();
 			table1.setId(i);

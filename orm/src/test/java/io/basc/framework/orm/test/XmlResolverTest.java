@@ -12,7 +12,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.orm.annotation.PrimaryKey;
+import io.basc.framework.orm.stereotype.PrimaryKey;
 
 public class XmlResolverTest {
 	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);

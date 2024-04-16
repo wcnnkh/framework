@@ -16,5 +16,5 @@ public interface MappingRegistry extends MappingFactory {
 	 * @param entityClass
 	 * @param mapping
 	 */
-	void registerMapping(Class<?> entityClass, Mapping<? extends Item> mapping);
+	void registerMapping(Class<?> entityClass, Mapping<? extends FieldDescriptor> mapping);
 }

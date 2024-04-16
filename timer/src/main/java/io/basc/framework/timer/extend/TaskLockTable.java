@@ -3,8 +3,8 @@ package io.basc.framework.timer.extend;
 import java.io.Serializable;
 
 import io.basc.framework.jdbc.template.annotation.Table;
-import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.orm.annotation.Version;
+import io.basc.framework.orm.stereotype.PrimaryKey;
+import io.basc.framework.orm.stereotype.Version;
 
 @Table
 public class TaskLockTable implements Serializable {

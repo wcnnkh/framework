@@ -7,18 +7,18 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.value.observe.Observable;
+import io.basc.framework.env.SystemProperties;
+import io.basc.framework.value.Value;
 
 public class IgnoreDTDResolver implements EntityResolver {
-	private static final Observable<Boolean> IGNORE_DTD = Sys.getEnv().getProperties()
-			.getObservable("io.basc.framework.xml.ignore.dtd").map((e) -> e.or(true).getAsBoolean());
+	private static final Value IGNORE_DTD = SystemProperties.getInstance().get("io.basc.framework.xml.ignore.dtd")
+			.or(true);
 
 	public static final EntityResolver INSTANCE = new IgnoreDTDResolver();
 
 	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-		if (IGNORE_DTD.get() && systemId != null && systemId.endsWith(".dtd")) {
+		if (IGNORE_DTD.getAsBoolean() && systemId != null && systemId.endsWith(".dtd")) {
 			return new InputSource(new StringReader(""));
 		}
 		return null;

@@ -1,11 +1,11 @@
 package io.basc.framework.sqlite.test.orm;
 
-import io.basc.framework.jdbc.template.annotation.Table;
-import io.basc.framework.orm.annotation.PrimaryKey;
+import io.basc.framework.orm.stereotype.Entity;
+import io.basc.framework.orm.stereotype.PrimaryKey;
 import lombok.Data;
 
-@Table
 @Data
+@Entity
 public class TestTable1 {
 	@PrimaryKey
 	private int id;

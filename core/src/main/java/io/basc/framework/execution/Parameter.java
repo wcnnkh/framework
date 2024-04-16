@@ -1,6 +1,5 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.element.Indexed;
@@ -25,12 +24,7 @@ public class Parameter extends ObjectProperty {
 	}
 
 	public Parameter(int index, String name, Object value, @Nullable TypeDescriptor typeDescriptor) {
-		this(index, name, value, typeDescriptor, null);
-	}
-
-	public Parameter(int index, String name, Object value, @Nullable TypeDescriptor typeDescriptor,
-			Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
-		super(name, value, typeDescriptor, converter);
+		super(name, value, typeDescriptor);
 		this.index = index;
 	}
 
@@ -50,11 +44,6 @@ public class Parameter extends ObjectProperty {
 	@Override
 	public Parameter clone() {
 		return new Parameter(index, getName(), this);
-	}
-
-	@Override
-	public Value createRelative(Object value, TypeDescriptor type) {
-		return new Parameter(index, getName(), value, type, getConverter());
 	}
 
 	@Override

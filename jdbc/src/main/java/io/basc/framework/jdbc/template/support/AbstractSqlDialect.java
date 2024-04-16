@@ -3,7 +3,9 @@ package io.basc.framework.jdbc.template.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
@@ -11,20 +13,23 @@ import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.DeleteOperation;
 import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.QueryOperation;
 import io.basc.framework.data.repository.RelationshipSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.data.repository.SortSymbol;
+import io.basc.framework.data.repository.SortOrder;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.jdbc.EasySql;
+import io.basc.framework.jdbc.ResultSetMapper;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.jdbc.SqlUtils;
 import io.basc.framework.jdbc.template.SqlDialect;
 import io.basc.framework.jdbc.template.SqlDialectException;
 import io.basc.framework.jdbc.template.SqlType;
+import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
@@ -38,7 +43,7 @@ import io.basc.framework.value.Value;
  * @author wcnnkh
  *
  */
-public abstract class AbstractSqlDialect extends DefaultTableMapper implements SqlDialect {
+public abstract class AbstractSqlDialect extends ResultSetMapper implements SqlDialect {
 	private String escapeCharacter = "`";
 
 	public void concat(StringBuilder sb, String... strs) {
@@ -54,6 +59,24 @@ public abstract class AbstractSqlDialect extends DefaultTableMapper implements S
 			sb.append(strs[i]);
 		}
 		sb.append(")");
+	}
+
+	public <T extends ColumnDescriptor> Map<IndexInfo, List<T>> getIndexGroups(Elements<? extends T> elements) {
+		Map<IndexInfo, List<T>> groups = new LinkedHashMap<>();
+		elements.forEach((column) -> {
+			Elements<IndexInfo> indexs = column.getIndexs();
+			if (!CollectionUtils.isEmpty(indexs)) {
+				for (IndexInfo indexInfo : indexs) {
+					List<T> columns = groups.get(indexInfo);
+					if (columns == null) {
+						columns = new ArrayList<>(8);
+					}
+					columns.add(column);
+					groups.put(indexInfo, columns);
+				}
+			}
+		});
+		return groups;
 	}
 
 	public String getCreateTablePrefix() {
@@ -238,14 +261,14 @@ public abstract class AbstractSqlDialect extends DefaultTableMapper implements S
 		while (iterator.hasNext()) {
 			Sort sort = iterator.next();
 			keywordProcessing(sb, sort.getExpression().getName());
-			if (sort.getSymbol() != null) {
+			if (sort.getOrder() != null) {
 				sb.append(" ");
-				if (SortSymbol.ASC.getName().equals(sort.getSymbol().getName())) {
+				if (SortOrder.ASC.getName().equals(sort.getOrder().getName())) {
 					sb.append("asc");
-				} else if (SortSymbol.DESC.getName().equals(sort.getSymbol().getName())) {
+				} else if (SortOrder.DESC.getName().equals(sort.getOrder().getName())) {
 					sb.append("desc");
 				} else {
-					sb.append(sort.getSymbol().getName());
+					sb.append(sort.getOrder().getName());
 				}
 			}
 		}

@@ -20,14 +20,12 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.basc.framework.orm.annotation.ConfigurationProperties;
-
 /**
  * Properties for {@link InetUtils}.
  *
  * @author Spencer Gibb
  */
-@ConfigurationProperties(prefix = InetUtilsProperties.PREFIX)
+//@ConfigurationProperties(prefix = InetUtilsProperties.PREFIX)
 public class InetUtilsProperties {
 
 	/**
@@ -51,8 +49,7 @@ public class InetUtilsProperties {
 	private int timeoutSeconds = 1;
 
 	/**
-	 * List of Java regular expressions for network interfaces that will be
-	 * ignored.
+	 * List of Java regular expressions for network interfaces that will be ignored.
 	 */
 	private List<String> ignoredInterfaces = new ArrayList<String>();
 
@@ -67,7 +64,7 @@ public class InetUtilsProperties {
 	 * preferred.
 	 */
 	private List<String> preferredNetworks = new ArrayList<String>();
-	
+
 	public String getDefaultHostname() {
 		return this.defaultHostname;
 	}

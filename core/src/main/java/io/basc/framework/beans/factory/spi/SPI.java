@@ -13,8 +13,11 @@ import io.basc.framework.util.element.Elements;
  * @author shuchaowen
  *
  */
-public class SPI extends DefaultServiceLoaderFactory {
+public final class SPI extends DefaultServiceLoaderFactory {
 	private static volatile SPI global;
+
+	private SPI() {
+	}
 
 	/**
 	 * 使用全局的spi获取支持的服务

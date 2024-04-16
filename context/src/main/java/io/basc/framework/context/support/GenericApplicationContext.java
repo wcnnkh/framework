@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
+import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextAware;
@@ -232,5 +234,15 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 	@Override
 	public void publishBatchEvent(Elements<ApplicationContextEvent> events) throws EventPushException {
 		eventDispatcher.publishBatchEvent(events);
+	}
+
+	@Override
+	public AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
+		return this;
+	}
+
+	@Override
+	public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
+		return this;
 	}
 }

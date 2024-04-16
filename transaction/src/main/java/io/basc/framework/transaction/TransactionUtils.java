@@ -1,6 +1,6 @@
 package io.basc.framework.transaction;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -13,7 +13,7 @@ public final class TransactionUtils {
 	/**
 	 * Global default transactions(全局默认使用的事务)
 	 */
-	private static final TransactionManager DEFAULT = Sys.getEnv()
+	private static final TransactionManager DEFAULT = SPI.global()
 			.getServiceLoader(TransactionManager.class, ThreadLocalTransactionManager.class).getServices().first();
 	private static final ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
 			TransactionManager.class.getSimpleName());

@@ -16,7 +16,7 @@ public class AutoIncrementTest {
 
 	@Test
 	public void test() {
-		LoggerFactory.getSource().getLevelManager().getMaster().put("io.basc.framework.sql", Levels.DEBUG.getValue());
+		LoggerFactory.getSource().getLevelManager().put("io.basc.framework.sql", Levels.DEBUG.getValue());
 		db.createTable(AutoIncrementTestBean.class);
 		db.deleteAll(AutoIncrementTestBean.class);
 		int size = 2;

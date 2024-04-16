@@ -1,7 +1,6 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.util.element.Elements;
 
 public class MergedSetter extends MergedParameterDescriptor<Setter> implements Setter {
@@ -21,7 +20,7 @@ public class MergedSetter extends MergedParameterDescriptor<Setter> implements S
 	}
 
 	@Override
-	public void set(Object target, Object value) throws Throwable {
+	public void set(Object target, Object value) {
 		getMaster().set(target, value);
 	}
 
@@ -33,10 +32,5 @@ public class MergedSetter extends MergedParameterDescriptor<Setter> implements S
 	@Override
 	public TypeDescriptor getDeclaringTypeDescriptor() {
 		return getMaster().getReturnTypeDescriptor();
-	}
-
-	@Override
-	public MergedAnnotations getAnnotations() {
-		return getMaster().getAnnotations();
 	}
 }

@@ -1,7 +1,7 @@
 package io.basc.framework.dubbo.test.service;
 
+import io.basc.framework.autoconfigure.boot.BootApplication;
 import io.basc.framework.beans.factory.annotation.ImportResource;
-import io.basc.framework.boot.annotation.BootApplication;
 import io.basc.framework.boot.support.MainApplication;
 
 @ImportResource("export.xml")

@@ -3,6 +3,7 @@ package io.basc.framework.orm;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.execution.Parameter;
@@ -66,13 +67,15 @@ public interface EntityResolver {
 
 	@Nullable
 	<T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable PropertyDescriptor property);
+			@Nullable ColumnDescriptor property);
 
 	@Nullable
 	<T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable PropertyDescriptor property);
+			@Nullable ColumnDescriptor property);
 
 	@Nullable
 	<T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable PropertyDescriptor property);
+			@Nullable ColumnDescriptor property);
+	
+	Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor);
 }

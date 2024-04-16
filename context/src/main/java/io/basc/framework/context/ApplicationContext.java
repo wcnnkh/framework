@@ -56,6 +56,8 @@ public interface ApplicationContext
 	@Nullable
 	ApplicationContext getParent();
 
+	AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException;
+
 	default Elements<Resource> getProfileResources(String location) {
 		Resource rootResource = getResource(location);
 		Elements<Resource> root = Elements.singleton(rootResource);

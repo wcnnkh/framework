@@ -15,18 +15,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>transaction</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>locks</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>orm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
 	</dependencies>

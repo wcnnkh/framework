@@ -391,11 +391,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>mysql</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>sqlite</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -427,16 +422,6 @@
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>data</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>beans-annotation</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>beans-annotation-processor</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
@@ -639,6 +624,11 @@
 				<artifactId>console</artifactId>
 				<version>1.8.4</version>
 			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>autoconfigure</artifactId>
+				<version>1.8.4</version>
+			</dependency>
 			<!-- 测试 -->
 			<dependency>
 				<groupId>io.basc.framework</groupId>
@@ -771,7 +761,6 @@
 		<module>druid</module>
 		<module>hikaricp</module>
 		<module>sqlite</module>
-		<module>mysql</module>
 		<module>lucene</module>
 		<module>yaml</module>
 		<module>log4j</module>
@@ -814,8 +803,7 @@
 		<module>spring-context</module>
 		<module>locks</module>
 		<module>jdbc</module>
-		<module>beans-annotation</module>
-		<module>beans-annotation-processor</module>
+		<module>autoconfigure</module>
 	</modules>
 	<profiles>
 		<profile>

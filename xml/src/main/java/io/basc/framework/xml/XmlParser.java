@@ -17,12 +17,13 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;
-import io.basc.framework.env.Sys;
+import io.basc.framework.env.SystemProperties;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
@@ -35,19 +36,19 @@ public class XmlParser implements DocumentParser, ConversionService {
 	private static Logger logger = LoggerFactory.getLogger(XmlParser.class);
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	@Nullable
-	private static final EntityResolver ENTITY_RESOLVER = Sys.getEnv().loadService(EntityResolver.class).orElse(null);
+	private static final EntityResolver ENTITY_RESOLVER = SPI.getServices(EntityResolver.class).first();
 
 	static {
-		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(Sys.getEnv().getProperties()
+		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(SystemProperties.getInstance()
 				.get("io.basc.framework.xml.ignoring.element.content.whitespace").or(true).getAsBoolean());
 		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(
-				Sys.getEnv().getProperties().get("io.basc.framework.xml.ignoring.comments").or(true).getAsBoolean());
+				SystemProperties.getInstance().get("io.basc.framework.xml.ignoring.comments").or(true).getAsBoolean());
 		DOCUMENT_BUILDER_FACTORY.setCoalescing(
-				Sys.getEnv().getProperties().get("io.basc.framework.dom.coalescing").or(true).getAsBoolean());
+				SystemProperties.getInstance().get("io.basc.framework.dom.coalescing").or(true).getAsBoolean());
 		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(
-				Sys.getEnv().getProperties().getAsBoolean("io.basc.framework.xml.expand.entity.references"));
-		DOCUMENT_BUILDER_FACTORY
-				.setNamespaceAware(Sys.getEnv().getProperties().getAsBoolean("io.basc.framework.xml.namespace.aware"));
+				SystemProperties.getInstance().getAsBoolean("io.basc.framework.xml.expand.entity.references"));
+		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(
+				SystemProperties.getInstance().getAsBoolean("io.basc.framework.xml.namespace.aware"));
 		try {
 			DOCUMENT_BUILDER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		} catch (ParserConfigurationException e) {

@@ -84,7 +84,7 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.decode(value);
 			}
 
-			return new Pair<>(key, new ObjectValue(value, null, getConversionService()));
+			return new Pair<>(key, new ObjectValue(value, null));
 		});
 	}
 }

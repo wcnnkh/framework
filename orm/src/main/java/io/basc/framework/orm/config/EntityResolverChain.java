@@ -5,16 +5,17 @@ import java.util.Iterator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MappingStrategy;
+import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
@@ -235,7 +236,7 @@ public class EntityResolverChain implements EntityResolver {
 
 	@Override
 	public <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, PropertyDescriptor property) {
+			Parameter parameter, ColumnDescriptor property) {
 		if (iterator.hasNext()) {
 			return iterator.next().getColumn(operationSymbol, repository, parameter, property, this);
 		}
@@ -244,7 +245,7 @@ public class EntityResolverChain implements EntityResolver {
 
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, PropertyDescriptor property) {
+			Parameter parameter, ColumnDescriptor property) {
 		if (iterator.hasNext()) {
 			return iterator.next().getCondition(operationSymbol, repository, parameter, property, this);
 		}
@@ -253,11 +254,19 @@ public class EntityResolverChain implements EntityResolver {
 
 	@Override
 	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			PropertyDescriptor property) {
+			ColumnDescriptor property) {
 		if (iterator.hasNext()) {
 			return iterator.next().getSort(operationSymbol, repository, parameter, property, this);
 		}
 		return nextChain == null ? null : nextChain.getSort(operationSymbol, repository, parameter, property);
+	}
+
+	@Override
+	public Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().getIndexs(sourceClass, descriptor, this);
+		}
+		return nextChain == null ? Elements.empty() : nextChain.getIndexs(sourceClass, descriptor);
 	}
 
 }

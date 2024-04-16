@@ -68,7 +68,7 @@ public interface Importer {
 	default <T> Elements<T> read(Resource source, Class<? extends T> targetType) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(targetType != null, "targetType");
-		return read(source, TypeDescriptor.valueOf(targetType));
+		eturn read(source, TypeDescriptor.valueOf(targetType));
 	}
 
 	default <T> Elements<T> read(File source, Class<? extends T> targetType) throws IOException {

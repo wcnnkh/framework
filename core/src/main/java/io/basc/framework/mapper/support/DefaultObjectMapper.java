@@ -15,7 +15,7 @@ import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingContext;
 import io.basc.framework.mapper.MappingException;
@@ -39,7 +39,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	private final ServiceRegistry<MappingStrategyFilter> filterRegistry = new ServiceRegistry<>();
 	@Nullable
 	private MappingFactory mappingFactory;
-	private final Map<Class<?>, Mapping<? extends Item>> mappingMap = new ConcurrentHashMap<>();
+	private final Map<Class<?>, Mapping<? extends FieldDescriptor>> mappingMap = new ConcurrentHashMap<>();
 	private final DefaultMappingStrategy mappingStrategy = new DefaultMappingStrategy();
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
 
@@ -67,8 +67,8 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public Mapping<? extends Item> getMapping(Class<?> entityClass) {
-		Mapping<? extends Item> structure = mappingMap.get(entityClass);
+	public Mapping<? extends FieldDescriptor> getMapping(Class<?> entityClass) {
+		Mapping<? extends FieldDescriptor> structure = mappingMap.get(entityClass);
 		if (structure == null) {
 			synchronized (this) {
 				structure = mappingMap.get(entityClass);
@@ -115,7 +115,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public void registerMapping(Class<?> entityClass, Mapping<? extends Item> mapping) {
+	public void registerMapping(Class<?> entityClass, Mapping<? extends FieldDescriptor> mapping) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (mapping == null) {
 			mappingMap.remove(entityClass);
@@ -168,7 +168,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public <S extends Item, T extends Item> void transform(Object source, TypeDescriptor sourceType,
+	public <S extends FieldDescriptor, T extends FieldDescriptor> void transform(Object source, TypeDescriptor sourceType,
 			MappingContext sourceContext, Mapping<? extends S> sourceMapping, Object target, TypeDescriptor targetType,
 			MappingContext targetContext, Mapping<? extends T> targetMapping, MappingStrategy strategy)
 			throws MappingException {
@@ -177,7 +177,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public <T extends Item> void transform(Object source, TypeDescriptor sourceType, MappingContext sourceContext,
+	public <T extends FieldDescriptor> void transform(Object source, TypeDescriptor sourceType, MappingContext sourceContext,
 			Mapping<? extends T> sourceMapping, ObjectAccess targetAccess, MappingContext targetContext,
 			MappingStrategy strategy) throws MappingException {
 		ObjectMapper.super.transform(source, sourceType, sourceContext, sourceMapping, targetAccess, targetContext,
@@ -201,7 +201,7 @@ public class DefaultObjectMapper extends DefaultConversionService
 	}
 
 	@Override
-	public <T extends Item> void transform(ObjectAccess sourceAccess, MappingContext sourceContext, Object target,
+	public <T extends FieldDescriptor> void transform(ObjectAccess sourceAccess, MappingContext sourceContext, Object target,
 			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends T> targetMapping,
 			MappingStrategy strategy) throws MappingException {
 		ObjectMapper.super.transform(sourceAccess, sourceContext, target, targetType, targetContext, targetMapping,

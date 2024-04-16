@@ -1,76 +1,62 @@
 package io.basc.framework.gson;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonObject;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@EqualsAndHashCode(of = "jsonElement", callSuper = false)
+@Getter
 public final class GsonElement extends AbstractJsonElement {
-	private JsonElement gsonJsonElement;
-	private Gson gson;
-
-	public GsonElement(JsonElement gsonJsonElement, Gson gson) {
-		this.gsonJsonElement = gsonJsonElement;
-		this.gson = gson;
-	}
+	private final JsonElement jsonElement;
+	private final GsonConverter converter;
 
 	@Override
 	public Object getSource() {
-		return gsonJsonElement;
+		return jsonElement;
 	}
 
 	public String getAsString() {
-		if (gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()) {
-			return gsonJsonElement.toString();
+		if (jsonElement.isJsonArray() || jsonElement.isJsonObject()) {
+			return jsonElement.toString();
 		}
-		return gsonJsonElement.getAsString();
+		return jsonElement.getAsString();
 	}
 
 	public JsonArray getAsJsonArray() {
-		return new GsonArray(gsonJsonElement.getAsJsonArray(), gson);
+		return new GsonArray(jsonElement.getAsJsonArray(), converter);
 	}
 
 	public JsonObject getAsJsonObject() {
-		return new GsonObject(gsonJsonElement.getAsJsonObject(), gson);
+		return new GsonObject(jsonElement.getAsJsonObject(), converter);
 	}
 
 	public boolean isJsonArray() {
-		return gsonJsonElement.isJsonArray();
+		return jsonElement.isJsonArray();
 	}
 
 	public boolean isJsonObject() {
-		return gsonJsonElement.isJsonObject();
+		return jsonElement.isJsonObject();
 	}
 
 	public String toJsonString() {
-		if (gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()) {
-			return gsonJsonElement.toString();
+		if (jsonElement.isJsonArray() || jsonElement.isJsonObject()) {
+			return jsonElement.toString();
 		}
-		return gsonJsonElement.getAsString();
+		return jsonElement.getAsString();
 	}
 
 	@Override
-	public int hashCode() {
-		return gsonJsonElement.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof GsonElement) {
-			return gsonJsonElement.equals(((GsonElement) obj).gsonJsonElement);
-		}
-		return false;
-	}
-
-	@Override
-	public Object getAsObject(TypeDescriptor type) {
-		return gson.fromJson(gsonJsonElement, type.getResolvableType().getType());
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws JsonException, ConversionException {
+		return converter.convert(source, sourceType, targetType);
 	}
 }

@@ -3,7 +3,6 @@ package io.basc.framework.value;
 import java.io.Serializable;
 import java.util.Objects;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.ObjectUtils;
 import lombok.AllArgsConstructor;
@@ -17,19 +16,14 @@ public class ObjectValue implements Value, Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Object value;
 	private TypeDescriptor typeDescriptor;
-	private Converter<? super Object, ? super Object, ? extends RuntimeException> converter;
 
 	public ObjectValue(Object value) {
 		this(value, null);
 	}
 
-	public ObjectValue(Object value, TypeDescriptor typeDescriptor) {
-		this(value, typeDescriptor, null);
-	}
-
 	@Override
 	public ObjectValue clone() {
-		return new ObjectValue(value, typeDescriptor, converter);
+		return new ObjectValue(value, typeDescriptor);
 	}
 
 	@Override
@@ -47,10 +41,6 @@ public class ObjectValue implements Value, Cloneable, Serializable {
 		}
 
 		return false;
-	}
-
-	public Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
-		return converter == null ? Value.super.getConverter() : converter;
 	}
 
 	@Override
@@ -74,10 +64,6 @@ public class ObjectValue implements Value, Cloneable, Serializable {
 	@Override
 	public int hashCode() {
 		return value == null ? super.hashCode() : value.hashCode();
-	}
-
-	public void setConverter(ValueConverter converter) {
-		this.converter = converter;
 	}
 
 	public void setTypeDescriptor(TypeDescriptor typeDescriptor) {

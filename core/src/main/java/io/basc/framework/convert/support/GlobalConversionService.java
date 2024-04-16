@@ -47,7 +47,7 @@ public final class GlobalConversionService extends ConfigurableConversionService
 
 		register(new MapToMapConversionService(this));
 
-		register(new ValueConversionService(this));
+		register(new ValueConversionService());
 		register(new JsonConversionService());
 		register(new JsonToObjectConversionService());
 

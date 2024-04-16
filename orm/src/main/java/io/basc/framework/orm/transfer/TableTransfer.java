@@ -24,7 +24,7 @@ import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.io.FileRecords;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.PropertyDescriptor;
+import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pair;
@@ -142,13 +142,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				});
 			}
 		} else {
-			Mapping<? extends PropertyDescriptor> structure = mapper.getMapping(targetType.getType());
+			Mapping<? extends ColumnDescriptor> structure = mapper.getMapping(targetType.getType());
 			return mapEntity(source, structure);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> Stream<T> mapEntity(Stream<String[]> source, Mapping<? extends PropertyDescriptor> structure) {
+	public final <T> Stream<T> mapEntity(Stream<String[]> source, Mapping<? extends ColumnDescriptor> structure, TypeDescriptor targetType) {
 		Assert.requiredArgument(structure != null, "structure");
 		Assert.requiredArgument(source != null, "source");
 		if (isHeader()) {
@@ -164,7 +164,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				}
 			}
 
-			Elements<? extends PropertyDescriptor> properties = structure.getElements()
+			Elements<? extends ColumnDescriptor> properties = structure.getElements()
 					.filter((e) -> e.isSupportSetter());
 			// 映射
 			return Streams.stream(iterator).map((contents) -> {
@@ -192,10 +192,10 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			return source.map((e) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				int i = 0;
-				Iterator<? extends PropertyDescriptor> iterator = structure.filter((p) -> p.isSupportSetter())
+				Iterator<? extends ColumnDescriptor> iterator = structure.filter((p) -> p.isSupportSetter())
 						.getElements().iterator();
 				while (iterator.hasNext() && i < e.length) {
-					PropertyDescriptor property = iterator.next();
+					ColumnDescriptor property = iterator.next();
 					property.getSetter().set(instance, e[i++], conversionService);
 				}
 				return instance;
@@ -245,13 +245,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			return new TransfColumns<String, String>(values);
 		} else {
 			// ORM
-			ObjectRelational<? extends PropertyDescriptor> structure = mapper.getStructure(type.getType());
+			ObjectRelational<? extends ColumnDescriptor> structure = mapper.getStructure(type.getType());
 			return mapColumns(source, structure);
 		}
 	}
 
 	public final TransfColumns<String, String> mapColumns(Object source,
-			Mapping<? extends PropertyDescriptor> structure) {
+			Mapping<? extends ColumnDescriptor> structure) {
 		return structure.getElements().filter((e) -> e.isSupportGetter()).map((property) -> {
 			Object value = property.get(source);
 			if (value == null) {

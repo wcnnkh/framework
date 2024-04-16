@@ -7,12 +7,14 @@ import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.Sql;
+import io.basc.framework.orm.EntityMapper;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.util.element.Elements;
 
-public interface SqlDialect extends TableMapper, SqlTypeFactory {
-	Elements<Sql> toCreateTableSql(TableMapping<?> tableMapping, String tableName) throws SqlDialectException;
+public interface SqlDialect extends EntityMapper, SqlTypeFactory {
+	Elements<Sql> toCreateTableSql(EntityMapping<?> tableMapping, String tableName) throws SqlDialectException;
 
-	Sql toCopyTableStructureSql(TableMapping<?> tableMapping, String newTableName, String oldTableName)
+	Sql toCopyTableStructureSql(EntityMapping<?> tableMapping, String newTableName, String oldTableName)
 			throws SqlDialectException;
 
 	Sql toCountSql(Sql sql) throws SqlDialectException;

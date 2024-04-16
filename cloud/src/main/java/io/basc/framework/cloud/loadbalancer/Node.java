@@ -1,6 +1,5 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import io.basc.framework.orm.annotation.PrimaryKey;
 import io.basc.framework.util.select.Weighted;
 
 /**
@@ -15,7 +14,6 @@ public interface Node extends Weighted {
 	 * 
 	 * @return
 	 */
-	@PrimaryKey
 	String getId();
 
 	/**

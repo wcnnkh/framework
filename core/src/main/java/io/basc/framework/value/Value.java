@@ -7,6 +7,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 
+import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
@@ -18,7 +19,8 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.function.Optional;
 import io.basc.framework.util.function.Source;
 
-public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier {
+public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier,
+		Converter<Object, Object, ConversionException> {
 	static final Value EMPTY = new EmptyValue();
 
 	static final Value[] EMPTY_ARRAY = new Value[0];
@@ -68,7 +70,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return (Value) value;
 		}
 
-		return new ObjectValue(value, type, null);
+		return new ObjectValue(value, type);
 	}
 
 	default <T> Optional<T> as(Class<? extends T> type) {
@@ -103,10 +105,10 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 
 		TypeDescriptor sourceType = getTypeDescriptor();
 		if (converter instanceof ConversionService) {
+			ConversionService conversionService = (ConversionService) converter;
 			while (true) {
-				ConversionService conversionService = (ConversionService) converter;
 				if (conversionService.canConvert(sourceType, targetType)) {
-					return converter.convert(value, sourceType, targetType);
+					return conversionService.convert(value, sourceType, targetType);
 				}
 
 				if (value instanceof Value) {
@@ -152,7 +154,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigDecimal();
 		}
 
-		return getConverter().convert(getAsString(), BigDecimal.class);
+		return convert(getAsString(), BigDecimal.class);
 	}
 
 	@Nullable
@@ -174,7 +176,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigInteger();
 		}
 
-		return getConverter().convert(getAsString(), BigInteger.class);
+		return convert(getAsString(), BigInteger.class);
 	}
 
 	default boolean getAsBoolean() {
@@ -194,7 +196,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		if (value instanceof Value) {
 			return ((Value) value).getAsBoolean();
 		}
-		return getConverter().convert(getAsString(), boolean.class);
+		return convert(getAsString(), boolean.class);
 	}
 
 	default byte getAsByte() {
@@ -215,7 +217,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsByte();
 		}
 
-		return getConverter().convert(getAsString(), byte.class);
+		return convert(getAsString(), byte.class);
 	}
 
 	default char getAsChar() {
@@ -232,7 +234,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsChar();
 		}
 
-		return getConverter().convert(getAsString(), char.class);
+		return convert(getAsString(), char.class);
 	}
 
 	@Nullable
@@ -250,7 +252,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsClass();
 		}
 
-		return getConverter().convert(getAsString(), Class.class);
+		return convert(getAsString(), Class.class);
 	}
 
 	@Override
@@ -272,7 +274,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsDouble();
 		}
 
-		return getConverter().convert(getAsString(), double.class);
+		return convert(getAsString(), double.class);
 	}
 
 	@Nullable
@@ -290,7 +292,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsEnum(enumType);
 		}
 
-		return (Enum<?>) getConverter().convert(getAsString(), enumType);
+		return (Enum<?>) convert(getAsString(), enumType);
 	}
 
 	default float getAsFloat() {
@@ -311,7 +313,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsFloat();
 		}
 
-		return getConverter().convert(getAsString(), float.class);
+		return convert(getAsString(), float.class);
 	}
 
 	@Override
@@ -333,7 +335,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsInt();
 		}
 
-		return getConverter().convert(getAsString(), int.class);
+		return convert(getAsString(), int.class);
 	}
 
 	@Override
@@ -355,7 +357,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsLong();
 		}
 
-		return getConverter().convert(getAsString(), long.class);
+		return convert(getAsString(), long.class);
 	}
 
 	@Nullable
@@ -373,7 +375,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsNumber();
 		}
 
-		return getConverter().convert(getAsString(), Number.class);
+		return convert(getAsString(), Number.class);
 	}
 
 	@Nullable
@@ -427,7 +429,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = convert(type, getConverter());
+			v = convert(type, this);
 		}
 		return (T) v;
 	}
@@ -450,7 +452,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return getAsObject(type.getType());
 		}
 
-		return convert(type, getConverter());
+		return convert(type, this);
 	}
 
 	default short getAsShort() {
@@ -471,7 +473,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsShort();
 		}
 
-		return getConverter().convert(getAsString(), short.class);
+		return convert(getAsString(), short.class);
 	}
 
 	@Nullable
@@ -493,11 +495,16 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsString();
 		}
 
-		return convert(String.class, getConverter());
+		return convert(String.class, this);
 	}
 
-	default Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
-		return ValueConverter.getInstance();
+	/**
+	 * 注意，这是一个兜底方法，是用来转换非常用类型的
+	 */
+	@Override
+	default Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
+		return ValueConverter.getInstance().convert(source, sourceType, targetType);
 	}
 
 	@Nullable
@@ -565,7 +572,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 	}
 
 	default Value or(Object other) {
-		return orElse(other instanceof Value ? (Value) other : createRelative(other, null));
+		return orElse(other instanceof Value ? (Value) other : new ConvertableValue(other, null, this));
 	}
 
 	@Override
@@ -582,11 +589,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return this;
 	}
 
-	default <E extends Throwable> Value orElse(Source<? extends Object, ? extends E> other) throws E {
-		return orElseGet(() -> createRelative(other.get(), null));
-	}
-
-	default Value createRelative(Object value, @Nullable TypeDescriptor type) {
-		return new ObjectValue(value, type, getConverter());
+	default <E extends Throwable> Value orGet(Source<? extends Object, ? extends E> other) throws E {
+		return orElseGet(() -> new ConvertableValue(other, null, this));
 	}
 }

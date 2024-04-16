@@ -11,5 +11,5 @@ public interface MappingFactory {
 	 * @return
 	 */
 	@Nullable
-	Mapping<? extends Item> getMapping(Class<?> entityClass);
+	Mapping<? extends FieldDescriptor> getMapping(Class<?> entityClass);
 }

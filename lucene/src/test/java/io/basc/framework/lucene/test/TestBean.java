@@ -1,6 +1,6 @@
 package io.basc.framework.lucene.test;
 
-import io.basc.framework.orm.annotation.PrimaryKey;
+import io.basc.framework.autoconfigure.orm.PrimaryKey;
 import lombok.Data;
 
 @Data

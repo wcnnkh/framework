@@ -2,10 +2,12 @@ package io.basc.framework.execution.reflect;
 
 import java.lang.reflect.Field;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Getter;
 import lombok.NonNull;
 
 public class ReflectionFieldGetter extends ReflectionField implements Getter {
+	private static final long serialVersionUID = 1L;
 	private String name;
 
 	public ReflectionFieldGetter(@NonNull Field member) {
@@ -13,8 +15,8 @@ public class ReflectionFieldGetter extends ReflectionField implements Getter {
 	}
 
 	@Override
-	public Object get(Object target) throws Throwable {
-		return getMember().get(target);
+	public Object get(Object target) {
+		return ReflectionUtils.get(getMember(), target);
 	}
 
 	@Override

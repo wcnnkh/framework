@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,15 +13,14 @@ import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.element.Elements;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@AllArgsConstructor
+@Getter
 public class JacksonJsonObject extends AbstractJson<String> implements JsonObject, JsonSerializable {
 	private final ObjectNode objectNode;
-	private final ObjectMapper mapper;
-
-	public JacksonJsonObject(ObjectMapper mapper, ObjectNode objectNode) {
-		this.mapper = mapper;
-		this.objectNode = objectNode;
-	}
+	private final JacksonConverter converter;
 
 	@Override
 	public int size() {
@@ -68,7 +66,7 @@ public class JacksonJsonObject extends AbstractJson<String> implements JsonObjec
 	}
 
 	public JsonElement convert(JsonNode o) {
-		return new JacksonJsonElement(o, mapper);
+		return new JacksonJsonElement(o, converter);
 	}
 
 }

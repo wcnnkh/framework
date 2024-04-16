@@ -7,6 +7,7 @@ import io.basc.framework.execution.Setter;
 import lombok.NonNull;
 
 public class ReflectionFieldSetter extends ReflectionField implements Setter {
+	private static final long serialVersionUID = 1L;
 	private String name;
 
 	public ReflectionFieldSetter(@NonNull Field member) {
@@ -19,7 +20,7 @@ public class ReflectionFieldSetter extends ReflectionField implements Setter {
 	}
 
 	@Override
-	public void set(Object target, Object value) throws Throwable {
+	public void set(Object target, Object value) {
 		ReflectionUtils.set(getMember(), target, value);
 	}
 

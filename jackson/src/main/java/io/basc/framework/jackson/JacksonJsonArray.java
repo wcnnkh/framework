@@ -6,7 +6,6 @@ import java.util.Iterator;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,15 +14,14 @@ import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.util.element.ConvertibleIterator;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class JacksonJsonArray extends AbstractJson<Integer> implements JsonArray, JsonSerializable {
 	private final ArrayNode arrayNode;
-	private final ObjectMapper mapper;
-
-	public JacksonJsonArray(ObjectMapper mapper, ArrayNode arrayNode) {
-		this.mapper = mapper;
-		this.arrayNode = arrayNode;
-	}
+	private final JacksonConverter converter;
 
 	@Override
 	public int size() {
@@ -36,7 +34,7 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements JsonArray
 	}
 
 	public JsonElement convert(JsonNode o) {
-		return new JacksonJsonElement(o, mapper);
+		return new JacksonJsonElement(o, converter);
 	}
 
 	@Override
@@ -52,7 +50,7 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements JsonArray
 
 	@Override
 	public boolean add(Object element) {
-		JsonNode jsonNode = mapper.getNodeFactory().pojoNode(element);
+		JsonNode jsonNode = converter.getMapper().getNodeFactory().pojoNode(element);
 		arrayNode.add(jsonNode);
 		return true;
 	}

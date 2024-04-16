@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.memory.CAS;
+import io.basc.framework.data.domain.CAS;
 import io.basc.framework.memcached.Memcached;
 import io.basc.framework.memcached.config.MemcachedNodeProperties;
 import io.basc.framework.memcached.config.MemcachedProperties;
@@ -60,7 +60,7 @@ public final class XMemcached implements Memcached {
 			return null;
 		}
 
-		return new CAS<>(cas.getCas(), cas.getValue());
+		return new CAS<>(cas.getValue(), cas.getCas());
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public final class XMemcached implements Memcached {
 			Map<String, CAS<Object>> casMap = new HashMap<String, CAS<Object>>();
 			for (Entry<String, GetsResponse<Object>> entry : map.entrySet()) {
 				GetsResponse<Object> v = entry.getValue();
-				casMap.put(entry.getKey(), new CAS<Object>(v.getCas(), v.getValue()));
+				casMap.put(entry.getKey(), new CAS<Object>(v.getValue(), v.getCas()));
 			}
 			return casMap;
 		}

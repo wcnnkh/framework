@@ -19,7 +19,6 @@ public class Configurator extends DefaultEntityMapper {
 
 	public Configurator(Environment environment) {
 		this(environment, TypeDescriptor.valueOf(PropertyFactory.class));
-		setPlaceholderFormat(environment);
 	}
 
 	public Configurator(Object source, @Nullable TypeDescriptor sourceType) {

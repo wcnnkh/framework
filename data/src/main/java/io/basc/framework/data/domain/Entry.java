@@ -3,16 +3,12 @@ package io.basc.framework.data.domain;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Entry<K, V> implements Map.Entry<K, V> {
 	private final K key;
 	private V value;

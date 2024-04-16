@@ -6,19 +6,15 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
+import io.basc.framework.execution.Getter;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Getter;
-import io.basc.framework.mapper.Mapping;
-import io.basc.framework.mapper.Item;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.mapper.support.DefaultObjectMapping;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
@@ -31,19 +27,22 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return new EntityRepository<T>(repositoryName, entityMapping, entityClass, entity);
 	}
 
+	@Override
+	EntityMapping<? extends ColumnDescriptor> getMapping(Class<?> entityClass);
+
 	default <T> Elements<? extends Condition> getConditions(OperationSymbol operationSymbol,
 			EntityRepository<T> repository) {
 		if (repository.getEntity() == null) {
 			return Elements.empty();
 		}
 
-		List<Entry<PropertyDescriptor, Parameter>> entries = getEntries(repository.getEntity(),
+		List<Entry<ColumnDescriptor, Parameter>> entries = getEntries(repository.getEntity(),
 				repository.getEntityMapping().columns().iterator());
 		return toConditions(operationSymbol, repository, Elements.of(entries));
 	}
 
 	default <T> Elements<? extends Sort> getOrders(OperationSymbol operationSymbol, EntityRepository<T> repository) {
-		Elements<Entry<PropertyDescriptor, Parameter>> entries;
+		Elements<Entry<ColumnDescriptor, Parameter>> entries;
 		if (repository.getEntity() == null) {
 			entries = repository.getEntityMapping().columns().map((property) -> {
 				Parameter parameter = createParameter(property, null);
@@ -62,7 +61,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 			return repository.getEntityMapping().columns().map((e) -> new Expression(e.getName()));
 		}
 
-		List<Entry<PropertyDescriptor, Parameter>> entries = getEntries(repository.getEntity(),
+		List<Entry<ColumnDescriptor, Parameter>> entries = getEntries(repository.getEntity(),
 				repository.getEntityMapping().columns().iterator());
 		return toColumns(operationSymbol, repository, Elements.of(entries));
 	}
@@ -77,28 +76,20 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return ObjectMapper.super.isEntity(source, parameterDescriptor);
 	}
 
-	@Override
-	default EntityMapping<? extends PropertyDescriptor> getMapping(Class<?> entityClass) {
-		Mapping<? extends Item> mapping = DefaultObjectMapping.getMapping(entityClass).all();
-		return new DefaultEntityMapping<>(mapping, (e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
-	}
-
-	default Parameter createParameter(PropertyDescriptor property, Object value) {
+	default Parameter createParameter(ColumnDescriptor property, Object value) {
 		Parameter parameter;
 		if (value instanceof Parameter) {
 			parameter = (Parameter) value;
 			parameter = parameter.rename(property.getName());
 		} else {
-			MergedAnnotatedElement annotatedElement = new MergedAnnotatedElement(
-					property.getGetters().map((e) -> e.getTypeDescriptor()));
 			TypeDescriptor typeDescriptor = new TypeDescriptor(ResolvableType.forClass(value.getClass()),
-					value.getClass(), annotatedElement);
+					value.getClass(), property.getter().getTypeDescriptor());
 			parameter = new Parameter(property.getName(), value, typeDescriptor);
 		}
 		return parameter;
 	}
 
-	default <F extends PropertyDescriptor> List<Entry<F, Parameter>> combineEntries(Iterator<? extends F> properties,
+	default <F extends ColumnDescriptor> List<Entry<F, Parameter>> combineEntries(Iterator<? extends F> properties,
 			Iterator<? extends Object> args) {
 		List<Entry<F, Parameter>> entries = new ArrayList<>(8);
 		while (properties.hasNext() && args.hasNext()) {
@@ -111,18 +102,14 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return entries;
 	}
 
-	default <F extends PropertyDescriptor> List<Entry<F, Parameter>> getEntries(Object entity,
+	default <F extends ColumnDescriptor> List<Entry<F, Parameter>> getEntries(Object entity,
 			Iterator<? extends F> propertyIterator) {
 		List<Entry<F, Parameter>> entries = new ArrayList<>();
 		while (propertyIterator.hasNext()) {
 			F property = propertyIterator.next();
-			Getter getter = property.getGetters().first();
+			Getter getter = property.getter();
 			Object value = getter.get(entity);
-			MergedAnnotatedElement annotatedElement = new MergedAnnotatedElement(
-					property.getGetters().map((e) -> e.getTypeDescriptor()));
-			TypeDescriptor typeDescriptor = new TypeDescriptor(getter.getTypeDescriptor().getResolvableType(),
-					value.getClass(), annotatedElement);
-			Parameter parameter = new Parameter(property.getName(), value, typeDescriptor);
+			Parameter parameter = new Parameter(property.getName(), value, getter.getTypeDescriptor());
 			if (!hasEffectiveValue(parameter)) {
 				continue;
 			}
@@ -133,27 +120,23 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 		return entries;
 	}
 
-	default boolean hasEffectiveValue(Object entity, PropertyDescriptor property) {
+	default boolean hasEffectiveValue(Object entity, ColumnDescriptor property) {
 		if (!property.isSupportGetter()) {
 			return false;
 		}
 
-		for (Getter getter : property.getGetters()) {
-			Object value = getter.get(entity);
-			if (value == null) {
-				continue;
-			}
-
-			Parameter parameter = new Parameter(getter.getName(), value, getter.getTypeDescriptor());
-			if (!parameter.isPresent()) {
-				continue;
-			}
-
-			if (hasEffectiveValue(parameter)) {
-				return true;
-			}
+		Getter getter = property.getter();
+		Object value = getter.get(entity);
+		if (value == null) {
+			return false;
 		}
-		return false;
+
+		Parameter parameter = new Parameter(getter.getName(), value, getter.getTypeDescriptor());
+		if (!parameter.isPresent()) {
+			return false;
+		}
+
+		return hasEffectiveValue(parameter);
 	}
 
 	@Override
@@ -162,13 +145,13 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityRe
 	}
 
 	default <T> Elements<? extends Expression> toColumns(OperationSymbol operationSymbol,
-			EntityRepository<T> repository, Elements<? extends Entry<PropertyDescriptor, Parameter>> elements) {
+			EntityRepository<T> repository, Elements<? extends Entry<ColumnDescriptor, Parameter>> elements) {
 		return elements.filter((e) -> hasEffectiveValue(e.getValue()))
 				.map((e) -> getColumn(operationSymbol, repository, e.getValue(), e.getKey()));
 	}
 
 	default <T> Elements<? extends Condition> toConditions(OperationSymbol operationSymbol,
-			EntityRepository<T> repository, Elements<? extends Entry<PropertyDescriptor, Parameter>> elements) {
+			EntityRepository<T> repository, Elements<? extends Entry<ColumnDescriptor, Parameter>> elements) {
 		return elements.filter((e) -> hasEffectiveValue(e.getValue()))
 				.map((e) -> getCondition(operationSymbol, repository, e.getValue(), e.getKey()));
 	}

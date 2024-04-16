@@ -10,13 +10,13 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Data
-public final class BeanMapping implements Mapping<BeanItem> {
+public final class BeanMapping implements Mapping<BeanFieldDescriptor> {
 	private final Class<?> beanClass;
 	private final BeanInfo beanInfo;
 	@NonNull
 	private Elements<String> aliasNames = Elements.empty();
 	@Setter(AccessLevel.NONE)
-	private volatile Elements<BeanItem> elements;
+	private volatile Elements<BeanFieldDescriptor> elements;
 
 	public BeanMapping(Class<?> beanClass, BeanInfo beanInfo) {
 		this.beanClass = beanClass;
@@ -28,12 +28,12 @@ public final class BeanMapping implements Mapping<BeanItem> {
 		return beanInfo.getBeanDescriptor().getName();
 	}
 
-	private Elements<BeanItem> parseElements() {
-		return Elements.forArray(beanInfo.getPropertyDescriptors()).map((e) -> new BeanItem(beanClass, e)).toList();
+	private Elements<BeanFieldDescriptor> parseElements() {
+		return Elements.forArray(beanInfo.getPropertyDescriptors()).map((e) -> new BeanFieldDescriptor(beanClass, e)).toList();
 	}
 
 	@Override
-	public Elements<BeanItem> getElements() {
+	public Elements<BeanFieldDescriptor> getElements() {
 		if (elements == null) {
 			synchronized (this) {
 				if (elements == null) {

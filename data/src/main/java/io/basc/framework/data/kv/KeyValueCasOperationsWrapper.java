@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.data.memory.CAS;
+import io.basc.framework.data.domain.CAS;
 import io.basc.framework.util.CollectionUtils;
 
 public interface KeyValueCasOperationsWrapper<K, V>
@@ -20,8 +20,7 @@ public interface KeyValueCasOperationsWrapper<K, V>
 		Codec<K, K> keyFomatter = getKeyFomatter();
 		CAS<V> value = getSourceOperations().gets(keyFomatter == null ? key : keyFomatter.encode(key));
 		Codec<V, V> valueFomatter = getValueFomatter();
-		return (value == null || valueFomatter == null) ? value
-				: new CAS<>(value.getCas(), valueFomatter.decode(value.getValue()));
+		return (value == null || valueFomatter == null) ? value : value.convert((e) -> valueFomatter.decode(e));
 	}
 
 	@Override
@@ -45,7 +44,7 @@ public interface KeyValueCasOperationsWrapper<K, V>
 			}
 
 			targetMap.put(keyFomatter == null ? entry.getKey() : keyFomatter.decode(entry.getKey()),
-					valueFomatter == null ? value : new CAS<>(value.getCas(), valueFomatter.decode(value.getValue())));
+					valueFomatter == null ? value : value.convert((e) -> valueFomatter.decode(e)));
 		}
 		return targetMap;
 	}

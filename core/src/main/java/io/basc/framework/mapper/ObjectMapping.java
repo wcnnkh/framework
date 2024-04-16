@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class ObjectMapping<T extends Item, R extends ObjectMapping<T, R>> extends DecorationMembers<T, R>
+public abstract class ObjectMapping<T extends FieldDescriptor, R extends ObjectMapping<T, R>> extends DecorationMembers<T, R>
 		implements Mapping<T> {
 	private volatile String name;
 	private Elements<String> aliasNames;

@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
+import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextEvent;
 import io.basc.framework.context.Lifecycle;
@@ -85,4 +86,6 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Clas
 	 * @param parent the parent context
 	 */
 	void setParent(@Nullable ApplicationContext parent);
+
+	ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
 }

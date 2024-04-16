@@ -11,7 +11,7 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
-import io.basc.framework.orm.annotation.ConfigurationProperties;
+import io.basc.framework.orm.stereotype.ConfigurationProperties;
 import lombok.Data;
 
 @ConfigurationProperties("eureka.instance")

@@ -16,5 +16,5 @@ import lombok.Data;
 public class Sort implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Expression expression;
-	private final SortSymbol symbol;
+	private final SortOrder order;
 }

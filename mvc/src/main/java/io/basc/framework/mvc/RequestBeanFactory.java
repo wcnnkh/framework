@@ -13,7 +13,7 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.MergedParameterDescriptor;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.util.Return;
 import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
@@ -74,10 +74,10 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 
 				if (result != null && result.isSuccess()) {
 					ContextConfigurator beanConfigurator = new ContextConfigurator(context);
-					beanConfigurator.getContext().addFilter(new Predicate<Item>() {
+					beanConfigurator.getContext().addFilter(new Predicate<FieldDescriptor>() {
 
 						@Override
-						public boolean test(Item field) {
+						public boolean test(FieldDescriptor field) {
 							for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
 								if (parameterDescriptor.getName().equals(field.getSetter().getName())) {
 									return false;

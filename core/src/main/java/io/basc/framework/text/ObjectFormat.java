@@ -17,7 +17,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingFactory;
 import io.basc.framework.util.CollectionFactory;
@@ -119,7 +119,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 
 		// 兜底
 		Mapping<?> mapping = mappingFactory.getMapping(sourceType.getType());
-		for (Item element : mapping.getElements()) {
+		for (FieldDescriptor element : mapping.getElements()) {
 			String key = element.getName();
 			Object value;
 			try {
@@ -216,7 +216,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value> {
 		Object target = ReflectionUtils.newInstance(targetType.getType());
 		Mapping<?> mapping = mappingFactory.getMapping(targetType.getType());
 		for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
-			Item element = mapping.getElements(entry.getKey()).first();
+			FieldDescriptor element = mapping.getElements(entry.getKey()).first();
 			if (element == null) {
 				continue;
 			}

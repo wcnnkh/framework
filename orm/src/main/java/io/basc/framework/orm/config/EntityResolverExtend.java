@@ -3,16 +3,17 @@ package io.basc.framework.orm.config;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MappingStrategy;
+import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.PropertyDescriptor;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
@@ -123,19 +124,23 @@ public interface EntityResolverExtend {
 
 	@Nullable
 	default <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, @Nullable PropertyDescriptor property, EntityResolver chain) {
+			Parameter parameter, @Nullable ColumnDescriptor property, EntityResolver chain) {
 		return chain.getColumn(operationSymbol, repository, parameter, property);
 	}
 
 	@Nullable
 	default <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, @Nullable PropertyDescriptor property, EntityResolver chain) {
+			Parameter parameter, @Nullable ColumnDescriptor property, EntityResolver chain) {
 		return chain.getCondition(operationSymbol, repository, parameter, property);
 	}
 
 	@Nullable
 	default <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable PropertyDescriptor property, EntityResolver chain) {
+			@Nullable ColumnDescriptor property, EntityResolver chain) {
 		return chain.getSort(operationSymbol, repository, parameter, property);
+	}
+
+	default Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor, EntityResolver chain) {
+		return chain.getIndexs(sourceClass, descriptor);
 	}
 }

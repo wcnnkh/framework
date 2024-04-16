@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import io.basc.framework.orm.annotation.ConfigurationProperties;
+import io.basc.framework.orm.stereotype.ConfigurationProperties;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 

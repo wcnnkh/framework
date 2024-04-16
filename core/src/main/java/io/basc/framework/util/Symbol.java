@@ -61,7 +61,7 @@ public class Symbol implements Serializable, Named {
 		}
 	}
 
-	public static <T> T getOrCreate(Supplier<? extends T> supplier, Supplier<T> creator) {
+	public static <T> T getOrCreate(Supplier<? extends T> supplier, Supplier<? extends T> creator) {
 		Assert.requiredArgument(supplier != null, "supplier");
 		Assert.requiredArgument(creator != null, "creator");
 		T value = supplier.get();

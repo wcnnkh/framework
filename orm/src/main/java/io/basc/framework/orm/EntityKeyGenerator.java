@@ -13,13 +13,12 @@ import io.basc.framework.util.CollectionUtils;
 public interface EntityKeyGenerator {
 
 	default <T> String getEntityKey(EntityRepository<? extends T> repository, T entity) {
-		List<? extends PropertyDescriptor> elements = repository.getEntityMapping().getPrimaryKeys().toList();
-		List<Object> values = elements.stream().map((e) -> e.getGetters().first().get(entity))
-				.collect(Collectors.toList());
+		List<? extends ColumnDescriptor> elements = repository.getEntityMapping().getPrimaryKeys().toList();
+		List<Object> values = elements.stream().map((e) -> e.getter().get(entity)).collect(Collectors.toList());
 		return getEntityKey(repository, elements.iterator(), values.iterator());
 	}
 
-	String getEntityKey(EntityRepository<?> repository, Iterator<? extends PropertyDescriptor> propertyIterator,
+	String getEntityKey(EntityRepository<?> repository, Iterator<? extends ColumnDescriptor> propertyIterator,
 			Iterator<? extends Object> valueIterator);
 
 	default <K> Map<String, K> getEntityKeyMap(EntityRepository<?> repository, Iterator<? extends K> lastPrimaryKeys,

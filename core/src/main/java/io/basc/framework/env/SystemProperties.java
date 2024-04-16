@@ -1,7 +1,9 @@
 package io.basc.framework.env;
 
 import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.XUtils;
 import io.basc.framework.util.element.ConvertibleEnumeration;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.MultiIterator;
@@ -10,6 +12,8 @@ import io.basc.framework.value.Value;
 import lombok.Data;
 
 public class SystemProperties extends DefaultPropertyResolver {
+	private static final String WORK_PATH_NAME = "basc.work.path";
+
 	private static volatile SystemProperties instance;
 
 	public static SystemProperties getInstance() {
@@ -74,5 +78,14 @@ public class SystemProperties extends DefaultPropertyResolver {
 	 */
 	public static Property getProperty(String key) {
 		return new SystemProperty(key);
+	}
+
+	public static String getWorkPath() {
+		return getInstance().get(WORK_PATH_NAME)
+				.orGet(() -> XUtils.getWebAppDirectory(ClassUtils.getDefaultClassLoader())).getAsString();
+	}
+
+	public static void setWorkPath(String workPath) {
+		getInstance().put(WORK_PATH_NAME, workPath);
 	}
 }

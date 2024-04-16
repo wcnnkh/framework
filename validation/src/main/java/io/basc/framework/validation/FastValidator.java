@@ -9,9 +9,6 @@ import javax.validation.Validator;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
-import io.basc.framework.beans.factory.component.Component;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.Order;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.function.Source;
 
@@ -21,8 +18,6 @@ import io.basc.framework.util.function.Source;
  * @author wcnnkh
  *
  */
-@Component
-@Order(Ordered.LOWEST_PRECEDENCE)
 public class FastValidator implements Validator {
 	private static final Validator VALIDATOR = Validation.byProvider(org.hibernate.validator.HibernateValidator.class)
 			.configure().failFast(true).buildValidatorFactory().getValidator();

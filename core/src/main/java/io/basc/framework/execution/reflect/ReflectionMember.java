@@ -10,25 +10,29 @@ import lombok.NonNull;
 @Data
 public abstract class ReflectionMember<T extends Member> implements Executable {
 	@NonNull
-	private final T member;
-	
-	public final T getMember() {
+	private volatile T member;
+
+	public T getMember() {
 		return member;
 	}
 
 	@Override
 	public String getName() {
-		return member.getName();
+		return getMember().getName();
 	}
 
 	@Override
 	public int getModifiers() {
-		return member.getModifiers();
+		return getMember().getModifiers();
+	}
+
+	public Class<?> getDeclaringClass() {
+		return getMember().getDeclaringClass();
 	}
 
 	@Override
 	public TypeDescriptor getDeclaringTypeDescriptor() {
-		return TypeDescriptor.valueOf(member.getDeclaringClass());
+		return TypeDescriptor.valueOf(getDeclaringClass());
 	}
-	
+
 }

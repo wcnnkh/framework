@@ -14,7 +14,7 @@ import com.netflix.discovery.shared.transport.EurekaTransportConfig;
 
 import io.basc.framework.beans.factory.annotation.Autowired;
 import io.basc.framework.env.Environment;
-import io.basc.framework.orm.annotation.ConfigurationProperties;
+import io.basc.framework.orm.stereotype.ConfigurationProperties;
 import io.basc.framework.util.StringUtils;
 
 /**

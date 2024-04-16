@@ -12,7 +12,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Parameters;
 import io.basc.framework.execution.Setter;
 import io.basc.framework.execution.reflect.ReflectionMethod;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,7 +25,7 @@ import lombok.NonNull;
  */
 @Getter
 @lombok.Setter
-public class IocProcessor extends IocResolvers implements BeanPostProcessor {
+public class IocProcessor extends ConfigurableIocResolver implements BeanPostProcessor {
 	private final AutowireCapableBeanFactory autowireCapableBeanFactory;
 	@NonNull
 	private BeanMapper beanMapper = BeanUtils.getMapper();
@@ -41,7 +41,7 @@ public class IocProcessor extends IocResolvers implements BeanPostProcessor {
 			return;
 		}
 
-		for (Item item : beanMapper.getMapping(bean.getClass()).getElements()) {
+		for (FieldDescriptor item : beanMapper.getMapping(bean.getClass()).getElements()) {
 			if (!item.isSupportSetter()) {
 				continue;
 			}

@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.memory.CAS;
+import io.basc.framework.data.domain.CAS;
 import io.basc.framework.util.CollectionUtils;
 
 public interface ObjectCasOperations<K> extends ObjectOperations<K>, KeyValueCasOperations<K, Object> {
@@ -17,8 +17,7 @@ public interface ObjectCasOperations<K> extends ObjectOperations<K>, KeyValueCas
 		if (value == null) {
 			return null;
 		}
-		return new CAS<T>(value.getCas(),
-				(T) getConversionService().convert(value.getValue(), TypeDescriptor.forObject(value.getValue()), type));
+		return value.convert((e) -> (T) getConversionService().convert(e, type));
 	}
 
 	@Override

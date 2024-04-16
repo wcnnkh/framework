@@ -13,21 +13,6 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>context</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>beans-annotation-processor</artifactId>
-		</dependency>
-		<!-- 额外支持的 -->
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>web</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<!-- 测试 -->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
