@@ -15,11 +15,12 @@ import io.basc.framework.execution.Getter;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
 
-public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, EntityResolver {
+public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer {
 	default <T> EntityRepository<T> getRepository(OperationSymbol operationSymbol, Class<? extends T> entityClass,
 			@Nullable T entity) {
 		EntityMapping<?> entityMapping = getMapping(entityClass);

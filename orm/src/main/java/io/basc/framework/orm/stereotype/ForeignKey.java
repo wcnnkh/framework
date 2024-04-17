@@ -1,11 +1,20 @@
-package io.basc.framework.autoconfigure.orm;
+package io.basc.framework.orm.stereotype;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+/**
+ * 外键
+ * 
+ * @author wcnnkh
+ *
+ */
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Unique {
+public @interface ForeignKey {
+	Class<?> entity();
+
+	String name();
 }

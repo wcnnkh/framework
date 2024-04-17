@@ -14,27 +14,26 @@ import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
-import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
 
-public class EntityResolverChain implements EntityResolver {
+public class ChainAnalyzer implements Analyzer {
 
-	public static EntityResolverChain build(Iterator<EntityResolverExtend> iterator) {
-		return new EntityResolverChain(iterator);
+	public static ChainAnalyzer build(Iterator<AnalyzeExtender> iterator) {
+		return new ChainAnalyzer(iterator);
 	}
 
-	private final Iterator<EntityResolverExtend> iterator;
-	private final EntityResolver nextChain;
+	private final Iterator<AnalyzeExtender> iterator;
+	private final Analyzer nextChain;
 
-	public EntityResolverChain(Iterator<EntityResolverExtend> iterator) {
+	public ChainAnalyzer(Iterator<AnalyzeExtender> iterator) {
 		this(iterator, null);
 	}
 
-	public EntityResolverChain(Iterator<EntityResolverExtend> iterator, @Nullable EntityResolver nextChain) {
+	public ChainAnalyzer(Iterator<AnalyzeExtender> iterator, @Nullable Analyzer nextChain) {
 		Assert.requiredArgument(iterator != null, "iterator");
 		this.iterator = iterator;
 		this.nextChain = nextChain;

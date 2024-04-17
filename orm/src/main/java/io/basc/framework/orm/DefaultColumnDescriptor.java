@@ -4,6 +4,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.FieldDescriptorWrapper;
+import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import lombok.Data;
@@ -49,19 +50,19 @@ public class DefaultColumnDescriptor extends FieldDescriptorWrapper<FieldDescrip
 		this.indexs = columnDescriptor.getIndexs();
 	}
 
-	public DefaultColumnDescriptor(FieldDescriptor field, Class<?> sourceClass, EntityResolver resolver) {
+	public DefaultColumnDescriptor(FieldDescriptor field, Class<?> sourceClass, Analyzer analyzer) {
 		this(field);
-		this.autoIncrement = resolver.isAutoIncrement(sourceClass, field.setter());
-		this.charsetName = resolver.getCharsetName(sourceClass, field.getter());
-		this.comment = resolver.getCharsetName(sourceClass, field.getter());
-		this.entity = resolver.isEntity(TypeDescriptor.valueOf(sourceClass), field.getter());
-		this.increment = resolver.isIncrement(sourceClass, field.setter());
-		this.nullable = resolver.isNullable(sourceClass, field.setter());
-		this.numberRanges = resolver.getNumberRanges(sourceClass, field.setter());
-		this.primaryKey = resolver.isPrimaryKey(sourceClass, field.getter());
-		this.unique = resolver.isUnique(sourceClass, field.getter());
-		this.version = resolver.isVersion(sourceClass, field.setter());
-		this.indexs = resolver.getIndexs(sourceClass, field.setter());
+		this.autoIncrement = analyzer.isAutoIncrement(sourceClass, field.setter());
+		this.charsetName = analyzer.getCharsetName(sourceClass, field.getter());
+		this.comment = analyzer.getCharsetName(sourceClass, field.getter());
+		this.entity = analyzer.isEntity(TypeDescriptor.valueOf(sourceClass), field.getter());
+		this.increment = analyzer.isIncrement(sourceClass, field.setter());
+		this.nullable = analyzer.isNullable(sourceClass, field.setter());
+		this.numberRanges = analyzer.getNumberRanges(sourceClass, field.setter());
+		this.primaryKey = analyzer.isPrimaryKey(sourceClass, field.getter());
+		this.unique = analyzer.isUnique(sourceClass, field.getter());
+		this.version = analyzer.isVersion(sourceClass, field.setter());
+		this.indexs = analyzer.getIndexs(sourceClass, field.setter());
 	}
 
 	public boolean isNullable() {

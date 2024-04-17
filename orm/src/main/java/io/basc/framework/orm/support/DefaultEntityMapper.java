@@ -27,8 +27,8 @@ import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.config.ConfigurableEntityResolver;
-import io.basc.framework.orm.config.DefaultEntityResolver;
+import io.basc.framework.orm.config.ConfigurableAnalyzer;
+import io.basc.framework.orm.config.DefaultAnalyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
@@ -48,7 +48,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper implements EntityMa
 	@NonNull
 	private String entityKeyConnector = ENTITY_KEY_CONNECTOR;
 
-	private final ConfigurableEntityResolver entityResolver = new DefaultEntityResolver();
+	private final ConfigurableAnalyzer entityResolver = new DefaultAnalyzer();
 
 	private boolean configured;
 

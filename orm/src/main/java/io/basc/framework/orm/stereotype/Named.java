@@ -1,12 +1,12 @@
-package io.basc.framework.autoconfigure.orm;
+package io.basc.framework.orm.stereotype;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.FIELD, ElementType.TYPE })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Display {
-	String name() default "";
+public @interface Named {
+	public String value();
 }

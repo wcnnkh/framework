@@ -1,4 +1,4 @@
-package io.basc.framework.autoconfigure.orm;
+package io.basc.framework.orm.stereotype;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
@@ -25,8 +25,8 @@ import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.ParameterNameFilter;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityRepository;
-import io.basc.framework.orm.EntityResolver;
-import io.basc.framework.orm.config.EntityResolverExtend;
+import io.basc.framework.orm.config.AnalyzeExtender;
+import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
 import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.Range;
@@ -36,7 +36,7 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.match.StringMatchers;
 import io.basc.framework.value.ParameterDescriptor;
 
-public class AnnotationEntityResolverExtend implements EntityResolverExtend, PlaceholderFormatAware {
+public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;
 
 	@Nullable
@@ -50,7 +50,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isIgnore(Class<?> entityClass, EntityResolver chain) {
+	public boolean isIgnore(Class<?> entityClass, Analyzer chain) {
 		Ignore ignore = entityClass.getAnnotation(Ignore.class);
 		if (ignore == null) {
 			return chain.isIgnore(entityClass);
@@ -59,7 +59,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		Ignore ignore = descriptor.getTypeDescriptor().getAnnotation(Ignore.class);
 		if (ignore == null) {
 			return chain.isIgnore(entityClass, descriptor);
@@ -79,7 +79,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public String getName(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		String name = getAnnotationFeldName(descriptor.getTypeDescriptor());
 		if (StringUtils.isEmpty(name)) {
 			return chain.getName(entityClass, descriptor);
@@ -93,7 +93,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		Elements<String> elements = chain.getAliasNames(entityClass, descriptor);
 		Set<String> names = new LinkedHashSet<String>();
 		String name = getAnnotationFeldName(descriptor.getTypeDescriptor());
@@ -113,7 +113,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, EntityResolver chain) {
+	public String getName(Class<?> entityClass, Analyzer chain) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(entityClass,
 				Entity.class);
 		if (annotationAttributes == null) {
@@ -142,7 +142,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public Elements<String> getAliasNames(Class<?> entityClass, EntityResolver chain) {
+	public Elements<String> getAliasNames(Class<?> entityClass, Analyzer chain) {
 		Elements<String> elements = chain.getAliasNames(entityClass);
 		Set<String> list = new LinkedHashSet<String>(8);
 		String name = getEntityNameByAnnotatedElement(entityClass);
@@ -162,7 +162,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		// TODO 为什么使用AnnotatedElementUtils.hasAnnotation无法获取到
 		if (descriptor.getTypeDescriptor().isAnnotationPresent(PrimaryKey.class)) {
 			return true;
@@ -184,7 +184,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(), Nullable.class);
 		if (nullable == null) {
 			return chain.isNullable(entityClass, descriptor);
@@ -193,7 +193,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, Analyzer chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Entity.class)) {
 			return true;
 		}
@@ -201,7 +201,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isEntity(TypeDescriptor source, EntityResolver chain) {
+	public boolean isEntity(TypeDescriptor source, Analyzer chain) {
 		if (AnnotatedElementUtils.hasAnnotation(source, Entity.class)) {
 			return true;
 		}
@@ -216,7 +216,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Version.class)) {
 			return true;
 		}
@@ -225,7 +225,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 
 	@Override
 	public Elements<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityResolver chain) {
+			Analyzer chain) {
 		NumberRange range = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(),
 				NumberRange.class);
 		if (range != null) {
@@ -235,7 +235,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), AutoIncrement.class)) {
 			return true;
 		}
@@ -244,7 +244,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, EntityResolver chain) {
+	public String getComment(Class<?> entityClass, Analyzer chain) {
 		Entity entity = AnnotatedElementUtils.getMergedAnnotation(entityClass, Entity.class);
 		if (entity != null && StringUtils.hasText(entity.comment())) {
 			return entity.comment();
@@ -258,7 +258,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		Comment comment = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(), Comment.class);
 		if (comment != null && StringUtils.hasText(comment.value())) {
 			return comment.value();
@@ -267,18 +267,18 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, EntityResolver chain) {
+	public String getCharsetName(Class<?> entityClass, Analyzer chain) {
 		return Annotations.getCharsetName(entityClass, () -> chain.getCharsetName(entityClass));
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return Annotations.getCharsetName(descriptor.getTypeDescriptor(),
 				() -> chain.getCharsetName(entityClass, descriptor));
 	}
 
 	@Override
-	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Unique.class)) {
 			return true;
 		}
@@ -286,7 +286,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor.getTypeDescriptor(), Increment.class)) {
 			return true;
 		}
@@ -295,20 +295,20 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 
 	@Override
 	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			ColumnDescriptor property, EntityResolver chain) {
+			ColumnDescriptor property, Analyzer chain) {
 		SortType sortType = AnnotatedElementUtils.getMergedAnnotation(parameter.getTypeDescriptor(), SortType.class);
 		if (sortType != null) {
 			SortOrder sortSymbol = SortOrder.forName(sortType.value());
 			return new Sort(new Expression(parameter.getName()), sortSymbol);
 		}
-		return EntityResolverExtend.super.getSort(operationSymbol, repository, parameter, property, chain);
+		return AnalyzeExtender.super.getSort(operationSymbol, repository, parameter, property, chain);
 	}
 
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, ColumnDescriptor property, EntityResolver chain) {
-		io.basc.framework.autoconfigure.orm.Condition condition = AnnotatedElementUtils.getMergedAnnotation(
-				parameter.getTypeDescriptor(), io.basc.framework.autoconfigure.orm.Condition.class);
+			Parameter parameter, ColumnDescriptor property, Analyzer chain) {
+		io.basc.framework.orm.stereotype.Condition condition = AnnotatedElementUtils.getMergedAnnotation(
+				parameter.getTypeDescriptor(), io.basc.framework.orm.stereotype.Condition.class);
 		if (condition != null) {
 			ConditionSymbol conditionSymbol = Symbol.getOrCreate(
 					() -> ConditionSymbol.getConditionSymbols(condition.value()).first(),
@@ -325,11 +325,11 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 			return new Condition(relationshipSymbol, parameter.getName(), conditionSymbol, parameter.getSource(),
 					parameter.getTypeDescriptor());
 		}
-		return EntityResolverExtend.super.getCondition(operationSymbol, repository, parameter, property, chain);
+		return AnalyzeExtender.super.getCondition(operationSymbol, repository, parameter, property, chain);
 	}
 
 	@Override
-	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		Display display = AnnotatedElementUtils.getMergedAnnotation(entityClass, Display.class);
 		if (display != null && StringUtils.equals(display.name(), descriptor.getName())) {
 			return true;
@@ -339,34 +339,34 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 		if (display != null) {
 			return true;
 		}
-		return EntityResolverExtend.super.isDisplay(entityClass, descriptor, chain);
+		return AnalyzeExtender.super.isDisplay(entityClass, descriptor, chain);
 	}
 
 	@Override
 	public io.basc.framework.orm.ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityResolver chain) {
+			Analyzer chain) {
 		ForeignKey foreignKey = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(),
 				ForeignKey.class);
 		if (foreignKey != null) {
 			return new io.basc.framework.orm.ForeignKey(foreignKey.entity(), foreignKey.name());
 		}
-		return EntityResolverExtend.super.getForeignKey(entityClass, descriptor, chain);
+		return AnalyzeExtender.super.getForeignKey(entityClass, descriptor, chain);
 	}
 
 	@Override
-	public boolean isConfigurable(TypeDescriptor sourceType, EntityResolver chain) {
+	public boolean isConfigurable(TypeDescriptor sourceType, Analyzer chain) {
 		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
 				sourceType, sourceType.getType());
 		if (configurationProperties != null) {
 			return true;
 		}
-		return EntityResolverExtend.super.isConfigurable(sourceType, chain);
+		return AnalyzeExtender.super.isConfigurable(sourceType, chain);
 	}
 
 	@Override
 	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy,
-			EntityResolver chain) {
-		MappingStrategy mappingStrategy = EntityResolverExtend.super.getMappingStrategy(source,
+			Analyzer chain) {
+		MappingStrategy mappingStrategy = AnalyzeExtender.super.getMappingStrategy(source,
 				dottomlessMappingStrategy, chain);
 		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
 				source, source.getType());
@@ -393,7 +393,7 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 	}
 
 	@Override
-	public boolean hasEffectiveValue(Parameter parameter, EntityResolver chain) {
+	public boolean hasEffectiveValue(Parameter parameter, Analyzer chain) {
 		InvalidBaseTypeValue invalidBaseTypeValue = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), InvalidBaseTypeValue.class);
 		if (invalidBaseTypeValue != null && invalidBaseTypeValue.value().length > 0) {
@@ -407,11 +407,11 @@ public class AnnotationEntityResolverExtend implements EntityResolverExtend, Pla
 				}
 			}
 		}
-		return EntityResolverExtend.super.hasEffectiveValue(parameter, chain);
+		return AnalyzeExtender.super.hasEffectiveValue(parameter, chain);
 	}
 
 	@Override
-	public Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	public Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor, Analyzer chain) {
 		Elements<IndexInfo> indexs = chain.getIndexs(sourceClass, descriptor);
 		Index index = AnnotatedElementUtils.getMergedAnnotation(descriptor.getTypeDescriptor(), Index.class);
 		if (index != null) {

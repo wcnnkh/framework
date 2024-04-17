@@ -1,4 +1,4 @@
-package io.basc.framework.autoconfigure.orm;
+package io.basc.framework.orm.stereotype;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,12 +7,16 @@ import java.lang.annotation.Target;
 
 import io.basc.framework.core.annotation.AliasFor;
 
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigurationProperties {
-	@AliasFor("prefix")
-	public String value() default "";
+public @interface Entity {
+	@AliasFor("name")
+	String value() default "";
 
 	@AliasFor("value")
-	public String prefix() default "";
+	String name() default "";
+
+	String[] primaryKeys() default {};
+
+	String comment() default "";
 }

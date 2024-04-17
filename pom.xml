@@ -804,6 +804,7 @@
 		<module>locks</module>
 		<module>jdbc</module>
 		<module>autoconfigure</module>
+		<module>job</module>
 	</modules>
 	<profiles>
 		<profile>

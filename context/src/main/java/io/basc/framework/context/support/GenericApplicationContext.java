@@ -25,7 +25,6 @@ import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourcePatternResolver;
-import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Registration;
@@ -35,7 +34,6 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 	private ConfigurableEnvironment environment = new DefaultEnvironment();
 	private ApplicationContext parent;
 	private ClassLoaderProvider classLoaderProvider;
-	private final ConfigurablePropertiesResolver propertiesResolver = new ConfigurablePropertiesResolver();
 	private final DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this);
 	private final BeanFactoryPostProcessors beanFactoryPostProcessors = new BeanFactoryPostProcessors();
@@ -49,7 +47,6 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 			return Registration.EMPTY;
 		});
 		beanFactoryPostProcessors.getServiceInjectors().register(getServiceInjectors());
-		propertiesResolver.getServiceInjectors().register(getServiceInjectors());
 	}
 
 	public ConfigurableEnvironment getEnvironment() {
@@ -75,11 +72,6 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
 		this.classLoaderProvider = classLoaderProvider;
-	}
-
-	@Override
-	public ConfigurablePropertiesResolver getPropertiesResolver() {
-		return propertiesResolver;
 	}
 
 	@Override

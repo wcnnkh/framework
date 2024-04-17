@@ -12,135 +12,134 @@ import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
-import io.basc.framework.orm.EntityResolver;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
 
-public interface EntityResolverExtend {
-	default boolean isIgnore(Class<?> entityClass, EntityResolver chain) {
+public interface AnalyzeExtender {
+	default boolean isIgnore(Class<?> entityClass, Analyzer chain) {
 		return chain.isIgnore(entityClass);
 	}
 
-	default boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isIgnore(entityClass, descriptor);
 	}
 
-	default String getName(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default String getName(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.getName(entityClass, descriptor);
 	}
 
-	default Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.getAliasNames(entityClass, descriptor);
 	}
 
-	default String getName(Class<?> entityClass, EntityResolver chain) {
+	default String getName(Class<?> entityClass, Analyzer chain) {
 		return chain.getName(entityClass);
 	}
 
-	default Elements<String> getAliasNames(Class<?> entityClass, EntityResolver chain) {
+	default Elements<String> getAliasNames(Class<?> entityClass, Analyzer chain) {
 		return chain.getAliasNames(entityClass);
 	}
 
-	default boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isPrimaryKey(entityClass, descriptor);
 	}
 
-	default boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isNullable(entityClass, descriptor);
 	}
 
-	default boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isEntity(TypeDescriptor source, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isEntity(source, descriptor);
 	}
 
-	default boolean isEntity(TypeDescriptor source, EntityResolver chain) {
+	default boolean isEntity(TypeDescriptor source, Analyzer chain) {
 		return chain.isEntity(source);
 	}
 
-	default boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isVersion(entityClass, descriptor);
 	}
 
 	default Elements<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityResolver chain) {
+			Analyzer chain) {
 		return chain.getNumberRanges(entityClass, descriptor);
 	}
 
-	default boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isAutoIncrement(entityClass, descriptor);
 	}
 
-	default String getComment(Class<?> entityClass, EntityResolver chain) {
+	default String getComment(Class<?> entityClass, Analyzer chain) {
 		return chain.getComment(entityClass);
 	}
 
-	default String getComment(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default String getComment(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.getComment(entityClass, descriptor);
 	}
 
-	default String getCharsetName(Class<?> entityClass, EntityResolver chain) {
+	default String getCharsetName(Class<?> entityClass, Analyzer chain) {
 		return chain.getCharsetName(entityClass);
 	}
 
-	default String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.getCharsetName(entityClass, descriptor);
 	}
 
-	default boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isUnique(entityClass, descriptor);
 	}
 
-	default boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isIncrement(entityClass, descriptor);
 	}
 
-	default ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.getForeignKey(entityClass, descriptor);
 	}
 
-	default boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.isDisplay(entityClass, descriptor);
 	}
 
-	default boolean isConfigurable(TypeDescriptor sourceType, EntityResolver chain) {
+	default boolean isConfigurable(TypeDescriptor sourceType, Analyzer chain) {
 		return chain.isConfigurable(sourceType);
 	}
 
-	default boolean hasEffectiveValue(Parameter parameter, EntityResolver chain) {
+	default boolean hasEffectiveValue(Parameter parameter, Analyzer chain) {
 		return chain.hasEffectiveValue(parameter);
 	}
 
 	default MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy,
-			EntityResolver chain) {
+			Analyzer chain) {
 		return chain.getMappingStrategy(source, dottomlessMappingStrategy);
 	}
 
 	default <T> String getRepositoryName(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
-			Class<? extends T> entityClass, @Nullable T entity, EntityResolver chain) {
+			Class<? extends T> entityClass, @Nullable T entity, Analyzer chain) {
 		return chain.getRepositoryName(operationSymbol, entityMapping, entityClass, entity);
 	}
 
 	@Nullable
 	default <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, @Nullable ColumnDescriptor property, EntityResolver chain) {
+			Parameter parameter, @Nullable ColumnDescriptor property, Analyzer chain) {
 		return chain.getColumn(operationSymbol, repository, parameter, property);
 	}
 
 	@Nullable
 	default <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
-			Parameter parameter, @Nullable ColumnDescriptor property, EntityResolver chain) {
+			Parameter parameter, @Nullable ColumnDescriptor property, Analyzer chain) {
 		return chain.getCondition(operationSymbol, repository, parameter, property);
 	}
 
 	@Nullable
 	default <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
-			@Nullable ColumnDescriptor property, EntityResolver chain) {
+			@Nullable ColumnDescriptor property, Analyzer chain) {
 		return chain.getSort(operationSymbol, repository, parameter, property);
 	}
 
-	default Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor, EntityResolver chain) {
+	default Elements<IndexInfo> getIndexs(Class<?> sourceClass, ParameterDescriptor descriptor, Analyzer chain) {
 		return chain.getIndexs(sourceClass, descriptor);
 	}
 }

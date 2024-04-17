@@ -1,4 +1,4 @@
-package io.basc.framework.autoconfigure.orm;
+package io.basc.framework.orm.stereotype;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
