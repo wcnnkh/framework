@@ -16,7 +16,7 @@ public class VersionRegistration extends DisposableRegistration {
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return version != versionSupplier.getAsLong() || super.isEmpty();
+	public boolean isInvalid() {
+		return version != versionSupplier.getAsLong() || super.isInvalid();
 	}
 }

@@ -1,6 +1,8 @@
 package io.basc.framework.execution;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -8,44 +10,42 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.Items;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.Indexed;
 import io.basc.framework.value.ParameterDescriptor;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import io.basc.framework.value.Value;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * 多个参数
  */
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Parameters implements Function<Elements<? extends ParameterDescriptor>, ParameterMatchingResults> {
+@Setter
+public class Parameters implements Items<Parameter>,
+		Function<Elements<? extends ParameterDescriptor>, ParameterMatchingResults>, Serializable {
+	private static final long serialVersionUID = 1L;
 	@NonNull
 	private Elements<Parameter> elements = Elements.empty();
 
 	public Parameters(Parameter... parameters) {
-		this(Elements.forArray(parameters));
+		this(Arrays.asList(parameters));
+	}
+
+	public Parameters(Iterable<Parameter> parameters) {
+		this.elements = Elements.of(parameters);
 	}
 
 	public Elements<Class<?>> getTypes() {
 		return elements == null ? Elements.empty()
-				: elements.sorted(Comparator.comparing(Parameter::getIndex)).map(Parameter::getTypeDescriptor)
+				: elements.sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getTypeDescriptor)
 						.map(TypeDescriptor::getType);
 	}
 
 	public Elements<Object> getArgs() {
 		return elements == null ? Elements.empty()
-				: elements.sorted(Comparator.comparing(Parameter::getIndex)).map(Parameter::getValue);
-	}
-
-	public Parameter get(int index) {
-		if (elements == null) {
-			throw new ArrayIndexOutOfBoundsException(index);
-		}
-		return elements.filter((e) -> e.getIndex() == index).findFirst().orElseGet(() -> elements.get(index));
+				: elements.sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getValue);
 	}
 
 	public boolean isEmpty() {
@@ -60,13 +60,12 @@ public class Parameters implements Function<Elements<? extends ParameterDescript
 			return matchingResults;
 		}
 
-		List<Indexed<? extends ParameterDescriptor>> parameterDescriptorList = parameterDescriptors.index()
-				.collect(Collectors.toList());
+		List<ParameterDescriptor> parameterDescriptorList = parameterDescriptors.collect(Collectors.toList());
 		List<Parameter> parameterList = elements.collect(Collectors.toList());
 		List<ParameterMatched> results = new ArrayList<ParameterMatched>();
-		Iterator<Indexed<? extends ParameterDescriptor>> iterator = parameterDescriptorList.iterator();
+		Iterator<ParameterDescriptor> iterator = parameterDescriptorList.iterator();
 		while (iterator.hasNext()) {
-			Indexed<? extends ParameterDescriptor> indexed = iterator.next();
+			ParameterDescriptor indexed = iterator.next();
 			Iterator<Parameter> paramIterator = parameterList.iterator();
 			while (paramIterator.hasNext()) {
 				Parameter parameter = paramIterator.next();
@@ -74,7 +73,7 @@ public class Parameters implements Function<Elements<? extends ParameterDescript
 					// 匹配成功
 					ParameterMatched matched = new ParameterMatched();
 					matched.setParameter(parameter);
-					matched.setParameterDescriptor(indexed.getElement());
+					matched.setParameterDescriptor(parameter);
 					matched.setSuccessful(true);
 					results.add(matched);
 					iterator.remove();
@@ -101,11 +100,11 @@ public class Parameters implements Function<Elements<? extends ParameterDescript
 		} else {
 			if (parameterList.isEmpty()) {
 				// 补充空数据
-				for (Indexed<? extends ParameterDescriptor> indexed : parameterDescriptorList) {
+				for (ParameterDescriptor indexed : parameterDescriptorList) {
 					ParameterMatched matched = new ParameterMatched();
 					matched.setParameter(null);
-					matched.setParameterDescriptor(indexed.getElement());
-					matched.setSuccessful(indexed.getElement().isNullable());
+					matched.setParameterDescriptor(indexed);
+					matched.setSuccessful(indexed.isNullable());
 					results.add(matched);
 				}
 
@@ -118,5 +117,22 @@ public class Parameters implements Function<Elements<? extends ParameterDescript
 		}
 		matchingResults.setElements(Elements.of(results));
 		return matchingResults;
+	}
+
+	public static Parameters forArgs(Iterable<? extends Object> args) {
+		Elements<Parameter> parameters = Elements.of(args).index()
+				.map((e) -> new Parameter((int) e.getIndex(), e.getElement())).toList();
+		return new Parameters(parameters);
+	}
+
+	public static Parameters forValues(Iterable<? extends Value> values) {
+		Elements<Parameter> parameters = Elements.of(values).index()
+				.map((e) -> new Parameter((int) e.getIndex(), null, e.getElement())).toList();
+		return new Parameters(parameters);
+	}
+
+	@Override
+	public Elements<Parameter> getElements() {
+		return elements.sorted(Comparator.comparing(Parameter::getPositionIndex));
 	}
 }

@@ -40,7 +40,7 @@ public class LambdaTest {
 	private static interface A extends Registration {
 
 		@Override
-		default boolean isEmpty() {
+		default boolean isInvalid() {
 			return false;
 		}
 

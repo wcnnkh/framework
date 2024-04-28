@@ -24,7 +24,6 @@ public interface ServiceLoader<S> {
 
 	Elements<S> getServices();
 
-	@SuppressWarnings("unchecked")
 	default ServiceLoader<S> concat(ServiceLoader<S> serviceLoader) {
 		Elements<? extends ServiceLoader<S>> serviceLoaders = Elements.forArray(this, serviceLoader);
 		return new MultiServiceLoader<>(serviceLoaders);

@@ -23,8 +23,8 @@ public class Registrations<T extends Registration> implements Registration {
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return registrations.isEmpty() && and.isEmpty();
+		public boolean isInvalid() {
+			return registrations.isInvalid() && and.isInvalid();
 		}
 
 		@Override
@@ -48,8 +48,8 @@ public class Registrations<T extends Registration> implements Registration {
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return left.isEmpty() && right.isEmpty();
+		public boolean isInvalid() {
+			return left.isInvalid() && right.isInvalid();
 		}
 
 		@Override
@@ -75,8 +75,8 @@ public class Registrations<T extends Registration> implements Registration {
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return version != versionSupplier.getAsLong() || registrations.isEmpty();
+		public boolean isInvalid() {
+			return version != versionSupplier.getAsLong() || registrations.isInvalid();
 		}
 
 		@Override
@@ -118,7 +118,7 @@ public class Registrations<T extends Registration> implements Registration {
 				throw e;
 			}
 
-			if (registration.isEmpty()) {
+			if (registration.isInvalid()) {
 				continue;
 			}
 
@@ -143,7 +143,7 @@ public class Registrations<T extends Registration> implements Registration {
 
 	@Override
 	public Registrations<T> and(Registration registration) {
-		if (registration == null || registration.isEmpty()) {
+		if (registration == null || registration.isInvalid()) {
 			return this;
 		}
 		return new AndRegistration<>(this, registration);
@@ -158,10 +158,10 @@ public class Registrations<T extends Registration> implements Registration {
 	}
 
 	@Override
-	public boolean isEmpty() {
+	public boolean isInvalid() {
 		Stream<T> stream = elements.stream();
 		try {
-			return stream.allMatch((e) -> e.isEmpty());
+			return stream.allMatch((e) -> e.isInvalid());
 		} finally {
 			stream.close();
 		}
@@ -169,7 +169,7 @@ public class Registrations<T extends Registration> implements Registration {
 
 	@Override
 	public void unregister() throws RegistrationException {
-		if (isEmpty()) {
+		if (isInvalid()) {
 			return;
 		}
 		ConsumeProcessor.consumeAll(elements.reverse(), (e) -> e.unregister());

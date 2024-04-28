@@ -15,6 +15,11 @@
 		<!-- 支持-->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
+			<artifactId>orm</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
 			<artifactId>transaction</artifactId>
 			<scope>provided</scope>
 		</dependency>

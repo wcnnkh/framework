@@ -103,10 +103,6 @@ public interface AnalyzeExtender {
 		return chain.isDisplay(entityClass, descriptor);
 	}
 
-	default boolean isConfigurable(TypeDescriptor sourceType, Analyzer chain) {
-		return chain.isConfigurable(sourceType);
-	}
-
 	default boolean hasEffectiveValue(Parameter parameter, Analyzer chain) {
 		return chain.hasEffectiveValue(parameter);
 	}

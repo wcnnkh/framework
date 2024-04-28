@@ -51,7 +51,7 @@ public final class ParameterUtils {
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
 			MethodParameter parameter = MethodParameter.forExecutable(executable, i);
-			parameterDefinitions[i] = new StandardParameterDescriptor(names[i], new TypeDescriptor(parameter));
+			parameterDefinitions[i] = new StandardParameterDescriptor(names[i], new TypeDescriptor(parameter), i);
 		}
 		return parameterDefinitions;
 	}

@@ -2,6 +2,7 @@ package io.basc.framework.value;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,8 @@ import lombok.Setter;
 public class ObjectProperty extends ObjectValue implements Property, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private String name;
+	private int positionIndex = -1;
+	private Elements<String> aliasNames;
 
 	public ObjectProperty(String name, Object value) {
 		this(name, value, null);
@@ -31,11 +34,17 @@ public class ObjectProperty extends ObjectValue implements Property, Cloneable {
 
 	@Override
 	public Property rename(String name) {
-		return new ObjectProperty(name, this);
+		ObjectProperty property = new ObjectProperty(name, this);
+		property.positionIndex = this.positionIndex;
+		return property;
 	}
 
 	@Override
 	public boolean isValid() {
 		return StringUtils.isNotEmpty(name);
+	}
+
+	public Elements<String> getAliasNames() {
+		return aliasNames == null ? Elements.empty() : aliasNames;
 	}
 }

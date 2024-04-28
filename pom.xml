@@ -621,6 +621,21 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
+				<artifactId>excel</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>jxl</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>poi</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
 				<artifactId>console</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -805,6 +820,9 @@
 		<module>jdbc</module>
 		<module>autoconfigure</module>
 		<module>job</module>
+		<module>excel</module>
+		<module>jxl</module>
+		<module>poi</module>
 	</modules>
 	<profiles>
 		<profile>

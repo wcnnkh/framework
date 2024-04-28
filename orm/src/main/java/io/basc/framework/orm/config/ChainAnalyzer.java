@@ -198,14 +198,6 @@ public class ChainAnalyzer implements Analyzer {
 	}
 
 	@Override
-	public boolean isConfigurable(TypeDescriptor sourceType) {
-		if (iterator.hasNext()) {
-			return iterator.next().isConfigurable(sourceType, this);
-		}
-		return nextChain == null ? false : nextChain.isConfigurable(sourceType);
-	}
-
-	@Override
 	public boolean hasEffectiveValue(Parameter parameter) {
 		if (iterator.hasNext()) {
 			return iterator.next().hasEffectiveValue(parameter, this);

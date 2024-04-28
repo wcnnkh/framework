@@ -16,7 +16,7 @@ public interface Registration {
 		}
 
 		@Override
-		public boolean isEmpty() {
+		public boolean isInvalid() {
 			return true;
 		}
 
@@ -40,7 +40,12 @@ public interface Registration {
 
 	void unregister() throws RegistrationException;
 
-	default boolean isEmpty() {
+	/**
+	 * 是否是无效的
+	 * 
+	 * @return
+	 */
+	default boolean isInvalid() {
 		return this == EMPTY;
 	}
 

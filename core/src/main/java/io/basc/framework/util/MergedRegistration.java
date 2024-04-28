@@ -24,8 +24,8 @@ public class MergedRegistration implements Registration {
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return left.isEmpty() && right.isEmpty();
+	public boolean isInvalid() {
+		return left.isInvalid() && right.isInvalid();
 	}
 
 	public static Registration merge(Registration left, Registration right) {

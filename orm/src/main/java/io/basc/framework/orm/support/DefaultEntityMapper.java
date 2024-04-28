@@ -68,10 +68,6 @@ public class DefaultEntityMapper extends DefaultObjectMapper implements EntityMa
 			return;
 		}
 
-		if (!isConfigurable(targetType)) {
-			return;
-		}
-
 		transform(source, sourceType, target, targetType);
 	}
 
@@ -195,11 +191,6 @@ public class DefaultEntityMapper extends DefaultObjectMapper implements EntityMa
 	@Override
 	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return entityResolver.isAutoIncrement(entityClass, descriptor);
-	}
-
-	@Override
-	public boolean isConfigurable(TypeDescriptor sourceType) {
-		return entityResolver.isConfigurable(sourceType);
 	}
 
 	public boolean isConfigured() {

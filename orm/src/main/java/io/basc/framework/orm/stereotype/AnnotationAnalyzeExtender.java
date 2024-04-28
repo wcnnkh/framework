@@ -1,7 +1,6 @@
 package io.basc.framework.orm.stereotype;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -20,9 +19,6 @@ import io.basc.framework.data.repository.SortOrder;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.MappingStrategy;
-import io.basc.framework.mapper.filter.FilterableMappingStrategy;
-import io.basc.framework.mapper.filter.ParameterNameFilter;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.config.AnalyzeExtender;
@@ -33,7 +29,6 @@ import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Symbol;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.match.StringMatchers;
 import io.basc.framework.value.ParameterDescriptor;
 
 public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFormatAware {
@@ -351,45 +346,6 @@ public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFo
 			return new io.basc.framework.orm.ForeignKey(foreignKey.entity(), foreignKey.name());
 		}
 		return AnalyzeExtender.super.getForeignKey(entityClass, descriptor, chain);
-	}
-
-	@Override
-	public boolean isConfigurable(TypeDescriptor sourceType, Analyzer chain) {
-		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
-				sourceType, sourceType.getType());
-		if (configurationProperties != null) {
-			return true;
-		}
-		return AnalyzeExtender.super.isConfigurable(sourceType, chain);
-	}
-
-	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy,
-			Analyzer chain) {
-		MappingStrategy mappingStrategy = AnalyzeExtender.super.getMappingStrategy(source,
-				dottomlessMappingStrategy, chain);
-		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
-				source, source.getType());
-		if (configurationProperties == null) {
-			return mappingStrategy;
-		}
-
-		String prefix = configurationProperties.prefix();
-		if (StringUtils.isEmpty(prefix)) {
-			prefix = configurationProperties.value();
-		}
-
-		if (StringUtils.isNotEmpty(prefix)) {
-			PlaceholderFormat placeholderFormat = getPlaceholderFormat();
-			if (placeholderFormat != null) {
-				prefix = placeholderFormat.replacePlaceholders(prefix);
-			}
-		}
-
-		// TODO 后续优化Naming时一起优化
-		final String namePrefix = prefix + ".";
-		ParameterNameFilter filter = new ParameterNameFilter(StringMatchers.PREFIX, namePrefix);
-		return new FilterableMappingStrategy(Arrays.asList(filter), mappingStrategy);
 	}
 
 	@Override

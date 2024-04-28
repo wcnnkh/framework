@@ -60,8 +60,6 @@ public interface Analyzer {
 
 	boolean isDisplay(Class<?> sourceClass, ParameterDescriptor descriptor);
 
-	boolean isConfigurable(TypeDescriptor source);
-
 	boolean hasEffectiveValue(Parameter parameter);
 
 	MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy);

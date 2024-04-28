@@ -24,14 +24,13 @@ public class AnnotationComponentResolver implements ComponentResolver, IocResolv
 
 	@Override
 	public boolean isComponent(AnnotatedTypeMetadata annotatedTypeMetadata) {
-		// TODO Auto-generated method stub
-		return false;
+		return annotatedTypeMetadata.getAnnotations().isPresent(Component.class);
 	}
 
 	@Override
 	public Elements<String> getAliasNames(BeanDefinition beanDefinition) {
-		// TODO Auto-generated method stub
-		return null;
+		Bean bean = beanDefinition.getAnnotations().get(Bean.class).synthesize();
+		return Elements.forArray(bean.value()).concat(Elements.forArray(bean.name()));
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class AnnotationComponentResolver implements ComponentResolver, IocResolv
 
 	@Override
 	public boolean isConfiguration(BeanDefinition component) {
-		// TODO Auto-generated method stub
-		return false;
+		return component.getAnnotations().isPresent(Configuration.class);
 	}
 
 	@Override

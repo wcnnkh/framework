@@ -175,11 +175,6 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 	}
 
 	@Override
-	public boolean isConfigurable(TypeDescriptor sourceType) {
-		return ChainAnalyzer.build(getServices().iterator()).isConfigurable(sourceType);
-	}
-
-	@Override
 	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return ChainAnalyzer.build(getServices().iterator()).isDisplay(entityClass, descriptor);
 	}

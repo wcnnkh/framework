@@ -193,7 +193,7 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 
 						Registrations<ElementRegistration<S>> registration = registry
 								.registers(entry.getKey().getElement().getServices());
-						if (registration.isEmpty()) {
+						if (registration.isInvalid()) {
 							// 初始化没拿到结果，忽略
 							continue;
 						}

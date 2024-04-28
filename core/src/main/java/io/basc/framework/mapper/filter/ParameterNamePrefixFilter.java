@@ -1,23 +1,19 @@
 package io.basc.framework.mapper.filter;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@RequiredArgsConstructor
 public class ParameterNamePrefixFilter extends ParameterDescriptorFilter {
-	private final String prefix;
-
-	public ParameterNamePrefixFilter(String prefix) {
-		this.prefix = prefix;
-	}
+	@NonNull
+	private final Elements<String> prefixs;
 
 	@Override
 	public boolean test(TypeDescriptor sourceTypeDescriptor, ParameterDescriptor parameter) {
-		return parameter.getName().startsWith(prefix) && super.test(sourceTypeDescriptor, parameter);
+		return prefixs.anyMatch((e) -> parameter.getName().startsWith(e))
+				&& super.test(sourceTypeDescriptor, parameter);
 	}
 }

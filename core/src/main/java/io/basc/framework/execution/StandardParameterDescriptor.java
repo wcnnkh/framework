@@ -10,9 +10,10 @@ import lombok.Data;
 public class StandardParameterDescriptor implements ParameterDescriptor {
 	private final String name;
 	private final TypeDescriptor typeDescriptor;
+	private final int order;
 
 	@Override
 	public ParameterDescriptor rename(String name) {
-		return new StandardParameterDescriptor(name, this.typeDescriptor);
+		return new StandardParameterDescriptor(name, this.typeDescriptor, order);
 	}
 }

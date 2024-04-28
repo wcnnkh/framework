@@ -13,9 +13,18 @@ public class DisposableRegistration implements Registration {
 
 	@Override
 	public void unregister() {
-		if (!isEmpty() && unregistred.compareAndSet(false, true)) {
+		if (!registration.isInvalid() && unregistred.compareAndSet(false, true)) {
 			registration.unregister();
 		}
+	}
+
+	public void add(Registration registration) {
+		this.registration = this.registration.and(registration);
+	}
+
+	@Override
+	public boolean isInvalid() {
+		return registration.isInvalid() || isUnregistred();
 	}
 
 	public boolean isUnregistred() {

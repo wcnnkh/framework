@@ -1,9 +1,7 @@
 package io.basc.framework.beans.factory.ioc;
 
-import io.basc.framework.beans.BeanMapper;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.observe.properties.ObservablePropertyFactory;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
@@ -15,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public abstract class ConfigurationPropertiesBeanPostProcessor extends BeanMapper implements BeanPostProcessor {
+public abstract class ConfigurationPropertiesBeanPostProcessor implements BeanPostProcessor {
 	private final PropertyFactory propertyFactory;
 	private final BeanRegistrationManager beanRegistrationManager;
 
@@ -51,12 +49,7 @@ public abstract class ConfigurationPropertiesBeanPostProcessor extends BeanMappe
 		transform(propertyFactory, bean, prefixs);
 	}
 
-	public void transform(Object source, Object target, Elements<String> prefixs) {
-		ConfigurationPropertiesMappingStrategy configurationPropertiesMappingStrategy = new ConfigurationPropertiesMappingStrategy();
-		// TODO 还未处理
-		transform(source, TypeDescriptor.forObject(source), null, target, TypeDescriptor.forObject(target), null,
-				configurationPropertiesMappingStrategy);
-	}
+	protected abstract void transform(Object source, Object target, Elements<String> prefixs);
 
 	@Override
 	public void postProcessAfterDestroy(Object bean, String beanName) throws BeansException {

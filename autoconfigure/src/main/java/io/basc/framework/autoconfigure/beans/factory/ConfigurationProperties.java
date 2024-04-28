@@ -9,6 +9,7 @@ import io.basc.framework.core.annotation.AliasFor;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
+@Component
 public @interface ConfigurationProperties {
 	@AliasFor("prefix")
 	public String value() default "";

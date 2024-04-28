@@ -1,10 +1,15 @@
 package io.basc.framework.observe.register;
 
+import java.util.Objects;
 import java.util.function.LongSupplier;
 
 import io.basc.framework.util.DisposableRegistration;
 import io.basc.framework.util.Registration;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ElementRegistration<E> extends DisposableRegistration {
 	private static ElementRegistration<?> EMPTY = new ElementRegistration<>(null, Registration.EMPTY);
 
@@ -14,10 +19,12 @@ public class ElementRegistration<E> extends DisposableRegistration {
 	}
 
 	private final E element;
+	private Object equalsAndHashCode;
 
 	public ElementRegistration(E element, Registration registration) {
 		super(registration);
 		this.element = element;
+		this.equalsAndHashCode = element;
 	}
 
 	public E getElement() {
@@ -25,8 +32,26 @@ public class ElementRegistration<E> extends DisposableRegistration {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof ElementRegistration) {
+			ElementRegistration<?> elementRegistration = (ElementRegistration<?>) obj;
+			return Objects.equals(equalsAndHashCode, elementRegistration.equalsAndHashCode);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(equalsAndHashCode);
+	}
+
+	@Override
 	public ElementRegistration<E> and(Registration registration) {
-		if (registration == null || registration.isEmpty()) {
+		if (registration == null || registration.isInvalid()) {
 			return this;
 		}
 		return new AndElementRegistration<>(this, registration);
@@ -48,8 +73,8 @@ public class ElementRegistration<E> extends DisposableRegistration {
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return version != versionSupplier.getAsLong() || super.isEmpty();
+		public boolean isInvalid() {
+			return version != versionSupplier.getAsLong() || super.isInvalid();
 		}
 	}
 

@@ -9,32 +9,29 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.element.Elements;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class DefaultMapping<T extends FieldDescriptor> implements Mapping<T> {
-	private String name;
-	private Elements<String> aliasNames;
+@Getter
+@Setter
+public class DefaultMapping<T extends FieldDescriptor> extends StandardNamed implements Mapping<T> {
 	private MultiValueMap<String, T> elementMap;
 
 	public DefaultMapping() {
 	}
 
-	public <S extends FieldDescriptor> DefaultMapping(Mapping<? extends S> mapping, Function<? super S, ? extends T> converter) {
+	public <S extends FieldDescriptor> DefaultMapping(Mapping<? extends S> mapping,
+			Function<? super S, ? extends T> converter) {
 		Assert.requiredArgument(mapping != null, "mapping");
 		Assert.requiredArgument(converter != null, "converter");
-		this.name = mapping.getName();
-		this.aliasNames = mapping.getAliasNames();
+		setName(mapping.getName());
+		setAliasNames(mapping.getAliasNames());
 		MultiValueMap<String, T> propertyMap = new LinkedMultiValueMap<>();
 		for (S field : mapping.getElements()) {
 			T property = converter.apply(field);
 			propertyMap.add(property.getName(), property);
 		}
 		setElementMap(propertyMap);
-	}
-
-	public Elements<String> getAliasNames() {
-		return aliasNames == null ? Elements.empty() : aliasNames;
 	}
 
 	public Elements<T> getElements() {

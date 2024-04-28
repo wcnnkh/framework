@@ -25,7 +25,7 @@ public interface Registry<E> extends ServiceLoader<E>, Observable<RegistryEvent<
 		Assert.requiredArgument(elements != null, "elements");
 		return Registrations.register(elements.iterator(), (element) -> {
 			Registration registration = register(element);
-			if (registration.isEmpty()) {
+			if (registration.isInvalid()) {
 				return ElementRegistration.empty();
 			}
 			return new ElementRegistration<E>(element, registration);

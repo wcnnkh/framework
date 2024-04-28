@@ -2,7 +2,6 @@ package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.element.Indexed;
 import io.basc.framework.value.ObjectProperty;
 import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.value.Value;
@@ -13,7 +12,6 @@ import lombok.Setter;
 @Setter
 public class Parameter extends ObjectProperty {
 	private static final long serialVersionUID = 1L;
-	private int index;
 
 	public Parameter(int index, Object value) {
 		this(index, value, null);
@@ -25,12 +23,11 @@ public class Parameter extends ObjectProperty {
 
 	public Parameter(int index, String name, Object value, @Nullable TypeDescriptor typeDescriptor) {
 		super(name, value, typeDescriptor);
-		this.index = index;
 	}
 
 	public Parameter(int index, String name, Value value) {
 		super(name, value);
-		this.index = index;
+		setPositionIndex(index);
 	}
 
 	public Parameter(String name, Object value) {
@@ -43,24 +40,24 @@ public class Parameter extends ObjectProperty {
 
 	@Override
 	public Parameter clone() {
-		return new Parameter(index, getName(), this);
+		return new Parameter(getPositionIndex(), getName(), this);
 	}
 
 	@Override
 	public boolean isValid() {
-		return index > 0 || super.isValid();
+		return getPositionIndex() >= 0 || super.isValid();
 	}
 
 	public Parameter rename(String name) {
-		return new Parameter(index, name, this);
+		return new Parameter(getPositionIndex(), name, this);
 	}
-
-	public boolean test(Indexed<? extends ParameterDescriptor> indexed) {
-		if (getValue() == null && !indexed.getElement().isNullable()) {
+	
+	@Override
+	public boolean test(ParameterDescriptor target) {
+		if (getValue() == null && !target.isNullable()) {
 			// 不能为空
 			return false;
 		}
-
-		return (indexed.getIndex() == this.index) || test(indexed.getElement());
+		return super.test(target);
 	}
 }
