@@ -3,8 +3,8 @@ package io.basc.framework.mapper.support;
 import java.util.List;
 import java.util.function.Function;
 
-import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;

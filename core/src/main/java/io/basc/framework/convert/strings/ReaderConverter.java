@@ -19,7 +19,7 @@ public class ReaderConverter implements ReversibleConverter<String, Reader, Conv
 	}
 
 	@Override
-	public String invert(Reader source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Reader source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		try {
 			return IOUtils.read(source);

@@ -4,13 +4,13 @@ import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.Mapping;
-import io.basc.framework.mapper.MappingContext;
-import io.basc.framework.mapper.MappingException;
-import io.basc.framework.mapper.MappingStrategy;
-import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.access.ObjectAccess;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
+import io.basc.framework.mapper.entity.MappingContext;
+import io.basc.framework.mapper.entity.MappingException;
+import io.basc.framework.mapper.entity.MappingStrategy;
 import io.basc.framework.util.Assert;
 
 public final class MappingStrategyChain implements MappingStrategy {

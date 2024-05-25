@@ -22,7 +22,7 @@ public class CharacterConverter implements ReversibleConverter<String, Character
 	}
 
 	@Override
-	public String invert(Character source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Character source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.toString();
 	}

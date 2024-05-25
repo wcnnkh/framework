@@ -21,7 +21,7 @@ public class LongConverter implements ReversibleConverter<String, Long, Conversi
 	}
 
 	@Override
-	public String invert(Long source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
+	public String reverseConvert(Long source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
 		if (source == null) {
 			return null;
 		}

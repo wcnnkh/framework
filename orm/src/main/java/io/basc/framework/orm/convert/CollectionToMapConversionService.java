@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.execution.Getter;
 import io.basc.framework.lang.AlreadyExistsException;

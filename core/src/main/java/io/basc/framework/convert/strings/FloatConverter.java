@@ -17,7 +17,7 @@ public class FloatConverter implements ReversibleConverter<String, Float, Conver
 	}
 
 	@Override
-	public String invert(Float source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Float source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.toString();
 	}

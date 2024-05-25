@@ -35,7 +35,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 
 	public ResourceResolvers(PropertiesResolvers propertiesResolvers, ConversionService conversionService,
 			@Nullable Supplier<Charset> charset) {
-		super(ResourceResolver.class);
+		setServiceClass(ResourceResolver.class);
 		this.propertiesResolvers = propertiesResolvers;
 		this.conversionService = conversionService;
 		this.charset = charset;

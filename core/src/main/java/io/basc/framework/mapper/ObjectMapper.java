@@ -1,15 +1,23 @@
 package io.basc.framework.mapper;
 
 import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.ReversibleMapper;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.config.MapperRegistry;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.access.ObjectAccess;
+import io.basc.framework.mapper.access.ObjectAccessFactoryRegistry;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
+import io.basc.framework.mapper.entity.MappingContext;
+import io.basc.framework.mapper.entity.MappingException;
+import io.basc.framework.mapper.entity.MappingStrategy;
+import io.basc.framework.mapper.entity.MappingStrategyFactory;
+import io.basc.framework.mapper.entity.factory.config.MappingRegistry;
 import io.basc.framework.value.ParameterDescriptor;
-import io.basc.framework.value.Value;
 
-public interface ObjectMapper extends MapperRegistry<Object, ConversionException>, MappingRegistry,
-		ObjectAccessFactoryRegistry, MappingStrategyFactory {
+public interface ObjectMapper extends ReversibleMapper<Object, Object, ConversionException>, MappingRegistry,
+		ObjectAccessFactoryRegistry, MappingStrategyFactory, ConversionService {
 
 	default boolean isEntity(TypeDescriptor source, ParameterDescriptor parameterDescriptor) {
 		return isEntity(parameterDescriptor.getTypeDescriptor());
@@ -22,18 +30,6 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 
 	default void transform(Object source, Object target, MappingStrategy mappingStrategy) {
 		transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target), mappingStrategy);
-	}
-
-	/**
-	 * 判断是否是实体对象
-	 * 
-	 * @param type
-	 * @return
-	 */
-	default boolean isEntity(TypeDescriptor source) {
-		return (!Value.isBaseType(source.getType()) && !source.isArray() && source.getType() != Object.class
-				&& ReflectionUtils.isInstance(source.getType()) && !source.isMap() && !source.isCollection())
-				|| isMappingRegistred(source.getType());
 	}
 
 	default void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext, Object target,
@@ -77,10 +73,10 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 		}
 	}
 
-	default <S extends FieldDescriptor, T extends FieldDescriptor> void transform(Object source, TypeDescriptor sourceType,
-			@Nullable MappingContext sourceContext, Mapping<? extends S> sourceMapping, Object target,
-			TypeDescriptor targetType, @Nullable MappingContext targetContext, Mapping<? extends T> targetMapping,
-			MappingStrategy strategy) throws MappingException {
+	default <S extends FieldDescriptor, T extends FieldDescriptor> void transform(Object source,
+			TypeDescriptor sourceType, @Nullable MappingContext sourceContext, Mapping<? extends S> sourceMapping,
+			Object target, TypeDescriptor targetType, @Nullable MappingContext targetContext,
+			Mapping<? extends T> targetMapping, MappingStrategy strategy) throws MappingException {
 		for (FieldDescriptor targetField : targetMapping.getElements()) {
 			if (targetField.isSupportSetter()) {
 				strategy.transform(this, source, sourceType, sourceContext, sourceMapping, target, targetType,
@@ -89,9 +85,10 @@ public interface ObjectMapper extends MapperRegistry<Object, ConversionException
 		}
 	}
 
-	default <T extends FieldDescriptor> void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext,
-			Object target, TypeDescriptor targetType, @Nullable MappingContext targetContext,
-			Mapping<? extends T> targetMapping, MappingStrategy strategy) throws MappingException {
+	default <T extends FieldDescriptor> void transform(ObjectAccess sourceAccess,
+			@Nullable MappingContext sourceContext, Object target, TypeDescriptor targetType,
+			@Nullable MappingContext targetContext, Mapping<? extends T> targetMapping, MappingStrategy strategy)
+			throws MappingException {
 		for (T targetField : targetMapping.getElements()) {
 			if (targetField.isSupportSetter()) {
 				strategy.transform(this, sourceAccess, sourceContext, target, targetType, targetContext, targetMapping,

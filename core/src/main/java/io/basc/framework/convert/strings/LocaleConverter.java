@@ -16,7 +16,7 @@ public class LocaleConverter implements ReversibleConverter<String, Locale, Conv
 	}
 
 	@Override
-	public String invert(Locale source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Locale source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.toLanguageTag();
 	}

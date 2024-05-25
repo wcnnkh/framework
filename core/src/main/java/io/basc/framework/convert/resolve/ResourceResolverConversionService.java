@@ -1,9 +1,9 @@
 package io.basc.framework.convert.resolve;
 
-import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.io.Resource;
 
 import java.util.Collections;

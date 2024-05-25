@@ -1,87 +1,91 @@
 package io.basc.framework.mapper.transfer;
 
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionFailedException;
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ReversibleConverter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
-import io.basc.framework.mapper.Item;
-import io.basc.framework.mapper.Items;
-import io.basc.framework.mapper.Mapping;
-import io.basc.framework.mapper.Named;
-import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.execution.Setter;
+import io.basc.framework.mapper.InstanceFactory;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
+import io.basc.framework.mapper.entity.factory.MappingFactory;
+import io.basc.framework.mapper.property.Items;
+import io.basc.framework.mapper.transfer.convert.ParameterConverter;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.Value;
 
-public interface RecordConverter extends ReversibleConverter<Parameters, Object, ConversionException>{
-	ObjectMapper getMapper();
+public interface RecordConverter extends ReversibleConverter<Parameters, Object, ConversionException> {
+	MappingFactory getMappingFactory();
 
-	/**
-	 * 将对象解析为参数
-	 * 
-	 * @param source
-	 * @param sourceTypeDescriptor
-	 * @return
-	 */
+	InstanceFactory getInstanceFactory();
+
+	ConversionService getConversionService();
+
+	ParameterConverter getParameterConverter();
+
 	@SuppressWarnings("unchecked")
-	default Parameters parseObject(Object source, TypeDescriptor sourceTypeDescriptor) {
+	@Override
+	default Parameters reverseConvert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		if (source instanceof Parameters) {
 			return (Parameters) source;
-		} else if (getMapper().canConvert(sourceTypeDescriptor, Parameters.class)) {
-			return getMapper().convert(source, sourceTypeDescriptor, Parameters.class);
+		} else if (getConversionService().canConvert(sourceType, Parameters.class)) {
+			return getConversionService().convert(source, sourceType, Parameters.class);
 		} else if (source instanceof Items) {
 			Items<?> items = (Items<?>) source;
-			return parseItems(items, sourceTypeDescriptor);
-		} else if (sourceTypeDescriptor.isArray()) {
-			return parseArray(source, sourceTypeDescriptor.getElementTypeDescriptor());
-		} else if (sourceTypeDescriptor.isCollection()) {
+			return reverseConvertItems(items, sourceType);
+		} else if (sourceType.isArray()) {
+			return reverseConvertArray(source, sourceType.getElementTypeDescriptor());
+		} else if (sourceType.isCollection()) {
 			Collection<?> collection = (Collection<?>) source;
-			return parseIterable(collection, sourceTypeDescriptor.getElementTypeDescriptor());
+			return reverseConvertIterable(collection, sourceType.getElementTypeDescriptor());
 		} else if (source instanceof Iterable) {
 			Iterable<?> iterable = (Iterable<?>) source;
-			return parseIterable(iterable, sourceTypeDescriptor.getGeneric(0));
+			return reverseConvertIterable(iterable, sourceType.getGeneric(0));
 		} else if (source instanceof Map) {
 			Map<?, ?> map = (Map<?, ?>) source;
-			return parseMap(map, sourceTypeDescriptor.getMapKeyTypeDescriptor(),
-					sourceTypeDescriptor.getMapValueTypeDescriptor());
-		} else if (getMapper().isEntity(sourceTypeDescriptor)) {
-			Mapping<?> mapping = getMapper().getMapping(sourceTypeDescriptor.getType());
-			return parseEntity(source, sourceTypeDescriptor, mapping);
+			return reverseConvertMap(map, sourceType.getMapKeyTypeDescriptor(), sourceType.getMapValueTypeDescriptor());
+		} else if (getMappingFactory().isEntity(sourceType)) {
+			Mapping<?> mapping = getMappingFactory().getMapping(sourceType.getType());
+			return reverseConvertEntity(source, sourceType, mapping);
 		} else {
 			TypeDescriptor mapTypeDescriptor = TypeDescriptor.map(Map.class, String.class, Object.class);
-			if (getMapper().canConvert(sourceTypeDescriptor, mapTypeDescriptor)) {
-				Map<String, Object> map = (Map<String, Object>) getMapper().convert(source, sourceTypeDescriptor,
+			if (getConversionService().canConvert(sourceType, mapTypeDescriptor)) {
+				Map<String, Object> map = (Map<String, Object>) getConversionService().convert(source, sourceType,
 						mapTypeDescriptor);
-				return parseMap(map, mapTypeDescriptor.getMapKeyTypeDescriptor(),
+				return reverseConvertMap(map, mapTypeDescriptor.getMapKeyTypeDescriptor(),
 						mapTypeDescriptor.getMapValueTypeDescriptor());
 			} else {
-				Parameter parameter = encapsulation(source, sourceTypeDescriptor);
+				Parameter parameter = getParameterConverter().reverseConvert(source, sourceType);
 				return new Parameters(parameter);
 			}
 		}
 	}
 
-	default Parameters parseArray(Object array, TypeDescriptor elementTypeDescriptor) throws IOException {
+	default Parameters reverseConvertArray(Object array, TypeDescriptor elementTypeDescriptor) {
 		Parameter[] parameters = new Parameter[Array.getLength(array)];
 		for (int len = parameters.length, i = 0; i < len; i++) {
 			Object value = Array.get(array, i);
-			Parameter parameter = encapsulation(value, elementTypeDescriptor);
+			Parameter parameter = getParameterConverter().reverseConvert(value, elementTypeDescriptor);
 			parameter.setPositionIndex(i);
 			parameters[i] = parameter;
 		}
 		return new Parameters(parameters);
 	}
 
-	default Parameters parseEntity(Object entity, TypeDescriptor typeDescriptor, Mapping<?> mapping) {
+	default Parameters reverseConvertEntity(Object entity, TypeDescriptor typeDescriptor, Mapping<?> mapping) {
 		Elements<Parameter> elements = mapping.getElements().filter((e) -> e.isSupportGetter())
 				.map((fieldDescriptor) -> {
 					Object value = fieldDescriptor.getter().get(entity);
@@ -93,24 +97,26 @@ public interface RecordConverter extends ReversibleConverter<Parameters, Object,
 		return new Parameters(elements);
 	}
 
-	default Parameters parseItems(Items<?> items, TypeDescriptor elementTypeDescriptor) {
-		Elements<Parameter> elements = items.getElements().map((e) -> encapsulation(e, elementTypeDescriptor));
+	default Parameters reverseConvertItems(Items<?> items, TypeDescriptor elementTypeDescriptor) {
+		Elements<Parameter> elements = items.getElements()
+				.map((e) -> getParameterConverter().reverseConvert(e, elementTypeDescriptor));
 		return new Parameters(elements);
 	}
 
-	default Parameters parseIterable(Iterable<?> iterable, TypeDescriptor elementTypeDescriptor) {
+	default Parameters reverseConvertIterable(Iterable<?> iterable, TypeDescriptor elementTypeDescriptor) {
 		Elements<?> elements = Elements.of(iterable);
 		Elements<Parameter> parameters = elements.map((e) -> {
-			return encapsulation(e, elementTypeDescriptor);
+			return getParameterConverter().reverseConvert(e, elementTypeDescriptor);
 		});
 		return new Parameters(parameters);
 	}
 
-	default Parameters parseMap(Map<?, ?> map, TypeDescriptor keyTypeDescriptor, TypeDescriptor valueTypeDescriptor) {
+	default Parameters reverseConvertMap(Map<?, ?> map, TypeDescriptor keyTypeDescriptor,
+			TypeDescriptor valueTypeDescriptor) {
 		List<Parameter> list = new ArrayList<>();
 		int index = 0;
 		for (Entry<?, ?> entry : map.entrySet()) {
-			Parameter parameter = encapsulation(entry.getValue(), valueTypeDescriptor);
+			Parameter parameter = getParameterConverter().reverseConvert(entry.getValue(), valueTypeDescriptor);
 			parameter.setPositionIndex(index++);
 			Object key = entry.getKey();
 			if (key != null) {
@@ -119,8 +125,8 @@ public interface RecordConverter extends ReversibleConverter<Parameters, Object,
 					parameter.setPositionIndex(kValue.getAsInt());
 				} else {
 					String name;
-					if (getMapper().canConvert(keyTypeDescriptor, String.class)) {
-						name = getMapper().convert(key, keyTypeDescriptor, String.class);
+					if (getConversionService().canConvert(keyTypeDescriptor, String.class)) {
+						name = getConversionService().convert(key, keyTypeDescriptor, String.class);
 					} else {
 						name = kValue.getAsString();
 					}
@@ -131,53 +137,75 @@ public interface RecordConverter extends ReversibleConverter<Parameters, Object,
 		}
 		return new Parameters(list);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	default Object convert(Parameters source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
+		if (getConversionService().canConvert(sourceType, targetType)) {
+			return getConversionService().convert(source, targetType);
+		} else if (targetType.isArray()) {
+			TypeDescriptor elementTypeDescriptor = targetType.getElementTypeDescriptor();
+			Parameter[] parameters = source.getElements().toArray(Parameter[]::new);
+			Object array = Array.newInstance(elementTypeDescriptor.getType(), parameters.length);
+			for (int i = 0; i < parameters.length; i++) {
+				Object value = getParameterConverter().convert(parameters[i], elementTypeDescriptor);
+				Array.set(array, i, value);
+			}
+			return array;
+		} else if (targetType.isCollection()) {
+			TypeDescriptor elementTypeDescriptor = targetType.getElementTypeDescriptor();
+			Collection<Object> collection = (Collection<Object>) getInstanceFactory().newInstance(targetType);
+			for (Parameter parameter : source.getElements()) {
+				Object value = getParameterConverter().convert(parameter, elementTypeDescriptor);
+				collection.add(value);
+			}
+			return collection;
+		} else if (targetType.isMap()) {
+			TypeDescriptor keyTypeDescriptor = targetType.getMapKeyTypeDescriptor();
+			TypeDescriptor valueTypeDescriptor = targetType.getMapValueTypeDescriptor();
+			Map<Object, Object> map = (Map<Object, Object>) getInstanceFactory().newInstance(targetType);
+			if (ClassUtils.isInt(keyTypeDescriptor.getType())) {
+				int index = 0;
+				for (Parameter parameter : source.getElements()) {
+					Object key = index++;
+					Object value = getParameterConverter().convert(parameter, valueTypeDescriptor);
+					map.put(key, value);
+				}
+			} else {
+				for (Parameter parameter : source.getElements()) {
+					Object key = getConversionService().convert(parameter.getName(), keyTypeDescriptor);
+					Object value = getParameterConverter().convert(parameter, valueTypeDescriptor);
+					map.put(key, value);
+				}
+			}
+			return map;
+		} else if (getMappingFactory().isEntity(targetType)) {
+			Mapping<?> mapping = getMappingFactory().getMapping(targetType.getType());
+			Object entity = getInstanceFactory().newInstance(targetType);
+			List<Parameter> parameters = new ArrayList<>(source.getElements().toList());
+			for (FieldDescriptor fieldDescriptor : mapping.getElements()) {
+				if (!fieldDescriptor.isSupportSetter()) {
+					continue;
+				}
+				Setter setter = fieldDescriptor.setter();
+				Iterator<Parameter> iterator = parameters.iterator();
 
-	/**
-	 * 打包成参数
-	 * 
-	 * @param source
-	 * @param sourceTypeDescriptor
-	 * @return
-	 */
-	default Parameter encapsulation(Object source, TypeDescriptor sourceTypeDescriptor) {
-		if (source instanceof Parameter) {
-			return (Parameter) source;
+				while (iterator.hasNext()) {
+					Parameter parameter = iterator.next();
+					if (parameter.getName().equals(fieldDescriptor.getName())
+							|| parameter.getAliasNames().contains(fieldDescriptor.getName())
+							|| fieldDescriptor.getAliasNames().contains(parameter.getName())
+							|| fieldDescriptor.getAliasNames().anyMatch(parameter.getAliasNames(), String::equals)) {
+						Object value = getParameterConverter().convert(parameter, setter.getTypeDescriptor());
+						setter.set(entity, value);
+						iterator.remove();
+						break;
+					}
+				}
+			}
+			return entity;
 		}
-
-		if (getMapper().canConvert(sourceTypeDescriptor, Parameter.class)) {
-			return getMapper().convert(source, sourceTypeDescriptor, Parameter.class);
-		}
-
-		Value value;
-		if (source instanceof Value) {
-			value = (Value) source;
-		} else if (getMapper().canConvert(sourceTypeDescriptor, Value.class)) {
-			value = getMapper().convert(source, sourceTypeDescriptor, Value.class);
-		} else {
-			value = Value.of(source, sourceTypeDescriptor);
-		}
-
-		Parameter parameter;
-		if (source instanceof Item) {
-			Item item = (Item) source;
-			parameter = new Parameter(item.getPositionIndex(), item.getName(), value);
-			parameter.setAliasNames(item.getAliasNames());
-		} else if (source instanceof Named) {
-			Named named = (Named) source;
-			parameter = new Parameter(-1, named.getName(), value);
-			parameter.setAliasNames(named.getAliasNames());
-		} else {
-			parameter = new Parameter(-1, null, value);
-		}
-		return parameter;
+		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
-
-	/**
-	 * 使用参数构造对句
-	 * 
-	 * @param parameters
-	 * @param targetTypeDescriptor
-	 * @return
-	 */
-	Object createObject(Parameters parameters, TypeDescriptor targetTypeDescriptor);
 }

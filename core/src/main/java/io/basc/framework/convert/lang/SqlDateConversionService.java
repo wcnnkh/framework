@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.lang.UnsupportedException;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {

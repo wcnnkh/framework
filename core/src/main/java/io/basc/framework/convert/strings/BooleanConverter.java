@@ -21,7 +21,7 @@ public class BooleanConverter extends HashSet<String>
 	}
 
 	@Override
-	public String invert(Boolean source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Boolean source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : Boolean.toString(source);
 	}

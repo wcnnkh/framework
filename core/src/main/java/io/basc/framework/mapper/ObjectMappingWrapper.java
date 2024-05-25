@@ -3,6 +3,7 @@ package io.basc.framework.mapper;
 import java.util.function.Function;
 
 import io.basc.framework.core.Members;
+import io.basc.framework.mapper.entity.FieldDescriptor;
 
 final class ObjectMappingWrapper<T extends FieldDescriptor, R extends ObjectMapping<T, R>> extends ObjectMapping<T, R> {
 	private final Function<? super ObjectMapping<T, R>, ? extends R> objectMappingDecorator;

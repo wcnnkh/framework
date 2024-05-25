@@ -7,9 +7,9 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.util.CollectionFactory;

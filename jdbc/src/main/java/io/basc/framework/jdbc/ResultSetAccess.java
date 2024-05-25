@@ -8,7 +8,7 @@ import java.util.Arrays;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Parameter;
-import io.basc.framework.mapper.ObjectAccess;
+import io.basc.framework.mapper.access.ObjectAccess;
 import io.basc.framework.util.element.ElementList;
 import io.basc.framework.util.element.Elements;
 

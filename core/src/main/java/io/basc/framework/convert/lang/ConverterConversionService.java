@@ -3,11 +3,11 @@ package io.basc.framework.convert.lang;
 import java.util.Collections;
 import java.util.Set;
 
-import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.util.function.Processor;
 
 public class ConverterConversionService implements ConditionalConversionService {

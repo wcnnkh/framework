@@ -9,88 +9,28 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.config.support.DefaultReversibleConverterRegistry;
+import io.basc.framework.convert.ReversibleConverter;
+import io.basc.framework.convert.factory.support.DefaultReversibleConverterFactory;
 import io.basc.framework.convert.lang.ResourceToString;
-import io.basc.framework.util.function.Optional;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class StringConverter extends DefaultReversibleConverterRegistry<String, ConversionException> {
-	public static final StringConverter DEFAULT_STRING_CONVERTER = new StringConverter();
+public class StringConverter extends
+		DefaultReversibleConverterFactory<String, ConversionException, ReversibleConverter<String, ? extends Object, ? extends ConversionException>> {
+	private static volatile StringConverter instance;
 
-	public static <T> Optional<T> parse(String source, Class<T> type) {
-		T value = DEFAULT_STRING_CONVERTER.convert(source, type);
-		return Optional.of(value);
-	}
-
-	public static boolean parseBoolean(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, boolean.class);
-	}
-
-	public static boolean parseBoolean(String source, boolean defaultValue) {
-		Boolean value = DEFAULT_STRING_CONVERTER.convert(source, Boolean.class);
-		return value == null ? defaultValue : value.booleanValue();
-	}
-
-	public static byte parseByte(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, byte.class);
-	}
-
-	public static byte parseByte(String source, byte defaultValue) {
-		Byte value = DEFAULT_STRING_CONVERTER.convert(source, Byte.class);
-		return value == null ? defaultValue : value.byteValue();
-	}
-
-	public static char parseChar(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, char.class);
-	}
-
-	public static double parseDouble(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, double.class);
-	}
-
-	public static double parseDouble(String source, double defaultValue) {
-		Double value = DEFAULT_STRING_CONVERTER.convert(source, Double.class);
-		return value == null ? defaultValue : value.doubleValue();
-	}
-
-	public static float parseFloat(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, float.class);
-	}
-
-	public static float parseFloat(String source, float defaultValue) {
-		Float value = DEFAULT_STRING_CONVERTER.convert(source, Float.class);
-		return value == null ? defaultValue : value.floatValue();
-	}
-
-	public static int parseInt(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, int.class);
-	}
-
-	public static int parseInt(String source, int defaultValue) {
-		Integer value = DEFAULT_STRING_CONVERTER.convert(source, Integer.class);
-		return value == null ? defaultValue : value.intValue();
-	}
-
-	public static long parseLong(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, long.class);
-	}
-
-	public static long parseLong(String source, long defaultValue) {
-		Long value = DEFAULT_STRING_CONVERTER.convert(source, Long.class);
-		return value == null ? defaultValue : value.longValue();
-	}
-
-	public static short parseShort(String source) {
-		return DEFAULT_STRING_CONVERTER.convert(source, short.class);
-	}
-
-	public static short parseShort(String source, short defaultValue) {
-		Short value = DEFAULT_STRING_CONVERTER.convert(source, Short.class);
-		return value == null ? defaultValue : value.shortValue();
+	public static StringConverter getInstance() {
+		if (instance == null) {
+			synchronized (StringConverter.class) {
+				if (instance == null) {
+					instance = new StringConverter();
+				}
+			}
+		}
+		return instance;
 	}
 
 	@NonNull
@@ -133,31 +73,31 @@ public class StringConverter extends DefaultReversibleConverterRegistry<String, 
 	private ResourceToString resourceToString = ResourceToString.DEFAULT;
 
 	public StringConverter() {
-		registerReversibleConverter(Reader.class, readerConverter);
-		registerReversibleConverter(Enum.class, enumConverter);
-		registerReversibleConverter(Charset.class, charsetConverter);
-		registerReversibleConverter(Class.class, classConverter);
-		registerReversibleConverter(TimeZone.class, timeZoneConverter);
-		registerReversibleConverter(Currency.class, currencyConverter);
-		registerReversibleConverter(Locale.class, localeConverter);
-		registerReversibleConverter(BigDecimal.class, bigDecimalConverter);
-		registerReversibleConverter(BigInteger.class, bigIntegerConverter);
+		registerConverter(Reader.class, readerConverter);
+		registerConverter(Enum.class, enumConverter);
+		registerConverter(Charset.class, charsetConverter);
+		registerConverter(Class.class, classConverter);
+		registerConverter(TimeZone.class, timeZoneConverter);
+		registerConverter(Currency.class, currencyConverter);
+		registerConverter(Locale.class, localeConverter);
+		registerConverter(BigDecimal.class, bigDecimalConverter);
+		registerConverter(BigInteger.class, bigIntegerConverter);
 
-		registerReversibleConverter(char.class, characterConverter);
-		registerReversibleConverter(Character.class, characterConverter);
-		registerReversibleConverter(boolean.class, booleanConverter);
-		registerReversibleConverter(Boolean.class, booleanConverter);
-		registerReversibleConverter(double.class, doubleConverter);
-		registerReversibleConverter(Double.class, doubleConverter);
-		registerReversibleConverter(byte.class, byteConverter);
-		registerReversibleConverter(Byte.class, byteConverter);
-		registerReversibleConverter(float.class, floatConverter);
-		registerReversibleConverter(Float.class, floatConverter);
-		registerReversibleConverter(short.class, shortConverter);
-		registerReversibleConverter(Short.class, shortConverter);
-		registerReversibleConverter(int.class, integerConverter);
-		registerReversibleConverter(Integer.class, integerConverter);
-		registerReversibleConverter(long.class, longConverter);
-		registerReversibleConverter(Long.class, longConverter);
+		registerConverter(char.class, characterConverter);
+		registerConverter(Character.class, characterConverter);
+		registerConverter(boolean.class, booleanConverter);
+		registerConverter(Boolean.class, booleanConverter);
+		registerConverter(double.class, doubleConverter);
+		registerConverter(Double.class, doubleConverter);
+		registerConverter(byte.class, byteConverter);
+		registerConverter(Byte.class, byteConverter);
+		registerConverter(float.class, floatConverter);
+		registerConverter(Float.class, floatConverter);
+		registerConverter(short.class, shortConverter);
+		registerConverter(Short.class, shortConverter);
+		registerConverter(int.class, integerConverter);
+		registerConverter(Integer.class, integerConverter);
+		registerConverter(long.class, longConverter);
+		registerConverter(Long.class, longConverter);
 	}
 }

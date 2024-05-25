@@ -20,7 +20,7 @@ public class ShortConverter implements ReversibleConverter<String, Short, Conver
 	}
 
 	@Override
-	public String invert(Short source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Short source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.toString();
 	}

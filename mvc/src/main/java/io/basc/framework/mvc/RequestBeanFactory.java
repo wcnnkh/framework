@@ -13,7 +13,7 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.MergedParameterDescriptor;
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.mapper.entity.FieldDescriptor;
 import io.basc.framework.util.Return;
 import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;

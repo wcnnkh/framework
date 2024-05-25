@@ -13,7 +13,7 @@ import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.execution.Parameter;
-import io.basc.framework.mapper.MappingStrategy;
+import io.basc.framework.mapper.entity.MappingStrategy;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;

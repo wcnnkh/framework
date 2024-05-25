@@ -17,7 +17,7 @@ public class DoubleConverter implements ReversibleConverter<String, Double, Conv
 	}
 
 	@Override
-	public String invert(Double source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Double source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws NumberFormatException {
 		return source == null ? null : source.toString();
 	}

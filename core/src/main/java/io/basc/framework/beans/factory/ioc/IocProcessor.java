@@ -12,7 +12,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.Parameters;
 import io.basc.framework.execution.Setter;
 import io.basc.framework.execution.reflect.ReflectionMethod;
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.mapper.entity.FieldDescriptor;
 import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.NonNull;

@@ -21,7 +21,7 @@ public class ConfigurableIocResolver extends ConfigurableServices<IocResolver> i
 	}
 
 	public ConfigurableIocResolver() {
-		super(IocResolver.class);
+		setServiceClass(IocResolver.class);
 	}
 
 	@Override

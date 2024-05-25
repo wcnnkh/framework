@@ -13,7 +13,7 @@ public final class StringConversionService implements ConversionService {
 	private final StringConverter stringConverter;
 
 	public StringConversionService() {
-		this(StringConverter.DEFAULT_STRING_CONVERTER);
+		this(StringConverter.getInstance());
 	}
 
 	public StringConversionService(StringConverter stringConverter) {
@@ -27,7 +27,7 @@ public final class StringConversionService implements ConversionService {
 		if (sourceType.getType() == String.class) {
 			return stringConverter.convert((String) source, sourceType, targetType);
 		} else if (targetType.getType() == String.class) {
-			return stringConverter.invert(source, sourceType, targetType);
+			return stringConverter.reverseConvert(source, sourceType, targetType);
 		}
 		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
@@ -39,9 +39,9 @@ public final class StringConversionService implements ConversionService {
 		}
 
 		if (sourceType.getType() == String.class) {
-			return stringConverter.isConverterRegistred(targetType.getType());
+			return stringConverter.canConvert(sourceType, targetType);
 		} else if (targetType.getType() == String.class) {
-			return stringConverter.isInverterRegistred(sourceType.getType());
+			return stringConverter.canReverseConvert(sourceType, targetType);
 		}
 		return false;
 	}

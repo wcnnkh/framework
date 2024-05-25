@@ -16,7 +16,7 @@ public class TimeZoneConverter implements ReversibleConverter<String, TimeZone, 
 	}
 
 	@Override
-	public String invert(TimeZone source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(TimeZone source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source.getDisplayName();
 	}

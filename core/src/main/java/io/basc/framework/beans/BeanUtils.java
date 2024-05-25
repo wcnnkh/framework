@@ -2,7 +2,7 @@ package io.basc.framework.beans;
 
 import io.basc.framework.convert.IdentityConversionService;
 import io.basc.framework.convert.RecursiveConversionService;
-import io.basc.framework.mapper.MappingStrategy;
+import io.basc.framework.mapper.entity.MappingStrategy;
 import io.basc.framework.mapper.support.DefaultMappingStrategy;
 import io.basc.framework.util.Assert;
 

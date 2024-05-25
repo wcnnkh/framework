@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.Items;
+import io.basc.framework.mapper.property.Items;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.ParameterDescriptor;
 import io.basc.framework.value.Value;

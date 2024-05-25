@@ -1,6 +1,6 @@
 package io.basc.framework.mapper.support;
 
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.property.Item;
 import lombok.Getter;
 import lombok.Setter;
 

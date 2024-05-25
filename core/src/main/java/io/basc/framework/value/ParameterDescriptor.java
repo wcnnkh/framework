@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.Annotations;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.property.Item;
 
 public interface ParameterDescriptor extends Item, Predicate<ParameterDescriptor> {
 	public static final ParameterDescriptor[] EMPTY_ARRAY = new ParameterDescriptor[0];

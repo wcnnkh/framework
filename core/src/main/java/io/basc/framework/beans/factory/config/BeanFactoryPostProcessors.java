@@ -6,7 +6,7 @@ public final class BeanFactoryPostProcessors extends ConfigurableServices<BeanFa
 		implements BeanFactoryPostProcessor {
 
 	public BeanFactoryPostProcessors() {
-		super(BeanFactoryPostProcessor.class);
+		setServiceClass(BeanFactoryPostProcessor.class);
 	}
 
 	@Override

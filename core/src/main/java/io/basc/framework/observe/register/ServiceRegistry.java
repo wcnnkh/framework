@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import java.util.stream.Collectors;
@@ -39,18 +40,7 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 	private volatile long version = 0;
 
 	public ServiceRegistry() {
-		this(OrderComparator.INSTANCE);
-	}
-
-	public ServiceRegistry(Comparator<? super S> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		this.serviceMap = CollectionUtils.newStrictTreeMap((o1, o2) -> {
-			int order = Integer.compare(o1.getWeight(), o2.getWeight());
-			if (order == 0) {
-				return comparator.compare(o1.getElement(), o2.getElement());
-			}
-			return order;
-		});
+		setServiceComparator(OrderComparator.INSTANCE);
 		serviceInjectors.registerBatchListener((events) -> {
 			WriteLock writeLock = this.lock.writeLock();
 			try {
@@ -60,6 +50,28 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 				writeLock.unlock();
 			}
 		});
+	}
+
+	public void setServiceComparator(Comparator<? super S> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		Lock writeLock = lock.writeLock();
+		writeLock.lock();
+		try {
+			TreeMap<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> serviceMap = CollectionUtils
+					.newStrictTreeMap((o1, o2) -> {
+						int order = Integer.compare(o1.getWeight(), o2.getWeight());
+						if (order == 0) {
+							return comparator.compare(o1.getElement(), o2.getElement());
+						}
+						return order;
+					});
+			if (this.serviceMap != null) {
+				serviceMap.putAll(serviceMap);
+			}
+			this.serviceMap = serviceMap;
+		} finally {
+			writeLock.unlock();
+		}
 	}
 
 	private void change(WeightedElement<S> element, ChangeType eventType) {

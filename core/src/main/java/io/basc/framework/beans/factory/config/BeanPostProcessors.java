@@ -5,7 +5,7 @@ import io.basc.framework.beans.BeansException;
 public final class BeanPostProcessors extends ConfigurableServices<BeanPostProcessor> implements BeanPostProcessor {
 
 	public BeanPostProcessors() {
-		super(BeanPostProcessor.class);
+		setServiceClass(BeanPostProcessor.class);
 	}
 
 	@Override

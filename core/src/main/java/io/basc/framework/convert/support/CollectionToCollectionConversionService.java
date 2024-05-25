@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import io.basc.framework.convert.ConditionalConversionService;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.CollectionFactory;

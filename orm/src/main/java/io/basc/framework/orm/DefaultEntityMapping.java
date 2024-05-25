@@ -2,8 +2,8 @@ package io.basc.framework.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
 import io.basc.framework.mapper.support.DefaultMapping;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Assert;

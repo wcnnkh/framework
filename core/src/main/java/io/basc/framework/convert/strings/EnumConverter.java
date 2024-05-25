@@ -16,7 +16,7 @@ public class EnumConverter implements ReversibleConverter<String, Enum, Conversi
 	}
 
 	@Override
-	public String invert(Enum source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
+	public String reverseConvert(Enum source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
 		return source == null ? null : source.name();
 	}
 

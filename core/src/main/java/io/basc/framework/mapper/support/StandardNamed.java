@@ -3,7 +3,7 @@ package io.basc.framework.mapper.support;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import io.basc.framework.mapper.Named;
+import io.basc.framework.mapper.property.Named;
 import io.basc.framework.util.DisposableRegistration;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;

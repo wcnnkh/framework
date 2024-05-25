@@ -22,7 +22,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.io.FileRecords;
-import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.entity.Mapping;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.util.ArrayUtils;

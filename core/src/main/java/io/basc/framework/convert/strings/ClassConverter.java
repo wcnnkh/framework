@@ -27,7 +27,7 @@ public class ClassConverter extends DefaultClassLoaderAccessor
 	}
 
 	@Override
-	public String invert(Class source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Class source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.getName();
 	}

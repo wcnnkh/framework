@@ -2,7 +2,7 @@ package io.basc.framework.beans;
 
 import java.beans.BeanInfo;
 
-import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.entity.Mapping;
 import io.basc.framework.util.element.Elements;
 import lombok.AccessLevel;
 import lombok.Data;

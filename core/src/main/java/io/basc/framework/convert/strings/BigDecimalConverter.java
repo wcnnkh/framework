@@ -16,7 +16,7 @@ public class BigDecimalConverter implements ReversibleConverter<String, BigDecim
 	}
 
 	@Override
-	public String invert(BigDecimal source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(BigDecimal source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.toString();
 	}

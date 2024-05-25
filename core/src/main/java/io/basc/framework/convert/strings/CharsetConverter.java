@@ -16,7 +16,7 @@ public class CharsetConverter implements ReversibleConverter<String, Charset, Co
 	}
 
 	@Override
-	public String invert(Charset source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Charset source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.name();
 	}

@@ -2,8 +2,8 @@ package io.basc.framework.mapper.support;
 
 import java.util.Comparator;
 
-import io.basc.framework.mapper.Item;
-import io.basc.framework.mapper.Items;
+import io.basc.framework.mapper.property.Item;
+import io.basc.framework.mapper.property.Items;
 import io.basc.framework.observe.register.ElementRegistry;
 import io.basc.framework.util.element.Elements;
 

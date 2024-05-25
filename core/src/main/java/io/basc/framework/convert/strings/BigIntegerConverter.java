@@ -19,7 +19,7 @@ public class BigIntegerConverter implements ReversibleConverter<String, BigInteg
 	}
 
 	@Override
-	public String invert(BigInteger source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(BigInteger source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.toString(radix);
 	}

@@ -1,13 +1,13 @@
 package io.basc.framework.mapper.filter;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.Mapping;
-import io.basc.framework.mapper.MappingContext;
-import io.basc.framework.mapper.MappingException;
-import io.basc.framework.mapper.MappingStrategy;
-import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.access.ObjectAccess;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
+import io.basc.framework.mapper.entity.MappingContext;
+import io.basc.framework.mapper.entity.MappingException;
+import io.basc.framework.mapper.entity.MappingStrategy;
 
 /**
  * 映射策略拦截器

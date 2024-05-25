@@ -14,7 +14,7 @@ import io.basc.framework.value.ParameterDescriptor;
 public class ParameterFactories extends ConfigurableServices<ParameterFactory> implements ParameterFactory {
 
 	public ParameterFactories() {
-		super(ParameterFactory.class);
+		setServiceClass(ParameterFactory.class);
 	}
 
 	@Override

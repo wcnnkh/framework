@@ -18,7 +18,7 @@ public class ByteConverter implements ReversibleConverter<String, Byte, Conversi
 	}
 
 	@Override
-	public String invert(Byte source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
+	public String reverseConvert(Byte source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
 		return source == null ? null : source.toString();
 	}
 

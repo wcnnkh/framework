@@ -1,6 +1,6 @@
 package io.basc.framework.excel;
 
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.property.Item;
 
 public interface SheetContext extends Item {
 

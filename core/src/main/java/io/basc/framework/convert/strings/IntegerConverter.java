@@ -22,7 +22,7 @@ public class IntegerConverter implements ReversibleConverter<String, Integer, Co
 	}
 
 	@Override
-	public String invert(Integer source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Integer source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		if (source == null) {
 			return null;

@@ -15,7 +15,7 @@ import io.basc.framework.execution.reflect.ReflectionFieldGetter;
 import io.basc.framework.execution.reflect.ReflectionFieldSetter;
 import io.basc.framework.execution.reflect.ReflectionMethodGetter;
 import io.basc.framework.execution.reflect.ReflectionMethodSetter;
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.mapper.entity.FieldDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 

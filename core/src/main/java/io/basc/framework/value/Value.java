@@ -78,18 +78,6 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 	}
 
 	@Nullable
-	@SuppressWarnings("unchecked")
-	default <T, E extends Throwable> T convert(Class<? extends T> targetType,
-			Converter<? super Object, ? extends Object, E> converter) throws E {
-		return (T) convert(TypeDescriptor.valueOf(targetType), converter);
-	}
-
-	default <E extends Throwable> Object convert(Type targetType,
-			Converter<? super Object, ? extends Object, E> converter) throws E {
-		return convert(TypeDescriptor.valueOf(targetType), converter);
-	}
-
-	@Nullable
 	default <E extends Throwable> Object convert(TypeDescriptor targetType,
 			Converter<? super Object, ? extends Object, E> converter) throws E {
 		Assert.requiredArgument(converter != null, "converter");
@@ -154,7 +142,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigDecimal();
 		}
 
-		return convert(getAsString(), BigDecimal.class);
+		return (BigDecimal) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(BigDecimal.class));
 	}
 
 	@Nullable
@@ -176,7 +165,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigInteger();
 		}
 
-		return convert(getAsString(), BigInteger.class);
+		return (BigInteger) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(BigInteger.class));
 	}
 
 	default boolean getAsBoolean() {
@@ -196,7 +186,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		if (value instanceof Value) {
 			return ((Value) value).getAsBoolean();
 		}
-		return convert(getAsString(), boolean.class);
+		return (boolean) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(boolean.class));
 	}
 
 	default byte getAsByte() {
@@ -217,7 +208,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsByte();
 		}
 
-		return convert(getAsString(), byte.class);
+		return (byte) convert(getAsString(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(byte.class));
 	}
 
 	default char getAsChar() {
@@ -234,7 +225,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsChar();
 		}
 
-		return convert(getAsString(), char.class);
+		return (char) convert(getAsString(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(char.class));
 	}
 
 	@Nullable
@@ -252,7 +243,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsClass();
 		}
 
-		return convert(getAsString(), Class.class);
+		return (Class<?>) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(Class.class));
 	}
 
 	@Override
@@ -274,7 +266,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsDouble();
 		}
 
-		return convert(getAsString(), double.class);
+		return (double) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(double.class));
 	}
 
 	@Nullable
@@ -292,7 +285,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsEnum(enumType);
 		}
 
-		return (Enum<?>) convert(getAsString(), enumType);
+		return (Enum<?>) convert(getAsString(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(enumType));
 	}
 
 	default float getAsFloat() {
@@ -313,7 +306,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsFloat();
 		}
 
-		return convert(getAsString(), float.class);
+		return (float) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(float.class));
 	}
 
 	@Override
@@ -335,7 +329,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsInt();
 		}
 
-		return convert(getAsString(), int.class);
+		return (int) convert(getAsString(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(int.class));
 	}
 
 	@Override
@@ -357,7 +351,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsLong();
 		}
 
-		return convert(getAsString(), long.class);
+		return (long) convert(getAsString(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(long.class));
 	}
 
 	@Nullable
@@ -375,7 +369,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsNumber();
 		}
 
-		return convert(getAsString(), Number.class);
+		return (Number) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(Number.class));
 	}
 
 	@Nullable
@@ -429,7 +424,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = convert(type, this);
+			v = convert(TypeDescriptor.valueOf(type), this);
 		}
 		return (T) v;
 	}
@@ -473,7 +468,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsShort();
 		}
 
-		return convert(getAsString(), short.class);
+		return (short) convert(getAsString(), TypeDescriptor.valueOf(String.class),
+				TypeDescriptor.valueOf(short.class));
 	}
 
 	@Nullable
@@ -495,7 +491,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsString();
 		}
 
-		return convert(String.class, this);
+		return (String) convert(TypeDescriptor.valueOf(String.class), this);
 	}
 
 	/**

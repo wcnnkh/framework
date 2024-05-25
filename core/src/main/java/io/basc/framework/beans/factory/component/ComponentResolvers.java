@@ -13,7 +13,7 @@ import io.basc.framework.util.element.Elements;
 
 public class ComponentResolvers extends ConfigurableServices<ComponentResolver> implements ComponentResolver {
 	public ComponentResolvers() {
-		super(ComponentResolver.class);
+		setServiceClass(ComponentResolver.class);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.Value;
 
 public interface RowImporter extends RecordImporter {
-	Titles getTitles();
+	SimpleTitles getTitles();
 
 	default Elements<Value[]> doReadAll() {
 		// TODO

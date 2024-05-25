@@ -15,7 +15,7 @@ public class ConversionFailedException extends ConversionException {
 	private final Object value;
 
 	public ConversionFailedException(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType,
-			@Nullable Object value, Throwable cause) {
+			@Nullable Object value, @Nullable Throwable cause) {
 
 		super("Failed to convert from type [" + sourceType + "] to type [" + targetType + "] for value '"
 				+ ObjectUtils.toString(value) + "'", cause);

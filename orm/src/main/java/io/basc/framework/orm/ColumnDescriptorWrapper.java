@@ -1,7 +1,7 @@
 package io.basc.framework.orm;
 
 import io.basc.framework.data.repository.IndexInfo;
-import io.basc.framework.mapper.FieldDescriptorWrapper;
+import io.basc.framework.mapper.entity.FieldDescriptorWrapper;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 

@@ -16,10 +16,13 @@
 
 package io.basc.framework.convert;
 
+import io.basc.framework.lang.Nullable;
+
 /**
  * A service interface for type conversion. This is the entry point into the
  * convert system. Call {@link #convert(Object, Class)} to perform a thread-safe
  * type conversion using this system.
  */
-public interface ConversionService extends Converter<Object, Object, ConversionException>, ConversionTester {
+public interface ConversionService extends Converter<Object, Object, ConversionException> {
+	boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType);
 }

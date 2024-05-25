@@ -5,6 +5,8 @@ import java.util.function.Function;
 import io.basc.framework.core.DecorationMembers;
 import io.basc.framework.core.Members;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.entity.Mapping;
 import io.basc.framework.util.element.Elements;
 import lombok.Getter;
 import lombok.Setter;

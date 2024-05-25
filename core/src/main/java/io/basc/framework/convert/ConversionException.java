@@ -1,6 +1,7 @@
 package io.basc.framework.convert;
 
 import io.basc.framework.lang.NestedRuntimeException;
+import io.basc.framework.lang.Nullable;
 
 public class ConversionException extends NestedRuntimeException {
 	private static final long serialVersionUID = 1L;
@@ -24,7 +25,7 @@ public class ConversionException extends NestedRuntimeException {
 	 * @param message the exception message
 	 * @param cause   the cause
 	 */
-	public ConversionException(String message, Throwable cause) {
+	public ConversionException(String message, @Nullable Throwable cause) {
 		super(message, cause);
 	}
 

@@ -16,7 +16,7 @@ public class CurrencyConverter implements ReversibleConverter<String, Currency, 
 	}
 
 	@Override
-	public String invert(Currency source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public String reverseConvert(Currency source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return source == null ? null : source.getCurrencyCode();
 	}

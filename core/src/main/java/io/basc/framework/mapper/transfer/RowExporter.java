@@ -4,19 +4,19 @@ import java.io.IOException;
 
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
-import io.basc.framework.mapper.Item;
+import io.basc.framework.mapper.property.Item;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.Value;
 
 public interface RowExporter extends RecordExporter {
-	Titles getTitles();
+	SimpleTitles getTitles();
 
 	default boolean rewriteTitles(Elements<? extends Item> items) {
 		if (items == null) {
 			return false;
 		}
 
-		Titles titles = getTitles();
+		SimpleTitles titles = getTitles();
 		if (titles == null || !titles.isEmpty()) {
 			return false;
 		}
@@ -32,7 +32,7 @@ public interface RowExporter extends RecordExporter {
 	 */
 	@Override
 	default void doWriteParameters(Parameters record) throws IOException {
-		Titles titles = getTitles();
+		SimpleTitles titles = getTitles();
 		if (titles == null || titles.isEmpty()) {
 			doWriteValues(record.getElements());
 		} else {
