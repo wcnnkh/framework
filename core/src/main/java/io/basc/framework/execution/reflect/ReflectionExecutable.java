@@ -9,9 +9,9 @@ import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
-import io.basc.framework.execution.ParameterUtils;
+import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.execution.param.ParameterUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 import lombok.NonNull;
 
 public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T> {

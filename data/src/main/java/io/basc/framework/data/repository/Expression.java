@@ -1,7 +1,7 @@
 package io.basc.framework.data.repository;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Arg;
 import io.basc.framework.lang.Nullable;
 
 /**
@@ -10,7 +10,7 @@ import io.basc.framework.lang.Nullable;
  * @author wcnnkh
  *
  */
-public class Expression extends Parameter {
+public class Expression extends Arg {
 	private static final long serialVersionUID = 1L;
 
 	public Expression(String name) {
@@ -22,6 +22,6 @@ public class Expression extends Parameter {
 	}
 
 	public Expression(String name, Object value, @Nullable TypeDescriptor typeDescriptor) {
-		super(name, value, typeDescriptor);
+		super(name, typeDescriptor, value);
 	}
 }

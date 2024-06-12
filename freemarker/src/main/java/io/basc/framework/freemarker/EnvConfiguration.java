@@ -11,9 +11,9 @@ import freemarker.template.Version;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.env.Environment;
+import io.basc.framework.env.PropertyFactory;
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.PropertyFactory;
 
 public class EnvConfiguration extends Configuration implements Configurable {
 	public static final String CONFIG_PROPERTY_PREFIX = "io.basc.freemarker.";

@@ -2,7 +2,7 @@ package io.basc.framework.autoconfigure.beans.factory;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.ioc.AutowireParameterExtractor;
-import io.basc.framework.value.ParameterDescriptor;
+import io.basc.framework.execution.param.ParameterDescriptor;
 
 public class ValueAutowireParameterExtractor implements AutowireParameterExtractor {
 

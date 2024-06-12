@@ -10,7 +10,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.Function;
 import io.basc.framework.execution.Method;
-import io.basc.framework.execution.Parameters;
+import io.basc.framework.execution.param.Parameters;
 
 public class DefinitionFactoryBean implements FactoryBean<Object> {
 	private AutowireCapableBeanFactory autowireCapableBeanFactory;

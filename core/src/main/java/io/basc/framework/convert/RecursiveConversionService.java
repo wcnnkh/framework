@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.value.Value;
 import lombok.Data;
 
 /**

@@ -17,8 +17,8 @@
 package io.basc.framework.cloud.commons.util;
 
 import io.basc.framework.env.Environment;
+import io.basc.framework.env.PropertyFactory;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.PropertyFactory;
 
 /**
  * @author Spencer Gibb

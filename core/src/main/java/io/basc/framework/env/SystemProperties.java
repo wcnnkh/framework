@@ -1,14 +1,14 @@
 package io.basc.framework.env;
 
 import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.convert.lang.Value;
+import io.basc.framework.transform.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.element.ConvertibleEnumeration;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.MultiIterator;
-import io.basc.framework.value.Property;
-import io.basc.framework.value.Value;
 import lombok.Data;
 
 public class SystemProperties extends DefaultPropertyResolver {
@@ -60,13 +60,19 @@ public class SystemProperties extends DefaultPropertyResolver {
 		private final String name;
 
 		@Override
-		public Object getSource() {
+		public Object getValue() {
 			return getInstance().get(name);
 		}
 
 		@Override
 		public Property rename(String name) {
 			return new SystemProperty(name);
+		}
+		
+		@Override
+		public void setValue(Object value) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

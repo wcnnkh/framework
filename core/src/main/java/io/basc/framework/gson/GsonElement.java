@@ -20,7 +20,7 @@ public final class GsonElement extends AbstractJsonElement {
 	private final GsonConverter converter;
 
 	@Override
-	public Object getSource() {
+	public Object getValue() {
 		return jsonElement;
 	}
 

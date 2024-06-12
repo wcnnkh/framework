@@ -9,7 +9,7 @@ public class ConfigurableServletContextInitializer extends ConfigurableServices<
 		implements ServletContextInitializer {
 
 	public ConfigurableServletContextInitializer() {
-		super(ServletContextInitializer.class);
+		setServiceClass(ServletContextInitializer.class);
 	}
 
 	@Override

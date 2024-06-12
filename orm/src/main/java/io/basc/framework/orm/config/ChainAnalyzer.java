@@ -8,17 +8,17 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.entity.MappingStrategy;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.ForeignKey;
+import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 
 public class ChainAnalyzer implements Analyzer {
 
@@ -207,12 +207,13 @@ public class ChainAnalyzer implements Analyzer {
 	}
 
 	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy) {
+	public PropertiesTransformStrategy getPropertiesTransformStrategy(TypeDescriptor source,
+			PropertiesTransformStrategy dottomlessStrategy) {
 		if (iterator.hasNext()) {
-			return iterator.next().getMappingStrategy(source, dottomlessMappingStrategy, this);
+			return iterator.next().getPropertiesTransformStrategy(source, dottomlessStrategy, this);
 		}
-		return nextChain == null ? dottomlessMappingStrategy
-				: nextChain.getMappingStrategy(source, dottomlessMappingStrategy);
+		return nextChain == null ? dottomlessStrategy
+				: nextChain.getPropertiesTransformStrategy(source, dottomlessStrategy);
 	}
 
 	@Override

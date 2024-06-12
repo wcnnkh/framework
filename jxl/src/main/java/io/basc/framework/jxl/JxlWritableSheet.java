@@ -2,9 +2,9 @@ package io.basc.framework.jxl;
 
 import java.io.IOException;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.excel.WritableSheet;
-import io.basc.framework.value.Value;
 import jxl.write.Label;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;

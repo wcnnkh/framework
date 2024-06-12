@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.io.Resource;
@@ -14,13 +15,12 @@ import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.Observer;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.observe.watch.ResourceObserver;
+import io.basc.framework.transform.factory.config.EditablePropertyFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.ConvertibleIterator;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.EditablePropertyFactory;
-import io.basc.framework.value.Value;
 import lombok.Getter;
 import lombok.Setter;
 

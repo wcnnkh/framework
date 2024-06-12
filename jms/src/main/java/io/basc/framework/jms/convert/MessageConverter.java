@@ -2,7 +2,7 @@ package io.basc.framework.jms.convert;
 
 import javax.jms.Message;
 
-import io.basc.framework.value.ParameterDescriptor;
+import io.basc.framework.execution.param.ParameterDescriptor;
 
 public interface MessageConverter {
 	boolean canRead(ParameterDescriptor parameterDescriptor);

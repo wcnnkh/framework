@@ -11,12 +11,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.env.Environment;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Processor;
-import io.basc.framework.value.Value;
 
 public final class DomUtils {
 	private static final DocumentTemplate TEMPLATE = SPI.global()
@@ -140,7 +140,7 @@ public final class DomUtils {
 
 	public static Value getRequireNodeAttributeValue(Node node, String name) {
 		Value value = getNodeAttributeValue(node, name);
-		if (value.isEmpty()) {
+		if (!value.isPresent()) {
 			throw new NotFoundException("not found attribute [" + name + "]");
 		}
 		return value;
@@ -148,7 +148,7 @@ public final class DomUtils {
 
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
-			if (DomUtils.getNodeAttributeValue(node, n).isEmpty()) {
+			if (!DomUtils.getNodeAttributeValue(node, n).isPresent()) {
 				throw new NotFoundException("not found attribute [" + n + "]");
 			}
 		}
@@ -161,7 +161,7 @@ public final class DomUtils {
 		}
 
 		Value value = getNodeAttributeValue(node, name);
-		if (value.isEmpty()) {
+		if (!value.isPresent()) {
 			return getParentAttributeValue(parent, name);
 		}
 		return value;

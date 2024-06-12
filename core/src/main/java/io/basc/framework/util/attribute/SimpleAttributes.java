@@ -1,10 +1,9 @@
 package io.basc.framework.util.attribute;
 
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import io.basc.framework.util.element.Elements;
 import lombok.Data;
 
 @Data
@@ -22,10 +21,8 @@ public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
 		return attributeMap == null ? null : attributeMap.get(name);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Enumeration<K> getAttributeNames() {
-		return (Enumeration<K>) (attributeMap == null ? Collections.emptyEnumeration()
-				: Collections.enumeration(attributeMap.keySet()));
+	public Elements<K> getAttributeNames() {
+		return attributeMap == null ? Elements.empty() : Elements.of(attributeMap.keySet());
 	}
 
 	public void setAttribute(K name, V o) {

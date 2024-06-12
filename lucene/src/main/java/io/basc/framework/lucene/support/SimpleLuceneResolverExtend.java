@@ -14,9 +14,9 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 
 import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lucene.LuceneResolver;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.value.ParameterDescriptor;
 
 public class SimpleLuceneResolverExtend implements LuceneResolverExtend {
 

@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.execution.MergedParameterDescriptor;
+import io.basc.framework.execution.param.MergedParameterDescriptor;
 import io.basc.framework.execution.test.Executor;
 import io.basc.framework.web.pattern.HttpPattern;
 

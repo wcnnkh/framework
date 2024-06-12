@@ -10,9 +10,8 @@ import io.basc.framework.util.DisposableRegistration;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.comparator.TypeComparator;
 
-public class DefaultConverterFactory<S, E extends Throwable, C extends Converter<? super S, ? extends Object, ? extends E>>
-		implements ConverterRegistry<S, E, C> {
-	private TreeMap<Class<?>, C> converterMap;
+public class DefaultConverterFactory<S, E extends Throwable> implements ConverterRegistry<S, E> {
+	private TreeMap<Class<?>, Converter<? super S, ? extends Object, ? extends E>> converterMap;
 
 	protected <T> T get(Class<?> type, TreeMap<Class<?>, T> sourceMap) {
 		if (sourceMap == null || sourceMap.isEmpty()) {
@@ -55,8 +54,9 @@ public class DefaultConverterFactory<S, E extends Throwable, C extends Converter
 	}
 
 	@Override
-	public Registration registerConverter(Class<?> type, C converter) {
-		this.converterMap = register(type, converter, converterMap);
-		return DisposableRegistration.of(() -> converterMap.remove(type));
+	public <T> Registration registerConverter(Class<T> targetType,
+			Converter<? super S, ? extends T, ? extends E> converter) {
+		this.converterMap = register(targetType, converter, converterMap);
+		return DisposableRegistration.of(() -> converterMap.remove(targetType));
 	}
 }

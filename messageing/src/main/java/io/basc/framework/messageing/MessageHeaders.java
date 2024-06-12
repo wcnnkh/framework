@@ -2,7 +2,7 @@ package io.basc.framework.messageing;
 
 import java.util.HashMap;
 
-import io.basc.framework.value.Value;
+import io.basc.framework.convert.lang.Value;
 
 public class MessageHeaders extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;

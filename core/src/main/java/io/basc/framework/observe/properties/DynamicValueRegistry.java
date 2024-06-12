@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.value.Value;
+import io.basc.framework.convert.lang.Value;
 
 public class DynamicValueRegistry<K> extends DynamicMap<K, Value> implements ObservableValueFactory<K> {
 

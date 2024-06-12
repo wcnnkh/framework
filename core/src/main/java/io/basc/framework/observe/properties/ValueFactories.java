@@ -1,8 +1,8 @@
 package io.basc.framework.observe.properties;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.value.Value;
-import io.basc.framework.value.ValueFactory;
+import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ValueFactory;
 
 public class ValueFactories<K, F extends ValueFactory<K>> extends ConfigurableServices<F> implements ValueFactory<K> {
 	@Override

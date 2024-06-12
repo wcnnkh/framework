@@ -2,8 +2,8 @@ package io.basc.framework.json;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.value.Value;
 
 public interface JsonElement extends Value, JsonAware, JsonConverter {
 	public static JsonElement EMPTY = new EmptyJsonElement();

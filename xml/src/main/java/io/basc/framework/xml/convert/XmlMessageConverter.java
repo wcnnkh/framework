@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.InputMessage;
@@ -15,7 +16,6 @@ import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.convert.AbstractMessageConverter;
 import io.basc.framework.net.message.convert.MessageConvertException;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.value.Value;
 import io.basc.framework.xml.XmlUtils;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> implements ConversionServiceAware {

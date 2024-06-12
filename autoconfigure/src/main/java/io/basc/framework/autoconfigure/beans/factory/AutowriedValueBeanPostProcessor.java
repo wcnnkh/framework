@@ -3,11 +3,11 @@ package io.basc.framework.autoconfigure.beans.factory;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.support.PropertyAutowiredBeanPostProcessor;
 import io.basc.framework.beans.factory.ioc.BeanRegistrationManager;
+import io.basc.framework.env.PropertyFactory;
 import io.basc.framework.mapper.Setter;
-import io.basc.framework.mapper.entity.FieldDescriptor;
-import io.basc.framework.mapper.entity.factory.config.MappingRegistry;
+import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.MappingRegistry;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.PropertyFactory;
 
 /**
  * value注解的实现

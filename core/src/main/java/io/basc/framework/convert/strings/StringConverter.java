@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ReversibleConverter;
 import io.basc.framework.convert.factory.support.DefaultReversibleConverterFactory;
 import io.basc.framework.convert.lang.ResourceToString;
 import lombok.Getter;
@@ -18,8 +17,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class StringConverter extends
-		DefaultReversibleConverterFactory<String, ConversionException, ReversibleConverter<String, ? extends Object, ? extends ConversionException>> {
+public class StringConverter extends DefaultReversibleConverterFactory<String, ConversionException> {
 	private static volatile StringConverter instance;
 
 	public static StringConverter getInstance() {
@@ -73,31 +71,31 @@ public class StringConverter extends
 	private ResourceToString resourceToString = ResourceToString.DEFAULT;
 
 	public StringConverter() {
-		registerConverter(Reader.class, readerConverter);
-		registerConverter(Enum.class, enumConverter);
-		registerConverter(Charset.class, charsetConverter);
-		registerConverter(Class.class, classConverter);
-		registerConverter(TimeZone.class, timeZoneConverter);
-		registerConverter(Currency.class, currencyConverter);
-		registerConverter(Locale.class, localeConverter);
-		registerConverter(BigDecimal.class, bigDecimalConverter);
-		registerConverter(BigInteger.class, bigIntegerConverter);
+		registerReversibleConverter(Reader.class, readerConverter);
+		registerReversibleConverter(Enum.class, enumConverter);
+		registerReversibleConverter(Charset.class, charsetConverter);
+		registerReversibleConverter(Class.class, classConverter);
+		registerReversibleConverter(TimeZone.class, timeZoneConverter);
+		registerReversibleConverter(Currency.class, currencyConverter);
+		registerReversibleConverter(Locale.class, localeConverter);
+		registerReversibleConverter(BigDecimal.class, bigDecimalConverter);
+		registerReversibleConverter(BigInteger.class, bigIntegerConverter);
 
-		registerConverter(char.class, characterConverter);
-		registerConverter(Character.class, characterConverter);
-		registerConverter(boolean.class, booleanConverter);
-		registerConverter(Boolean.class, booleanConverter);
-		registerConverter(double.class, doubleConverter);
-		registerConverter(Double.class, doubleConverter);
-		registerConverter(byte.class, byteConverter);
-		registerConverter(Byte.class, byteConverter);
-		registerConverter(float.class, floatConverter);
-		registerConverter(Float.class, floatConverter);
-		registerConverter(short.class, shortConverter);
-		registerConverter(Short.class, shortConverter);
-		registerConverter(int.class, integerConverter);
-		registerConverter(Integer.class, integerConverter);
-		registerConverter(long.class, longConverter);
-		registerConverter(Long.class, longConverter);
+		registerReversibleConverter(char.class, characterConverter);
+		registerReversibleConverter(Character.class, characterConverter);
+		registerReversibleConverter(boolean.class, booleanConverter);
+		registerReversibleConverter(Boolean.class, booleanConverter);
+		registerReversibleConverter(double.class, doubleConverter);
+		registerReversibleConverter(Double.class, doubleConverter);
+		registerReversibleConverter(byte.class, byteConverter);
+		registerReversibleConverter(Byte.class, byteConverter);
+		registerReversibleConverter(float.class, floatConverter);
+		registerReversibleConverter(Float.class, floatConverter);
+		registerReversibleConverter(short.class, shortConverter);
+		registerReversibleConverter(Short.class, shortConverter);
+		registerReversibleConverter(int.class, integerConverter);
+		registerReversibleConverter(Integer.class, integerConverter);
+		registerReversibleConverter(long.class, longConverter);
+		registerReversibleConverter(Long.class, longConverter);
 	}
 }

@@ -2,8 +2,8 @@ package io.basc.framework.data.domain;
 
 import java.io.Serializable;
 
+import io.basc.framework.convert.value.Values;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Values;
 
 /**
  * 定义表格数据

@@ -4,14 +4,14 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.Executors;
 import io.basc.framework.execution.Function;
 import io.basc.framework.execution.Method;
-import io.basc.framework.execution.Parameters;
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Named;
+import io.basc.framework.util.Name;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Value;
 
 /**
  * bean的定义
@@ -19,7 +19,7 @@ import io.basc.framework.value.Value;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends Executors<Function>, Named {
+public interface BeanDefinition extends Executors<Function>, Name {
 	String getResourceDescription();
 
 	/**

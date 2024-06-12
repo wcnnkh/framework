@@ -13,12 +13,12 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.dom.NodeListAccess;
+import io.basc.framework.dom.NodeListProperties;
 import io.basc.framework.env.SystemProperties;
-import io.basc.framework.execution.Parameter;
-import io.basc.framework.mapper.entity.FieldDescriptor;
-import io.basc.framework.mapper.entity.Mapping;
-import io.basc.framework.mapper.entity.MappingStrategy;
+import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.Mapping;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.DefaultColumnDescriptor;
@@ -29,9 +29,9 @@ import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.config.ConfigurableAnalyzer;
 import io.basc.framework.orm.config.DefaultAnalyzer;
+import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -53,8 +53,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper implements EntityMa
 	private boolean configured;
 
 	public DefaultEntityMapper() {
-		registerObjectAccessFactory(NodeList.class, (s, e) -> new NodeListAccess(s, e));
-		getMappingStrategy().and((s, parameter) -> {
+		registerPropertiesTransformer(NodeList.class, (s, e) -> new NodeListProperties(s));
+		getPropertiesTransformStrategy().and((s, parameter) -> {
 			if (isIgnore(s.getType(), parameter)) {
 				return false;
 			}
@@ -158,14 +158,15 @@ public class DefaultEntityMapper extends DefaultObjectMapper implements EntityMa
 	}
 
 	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor typeDescriptor) {
-		MappingStrategy dottomlessMappingStrategy = super.getMappingStrategy(typeDescriptor);
-		return getMappingStrategy(typeDescriptor, dottomlessMappingStrategy);
+	public PropertiesTransformStrategy getPropertiesTransformStrategy(TypeDescriptor typeDescriptor) {
+		PropertiesTransformStrategy dottomlessStrategy = super.getPropertiesTransformStrategy(typeDescriptor);
+		return getPropertiesTransformStrategy(typeDescriptor, dottomlessStrategy);
 	}
 
 	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy) {
-		return entityResolver.getMappingStrategy(source, dottomlessMappingStrategy);
+	public PropertiesTransformStrategy getPropertiesTransformStrategy(TypeDescriptor source,
+			PropertiesTransformStrategy dottomlessStrategy) {
+		return entityResolver.getPropertiesTransformStrategy(source, dottomlessStrategy);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementWrapper;
 import io.basc.framework.core.annotation.MergedAnnotatedElement;
-import io.basc.framework.execution.MergedParameterDescriptor;
+import io.basc.framework.execution.param.MergedParameterDescriptor;
 import io.basc.framework.mapper.support.ExecutableParameterDescriptors;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.pattern.HttpPattern;

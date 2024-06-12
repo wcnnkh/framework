@@ -13,18 +13,18 @@ import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ReversibleConverter;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
 import io.basc.framework.execution.Setter;
 import io.basc.framework.mapper.InstanceFactory;
-import io.basc.framework.mapper.entity.FieldDescriptor;
-import io.basc.framework.mapper.entity.Mapping;
-import io.basc.framework.mapper.entity.factory.MappingFactory;
-import io.basc.framework.mapper.property.Items;
+import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.Mapping;
+import io.basc.framework.mapper.stereotype.MappingFactory;
 import io.basc.framework.mapper.transfer.convert.ParameterConverter;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Items;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Value;
 
 public interface RecordConverter extends ReversibleConverter<Parameters, Object, ConversionException> {
 	MappingFactory getMappingFactory();

@@ -16,7 +16,8 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
 
 	public MessageConverters() {
-		super(new ComparatorMessageConverter(), MessageConverter.class);
+		setServiceClass(MessageConverter.class);
+		setServiceComparator(new ComparatorMessageConverter());
 	}
 
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {

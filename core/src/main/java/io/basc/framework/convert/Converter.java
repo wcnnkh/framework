@@ -4,6 +4,11 @@ import io.basc.framework.lang.Nullable;
 
 @FunctionalInterface
 public interface Converter<S, T, E extends Throwable> {
+	@SuppressWarnings("unchecked")
+	public static <S, T, E extends Throwable> Converter<S, T, E> unsupported() {
+		return (Converter<S, T, E>) UnsupportedConverter.INSTANCE;
+	}
+
 	default boolean canConvert(@Nullable Class<?> sourceType, Class<?> targetType) {
 		return canConvert(sourceType, TypeDescriptor.valueOf(targetType));
 	}

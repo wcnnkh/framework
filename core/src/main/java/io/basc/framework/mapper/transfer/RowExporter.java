@@ -2,11 +2,11 @@ package io.basc.framework.mapper.transfer;
 
 import java.io.IOException;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
-import io.basc.framework.mapper.property.Item;
+import io.basc.framework.util.Item;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Value;
 
 public interface RowExporter extends RecordExporter {
 	SimpleTitles getTitles();

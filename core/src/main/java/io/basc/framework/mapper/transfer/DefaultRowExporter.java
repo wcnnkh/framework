@@ -2,9 +2,9 @@ package io.basc.framework.mapper.transfer;
 
 import java.io.IOException;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.Parameters;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Value;
 
 public class DefaultRowExporter extends AbstractRowExporter {
 	

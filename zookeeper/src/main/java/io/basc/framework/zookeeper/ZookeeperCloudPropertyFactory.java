@@ -9,6 +9,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
@@ -22,7 +23,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.ElementList;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.value.AbstractEditablePropertyFactory;
-import io.basc.framework.value.Value;
 
 /**
  * 使用zookeeper实现的配置中心

@@ -1,9 +1,9 @@
 package io.basc.framework.autoconfigure.beans.factory;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.execution.ParameterExtractor;
+import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.execution.param.ParameterExtractor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.ParameterDescriptor;
 import lombok.Data;
 
 @Data

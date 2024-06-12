@@ -6,8 +6,8 @@ import java.lang.reflect.Field;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 import lombok.NonNull;
 
 public abstract class ReflectionField extends ReflectionMember<Field> implements ParameterDescriptor, Serializable {

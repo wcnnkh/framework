@@ -23,8 +23,8 @@ import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 import io.basc.framework.rabbitmq.RabbitmqExchange;
+import io.basc.framework.transform.strategy.filter.ParameterNamePrefixFilter;
 import io.basc.framework.util.ClassUtils;
 
 @ConditionalOnParameters

@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.lang.Nullable;
@@ -14,7 +15,6 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.select.Selector;
-import io.basc.framework.value.Value;
 
 public abstract class AbstractLoadBalancer<T extends Node> implements LoadBalancer<T>, EnvironmentAware {
 	private static Logger logger = LoggerFactory.getLogger(AbstractLoadBalancer.class);

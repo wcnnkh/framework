@@ -17,7 +17,11 @@ public interface ConverterFactory<S, E extends Throwable> extends Converter<S, O
 
 	@Override
 	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return getConverter(targetType.getType()) != null;
+		Converter<S, Object, E> converter = getConverter(targetType.getType());
+		if (converter == null) {
+			return false;
+		}
+		return converter.canConvert(sourceType, targetType);
 	}
 
 	<T> Converter<S, T, E> getConverter(Class<? extends T> requiredType);

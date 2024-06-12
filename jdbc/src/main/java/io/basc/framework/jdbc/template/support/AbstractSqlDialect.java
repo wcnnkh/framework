@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.DeleteOperation;
@@ -35,7 +36,6 @@ import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Value;
 
 /**
  * 标准的sql方言

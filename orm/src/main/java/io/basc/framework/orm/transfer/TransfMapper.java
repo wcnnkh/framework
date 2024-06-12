@@ -1,9 +1,9 @@
 package io.basc.framework.orm.transfer;
 
+import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 
 public class TransfMapper extends DefaultEntityMapper {
 

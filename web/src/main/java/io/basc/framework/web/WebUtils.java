@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import io.basc.framework.codec.Decoder;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.codec.support.URLCodec;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
@@ -35,7 +36,6 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.value.Value;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.xml.XmlUtils;
 

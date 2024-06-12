@@ -3,10 +3,10 @@ package io.basc.framework.mapper.transfer.convert;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.support.DefaultReversibleConverterRegistry;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.Parameter;
-import io.basc.framework.mapper.property.Item;
-import io.basc.framework.mapper.property.Named;
-import io.basc.framework.value.Value;
+import io.basc.framework.util.Item;
+import io.basc.framework.util.Named;
 
 public class ParameterConverter extends DefaultReversibleConverterRegistry<Parameter, ConversionException> {
 

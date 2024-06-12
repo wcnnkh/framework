@@ -1,13 +1,12 @@
 package io.basc.framework.util.attribute;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.element.Elements;
 
 public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -24,11 +23,7 @@ public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, S
 	public SerializableAttributes(Attributes<K, V> attributes) {
 		this();
 		Assert.requiredArgument(attrbitues != null, "attrbitues");
-		Enumeration<K> enumeration = attributes.getAttributeNames();
-		while (enumeration.hasMoreElements()) {
-			K key = enumeration.nextElement();
-			setAttribute(key, attributes.getAttribute(key));
-		}
+		attributes.getAttributeNames().forEach((key) -> setAttribute(key, attributes.getAttribute(key)));
 	}
 
 	@Override
@@ -37,12 +32,12 @@ public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, S
 	}
 
 	@Override
-	public Enumeration<K> getAttributeNames() {
+	public Elements<K> getAttributeNames() {
 		if (attrbitues == null) {
-			return Collections.emptyEnumeration();
+			return Elements.empty();
 		}
 
-		return Collections.enumeration(attrbitues.keySet());
+		return Elements.of(attrbitues.keySet());
 	}
 
 	@Override

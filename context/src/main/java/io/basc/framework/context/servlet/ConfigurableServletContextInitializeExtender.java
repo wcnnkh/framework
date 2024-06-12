@@ -9,7 +9,7 @@ public class ConfigurableServletContextInitializeExtender extends ConfigurableSe
 		implements ServletContextInitializeExtender {
 
 	public ConfigurableServletContextInitializeExtender() {
-		super(ServletContextInitializeExtender.class);
+		setServiceClass(ServletContextInitializeExtender.class);
 	}
 
 	@Override

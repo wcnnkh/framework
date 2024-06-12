@@ -7,13 +7,13 @@ import java.util.stream.Stream;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.URLCodec;
+import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.ObjectFormat;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.ObjectValue;
-import io.basc.framework.value.Value;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

@@ -4,9 +4,9 @@ import io.basc.framework.convert.ReversibleConverter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
-import io.basc.framework.mapper.property.Item;
-import io.basc.framework.mapper.property.Items;
 import io.basc.framework.mapper.support.ItemRegistry;
+import io.basc.framework.util.Item;
+import io.basc.framework.util.Items;
 import io.basc.framework.util.element.Elements;
 
 public interface ItemsRecordConverter extends ReversibleConverter<Parameters, Items<?>, Throwable> {

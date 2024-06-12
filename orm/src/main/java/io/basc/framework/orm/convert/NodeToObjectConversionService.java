@@ -11,8 +11,8 @@ import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.convert.lang.AbstractConversionService;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.value.Value;
 
 class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
 

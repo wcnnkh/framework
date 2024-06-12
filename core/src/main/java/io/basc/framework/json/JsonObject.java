@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.value.PropertyFactory;
+import io.basc.framework.transform.factory.PropertyFactory;
 
 public interface JsonObject extends Json<String>, PropertyFactory {
 	static final String PREFIX = "{";

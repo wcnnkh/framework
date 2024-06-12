@@ -29,10 +29,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.mapper.transfer.Exporter;
 import io.basc.framework.mapper.transfer.RecordExporter;
-import io.basc.framework.value.Value;
 
 public class DefaultHSSFListener implements HSSFListener {
 	private final List<String> values = new ArrayList<String>(8);

@@ -37,8 +37,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.mapper.ObjectMapping;
-import io.basc.framework.mapper.entity.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.ObjectMapping;
 import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.util.StringUtils;
 

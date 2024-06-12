@@ -1,6 +1,6 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.mapper.entity.MappingException;
+import io.basc.framework.mapper.stereotype.MappingException;
 
 public class OrmException extends MappingException {
 	private static final long serialVersionUID = 1L;

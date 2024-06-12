@@ -17,6 +17,7 @@ import io.basc.framework.data.repository.RelationshipSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.SortOrder;
 import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.ColumnDescriptor;
@@ -29,7 +30,6 @@ import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Symbol;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 
 public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;

@@ -3,6 +3,7 @@ package io.basc.framework.mvc.security;
 import java.net.HttpCookie;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -14,7 +15,6 @@ import io.basc.framework.security.session.UserSessions;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.value.Value;
 import io.basc.framework.web.WebUtils;
 
 @ConditionalOnParameters

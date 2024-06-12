@@ -41,7 +41,6 @@ public interface Return<T> extends Optional<T>, Status {
 		return new StandardReturn<U>(false, code, msg, value);
 	}
 
-	@Override
 	<U> Return<U> convert(Function<? super T, ? extends U> converter);
 
 	@Override

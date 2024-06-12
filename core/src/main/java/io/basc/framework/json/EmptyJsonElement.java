@@ -2,7 +2,7 @@ package io.basc.framework.json;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.value.EmptyValue;
+import io.basc.framework.convert.lang.EmptyValue;
 
 public class EmptyJsonElement extends EmptyValue implements JsonElement {
 	private static final long serialVersionUID = 1L;

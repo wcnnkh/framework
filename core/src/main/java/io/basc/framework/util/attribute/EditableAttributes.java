@@ -1,6 +1,6 @@
 package io.basc.framework.util.attribute;
 
-import java.util.Enumeration;
+import io.basc.framework.util.element.Elements;
 
 public interface EditableAttributes<K, V> extends Attributes<K, V> {
 	void setAttribute(K name, V value);
@@ -8,10 +8,7 @@ public interface EditableAttributes<K, V> extends Attributes<K, V> {
 	void removeAttribute(K name);
 
 	default void setAttributes(Attributes<K, ? extends V> attributes) {
-		Enumeration<? extends K> keys = attributes.getAttributeNames();
-		while (keys.hasMoreElements()) {
-			K key = keys.nextElement();
-			setAttribute(key, attributes.getAttribute(key));
-		}
+		Elements<? extends K> keys = attributes.getAttributeNames();
+		keys.forEach((key) -> setAttribute(key, attributes.getAttribute(key)));
 	}
 }

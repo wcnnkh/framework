@@ -1,9 +1,9 @@
 package io.basc.framework.util.attribute;
 
-import java.util.Enumeration;
+import io.basc.framework.util.element.Elements;
 
 public interface Attributes<K, V> {
 	V getAttribute(K name);
-	
-	Enumeration<K> getAttributeNames();
+
+	Elements<K> getAttributeNames();
 }

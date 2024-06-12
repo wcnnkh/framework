@@ -1,8 +1,8 @@
 package io.basc.framework.jxl;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.value.AbstractValue;
 import io.basc.framework.excel.SheetContext;
-import io.basc.framework.value.AbstractValue;
 import jxl.Cell;
 import lombok.RequiredArgsConstructor;
 

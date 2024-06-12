@@ -2,9 +2,9 @@ package io.basc.framework.util;
 
 import java.util.Map;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.value.Value;
 
 public class JavaVersion extends Version {
 	private static final long serialVersionUID = 1L;

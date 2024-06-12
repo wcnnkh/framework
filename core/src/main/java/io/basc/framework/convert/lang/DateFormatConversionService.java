@@ -12,7 +12,6 @@ import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.TimeUtils;
-import io.basc.framework.value.Value;
 
 public class DateFormatConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERTIBLE_PAIRS = new HashSet<>(4);

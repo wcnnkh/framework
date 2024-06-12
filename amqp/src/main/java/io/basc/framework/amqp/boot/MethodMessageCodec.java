@@ -2,7 +2,7 @@ package io.basc.framework.amqp.boot;
 
 import io.basc.framework.amqp.Message;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.value.Values;
+import io.basc.framework.convert.value.Values;
 
 public interface MethodMessageCodec<T> {
 	Message<T> encode(Message<Values> args);

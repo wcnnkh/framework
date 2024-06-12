@@ -2,8 +2,9 @@ package io.basc.framework.beans;
 
 import io.basc.framework.convert.IdentityConversionService;
 import io.basc.framework.convert.RecursiveConversionService;
-import io.basc.framework.mapper.entity.MappingStrategy;
-import io.basc.framework.mapper.support.DefaultMappingStrategy;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.transform.strategy.DefaultPropertiesTransformStrategy;
+import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Assert;
 
 public class BeanUtils {
@@ -14,19 +15,19 @@ public class BeanUtils {
 	}
 
 	public static <T> T clone(Object source, Class<? extends T> targetType, boolean deep) {
-		DefaultMappingStrategy mappingStrategy = new DefaultMappingStrategy();
+		DefaultPropertiesTransformStrategy strategy = new DefaultPropertiesTransformStrategy();
 		if (deep) {
-			mappingStrategy.setConversionService(new RecursiveConversionService(MAPPER));
+			strategy.setConversionService(new RecursiveConversionService(MAPPER));
 		} else {
-			mappingStrategy.setConversionService(new IdentityConversionService());
+			strategy.setConversionService(new IdentityConversionService());
 		}
-		return clone(source, targetType, mappingStrategy);
+		return clone(source, targetType, strategy);
 	}
 
-	public static <T> T clone(Object source, Class<? extends T> targetType, MappingStrategy mappingStrategy) {
+	public static <T> T clone(Object source, Class<? extends T> targetType, PropertiesTransformStrategy strategy) {
 		Assert.requiredArgument(targetType != null, "targetType");
 		T target = MAPPER.newInstance(targetType);
-		return copy(source, target, mappingStrategy);
+		return copy(source, target, strategy);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,20 +50,20 @@ public class BeanUtils {
 	}
 
 	public static <T> T copy(Object source, T target, boolean deep) {
-		DefaultMappingStrategy mappingStrategy = new DefaultMappingStrategy();
+		DefaultPropertiesTransformStrategy strategy = new DefaultPropertiesTransformStrategy();
 		if (deep) {
-			mappingStrategy.setConversionService(new RecursiveConversionService(MAPPER));
+			strategy.setConversionService(new RecursiveConversionService(MAPPER));
 		} else {
-			mappingStrategy.setConversionService(new IdentityConversionService());
+			strategy.setConversionService(new IdentityConversionService());
 		}
-		return copy(source, target, mappingStrategy);
+		return copy(source, target, strategy);
 	}
 
-	public static <T> T copy(Object source, T target, MappingStrategy mappingStrategy) {
+	public static <T> T copy(Object source, T target, PropertiesTransformStrategy strategy) {
 		if (source == null || target == null) {
 			return target;
 		}
-		MAPPER.transform(source, target, mappingStrategy);
+		MAPPER.transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target), strategy);
 		return target;
 	}
 

@@ -1,8 +1,7 @@
 package io.basc.framework.util.attribute;
 
-import java.util.Enumeration;
-
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.element.Elements;
 
 public class AttributesWrapper<W extends Attributes<K, V>, K, V> extends Wrapper<W> implements Attributes<K, V> {
 
@@ -16,7 +15,7 @@ public class AttributesWrapper<W extends Attributes<K, V>, K, V> extends Wrapper
 	}
 
 	@Override
-	public Enumeration<K> getAttributeNames() {
+	public Elements<K> getAttributeNames() {
 		return wrappedTarget.getAttributeNames();
 	}
 

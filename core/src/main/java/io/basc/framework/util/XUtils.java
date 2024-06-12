@@ -67,7 +67,7 @@ public final class XUtils {
 	/**
 	 * 获取名称
 	 * 
-	 * @see Named#getName()
+	 * @see Name#getName()
 	 * @param instance
 	 * @param defaultName
 	 * @return
@@ -77,8 +77,8 @@ public final class XUtils {
 			return defaultName;
 		}
 
-		if (instance instanceof Named) {
-			String name = ((Named) instance).getName();
+		if (instance instanceof Name) {
+			String name = ((Name) instance).getName();
 			return name == null ? defaultName : name;
 		}
 

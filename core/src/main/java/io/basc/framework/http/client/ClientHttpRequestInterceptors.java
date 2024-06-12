@@ -8,7 +8,7 @@ public class ClientHttpRequestInterceptors extends ConfigurableServices<ClientHt
 		implements ClientHttpRequestInterceptor {
 
 	public ClientHttpRequestInterceptors() {
-		super(ClientHttpRequestInterceptor.class);
+		setServiceClass(ClientHttpRequestInterceptor.class);
 	}
 
 	@Override

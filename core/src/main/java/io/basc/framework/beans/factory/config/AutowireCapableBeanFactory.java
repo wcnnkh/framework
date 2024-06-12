@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.execution.ParameterFactory;
+import io.basc.framework.execution.param.ParameterFactory;
 
 public interface AutowireCapableBeanFactory extends BeanFactory, ParameterFactory {
 

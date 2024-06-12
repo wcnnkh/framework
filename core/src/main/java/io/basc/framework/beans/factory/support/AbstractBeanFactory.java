@@ -21,15 +21,15 @@ import io.basc.framework.beans.factory.ioc.AutowireParameterExtractors;
 import io.basc.framework.beans.factory.ioc.DefaultAutowireParameterExtractors;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.execution.Executable;
-import io.basc.framework.execution.Parameter;
-import io.basc.framework.execution.ParameterExtractors;
-import io.basc.framework.execution.Parameters;
+import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.execution.param.ParameterExtractors;
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.observe.register.ServiceInjectors;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);

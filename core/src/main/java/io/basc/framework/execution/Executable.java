@@ -3,10 +3,12 @@ package io.basc.framework.execution;
 import java.lang.reflect.Modifier;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.Named;
+import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.execution.param.ParameterMatchingResults;
+import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.util.Name;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
-import io.basc.framework.value.ParameterDescriptor;
 
 /**
  * 所有执行的基类
@@ -14,7 +16,7 @@ import io.basc.framework.value.ParameterDescriptor;
  * @author wcnnkh
  *
  */
-public interface Executable extends Executed, Named {
+public interface Executable extends Executed, Name {
 	default boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
 		return getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()).equals(parameterTypes,
 				Class::isAssignableFrom);

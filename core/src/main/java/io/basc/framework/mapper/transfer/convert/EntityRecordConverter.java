@@ -11,9 +11,9 @@ import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
 import io.basc.framework.execution.Setter;
 import io.basc.framework.mapper.InstanceFactory;
-import io.basc.framework.mapper.entity.FieldDescriptor;
-import io.basc.framework.mapper.entity.Mapping;
-import io.basc.framework.mapper.entity.factory.MappingFactory;
+import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.Mapping;
+import io.basc.framework.mapper.stereotype.MappingFactory;
 import io.basc.framework.util.element.Elements;
 
 public interface EntityRecordConverter extends ReversibleConverter<Parameters, Object, ConversionException> {

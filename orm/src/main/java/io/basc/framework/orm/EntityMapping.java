@@ -1,7 +1,7 @@
 package io.basc.framework.orm;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.entity.Mapping;
+import io.basc.framework.mapper.stereotype.Mapping;
 import io.basc.framework.util.element.Elements;
 
 /**

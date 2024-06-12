@@ -11,7 +11,7 @@ import io.basc.framework.lang.UnsupportedException;
 public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver> implements PropertiesResolver {
 
 	public PropertiesResolvers() {
-		super(PropertiesResolver.class);
+		setServiceClass(PropertiesResolver.class);
 	}
 
 	public boolean canResolveProperties(Resource resource) {

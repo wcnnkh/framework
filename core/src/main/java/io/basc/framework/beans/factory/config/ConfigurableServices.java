@@ -24,6 +24,10 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 		}
 	}
 
+	public ConfigurableServices(Class<? extends T> serviceClass) {
+		setServiceClass(serviceClass);
+	}
+
 	public void configure(Class<? extends T> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
 		if (serviceLoaderFactory == null || serviceClass == null) {
 			return;

@@ -32,7 +32,7 @@ import lombok.ToString;
  */
 @ToString
 @EqualsAndHashCode
-public class Symbol implements Serializable, Named {
+public class Symbol implements Serializable, Name {
 	private static final ReentrantReadWriteLock READ_WRITE_LOCK = new ReentrantReadWriteLock();
 	private static final long serialVersionUID = 1L;
 	private static final TreeMap<Class<?>, Map<String, List<Symbol>>> SYMBOL_MAP = new TreeMap<>(

@@ -22,7 +22,7 @@ import io.basc.framework.data.repository.RepositoryOperations;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.data.repository.UpdateOperationSymbol;
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
@@ -72,7 +72,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
 
@@ -103,7 +103,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
 		DeleteOperation deleteOperation = new DeleteOperation(operationSymbol, repository);
@@ -131,7 +131,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
 
@@ -180,7 +180,7 @@ public interface EntityOperations extends RepositoryOperations {
 			List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 					repository.getEntityMapping().getPrimaryKeys().iterator());
 			List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-				return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+				return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 						parameter.getTypeDescriptor());
 			}).collect(Collectors.toList());
 			operation.setConditions(Elements.of(conditions));
@@ -264,7 +264,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
 		queryOperation.setConditions(Elements.of(conditions));
@@ -283,7 +283,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Condition> conditions = new ArrayList<>(conditionEntries.size() + 1);
 		for (Entry<ColumnDescriptor, Parameter> entry : conditionEntries) {
 			Parameter parameter = entry.getValue();
-			conditions.add(new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			conditions.add(new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor()));
 		}
 
@@ -347,7 +347,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().getEntries(entity,
 				repository.getEntityMapping().getPrimaryKeys().iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
 
@@ -377,7 +377,7 @@ public interface EntityOperations extends RepositoryOperations {
 		List<Entry<ColumnDescriptor, Parameter>> conditionEntries = getMapper().combineEntries(
 				repository.getEntityMapping().getPrimaryKeys().iterator(), Arrays.asList(primaryKeys).iterator());
 		List<Condition> conditions = conditionEntries.stream().map((e) -> e.getValue()).map((parameter) -> {
-			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			return new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}).collect(Collectors.toList());
 

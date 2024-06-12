@@ -2,8 +2,8 @@ package io.basc.framework.convert.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.value.ObjectValue;
-import io.basc.framework.value.Value;
+import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.Value;
 
 class ValueConversionService implements ConversionService {
 

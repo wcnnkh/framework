@@ -2,8 +2,8 @@ package io.basc.framework.orm;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.repository.IndexInfo;
-import io.basc.framework.mapper.entity.FieldDescriptor;
-import io.basc.framework.mapper.entity.FieldDescriptorWrapper;
+import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.mapper.stereotype.FieldDescriptorWrapper;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;

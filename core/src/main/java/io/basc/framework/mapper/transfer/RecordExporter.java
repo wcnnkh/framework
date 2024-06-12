@@ -9,16 +9,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.Parameter;
 import io.basc.framework.execution.Parameters;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.mapper.entity.Mapping;
-import io.basc.framework.mapper.property.Item;
-import io.basc.framework.mapper.property.Items;
-import io.basc.framework.mapper.property.Named;
+import io.basc.framework.mapper.stereotype.Mapping;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Item;
+import io.basc.framework.util.Items;
+import io.basc.framework.util.Named;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.Value;
 
 public interface RecordExporter extends Exporter {
 	@SuppressWarnings("unchecked")

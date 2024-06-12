@@ -1,26 +1,5 @@
 package io.basc.framework.util;
 
-import java.util.stream.Collectors;
-
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.element.Elements;
-
 public interface Name {
-
-	/**
-	 * 分割符
-	 * 
-	 * @return
-	 */
-	@Nullable
-	CharSequence getDelimiter();
-
-	Elements<? extends Name> getElements();
-
-	default String getName() {
-		Elements<String> elements = getElements().map((e) -> e.getName());
-		CharSequence delimiter = getDelimiter();
-		return delimiter == null ? elements.collect(Collectors.joining())
-				: elements.collect(Collectors.joining(delimiter));
-	}
+	String getName();
 }

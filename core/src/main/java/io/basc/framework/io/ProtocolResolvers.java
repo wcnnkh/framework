@@ -5,7 +5,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServices;
 public class ProtocolResolvers extends ConfigurableServices<ProtocolResolver> implements ProtocolResolver {
 
 	public ProtocolResolvers() {
-		super(ProtocolResolver.class);
+		setServiceClass(ProtocolResolver.class);
 	}
 
 	@Override

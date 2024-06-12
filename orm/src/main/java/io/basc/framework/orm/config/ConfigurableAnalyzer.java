@@ -12,16 +12,16 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.execution.Parameter;
-import io.basc.framework.mapper.entity.MappingStrategy;
+import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.ForeignKey;
+import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.ParameterDescriptor;
 
 public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> implements Analyzer {
 	/**
@@ -84,18 +84,18 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 	@Override
 	public <T> String getRepositoryName(OperationSymbol operationSymbol, EntityMapping<?> entityMapping,
 			Class<? extends T> entityClass, T entity) {
-		String name = ChainAnalyzer.build(getServices().iterator()).getRepositoryName(operationSymbol,
-				entityMapping, entityClass, entity);
+		String name = ChainAnalyzer.build(getServices().iterator()).getRepositoryName(operationSymbol, entityMapping,
+				entityClass, entity);
 		return StringUtils.isEmpty(name) ? entityMapping.getName() : name;
 	}
 
 	@Override
 	public <T> Expression getColumn(OperationSymbol operationSymbol, EntityRepository<T> repository,
 			Parameter parameter, ColumnDescriptor property) {
-		Expression expression = ChainAnalyzer.build(getServices().iterator()).getColumn(operationSymbol,
-				repository, parameter, property);
+		Expression expression = ChainAnalyzer.build(getServices().iterator()).getColumn(operationSymbol, repository,
+				parameter, property);
 		if (expression == null) {
-			expression = new Expression(parameter.getName(), parameter.getSource(), parameter.getTypeDescriptor());
+			expression = new Expression(parameter.getName(), parameter.getValue(), parameter.getTypeDescriptor());
 		}
 		return expression;
 	}
@@ -103,10 +103,10 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
 			Parameter parameter, ColumnDescriptor property) {
-		Condition condition = ChainAnalyzer.build(getServices().iterator()).getCondition(operationSymbol,
-				repository, parameter, property);
+		Condition condition = ChainAnalyzer.build(getServices().iterator()).getCondition(operationSymbol, repository,
+				parameter, property);
 		if (condition == null) {
-			condition = new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getSource(),
+			condition = new Condition(parameter.getName(), ConditionSymbol.EQU, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}
 		return condition;
@@ -115,8 +115,7 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 	@Override
 	public <T> Sort getSort(OperationSymbol operationSymbol, EntityRepository<T> repository, Parameter parameter,
 			ColumnDescriptor property) {
-		return ChainAnalyzer.build(getServices().iterator()).getSort(operationSymbol, repository, parameter,
-				property);
+		return ChainAnalyzer.build(getServices().iterator()).getSort(operationSymbol, repository, parameter, property);
 	}
 
 	@Override
@@ -240,8 +239,8 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 	}
 
 	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy) {
-		return ChainAnalyzer.build(getServices().iterator()).getMappingStrategy(source,
-				dottomlessMappingStrategy);
+	public PropertiesTransformStrategy getPropertiesTransformStrategy(TypeDescriptor source,
+			PropertiesTransformStrategy dottomlessStrategy) {
+		return ChainAnalyzer.build(getServices().iterator()).getPropertiesTransformStrategy(source, dottomlessStrategy);
 	}
 }

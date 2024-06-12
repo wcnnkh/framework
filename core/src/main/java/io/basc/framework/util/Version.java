@@ -3,7 +3,7 @@ package io.basc.framework.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import io.basc.framework.value.Value;
+import io.basc.framework.convert.lang.Value;
 
 public class Version implements Serializable, Comparable<Version>, Comparator<Value> {
 	private static final long serialVersionUID = 1L;

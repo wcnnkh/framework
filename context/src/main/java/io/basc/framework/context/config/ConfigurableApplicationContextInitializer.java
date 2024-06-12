@@ -6,7 +6,7 @@ public class ConfigurableApplicationContextInitializer extends ConfigurableServi
 		implements ApplicationContextInitializer {
 
 	public ConfigurableApplicationContextInitializer() {
-		super(ApplicationContextInitializer.class);
+		setServiceClass(ApplicationContextInitializer.class);
 	}
 
 	@Override

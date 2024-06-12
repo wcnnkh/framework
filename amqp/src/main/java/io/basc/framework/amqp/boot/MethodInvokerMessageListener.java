@@ -9,9 +9,9 @@ import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.MessageProperties;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.value.Values;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.value.Values;
 
 class MethodInvokerMessageListener<T> implements MessageListener<T> {
 	private MethodInvoker invoker;

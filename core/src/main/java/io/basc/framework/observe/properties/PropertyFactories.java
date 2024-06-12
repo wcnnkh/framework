@@ -1,12 +1,12 @@
 package io.basc.framework.observe.properties;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.Observer;
+import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.RegistrationException;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.Value;
 
 /**
  * 频繁修改属性建议使用此类, 不会触发数据收集
