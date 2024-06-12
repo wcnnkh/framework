@@ -14,7 +14,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Condition extends Expression {
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 和上一个条件的关系

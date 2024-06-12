@@ -1,41 +1,20 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.transform.Property;
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
-public class Field implements Property {
-	private final FieldDescriptor fieldDescriptor;
+public class Field extends AbstractField {
 	private final Object target;
 
-	@Override
-	public String getName() {
-		return fieldDescriptor.getName();
-	}
-
-	@Override
-	public TypeDescriptor getTypeDescriptor() {
-		return fieldDescriptor.getter().getTypeDescriptor();
-	}
-
-	@Override
-	public TypeDescriptor getRequiredTypeDescriptor() {
-		return fieldDescriptor.setter().getTypeDescriptor();
+	public Field(FieldDescriptor fieldDescriptor, Object target) {
+		super(fieldDescriptor);
+		this.target = target;
 	}
 
 	@Override
 	public Object getValue() {
-		return fieldDescriptor.getter().get(target);
-	}
-
-	@Override
-	public boolean isReadOnly() {
-		return !fieldDescriptor.isSupportSetter();
+		return getFieldDescriptor().getter().get(target);
 	}
 
 	@Override
 	public void setValue(Object value) {
-		fieldDescriptor.setter().set(target, value);
+		getFieldDescriptor().setter().set(target, value);
 	}
 }

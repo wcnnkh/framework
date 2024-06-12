@@ -1,5 +1,6 @@
 package io.basc.framework.execution.param;
 
+import io.basc.framework.convert.TypeDescriptor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,14 @@ public class SimpleParameter extends SimpleParameterDescriptor implements Parame
 	public SimpleParameter(Parameter parameter) {
 		this((ParameterDescriptor) parameter);
 		this.value = parameter.getValue();
+	}
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		TypeDescriptor typeDescriptor = super.getTypeDescriptor();
+		if (typeDescriptor == DEFAULT_TYPE_DESCRIPTOR && value != null) {
+			return TypeDescriptor.forObject(value);
+		}
+		return typeDescriptor;
 	}
 }

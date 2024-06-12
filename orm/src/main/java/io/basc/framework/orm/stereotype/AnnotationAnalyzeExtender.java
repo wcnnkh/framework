@@ -16,7 +16,7 @@ import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.RelationshipSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.SortOrder;
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
@@ -302,8 +302,8 @@ public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFo
 	@Override
 	public <T> Condition getCondition(OperationSymbol operationSymbol, EntityRepository<T> repository,
 			Parameter parameter, ColumnDescriptor property, Analyzer chain) {
-		io.basc.framework.orm.stereotype.Condition condition = AnnotatedElementUtils.getMergedAnnotation(
-				parameter.getTypeDescriptor(), io.basc.framework.orm.stereotype.Condition.class);
+		io.basc.framework.orm.stereotype.Condition condition = AnnotatedElementUtils
+				.getMergedAnnotation(parameter.getTypeDescriptor(), io.basc.framework.orm.stereotype.Condition.class);
 		if (condition != null) {
 			ConditionSymbol conditionSymbol = Symbol.getOrCreate(
 					() -> ConditionSymbol.getConditionSymbols(condition.value()).first(),
@@ -317,7 +317,7 @@ public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFo
 						() -> RelationshipSymbol.getRelationshipSymbol(relationship.value()).first(),
 						() -> new RelationshipSymbol(relationship.value()));
 			}
-			return new Condition(relationshipSymbol, parameter.getName(), conditionSymbol, parameter.getSource(),
+			return new Condition(relationshipSymbol, parameter.getName(), conditionSymbol, parameter.getValue(),
 					parameter.getTypeDescriptor());
 		}
 		return AnalyzeExtender.super.getCondition(operationSymbol, repository, parameter, property, chain);
@@ -353,7 +353,7 @@ public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFo
 		InvalidBaseTypeValue invalidBaseTypeValue = AnnotatedElementUtils
 				.getMergedAnnotation(parameter.getTypeDescriptor(), InvalidBaseTypeValue.class);
 		if (invalidBaseTypeValue != null && invalidBaseTypeValue.value().length > 0) {
-			Object value = parameter.getSource();
+			Object value = parameter.getValue();
 			if (value instanceof Number) {
 				double dv = ((Number) value).doubleValue();
 				for (double invalid : invalidBaseTypeValue.value()) {

@@ -19,6 +19,10 @@ import io.basc.framework.util.element.Elements;
 public interface Parameters
 		extends Items<Parameter>, Function<Elements<? extends ParameterDescriptor>, ParameterMatchingResults> {
 
+	public static Parameters empty() {
+		return EmptyParameters.INSTANCE;
+	}
+
 	public static Parameters forArgs(Iterable<? extends Object> args) {
 		Elements<Parameter> parameters = Elements.of(args).index()
 				.map((e) -> new Arg((int) e.getIndex(), Value.of(e.getElement())));

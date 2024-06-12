@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class SimpleParameterDescriptor extends SimpleItem implements ParameterDescriptor {
+	public static final TypeDescriptor DEFAULT_TYPE_DESCRIPTOR = TypeDescriptor.valueOf(Object.class);
 	private TypeDescriptor typeDescriptor;
 
 	public SimpleParameterDescriptor(Item item) {
@@ -26,6 +27,6 @@ public class SimpleParameterDescriptor extends SimpleItem implements ParameterDe
 
 	@Override
 	public TypeDescriptor getTypeDescriptor() {
-		return typeDescriptor == null ? TypeDescriptor.valueOf(Object.class) : typeDescriptor;
+		return typeDescriptor == null ? DEFAULT_TYPE_DESCRIPTOR : typeDescriptor;
 	}
 }

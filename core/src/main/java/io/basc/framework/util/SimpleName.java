@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SimpleName implements Name {
 	private String name;
-	
+
 	public SimpleName(Name name) {
 		this.name = name.getName();
 	}

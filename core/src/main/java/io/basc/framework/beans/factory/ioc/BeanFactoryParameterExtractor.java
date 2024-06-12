@@ -9,9 +9,9 @@ import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.ListableBeanFactory;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.Arg;
 import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.execution.param.SimpleParameter;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.element.ServiceLoader;
 
@@ -112,7 +112,10 @@ public class BeanFactoryParameterExtractor implements AutowireParameterExtractor
 				}
 			}
 		}
-		return new Arg(parameterDescriptor.getName(), parameterDescriptor.getTypeDescriptor(), bean);
+
+		SimpleParameter parameter = new SimpleParameter(parameterDescriptor);
+		parameter.setValue(bean);
+		return parameter;
 	}
 
 }

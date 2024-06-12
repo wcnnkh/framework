@@ -5,22 +5,23 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.ResolvableType;
 import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.execution.Getter;
 import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.stereotype.Field;
+import io.basc.framework.mapper.stereotype.OffLineField;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
 
 public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer {
+
 	default <T> EntityRepository<T> getRepository(OperationSymbol operationSymbol, Class<? extends T> entityClass,
 			@Nullable T entity) {
 		EntityMapping<?> entityMapping = getMapping(entityClass);
@@ -78,16 +79,9 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer
 	}
 
 	default Parameter createParameter(ColumnDescriptor property, Object value) {
-		Parameter parameter;
-		if (value instanceof Parameter) {
-			parameter = (Parameter) value;
-			parameter = parameter.rename(property.getName());
-		} else {
-			TypeDescriptor typeDescriptor = new TypeDescriptor(ResolvableType.forClass(value.getClass()),
-					value.getClass(), property.getter().getTypeDescriptor());
-			parameter = new Parameter(property.getName(), value, typeDescriptor);
-		}
-		return parameter;
+		OffLineField field = new OffLineField(property);
+		field.setValue(value);
+		return field;
 	}
 
 	default <F extends ColumnDescriptor> List<Entry<F, Parameter>> combineEntries(Iterator<? extends F> properties,
@@ -108,9 +102,7 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer
 		List<Entry<F, Parameter>> entries = new ArrayList<>();
 		while (propertyIterator.hasNext()) {
 			F property = propertyIterator.next();
-			Getter getter = property.getter();
-			Object value = getter.get(entity);
-			Parameter parameter = new Parameter(property.getName(), value, getter.getTypeDescriptor());
+			Field parameter = new Field(property, entity);
 			if (!hasEffectiveValue(parameter)) {
 				continue;
 			}
@@ -126,18 +118,12 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer
 			return false;
 		}
 
-		Getter getter = property.getter();
-		Object value = getter.get(entity);
-		if (value == null) {
+		Field field = new Field(property, entity);
+		if (!field.isPresent()) {
 			return false;
 		}
 
-		Parameter parameter = new Parameter(getter.getName(), value, getter.getTypeDescriptor());
-		if (!parameter.isPresent()) {
-			return false;
-		}
-
-		return hasEffectiveValue(parameter);
+		return hasEffectiveValue(field);
 	}
 
 	@Override

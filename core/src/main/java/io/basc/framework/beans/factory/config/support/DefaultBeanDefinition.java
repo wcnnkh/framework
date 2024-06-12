@@ -30,7 +30,7 @@ public class DefaultBeanDefinition extends ExecutorRegistry<Function> implements
 	private Elements<Method> initMethods;
 	private Elements<Method> destroyMethods;
 	@NonNull
-	private Parameters parameters = new Parameters();
+	private Parameters parameters = Parameters.empty();
 
 	public DefaultBeanDefinition(TypeDescriptor returnTypeDescriptor) {
 		super(returnTypeDescriptor);
