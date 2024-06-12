@@ -204,7 +204,7 @@ public final class DomUtils {
 
 	public static Value getNodeAttributeValue(Environment environment, Node node, String name) {
 		Value value = getNodeAttributeValue(node, name);
-		if (value.isEmpty()) {
+		if (!value.isPresent()) {
 			return value;
 		}
 
@@ -232,7 +232,7 @@ public final class DomUtils {
 
 	public static Value getRequireNodeAttributeValue(Environment environment, Node node, String name) {
 		Value value = getNodeAttributeValue(environment, node, name);
-		if (value.isEmpty()) {
+		if (!value.isPresent()) {
 			throw new NotFoundException("not found attribute " + name);
 		}
 		return value;

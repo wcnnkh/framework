@@ -16,7 +16,7 @@ public interface PropertyFactory extends ValueFactory<String>, Properties {
 
 	@Override
 	default Elements<Property> getElements() {
-		return keys().map((key) -> new ReadOnlyProperty(key, null, () -> get(key)));
+		return keys().map((key) -> new ReadOnlyProperty(key, get(key)));
 	}
 
 	Elements<String> keys();

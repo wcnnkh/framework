@@ -2,25 +2,22 @@ package io.basc.framework.execution.param;
 
 import java.io.Serializable;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.Value;
+import lombok.Getter;
 
-public class Arg extends SimpleParameter implements Serializable {
+@Getter
+public class Arg implements Parameter, Serializable {
 	private static final long serialVersionUID = 1L;
+	private int positionIndex;
+	private String name;
+	private Value value;
 
-	public Arg(ParameterDescriptor parameterDescriptor, Object value) {
-		super(parameterDescriptor);
-		setValue(value);
+	public Arg(int positionIndex, Value value) {
+		this.positionIndex = positionIndex;
 	}
 
-	public Arg(int positionIndex, TypeDescriptor typeDescriptor, Object value) {
-		setPositionIndex(positionIndex);
-		setTypeDescriptor(typeDescriptor);
-		setValue(value);
-	}
-
-	public Arg(String name, TypeDescriptor typeDescriptor, Object value) {
-		setName(name);
-		setTypeDescriptor(typeDescriptor);
-		setValue(value);
+	public Arg(String name, Value value) {
+		this.name = name;
+		this.value = value;
 	}
 }

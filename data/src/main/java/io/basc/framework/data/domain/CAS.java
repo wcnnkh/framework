@@ -20,7 +20,6 @@ public class CAS<V> extends DefaultOptional<V> implements Variable {
 		return lastModified;
 	}
 
-	@Override
 	public <T> CAS<T> convert(Function<? super V, ? extends T> converter) {
 		Assert.requiredArgument(converter != null, "converter");
 		V oldValue = orElse(null);

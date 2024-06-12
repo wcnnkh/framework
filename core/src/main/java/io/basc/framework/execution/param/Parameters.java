@@ -1,8 +1,6 @@
 package io.basc.framework.execution.param;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -13,46 +11,28 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.util.Items;
 import io.basc.framework.util.element.Elements;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
 
 /**
  * 多个参数
  */
-@NoArgsConstructor
-@Setter
-public class Parameters implements Items<Parameter>,
-		Function<Elements<? extends ParameterDescriptor>, ParameterMatchingResults>, Serializable {
-	private static final long serialVersionUID = 1L;
-	@NonNull
-	private Elements<Parameter> elements = Elements.empty();
+@FunctionalInterface
+public interface Parameters
+		extends Items<Parameter>, Function<Elements<? extends ParameterDescriptor>, ParameterMatchingResults> {
 
-	public Parameters(Parameter... parameters) {
-		this(Arrays.asList(parameters));
+	public static Parameters forArgs(Iterable<? extends Object> args) {
+		Elements<Parameter> parameters = Elements.of(args).index()
+				.map((e) -> new Arg((int) e.getIndex(), Value.of(e.getElement())));
+		return new Args(parameters);
 	}
 
-	public Parameters(Iterable<Parameter> parameters) {
-		this.elements = Elements.of(parameters);
-	}
-
-	public Elements<Class<?>> getTypes() {
-		return elements == null ? Elements.empty()
-				: elements.sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getTypeDescriptor)
-						.map(TypeDescriptor::getType);
-	}
-
-	public Elements<Object> getArgs() {
-		return elements == null ? Elements.empty()
-				: elements.sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getValue);
-	}
-
-	public boolean isEmpty() {
-		return elements == null || elements.isEmpty();
+	public static Parameters forValues(Iterable<? extends Value> values) {
+		Elements<Parameter> parameters = Elements.of(values).index()
+				.map((e) -> new Arg((int) e.getIndex(), e.getElement()));
+		return new Args(parameters);
 	}
 
 	@Override
-	public ParameterMatchingResults apply(Elements<? extends ParameterDescriptor> parameterDescriptors) {
+	default ParameterMatchingResults apply(Elements<? extends ParameterDescriptor> parameterDescriptors) {
 		ParameterMatchingResults matchingResults = new ParameterMatchingResults();
 		if (parameterDescriptors.isEmpty() && isEmpty()) {
 			matchingResults.setSuccessful(true);
@@ -60,7 +40,7 @@ public class Parameters implements Items<Parameter>,
 		}
 
 		List<ParameterDescriptor> parameterDescriptorList = parameterDescriptors.collect(Collectors.toList());
-		List<Parameter> parameterList = elements.collect(Collectors.toList());
+		List<Parameter> parameterList = getElements().collect(Collectors.toList());
 		List<ParameterMatched> results = new ArrayList<ParameterMatched>();
 		Iterator<ParameterDescriptor> iterator = parameterDescriptorList.iterator();
 		while (iterator.hasNext()) {
@@ -118,20 +98,16 @@ public class Parameters implements Items<Parameter>,
 		return matchingResults;
 	}
 
-	public static Parameters forArgs(Iterable<? extends Object> args) {
-		Elements<Parameter> parameters = Elements.of(args).index()
-				.map((e) -> new Arg((int) e.getIndex(), null, e.getElement()));
-		return new Parameters(parameters);
+	default Elements<Object> getArgs() {
+		return getElements().sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getValue);
 	}
 
-	public static Parameters forValues(Iterable<? extends Value> values) {
-		Elements<Parameter> parameters = Elements.of(values).index()
-				.map((e) -> new Arg((int) e.getIndex(), e.getElement().getTypeDescriptor(), e.getElement().getValue()));
-		return new Parameters(parameters);
+	default Elements<Class<?>> getTypes() {
+		return getElements().sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getTypeDescriptor)
+				.map(TypeDescriptor::getType);
 	}
 
-	@Override
-	public Elements<Parameter> getElements() {
-		return elements.sorted(Comparator.comparing(Parameter::getPositionIndex));
+	default boolean isEmpty() {
+		return getElements().isEmpty();
 	}
 }

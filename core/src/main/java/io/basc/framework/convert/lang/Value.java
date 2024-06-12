@@ -15,8 +15,10 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.function.Optional;
+import io.basc.framework.util.function.Source;
 
-public interface Value extends IntSupplier, LongSupplier, DoubleSupplier {
+public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Optional<Value> {
 	static final Value EMPTY = new EmptyValue();
 
 	static final Value[] EMPTY_ARRAY = new Value[0];
@@ -488,5 +490,22 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier {
 			return false;
 		}
 		return true;
+	}
+
+	default <T> Optional<T> as(Class<? extends T> type) {
+		return map((e) -> getAsObject(type));
+	}
+
+	default Value or(Object other) {
+		return orElse(Value.of(other));
+	}
+
+	@Override
+	default Value orElse(Value other) {
+		return isPresent() ? this : other;
+	}
+
+	default <E extends Throwable> Value orGet(Source<? extends Object, ? extends E> other) throws E {
+		return orElseGet(() -> Value.of(other.get()));
 	}
 }

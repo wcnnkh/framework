@@ -49,13 +49,17 @@ public class DefaultPropertiesTransformStrategy extends ConfigurableParameterDes
 		}
 
 		Elements<String> names = getAliasNames(sourceContext, sourceProperty);
-		Elements<Property> elements = names.map((name) -> targetProperties.getElements(name))
+		Elements<Property> targetElements = names.map((name) -> targetProperties.getElements(name))
 				.map((es) -> es.filter((property) -> !property.isReadOnly())).filter((e) -> !e.isEmpty()).first();
-		if (elements == null) {
-			return;
+		// 如果使用名称匹配不到那么使用位置匹配
+		if (targetElements.isEmpty()) {
+			Property targetProperty = targetProperties.getElement(sourceProperty.getPositionIndex());
+			if (targetProperty != null) {
+				targetElements = Elements.singleton(targetProperty);
+			}
 		}
 
-		elements.forEach((targetProperty) -> {
+		targetElements.forEach((targetProperty) -> {
 			if (conversionService.canConvert(sourceProperty.getTypeDescriptor(),
 					targetProperty.getRequiredTypeDescriptor())) {
 				Object value = conversionService.convert(sourceProperty.getValue(),

@@ -27,8 +27,11 @@ public interface ParameterFactory {
 	}
 
 	default Elements<Parameter> extractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
-		return parameterDescriptors.index()
-				.map((indexed) -> new Arg(indexed.getElement(), extractParameter(indexed.getElement())));
+		return parameterDescriptors.index().map((indexed) -> {
+			SimpleParameter parameter = new SimpleParameter(indexed.getElement());
+			parameter.setValue(extractParameter(indexed.getElement()));
+			return parameter;
+		});
 	}
 
 	default boolean canExtractExecutionParameters(Executable executable) {
@@ -36,7 +39,7 @@ public interface ParameterFactory {
 	}
 
 	default Parameters extractExecutionParameters(Executable executable) {
-		Parameters parameters = new Parameters();
+		Args parameters = new Args();
 		parameters.setElements(extractParameters(executable.getParameterDescriptors()));
 		return parameters;
 	}
