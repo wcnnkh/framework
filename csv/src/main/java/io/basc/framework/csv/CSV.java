@@ -11,9 +11,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 
+import io.basc.framework.io.InputStreamProcessor;
+import io.basc.framework.io.OutputStreamProcessor;
 import io.basc.framework.io.WritableResource;
-import io.basc.framework.io.convert.InputStreamProcessor;
-import io.basc.framework.io.convert.OutputStreamProcessor;
 import io.basc.framework.mapper.io.Exporter;
 import io.basc.framework.mapper.io.template.AbstractRecordExporter;
 import io.basc.framework.mapper.io.template.Record;

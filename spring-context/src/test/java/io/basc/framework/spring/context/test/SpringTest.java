@@ -22,7 +22,7 @@ public class SpringTest {
 	}
 
 	public static class Test3 {
-		private String a;
+		public String a;
 	}
 	
 	@EqualsAndHashCode(callSuper = true)
@@ -33,7 +33,7 @@ public class SpringTest {
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	public static class Test1 extends Test2 {
-		private String a;
+		public String a;
 
 		public String getB() {
 			return "b";

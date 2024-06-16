@@ -5,10 +5,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import io.basc.framework.convert.lang.Value;
-import io.basc.framework.orm.stereotype.ConfigurationProperties;
 import io.basc.framework.util.StringUtils;
 
-@ConfigurationProperties("mail")
 public class SimpleProperties extends Properties {
 	private static final long serialVersionUID = 1L;
 	public static final String PREFIX = "mail.";

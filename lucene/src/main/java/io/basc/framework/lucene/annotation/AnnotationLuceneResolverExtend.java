@@ -9,7 +9,7 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
-import io.basc.framework.execution.Parameter;
+import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lucene.support.SimpleLuceneResolverExtend;
 

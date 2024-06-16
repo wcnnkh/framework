@@ -28,8 +28,8 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.RelationshipSymbol;
 import io.basc.framework.data.repository.SortOrder;
-import io.basc.framework.execution.Parameter;
-import io.basc.framework.lucene.DocumentAccess;
+import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.lucene.DocumentProperties;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
 import io.basc.framework.orm.support.DefaultEntityMapper;
@@ -43,7 +43,7 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 
 	public DefaultLuceneMapper() {
 		luceneResolverExtends.register(new AnnotationLuceneResolverExtend());
-		registerObjectAccessFactory(Document.class, (s, e) -> new DocumentAccess(s, this, e));
+		registerPropertiesTransformer(Document.class, (s, e) -> new DocumentProperties(s, this));
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 	private String toString(Condition condition) {
 		String value;
 		if (canConvert(condition.getTypeDescriptor(), String.class)) {
-			value = convert(condition.getSource(), condition.getTypeDescriptor(), String.class);
+			value = convert(condition.getValue(), condition.getTypeDescriptor(), String.class);
 		} else {
 			value = condition.getAsString();
 		}
@@ -80,7 +80,7 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 			// =
 			Term term;
 			if (condition.getTypeDescriptor().getType() == byte[].class) {
-				term = new Term(condition.getName(), new BytesRef((byte[]) condition.getSource()));
+				term = new Term(condition.getName(), new BytesRef((byte[]) condition.getValue()));
 			} else {
 				String value = toString(condition);
 				term = new Term(condition.getName(), value);
@@ -94,12 +94,12 @@ public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMa
 				elementTypeDescriptor = condition.getTypeDescriptor().getElementTypeDescriptor();
 				TypeDescriptor targetType = TypeDescriptor.collection(List.class, elementTypeDescriptor);
 				if (canConvert(condition.getTypeDescriptor(), targetType)) {
-					list = (List<?>) convert(condition.getSource(), condition.getTypeDescriptor(), targetType);
+					list = (List<?>) convert(condition.getValue(), condition.getTypeDescriptor(), targetType);
 				} else {
 					list = (List<?>) condition.getAsObject(targetType);
 				}
 			} else {
-				list = Arrays.asList(condition.getSource());
+				list = Arrays.asList(condition.getValue());
 				elementTypeDescriptor = condition.getTypeDescriptor();
 			}
 
