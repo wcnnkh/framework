@@ -1,6 +1,6 @@
 package io.basc.framework.excel;
 
-import io.basc.framework.mapper.support.StandardItem;
+import io.basc.framework.util.SimpleItem;
 
-public class StandardSheetContext extends StandardItem implements SheetContext {
+public class StandardSheetContext extends SimpleItem implements SheetContext {
 }

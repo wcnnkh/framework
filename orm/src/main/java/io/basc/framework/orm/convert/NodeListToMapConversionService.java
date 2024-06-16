@@ -19,7 +19,7 @@ import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-class NodeListToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
+public class NodeListToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
 	private EntityMapper mapper;
 

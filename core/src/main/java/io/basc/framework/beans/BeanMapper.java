@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.support.DefaultObjectMapper;
+import io.basc.framework.mapper.stereotype.DefaultObjectMapper;
 import io.basc.framework.util.Assert;
 
 public class BeanMapper extends DefaultObjectMapper {

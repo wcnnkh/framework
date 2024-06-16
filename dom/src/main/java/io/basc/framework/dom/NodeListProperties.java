@@ -6,6 +6,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.convert.lang.Value;
+import io.basc.framework.execution.param.Arg;
+import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
@@ -22,7 +24,8 @@ public class NodeListProperties implements Properties {
 	public Elements<Property> getElements() {
 		return Elements.of(() -> IntStream.range(1, nodeList.getLength() + 1).mapToObj((i) -> {
 			Node node = nodeList.item(i);
-			return new ReadOnlyProperty(i, node.getNodeName(), null, () -> Value.of(node));
+			Parameter parameter = new Arg(i, node.getNodeName(), Value.of(node));
+			return new ReadOnlyProperty(parameter);
 		}));
 	}
 

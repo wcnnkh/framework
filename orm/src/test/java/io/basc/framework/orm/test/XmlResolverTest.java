@@ -8,7 +8,9 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
+import io.basc.framework.convert.resolve.ResourceResolvers;
+import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -20,22 +22,23 @@ public class XmlResolverTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		System.out.println(Sys.getEnv().getConversionService());
+		System.out.println(GlobalConversionService.getInstance());
 		TypeDescriptor mapType = TypeDescriptor.map(Map.class, String.class, TestBean.class);
 		TypeDescriptor listType = TypeDescriptor.collection(List.class, TestBean.class);
-		Resource resource = Sys.getEnv().getResourceLoader().getResource("test.xml");
-		Map<String, TestBean> map = (Map<String, TestBean>) Sys.getEnv().getResourceResolver().resolveResource(resource,
-				mapType);
+		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+		Resource resource = resourceLoader.getResource("test.xml");
+		ResourceResolvers resourceResolvers = new ResourceResolvers(GlobalConversionService.getInstance());
+		Map<String, TestBean> map = (Map<String, TestBean>) resourceResolvers.resolveResource(resource, mapType);
 		logger.info(map.toString());
 		assertTrue(map.size() == 3);
-		List<TestBean> list = (List<TestBean>) Sys.getEnv().getResourceResolver().resolveResource(resource, listType);
+		List<TestBean> list = (List<TestBean>) resourceResolvers.resolveResource(resource, listType);
 		logger.info(list.toString());
 		assertTrue(list.size() == 3);
 
 		TypeDescriptor nestedType2 = TypeDescriptor.map(Map.class, String.class, TestBean2.class);
 		TypeDescriptor mapType2 = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class), nestedType2);
-		Map<String, Map<String, TestBean>> map2 = (Map<String, Map<String, TestBean>>) Sys.getEnv()
-				.getResourceResolver().resolveResource(resource, mapType2);
+		Map<String, Map<String, TestBean>> map2 = (Map<String, Map<String, TestBean>>) resourceResolvers
+				.resolveResource(resource, mapType2);
 		logger.info(map2.toString());
 		assertTrue(map2.size() == 3);
 	}

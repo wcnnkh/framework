@@ -4,6 +4,24 @@ import io.basc.framework.lang.Nullable;
 
 @FunctionalInterface
 public interface Converter<S, T, E extends Throwable> {
+	/**
+	 * 是否能直接转换，无需重写此方法
+	 * 
+	 * @param sourceType
+	 * @param targetType
+	 * @return
+	 */
+	default boolean canDirectlyConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType != null && targetType != null && targetType.isAssignableTo(targetType)) {
+			return true;
+		}
+
+		if (targetType.getType() == Object.class) {
+			return true;
+		}
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <S, T, E extends Throwable> Converter<S, T, E> unsupported() {
 		return (Converter<S, T, E>) UnsupportedConverter.INSTANCE;

@@ -12,6 +12,10 @@ import lombok.ToString;
 public class SimpleItem extends SimpleNamed implements Item {
 	private int positionIndex = -1;
 
+	public SimpleItem(int positionIndex) {
+		this.positionIndex = positionIndex;
+	}
+	
 	public SimpleItem(Named named) {
 		super(named);
 	}

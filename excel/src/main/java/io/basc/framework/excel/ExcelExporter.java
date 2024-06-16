@@ -1,15 +1,18 @@
 package io.basc.framework.excel;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import io.basc.framework.execution.Parameters;
-import io.basc.framework.mapper.transfer.RowExporter;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.io.Exporter;
 
-public interface ExcelExporter extends RowExporter {
+public interface ExcelExporter extends ExcelImporter, Exporter {
 
-	default void put(Object... row) throws IOException, ExcelException {
-		Parameters parameters = Parameters.forArgs(Arrays.asList(row));
-		doWriteRecord(parameters);
+	@Override
+	WritableSheet getSheet(int positionIndex);
+
+	@Override
+	default void doWrite(Object data, TypeDescriptor typeDescriptor) throws IOException {
+		WritableSheet sheet = getSheet(getNumberOfSheets());
+		sheet.doWrite(data, typeDescriptor);
 	}
 }

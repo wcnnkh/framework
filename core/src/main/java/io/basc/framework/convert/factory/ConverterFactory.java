@@ -8,6 +8,10 @@ import io.basc.framework.convert.TypeDescriptor;
 public interface ConverterFactory<S, E extends Throwable> extends Converter<S, Object, E> {
 	@Override
 	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return source;
+		}
+
 		Converter<S, Object, E> converter = getConverter(targetType.getType());
 		if (converter == null) {
 			throw new ConverterNotFoundException(sourceType, targetType);
@@ -17,6 +21,10 @@ public interface ConverterFactory<S, E extends Throwable> extends Converter<S, O
 
 	@Override
 	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return true;
+		}
+
 		Converter<S, Object, E> converter = getConverter(targetType.getType());
 		if (converter == null) {
 			return false;

@@ -7,7 +7,7 @@ import io.basc.framework.jdbc.template.DatabaseConnectionFactory;
 import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.jdbc.template.support.DataSourceDatabaseConnectionFactory;
-import io.basc.framework.mapper.support.Copy;
+import io.basc.framework.mapper.stereotype.Copy;
 
 public class DruidConnectionFactory extends DataSourceDatabaseConnectionFactory<DruidDataSource> {
 

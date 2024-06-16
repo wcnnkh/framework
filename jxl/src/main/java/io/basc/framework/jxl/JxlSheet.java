@@ -3,9 +3,15 @@ package io.basc.framework.jxl;
 import java.io.IOException;
 
 import io.basc.framework.excel.Sheet;
+import io.basc.framework.excel.SheetColumn;
+import io.basc.framework.excel.SheetColumns;
+import io.basc.framework.excel.SheetRow;
+import io.basc.framework.mapper.io.table.TableImporter;
+import io.basc.framework.mapper.io.template.AbstractRecordImporter;
+import io.basc.framework.util.SimpleItem;
 import jxl.Cell;
 
-public class JxlSheet implements Sheet {
+public class JxlSheet extends AbstractRecordImporter implements Sheet, TableImporter {
 	private final jxl.Sheet sheet;
 	private final int positionIndex;
 
@@ -22,9 +28,15 @@ public class JxlSheet implements Sheet {
 		return sheet;
 	}
 
-	public io.basc.framework.excel.Cell read(int rowIndex, int colIndex) throws IOException {
+	@Override
+	public SheetColumn readColumn(int rowIndex, int colIndex) throws IOException {
 		Cell cell = sheet.getCell(colIndex, rowIndex);
-		return new JxlCell(cell, this);
+		if (cell == null) {
+			return null;
+		}
+		SimpleItem row = new SimpleItem();
+		row.setPositionIndex(rowIndex);
+		return new CellColumn(cell, row, this);
 	}
 
 	@Override
@@ -40,5 +52,14 @@ public class JxlSheet implements Sheet {
 	@Override
 	public int getNumberOfColumns() {
 		return sheet.getColumns();
+	}
+
+	@Override
+	public SheetRow readRow(int rowIndex) throws IOException {
+		SheetColumn[] sheetColumns = new SheetColumn[getNumberOfColumns()];
+		for (int i = 0; i < sheetColumns.length; i++) {
+			sheetColumns[i] = readColumn(rowIndex, i);
+		}
+		return new SheetColumns(sheetColumns, this);
 	}
 }

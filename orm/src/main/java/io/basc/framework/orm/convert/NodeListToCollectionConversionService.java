@@ -15,7 +15,7 @@ import io.basc.framework.dom.DomUtils;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-class NodeListToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
+public class NodeListToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(NodeList.class, Collection.class));

@@ -14,7 +14,7 @@ import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.dom.DomUtils;
 
-class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
+public class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {

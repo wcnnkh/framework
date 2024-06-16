@@ -29,12 +29,6 @@ public interface Parameters
 		return new Args(parameters);
 	}
 
-	public static Parameters forValues(Iterable<? extends Value> values) {
-		Elements<Parameter> parameters = Elements.of(values).index()
-				.map((e) -> new Arg((int) e.getIndex(), e.getElement()));
-		return new Args(parameters);
-	}
-
 	@Override
 	default ParameterMatchingResults apply(Elements<? extends ParameterDescriptor> parameterDescriptors) {
 		ParameterMatchingResults matchingResults = new ParameterMatchingResults();
@@ -44,7 +38,7 @@ public interface Parameters
 		}
 
 		List<ParameterDescriptor> parameterDescriptorList = parameterDescriptors.collect(Collectors.toList());
-		List<Parameter> parameterList = getElements().collect(Collectors.toList());
+		List<Parameter> parameterList = getOrderedElements().collect(Collectors.toList());
 		List<ParameterMatched> results = new ArrayList<ParameterMatched>();
 		Iterator<ParameterDescriptor> iterator = parameterDescriptorList.iterator();
 		while (iterator.hasNext()) {
@@ -103,12 +97,15 @@ public interface Parameters
 	}
 
 	default Elements<Object> getArgs() {
-		return getElements().sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getValue);
+		return getOrderedElements().map(Parameter::getValue);
 	}
 
 	default Elements<Class<?>> getTypes() {
-		return getElements().sorted(Comparator.comparing(Parameter::getPositionIndex)).map(Parameter::getTypeDescriptor)
-				.map(TypeDescriptor::getType);
+		return getOrderedElements().map(Parameter::getTypeDescriptor).map(TypeDescriptor::getType);
+	}
+
+	default Elements<Parameter> getOrderedElements() {
+		return getElements().sorted(Comparator.comparing(Parameter::getPositionIndex));
 	}
 
 	default boolean isEmpty() {

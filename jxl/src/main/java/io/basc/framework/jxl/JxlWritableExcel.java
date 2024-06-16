@@ -5,24 +5,31 @@ import java.io.IOException;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.excel.WritableExcel;
 import io.basc.framework.excel.WritableSheet;
-import io.basc.framework.mapper.transfer.AbstractRowExporter;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.function.CloseableRegistry;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import lombok.Getter;
 
-public class JxlWritableExcel extends AbstractRowExporter implements WritableExcel {
-	private WritableWorkbook workbook;
+@Getter
+public class JxlWritableExcel implements WritableExcel {
+	private final WritableWorkbook workbook;
+	private final CloseableRegistry<IOException> closeable = new CloseableRegistry<>();
 
 	public JxlWritableExcel(WritableWorkbook workbook) {
 		Assert.requiredArgument(workbook != null, "workbook");
 		this.workbook = workbook;
 	}
 
-	public void close() throws IOException {
+	public void close() throws IOException, ExcelException {
 		try {
-			workbook.close();
-		} catch (WriteException e) {
-			throw new ExcelException(e);
+			closeable.close();
+		} finally {
+			try {
+				workbook.close();
+			} catch (WriteException e) {
+				throw new ExcelException(e);
+			}
 		}
 	}
 

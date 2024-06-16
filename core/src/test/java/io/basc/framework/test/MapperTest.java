@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.json.JsonUtils;
-import io.basc.framework.mapper.support.DefaultObjectMapper;
+import io.basc.framework.mapper.stereotype.DefaultObjectMapper;
 import io.basc.framework.util.XUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -2,14 +2,14 @@ package io.basc.framework.jxl;
 
 import java.io.IOException;
 
-import io.basc.framework.convert.lang.Value;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.excel.WritableSheet;
+import io.basc.framework.mapper.io.table.Column;
+import io.basc.framework.mapper.io.table.TableExporter;
 import jxl.write.Label;
 import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
 
-public class JxlWritableSheet extends JxlSheet implements WritableSheet {
+public class JxlWritableSheet extends JxlSheet implements WritableSheet, TableExporter {
 
 	public JxlWritableSheet(jxl.write.WritableSheet sheet, int positionIndex) {
 		super(sheet, positionIndex);
@@ -26,13 +26,13 @@ public class JxlWritableSheet extends JxlSheet implements WritableSheet {
 	}
 
 	@Override
-	public void doWriteColumn(int rowIndex, int colIndex, Value column) throws IOException, ExcelException {
+	public void doWriteColumn(Column column) throws IOException {
+		Label label = new Label(column.getPositionIndex(), column.getRow().getPositionIndex(), column.getAsString());
 		try {
-			getSheet().addCell(new Label(colIndex, rowIndex, column.getAsString()));
-		} catch (RowsExceededException e) {
-			throw new ExcelException("write row=" + rowIndex + ", col=" + colIndex, e);
+			getSheet().addCell(label);
 		} catch (WriteException e) {
-			throw new ExcelException("write row=" + rowIndex + ", col=" + colIndex, e);
+			throw new ExcelException(
+					"write row=" + column.getRow().getPositionIndex() + ", col=" + column.getPositionIndex(), e);
 		}
 	}
 }

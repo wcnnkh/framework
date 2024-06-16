@@ -5,29 +5,32 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import io.basc.framework.csv.CsvTemplate;
+import io.basc.framework.csv.CSV;
+import io.basc.framework.io.FileSystemResource;
+import io.basc.framework.mapper.io.template.Record;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.element.Elements;
 
 public class CsvTest {
 	@Test
 	public void test() throws IOException {
-		CsvTemplate template = new CsvTemplate();
-
+		File file = File.createTempFile("test", ".csv");
+		FileSystemResource fileSystemResource = new FileSystemResource(file);
+		CSV csv = new CSV(fileSystemResource);
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < 3; i++) {
 			list.add(XUtils.getUUID());
 		}
 
 		System.out.println(list);
-		File file = File.createTempFile("test", ".csv");
 		try {
-			template.write(list.iterator(), file);
-			List<String> readList = template.read(file, String.class).collect(Collectors.toList());
+			csv.doWriteRecords(Elements.of(list).map(Arrays::asList).map(Record::forArgs));
+			List<String> readList = csv.readAllRecords().map((e) -> e.getElements().first().getAsString()).toList();
 			System.out.println(readList);
 			assertTrue(readList.equals(list));
 		} finally {

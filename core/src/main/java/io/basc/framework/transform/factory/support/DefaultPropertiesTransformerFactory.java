@@ -1,11 +1,17 @@
 package io.basc.framework.transform.factory.support;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.PropertiesTransformer;
+import io.basc.framework.transform.ReadOnlyProperty;
+import io.basc.framework.transform.array.ArrayProperties;
 import io.basc.framework.transform.factory.config.PropertiesTransformerRegistry;
+import io.basc.framework.transform.map.MapProperties;
 import io.basc.framework.transform.strategy.DefaultPropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.FilterablePropertiesTransformStrategy;
@@ -32,6 +38,14 @@ public class DefaultPropertiesTransformerFactory<E extends Throwable>
 	private final ServiceRegistry<PropertiesTransformFilter> propertiesTransformFilterRegistry = new ServiceRegistry<>();
 
 	private final DefaultPropertiesTransformStrategy propertiesTransformStrategy = new DefaultPropertiesTransformStrategy();
+
+	public DefaultPropertiesTransformerFactory() {
+		registerPropertiesTransformer(Object[].class, (s, e) -> new ArrayProperties(s));
+		registerPropertiesTransformer(Properties.class, (s, e) -> s);
+		registerPropertiesTransformer(Map.class,
+				(obj, type) -> new MapProperties(obj, type, propertiesTransformStrategy.getConversionService()));
+		registerPropertiesTransformer(Parameters.class, (s, e) -> () -> s.getElements().map(ReadOnlyProperty::new));
+	}
 
 	@Override
 	public boolean canReverseTransform(TypeDescriptor sourceType, TypeDescriptor targetType) {

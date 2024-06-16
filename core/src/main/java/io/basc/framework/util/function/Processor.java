@@ -187,11 +187,6 @@ public interface Processor<S, T, E extends Throwable> {
 		return processor.processAll(sourceIterator, targets);
 	}
 
-	public static <A, B, X extends Throwable, TL extends Collection<B>> TL processAll(Iterable<? extends A> sources,
-			TL targets, Processor<? super A, B, ? extends X> processor) throws X {
-		return processor.processAll(sources.iterator(), targets);
-	}
-
 	public static <A, B, X extends Throwable> List<B> processAll(Iterator<? extends A> sourceIterator,
 			Processor<? super A, B, ? extends X> processor) throws X {
 		return processor.processAll(sourceIterator);

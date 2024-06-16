@@ -16,8 +16,13 @@ public interface ReversibleConverterFactory<S, E extends Throwable>
 
 	<T> ReversibleConverter<S, T, E> getReversibleConverter(Class<? extends T> requiredType);
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default S reverseConvert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return (S) source;
+		}
+
 		ReversibleConverter<S, Object, E> converter = getReversibleConverter(sourceType.getType());
 		if (converter == null) {
 			throw new ConverterNotFoundException(sourceType, targetType);
@@ -27,6 +32,10 @@ public interface ReversibleConverterFactory<S, E extends Throwable>
 
 	@Override
 	default boolean canReverseConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return true;
+		}
+
 		ReversibleConverter<S, Object, E> converter = getReversibleConverter(sourceType.getType());
 		if (converter == null) {
 			return false;

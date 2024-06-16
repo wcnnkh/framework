@@ -28,11 +28,8 @@ import org.apache.poi.hssf.record.StringRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.Value;
 import io.basc.framework.excel.ExcelException;
-import io.basc.framework.mapper.transfer.Exporter;
-import io.basc.framework.mapper.transfer.RecordExporter;
+import io.basc.framework.mapper.io.Exporter;
 
 public class DefaultHSSFListener implements HSSFListener {
 	private final List<String> values = new ArrayList<String>(8);
@@ -65,11 +62,11 @@ public class DefaultHSSFListener implements HSSFListener {
 	private int nextColumn;
 	private boolean outputNextStringRecord;
 
-	public DefaultHSSFListener(POIFSFileSystem fs, RecordExporter exporter) {
+	public DefaultHSSFListener(POIFSFileSystem fs, Exporter exporter) {
 		this(fs, -1, exporter);
 	}
 
-	public DefaultHSSFListener(POIFSFileSystem fs, int minColumns, RecordExporter exporter) {
+	public DefaultHSSFListener(POIFSFileSystem fs, int minColumns, Exporter exporter) {
 		this.fs = fs;
 		this.minColumns = minColumns;
 		this.exporter = exporter;
@@ -100,6 +97,7 @@ public class DefaultHSSFListener implements HSSFListener {
 		factory.processWorkbookEvents(request, fs);
 	}
 
+	@Override
 	public void processRecord(org.apache.poi.hssf.record.Record record) {
 		int thisRow = -1;
 		int thisColumn = -1;
@@ -263,15 +261,12 @@ public class DefaultHSSFListener implements HSSFListener {
 			lastColumnNumber = -1;
 
 			if (exporter != null) {
-				int columns = values.size();
-				List<HSSFCell> cells = new ArrayList<>(columns);
-				for (int i = 0; i < columns; i++) {
-					HSSFCell hssfCell = new HSSFCell(sheetIndex, thisBoundSheetRecord, columns, i,
-							Value.of(values.get(i)));
-					cells.add(hssfCell);
-				}
+				// clone一个values
+				HssfRow hssfRow = new HssfRow(new ArrayList<>(values));
+				hssfRow.setPositionIndex(thisRow);
+				hssfRow.setSheetContext(new BoundSheetContext(sheetIndex, thisBoundSheetRecord));
 				try {
-					exporter.doWrite(cells, TypeDescriptor.collection(ArrayList.class, HSSFCell.class));
+					exporter.doWrite(hssfRow);
 				} catch (IOException e) {
 					// TODO 描述详细的错误信息
 					throw new ExcelException(e);

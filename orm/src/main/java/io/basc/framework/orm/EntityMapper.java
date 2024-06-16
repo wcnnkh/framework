@@ -11,10 +11,9 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.execution.param.Parameter;
-import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.stereotype.Field;
+import io.basc.framework.mapper.stereotype.ObjectMapper;
 import io.basc.framework.mapper.stereotype.OffLineField;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
@@ -71,11 +70,6 @@ public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer
 	default <T> Range<Long> getLimit(OperationSymbol operationSymbol, EntityRepository<T> repository) {
 		// TODO 实现待定
 		return Range.unbounded();
-	}
-
-	@Override
-	default boolean isEntity(TypeDescriptor source, ParameterDescriptor parameterDescriptor) {
-		return ObjectMapper.super.isEntity(source, parameterDescriptor);
 	}
 
 	default Parameter createParameter(ColumnDescriptor property, Object value) {

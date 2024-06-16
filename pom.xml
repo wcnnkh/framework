@@ -476,11 +476,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>microsoft</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>freemarker</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -761,7 +756,6 @@
 		<module>websocket</module>
 		<module>cloud</module>
 		<module>security</module>
-		<module>microsoft</module>
 		<module>dubbo</module>
 		<module>zookeeper</module>
 		<module>netflix-eureka-client</module>

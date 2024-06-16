@@ -4,11 +4,16 @@ import java.io.IOException;
 
 import io.basc.framework.excel.Excel;
 import io.basc.framework.excel.Sheet;
+import io.basc.framework.mapper.io.template.AbstractRecordImporter;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.function.CloseableRegistry;
 import jxl.Workbook;
+import lombok.Getter;
 
-public class JxlExcel implements Excel {
+@Getter
+public class JxlExcel extends AbstractRecordImporter implements Excel {
 	private final Workbook workbook;
+	private final CloseableRegistry<IOException> closeable = new CloseableRegistry<>();
 
 	public JxlExcel(Workbook workbook) {
 		Assert.requiredArgument(workbook != null, "workbook");
@@ -16,7 +21,11 @@ public class JxlExcel implements Excel {
 	}
 
 	public void close() throws IOException {
-		workbook.close();
+		try {
+			closeable.close();
+		} finally {
+			workbook.close();
+		}
 	}
 
 	public Sheet getSheet(int sheetIndex) {
