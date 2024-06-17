@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import io.basc.framework.gson.GsonSupport;
 import io.basc.framework.util.XUtils;
+import lombok.ToString;
 
 public class GsonTest {
 	@Test
@@ -18,6 +19,7 @@ public class GsonTest {
 		assertTrue(GsonSupport.INSTANCE.toJsonString(a).equals(json));
 	}
 
+	@ToString
 	public static class A {
 		private String a;
 		private int b;

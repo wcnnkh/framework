@@ -5,37 +5,22 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.transform.Properties;
+import io.basc.framework.transform.Property;
+import io.basc.framework.transform.ReadOnlyProperty;
 import io.basc.framework.util.Streams;
+import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 
-public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
+public interface JsonArray extends Json<Integer>, Iterable<JsonElement>, Properties {
 	static final String PREFIX = "[";
 	static final String SUFFIX = "]";
 
-	JsonElement get(Integer index);
-
 	boolean add(Object element);
-
-	boolean remove(int index);
-
-	default Stream<JsonElement> stream() {
-		return Streams.stream(this.iterator());
-	}
-
-	default <T, E extends Throwable> List<T> convert(Processor<JsonElement, T, E> converter) throws E {
-		if (isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		List<T> list = new ArrayList<T>(size());
-		for (JsonElement jsonElement : this) {
-			list.add(converter.process(jsonElement));
-		}
-		return list;
-	}
 
 	@SuppressWarnings("unchecked")
 	default <T> List<T> convert(Class<? extends T> type) {
@@ -56,6 +41,18 @@ public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 		});
 	}
 
+	default <T, E extends Throwable> List<T> convert(Processor<JsonElement, T, E> converter) throws E {
+		if (isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<T> list = new ArrayList<T>(size());
+		for (JsonElement jsonElement : this) {
+			list.add(converter.process(jsonElement));
+		}
+		return list;
+	}
+
 	@SuppressWarnings("unchecked")
 	default <T> List<T> convert(Type type) {
 		if (type instanceof Class) {
@@ -63,5 +60,21 @@ public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 		}
 
 		return convert((o) -> (T) o.getAsObject(type));
+	}
+
+	JsonElement get(Integer index);
+
+	@Override
+	default Elements<Property> getElements() {
+		return Elements.of(() -> IntStream.range(0, size()).mapToObj((index) -> {
+			JsonElement jsonElement = get(index);
+			return new ReadOnlyProperty(index, jsonElement);
+		}));
+	}
+
+	boolean remove(int index);
+
+	default Stream<JsonElement> stream() {
+		return Streams.stream(this.iterator());
 	}
 }

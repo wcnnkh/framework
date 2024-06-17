@@ -1,7 +1,5 @@
 package io.basc.framework.json;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.EmptyValue;
 
 public class EmptyJsonElement extends EmptyValue implements JsonElement {
@@ -25,12 +23,6 @@ public class EmptyJsonElement extends EmptyValue implements JsonElement {
 	}
 
 	public String toJsonString() {
-		return null;
-	}
-
-	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws JsonException, ConversionException {
 		return null;
 	}
 }

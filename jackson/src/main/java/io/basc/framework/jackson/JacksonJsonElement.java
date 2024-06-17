@@ -11,11 +11,10 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 	private final JacksonConverter converter;
 
 	@Override
-	public Object getSource() {
+	public Object getValue() {
 		return jsonNode;
 	}
 
@@ -40,6 +39,17 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 	@Override
 	public JsonObject getAsJsonObject() {
 		return new JacksonJsonObject((ObjectNode) jsonNode, converter);
+	}
+
+	@Override
+	public <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return super.convert(targetType, (s, st, tt) -> {
+			if (converter.canConvert(st, tt)) {
+				converter.convert(s, st, tt);
+			}
+			return getConverter().convert(s, st, tt);
+		});
 	}
 
 	@Override
@@ -71,16 +81,5 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
 			throws IOException {
 		jsonNode.serializeWithType(gen, serializers, typeSer);
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return jsonNode.isEmpty() || super.isEmpty();
-	}
-
-	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws JsonException, ConversionException {
-		return converter.convert(source, sourceType, targetType);
 	}
 }

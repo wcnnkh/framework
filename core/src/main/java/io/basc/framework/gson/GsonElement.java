@@ -2,11 +2,10 @@ package io.basc.framework.gson;
 
 import com.google.gson.JsonElement;
 
-import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonObject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -47,16 +46,21 @@ public final class GsonElement extends AbstractJsonElement {
 		return jsonElement.isJsonObject();
 	}
 
+	@Override
+	public <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return super.convert(targetType, (s, st, tt) -> {
+			if (converter.canConvert(st, tt)) {
+				converter.convert(s, st, tt);
+			}
+			return getConverter().convert(s, st, tt);
+		});
+	}
+
 	public String toJsonString() {
 		if (jsonElement.isJsonArray() || jsonElement.isJsonObject()) {
 			return jsonElement.toString();
 		}
 		return jsonElement.getAsString();
-	}
-
-	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws JsonException, ConversionException {
-		return converter.convert(source, sourceType, targetType);
 	}
 }

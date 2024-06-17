@@ -8,11 +8,10 @@ import com.alibaba.fastjson.JSONValidator;
 import com.alibaba.fastjson.JSONValidator.Type;
 import com.alibaba.fastjson.parser.Feature;
 
-import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.StringUtils;
 
@@ -25,15 +24,21 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws JsonException, ConversionException {
-		String text;
-		if (source instanceof String) {
-			text = (String) source;
-		} else {
-			text = JSON.toJSONString(source);
-		}
-		return JSON.parseObject(text, targetType.getResolvableType().getType(), Feature.SupportNonPublicField);
+	public <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return super.convert(targetType, (source, st, tt) -> {
+			if (converter.canConvert(st, tt)) {
+				return converter.convert(source, st, tt);
+			}
+
+			String text;
+			if (source instanceof String) {
+				text = (String) source;
+			} else {
+				text = JSON.toJSONString(source);
+			}
+			return JSON.parseObject(text, targetType.getResolvableType().getType(), Feature.SupportNonPublicField);
+		});
 	}
 
 	public JsonArray getAsJsonArray() {
@@ -45,7 +50,7 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	@Override
-	public Object getSource() {
+	public Object getValue() {
 		return text;
 	}
 

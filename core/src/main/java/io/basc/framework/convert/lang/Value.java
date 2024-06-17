@@ -387,7 +387,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Option
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = convert(TypeDescriptor.valueOf(type), null);
+			v = convert(TypeDescriptor.valueOf(type), Converter.unsupported());
 		}
 		return (T) v;
 	}
@@ -410,7 +410,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Option
 			return getAsObject(type.getType());
 		}
 
-		return convert(type, null);
+		return convert(type, Converter.unsupported());
 	}
 
 	default short getAsShort() {
