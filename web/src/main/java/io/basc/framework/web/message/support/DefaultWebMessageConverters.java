@@ -4,7 +4,6 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
-import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.util.Registration;
@@ -40,7 +39,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
 		getServiceInjectors().inject(lastWebMessageConverter);
 		afters.registerLast(lastWebMessageConverter);
-		register(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
+		register(new MultipartMessageWebMessageConverter());
 		register(new EntityMessageConverter());
 		register(new InputMessageConverter());
 		register(new ResourceMessageConverter());

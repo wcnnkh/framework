@@ -2,9 +2,9 @@ package io.basc.framework.util.function;
 
 import java.io.Serializable;
 
-import lombok.ToString;
+import lombok.Data;
 
-@ToString
+@Data
 public class DefaultOptional<T> implements Optional<T>, Serializable {
 	private static final long serialVersionUID = 1L;
 

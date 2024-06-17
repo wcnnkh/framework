@@ -8,7 +8,6 @@ import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.Principal;
-import java.util.Enumeration;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
@@ -17,6 +16,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.net.message.InputMessageWrapper;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.element.Elements;
 
 public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequest> implements ServerHttpRequest {
 	private final boolean overrideBody;
@@ -83,7 +83,7 @@ public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequ
 		return wrappedTarget.getAttribute(name);
 	}
 
-	public Enumeration<String> getAttributeNames() {
+	public Elements<String> getAttributeNames() {
 		return wrappedTarget.getAttributeNames();
 	}
 

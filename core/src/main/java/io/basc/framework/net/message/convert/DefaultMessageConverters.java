@@ -5,7 +5,6 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.config.ConfigurableConversionService;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.convert.support.DefaultConversionService;
-import io.basc.framework.net.message.multipart.GlobalMultipartMessageResolver;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
 import io.basc.framework.util.Registration;
 
@@ -34,7 +33,7 @@ public class DefaultMessageConverters extends MessageConverters {
 		register(new StringMessageConverter(conversionService));
 		register(new ByteArrayMessageConverter());
 		register(new HttpFormMessageConveter());
-		register(new MultipartMessageConverter(GlobalMultipartMessageResolver.getInstance()));
+		register(new MultipartMessageConverter());
 		register(new ResourceMessageConverter());
 	}
 

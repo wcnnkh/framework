@@ -2,7 +2,7 @@ package io.basc.framework.memcached.locks;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.memory.CAS;
+import io.basc.framework.data.domain.CAS;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.memcached.Memcached;
 
@@ -30,7 +30,7 @@ public final class MemcachedLock extends RenewableLock {
 		cancelAutoRenewal();
 		CAS<Object> cas = memcached.gets(key);
 		if (id.equals(cas.getValue())) {
-			memcached.delete(key, cas.getCas());
+			memcached.delete(key, cas.lastModified());
 		}
 	}
 
@@ -39,6 +39,6 @@ public final class MemcachedLock extends RenewableLock {
 		if (!id.equals(cas.getValue())) {
 			return false;
 		}
-		return memcached.cas(key, id, cas.getCas(), time, unit);
+		return memcached.cas(key, id, cas.lastModified(), time, unit);
 	}
 }

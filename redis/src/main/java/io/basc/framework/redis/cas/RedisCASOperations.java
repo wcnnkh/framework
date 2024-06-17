@@ -8,7 +8,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryDataCasOperations;
-import io.basc.framework.data.memory.CAS;
+import io.basc.framework.data.domain.CAS;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
@@ -87,7 +87,7 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 
 		Object value = values.get(0);
 		long verion = Value.of(values.get(1)).getAsLong();
-		return new CAS<>(verion, value);
+		return new CAS<>(value, verion);
 	}
 
 	public boolean delete(String key) {

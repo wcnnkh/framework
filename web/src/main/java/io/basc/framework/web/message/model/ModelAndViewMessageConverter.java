@@ -1,5 +1,7 @@
 package io.basc.framework.web.message.model;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
@@ -10,9 +12,6 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
-
-import java.io.IOException;
-import java.util.Enumeration;
 
 public abstract class ModelAndViewMessageConverter implements WebMessageConverter {
 	static final String REQUEST = "_request";
@@ -58,9 +57,7 @@ public abstract class ModelAndViewMessageConverter implements WebMessageConverte
 			response.setContentType(MediaType.TEXT_HTML);
 		}
 
-		Enumeration<String> names = request.getAttributeNames();
-		while (names.hasMoreElements()) {
-			String name = names.nextElement();
+		for (String name : request.getAttributeNames()) {
 			Object value = request.getAttribute(name);
 			if (value != null) {
 				page.put(name, value);

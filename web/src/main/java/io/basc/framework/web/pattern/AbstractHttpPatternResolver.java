@@ -5,22 +5,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.env.SystemProperties;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
 import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.CollectionUtils;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
+@Getter
+@Setter
 public abstract class AbstractHttpPatternResolver implements HttpPatternResolver, PlaceholderFormatAware {
-	private PlaceholderFormat placeholderFormat;
-
-	@Override
-	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {
-		this.placeholderFormat = placeholderFormat;
-	}
-
-	public PlaceholderFormat getPlaceholderFormat() {
-		return placeholderFormat == null ? Sys.getEnv().getProperties() : placeholderFormat;
-	}
+	@NonNull
+	private PlaceholderFormat placeholderFormat = SystemProperties.getInstance();
 
 	@Override
 	public Collection<HttpPattern> resolve(Method method) {

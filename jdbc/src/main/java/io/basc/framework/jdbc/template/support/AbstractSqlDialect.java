@@ -212,7 +212,7 @@ public abstract class AbstractSqlDialect extends ResultSetMapper implements SqlD
 						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()), this);
 				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
 			} else {
-				list = Arrays.asList(condition.getSource());
+				list = Arrays.asList(condition.getValue());
 			}
 
 			keywordProcessing(sb, condition.getName());

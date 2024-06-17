@@ -13,6 +13,10 @@
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
+			<artifactId>locks</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
 			<artifactId>data</artifactId>
 		</dependency>
 		

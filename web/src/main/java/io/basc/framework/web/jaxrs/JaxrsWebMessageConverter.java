@@ -13,10 +13,10 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.Method;
 import io.basc.framework.execution.aop.Aop;
+import io.basc.framework.execution.aop.MethodExecutionInterceptor;
 import io.basc.framework.execution.param.ParameterDescriptor;
-import io.basc.framework.execution.reflect.ReflectionMethodExecutionInterceptor;
-import io.basc.framework.execution.reflect.ReflectionMethod;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
@@ -154,7 +154,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 	 * @author wcnnkh
 	 *
 	 */
-	private static class OutputStreamMethodExecutionInterceptor implements ReflectionMethodExecutionInterceptor {
+	private static class OutputStreamMethodExecutionInterceptor implements MethodExecutionInterceptor {
 		private final OutputMessage outputMessage;
 		private final MultivaluedMap<String, String> headerMap;
 		private volatile boolean headerTag;
@@ -167,7 +167,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 		}
 
 		@Override
-		public Object intercept(ReflectionMethod executor, Elements<Object> args) throws Throwable {
+		public Object intercept(Method executor, Elements<? extends Object> args) throws Throwable {
 			if (!outputMessage.getHeaders().isReadyOnly()) {
 				if (!headerTag) {
 					synchronized (this) {

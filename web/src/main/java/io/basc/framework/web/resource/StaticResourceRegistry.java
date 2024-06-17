@@ -2,7 +2,7 @@ package io.basc.framework.web.resource;
 
 import java.io.IOException;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.net.FileMimeTypeUitls;
@@ -12,26 +12,17 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.pattern.PathRegistry;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class StaticResourceRegistry extends PathRegistry implements HttpService {
+	@NonNull
 	private String defaultFileName = "index.html";
-	private ResourceLoader resourceLoader;
-
-	public ResourceLoader getResourceLoader() {
-		return resourceLoader == null ? Sys.getEnv().getResourceLoader() : resourceLoader;
-	}
-
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
-
-	public String getDefaultFileName() {
-		return defaultFileName;
-	}
-
-	public void setDefaultFileName(String defaultFileName) {
-		this.defaultFileName = defaultFileName;
-	}
+	@NonNull
+	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	@Override
 	public boolean test(ServerHttpRequest request) {

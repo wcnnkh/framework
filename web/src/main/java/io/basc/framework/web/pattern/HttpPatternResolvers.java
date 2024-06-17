@@ -5,14 +5,20 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.env.Sys;
+import io.basc.framework.env.SystemProperties;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
 import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.Registration;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver>
 		implements HttpPatternResolver, PlaceholderFormatAware {
-	private PlaceholderFormat placeholderFormat;
+	@NonNull
+	private PlaceholderFormat placeholderFormat = SystemProperties.getInstance();
 
 	public HttpPatternResolvers() {
 		super(HttpPatternResolver.class);
@@ -24,14 +30,6 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 			}
 			return Registration.EMPTY;
 		});
-	}
-
-	public PlaceholderFormat getPlaceholderFormat() {
-		return placeholderFormat == null ? Sys.getEnv().getProperties() : placeholderFormat;
-	}
-
-	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {
-		this.placeholderFormat = placeholderFormat;
 	}
 
 	@Override

@@ -7,21 +7,19 @@ import java.util.List;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.DefaultHttpInputMessage;
 import io.basc.framework.http.HttpInputMessage;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.convert.MessageConvertException;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.element.Elements;
+import lombok.NonNull;
 
 public class MultipartMessageConverter extends MultipartMessageWriter {
+	@NonNull
+	private MultipartMessageResolver multipartMessageResolver = GlobalMultipartMessageResolver.getInstance();
 
-	@Nullable
-	private final MultipartMessageResolver multipartMessageResolver;
-
-	public MultipartMessageConverter(@Nullable MultipartMessageResolver multipartMessageResolver) {
-		this.multipartMessageResolver = multipartMessageResolver;
+	public MultipartMessageConverter() {
 		supportMimeTypes.add(MimeTypeUtils.MULTIPART_FORM_DATA);
 	}
 
