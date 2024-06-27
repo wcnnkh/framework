@@ -1,6 +1,6 @@
 package io.basc.framework.upload.kind;
 
-import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.upload.UploaderException;
 
 import java.io.IOException;

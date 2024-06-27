@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import io.basc.framework.context.Context;
 import io.basc.framework.mvc.security.UserSessionManager;
-import io.basc.framework.net.message.multipart.MultipartMessageResolver;
+import io.basc.framework.net.multipart.MultipartMessageResolver;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;

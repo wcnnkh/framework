@@ -1,7 +1,7 @@
 package io.basc.framework.http;
 
 import io.basc.framework.net.MimeType;
-import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.OutputMessage;
 
 public interface HttpOutputMessage extends OutputMessage, HttpMessage {
 

@@ -1,12 +1,12 @@
 package io.basc.framework.http.client;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 import io.basc.framework.http.HttpInputMessage;
 import io.basc.framework.http.HttpStatus;
+import io.basc.framework.net.client.ClientResponse;
 
-public interface ClientHttpResponse extends HttpInputMessage, Closeable {
+public interface ClientHttpResponse extends HttpInputMessage, ClientResponse {
 	/**
 	 * Return the HTTP status code of the response.
 	 * 

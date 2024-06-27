@@ -7,7 +7,7 @@ import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.net.message.Headers;
+import io.basc.framework.net.Headers;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;

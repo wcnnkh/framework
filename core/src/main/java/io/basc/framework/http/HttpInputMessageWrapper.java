@@ -1,6 +1,6 @@
 package io.basc.framework.http;
 
-import io.basc.framework.net.message.InputMessageWrapper;
+import io.basc.framework.net.InputMessageWrapper;
 
 public class HttpInputMessageWrapper<W extends HttpInputMessage> extends InputMessageWrapper<W>
 		implements HttpInputMessage {

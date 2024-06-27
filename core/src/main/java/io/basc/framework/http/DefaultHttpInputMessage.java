@@ -1,9 +1,9 @@
 package io.basc.framework.http;
 
-import io.basc.framework.net.message.InputMessage;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import io.basc.framework.net.InputMessage;
 
 public class DefaultHttpInputMessage implements HttpInputMessage {
 	private HttpHeaders httpHeaders = new HttpHeaders();

@@ -9,6 +9,13 @@ import io.basc.framework.util.Status;
 import io.basc.framework.util.function.Source;
 import io.basc.framework.util.transmittable.AnyInheriterRegistry;
 
+/**
+ * TODO 不应该静态的使用，会出现内存泄露
+ * 
+ * @author shuchaowen
+ *
+ * @param <T>
+ */
 public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLocal<T> implements Configurable {
 	private static Logger logger = LoggerFactory.getLogger(InheritableThreadLocalConfigurator.class);
 	private final Class<T> serviceClass;

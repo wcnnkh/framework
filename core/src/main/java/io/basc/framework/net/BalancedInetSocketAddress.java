@@ -3,7 +3,9 @@ package io.basc.framework.net;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class BalancedInetSocketAddress extends InetSocketAddress {
+import io.basc.framework.util.select.Weighted;
+
+public class BalancedInetSocketAddress extends InetSocketAddress implements Weighted{
 	private static final long serialVersionUID = 1L;
 	private final int weight;
 

@@ -1,6 +1,6 @@
 package io.basc.framework.upload.ueditor.upload;
 
-import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.upload.ueditor.PathFormat;
 import io.basc.framework.upload.ueditor.define.AppInfo;
 import io.basc.framework.upload.ueditor.define.BaseState;

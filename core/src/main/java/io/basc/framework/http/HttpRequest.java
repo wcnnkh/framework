@@ -1,8 +1,8 @@
 package io.basc.framework.http;
 
-import java.net.URI;
+import io.basc.framework.net.Request;
 
-public interface HttpRequest extends HttpMessage {
+public interface HttpRequest extends HttpMessage, Request {
 	HttpHeaders getHeaders();
 
 	default HttpMethod getMethod() {
@@ -10,6 +10,4 @@ public interface HttpRequest extends HttpMessage {
 	}
 
 	String getRawMethod();
-
-	URI getURI();
 }

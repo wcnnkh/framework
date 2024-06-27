@@ -30,4 +30,9 @@ public class GsonConverter implements JsonConverter {
 		return gson.fromJson(jsonElement, targetType.getResolvableType().getType());
 	}
 
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return true;
+	}
+
 }

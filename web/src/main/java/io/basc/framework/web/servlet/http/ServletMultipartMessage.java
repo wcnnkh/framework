@@ -4,7 +4,7 @@ import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.net.multipart.MultipartMessage;
 
 import java.io.IOException;
 import java.io.InputStream;

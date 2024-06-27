@@ -14,7 +14,7 @@ import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.message.convert.MessageConverter;
+import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.net.uri.DefaultUriTemplateHandler;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.retry.RetryOperations;

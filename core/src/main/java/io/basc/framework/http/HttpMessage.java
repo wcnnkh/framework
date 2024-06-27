@@ -1,6 +1,6 @@
 package io.basc.framework.http;
 
-import io.basc.framework.net.message.Message;
+import io.basc.framework.net.Message;
 
 public interface HttpMessage extends Message {
 	HttpHeaders getHeaders();

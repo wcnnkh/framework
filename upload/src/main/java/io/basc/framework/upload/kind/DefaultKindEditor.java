@@ -9,7 +9,7 @@ import java.util.List;
 
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.FilenameUtils;
-import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.TimeUtils;

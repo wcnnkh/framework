@@ -6,7 +6,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.net.message.convert.MessageConverter;
+import io.basc.framework.net.convert.MessageConverter;
 
 public class MessageConverterClientHttpResponseExtractor<T> implements ClientHttpResponseExtractor<T> {
 	private final MessageConverter messageConverter;
@@ -28,11 +28,11 @@ public class MessageConverterClientHttpResponseExtractor<T> implements ClientHtt
 			return null;
 		}
 
-		if (messageConverter == null || !messageConverter.canRead(responseType, response.getContentType())) {
+		if (messageConverter == null || !messageConverter.isReadable(responseType, response.getContentType())) {
 			throw new UnsupportedException("not supported read responseType=" + responseType);
 		}
 
-		return (T) messageConverter.read(responseType, response);
+		return (T) messageConverter.readFrom(responseType, response);
 	}
 
 }

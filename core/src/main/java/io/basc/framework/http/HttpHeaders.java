@@ -22,10 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.net.Headers;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
-import io.basc.framework.net.message.Headers;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;

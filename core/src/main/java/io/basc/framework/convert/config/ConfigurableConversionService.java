@@ -8,12 +8,10 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
-import lombok.NonNull;
 
-public class ConfigurableConversionService extends ConfigurableServices<ConversionService> implements ConversionService {
+public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
+		implements ConversionService {
 	private static final NestingChecker<ConversionService> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
-	@NonNull
-	private ConversionService awareConversionService = this;
 
 	public ConfigurableConversionService() {
 		setServiceClass(ConversionService.class);
@@ -21,7 +19,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 		getServiceInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				ConversionServiceAware conversionServiceAware = (ConversionServiceAware) service;
-				conversionServiceAware.setConversionService(awareConversionService);
+				conversionServiceAware.setConversionService(this);
 			}
 			return Registration.EMPTY;
 		});

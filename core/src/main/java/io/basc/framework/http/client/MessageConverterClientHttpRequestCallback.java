@@ -2,9 +2,10 @@ package io.basc.framework.http.client;
 
 import java.io.IOException;
 
+import io.basc.framework.convert.lang.Value;
 import io.basc.framework.http.HttpEntity;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.net.message.convert.MessageConverter;
+import io.basc.framework.net.convert.MessageConverter;
 
 public class MessageConverterClientHttpRequestCallback implements ClientHttpRequestCallback {
 	private final MessageConverter messageConverter;
@@ -26,13 +27,13 @@ public class MessageConverterClientHttpRequestCallback implements ClientHttpRequ
 		}
 
 		if (httpEntity.hasBody() && clientRequest.getMethod().hasRequestBody()) {
-			if (messageConverter == null || !messageConverter.canWrite(httpEntity.getTypeDescriptor(),
-					httpEntity.getBody(), httpEntity.getContentType())) {
+			if (messageConverter == null
+					|| !messageConverter.isWriteable(httpEntity.getTypeDescriptor(), httpEntity.getContentType())) {
 				throw new UnsupportedException("not supported write " + httpEntity);
 			}
 
-			messageConverter.write(httpEntity.getTypeDescriptor(), httpEntity.getBody(), httpEntity.getContentType(),
-					clientRequest);
+			messageConverter.writeTo(Value.of(httpEntity.getBody(), httpEntity.getTypeDescriptor()),
+					httpEntity.getContentType(), clientRequest);
 		}
 		return clientRequest;
 	}

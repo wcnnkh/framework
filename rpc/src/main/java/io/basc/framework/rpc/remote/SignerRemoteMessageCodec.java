@@ -11,8 +11,8 @@ import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.message.InputMessage;
-import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.InputMessage;
+import io.basc.framework.net.OutputMessage;
 
 /**
  * 验证签名的方式编解码数据

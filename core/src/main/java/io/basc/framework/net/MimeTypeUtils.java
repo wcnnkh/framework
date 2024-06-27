@@ -1,16 +1,9 @@
 package io.basc.framework.net;
 
-import io.basc.framework.lang.Constants;
-import io.basc.framework.net.MimeType.SpecificityComparator;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -18,6 +11,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import io.basc.framework.lang.Constants;
+import io.basc.framework.net.MimeType.SpecificityComparator;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 
 public final class MimeTypeUtils {
 	private static final byte[] BOUNDARY_CHARS = new byte[] { '-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -312,7 +311,7 @@ public final class MimeTypeUtils {
 	 * @return the list of mime types
 	 * @throws IllegalArgumentException if the String cannot be parsed
 	 */
-	public static String toString(Collection<? extends MimeType> mimeTypes) {
+	public static String toString(Iterable<? extends MimeType> mimeTypes) {
 		StringBuilder builder = new StringBuilder();
 		for (Iterator<? extends MimeType> iterator = mimeTypes.iterator(); iterator.hasNext();) {
 			MimeType mimeType = iterator.next();

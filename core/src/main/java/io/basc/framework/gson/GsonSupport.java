@@ -3,6 +3,7 @@ package io.basc.framework.gson;
 import java.io.IOException;
 import java.io.Reader;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonSupport;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonException;
@@ -28,6 +29,11 @@ public final class GsonSupport extends AbstractJsonSupport {
 		com.google.gson.JsonElement gsonJsonElement = converter.getGson().fromJson(reader,
 				com.google.gson.JsonElement.class);
 		return new GsonElement(gsonJsonElement, converter);
+	}
+	
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return true;
 	}
 
 	@Override

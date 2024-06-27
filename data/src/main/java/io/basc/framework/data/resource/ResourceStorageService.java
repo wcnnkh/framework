@@ -8,7 +8,7 @@ import java.util.List;
 import io.basc.framework.data.DataException;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.message.InputMessage;
+import io.basc.framework.net.InputMessage;
 
 /**
  * 资源存储服务

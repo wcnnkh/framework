@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.convert.support.GlobalConversionService;
@@ -33,7 +34,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class ObjectFormat implements PairFormat<String, Value> {
+public abstract class ObjectFormat implements PairFormat<String, Value>, ConversionServiceAware {
 	@NonNull
 	private ConversionService conversionService = GlobalConversionService.getInstance();
 	@NonNull

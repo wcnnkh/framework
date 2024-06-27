@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-public class JsonSupportAccessor {
+public class JsonSupportAccessor implements JsonSupportAware {
 	private JsonSupport jsonSupport;
 
 	public JsonSupport getJsonSupport() {

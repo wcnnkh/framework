@@ -7,7 +7,7 @@ import java.net.HttpCookie;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.net.message.OutputMessageWrapper;
+import io.basc.framework.net.OutputMessageWrapper;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.XUtils;
 

@@ -1,6 +1,6 @@
 package io.basc.framework.http;
 
-import io.basc.framework.net.message.OutputMessageWrapper;
+import io.basc.framework.net.OutputMessageWrapper;
 
 public class HttpOutputMessageWrapper<W extends HttpOutputMessage> extends OutputMessageWrapper<W>
 		implements HttpOutputMessage {

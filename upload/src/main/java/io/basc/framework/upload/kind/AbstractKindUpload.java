@@ -1,7 +1,7 @@
 package io.basc.framework.upload.kind;
 
 import io.basc.framework.io.FileUtils;
-import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.upload.UploaderException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;

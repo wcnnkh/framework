@@ -20,7 +20,7 @@ import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.OutputMessage;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;

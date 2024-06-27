@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.Principal;
 
-import io.basc.framework.net.message.InputMessage;
+import io.basc.framework.net.InputMessage;
 import io.basc.framework.util.attribute.EditableAttributes;
 
 public interface ServerRequest extends EditableAttributes<String, Object>, InputMessage {

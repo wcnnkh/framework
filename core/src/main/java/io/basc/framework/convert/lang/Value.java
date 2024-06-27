@@ -1,11 +1,14 @@
 package io.basc.framework.convert.lang;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
+import java.util.stream.IntStream;
 
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.Converter;
@@ -15,6 +18,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.Enumerable;
 import io.basc.framework.util.function.Optional;
 import io.basc.framework.util.function.Source;
 
@@ -69,6 +74,42 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Option
 		}
 
 		return new ObjectValue(value, type);
+	}
+
+	static boolean isElements(TypeDescriptor typeDescriptor) {
+		return typeDescriptor.isCollection() || typeDescriptor.isArray()
+				|| Iterable.class.isAssignableFrom(typeDescriptor.getType())
+				|| Enumerable.class.isAssignableFrom(typeDescriptor.getType());
+	}
+
+	static Elements<Value> asElements(Object value, TypeDescriptor typeDescriptor) {
+		if (value instanceof Collection) {
+			Collection<?> collection = (Collection<?>) value;
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			return Elements.of(collection).map((v) -> Value.of(v, elementTypeDescriptor));
+		} else if (value instanceof Iterable) {
+			Iterable<?> iterable = (Iterable<?>) value;
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			return Elements.of(iterable).map((v) -> Value.of(v, elementTypeDescriptor));
+		} else if (value instanceof Enumerable) {
+			Enumerable<?> enumerable = (Enumerable<?>) value;
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			return Elements.of(enumerable).map((v) -> Value.of(v, elementTypeDescriptor));
+		} else if (value.getClass().isArray()) {
+			int len = Array.getLength(value);
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			return Elements.of(() -> IntStream.range(0, len)
+					.mapToObj((index) -> Value.of(Array.get(value, index), elementTypeDescriptor)));
+		} /*
+			 * else if (value instanceof Iterator) { Iterator<?> iterator = (Iterator<?>)
+			 * value; TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			 * return Elements.of(() -> iterator).map((v) -> Value.of(v,
+			 * elementTypeDescriptor)); } else if (value instanceof Enumeration) {
+			 * Enumeration<?> enumeration = (Enumeration<?>) value; TypeDescriptor
+			 * elementTypeDescriptor = typeDescriptor.getGeneric(0); return Elements.of(()
+			 * -> enumeration).map((v) -> Value.of(v, elementTypeDescriptor)); }
+			 */
+		return Elements.singleton(Value.of(value, typeDescriptor));
 	}
 
 	@Nullable

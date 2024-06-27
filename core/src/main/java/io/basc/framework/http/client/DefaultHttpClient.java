@@ -2,8 +2,8 @@ package io.basc.framework.http.client;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.net.message.convert.DefaultMessageConverters;
-import io.basc.framework.net.message.convert.MessageConverters;
+import io.basc.framework.net.convert.ConfigurableMessageConverter;
+import io.basc.framework.net.convert.DefaultMessageConverters;
 import io.basc.framework.util.ClassUtils;
 
 public class DefaultHttpClient extends AbstractHttpClient {
@@ -17,7 +17,7 @@ public class DefaultHttpClient extends AbstractHttpClient {
 			.getServiceLoader(ClientHttpRequestFactory.class, SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS).getServices()
 			.first();
 
-	private final MessageConverters messageConverters;
+	private final ConfigurableMessageConverter messageConverters;
 	private final ClientHttpRequestInterceptors interceptors;
 	private boolean configured = false;
 
@@ -50,7 +50,7 @@ public class DefaultHttpClient extends AbstractHttpClient {
 		return interceptors;
 	}
 
-	public MessageConverters getMessageConverters() {
+	public ConfigurableMessageConverter getMessageConverters() {
 		return messageConverters;
 	}
 

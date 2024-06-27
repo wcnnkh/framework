@@ -1,8 +1,8 @@
 package io.basc.framework.rpc.remote;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.message.InputMessage;
-import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.InputMessage;
+import io.basc.framework.net.OutputMessage;
 
 import java.io.IOException;
 

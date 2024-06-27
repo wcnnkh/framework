@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.param.ParameterDescriptor;
-import io.basc.framework.net.ClientRequest;
-import io.basc.framework.net.message.InputMessage;
-import io.basc.framework.net.message.Message;
-import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.InputMessage;
+import io.basc.framework.net.Message;
+import io.basc.framework.net.OutputMessage;
+import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.web.message.WebMessagelConverterException;
 

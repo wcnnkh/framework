@@ -37,9 +37,7 @@ import io.basc.framework.util.ObjectUtils;
  * @see java.io.Reader
  * @see java.nio.charset.Charset
  */
-public class EncodedResource implements InputStreamSource {
-
-	private final Resource resource;
+public class EncodedResource extends ResourceWrapper<Resource> implements ReaderSource {
 
 	private final String encoding;
 
@@ -78,18 +76,9 @@ public class EncodedResource implements InputStreamSource {
 	}
 
 	private EncodedResource(Resource resource, String encoding, Charset charset) {
-		super();
-		Assert.notNull(resource, "Resource must not be null");
-		this.resource = resource;
+		super(Assert.requiredArgument(resource != null, "Resource must not be null", resource));
 		this.encoding = encoding;
 		this.charset = charset;
-	}
-
-	/**
-	 * Return the {@code Resource} held by this {@code EncodedResource}.
-	 */
-	public final Resource getResource() {
-		return this.resource;
 	}
 
 	/**
@@ -131,11 +120,11 @@ public class EncodedResource implements InputStreamSource {
 	 */
 	public Reader getReader() throws IOException {
 		if (this.charset != null) {
-			return new InputStreamReader(this.resource.getInputStream(), this.charset);
+			return new InputStreamReader(wrappedTarget.getInputStream(), this.charset);
 		} else if (this.encoding != null) {
-			return new InputStreamReader(this.resource.getInputStream(), this.encoding);
+			return new InputStreamReader(wrappedTarget.getInputStream(), this.encoding);
 		} else {
-			return new InputStreamReader(this.resource.getInputStream());
+			return new InputStreamReader(wrappedTarget.getInputStream());
 		}
 	}
 
@@ -149,7 +138,7 @@ public class EncodedResource implements InputStreamSource {
 	 * @see #getReader()
 	 */
 	public InputStream getInputStream() throws IOException {
-		return this.resource.getInputStream();
+		return super.getInputStream();
 	}
 
 	@Override
@@ -161,18 +150,13 @@ public class EncodedResource implements InputStreamSource {
 			return false;
 		}
 		EncodedResource otherResource = (EncodedResource) other;
-		return (this.resource.equals(otherResource.resource) && ObjectUtils.equals(this.charset, otherResource.charset)
+		return (super.equals(other) && ObjectUtils.equals(this.charset, otherResource.charset)
 				&& ObjectUtils.equals(this.encoding, otherResource.encoding));
 	}
 
 	@Override
-	public int hashCode() {
-		return this.resource.hashCode();
+	public Resource createRelative(String relativePath) throws IOException {
+		Resource relativeResource = super.createRelative(relativePath);
+		return new EncodedResource(relativeResource, encoding, charset);
 	}
-
-	@Override
-	public String toString() {
-		return this.resource.toString();
-	}
-
 }
