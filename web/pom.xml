@@ -8,24 +8,18 @@
 		<version>1.8.4</version>
 	</parent>
 	<artifactId>web</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>xml</artifactId>
+			<artifactId>net</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>context</artifactId>
-		</dependency>
-		
 		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
 		<!-- 如果不想支持jax-rs也可以排队该依赖 -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
+			<optional>true</optional>
 		</dependency>
-		
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>

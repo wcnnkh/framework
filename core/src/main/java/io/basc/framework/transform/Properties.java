@@ -3,6 +3,7 @@ package io.basc.framework.transform;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Items;
 import io.basc.framework.util.element.Elements;
@@ -28,5 +29,9 @@ public interface Properties extends Items<Property> {
 			}
 		}
 		return map;
+	}
+
+	default Parameters toParameters() {
+		return () -> getElements().map((e) -> e);
 	}
 }

@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
@@ -125,26 +124,6 @@ public final class ResourceUtils {
 			resourcePrefixs[i] = prefix;
 		}
 		RESOURCE_PREFIXS = resourcePrefixs;
-	}
-
-	/**
-	 * Return whether the given resource location is a URL: either a special
-	 * "classpath" pseudo URL or a standard URL.
-	 * 
-	 * @param resourceLocation the location String to check
-	 * @return whether the location qualifies as a URL
-	 * @see #CLASSPATH_URL_PREFIX
-	 * @see java.net.URL
-	 */
-	public static boolean isUrl(@Nullable String resourceLocation) {
-		if (resourceLocation == null) {
-			return false;
-		}
-		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			return true;
-		}
-
-		return InetUtils.isUrl(resourceLocation);
 	}
 
 	/**

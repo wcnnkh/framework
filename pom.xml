@@ -315,6 +315,11 @@
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>net</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
                 <groupId>io.basc.framework</groupId>
                 <artifactId>locks</artifactId>
                 <version>1.8.4</version>
@@ -817,6 +822,7 @@
 		<module>excel</module>
 		<module>jxl</module>
 		<module>poi</module>
+		<module>net</module>
 	</modules>
 	<profiles>
 		<profile>

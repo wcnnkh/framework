@@ -24,6 +24,7 @@ import io.basc.framework.util.Registrations;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.ServiceLoader;
 import io.basc.framework.util.select.WeightedElement;
+import lombok.NonNull;
 
 /**
  * 一个动态注入的实现
@@ -38,6 +39,8 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 	private final ServiceLoaderRegistry<S> serviceLoaderRegistry = new ServiceLoaderRegistry<>(this);
 	private volatile TreeMap<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> serviceMap;
 	private volatile long version = 0;
+	@NonNull
+	private Comparator<? super S> comparator;
 
 	public ServiceRegistry() {
 		setServiceComparator(OrderComparator.INSTANCE);
@@ -52,23 +55,33 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 		});
 	}
 
+	private void initMap() {
+		if (serviceMap == null) {
+			this.serviceMap = newMap();
+		}
+	}
+
+	private TreeMap<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> newMap() {
+		return CollectionUtils.newStrictTreeMap((o1, o2) -> {
+			int order = Integer.compare(o1.getWeight(), o2.getWeight());
+			if (order == 0) {
+				return comparator.compare(o1.getElement(), o2.getElement());
+			}
+			return order;
+		});
+	}
+
 	public void setServiceComparator(Comparator<? super S> comparator) {
 		Assert.requiredArgument(comparator != null, "comparator");
 		Lock writeLock = lock.writeLock();
 		writeLock.lock();
 		try {
-			TreeMap<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> serviceMap = CollectionUtils
-					.newStrictTreeMap((o1, o2) -> {
-						int order = Integer.compare(o1.getWeight(), o2.getWeight());
-						if (order == 0) {
-							return comparator.compare(o1.getElement(), o2.getElement());
-						}
-						return order;
-					});
-			if (this.serviceMap != null) {
+			this.comparator = comparator;
+			if (serviceMap != null) {
+				TreeMap<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> serviceMap = newMap();
 				serviceMap.putAll(serviceMap);
+				this.serviceMap = serviceMap;
 			}
-			this.serviceMap = serviceMap;
 		} finally {
 			writeLock.unlock();
 		}
@@ -79,6 +92,10 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 		try {
 			writeLock.lock();
 			if (eventType == ChangeType.DELETE) {
+				if (serviceMap == null) {
+					return;
+				}
+
 				Map<ServiceInjector<? super S>, Registration> map = serviceMap.remove(element);
 				if (map == null) {
 					return;
@@ -88,6 +105,8 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 					entry.getValue().unregister();
 				}
 			} else if (eventType == ChangeType.CREATE) {
+				initMap();
+
 				Map<ServiceInjector<? super S>, Registration> map = serviceMap.get(element);
 				if (map == null) {
 					map = new LinkedHashMap<>();
@@ -111,24 +130,26 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 		try {
 			writeLock.lock();
 			Registration registration = serviceLoaderRegistry.clear();
-			List<ElementRegistration<S>> list = new ArrayList<>(serviceMap.size());
-			for (Entry<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> entry : serviceMap
-					.entrySet()) {
-				if (entry.getValue() != null) {
-					for (Entry<ServiceInjector<? super S>, Registration> en : entry.getValue().entrySet()) {
-						if (en.getValue() == null) {
-							continue;
-						}
+			List<ElementRegistration<S>> list = new ArrayList<>();
+			if (serviceMap != null) {
+				for (Entry<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> entry : serviceMap
+						.entrySet()) {
+					if (entry.getValue() != null) {
+						for (Entry<ServiceInjector<? super S>, Registration> en : entry.getValue().entrySet()) {
+							if (en.getValue() == null) {
+								continue;
+							}
 
-						en.getValue().unregister();
+							en.getValue().unregister();
+						}
 					}
+					list.add(new ElementRegistration<S>(entry.getKey().getElement(),
+							() -> change(entry.getKey(), ChangeType.CREATE)).version(() -> this.version));
 				}
-				list.add(new ElementRegistration<S>(entry.getKey().getElement(),
-						() -> change(entry.getKey(), ChangeType.CREATE)).version(() -> this.version));
+				serviceMap.clear();
+				publishBatchEvent(
+						Elements.of(list).map((e) -> new RegistryEvent<>(this, ChangeType.DELETE, e.getElement())));
 			}
-			serviceMap.clear();
-			publishBatchEvent(
-					Elements.of(list).map((e) -> new RegistryEvent<>(this, ChangeType.DELETE, e.getElement())));
 			return new Registrations<>(Elements.of(list)).and(registration);
 		} finally {
 			writeLock.unlock();
@@ -150,7 +171,8 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 	@Override
 	protected Elements<S> loadServices() {
 		serviceLoaderRegistry.touch();
-		return Elements.of(serviceMap.keySet().stream().map((e) -> e.getElement()).collect(Collectors.toList()));
+		return serviceMap == null ? Elements.empty()
+				: Elements.of(serviceMap.keySet().stream().map((e) -> e.getElement()).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -164,6 +186,7 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 		WeightedElement<S> weightedElement = new WeightedElement<>(weight, element);
 		try {
 			writeLock.lock();
+			initMap();
 			if (serviceMap.containsKey(weightedElement)) {
 				return ElementRegistration.empty();
 			}
@@ -202,10 +225,14 @@ public class ServiceRegistry<S> extends AbstractElementRegistry<S> {
 
 	@Override
 	public String toString() {
-		return serviceMap.keySet().toString();
+		return getServices().toString();
 	}
 
 	private void updateInjector(Elements<RegistryEvent<ServiceInjector<? super S>>> events) {
+		if (serviceMap == null) {
+			return;
+		}
+
 		List<S> update = new ArrayList<>();
 		for (RegistryEvent<ServiceInjector<? super S>> event : events) {
 			ServiceInjector<? super S> injector = event.getPayload();
