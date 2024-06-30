@@ -34,6 +34,7 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 	private volatile TreeMap<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> map;
 	private final Registry<S> registry;
 	private int version;
+	private final Comparator<? super ServiceLoader<? extends S>> serviceLoaderComparator;
 
 	public ServiceLoaderRegistry() {
 		this(new ElementRegistry<>());
@@ -47,14 +48,8 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 			Comparator<? super ServiceLoader<? extends S>> serviceLoaderComparator) {
 		Assert.requiredArgument(registry != null, "registry");
 		Assert.requiredArgument(serviceLoaderComparator != null, "serviceLoaderComparator");
-		this.map = CollectionUtils.newStrictTreeMap((o1, o2) -> {
-			int order = Integer.compare(o1.getWeight(), o2.getWeight());
-			if (order == 0) {
-				return serviceLoaderComparator.compare(o1.getElement(), o2.getElement());
-			}
-			return order;
-		});
 		this.registry = registry;
+		this.serviceLoaderComparator = serviceLoaderComparator;
 	}
 
 	@Override
@@ -62,6 +57,10 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 		WriteLock writeLock = lock.writeLock();
 		try {
 			writeLock.lock();
+			if (map == null) {
+				return Registrations.empty();
+			}
+
 			this.version++;
 			List<ElementRegistration<ServiceLoader<? extends S>>> registrations = new ArrayList<>(map.size());
 			for (Entry<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> entry : map
@@ -85,6 +84,10 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 		ReadLock readLock = lock.readLock();
 		try {
 			readLock.lock();
+			if (map == null) {
+				return Elements.empty();
+			}
+
 			List<ServiceLoader<? extends S>> list = map.keySet().stream().map((e) -> e.getElement())
 					.collect(Collectors.toList());
 			return Elements.of(list);
@@ -96,6 +99,18 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 	@Override
 	public final Registration register(ServiceLoader<? extends S> element) throws RegistrationException {
 		return register(element, Ordered.DEFAULT_PRECEDENCE);
+	}
+
+	private void initMap() {
+		if (map == null) {
+			this.map = CollectionUtils.newStrictTreeMap((o1, o2) -> {
+				int order = Integer.compare(o1.getWeight(), o2.getWeight());
+				if (order == 0) {
+					return serviceLoaderComparator.compare(o1.getElement(), o2.getElement());
+				}
+				return order;
+			});
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,6 +129,8 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 					Assert.isTrue(serviceLoader != registry && serviceLoader != this, "There is a circular reference");
 				}
 			}
+
+			initMap();
 
 			if (map.containsKey(weightElement)) {
 				return Registration.EMPTY;
@@ -156,6 +173,10 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 		Lock writeLock = lock.writeLock();
 		writeLock.lock();
 		try {
+			if (map == null) {
+				return;
+			}
+
 			for (Entry<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> entry : map
 					.entrySet()) {
 				entry.getKey().getElement().reload();
@@ -182,6 +203,10 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 			WriteLock writeLock = lock.writeLock();
 			try {
 				writeLock.lock();
+				if (map == null) {
+					return;
+				}
+
 				if (changed) {
 					for (Entry<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> entry : map
 							.entrySet()) {
@@ -213,8 +238,13 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 		try {
 			writeLock.lock();
 			if (eventType == ChangeType.CREATE) {
+				initMap();
 				map.putIfAbsent(serviceLoader, Registrations.empty());
 			} else if (eventType == ChangeType.DELETE) {
+				if (map == null) {
+					return;
+				}
+
 				Registrations<ElementRegistration<S>> registrations = map.remove(serviceLoader);
 				if (registrations != null && registrations != EMPTY) {
 					registrations.unregister();
@@ -228,6 +258,12 @@ public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? e
 
 	@Override
 	public String toString() {
-		return map.toString();
+		ReadLock readLock = lock.readLock();
+		readLock.lock();
+		try {
+			return map == null ? "{}" : map.toString();
+		} finally {
+			readLock.unlock();
+		}
 	}
 }
