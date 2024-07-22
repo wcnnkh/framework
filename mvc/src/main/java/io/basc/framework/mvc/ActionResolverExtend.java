@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import io.basc.framework.mvc.action.Action;
+import io.basc.framework.register.Registration;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
-import io.basc.framework.util.Registration;
 
 public interface ActionResolverExtend {
 	default String getControllerId(Class<?> sourceClass, Method method, ActionResolver chain) {

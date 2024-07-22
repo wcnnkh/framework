@@ -3,7 +3,7 @@ package io.basc.framework.beans.factory.spi;
 import java.util.ServiceLoader;
 
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
-import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.observe.register.ObservableServiceLoader;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -50,7 +50,7 @@ public final class SPI extends DefaultServiceLoaderFactory {
 	}
 
 	@Override
-	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
+	protected <S> void postProcessorServiceRegistry(ObservableServiceLoader<S> serviceRegistry, Class<S> serviceClass) {
 		super.postProcessorServiceRegistry(serviceRegistry, serviceClass);
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(serviceClass);
 		JdkServiceLoader<S> jdkServiceLoader = new JdkServiceLoader<>(serviceLoader);

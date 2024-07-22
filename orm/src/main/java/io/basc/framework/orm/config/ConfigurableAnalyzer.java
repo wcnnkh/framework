@@ -22,6 +22,7 @@ import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.MergedElements;
 
 public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> implements Analyzer {
 	/**
@@ -53,7 +54,7 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 		String defaultName = getName(entityClass);
 		names.add(defaultName);
 		appendDefaultAliasNames(names, defaultName);
-		return Elements.concat(parentNames, Elements.of(names));
+		return new MergedElements<>(parentNames, Elements.of(names));
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> 
 		if (isEntity(TypeDescriptor.valueOf(entityClass), descriptor)) {
 			getAliasNames(descriptor.getTypeDescriptor().getType()).forEach(names::add);
 		}
-		return Elements.concat(parentNames, Elements.of(names));
+		return new MergedElements<>(parentNames, Elements.of(names));
 	}
 
 	@Override

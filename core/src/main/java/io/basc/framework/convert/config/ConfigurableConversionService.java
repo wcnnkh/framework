@@ -5,7 +5,7 @@ import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
 
@@ -14,8 +14,8 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 	private static final NestingChecker<ConversionService> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
 
 	public ConfigurableConversionService() {
+		super(ConversionComparator.INSTANCE);
 		setServiceClass(ConversionService.class);
-		setServiceComparator(ConversionComparator.INSTANCE);
 		getServiceInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				ConversionServiceAware conversionServiceAware = (ConversionServiceAware) service;

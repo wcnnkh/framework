@@ -3,11 +3,11 @@ package io.basc.framework.transform.factory.support;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import io.basc.framework.register.LimitedRegistration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.transform.Transformer;
 import io.basc.framework.transform.factory.config.TransformerRegistry;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DisposableRegistration;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.comparator.TypeComparator;
 
 public class DefaultTransformerFactory<S, E extends Throwable> implements TransformerRegistry<S, E> {
@@ -57,6 +57,6 @@ public class DefaultTransformerFactory<S, E extends Throwable> implements Transf
 	public <T> Registration registerTransformer(Class<T> targetType,
 			Transformer<? super S, ? extends T, ? extends E> converter) {
 		this.transformerMap = register(targetType, converter, transformerMap);
-		return DisposableRegistration.of(() -> transformerMap.remove(targetType));
+		return LimitedRegistration.of(() -> transformerMap.remove(targetType));
 	}
 }

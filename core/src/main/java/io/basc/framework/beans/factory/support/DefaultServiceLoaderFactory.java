@@ -6,12 +6,12 @@ import java.util.Map;
 import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
-import io.basc.framework.observe.register.ServiceRegistry;
-import io.basc.framework.util.Registration;
+import io.basc.framework.observe.register.ObservableServiceLoader;
+import io.basc.framework.register.Registration;
 
 public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements ConfigurableServiceLoaderFactory {
 
-	private volatile Map<Class<?>, ServiceRegistry<?>> serviceLoaderMap = new HashMap<>();
+	private volatile Map<Class<?>, ObservableServiceLoader<?>> serviceLoaderMap = new HashMap<>();
 
 	public DefaultServiceLoaderFactory() {
 		getServiceInjectors().register((bean) -> {
@@ -27,13 +27,13 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> ServiceRegistry<S> getServiceLoader(Class<S> serviceClass) {
-		ServiceRegistry<S> serviceLoader = (ServiceRegistry<S>) serviceLoaderMap.get(serviceClass);
+	public <S> ObservableServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
+		ObservableServiceLoader<S> serviceLoader = (ObservableServiceLoader<S>) serviceLoaderMap.get(serviceClass);
 		if (serviceLoader == null) {
 			synchronized (this) {
-				serviceLoader = (ServiceRegistry<S>) serviceLoaderMap.get(serviceClass);
+				serviceLoader = (ObservableServiceLoader<S>) serviceLoaderMap.get(serviceClass);
 				if (serviceLoader == null) {
-					serviceLoader = new ServiceRegistry<>();
+					serviceLoader = new ObservableServiceLoader<>();
 					postProcessorServiceRegistry(serviceLoader, serviceClass);
 					serviceLoaderMap.putIfAbsent(serviceClass, serviceLoader);
 				}
@@ -42,7 +42,7 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 		return serviceLoader;
 	}
 
-	protected <S> void postProcessorServiceRegistry(ServiceRegistry<S> serviceRegistry, Class<S> serviceClass) {
+	protected <S> void postProcessorServiceRegistry(ObservableServiceLoader<S> serviceRegistry, Class<S> serviceClass) {
 		BeanProvider<S> beanProvider = getBeanProvider(serviceClass);
 		serviceRegistry.registerServiceLoader(beanProvider);
 	}

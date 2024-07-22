@@ -324,6 +324,11 @@
                 <artifactId>locks</artifactId>
                 <version>1.8.4</version>
             </dependency>
+            <dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>json</artifactId>
+				<version>1.8.4</version>
+			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>context</artifactId>
@@ -823,6 +828,7 @@
 		<module>jxl</module>
 		<module>poi</module>
 		<module>net</module>
+		<module>json</module>
 	</modules>
 	<profiles>
 		<profile>

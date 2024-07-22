@@ -12,12 +12,12 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.PayloadChangeEvent;
 import io.basc.framework.observe.PollingObserver;
-import io.basc.framework.observe.register.ElementRegistration;
-import io.basc.framework.observe.register.ElementRegistry;
-import io.basc.framework.util.Registration;
+import io.basc.framework.observe.register.ObservableList;
+import io.basc.framework.register.PayloadRegistration;
+import io.basc.framework.register.Registration;
 
 public class ResourceObserver extends PollingObserver<PayloadChangeEvent<ResourcePollingObserver>> {
-	private ElementRegistry<ResourcePollingObserver> registry = new ElementRegistry<>();
+	private ObservableList<ResourcePollingObserver> registry = new ObservableList<>();
 	private volatile WatchService watchService;
 
 	@Override
@@ -60,21 +60,21 @@ public class ResourceObserver extends PollingObserver<PayloadChangeEvent<Resourc
 	}
 
 	public void refresh() {
-		if (registry.getSize() == 0 || getListenerCount() == 0) {
+		if (registry.size() == 0 || getListenerCount() == 0) {
 			stop();
 			return;
 		}
 
-		if (registry.getSize() > 0 && getListenerCount() > 0) {
+		if (registry.size() > 0 && getListenerCount() > 0) {
 			initWatchService();
 			start();
 			return;
 		}
 	}
 
-	public ElementRegistration<ResourcePollingObserver> register(Resource resource) {
+	public PayloadRegistration<ResourcePollingObserver> register(Resource resource) {
 		ResourcePollingObserver observer = new ResourcePollingObserver(resource);
-		ElementRegistration<ResourcePollingObserver> registration = registry.register(observer);
+		PayloadRegistration<ResourcePollingObserver> registration = registry.register(observer);
 		refresh();
 		if (watchService != null) {
 			if (observer.register(watchService)) {

@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.observe.register.ObservableServiceLoader;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.collect.LRULinkedHashMap;
 import io.basc.framework.util.element.Elements;
@@ -14,16 +14,16 @@ import io.basc.framework.util.select.Selector;
 
 public class DefaultLoadBalancer<T extends Node> extends AbstractLoadBalancer<T> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultLoadBalancer.class);
-	private final ServiceRegistry<T> registry;
+	private final ObservableServiceLoader<T> registry;
 	private volatile LRULinkedHashMap<String, State> stateMap = new LRULinkedHashMap<>(256);
 
-	public DefaultLoadBalancer(Selector<T> selector, ServiceRegistry<T> registry) {
+	public DefaultLoadBalancer(Selector<T> selector, ObservableServiceLoader<T> registry) {
 		super(selector);
 		Assert.requiredArgument(registry != null, "registry");
 		this.registry = registry;
 	}
 
-	public ServiceRegistry<T> getRegistry() {
+	public ObservableServiceLoader<T> getRegistry() {
 		return registry;
 	}
 

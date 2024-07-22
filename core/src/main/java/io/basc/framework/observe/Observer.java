@@ -5,7 +5,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import io.basc.framework.event.support.DefaultBroadcastEventDispatcher;
 import io.basc.framework.util.Assert;
@@ -25,8 +24,6 @@ public class Observer<E> extends DefaultBroadcastEventDispatcher<E> implements P
 		return defaultTimer;
 	}
 
-	private final AtomicLong atomicLastModified = new AtomicLong();
-
 	private volatile Thread endlessLoopThread;
 
 	private long refreshTimeCycle = 5;
@@ -35,10 +32,6 @@ public class Observer<E> extends DefaultBroadcastEventDispatcher<E> implements P
 	private volatile ScheduledFuture<?> scheduledFuture;
 
 	private volatile TimerTask timerTask;
-
-	public AtomicLong getAtomicLastModified() {
-		return atomicLastModified;
-	}
 
 	public long getRefreshTimeCycle() {
 		return refreshTimeCycle;

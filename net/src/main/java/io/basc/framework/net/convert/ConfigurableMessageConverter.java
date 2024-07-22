@@ -12,7 +12,7 @@ import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
 import lombok.Getter;

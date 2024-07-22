@@ -2,10 +2,10 @@ package io.basc.framework.execution.aop;
 
 import io.basc.framework.execution.Function;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.observe.register.ObservableServiceLoader;
 import io.basc.framework.util.element.Elements;
 
-public class ExecutionInterceptorRegistry extends ServiceRegistry<ExecutionInterceptor>
+public class ExecutionInterceptorRegistry extends ObservableServiceLoader<ExecutionInterceptor>
 		implements ExecutionInterceptor {
 	private final Function nextChain;
 

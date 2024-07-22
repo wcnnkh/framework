@@ -5,7 +5,7 @@ import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.value.AbstractObservableValue;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 
 public class DynamicValue<K> extends AbstractObservableValue<Value> implements AutoCloseable {
 	private final K key;

@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.mvc.action.Action;
+import io.basc.framework.register.Registration;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
 
 public class ActionResolverChain extends ActionResolverConfiguration implements ActionResolver {
 	private final Iterator<? extends ActionResolverExtend> iterator;

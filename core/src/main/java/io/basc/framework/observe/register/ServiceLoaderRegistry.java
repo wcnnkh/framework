@@ -1,269 +1,55 @@
 package io.basc.framework.observe.register;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
-import java.util.stream.Collectors;
-
-import io.basc.framework.core.OrderComparator;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.observe.ChangeType;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.RegistrationException;
-import io.basc.framework.util.Registrations;
-import io.basc.framework.util.VersionRegistration;
+import io.basc.framework.observe.Observer;
+import io.basc.framework.observe.container.ServiceRegistry;
+import io.basc.framework.register.PayloadRegistration;
+import io.basc.framework.register.RegistrationException;
+import io.basc.framework.register.Registrations;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.ServiceLoader;
-import io.basc.framework.util.select.WeightedElement;
+import lombok.RequiredArgsConstructor;
 
-public class ServiceLoaderRegistry<S> extends AbstractRegistry<ServiceLoader<? extends S>> {
-	private volatile boolean changed;
-	/**
-	 * 用来作为默认填充
-	 */
-	private final Registrations<ElementRegistration<S>> EMPTY = Registrations.empty();
-	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private volatile TreeMap<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> map;
-	private final Registry<S> registry;
-	private int version;
-	private final Comparator<? super ServiceLoader<? extends S>> serviceLoaderComparator;
+@RequiredArgsConstructor
+public class ServiceLoaderRegistry<S> extends Observer<RegistryEvent<ServiceLoader<? extends S>>>
+		implements ServiceRegistry<ServiceLoader<? extends S>> {
+	private final ServiceRegistry<ServiceLoader<? extends S>> registry;
+	private final ServiceRegistry<S> serviceRegistry;
 
-	public ServiceLoaderRegistry() {
-		this(new ElementRegistry<>());
-	}
-
-	public ServiceLoaderRegistry(Registry<S> registry) {
-		this(registry, OrderComparator.INSTANCE);
-	}
-
-	public ServiceLoaderRegistry(Registry<S> registry,
-			Comparator<? super ServiceLoader<? extends S>> serviceLoaderComparator) {
-		Assert.requiredArgument(registry != null, "registry");
-		Assert.requiredArgument(serviceLoaderComparator != null, "serviceLoaderComparator");
-		this.registry = registry;
-		this.serviceLoaderComparator = serviceLoaderComparator;
+	public ServiceLoaderRegistry(ServiceRegistry<S> serviceRegistry) {
+		this(new ObservableList<>(), serviceRegistry);
 	}
 
 	@Override
-	public Registrations<ElementRegistration<ServiceLoader<? extends S>>> clear() throws RegistrationException {
-		WriteLock writeLock = lock.writeLock();
-		try {
-			writeLock.lock();
-			if (map == null) {
-				return Registrations.empty();
-			}
-
-			this.version++;
-			List<ElementRegistration<ServiceLoader<? extends S>>> registrations = new ArrayList<>(map.size());
-			for (Entry<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> entry : map
-					.entrySet()) {
-				entry.getValue().unregister();
-				ElementRegistration<ServiceLoader<? extends S>> registration = new ElementRegistration<ServiceLoader<? extends S>>(
-						entry.getKey().getElement(), () -> unregister(entry.getKey(), ChangeType.CREATE));
-				registrations.add(registration.version(() -> this.version));
-			}
-			changed = true;
-			return new Registrations<>(Elements.of(registrations));
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public Elements<ServiceLoader<? extends S>> getServices() {
-		// 获取迭代器并初始化ServiceLoader
-		touch();
-		ReadLock readLock = lock.readLock();
-		try {
-			readLock.lock();
-			if (map == null) {
-				return Elements.empty();
-			}
-
-			List<ServiceLoader<? extends S>> list = map.keySet().stream().map((e) -> e.getElement())
-					.collect(Collectors.toList());
-			return Elements.of(list);
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public final Registration register(ServiceLoader<? extends S> element) throws RegistrationException {
-		return register(element, Ordered.DEFAULT_PRECEDENCE);
-	}
-
-	private void initMap() {
-		if (map == null) {
-			this.map = CollectionUtils.newStrictTreeMap((o1, o2) -> {
-				int order = Integer.compare(o1.getWeight(), o2.getWeight());
-				if (order == 0) {
-					return serviceLoaderComparator.compare(o1.getElement(), o2.getElement());
-				}
-				return order;
-			});
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public Registration register(ServiceLoader<? extends S> element, int weight) {
-		Assert.requiredArgument(element != null, "element");
-		Assert.isTrue(element != registry && element != this, "There is a circular reference");
-
-		WriteLock writeLock = lock.writeLock();
-		WeightedElement<ServiceLoader<? extends S>> weightElement = new WeightedElement<ServiceLoader<? extends S>>(
-				weight, element);
-		try {
-			writeLock.lock();
-			if (element instanceof ServiceLoaderRegistry) {
-				for (ServiceLoader<? extends S> serviceLoader : ((ServiceLoaderRegistry<? extends S>) element)
-						.getServices()) {
-					Assert.isTrue(serviceLoader != registry && serviceLoader != this, "There is a circular reference");
-				}
-			}
-
-			initMap();
-
-			if (map.containsKey(weightElement)) {
-				return Registration.EMPTY;
-			}
-
-			Registrations<ElementRegistration<S>> set = map.putIfAbsent(weightElement, EMPTY);
-			if (set != null) {
-				return Registration.EMPTY;
-			}
-			changed = true;
-
-			// TODO 后面希望能做到懒加载
-			touch();
-		} finally {
-			writeLock.unlock();
+	public PayloadRegistration<ServiceLoader<? extends S>> register(ServiceLoader<? extends S> element)
+			throws RegistrationException {
+		VariableServiceLoader<S> observableServiceLoader = new VariableServiceLoader<>(element, serviceRegistry);
+		PayloadRegistration<ServiceLoader<? extends S>> registration = registry.register(observableServiceLoader);
+		if (registration.isInvalid()) {
+			return registration;
 		}
 
-		Registration registration = Registration.EMPTY;
-		if (element instanceof Registry) {
-			registration = registration.and(((Registry<?>) element).registerListener((event) -> {
-				publishEvent(new RegistryEvent<>(this, ChangeType.UPDATE, element));
-				changed = true;
-			}));
-		}
-
-		return new VersionRegistration(() -> this.version, () -> unregister(weightElement, ChangeType.DELETE))
-				.and(registration);
-	}
-
-	public Registration registerFirst(ServiceLoader<? extends S> element) {
-		return register(element, Ordered.HIGHEST_PRECEDENCE);
-	}
-
-	public Registration registerLast(ServiceLoader<? extends S> element) {
-		return register(element, Ordered.LOWEST_PRECEDENCE);
+		// 初始化一下
+		observableServiceLoader.reload(false);
+		registration = registration.and(observableServiceLoader.registerBatchListener((events) -> publishEvent(
+				new RegistryEvent<ServiceLoader<? extends S>>(this, ChangeType.UPDATE, element))));
+		publishEvent(new RegistryEvent<ServiceLoader<? extends S>>(this, ChangeType.CREATE, element));
+		return registration.and(
+				() -> publishEvent(new RegistryEvent<ServiceLoader<? extends S>>(this, ChangeType.DELETE, element)));
 	}
 
 	@Override
 	public void reload() {
-		Lock writeLock = lock.writeLock();
-		writeLock.lock();
-		try {
-			if (map == null) {
-				return;
-			}
-
-			for (Entry<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> entry : map
-					.entrySet()) {
-				entry.getKey().getElement().reload();
-				if (entry.getValue() == EMPTY) {
-					// 还没有初始化过，可以忽略
-					continue;
-				}
-
-				entry.getValue().unregister();
-				// 再次调用iterator的时候会初始化
-				entry.setValue(EMPTY);
-			}
-			changed = true;
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	/**
-	 * 触发ServiceLoader初始化
-	 */
-	public void touch() {
-		if (changed) {
-			WriteLock writeLock = lock.writeLock();
-			try {
-				writeLock.lock();
-				if (map == null) {
-					return;
-				}
-
-				if (changed) {
-					for (Entry<WeightedElement<ServiceLoader<? extends S>>, Registrations<ElementRegistration<S>>> entry : map
-							.entrySet()) {
-						// 因为此处校验，所以可以不用关心将changed=true时的线程安全性问题
-						if (entry.getValue() != EMPTY) {
-							// 已经初始化过了，可以忽略
-							continue;
-						}
-
-						Registrations<ElementRegistration<S>> registration = registry
-								.registers(entry.getKey().getElement().getServices());
-						if (registration.isInvalid()) {
-							// 初始化没拿到结果，忽略
-							continue;
-						}
-
-						entry.setValue(registration);
-					}
-					changed = false;
-				}
-			} finally {
-				writeLock.unlock();
-			}
-		}
-	}
-
-	private void unregister(WeightedElement<ServiceLoader<? extends S>> serviceLoader, ChangeType eventType) {
-		WriteLock writeLock = lock.writeLock();
-		try {
-			writeLock.lock();
-			if (eventType == ChangeType.CREATE) {
-				initMap();
-				map.putIfAbsent(serviceLoader, Registrations.empty());
-			} else if (eventType == ChangeType.DELETE) {
-				if (map == null) {
-					return;
-				}
-
-				Registrations<ElementRegistration<S>> registrations = map.remove(serviceLoader);
-				if (registrations != null && registrations != EMPTY) {
-					registrations.unregister();
-				}
-			}
-			changed = true;
-		} finally {
-			writeLock.unlock();
-		}
+		registry.getServices().forEach(ServiceLoader::reload);
 	}
 
 	@Override
-	public String toString() {
-		ReadLock readLock = lock.readLock();
-		readLock.lock();
-		try {
-			return map == null ? "{}" : map.toString();
-		} finally {
-			readLock.unlock();
-		}
+	public Elements<ServiceLoader<? extends S>> getServices() {
+		return registry.getServices();
+	}
+
+	@Override
+	public Registrations<PayloadRegistration<ServiceLoader<? extends S>>> getRegistrations() {
+		return registry.getRegistrations();
 	}
 }

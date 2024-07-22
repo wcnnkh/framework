@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.basc.framework.lang.AlreadyExistsException;
+import io.basc.framework.register.LimitedRegistration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
-import io.basc.framework.util.DisposableRegistration;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends DefaultAuthorityManager<T>
@@ -56,7 +56,7 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends Defaul
 
 				map.put(authority.getMethod(), authority.getId());
 				pathMap.put(authority.getPath(), map);
-				registration = registration.and(DisposableRegistration.of(() -> {
+				registration = registration.and(LimitedRegistration.of(() -> {
 					unregister(authority);
 				}));
 			}

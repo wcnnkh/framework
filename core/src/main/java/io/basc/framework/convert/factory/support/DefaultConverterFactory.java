@@ -5,9 +5,9 @@ import java.util.TreeMap;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.factory.config.ConverterRegistry;
+import io.basc.framework.register.LimitedRegistration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DisposableRegistration;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.comparator.TypeComparator;
 
 public class DefaultConverterFactory<S, E extends Throwable> implements ConverterRegistry<S, E> {
@@ -57,6 +57,6 @@ public class DefaultConverterFactory<S, E extends Throwable> implements Converte
 	public <T> Registration registerConverter(Class<T> targetType,
 			Converter<? super S, ? extends T, ? extends E> converter) {
 		this.converterMap = register(targetType, converter, converterMap);
-		return DisposableRegistration.of(() -> converterMap.remove(targetType));
+		return LimitedRegistration.of(() -> converterMap.remove(targetType));
 	}
 }

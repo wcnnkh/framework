@@ -1,7 +1,6 @@
 package io.basc.framework.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -10,7 +9,7 @@ import java.util.function.Predicate;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.MultiElements;
+import io.basc.framework.util.element.MergedElements;
 
 /**
  * 成员
@@ -204,14 +203,13 @@ public class Members<E> implements Cloneable, Consumer<E> {
 			if (interfaces == null) {
 				return self;
 			} else {
-				return Elements.concat(self, interfaces.flatMap((e) -> e.recursion()));
+				return new MergedElements<>(self, interfaces.flatMap((e) -> e.recursion()));
 			}
 		} else {
 			if (interfaces == null) {
-				return Elements.concat(self, superclass.recursion());
+				return new MergedElements<>(self, superclass.recursion());
 			} else {
-				return new MultiElements<>(
-						Arrays.asList(self, superclass.recursion(), interfaces.flatMap((e) -> e.recursion())));
+				return new MergedElements<>(self, superclass.recursion(), interfaces.flatMap((e) -> e.recursion()));
 			}
 		}
 	}

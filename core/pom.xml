@@ -22,12 +22,6 @@
 			<artifactId>cglib</artifactId>
 			<optional>true</optional>
 		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<optional>true</optional>
-		</dependency>
 		
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -53,7 +47,6 @@
 					<includes>
 						<include>*:asm</include>
 						<include>*:cglib</include>
-						<include>*:gson</include>
 					</includes>
 					<rules>
 						<rule>
@@ -71,14 +64,6 @@
 						<rule>
 							<pattern>net.sf.cglib.**.*</pattern>
 							<result>io.basc.framework.cglib.@1.$@2</result>
-						</rule>
-						<rule>
-							<pattern>com.google.gson.internal.**</pattern>
-							<result>io.basc.framework.gson.internal.$@1</result>
-						</rule>
-						<rule>
-							<pattern>com.google.gson.**</pattern>
-							<result>io.basc.framework.gson.@1</result>
 						</rule>
 						<keep>
 							<pattern>io.basc.framework.**.*</pattern>

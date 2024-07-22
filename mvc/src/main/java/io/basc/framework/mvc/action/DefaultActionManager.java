@@ -11,9 +11,9 @@ import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.observe.ObservableEvent;
+import io.basc.framework.register.LimitedRegistration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.observe.ChangeType;
-import io.basc.framework.util.DisposableRegistration;
-import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternMatcher;
@@ -47,7 +47,7 @@ public class DefaultActionManager extends StandardBroadcastEventDispatcher<Obser
 			}
 
 			actionMap.put(action.getMethod(), action);
-			registration = DisposableRegistration.of(() -> {
+			registration = LimitedRegistration.of(() -> {
 				synchronized (actionMap) {
 					actionMap.remove(action.getMethod());
 				}

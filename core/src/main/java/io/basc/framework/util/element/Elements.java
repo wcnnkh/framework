@@ -28,19 +28,6 @@ import io.basc.framework.util.Assert;
  */
 public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
-	/**
-	 * @see MultiElements
-	 * @param <T>
-	 * @param left
-	 * @param right
-	 * @return
-	 */
-	public static <T> Elements<T> concat(Elements<? extends T> left, Elements<? extends T> right) {
-		Assert.requiredArgument(left != null, "left");
-		Assert.requiredArgument(right != null, "right");
-		return new MultiElements<>(Arrays.asList(left, right));
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> Elements<T> empty() {
 		return (Elements<T>) ElementList.EMPTY;
@@ -118,7 +105,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	default Elements<E> concat(Elements<? extends E> elements) {
 		Assert.requiredArgument(elements != null, "elements");
-		return new MultiElements<>(Arrays.asList(this, elements));
+		return new MergedElements<>(this, elements);
 	}
 
 	default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {

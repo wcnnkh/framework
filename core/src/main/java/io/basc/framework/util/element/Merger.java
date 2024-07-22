@@ -1,5 +1,7 @@
 package io.basc.framework.util.element;
 
+import java.util.function.Function;
+
 import io.basc.framework.util.select.Selector;
 
 public class Merger<T> implements Selector<Elements<T>> {
@@ -7,7 +9,7 @@ public class Merger<T> implements Selector<Elements<T>> {
 
 	@Override
 	public Elements<T> apply(Elements<? extends Elements<T>> elements) {
-		return elements.flatMap((e) -> e);
+		return elements.filter((e) -> e != null).flatMap((e) -> e.map(Function.identity()));
 	}
 
 	@SuppressWarnings("unchecked")

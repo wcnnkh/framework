@@ -1,6 +1,6 @@
 package io.basc.framework.observe.register;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 
 /**
  * 服务注入

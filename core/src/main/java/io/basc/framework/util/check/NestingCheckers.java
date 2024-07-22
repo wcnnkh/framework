@@ -1,8 +1,7 @@
 package io.basc.framework.util.check;
 
+import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.Registrations;
 import io.basc.framework.util.element.Elements;
 
 public class NestingCheckers<E> implements NestingChecker<E> {
@@ -24,7 +23,7 @@ public class NestingCheckers<E> implements NestingChecker<E> {
 
 	@Override
 	public Registration registerNestedElement(E element) {
-		return Registrations.register(elements.iterator(), (e) -> e.registerNestedElement(element));
+		return Registration.registers(elements, (e) -> e.registerNestedElement(element));
 	}
 
 }

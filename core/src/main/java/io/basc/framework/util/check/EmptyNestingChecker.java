@@ -1,6 +1,6 @@
 package io.basc.framework.util.check;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 
 public class EmptyNestingChecker<E> implements NestingChecker<E> {
 	public static final EmptyNestingChecker<Object> EMPTY = new EmptyNestingChecker<>();

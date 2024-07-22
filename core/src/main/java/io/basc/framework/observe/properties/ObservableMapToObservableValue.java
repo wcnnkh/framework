@@ -6,7 +6,7 @@ import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.value.ObservableValue;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 
 class ObservableMapToObservableValue<K, V> implements ObservableValue<Map<K, V>> {
 	private final ObservableMap<K, V> observableMap;

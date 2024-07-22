@@ -12,10 +12,8 @@ public interface RequestPattern extends Predicate<Request>, Function<Request, Pa
 	 * 获取匹配参数
 	 */
 	@Override
-	default Parameters apply(Request request) {
-		return Parameters.empty();
-	}
-
+	Parameters apply(Request request);
+	
 	@Override
 	boolean equals(Object obj);
 

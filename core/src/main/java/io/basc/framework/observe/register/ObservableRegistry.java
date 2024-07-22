@@ -2,15 +2,17 @@ package io.basc.framework.observe.register;
 
 import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.Observable;
+import io.basc.framework.register.PayloadBatchRegistration;
+import io.basc.framework.register.PayloadRegistration;
+import io.basc.framework.register.Registration;
 
-public class ObservableRegistry<E extends Observable<?>> extends ElementRegistry<E> {
+public class ObservableRegistry<E extends Observable<?>> extends ObservableList<E> {
+
 	@Override
-	public ElementRegistration<E> register(E element) {
-		ElementRegistration<E> elementRegistration = super.register(element);
-		if (element != this) {
-			elementRegistration = elementRegistration.and(element
-					.registerListener((e) -> publishEvent(new RegistryEvent<>(this, ChangeType.UPDATE, element))));
-		}
-		return elementRegistration;
+	protected PayloadBatchRegistration<E> batch(PayloadBatchRegistration<E> batchRegistration) {
+		return super.batch(batchRegistration).batch((elements) -> Registration
+				.registers(elements.map(PayloadRegistration::getPayload), (e) -> e.registerBatchListener((events) -> {
+					publishEvent(new RegistryEvent<>(this, ChangeType.UPDATE, e));
+				})));
 	}
 }

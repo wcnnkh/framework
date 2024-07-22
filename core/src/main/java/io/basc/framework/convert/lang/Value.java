@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
@@ -23,7 +24,7 @@ import io.basc.framework.util.element.Enumerable;
 import io.basc.framework.util.function.Optional;
 import io.basc.framework.util.function.Source;
 
-public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Optional<Value> {
+public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier, Optional<Value> {
 	static final Value EMPTY = new EmptyValue();
 
 	static final Value[] EMPTY_ARRAY = new Value[0];

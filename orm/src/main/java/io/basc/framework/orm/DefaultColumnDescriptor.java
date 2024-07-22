@@ -7,6 +7,7 @@ import io.basc.framework.mapper.stereotype.FieldDescriptorWrapper;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.element.MergedElements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -81,7 +82,7 @@ public class DefaultColumnDescriptor extends FieldDescriptorWrapper<FieldDescrip
 			return super.getAliasNames();
 		}
 
-		return Elements.concat(this.aliasNames, super.getAliasNames());
+		return new MergedElements<>(this.aliasNames, super.getAliasNames());
 	}
 
 	@Override

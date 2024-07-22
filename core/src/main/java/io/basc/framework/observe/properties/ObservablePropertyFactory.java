@@ -2,8 +2,8 @@ package io.basc.framework.observe.properties;
 
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistrationException;
+import io.basc.framework.register.Registration;
 import io.basc.framework.transform.factory.PropertyFactory;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.element.Elements;
 
 public interface ObservablePropertyFactory extends ObservableValueFactory<String>, PropertyFactory {

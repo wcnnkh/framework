@@ -3,7 +3,7 @@ package io.basc.framework.observe.properties;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 import lombok.Data;
 
 @Data

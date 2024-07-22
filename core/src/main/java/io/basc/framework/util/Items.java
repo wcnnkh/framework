@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import io.basc.framework.util.element.Elements;
@@ -40,6 +42,21 @@ public interface Items<T extends Item> {
 		return getElements().filter((item) -> item.getName().equals(name) || item.getAliasNames().contains(name));
 	}
 
+	default Elements<T> getElements(Item item) {
+		Elements<T> elements = getElements(item.getName());
+		if (!elements.isEmpty()) {
+			return elements;
+		}
+
+		elements = item.getAliasNames().map((name) -> getElements(name)).filter((e) -> !e.isEmpty()).first();
+		if (elements != null) {
+			return elements;
+		}
+
+		T element = getElement(item.getPositionIndex());
+		return element == null ? Elements.empty() : Elements.singleton(element);
+	}
+
 	default int getNumberOfElements() {
 		return (int) getElements().count();
 	}
@@ -65,5 +82,18 @@ public interface Items<T extends Item> {
 	 */
 	default boolean isUniqueElement(String name) {
 		return getElements(name).isUnique();
+	}
+
+	default Map<String, T> getMap(String prefix) {
+		Assert.requiredArgument(prefix != null, "prefix");
+		Map<String, T> map = new LinkedHashMap<>();
+		for (T item : getElements()) {
+			String name = item.getName();
+			if (name.length() > prefix.length() && name.startsWith(prefix)) {
+				name = name.substring(prefix.length());
+				map.put(name, item);
+			}
+		}
+		return map;
 	}
 }

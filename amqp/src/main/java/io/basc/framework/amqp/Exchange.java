@@ -1,7 +1,7 @@
 package io.basc.framework.amqp;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 
 public interface Exchange<T> {
 	Registration bind(String routingKey, QueueDeclare queueDeclare, MessageListener<T> messageListener)

@@ -3,14 +3,18 @@ package io.basc.framework.observe.register;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.Polling;
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.PayloadBatchRegistration;
+import io.basc.framework.register.Registration;
 
-public abstract class PollingRegistry<E extends Polling> extends ElementRegistry<E> implements Polling {
+public abstract class PollingRegistry<E extends Polling> extends ObservableList<E> implements Polling {
+
+	public PollingRegistry() {
+		super();
+	}
 
 	public boolean startEndlessLoop() {
 		return startEndlessLoop(() -> {
@@ -56,13 +60,11 @@ public abstract class PollingRegistry<E extends Polling> extends ElementRegistry
 	}
 
 	@Override
-	public ElementRegistration<E> register(E element) {
-		ElementRegistration<E> registration = super.register(element);
+	protected PayloadBatchRegistration<E> batch(PayloadBatchRegistration<E> batchRegistration) {
 		refresh();
-		return registration.and(() -> refresh());
+		return super.batch(batchRegistration).batch((es) -> () -> refresh());
 	}
 
-	@Override
 	public Registration registerBatchListener(BatchEventListener<RegistryEvent<E>> batchEventListener)
 			throws EventRegistrationException {
 		Registration registration = super.registerBatchListener(batchEventListener);
@@ -70,22 +72,17 @@ public abstract class PollingRegistry<E extends Polling> extends ElementRegistry
 		return registration.and(() -> refresh());
 	}
 
-	public void refresh() {
-		Lock readLock = getReadWriteLock().readLock();
-		readLock.lock();
-		try {
-			if (getSize() == 0 || getListenerCount() == 0) {
-				stop();
-				return;
+	private void refresh() {
+		test((list) -> {
+			if (list.size() == 0 || getListenerCount() == 0) {
+				return stop();
 			}
 
-			if (getSize() > 0 && getListenerCount() > 0) {
-				start();
-				return;
+			if (list.size() > 0 && getListenerCount() > 0) {
+				return start();
 			}
-		} finally {
-			readLock.unlock();
-		}
+			return false;
+		});
 	}
 
 	public abstract boolean start();

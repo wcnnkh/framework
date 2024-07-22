@@ -3,9 +3,10 @@ package io.basc.framework.observe.properties;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.Observer;
+import io.basc.framework.observe.register.ElementRegistration;
+import io.basc.framework.register.Registration;
+import io.basc.framework.register.RegistrationException;
 import io.basc.framework.transform.factory.PropertyFactory;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.RegistrationException;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -37,6 +38,12 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 	@Override
 	public Elements<String> keys() {
 		return getServices().flatMap((e) -> e.keys()).distinct();
+	}
+
+	@Override
+	protected ElementRegistration<PropertyFactory> createElementRegistration(PropertyFactory element) {
+		ElementRegistration<PropertyFactory> registration = super.createElementRegistration(element);
+		
 	}
 
 	@Override

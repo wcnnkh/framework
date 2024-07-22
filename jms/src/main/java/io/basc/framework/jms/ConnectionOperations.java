@@ -6,7 +6,7 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.Source;
 

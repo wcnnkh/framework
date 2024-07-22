@@ -1,19 +1,27 @@
 package io.basc.framework.beans.factory.config;
 
+import java.util.Comparator;
+
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.ParameterizedTypeReference;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.observe.register.ServiceRegistry;
-import io.basc.framework.util.Registration;
+import io.basc.framework.observe.register.ObservableServiceLoader;
+import io.basc.framework.register.Registration;
 import io.basc.framework.util.element.ServiceLoader;
 
-public class ConfigurableServices<T> extends ServiceRegistry<T> implements Configurable {
+public class ConfigurableServices<T> extends ObservableServiceLoader<T> implements Configurable {
 	private Registration configurableRegistration;
 	private Class<? extends T> serviceClass;
 
-	@SuppressWarnings("unchecked")
 	public ConfigurableServices() {
+		this(OrderComparator.INSTANCE);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ConfigurableServices(Comparator<? super T> comparator) {
+		super(comparator);
 		try {
 			ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<T>() {
 			});
@@ -22,10 +30,6 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 			}
 		} catch (Exception e) {
 		}
-	}
-
-	public ConfigurableServices(Class<? extends T> serviceClass) {
-		setServiceClass(serviceClass);
 	}
 
 	public void configure(Class<? extends T> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {

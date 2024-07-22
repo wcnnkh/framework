@@ -5,7 +5,9 @@ import java.util.TreeMap;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.param.Parameters;
-import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.observe.register.ObservableServiceLoader;
+import io.basc.framework.register.LimitedRegistration;
+import io.basc.framework.register.Registration;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.PropertiesTransformer;
 import io.basc.framework.transform.ReadOnlyProperty;
@@ -16,8 +18,6 @@ import io.basc.framework.transform.strategy.DefaultPropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.FilterablePropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.PropertiesTransformFilter;
-import io.basc.framework.util.DisposableRegistration;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.XUtils;
 
 public class DefaultPropertiesTransformerFactory<E extends Throwable>
@@ -35,7 +35,7 @@ public class DefaultPropertiesTransformerFactory<E extends Throwable>
 	private final String id = XUtils.getUUID();
 	private TreeMap<Class<?>, PropertiesTransformer<?, ? extends E>> propertiesTransformerMap;
 
-	private final ServiceRegistry<PropertiesTransformFilter> propertiesTransformFilterRegistry = new ServiceRegistry<>();
+	private final ObservableServiceLoader<PropertiesTransformFilter> propertiesTransformFilterRegistry = new ObservableServiceLoader<>();
 
 	private final DefaultPropertiesTransformStrategy propertiesTransformStrategy = new DefaultPropertiesTransformStrategy();
 
@@ -65,7 +65,7 @@ public class DefaultPropertiesTransformerFactory<E extends Throwable>
 		return (PropertiesTransformer<T, E>) get(requiredType, this.propertiesTransformerMap);
 	}
 
-	public ServiceRegistry<PropertiesTransformFilter> getPropertiesTransformFilterRegistry() {
+	public ObservableServiceLoader<PropertiesTransformFilter> getPropertiesTransformFilterRegistry() {
 		return propertiesTransformFilterRegistry;
 	}
 
@@ -82,7 +82,7 @@ public class DefaultPropertiesTransformerFactory<E extends Throwable>
 	public <T> Registration registerPropertiesTransformer(Class<T> requiredType,
 			PropertiesTransformer<T, ? extends E> propertiesTransformer) {
 		this.propertiesTransformerMap = register(requiredType, propertiesTransformer, propertiesTransformerMap);
-		return DisposableRegistration.of(() -> propertiesTransformerMap.remove(requiredType));
+		return LimitedRegistration.of(() -> propertiesTransformerMap.remove(requiredType));
 	}
 
 	@Override

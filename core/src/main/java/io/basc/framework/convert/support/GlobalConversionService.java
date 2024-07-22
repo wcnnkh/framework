@@ -48,6 +48,7 @@ public final class GlobalConversionService extends ConfigurableConversionService
 		register(new MapToMapConversionService(this));
 
 		register(new ValueConversionService());
+		// TODO 定义json转换
 		register(new JsonConversionService());
 		register(new JsonToObjectConversionService());
 

@@ -2,7 +2,7 @@ package io.basc.framework.execution.param;
 
 import io.basc.framework.execution.Executable;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.observe.register.ServiceRegistry;
+import io.basc.framework.observe.register.ObservableServiceLoader;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -11,7 +11,7 @@ import io.basc.framework.util.element.Elements;
  * @author wcnnkh
  *
  */
-public class ParameterExtractors<S> extends ServiceRegistry<ParameterExtractor<? super S>>
+public class ParameterExtractors<S> extends ObservableServiceLoader<ParameterExtractor<? super S>>
 		implements ParameterExtractor<S> {
 
 	@Override

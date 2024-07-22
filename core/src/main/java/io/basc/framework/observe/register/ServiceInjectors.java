@@ -1,9 +1,8 @@
 package io.basc.framework.observe.register;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.register.Registration;
 
-public class ServiceInjectors<S> extends ElementRegistry<ServiceInjector<? super S>>
-		implements ServiceInjector<S> {
+public class ServiceInjectors<S> extends ObservableList<ServiceInjector<? super S>> implements ServiceInjector<S> {
 
 	@Override
 	public Registration inject(S service) {

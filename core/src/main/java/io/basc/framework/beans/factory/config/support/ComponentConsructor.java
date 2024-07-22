@@ -28,9 +28,9 @@ public class ComponentConsructor extends ReflectionConstructor implements BeanFa
 		if (enableAop) {
 			Aop aop = new Aop();
 			if (beanFactory != null) {
-				aop.registerServiceLoader(beanFactory.getBeanProvider(ProxyFactory.class));
-				aop.getExecutionInterceptorRegistry()
-						.registerServiceLoader(beanFactory.getBeanProvider(ExecutionInterceptor.class));
+				aop.getServiceLoaderRegistry().register(beanFactory.getBeanProvider(ProxyFactory.class));
+				aop.getExecutionInterceptorRegistry().getServiceLoaderRegistry()
+						.register(beanFactory.getBeanProvider(ExecutionInterceptor.class));
 			}
 			Proxy proxy = aop.getProxy(getReturnTypeDescriptor().getType());
 			return proxy.execute(getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()), args);
