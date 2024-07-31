@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.Polling;
-import io.basc.framework.register.PayloadBatchRegistration;
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.PayloadBatchRegistration;
+import io.basc.framework.util.register.Registration;
 
 public abstract class PollingRegistry<E extends Polling> extends ObservableList<E> implements Polling {
 

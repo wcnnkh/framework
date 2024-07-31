@@ -14,10 +14,10 @@ import java.util.function.Predicate;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.register.LimitedRegistration;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultAuthorityManager.class);

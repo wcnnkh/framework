@@ -6,8 +6,6 @@ import java.util.TreeMap;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.observe.register.ObservableServiceLoader;
-import io.basc.framework.register.LimitedRegistration;
-import io.basc.framework.register.Registration;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.PropertiesTransformer;
 import io.basc.framework.transform.ReadOnlyProperty;
@@ -19,6 +17,8 @@ import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.FilterablePropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.PropertiesTransformFilter;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class DefaultPropertiesTransformerFactory<E extends Throwable>
 		extends DefaultReversibleTransformerFactory<Object, E> implements PropertiesTransformerRegistry<E> {

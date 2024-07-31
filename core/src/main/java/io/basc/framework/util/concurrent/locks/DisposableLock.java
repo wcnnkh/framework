@@ -1,4 +1,4 @@
-package io.basc.framework.locks;
+package io.basc.framework.util.concurrent.locks;
 
 import java.util.concurrent.TimeUnit;
 

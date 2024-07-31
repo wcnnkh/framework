@@ -7,9 +7,9 @@ import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.observe.properties.DynamicPropertyRegistry;
-import io.basc.framework.register.Registration;
 import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
 import io.basc.framework.transform.factory.PropertyFactory;
+import io.basc.framework.util.register.Registration;
 
 public class DefaultPropertyResolver extends DynamicPropertyRegistry
 		implements ConfigurablePropertyResolver, Configurable {

@@ -5,8 +5,8 @@ import java.util.TreeMap;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ReversibleConverter;
 import io.basc.framework.convert.factory.config.ReversibleConverterRegistry;
-import io.basc.framework.register.LimitedRegistration;
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class DefaultReversibleConverterFactory<S, E extends Throwable> extends DefaultConverterFactory<S, E>
 		implements ReversibleConverterRegistry<S, E> {

@@ -3,7 +3,7 @@ package io.basc.framework.event.batch;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.EventRegistry;
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.Registration;
 
 public interface BatchEventRegistry<E> extends EventRegistry<E> {
 	@Override

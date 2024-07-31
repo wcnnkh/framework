@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.observe.ObservableEvent;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 
 public interface ActionManager extends BroadcastEventRegistry<ObservableEvent<Action>> {

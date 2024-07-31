@@ -3,11 +3,11 @@ package io.basc.framework.observe.register;
 import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.Observer;
 import io.basc.framework.observe.container.ServiceRegistry;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.RegistrationException;
-import io.basc.framework.register.Registrations;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.ServiceLoader;
+import io.basc.framework.util.register.BatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.register.RegistrationException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class ServiceLoaderRegistry<S> extends Observer<RegistryEvent<ServiceLoad
 	}
 
 	@Override
-	public Registrations<PayloadRegistration<ServiceLoader<? extends S>>> getRegistrations() {
+	public BatchRegistration<PayloadRegistration<ServiceLoader<? extends S>>> getRegistrations() {
 		return registry.getRegistrations();
 	}
 }

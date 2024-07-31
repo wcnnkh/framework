@@ -8,8 +8,8 @@ import java.util.NavigableSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import io.basc.framework.register.PayloadRegistration;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.register.PayloadRegistration;
 
 public class ObservableTreeMap<K, V> extends
 		ObservableNavigableMap<K, V, TreeMap<K, PayloadRegistration<Entry<K, V>>>, NavigableMap<K, V>, NavigableSet<K>> {

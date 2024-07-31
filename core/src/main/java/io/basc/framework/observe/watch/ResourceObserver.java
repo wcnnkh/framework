@@ -13,8 +13,8 @@ import io.basc.framework.observe.ChangeEvent;
 import io.basc.framework.observe.PayloadChangeEvent;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.observe.register.ObservableList;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class ResourceObserver extends PollingObserver<PayloadChangeEvent<ResourcePollingObserver>> {
 	private ObservableList<ResourcePollingObserver> registry = new ObservableList<>();

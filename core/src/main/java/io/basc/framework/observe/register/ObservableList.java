@@ -13,10 +13,10 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import io.basc.framework.observe.ChangeType;
-import io.basc.framework.register.PayloadBatchRegistration;
-import io.basc.framework.register.PayloadRegistration;
 import io.basc.framework.util.element.ElementList;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.PayloadBatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class ObservableList<E> extends ObservableCollection<E, List<PayloadRegistration<E>>> implements List<E> {

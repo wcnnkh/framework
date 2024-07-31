@@ -6,8 +6,8 @@ import io.basc.framework.event.EventPushException;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.event.batch.DelayableBatchEventDispatcher;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 
 public class EmptyEventDispatcher<E> implements DelayableBatchEventDispatcher<E> {
 

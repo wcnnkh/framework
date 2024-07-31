@@ -3,8 +3,8 @@ package io.basc.framework.util.check;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 
 /**
  * 嵌套检查器

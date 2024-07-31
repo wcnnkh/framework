@@ -11,8 +11,8 @@ import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.observe.watch.ResourceObserver;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.register.Registration;
 
 /**
  * 动态的map

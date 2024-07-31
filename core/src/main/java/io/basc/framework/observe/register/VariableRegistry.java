@@ -2,7 +2,7 @@ package io.basc.framework.observe.register;
 
 import io.basc.framework.observe.Variable;
 import io.basc.framework.observe.VariablePollingObserver;
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.Registration;
 
 public class VariableRegistry<T extends Variable> extends PollingRegistry<VariablePollingObserver<T>> {
 

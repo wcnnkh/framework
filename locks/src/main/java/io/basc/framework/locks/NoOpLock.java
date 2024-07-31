@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import io.basc.framework.util.concurrent.locks.NoOpLock;
+
 public final class NoOpLock implements Lock {
 	/**
 	 * 无锁的

@@ -21,12 +21,12 @@ import io.basc.framework.mvc.ActionResolver;
 import io.basc.framework.mvc.ActionResolverExtend;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.action.ActionInterceptor;
-import io.basc.framework.register.Registration;
 import io.basc.framework.security.authority.http.DefaultHttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.pattern.HttpPattern;
 
 @ConditionalOnParameters

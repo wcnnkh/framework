@@ -1,8 +1,8 @@
-package io.basc.framework.limit;
+package io.basc.framework.util.concurrent.limit;
 
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.locks.NoOpLock;
+import io.basc.framework.util.concurrent.locks.NoOpLock;
 
 /**
  * 无限制

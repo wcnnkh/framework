@@ -5,9 +5,9 @@ import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
+import io.basc.framework.util.register.Registration;
 
 public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
 		implements ConversionService {

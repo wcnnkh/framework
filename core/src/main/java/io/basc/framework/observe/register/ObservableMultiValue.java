@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.event.EventPushException;
 import io.basc.framework.observe.PublishService;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.Registrations;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.BatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class ObservableMultiValue<K, V> extends ObservableList<V> {
 		entryEventPublishService.publishBatchEvent(entryEvents);
 	}
 
-	public Registrations<PayloadRegistration<Entry<K, V>>> getEntryRegistrations() {
+	public BatchRegistration<PayloadRegistration<Entry<K, V>>> getEntryRegistrations() {
 		return getRegistrations().map((e) -> new PayloadRegistration<>(e, new ObservableEntry<>(key, e.getPayload())));
 	}
 

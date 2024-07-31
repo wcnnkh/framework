@@ -1,9 +1,9 @@
-package io.basc.framework.register;
+package io.basc.framework.util.register;
 
 import java.util.concurrent.locks.Lock;
 import java.util.function.BooleanSupplier;
 
-import io.basc.framework.limit.Limiter;
+import io.basc.framework.util.concurrent.limit.Limiter;
 import lombok.NonNull;
 
 public abstract class AbstractRegistration implements Registration {
@@ -43,7 +43,7 @@ public abstract class AbstractRegistration implements Registration {
 	 * @param runnable
 	 * @throws RegistrationException
 	 */
-	public void unregister(Runnable runnable) throws RegistrationException {
+	public void deregister(Runnable runnable) throws RegistrationException {
 		Lock resource = limiter.getResource();
 		if (resource.tryLock()) {
 			try {

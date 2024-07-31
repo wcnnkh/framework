@@ -4,10 +4,10 @@ import io.basc.framework.convert.lang.Value;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.observe.Observer;
 import io.basc.framework.observe.register.ElementRegistration;
-import io.basc.framework.register.Registration;
-import io.basc.framework.register.RegistrationException;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.RegistrationException;
 
 /**
  * 频繁修改属性建议使用此类, 不会触发数据收集

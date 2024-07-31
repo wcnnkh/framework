@@ -8,9 +8,9 @@ import java.util.logging.Level;
 
 import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.event.support.DefaultBroadcastEventDispatcher;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.register.Registration;
 
 public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
 	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();

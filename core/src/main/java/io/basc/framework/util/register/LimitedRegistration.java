@@ -1,7 +1,7 @@
-package io.basc.framework.register;
+package io.basc.framework.util.register;
 
-import io.basc.framework.limit.Limiter;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.concurrent.limit.Limiter;
 import lombok.NonNull;
 
 public class LimitedRegistration extends AbstractRegistration {
@@ -28,13 +28,8 @@ public class LimitedRegistration extends AbstractRegistration {
 	}
 
 	@Override
-	public final void unregister() throws RegistrationException {
-		unregister(registration::unregister);
-	}
-
-	@Override
-	public LimitedRegistration and(Registration registration) {
-		return new LimitedRegistration(this, this.registration.and(registration));
+	public final void deregister() throws RegistrationException {
+		deregister(registration::deregister);
 	}
 
 	@Override

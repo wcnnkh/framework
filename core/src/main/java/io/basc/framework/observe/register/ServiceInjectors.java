@@ -1,6 +1,6 @@
 package io.basc.framework.observe.register;
 
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.Registration;
 
 public class ServiceInjectors<S> extends ObservableList<ServiceInjector<? super S>> implements ServiceInjector<S> {
 

@@ -1,4 +1,4 @@
-package io.basc.framework.limit;
+package io.basc.framework.util.concurrent.limit;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

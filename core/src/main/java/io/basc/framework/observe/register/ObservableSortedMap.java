@@ -6,7 +6,7 @@ import java.util.SortedMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.basc.framework.register.PayloadRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class ObservableSortedMap<K, V, M extends SortedMap<K, PayloadRegistration<Entry<K, V>>>, R extends SortedMap<K, V>>

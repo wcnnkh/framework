@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import io.basc.framework.mvc.action.Action;
-import io.basc.framework.register.Registration;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
+import io.basc.framework.util.register.Registration;
 
 public class ActionResolverConfiguration implements ActionResolver {
 

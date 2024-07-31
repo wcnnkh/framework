@@ -8,8 +8,8 @@ import io.basc.framework.event.EventPushException;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.broadcast.BroadcastDelayableEventDispatcher;
 import io.basc.framework.event.unicast.UnicastDelayableEventDispatcher;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.register.Registration;
 
 public class AmqpEventDispatcher<T>
 		implements UnicastDelayableEventDispatcher<T>, BroadcastDelayableEventDispatcher<T>, EventDispatcher<T> {

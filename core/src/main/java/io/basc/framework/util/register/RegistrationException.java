@@ -1,4 +1,4 @@
-package io.basc.framework.register;
+package io.basc.framework.util.register;
 
 /**
  * 事件注册异常

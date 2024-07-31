@@ -1,9 +1,9 @@
-package io.basc.framework.limit;
+package io.basc.framework.util.concurrent.limit;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.locks.DisposableLock;
+import io.basc.framework.util.concurrent.locks.DisposableLock;
 
 public class DisposableLimiter implements Limiter {
 	private final AtomicBoolean limited = new AtomicBoolean();

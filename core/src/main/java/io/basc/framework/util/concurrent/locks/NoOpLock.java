@@ -1,4 +1,4 @@
-package io.basc.framework.locks;
+package io.basc.framework.util.concurrent.locks;
 
 public final class NoOpLock extends DisposableLock {
 	/**

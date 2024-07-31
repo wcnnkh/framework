@@ -2,7 +2,7 @@ package io.basc.framework.event;
 
 import java.util.Iterator;
 
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.Registration;
 
 @FunctionalInterface
 public interface EventListener<E> extends java.util.EventListener {

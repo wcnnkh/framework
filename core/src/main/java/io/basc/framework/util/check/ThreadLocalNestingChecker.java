@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import io.basc.framework.limit.DisposableLimiter;
-import io.basc.framework.register.LimitedRegistration;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.concurrent.limit.DisposableLimiter;
+import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class ThreadLocalNestingChecker<E> extends ThreadLocal<LinkedList<E>> implements NestingChecker<E> {
 

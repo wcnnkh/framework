@@ -14,13 +14,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.basc.framework.observe.container.AbstractServiceRegistry;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.Registration;
-import io.basc.framework.register.RegistrationException;
-import io.basc.framework.register.Registrations;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.BatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.RegistrationException;
 import lombok.NonNull;
 
 public class ObservableMultiValueMap<K, V, L extends ObservableMultiValue<K, V>, M extends Map<K, L>>
@@ -181,7 +181,7 @@ public class ObservableMultiValueMap<K, V, L extends ObservableMultiValue<K, V>,
 	}
 
 	@Override
-	public Registrations<PayloadRegistration<Entry<K, V>>> getRegistrations() {
+	public BatchRegistration<PayloadRegistration<Entry<K, V>>> getRegistrations() {
 		List<PayloadRegistration<Entry<K, V>>> list = read((map) -> {
 			if (map == null) {
 				return Collections.emptyList();
@@ -189,7 +189,7 @@ public class ObservableMultiValueMap<K, V, L extends ObservableMultiValue<K, V>,
 			return map.values().stream().flatMap((e) -> e.getEntryRegistrations().getServices().stream())
 					.collect(Collectors.toList());
 		});
-		return new Registrations<>(Elements.of(list));
+		return new BatchRegistration<>(Elements.of(list));
 	}
 
 	@Override

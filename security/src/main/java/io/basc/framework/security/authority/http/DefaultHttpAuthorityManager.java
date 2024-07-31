@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.register.LimitedRegistration;
-import io.basc.framework.register.Registration;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends DefaultAuthorityManager<T>
 		implements HttpAuthorityManager<T> {

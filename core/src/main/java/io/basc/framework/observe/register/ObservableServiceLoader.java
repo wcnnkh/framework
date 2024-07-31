@@ -3,9 +3,9 @@ package io.basc.framework.observe.register;
 import java.util.Comparator;
 
 import io.basc.framework.core.OrderComparator;
-import io.basc.framework.register.PayloadBatchRegistration;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.PayloadBatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.register.Registration;
 import lombok.Getter;
 
 /**

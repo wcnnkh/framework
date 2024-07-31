@@ -13,10 +13,10 @@ import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.batch.BatchEventDispatcher;
 import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.select.Selector;
 
 public class DefaultEventDispatcher<T> implements BatchEventDispatcher<T> {

@@ -1,4 +1,4 @@
-package io.basc.framework.register;
+package io.basc.framework.util.register;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,18 +10,10 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 
+@FunctionalInterface
 public interface Registration {
 
 	static final Registration EMPTY = new Registration() {
-
-		@Override
-		public Registration and(Registration registration) {
-			if (registration == null) {
-				return this;
-			}
-
-			return registration;
-		}
 
 		@Override
 		public boolean isInvalid() {
@@ -29,7 +21,7 @@ public interface Registration {
 		}
 
 		@Override
-		public void unregister() {
+		public void deregister() {
 		}
 	};
 
@@ -57,7 +49,7 @@ public interface Registration {
 				if (registrations != null) {
 					try {
 						Collections.reverse(registrations);
-						ConsumeProcessor.consumeAll(registrations, (reg) -> reg.unregister());
+						ConsumeProcessor.consumeAll(registrations, (reg) -> reg.deregister());
 					} catch (Throwable e2) {
 						e.addSuppressed(e2);
 					}
@@ -74,14 +66,7 @@ public interface Registration {
 			}
 			registrations.add(registration);
 		}
-		return new Registrations<>(Elements.of(registrations));
-	}
-
-	default Registration and(Registration registration) {
-		if (registration == null || registration == Registration.EMPTY) {
-			return this;
-		}
-		return new JoinRegistration(this, registration);
+		return new CombinableRegistration<>(Elements.of(registrations));
 	}
 
 	/**
@@ -93,5 +78,5 @@ public interface Registration {
 		return this == EMPTY;
 	}
 
-	void unregister() throws RegistrationException;
+	void deregister() throws RegistrationException;
 }

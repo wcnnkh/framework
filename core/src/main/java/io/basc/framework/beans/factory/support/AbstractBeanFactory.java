@@ -28,8 +28,8 @@ import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.observe.register.ServiceInjectors;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);

@@ -1,11 +1,11 @@
-package io.basc.framework.limit.count;
+package io.basc.framework.util.concurrent.limit.count;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.limit.Limiter;
-import io.basc.framework.locks.DisposableLock;
-import io.basc.framework.locks.NoOpLock;
+import io.basc.framework.util.concurrent.limit.Limiter;
+import io.basc.framework.util.concurrent.locks.DisposableLock;
+import io.basc.framework.util.concurrent.locks.NoOpLock;
 
 /**
  * 通过只能减小的次数来限制

@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import io.basc.framework.util.function.Processor;
 import lombok.Data;
 
-@Data
 public class Pair<K, V> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private K key;

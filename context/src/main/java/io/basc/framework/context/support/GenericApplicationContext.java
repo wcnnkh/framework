@@ -26,9 +26,9 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 
 public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
 	private ConfigurableEnvironment environment = new DefaultEnvironment();

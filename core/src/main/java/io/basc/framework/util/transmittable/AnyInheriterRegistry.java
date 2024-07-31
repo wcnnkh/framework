@@ -1,6 +1,6 @@
 package io.basc.framework.util.transmittable;
 
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.Registration;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public final class AnyInheriterRegistry extends InheriterRegistry<Object, Object> {

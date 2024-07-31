@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.container.AbstractServiceRegistry;
-import io.basc.framework.register.PayloadBatchRegistration;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.RegistrationException;
-import io.basc.framework.register.Registry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.PayloadBatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.register.RegistrationException;
+import io.basc.framework.util.register.Registry;
 
 public class ObservableCollection<E, C extends Collection<PayloadRegistration<E>>> extends AbstractServiceRegistry<E, C>
 		implements Collection<E> {

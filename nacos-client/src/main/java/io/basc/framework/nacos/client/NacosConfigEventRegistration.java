@@ -3,7 +3,7 @@ package io.basc.framework.nacos.client;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 
-import io.basc.framework.register.Registration;
+import io.basc.framework.util.register.Registration;
 
 public class NacosConfigEventRegistration implements Registration{
 	private final Listener listener;

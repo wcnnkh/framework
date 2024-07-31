@@ -127,4 +127,9 @@ public class ObservableContainer<E, C> extends Observer<E> {
 	public Supplier<? extends C> getContainerSupplier() {
 		return containerSupplier;
 	}
+
+	@Override
+	public String toString() {
+		return read((e) -> e == null ? null : e.toString());
+	}
 }

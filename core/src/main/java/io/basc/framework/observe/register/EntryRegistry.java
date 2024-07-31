@@ -13,15 +13,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import io.basc.framework.limit.DisposableLimiter;
 import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.container.AbstractServiceRegistry;
-import io.basc.framework.register.PayloadBatchRegistration;
-import io.basc.framework.register.PayloadRegistration;
-import io.basc.framework.register.Registration;
-import io.basc.framework.register.RegistrationException;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.concurrent.limit.DisposableLimiter;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.PayloadBatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.RegistrationException;
 import lombok.NonNull;
 
 public class EntryRegistry<K, V, M extends Map<K, PayloadRegistration<Entry<K, V>>>>

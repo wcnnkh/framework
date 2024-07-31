@@ -2,6 +2,8 @@ package io.basc.framework.locks;
 
 import java.util.concurrent.locks.Lock;
 
+import io.basc.framework.util.concurrent.locks.NoOpLock;
+
 public class NoOpLockFactory implements LockFactory {
 	/**
 	 * 无锁的

@@ -14,9 +14,9 @@ import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.event.batch.BatchEventRegistry;
 import io.basc.framework.event.batch.DelayableBatchEventDispatcher;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.Registration;
 
 public class ConvertibleEventDispatcher<S, T> implements DelayableBatchEventDispatcher<T> {
 	private final EventRegistry<S> source;

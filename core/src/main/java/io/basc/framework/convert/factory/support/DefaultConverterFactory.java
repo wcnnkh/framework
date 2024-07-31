@@ -5,10 +5,10 @@ import java.util.TreeMap;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.factory.config.ConverterRegistry;
-import io.basc.framework.register.LimitedRegistration;
-import io.basc.framework.register.Registration;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.comparator.TypeComparator;
+import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.Registration;
 
 public class DefaultConverterFactory<S, E extends Throwable> implements ConverterRegistry<S, E> {
 	private TreeMap<Class<?>, Converter<? super S, ? extends Object, ? extends E>> converterMap;
