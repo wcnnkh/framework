@@ -3,29 +3,23 @@ package io.basc.framework.util.register;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.concurrent.limit.Limiter;
 import io.basc.framework.util.element.Elements;
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
-public abstract class AbstractPayloadRegistration<T, R extends Registration> extends CombinableRegistration<R>
+public abstract class AbstractPayloadRegistration<T> extends CombinableRegistration<Registration>
 		implements PayloadRegistration<T> {
 
 	public AbstractPayloadRegistration(@NonNull Limiter limiter) {
-		this(limiter, Elements.empty());
+		super(limiter, Elements.empty());
 	}
 
-	public AbstractPayloadRegistration(@NonNull Limiter limiter, @NonNull Elements<R> registrations) {
-		super(limiter, registrations);
-	}
-
-	protected AbstractPayloadRegistration(CombinableRegistration<R> context) {
-		super(context);
+	protected AbstractPayloadRegistration(CombinableRegistration<Registration> combinableRegistration) {
+		super(combinableRegistration);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PayloadRegistration) {
-			PayloadRegistration<?> other = (PayloadRegistration<?>) obj;
+		if (obj instanceof AbstractPayloadRegistration) {
+			AbstractPayloadRegistration<?> other = (AbstractPayloadRegistration<?>) obj;
 			return ObjectUtils.equals(this.getPayload(), other.getPayload());
 		}
 		// 一般做为包装器使用，所以要比较一下外部数据

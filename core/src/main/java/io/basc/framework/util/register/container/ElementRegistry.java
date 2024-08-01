@@ -13,8 +13,8 @@ import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.register.BatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 
-public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>>
-		extends AbstractRegistry<E, C, ElementRegistration<E>> implements Collection<E> {
+public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> extends
+		AbstractServiceRegistry<E, C, ElementRegistration<E>, ElementBatchRegistration<E>> implements Collection<E> {
 
 	public ElementRegistry(Supplier<? extends C> containerSupplier) {
 		super(containerSupplier);
@@ -33,9 +33,18 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>>
 	}
 
 	@Override
-	protected BatchRegistration<ElementRegistration<E>> batch(
-			BatchRegistration<ElementRegistration<E>> batchRegistration) {
-		return batchRegistration.batch((es) -> () -> cleanup());
+	protected ElementRegistration<E> createRegistration(E item) {
+		return new ElementRegistration<>(item);
+	}
+
+	@Override
+	protected ElementBatchRegistration<E> createRegistrations(Elements<ElementRegistration<E>> registrations) {
+		return new ElementBatchRegistration<>(registrations);
+	}
+
+	@Override
+	protected ElementBatchRegistration<E> postRegisterAfter(ElementBatchRegistration<E> registrations) {
+		return registrations.batch((es) -> () -> cleanup());
 	}
 
 	/**
@@ -73,11 +82,6 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>>
 			// registrations已经被重写，此处可以使用contains，也提高了使用Set时的性能
 			return c.stream().allMatch((e) -> members.contains(e));
 		});
-	}
-
-	@Override
-	protected BatchRegistration<ElementRegistration<E>> createBatchRegistration(Iterable<? extends E> items) {
-		return new ContainerBatchRegistration<>(Elements.of(items).map(ElementRegistration::new), (a, b) -> a.and(b));
 	}
 
 	@Override

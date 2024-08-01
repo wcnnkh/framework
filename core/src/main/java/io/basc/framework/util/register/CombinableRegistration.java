@@ -7,6 +7,7 @@ import io.basc.framework.util.concurrent.limit.Limiter;
 import io.basc.framework.util.concurrent.limit.NoOpLimiter;
 import io.basc.framework.util.element.Elements;
 import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * 可组合的注册
@@ -15,6 +16,7 @@ import lombok.NonNull;
  *
  * @param <T>
  */
+@ToString(callSuper = false)
 public class CombinableRegistration<T extends Registration> extends AbstractRegistration implements Registrations<T> {
 	@NonNull
 	private final Elements<T> registrations;

@@ -17,7 +17,7 @@ public class WeightedRandomSelector<E> implements Selector<E> {
 	public static final WeightedRandomSelector<?> INSTANCE = new WeightedRandomSelector<>();
 
 	@Override
-	public E apply(Elements<? extends E> elements) {
+	public E select(Elements<? extends E> elements) {
 		if (elements == null) {
 			return null;
 		}

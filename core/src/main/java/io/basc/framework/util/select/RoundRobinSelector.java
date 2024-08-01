@@ -17,7 +17,7 @@ public class RoundRobinSelector<E> implements Selector<E> {
 	private final AtomicInteger position = new AtomicInteger();
 
 	@Override
-	public E apply(Elements<? extends E> elements) {
+	public E select(Elements<? extends E> elements) {
 		if (elements == null) {
 			return null;
 		}

@@ -2,6 +2,8 @@ package io.basc.framework.util.element;
 
 import java.util.function.Function;
 
+import io.basc.framework.util.select.Dispatcher;
+
 public interface ServiceLoader<S> {
 	@SuppressWarnings("unchecked")
 	public static <T> ServiceLoader<T> empty() {
@@ -14,6 +16,16 @@ public interface ServiceLoader<S> {
 		}
 
 		return new FinalServiceLoader<>(services);
+	}
+
+	/**
+	 * 根据指定的分发器来分发服务
+	 * 
+	 * @param dispatcher
+	 * @return
+	 */
+	default Elements<S> dispatch(Dispatcher<S> dispatcher) {
+		return dispatcher.dispatch(getServices());
 	}
 
 	default <U> ServiceLoader<U> convert(Function<? super Elements<S>, ? extends Elements<U>> converter) {

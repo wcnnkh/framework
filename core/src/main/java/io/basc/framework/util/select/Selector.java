@@ -1,8 +1,5 @@
 package io.basc.framework.util.select;
 
-import java.util.function.Function;
-
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.element.Elements;
 
 /**
@@ -13,7 +10,7 @@ import io.basc.framework.util.element.Elements;
  * @param <E> 元素类型
  */
 @FunctionalInterface
-public interface Selector<E> extends Function<Elements<? extends E>, E> {
+public interface Selector<E> extends Dispatcher<E>, Merger<E> {
 	/**
 	 * 选择第一个
 	 * 
@@ -46,6 +43,28 @@ public interface Selector<E> extends Function<Elements<? extends E>, E> {
 		return new RoundRobinSelector<>();
 	}
 
-	@Nullable
-	E apply(Elements<? extends E> elements);
+	/**
+	 * 选择器也是一种特殊的分发器
+	 */
+	@Override
+	default Elements<E> dispatch(Elements<? extends E> elements) {
+		E element = select(elements);
+		return Elements.singleton(element);
+	}
+
+	/**
+	 * 选择器也是一种特殊的合并器
+	 */
+	@Override
+	default E merge(Elements<? extends E> elements) {
+		return select(elements);
+	}
+
+	/**
+	 * 从多个中选择一个
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	E select(Elements<? extends E> elements);
 }

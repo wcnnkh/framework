@@ -6,16 +6,16 @@ import java.util.Map;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.element.Elements;
 
-public class MapCombiner<K, V> implements Selector<Map<K, V>> {
-	private static final MapCombiner<?, ?> SINGLETON = new MapCombiner<>();
+public class MapMerger<K, V> implements Merger<Map<K, V>> {
+	private static final MapMerger<?, ?> SINGLETON = new MapMerger<>();
 
 	@SuppressWarnings("unchecked")
-	public static <L, R> MapCombiner<L, R> getSingleton() {
-		return (MapCombiner<L, R>) SINGLETON;
+	public static <L, R> MapMerger<L, R> getSingleton() {
+		return (MapMerger<L, R>) SINGLETON;
 	}
 
 	@Override
-	public Map<K, V> apply(Elements<? extends Map<K, V>> elements) {
+	public Map<K, V> merge(Elements<? extends Map<K, V>> elements) {
 		Map<K, V> target = null;
 		for (Map<K, V> map : elements) {
 			if (map == null || map.isEmpty()) {

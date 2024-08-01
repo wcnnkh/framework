@@ -17,7 +17,8 @@ import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>>
-		extends AbstractRegistry<Entry<K, V>, M, EntryRegistration<K, V>> implements Map<K, V> {
+		extends AbstractServiceRegistry<Entry<K, V>, M, EntryRegistration<K, V>, EntryBatchRegistration<K, V>>
+		implements Map<K, V> {
 
 	public EntryRegistry(@NonNull Supplier<? extends M> containerSupplier) {
 		super(containerSupplier);
@@ -28,15 +29,13 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>>
 	}
 
 	@Override
-	protected BatchRegistration<EntryRegistration<K, V>> createBatchRegistration(
-			Iterable<? extends Entry<K, V>> items) {
-		return new ContainerBatchRegistration<>(Elements.of(items).map(this::createRegistration), (a, b) -> a.and(b));
+	protected EntryBatchRegistration<K, V> createRegistrations(Elements<EntryRegistration<K, V>> registrations) {
+		return new EntryBatchRegistration<>(registrations);
 	}
 
 	@Override
-	protected BatchRegistration<EntryRegistration<K, V>> batch(
-			BatchRegistration<EntryRegistration<K, V>> batchRegistration) {
-		return batchRegistration.batch((es) -> () -> {
+	protected EntryBatchRegistration<K, V> postRegisterAfter(EntryBatchRegistration<K, V> registrations) {
+		return registrations.batch((es) -> () -> {
 			execute((map) -> {
 				es.forEach((e) -> map.remove(e.getKey(), e));
 				return true;
@@ -108,8 +107,9 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>>
 		EntryRegistration<K, V> current = container.get(key);
 		if (current == null) {
 			Entry<K, V> entry = createEntry(key, value);
-			BatchRegistration<EntryRegistration<K, V>> batchRegistration = createBatchRegistration(
-					Elements.singleton(entry));
+			EntryRegistration<K, V> entryRegistration = createRegistration(entry);
+			BatchRegistration<EntryRegistration<K, V>> batchRegistration = createRegistrations(
+					Elements.singleton(entryRegistration));
 			current = batchRegistration.getRegistrations().first();
 			container.put(key, current);
 			return null;

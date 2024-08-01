@@ -4,11 +4,11 @@ import java.util.Properties;
 
 import io.basc.framework.util.element.Elements;
 
-public class PropertiesCombiner implements Selector<Properties> {
-	public static final PropertiesCombiner INSTANCE = new PropertiesCombiner();
+public class PropertiesMerger implements Merger<Properties> {
+	public static final PropertiesMerger INSTANCE = new PropertiesMerger();
 
 	@Override
-	public Properties apply(Elements<? extends Properties> elements) {
+	public Properties merge(Elements<? extends Properties> elements) {
 		Properties properties = new Properties();
 		for (Properties props : elements) {
 			properties.putAll(props);

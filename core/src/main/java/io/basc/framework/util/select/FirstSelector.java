@@ -21,7 +21,7 @@ public class FirstSelector<E> implements Selector<E> {
 	}
 
 	@Override
-	public E apply(Elements<? extends E> elements) {
+	public E select(Elements<? extends E> elements) {
 		if (elements == null) {
 			return null;
 		}

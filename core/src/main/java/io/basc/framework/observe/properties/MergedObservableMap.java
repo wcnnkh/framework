@@ -10,13 +10,13 @@ import io.basc.framework.observe.value.ConvertibleObservableValue;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.select.MapCombiner;
+import io.basc.framework.util.select.MapMerger;
 import io.basc.framework.util.select.Selector;
 
 public class MergedObservableMap<K, V> extends StandardObservableMap<K, V> {
 	private final ObservableRegistry<ObservableValue<? extends Map<K, V>>> registry = new ObservableRegistry<>();
 
-	private Selector<Map<K, V>> selector = MapCombiner.getSingleton();
+	private Selector<Map<K, V>> selector = MapMerger.getSingleton();
 
 	public MergedObservableMap() {
 		this(new LinkedHashMap<>());
@@ -79,7 +79,7 @@ public class MergedObservableMap<K, V> extends StandardObservableMap<K, V> {
 	}
 
 	public void setSelector(Selector<Map<K, V>> selector) {
-		this.selector = selector == null ? MapCombiner.getSingleton() : selector;
+		this.selector = selector == null ? MapMerger.getSingleton() : selector;
 		rfreshMap();
 	}
 }
