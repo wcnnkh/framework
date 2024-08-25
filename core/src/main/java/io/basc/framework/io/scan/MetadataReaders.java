@@ -7,10 +7,10 @@ import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.Resource;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.element.ServiceLoader;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import lombok.Data;
 import lombok.NonNull;
 

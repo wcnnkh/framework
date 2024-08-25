@@ -1,11 +1,11 @@
 package io.basc.framework.text.placeholder.support;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.text.placeholder.PlaceholderReplacer;
 import io.basc.framework.text.placeholder.PlaceholderResolver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,7 +1,7 @@
 package io.basc.framework.messageing.session;
 
-import io.basc.framework.logger.Logger;
 import io.basc.framework.messageing.Message;
+import io.basc.framework.util.logging.Logger;
 
 import java.io.IOException;
 import java.util.Enumeration;

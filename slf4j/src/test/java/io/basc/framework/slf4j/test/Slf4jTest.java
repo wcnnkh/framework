@@ -2,9 +2,9 @@ package io.basc.framework.slf4j.test;
 
 import org.junit.Test;
 
-import io.basc.framework.logger.JdkLoggerFactory;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.JdkLoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class Slf4jTest {
 	private static Logger logger = LoggerFactory.getLogger(Slf4jTest.class);

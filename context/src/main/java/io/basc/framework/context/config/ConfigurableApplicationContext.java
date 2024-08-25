@@ -8,12 +8,12 @@ import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextEvent;
-import io.basc.framework.context.Lifecycle;
 import io.basc.framework.env.ConfigurableEnvironment;
-import io.basc.framework.event.batch.BatchEventDispatcher;
 import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderAccessor;
+import io.basc.framework.util.Lifecycle;
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
 import io.basc.framework.util.register.Registration;
 
 public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable,

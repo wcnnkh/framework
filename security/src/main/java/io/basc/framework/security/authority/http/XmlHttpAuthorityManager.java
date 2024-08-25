@@ -10,9 +10,9 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.xml.XmlUtils;
 
 public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority> {

@@ -2,13 +2,13 @@ package io.basc.framework.amqp;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.event.EventDispatcher;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventPushException;
-import io.basc.framework.event.EventRegistrationException;
-import io.basc.framework.event.broadcast.BroadcastDelayableEventDispatcher;
-import io.basc.framework.event.unicast.UnicastDelayableEventDispatcher;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.event.EventDispatcher;
+import io.basc.framework.util.event.EventListener;
+import io.basc.framework.util.event.EventPushException;
+import io.basc.framework.util.event.EventRegistrationException;
+import io.basc.framework.util.event.broadcast.BroadcastDelayableEventDispatcher;
+import io.basc.framework.util.event.unicast.UnicastDelayableEventDispatcher;
 import io.basc.framework.util.register.Registration;
 
 public class AmqpEventDispatcher<T>

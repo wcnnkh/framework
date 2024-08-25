@@ -1,9 +1,9 @@
 package io.basc.framework.log4j.test;
 
 import io.basc.framework.log4j.Log4jLoggerFactory;
-import io.basc.framework.logger.ILoggerFactory;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.ILoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import org.junit.Test;
 

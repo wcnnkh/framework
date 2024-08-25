@@ -1,7 +1,7 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.observe.ChangeEvent;
-import io.basc.framework.observe.ChangeType;
+import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.ChangeType;
 
 public class PropertyChangeEvent<K, V> extends ChangeEvent {
 	private static final long serialVersionUID = 1L;

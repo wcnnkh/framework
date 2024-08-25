@@ -2,22 +2,26 @@ package io.basc.framework.observe;
 
 import java.io.IOException;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.Variable;
+import lombok.NonNull;
 
-public class VariablePollingObserver<T extends Variable> extends VariablePolling<ObservableEvent<Long>> {
-	private static Logger logger = LoggerFactory.getLogger(VariablePollingObserver.class);
-	private final T variable;
-
-	public VariablePollingObserver(T variable) {
-		Assert.requiredArgument(variable != null, "variable");
+public class VariablePollingObserver<T extends Variable> extends VariablePolling<ChangeEvent<Long>> {
+	public VariablePollingObserver(@NonNull BatchEventDispatcher<ChangeEvent<Long>> eventDispatcher,
+			@NonNull T variable) {
+		super(eventDispatcher);
 		this.variable = variable;
 		Long lastModified = lastModified(variable);
 		if (lastModified != null) {
 			getAtomicLastModified().set(lastModified);
 		}
 	}
+
+	private static Logger logger = LoggerFactory.getLogger(VariablePollingObserver.class);
+	private final T variable;
 
 	protected Long lastModified(T variable) {
 		try {
@@ -33,7 +37,7 @@ public class VariablePollingObserver<T extends Variable> extends VariablePolling
 	}
 
 	protected void modifyLastModified(long oldValue, long newValue) {
-		publishEvent(new ObservableEvent<>(this, new Changed<>(oldValue, newValue)));
+		getEventDispatcher().publishEvent(new UpdateEvent<>(newValue, oldValue));
 	}
 
 	@Override

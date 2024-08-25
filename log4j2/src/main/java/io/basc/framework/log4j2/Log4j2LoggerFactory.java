@@ -2,8 +2,8 @@ package io.basc.framework.log4j2;
 
 import org.apache.logging.log4j.LogManager;
 
-import io.basc.framework.logger.ILoggerFactory;
-import io.basc.framework.logger.Logger;
+import io.basc.framework.util.logging.ILoggerFactory;
+import io.basc.framework.util.logging.Logger;
 
 public class Log4j2LoggerFactory implements ILoggerFactory {
 

@@ -1,9 +1,9 @@
 package io.basc.framework.slf4j;
 
-import io.basc.framework.logger.ILoggerFactory;
-import io.basc.framework.logger.Logger;
-
 import org.slf4j.LoggerFactory;
+
+import io.basc.framework.util.logging.ILoggerFactory;
+import io.basc.framework.util.logging.Logger;
 
 public class Slf4jLoggerFactory implements ILoggerFactory {
 

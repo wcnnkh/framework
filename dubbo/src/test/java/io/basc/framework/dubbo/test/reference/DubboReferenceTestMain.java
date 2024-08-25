@@ -5,9 +5,9 @@ import java.util.concurrent.ExecutionException;
 import io.basc.framework.beans.factory.annotation.ImportResource;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 @ImportResource("reference.xml")
 public class DubboReferenceTestMain {

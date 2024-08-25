@@ -18,9 +18,9 @@ import org.w3c.dom.Node;
 
 import io.basc.framework.dom.DocumentTransformer;
 import io.basc.framework.dom.DomException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class XmlTransformer implements DocumentTransformer {
 	private static Logger logger = LoggerFactory.getLogger(XmlTransformer.class);

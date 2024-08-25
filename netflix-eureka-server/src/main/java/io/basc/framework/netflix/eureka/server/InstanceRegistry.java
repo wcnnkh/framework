@@ -14,11 +14,11 @@ import com.netflix.eureka.resources.ServerCodecs;
 
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.boot.ApplicationEvent;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.netflix.eureka.server.event.EurekaInstanceCanceledEvent;
 import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRegisteredEvent;
 import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRenewedEvent;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements ApplicationAware {
 	private static Logger logger = LoggerFactory.getLogger(InstanceRegistry.class);

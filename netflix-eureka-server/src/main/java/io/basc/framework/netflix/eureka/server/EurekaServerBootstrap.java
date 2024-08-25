@@ -18,8 +18,8 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.util.EurekaMonitors;
 import com.thoughtworks.xstream.XStream;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class EurekaServerBootstrap {
 	private static Logger log = LoggerFactory.getLogger(EurekaServerBootstrap.class);

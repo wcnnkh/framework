@@ -6,8 +6,8 @@ import javax.servlet.ServletException;
 import io.basc.framework.context.servlet.ServletApplicationContext;
 import io.basc.framework.context.servlet.ServletContextInitializer;
 import io.basc.framework.context.servlet.ServletContextUtils;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class GenericServletApplicationContextInitializer implements ServletContextInitializer {
 	private static Logger logger = LoggerFactory.getLogger(GenericServletApplicationContextInitializer.class);

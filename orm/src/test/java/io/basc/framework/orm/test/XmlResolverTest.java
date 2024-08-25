@@ -12,9 +12,9 @@ import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.GlobalConversionService;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.orm.stereotype.PrimaryKey;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class XmlResolverTest {
 	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);

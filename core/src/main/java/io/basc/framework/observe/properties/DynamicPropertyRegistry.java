@@ -8,10 +8,10 @@ import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.convert.lang.Value;
-import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.transform.factory.config.EditablePropertyFactory;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.observe.ChangeType;
 import io.basc.framework.util.register.Registration;
 
 public class DynamicPropertyRegistry extends DynamicValueRegistry<String>

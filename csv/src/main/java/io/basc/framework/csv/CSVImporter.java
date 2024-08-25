@@ -7,12 +7,12 @@ import java.io.Reader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.io.Exporter;
 import io.basc.framework.mapper.io.template.AbstractRecordImporter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.CloseableRegistry;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class CSVImporter extends AbstractRecordImporter implements Closeable {
 	private static Logger logger = LoggerFactory.getLogger(CSVImporter.class);

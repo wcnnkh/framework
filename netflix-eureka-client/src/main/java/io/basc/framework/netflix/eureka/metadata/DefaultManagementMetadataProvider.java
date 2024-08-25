@@ -3,10 +3,10 @@ package io.basc.framework.netflix.eureka.metadata;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 /**
  * Default implementation of {@link DefaultManagementMetadataProvider}.

@@ -14,7 +14,7 @@ import lombok.ToString;
 public class AtomicEntry<K, V> extends AtomicReference<V> implements KeyValue<K, V>, Entry<K, V> {
 	private static final long serialVersionUID = 1L;
 	private final K key;
-
+	
 	@Override
 	public V setValue(V value) {
 		return getAndSet(value);

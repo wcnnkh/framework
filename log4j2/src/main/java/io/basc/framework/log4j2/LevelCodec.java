@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.logger.CustomLevel;
+import io.basc.framework.util.logging.CustomLevel;
 
 public class LevelCodec implements Codec<Level, org.apache.logging.log4j.Level> {
 	public static final LevelCodec INSTANCE = new LevelCodec();

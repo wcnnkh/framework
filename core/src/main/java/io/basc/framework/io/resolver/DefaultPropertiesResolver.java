@@ -15,9 +15,9 @@ import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.WritableResource;
 import io.basc.framework.lang.NestedRuntimeException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class DefaultPropertiesResolver extends PropertiesResolvers {
 	private static Logger logger = LoggerFactory.getLogger(DefaultPropertiesResolver.class.getName());

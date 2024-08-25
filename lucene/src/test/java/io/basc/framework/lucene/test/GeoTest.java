@@ -21,13 +21,13 @@ import org.locationtech.spatial4j.distance.DistanceUtils;
 import org.locationtech.spatial4j.shape.Point;
 import org.locationtech.spatial4j.shape.Shape;
 
-import io.basc.framework.logger.Levels;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.lucene.DefaultLuceneTemplate;
 import io.basc.framework.lucene.LuceneTemplate;
 import io.basc.framework.lucene.LuceneWriteException;
 import io.basc.framework.lucene.SearchParameters;
 import io.basc.framework.lucene.SearchResults;
+import io.basc.framework.util.logging.Levels;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class GeoTest {
 	private final LuceneTemplate luceneTemplate = new DefaultLuceneTemplate("geo");

@@ -65,9 +65,9 @@ public class CombinableRegistration<T extends Registration> extends AbstractRegi
 	 * @param registration
 	 * @return 返回一个新的
 	 */
-	public CombinableRegistration<T> and(@NonNull T registration) {
+	public CombinableRegistration<T> combine(@NonNull T registration) {
 		Assert.requiredArgument(registration != null, "registration");
-		return andAll(Elements.singleton(registration));
+		return combineAll(Elements.singleton(registration));
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class CombinableRegistration<T extends Registration> extends AbstractRegi
 	 * @param registrations
 	 * @return 返回一个新的
 	 */
-	public CombinableRegistration<T> andAll(@NonNull Elements<? extends T> registrations) {
+	public CombinableRegistration<T> combineAll(@NonNull Elements<? extends T> registrations) {
 		Assert.requiredArgument(registrations != null, "registrations");
 		return new CombinableRegistration<>(this, this.registrations.concat(registrations));
 	}

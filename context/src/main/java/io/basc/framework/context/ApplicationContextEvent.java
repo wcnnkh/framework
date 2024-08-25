@@ -1,6 +1,6 @@
 package io.basc.framework.context;
 
-import io.basc.framework.event.Event;
+import io.basc.framework.util.event.Event;
 
 public class ApplicationContextEvent extends Event {
 	private static final long serialVersionUID = 1L;

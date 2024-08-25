@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.retry.RetryCallback;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryOperations;
@@ -18,6 +16,8 @@ import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.register.Registration;
 
 /**

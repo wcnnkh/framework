@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.orm.EntityMapping;
@@ -20,6 +18,8 @@ import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.web.message.annotation.QueryParams;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.ParameterProcessor;

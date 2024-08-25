@@ -9,15 +9,14 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import io.basc.framework.io.Resource;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.observe.ChangeEvent;
-import io.basc.framework.observe.ChangeType;
-import io.basc.framework.observe.Changed;
-import io.basc.framework.observe.ObservableEvent;
-import io.basc.framework.observe.PayloadChangeEvent;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.ChangeType;
+import lombok.NonNull;
 
 /**
  * 一个文件可能不存在或是不受Watch支持的，那么降级使用轮询时间
@@ -25,12 +24,14 @@ import io.basc.framework.util.Assert;
  * @author shuchaowen
  *
  */
-public class ResourcePollingObserver extends PollingObserver<ChangeEvent> {
+public class ResourcePollingObserver extends PollingObserver<ChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(ResourcePollingObserver.class);
 	private volatile Long lastModified;
 	private final Resource resource;
 
-	public ResourcePollingObserver(Resource resource) {
+	public ResourcePollingObserver(@NonNull BatchEventDispatcher<ChangeEvent<Resource>> eventDispatcher,
+			@NonNull Resource resource) {
+		super(eventDispatcher);
 		Assert.requiredArgument(resource != null, "resource");
 		this.resource = resource;
 		try {
@@ -130,9 +131,10 @@ public class ResourcePollingObserver extends PollingObserver<ChangeEvent> {
 					logger.trace(e, "Unable to obtain lastModified");
 					return;
 				}
-				Changed<Long> changed = new Changed<Long>(this.lastModified, lastModified);
+
 				this.lastModified = lastModified;
-				publishEvent(new ObservableEvent<>(this, changed));
+				getEventDispatcher().publishEvent(
+						new ChangeEvent<>(resource, ChangeType.getChangeType(this.lastModified, lastModified)));
 			} else {
 				WatchKeyPollingObserver<Path> watchKeyObserver = new WatchKeyPollingObserver<>(watchKey, Path.class);
 				watchKeyObserver.registerListener(this::publishWatchEvent);
@@ -165,12 +167,12 @@ public class ResourcePollingObserver extends PollingObserver<ChangeEvent> {
 		if (resourceFile.isDirectory()) {
 			// 如果是个目录，那么只要路径前缀一致就可以了
 			if (path.startsWith(resourceFile.toPath())) {
-				publishEvent(new PayloadChangeEvent<>(this, eventType, watchEvent));
+				getEventDispatcher().publishEvent(new ChangeEvent<Resource>(resource, eventType));
 			}
 		} else {
 			// 如果是文件那么需要全匹配
 			if (path.equals(resourceFile.toPath())) {
-				publishEvent(new PayloadChangeEvent<>(this, eventType, watchEvent));
+				getEventDispatcher().publishEvent(new ChangeEvent<>(resource, eventType));
 			}
 		}
 	}

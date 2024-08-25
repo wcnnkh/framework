@@ -2,9 +2,10 @@ package io.basc.framework.util.element;
 
 import java.util.function.Function;
 
+import io.basc.framework.util.Reloadable;
 import io.basc.framework.util.select.Dispatcher;
 
-public interface ServiceLoader<S> {
+public interface ServiceLoader<S> extends Reloadable{
 	@SuppressWarnings("unchecked")
 	public static <T> ServiceLoader<T> empty() {
 		return (ServiceLoader<T>) EmptyServiceLoader.EMPTY;
@@ -31,8 +32,6 @@ public interface ServiceLoader<S> {
 	default <U> ServiceLoader<U> convert(Function<? super Elements<S>, ? extends Elements<U>> converter) {
 		return new ConvertibleServiceLoader<>(this, converter);
 	}
-
-	void reload();
 
 	Elements<S> getServices();
 

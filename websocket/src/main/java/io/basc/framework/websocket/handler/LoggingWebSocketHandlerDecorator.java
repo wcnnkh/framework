@@ -1,8 +1,8 @@
 package io.basc.framework.websocket.handler;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.messageing.Message;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;

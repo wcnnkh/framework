@@ -1,12 +1,12 @@
 package io.basc.framework.websocket.adapter.standard;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.messageing.BinaryFragmentMessage;
 import io.basc.framework.messageing.BinaryMessage;
 import io.basc.framework.messageing.TextFragmentMessage;
 import io.basc.framework.messageing.TextMessage;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.PongMessage;
 import io.basc.framework.websocket.WebSocketHandler;

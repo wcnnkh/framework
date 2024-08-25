@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 import javax.websocket.Session;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class StandardSessionManager<T> {
 	private static Logger logger = LoggerFactory.getLogger(StandardSessionManager.class);

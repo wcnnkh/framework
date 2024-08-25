@@ -1,13 +1,13 @@
 package io.basc.framework.netflix.eureka;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.util.Map;
 
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.LeaseInfo;
+
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 /**
  * See com.netflix.appinfo.providers.EurekaConfigBasedInstanceInfoProvider.

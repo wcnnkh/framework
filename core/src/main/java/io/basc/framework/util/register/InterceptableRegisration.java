@@ -46,13 +46,14 @@ public class InterceptableRegisration<B extends Registration, T extends Registra
 	}
 
 	@Override
-	public InterceptableRegisration<B, T, A> and(@NonNull T registration) {
-		return new InterceptableRegisration<>(super.and(registration), this.preRegistration, this.postRegistration);
+	public InterceptableRegisration<B, T, A> combine(@NonNull T registration) {
+		return new InterceptableRegisration<>(super.combine(registration), this.preRegistration, this.postRegistration);
 	}
 
 	@Override
-	public InterceptableRegisration<B, T, A> andAll(@NonNull Elements<? extends T> registrations) {
-		return new InterceptableRegisration<>(super.andAll(registrations), this.preRegistration, this.postRegistration);
+	public InterceptableRegisration<B, T, A> combineAll(@NonNull Elements<? extends T> registrations) {
+		return new InterceptableRegisration<>(super.combineAll(registrations), this.preRegistration,
+				this.postRegistration);
 	}
 
 	@Override
@@ -86,7 +87,7 @@ public class InterceptableRegisration<B extends Registration, T extends Registra
 	 * @return
 	 */
 	public InterceptableRegisration<B, T, A> post(@NonNull A registration) {
-		return new InterceptableRegisration<>(this, this.preRegistration, this.postRegistration.and(registration));
+		return new InterceptableRegisration<>(this, this.preRegistration, this.postRegistration.combine(registration));
 	}
 
 	/**
@@ -96,6 +97,6 @@ public class InterceptableRegisration<B extends Registration, T extends Registra
 	 * @return
 	 */
 	public InterceptableRegisration<B, T, A> pre(@NonNull B registration) {
-		return new InterceptableRegisration<>(this, this.preRegistration.and(registration), this.postRegistration);
+		return new InterceptableRegisration<>(this, this.preRegistration.combine(registration), this.postRegistration);
 	}
 }

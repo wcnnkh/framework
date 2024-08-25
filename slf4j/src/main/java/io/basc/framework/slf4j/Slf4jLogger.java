@@ -5,8 +5,8 @@ import java.util.logging.LogRecord;
 
 import org.slf4j.Logger;
 
-import io.basc.framework.logger.CustomLevel;
 import io.basc.framework.util.PlaceholderMessage;
+import io.basc.framework.util.logging.CustomLevel;
 
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error
@@ -14,7 +14,7 @@ import io.basc.framework.util.PlaceholderMessage;
  * @author wcnnkh
  *
  */
-public class Slf4jLogger implements io.basc.framework.logger.Logger {
+public class Slf4jLogger implements io.basc.framework.util.logging.Logger {
 	private static final String FORMAT = "{}";
 	private final Logger logger;
 	private final String placeholder;
@@ -42,7 +42,7 @@ public class Slf4jLogger implements io.basc.framework.logger.Logger {
 		} else if (level.getName().equalsIgnoreCase(CustomLevel.ERROR.getName())) {
 			return logger.isErrorEnabled();
 		} else {
-			return io.basc.framework.logger.Logger.super.isLoggable(level);
+			return io.basc.framework.util.logging.Logger.super.isLoggable(level);
 		}
 	}
 

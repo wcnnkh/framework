@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
+import io.basc.framework.util.ObjectUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -86,12 +87,16 @@ public class LazyContainer<C> {
 		lock.lock();
 		try {
 			if (container == null) {
-				container = containerSupplier.get();
+				container = newContainer();
 			}
 			return writer.apply(container);
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	protected C newContainer() {
+		return containerSupplier.get();
 	}
 
 	/**
@@ -130,8 +135,19 @@ public class LazyContainer<C> {
 		}
 	}
 
-	public Supplier<? extends C> getContainerSupplier() {
-		return containerSupplier;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof LazyContainer) {
+			LazyContainer<?> other = (LazyContainer<?>) obj;
+			return test((o1) -> other.test((o2) -> ObjectUtils.equals(o1, o2)));
+		}
+
+		return test((conainer) -> ObjectUtils.equals(conainer, obj));
+	}
+
+	@Override
+	public int hashCode() {
+		return readInt((conainer) -> ObjectUtils.hashCode(conainer));
 	}
 
 	@Override

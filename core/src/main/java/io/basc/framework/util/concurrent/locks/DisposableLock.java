@@ -2,30 +2,24 @@ package io.basc.framework.util.concurrent.locks;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
-public abstract class DisposableLock extends AbstractLock {
-	private static Logger logger = LoggerFactory.getLogger(DisposableLock.class);
+public interface DisposableLock extends Lockable {
 
 	@Override
-	public void lockInterruptibly() throws InterruptedException {
+	default void lockInterruptibly() throws InterruptedException, DisposableLockException {
 		if (tryLock()) {
 			return;
 		}
 
-		logger.warn("Unable to obtain lock, thread[{}] will permanently sleep", Thread.currentThread());
-		// 永久休眠
-		while (true) {
-			Thread.sleep(Long.MAX_VALUE);
-		}
+		// 一个一次性的锁如果拿不到锁说明永远也拿不到了
+		throw new DisposableLockException("Unable to obtain lock");
 	}
 
 	@Override
-	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+	default boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
 		if (tryLock()) {
 			return true;
 		}
+		// 一个一次性的锁如果拿不到锁也不用等了，不会再拿到了
 		return false;
 	}
 }

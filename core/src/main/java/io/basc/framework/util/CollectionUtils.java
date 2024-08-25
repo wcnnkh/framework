@@ -903,4 +903,32 @@ public abstract class CollectionUtils {
 		recursion(source, Elements.empty(), 0, target);
 		return target;
 	}
+
+	/**
+	 * 获取第一个
+	 * 
+	 * @param <T>
+	 * @param iterable
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T first(Iterable<? extends T> iterable) {
+		if (iterable == null) {
+			return null;
+		}
+
+		if (iterable instanceof List) {
+			List<T> list = (List<T>) iterable;
+			if (list.isEmpty()) {
+				return null;
+			}
+			return list.get(0);
+		}
+
+		Iterator<? extends T> iterator = iterable.iterator();
+		while (iterator.hasNext()) {
+			return iterator.next();
+		}
+		return null;
+	}
 }

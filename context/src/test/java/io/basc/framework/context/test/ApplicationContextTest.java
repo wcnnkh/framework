@@ -8,8 +8,8 @@ import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.support.ContextLoader;
 import io.basc.framework.context.support.GenericApplicationContext;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class ApplicationContextTest {
 	private static Logger logger = LoggerFactory.getLogger(ApplicationContextTest.class);

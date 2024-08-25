@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
-import io.basc.framework.observe.register.ObservableServiceLoader;
+import io.basc.framework.observe.service.ObservableServiceLoader;
 import io.basc.framework.util.element.ServiceLoader;
 
 public class ServiceLoaderTest {

@@ -3,13 +3,14 @@ package io.basc.framework.util.concurrent;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public interface DelayableExecutor extends AsyncExecutor {
 
-	default <V> java.util.concurrent.Future<V> submit(Callable<V> task) throws RejectedExecutionException {
+	default <V> Future<V> submit(Callable<V> task) throws RejectedExecutionException {
 		return schedule(task, 0, TimeUnit.SECONDS);
 	};
 

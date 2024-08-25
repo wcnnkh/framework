@@ -13,11 +13,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import io.basc.framework.observe.ChangeType;
 import io.basc.framework.observe.container.AbstractServiceRegistry;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.concurrent.limit.DisposableLimiter;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.observe.ChangeType;
 import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
@@ -58,7 +58,7 @@ public class EntryRegistry<K, V, M extends Map<K, PayloadRegistration<Entry<K, V
 			super.unregister(() -> {
 				execute((map) -> {
 					if (map.remove(getPayload().getKey(), this)) {
-						publishEvent(new RegistryEvent<>(EntryRegistry.this, ChangeType.DELETE, getPayload()));
+						publishEvent(new RegistryEvent<>(KeyValueRegistry.this, ChangeType.DELETE, getPayload()));
 						return true;
 					}
 					return false;
@@ -250,7 +250,7 @@ public class EntryRegistry<K, V, M extends Map<K, PayloadRegistration<Entry<K, V
 			List<PayloadRegistration<Entry<K, V>>> updateList = new ArrayList<>(m.size());
 			for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
 				ObservableEntry<K, V> observableEntry = new ObservableEntry<>(entry.getKey(), entry.getValue());
-				EntryRegistration entryRegistration = new EntryRegistration(observableEntry);
+				AtomicEntryRegistration entryRegistration = new AtomicEntryRegistration(observableEntry);
 				// TODO 待优化
 				PayloadRegistration<Entry<K, V>> old = map.put(entry.getKey(), entryRegistration);
 				if (old == null) {

@@ -1,7 +1,7 @@
 package io.basc.framework.log4j;
 
-import io.basc.framework.logger.ILoggerFactory;
-import io.basc.framework.logger.Logger;
+import io.basc.framework.util.logging.ILoggerFactory;
+import io.basc.framework.util.logging.Logger;
 
 public class Log4jLoggerFactory implements ILoggerFactory {
 

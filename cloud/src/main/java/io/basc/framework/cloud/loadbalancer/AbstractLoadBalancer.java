@@ -10,10 +10,10 @@ import io.basc.framework.convert.lang.Value;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.select.Selector;
 
 public abstract class AbstractLoadBalancer<T extends Node> implements LoadBalancer<T>, EnvironmentAware {

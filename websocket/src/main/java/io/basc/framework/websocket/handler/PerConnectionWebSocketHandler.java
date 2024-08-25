@@ -21,8 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.support.BeanFactoryAccessor;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;

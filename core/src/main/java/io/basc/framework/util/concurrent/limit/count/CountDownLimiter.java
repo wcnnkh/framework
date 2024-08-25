@@ -35,10 +35,10 @@ public class CountDownLimiter implements Limiter {
 		if (isLimited()) {
 			return NoOpLock.DEAD;
 		}
-		return new Resource();
+		return new CountResource();
 	}
 
-	private class Resource extends DisposableLock {
+	private class CountResource implements DisposableLock {
 
 		@Override
 		public boolean tryLock() {

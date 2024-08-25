@@ -3,14 +3,14 @@ package io.basc.framework.jdbc;
 import java.sql.SQLException;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.RunnableProcessor;
 import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StandardStreamOperations;
 import io.basc.framework.util.function.StreamOperations;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class Operations<T, C extends Operations<T, C>> extends StandardStreamOperations<T, SQLException, C>
 		implements AutoCloseable {

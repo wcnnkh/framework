@@ -12,9 +12,9 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-import io.basc.framework.observe.ChangeType;
 import io.basc.framework.util.element.ElementList;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.observe.ChangeType;
 import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;

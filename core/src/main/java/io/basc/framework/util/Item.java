@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 public interface Item extends Named {
-
 	/**
 	 * 位置索引(从0开始)
 	 * 

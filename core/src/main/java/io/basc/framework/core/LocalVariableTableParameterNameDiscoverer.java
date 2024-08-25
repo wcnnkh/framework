@@ -34,9 +34,9 @@ import org.objectweb.asm.Type;
 
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 /**
  * Implementation of {@link ParameterNameDiscoverer} that uses the

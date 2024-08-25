@@ -6,19 +6,24 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.event.EventRegistrationException;
-import io.basc.framework.event.batch.BatchEventListener;
 import io.basc.framework.io.Resource;
-import io.basc.framework.observe.ChangeEvent;
-import io.basc.framework.observe.PayloadChangeEvent;
 import io.basc.framework.observe.PollingObserver;
-import io.basc.framework.observe.register.ObservableList;
-import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.observe.container.ObservableList;
 import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.event.EventRegistrationException;
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.event.batch.BatchEventListener;
+import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.register.PayloadRegistration;
+import lombok.NonNull;
 
-public class ResourceObserver extends PollingObserver<PayloadChangeEvent<ResourcePollingObserver>> {
-	private ObservableList<ResourcePollingObserver> registry = new ObservableList<>();
+public class ResourceObserver extends PollingObserver<ChangeEvent<Resource>> {
+	private final ObservableList<ResourcePollingObserver> resourceList = new ObservableList<>();
 	private volatile WatchService watchService;
+
+	public ResourceObserver(@NonNull BatchEventDispatcher<ChangeEvent<Resource>> eventDispatcher) {
+		super(eventDispatcher);
+	}
 
 	@Override
 	public void await() throws InterruptedException {
@@ -35,11 +40,6 @@ public class ResourceObserver extends PollingObserver<PayloadChangeEvent<Resourc
 			return watchService.poll(timeout, unit) != null;
 		}
 		return super.await(timeout, unit);
-	}
-
-	private PayloadChangeEvent<ResourcePollingObserver> convertEvent(ChangeEvent changeEvent,
-			ResourcePollingObserver observer) {
-		return new PayloadChangeEvent<ResourcePollingObserver>(this, changeEvent.getType(), observer);
 	}
 
 	private void initWatchService() {
@@ -60,12 +60,12 @@ public class ResourceObserver extends PollingObserver<PayloadChangeEvent<Resourc
 	}
 
 	public void refresh() {
-		if (registry.size() == 0 || getListenerCount() == 0) {
+		if (resourceList.size() == 0 || size() == 0) {
 			stop();
 			return;
 		}
 
-		if (registry.size() > 0 && getListenerCount() > 0) {
+		if (resourceList.size() > 0 && size() > 0) {
 			initWatchService();
 			start();
 			return;
@@ -73,8 +73,8 @@ public class ResourceObserver extends PollingObserver<PayloadChangeEvent<Resourc
 	}
 
 	public PayloadRegistration<ResourcePollingObserver> register(Resource resource) {
-		ResourcePollingObserver observer = new ResourcePollingObserver(resource);
-		PayloadRegistration<ResourcePollingObserver> registration = registry.register(observer);
+		ResourcePollingObserver observer = new ResourcePollingObserver(getEventDispatcher(), resource);
+		PayloadRegistration<ResourcePollingObserver> registration = resourceList.register(observer);
 		refresh();
 		if (watchService != null) {
 			if (observer.register(watchService)) {
@@ -82,15 +82,11 @@ public class ResourceObserver extends PollingObserver<PayloadChangeEvent<Resourc
 				registration = registration.and(() -> watchKey.cancel());
 			}
 		}
-		registration = registration.and(observer.registerBatchListener((events) -> {
-			publishBatchEvent(events.map((event) -> convertEvent(event, observer)));
-		}));
 		return registration.and(() -> refresh());
 	}
 
 	@Override
-	public Registration registerBatchListener(
-			BatchEventListener<PayloadChangeEvent<ResourcePollingObserver>> batchEventListener)
+	public Registration registerBatchListener(BatchEventListener<ChangeEvent<Resource>> batchEventListener)
 			throws EventRegistrationException {
 		Registration registration = super.registerBatchListener(batchEventListener);
 		refresh();
@@ -99,7 +95,7 @@ public class ResourceObserver extends PollingObserver<PayloadChangeEvent<Resourc
 
 	@Override
 	public void run() {
-		for (ResourcePollingObserver observer : registry.getServices()) {
+		for (ResourcePollingObserver observer : resourceList.getServices()) {
 			observer.run();
 			if (watchService != null && observer.getWatchKey() == null) {
 				observer.register(watchService);

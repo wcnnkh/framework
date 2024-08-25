@@ -24,8 +24,6 @@ import io.basc.framework.json.JsonObject;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.MimeType;
@@ -36,6 +34,8 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.xml.XmlUtils;
 

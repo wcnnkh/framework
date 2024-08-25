@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -17,6 +18,13 @@ import io.basc.framework.util.element.CloseableIterator;
  *
  */
 public class Streams {
+	private static final Stream<?> EMPTY = stream(Collections.emptyIterator());
+
+	@SuppressWarnings("unchecked")
+	public static <E> Stream<E> empty() {
+		return (Stream<E>) EMPTY;
+	}
+
 	/**
 	 * @see Stream#concat(Stream, Stream)
 	 * @param <T>

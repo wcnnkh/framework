@@ -2,9 +2,9 @@ package io.basc.framework.rpc.support;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.rpc.CallableFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

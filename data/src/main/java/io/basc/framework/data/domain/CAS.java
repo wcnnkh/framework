@@ -2,9 +2,9 @@ package io.basc.framework.data.domain;
 
 import java.util.function.Function;
 
-import io.basc.framework.observe.Variable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.DefaultOptional;
+import io.basc.framework.util.observe.Variable;
 
 public class CAS<V> extends DefaultOptional<V> implements Variable {
 	private static final long serialVersionUID = 1L;

@@ -13,8 +13,8 @@ import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.EnvironmentPostProcessor;
-import io.basc.framework.event.EventListener;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
+import io.basc.framework.util.event.EventListener;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class ActivemqEnvironmentPostProcessor implements EnvironmentPostProcessor, EventListener<BeanLifecycleEvent> {

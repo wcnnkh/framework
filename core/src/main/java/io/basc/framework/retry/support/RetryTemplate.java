@@ -1,8 +1,6 @@
 package io.basc.framework.retry.support;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RecoveryCallback;
 import io.basc.framework.retry.RetryCallback;
@@ -13,6 +11,8 @@ import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.RetryPolicy;
 import io.basc.framework.retry.TerminatedRetryException;
 import io.basc.framework.retry.policy.SimpleRetryPolicy;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class RetryTemplate implements RetryOperations {
 	/**

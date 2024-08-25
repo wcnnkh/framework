@@ -3,7 +3,15 @@ package io.basc.framework.observe;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.observe.Observer;
+import lombok.NonNull;
+
 public abstract class PollingObserver<E> extends Observer<E> implements Polling {
+	public PollingObserver(@NonNull BatchEventDispatcher<E> eventDispatcher) {
+		super(eventDispatcher);
+	}
+
 	public boolean startEndlessLoop() {
 		return startEndlessLoop(() -> {
 			try {

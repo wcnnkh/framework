@@ -23,7 +23,7 @@ public class MergedObservableValue<V> extends AtomicObservableValue<V> {
 	}
 
 	public V getMergedValue() {
-		return getSelector().apply(getRegistry().getServices().map((e) -> e.orElse(null)).filter((e) -> e != null));
+		return getSelector().select(getRegistry().getServices().map((e) -> e.orElse(null)).filter((e) -> e != null));
 	}
 
 	public void reload() {

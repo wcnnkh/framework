@@ -6,7 +6,7 @@ import java.util.Map;
 import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
-import io.basc.framework.observe.register.ObservableServiceLoader;
+import io.basc.framework.observe.service.ObservableServiceLoader;
 import io.basc.framework.util.register.Registration;
 
 public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements ConfigurableServiceLoaderFactory {

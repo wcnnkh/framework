@@ -7,8 +7,8 @@ import io.basc.framework.beans.factory.annotation.Autowired;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 /**
  * 自动启动eureka服务端

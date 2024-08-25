@@ -7,12 +7,12 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.OutputMessage;
 import io.basc.framework.net.Request;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class ConfigurableServerMessageConverter extends ConfigurableServices<ServerMessageConverter>
 		implements ServerMessageConverter {

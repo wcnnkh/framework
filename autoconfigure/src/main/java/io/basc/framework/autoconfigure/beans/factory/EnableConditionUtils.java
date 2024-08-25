@@ -8,9 +8,9 @@ import io.basc.framework.convert.lang.ValueFactory;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.env.PropertyFactory;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.match.StringMatchers;
 
 public class EnableConditionUtils {

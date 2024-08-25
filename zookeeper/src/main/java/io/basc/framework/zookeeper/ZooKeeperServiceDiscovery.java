@@ -9,8 +9,8 @@ import org.apache.zookeeper.ZooKeeper;
 import io.basc.framework.cloud.Service;
 import io.basc.framework.cloud.SimpleDiscoveryClient;
 import io.basc.framework.io.JavaSerializer;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<Service> implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);

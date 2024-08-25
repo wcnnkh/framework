@@ -13,10 +13,10 @@ import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.NestedRuntimeException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class DiskStorage extends TimerTask implements DataStorage {
 	private static Logger logger = LoggerFactory.getLogger(DiskStorage.class);

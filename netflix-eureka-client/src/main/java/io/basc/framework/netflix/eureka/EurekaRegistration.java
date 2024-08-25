@@ -17,9 +17,9 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.cloud.DefaultServiceInstance;
 import io.basc.framework.cloud.Service;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import lombok.Data;
 
 /**

@@ -2,10 +2,10 @@ package io.basc.framework.locks;
 
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.concurrent.locks.AbstractLock;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;

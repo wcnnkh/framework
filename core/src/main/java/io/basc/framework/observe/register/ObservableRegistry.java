@@ -1,7 +1,7 @@
 package io.basc.framework.observe.register;
 
-import io.basc.framework.observe.ChangeType;
-import io.basc.framework.observe.Observable;
+import io.basc.framework.util.observe.ChangeType;
+import io.basc.framework.util.observe.Observable;
 import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;

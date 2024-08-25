@@ -19,15 +19,16 @@ import java.util.stream.Stream;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ImpossibleException;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Source;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public abstract class ReflectionUtils {
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).getElements().filter((method) -> {
@@ -559,7 +560,7 @@ public abstract class ReflectionUtils {
 			throw (RuntimeException) ex;
 		} else if (ex instanceof Exception) {
 			handleReflectionException((Exception) ex);
-			throw Assert.shouldNeverGetHere();
+			throw new ImpossibleException();
 		} else {
 			throw new UndeclaredThrowableException(ex);
 		}

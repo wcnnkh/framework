@@ -11,10 +11,10 @@ import io.basc.framework.boot.support.MainApplication;
 import io.basc.framework.cloud.loadbalancer.DiscoveryLoadBalancer;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.netflix.eureka.boot.EnableEurekaClient;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 @EnableEurekaClient
 @Path("/")

@@ -4,8 +4,8 @@ import javax.servlet.ServletContext;
 
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
 
 public abstract class ServletContextUtils {
 	public static void startLogger(Logger logger, ServletContext servletContext, @Nullable Throwable e,

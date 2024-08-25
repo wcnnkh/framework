@@ -1,11 +1,11 @@
 package io.basc.framework.test;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.util.logging.Level;
 
 import org.junit.Test;
+
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class LoggerTest {
 	@Test

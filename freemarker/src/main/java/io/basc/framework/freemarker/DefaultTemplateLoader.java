@@ -9,8 +9,8 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class DefaultTemplateLoader implements TemplateLoader {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTemplateLoader.class);

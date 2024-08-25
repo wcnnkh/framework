@@ -9,21 +9,12 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.register.empty.EmptyRegistration;
 
 @FunctionalInterface
 public interface Registration {
 
-	static final Registration EMPTY = new Registration() {
-
-		@Override
-		public boolean isInvalid() {
-			return true;
-		}
-
-		@Override
-		public void deregister() {
-		}
-	};
+	static final Registration EMPTY = new EmptyRegistration();
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
 			Iterable<? extends S> iterable, Processor<? super S, ? extends E, ? extends X> register) throws X {
@@ -79,4 +70,11 @@ public interface Registration {
 	}
 
 	void deregister() throws RegistrationException;
+
+	default Registration and(Registration registration) {
+		if (registration == null || registration == EMPTY) {
+			return this;
+		}
+		return new CombinableRegistration<>(Elements.forArray(this, registration));
+	}
 }

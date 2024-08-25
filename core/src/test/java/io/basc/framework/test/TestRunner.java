@@ -9,10 +9,10 @@ import org.junit.runner.JUnitCore;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.io.scan.PackagePatternMetadataReaderScanner;
 import io.basc.framework.io.scan.TypeScanner;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class TestRunner {
 	private static Logger logger = LoggerFactory.getLogger(TestRunner.class);

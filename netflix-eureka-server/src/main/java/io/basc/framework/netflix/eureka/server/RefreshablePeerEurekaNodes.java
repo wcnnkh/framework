@@ -12,13 +12,13 @@ import com.netflix.eureka.resources.ServerCodecs;
 import com.netflix.eureka.transport.JerseyReplicationClient;
 
 import io.basc.framework.env.Environment;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.observe.ObservableEvent;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.event.EventListener;
+import io.basc.framework.util.observe.ChangeEvent;
 
 public class RefreshablePeerEurekaNodes extends PeerEurekaNodes
-		implements EventListener<ObservableEvent<Elements<String>>> {
+		implements EventListener<ChangeEvent<Elements<String>>> {
 	private static final String[] KEYS = new String[] { "eureka.client.region*", "eureka.client.service-url.*",
 			"eureka.client.availability-zones." };
 
@@ -49,7 +49,7 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes
 	}
 
 	@Override
-	public void onEvent(ObservableEvent<Elements<String>> event) {
+	public void onEvent(ChangeEvent<Elements<String>> event) {
 		if (!event.getSource().anyMatch(() -> Arrays.asList(KEYS).stream(), StringUtils::equals)) {
 			return;
 		}

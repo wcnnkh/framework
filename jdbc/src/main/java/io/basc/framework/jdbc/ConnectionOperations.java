@@ -6,12 +6,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.RunnableProcessor;
 import io.basc.framework.util.function.Source;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class ConnectionOperations extends Operations<Connection, ConnectionOperations> {
 	private static Logger logger = LoggerFactory.getLogger(ConnectionOperations.class);

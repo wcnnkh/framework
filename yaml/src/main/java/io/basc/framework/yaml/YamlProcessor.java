@@ -32,13 +32,13 @@ import io.basc.framework.io.WritableResource;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class YamlProcessor implements Function<Resource, Properties>, PropertiesResolver {
 	private final Logger logger = LoggerFactory.getLogger(getClass());

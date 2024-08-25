@@ -2,8 +2,8 @@ package io.basc.framework.rabbitmq;
 
 import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import java.io.IOException;
 

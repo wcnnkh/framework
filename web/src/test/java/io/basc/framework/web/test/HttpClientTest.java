@@ -4,8 +4,8 @@ import io.basc.framework.http.HttpUtils;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.http.client.HttpClientErrorException;
 import io.basc.framework.http.client.HttpClientResourceAccessException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import static org.junit.Assert.assertTrue;
 

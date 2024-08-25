@@ -11,8 +11,8 @@ import io.basc.framework.jms.JmsOperations;
 import io.basc.framework.jms.MessageBuilder;
 import io.basc.framework.jms.MessageCodec;
 import io.basc.framework.jms.QueueConnectionOperations;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class QueueConsumerTest {
 	private static Logger logger = LoggerFactory.getLogger(QueueConsumerTest.class);

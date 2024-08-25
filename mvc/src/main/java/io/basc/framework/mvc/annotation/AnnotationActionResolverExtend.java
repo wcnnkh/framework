@@ -15,8 +15,6 @@ import io.basc.framework.core.annotation.KeyValuePair;
 import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.ActionResolver;
 import io.basc.framework.mvc.ActionResolverExtend;
 import io.basc.framework.mvc.action.Action;
@@ -26,6 +24,8 @@ import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.pattern.HttpPattern;
 

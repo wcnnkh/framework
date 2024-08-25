@@ -1,6 +1,6 @@
 package io.basc.framework.util.concurrent.locks;
 
-public final class NoOpLock extends DisposableLock {
+public final class NoOpLock implements DisposableLock {
 	/**
 	 * 无锁的
 	 */

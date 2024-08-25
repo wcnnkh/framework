@@ -2,8 +2,8 @@ package io.basc.framework.observe.register;
 
 import java.util.Map;
 
-import io.basc.framework.observe.ObservableEvent;
-import io.basc.framework.observe.Observer;
+import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.Observer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +15,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = false)
-public class ObservableEntry<K, V> extends Observer<ObservableEvent<V>> implements Map.Entry<K, V> {
+public class ObservableEntry<K, V> extends Observer<ChangeEvent<V>> implements Map.Entry<K, V> {
 	private final K key;
 	private V value;
 
@@ -23,7 +23,7 @@ public class ObservableEntry<K, V> extends Observer<ObservableEvent<V>> implemen
 	public V setValue(V value) {
 		V previous = this.value;
 		this.value = value;
-		publishEvent(new ObservableEvent<V>(this, previous, value));
+		publishEvent(new ChangeEvent<V>(this, previous, value));
 		return previous;
 	}
 }

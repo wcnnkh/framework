@@ -2,8 +2,8 @@ package io.basc.framework.netflix.eureka;
 
 import static com.netflix.appinfo.InstanceInfo.InstanceStatus.UNKNOWN;
 import io.basc.framework.cloud.ServiceRegistry;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 import java.util.HashMap;
 

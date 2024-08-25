@@ -16,9 +16,6 @@
 
 package io.basc.framework.cloud.commons.util;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -34,6 +31,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 /**
  * @author Spencer Gibb

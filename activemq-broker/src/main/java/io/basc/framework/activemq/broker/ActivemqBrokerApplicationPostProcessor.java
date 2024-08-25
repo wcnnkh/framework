@@ -6,8 +6,8 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Component;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 @Component
 public class ActivemqBrokerApplicationPostProcessor implements ApplicationPostProcessor {

@@ -15,10 +15,10 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor
 		implements ClientHttpRequestFactory {

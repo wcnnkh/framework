@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import io.basc.framework.http.MediaType;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.net.multipart.MultipartMessageResolver;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 /**
  * 一个MultiPart请求

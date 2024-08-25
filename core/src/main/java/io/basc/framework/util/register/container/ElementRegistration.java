@@ -1,26 +1,24 @@
 package io.basc.framework.util.register.container;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.ServiceRegistration;
-import lombok.NonNull;
 
-public class ElementRegistration<T> extends ServiceRegistration<T> {
-	public ElementRegistration(T payload) {
-		super(payload);
+public interface ElementRegistration<V> extends PayloadRegistration<V> {
+	@Override
+	default V getPayload() {
+		return getValue();
 	}
 
-	protected ElementRegistration(ServiceRegistration<T> serviceRegistration) {
-		super(serviceRegistration);
-	}
+	V getValue();
+
+	V setValue(V value);
 
 	@Override
-	public ElementRegistration<T> and(@NonNull Registration registration) {
-		return new ElementRegistration<>(super.and(registration));
-	}
+	default ElementRegistration<V> and(Registration registration) {
+		if (registration == null || registration == EMPTY) {
+			return this;
+		}
 
-	@Override
-	public ElementRegistration<T> andAll(@NonNull Elements<? extends Registration> registrations) {
-		return new ElementRegistration<>(super.andAll(registrations));
+		return new CombinableElementRegistration<>(this, registration);
 	}
 }

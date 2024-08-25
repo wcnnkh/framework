@@ -2,6 +2,10 @@ package io.basc.framework.observe;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.observe.Variable;
+import lombok.NonNull;
+
 /**
  * 缓存轮询
  * 
@@ -11,6 +15,10 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class VariablePolling<E> extends PollingObserver<E> implements Variable {
 	private final AtomicLong atomicLastModified = new AtomicLong();
+
+	public VariablePolling(@NonNull BatchEventDispatcher<E> eventDispatcher) {
+		super(eventDispatcher);
+	}
 
 	public AtomicLong getAtomicLastModified() {
 		return atomicLastModified;

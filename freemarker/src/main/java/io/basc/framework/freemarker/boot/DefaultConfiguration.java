@@ -10,8 +10,8 @@ import io.basc.framework.beans.factory.annotation.ConditionalOnMissingBean;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.freemarker.EnvConfiguration;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 @Component
 @ConditionalOnMissingBean(DefaultConfiguration.class)

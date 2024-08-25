@@ -24,7 +24,7 @@ public class BatchRegistration<E extends CombinableRegistration<Registration>>
 		super(context);
 		this.andFunction = andFunction;
 	}
-	
+
 	public BatchRegistration(@NonNull Limiter limiter, @NonNull Elements<E> registrations,
 			@NonNull BiFunction<? super E, ? super Registration, ? extends E> andFunction) {
 		super(limiter, registrations);
@@ -36,13 +36,13 @@ public class BatchRegistration<E extends CombinableRegistration<Registration>>
 	}
 
 	@Override
-	public BatchRegistration<E> and(@NonNull E registration) {
-		return new BatchRegistration<>(super.and(registration), this.andFunction);
+	public BatchRegistration<E> combine(@NonNull E registration) {
+		return new BatchRegistration<>(super.combine(registration), this.andFunction);
 	}
 
 	@Override
-	public BatchRegistration<E> andAll(@NonNull Elements<? extends E> registrations) {
-		return new BatchRegistration<>(super.andAll(registrations), this.andFunction);
+	public BatchRegistration<E> combineAll(@NonNull Elements<? extends E> registrations) {
+		return new BatchRegistration<>(super.combineAll(registrations), this.andFunction);
 	}
 
 	public BatchRegistration<E> batch(@NonNull Function<? super Elements<E>, ? extends Registration> batchMapper) {

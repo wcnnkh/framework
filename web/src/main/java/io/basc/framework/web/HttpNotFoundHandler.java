@@ -3,8 +3,8 @@ package io.basc.framework.web;
 import java.io.IOException;
 
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.web.cors.CorsUtils;
 
 public class HttpNotFoundHandler implements HttpServiceTerminator {

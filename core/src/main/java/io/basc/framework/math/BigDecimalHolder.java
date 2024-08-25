@@ -1,10 +1,10 @@
 package io.basc.framework.math;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 public class BigDecimalHolder extends AbstractNumberHolder {
 	private static final long serialVersionUID = 1L;

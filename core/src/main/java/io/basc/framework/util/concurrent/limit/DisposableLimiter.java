@@ -23,7 +23,7 @@ public class DisposableLimiter implements Limiter {
 		return new DisposableResource();
 	}
 
-	private class DisposableResource extends DisposableLock {
+	private class DisposableResource implements DisposableLock {
 		@Override
 		public boolean tryLock() {
 			return limited.compareAndSet(false, true);

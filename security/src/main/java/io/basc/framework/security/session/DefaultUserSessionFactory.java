@@ -10,10 +10,10 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.env.Sys;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultUserSessionFactory implements UserSessionFactory {

@@ -15,12 +15,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.observe.PollingService;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
+import lombok.NonNull;
 
 public class Watcher<T> extends PollingObserver<WatchEvent<T>> implements PollingService<Elements<WatchEvent<T>>> {
 	private static volatile WatchService defaultWatchService;
@@ -94,13 +95,13 @@ public class Watcher<T> extends PollingObserver<WatchEvent<T>> implements Pollin
 	private final Class<T> contextType;
 	private final WatchService watchService;
 
-	public Watcher(Class<T> contextType) {
+	public Watcher(@NonNull BatchEventDispatcher<WatchEvent<T>> eventDispatcher, Class<T> contextType) {
 		this(getDefaultWatchService(), contextType);
 	}
 
-	public Watcher(WatchService watchService, Class<T> contextType) {
-		Assert.requiredArgument(watchService != null, "watchService");
-		Assert.requiredArgument(contextType != null, "contextType");
+	public Watcher(@NonNull BatchEventDispatcher<WatchEvent<T>> eventDispatcher, @NonNull WatchService watchService,
+			@NonNull Class<T> contextType) {
+		super(eventDispatcher);
 		this.watchService = watchService;
 		this.contextType = contextType;
 	}
