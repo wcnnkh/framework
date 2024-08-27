@@ -12,7 +12,7 @@ import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.element.ConvertibleIterator;
+import io.basc.framework.util.ConvertibleIterator;
 
 public final class FastJsonArray extends AbstractJson<Integer> implements JsonArray, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;

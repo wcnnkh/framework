@@ -1,6 +1,6 @@
 package io.basc.framework.data.repository;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 /**
  * 条件符号

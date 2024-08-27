@@ -1,13 +1,9 @@
 package io.basc.framework.util;
 
-public class ItemWrapper<W extends Item> extends NamedWrapper<W> implements Item {
-
-	public ItemWrapper(W wrappedTarget) {
-		super(wrappedTarget);
-	}
+public interface ItemWrapper<W extends Item> extends Item, NamedWrapper<W> {
 
 	@Override
-	public int getPositionIndex() {
-		return wrappedTarget.getPositionIndex();
+	default int getPositionIndex() {
+		return getSource().getPositionIndex();
 	}
 }

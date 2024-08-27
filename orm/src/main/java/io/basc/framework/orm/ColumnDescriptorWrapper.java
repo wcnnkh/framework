@@ -2,8 +2,8 @@ package io.basc.framework.orm;
 
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.mapper.stereotype.FieldDescriptorWrapper;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.element.Elements;
 
 public class ColumnDescriptorWrapper<W extends ColumnDescriptor> extends FieldDescriptorWrapper<W>
 		implements ColumnDescriptor {

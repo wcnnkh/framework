@@ -15,8 +15,8 @@ import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.Source;
 

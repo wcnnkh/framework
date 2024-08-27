@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.CloseableIterator;
+import io.basc.framework.util.CloseableIterator;
 import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StaticSupplier;
 

@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.concurrent.DelayableExecutor;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.DelayableNamedEventDispatcher;
 import io.basc.framework.util.event.EventDispatcher;
 import io.basc.framework.util.match.Matcher;

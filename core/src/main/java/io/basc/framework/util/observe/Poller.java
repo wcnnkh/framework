@@ -16,7 +16,7 @@ public abstract class Poller implements Runnable {
 		if (defaultTimer == null) {
 			synchronized (Poller.class) {
 				if (defaultTimer == null) {
-					defaultTimer = new Timer(Poller.class.getName());
+					defaultTimer = new Timer(Poller.class.getName(), true);
 					Runtime.getRuntime().addShutdownHook(new Thread(() -> defaultTimer.cancel()));
 				}
 			}
@@ -66,6 +66,8 @@ public abstract class Poller implements Runnable {
 						Poller.this.run();
 					}
 				});
+				// 使用守护线程,期望自动退出
+				endlessLoopThread.setDaemon(true);
 				endlessLoopThread.start();
 			}
 		}

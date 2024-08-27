@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 

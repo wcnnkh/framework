@@ -5,23 +5,19 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.DelayableEventDispatcher;
 import io.basc.framework.util.event.EventDispatcher;
 import io.basc.framework.util.event.EventListener;
 import io.basc.framework.util.event.EventPushException;
 import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.EventRegistry;
-import io.basc.framework.util.event.batch.BatchEventListener;
-import io.basc.framework.util.event.batch.BatchEventRegistry;
-import io.basc.framework.util.event.batch.DelayableBatchEventDispatcher;
 import io.basc.framework.util.register.Registration;
 
 public class ConvertibleEventDispatcher<S, T> implements DelayableEventDispatcher<T> {
 	private final EventDispatcher<S> source;
 	private final Codec<T, S> codec;
 
-	public ConvertibleEventDispatcher(EventRegistry<S> source, Codec<T, S> codec) {
+	public ConvertibleEventDispatcher(EventDispatcher<S> source, Codec<T, S> codec) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(codec != null, "codec");
 		this.source = source;
@@ -39,27 +35,20 @@ public class ConvertibleEventDispatcher<S, T> implements DelayableEventDispatche
 
 	@Override
 	public void publishBatchEvents(Elements<T> events) throws EventPushException {
-		if (source instanceof EventDispatcher) {
-			((EventDispatcher<S>) source).publishBatchEvents(events.map(codec::encode));
-			return;
-		}
-		throw new UnsupportedException("Not a EventDispatcher");
+		source.publishBatchEvents(events.map(codec::encode));
 	}
 
 	@Override
-	public Registration registerListener(EventListener<T> eventListener) throws EventRegistrationException {
-		return source.registerListener(new ConvertibleEventListener<>(eventListener, codec::decode));
+	public Registration registerEventListener(EventListener<T> eventListener) throws EventRegistrationException {
+		return source.registerEventListener(new ConvertibleEventListener<>(eventListener, codec::decode));
 	}
 
 	@Override
-	public Registration registerBatchListener(BatchEventListener<T> batchEventListener)
+	public Registration registerBatchEventsListener(EventListener<Elements<T>> batchEventsListener)
 			throws EventRegistrationException {
-		if (source instanceof BatchEventRegistry) {
-			BatchEventListener<S> convertibleBatchEventListener = new ConvertibleBatchEventListener<>(
-					batchEventListener, (e) -> e.map(codec::decode));
-			return ((BatchEventRegistry<S>) source).registerBatchListener(convertibleBatchEventListener);
-		}
-		return registerListener((e) -> batchEventListener.onEvent(Elements.singleton(e)));
+		EventListener<Elements<S>> convertibleEventListener = new ConvertibleEventListener<>(batchEventsListener,
+				(e) -> e.map(codec::decode));
+		return source.registerBatchEventsListener(convertibleEventListener);
 	}
 
 	@Override
@@ -72,10 +61,9 @@ public class ConvertibleEventDispatcher<S, T> implements DelayableEventDispatche
 	}
 
 	@Override
-	public void publishBatchEvent(Elements<T> events, long delay, TimeUnit delayTimeUnit) throws EventPushException {
-		if (source instanceof DelayableBatchEventDispatcher) {
-			((DelayableBatchEventDispatcher<S>) source).publishBatchEvent(events.map(codec::encode), delay,
-					delayTimeUnit);
+	public void publishBatchEvents(Elements<T> events, long delay, TimeUnit delayTimeUnit) throws EventPushException {
+		if (source instanceof DelayableEventDispatcher) {
+			((DelayableEventDispatcher<S>) source).publishBatchEvents(events.map(codec::encode), delay, delayTimeUnit);
 			return;
 		}
 

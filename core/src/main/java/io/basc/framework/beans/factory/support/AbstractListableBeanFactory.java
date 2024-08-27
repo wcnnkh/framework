@@ -9,7 +9,7 @@ import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionOverrideException;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public abstract class AbstractListableBeanFactory extends AbstractBeanFactory
 		implements ConfigurableListableBeanFactory {

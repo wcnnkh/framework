@@ -1,109 +1,96 @@
 package io.basc.framework.util.collect;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Wrapper;
+public interface CollectionWrapper<E, W extends Collection<E>> extends Collection<E>, IterableWrapper<E, W> {
 
-public class CollectionWrapper<E, W extends Collection<E>> extends Wrapper<W> implements Collection<E>, Serializable {
-	private static final long serialVersionUID = 1L;
-
-	public CollectionWrapper(W wrappedTarget) {
-		super(wrappedTarget);
+	@Override
+	default int size() {
+		return getSource().size();
 	}
 
 	@Override
-	public int size() {
-		return wrappedTarget.size();
+	default boolean isEmpty() {
+		return getSource().isEmpty();
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return wrappedTarget.isEmpty();
+	default boolean contains(Object o) {
+		return getSource().contains(o);
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		return wrappedTarget.contains(o);
+	default Iterator<E> iterator() {
+		return getSource().iterator();
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return wrappedTarget.iterator();
+	default Object[] toArray() {
+		return getSource().toArray();
 	}
 
 	@Override
-	public Object[] toArray() {
-		return wrappedTarget.toArray();
+	default <T> T[] toArray(T[] a) {
+		return getSource().toArray(a);
 	}
 
 	@Override
-	public <T> T[] toArray(T[] a) {
-		return wrappedTarget.toArray(a);
+	default boolean add(E e) {
+		return getSource().add(e);
 	}
 
 	@Override
-	public boolean add(E e) {
-		return wrappedTarget.add(e);
+	default boolean remove(Object o) {
+		return getSource().remove(o);
 	}
 
 	@Override
-	public boolean remove(Object o) {
-		return wrappedTarget.remove(o);
+	default boolean containsAll(Collection<?> c) {
+		return getSource().containsAll(c);
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
-		return wrappedTarget.containsAll(c);
+	default boolean addAll(Collection<? extends E> c) {
+		return getSource().addAll(c);
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
-		return wrappedTarget.addAll(c);
+	default boolean retainAll(Collection<?> c) {
+		return getSource().retainAll(c);
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> c) {
-		return wrappedTarget.retainAll(c);
+	default void clear() {
+		getSource().clear();
+	}
+
+
+	@Override
+	default Stream<E> parallelStream() {
+		return getSource().parallelStream();
 	}
 
 	@Override
-	public void clear() {
-		wrappedTarget.clear();
+	default boolean removeIf(Predicate<? super E> filter) {
+		return getSource().removeIf(filter);
 	}
 
 	@Override
-	public void forEach(Consumer<? super E> action) {
-		wrappedTarget.forEach(action);
+	default Spliterator<E> spliterator() {
+		return getSource().spliterator();
 	}
 
 	@Override
-	public Stream<E> parallelStream() {
-		return wrappedTarget.parallelStream();
+	default Stream<E> stream() {
+		return getSource().stream();
 	}
 
 	@Override
-	public boolean removeIf(Predicate<? super E> filter) {
-		return wrappedTarget.removeIf(filter);
-	}
-
-	@Override
-	public Spliterator<E> spliterator() {
-		return wrappedTarget.spliterator();
-	}
-
-	@Override
-	public Stream<E> stream() {
-		return wrappedTarget.stream();
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		return wrappedTarget.removeAll(c);
+	default boolean removeAll(Collection<?> c) {
+		return getSource().removeAll(c);
 	}
 }

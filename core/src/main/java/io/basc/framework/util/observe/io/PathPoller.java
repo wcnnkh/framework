@@ -8,7 +8,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.event.empty.EmptyEventDispatcher;
 import io.basc.framework.util.logging.Logger;
@@ -142,13 +142,13 @@ public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
 	@Override
 	public void run() {
 		try {
-			run(watchKeyRegistry.getServices());
+			run(watchKeyRegistry);
 		} finally {
 			super.run();
 		}
 	}
 
-	public void run(Elements<WatchKey> watchKeys) {
+	public void run(Iterable<? extends WatchKey> watchKeys) {
 		for (WatchKey watchKey : watchKeys) {
 			WatchKeyPoller<Path> poller = new WatchKeyPoller<>(watchKey, Path.class, this::publishWatchEvents);
 			poller.run();

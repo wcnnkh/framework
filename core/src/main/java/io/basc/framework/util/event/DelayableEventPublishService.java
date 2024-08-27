@@ -2,7 +2,7 @@ package io.basc.framework.util.event;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface DelayableEventPublishService<E> extends EventPublishService<E> {
 

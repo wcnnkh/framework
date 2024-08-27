@@ -1,13 +1,16 @@
 package io.basc.framework.util.register.container;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.observe.ChangeType;
@@ -130,12 +133,12 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 
 	@Override
 	public final boolean contains(Object o) {
-		return test((collection) -> collection.contains(o));
+		return readAsBoolean((collection) -> collection.contains(o));
 	}
 
 	@Override
 	public final boolean containsAll(Collection<?> c) {
-		return test((collection) -> collection == null ? false : collection.containsAll(c));
+		return readAsBoolean((collection) -> collection == null ? false : collection.containsAll(c));
 	}
 
 	@Override
@@ -184,12 +187,7 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 
 	@Override
 	public final boolean isEmpty() {
-		return test((collection) -> collection == null ? true : collection.isEmpty());
-	}
-
-	@Override
-	public final Iterator<E> iterator() {
-		return getServices().iterator();
+		return readAsBoolean((collection) -> collection == null ? true : collection.isEmpty());
 	}
 
 	protected ElementRegistration<E> newElementRegistration(E element) {
@@ -251,22 +249,12 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 
 	@Override
 	public final boolean retainAll(Collection<?> c) {
-		return test((collection) -> collection == null ? false : collection.retainAll(c));
+		return readAsBoolean((collection) -> collection == null ? false : collection.retainAll(c));
 	}
 
 	@Override
 	public final int size() {
 		return readInt((collection) -> collection == null ? 0 : collection.size());
-	}
-
-	@Override
-	public final Object[] toArray() {
-		return getServices().toArray();
-	}
-
-	@Override
-	public final <T> T[] toArray(T[] a) {
-		return getServices().toArray(a);
 	}
 
 	private final Registrations<ElementRegistration<E>> writeRegistrations(
@@ -276,5 +264,22 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 				.map((e) -> new ChangeEvent<>(e.getPayload(), ChangeType.CREATE));
 		eventPublishService.publishBatchEvents(events);
 		return getRegistrations((collection) -> registrations);
+	}
+
+	@Override
+	public Iterator<E> iterator() {
+		return read((collection) -> collection == null ? Collections.emptyIterator()
+				: collection.stream().filter((e) -> !e.isInvalid()).map((e) -> e.getPayload())
+						.collect(Collectors.toList()).iterator());
+	}
+
+	@Override
+	public final Stream<E> stream() {
+		return BrowseableRegistry.super.stream();
+	}
+
+	@Override
+	public final Object[] toArray() {
+		return BrowseableRegistry.super.toArray();
 	}
 }

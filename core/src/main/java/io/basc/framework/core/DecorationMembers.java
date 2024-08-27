@@ -3,7 +3,7 @@ package io.basc.framework.core;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public abstract class DecorationMembers<E, R extends DecorationMembers<E, R>> extends Members<E> {
 

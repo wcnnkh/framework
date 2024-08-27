@@ -5,7 +5,7 @@ import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.select.Selector;
 import lombok.RequiredArgsConstructor;
 

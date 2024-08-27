@@ -16,8 +16,8 @@ import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
 import io.basc.framework.netflix.eureka.metadata.DefaultManagementMetadataProvider;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadata;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadataProvider;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.element.Elements;
 
 public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinition {
 

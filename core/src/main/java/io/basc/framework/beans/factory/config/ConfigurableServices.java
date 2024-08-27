@@ -8,7 +8,7 @@ import io.basc.framework.core.ParameterizedTypeReference;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.service.ObservableServiceLoader;
-import io.basc.framework.util.element.ServiceLoader;
+import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.register.Registration;
 
 public class ConfigurableServices<T> extends ObservableServiceLoader<T> implements Configurable {

@@ -2,11 +2,12 @@ package io.basc.framework.util.observe.io;
 
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.Iterator;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Lifecycle;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.observe.Poller;
@@ -37,7 +38,7 @@ public class PathWatcher<T extends FileVariable> extends Poller implements Regis
 			return;
 		}
 
-		for (PathPoller<T> poller : registry.getServices()) {
+		for (PathPoller<T> poller : registry) {
 			try {
 				poller.run(Elements.singleton(watchKey));
 			} finally {
@@ -51,8 +52,8 @@ public class PathWatcher<T extends FileVariable> extends Poller implements Regis
 	}
 
 	@Override
-	public Elements<T> getServices() {
-		return registry.getServices().map((e) -> e.getVariable());
+	public Iterator<T> iterator() {
+		return registry.map((e) -> e.getVariable()).iterator();
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.util.comparator.TypeComparator;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 
 public class TypeRegistry<K, V> {

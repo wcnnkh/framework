@@ -10,8 +10,8 @@ import io.basc.framework.execution.Function;
 import io.basc.framework.execution.Method;
 import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Name;
-import io.basc.framework.util.element.Elements;
 
 /**
  * bean的定义

@@ -2,7 +2,7 @@ package io.basc.framework.util.register;
 
 import java.util.function.BooleanSupplier;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import lombok.NonNull;
 
 public class CombinablePayloadRegistration<S, W extends PayloadRegistration<S>>

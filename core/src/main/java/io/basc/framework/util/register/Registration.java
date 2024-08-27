@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.register.empty.EmptyRegistration;

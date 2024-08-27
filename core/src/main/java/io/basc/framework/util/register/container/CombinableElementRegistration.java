@@ -1,6 +1,6 @@
 package io.basc.framework.util.register.container;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.register.CombinablePayloadRegistration;
 import io.basc.framework.util.register.Registration;
 import lombok.NonNull;

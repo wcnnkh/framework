@@ -15,9 +15,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.match.Matcher;
 import io.basc.framework.util.observe.ChangeEvent;
@@ -265,12 +265,12 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 
 	@Override
 	public final boolean containsKey(Object key) {
-		return test((map) -> map == null ? false : map.containsKey(key));
+		return readAsBoolean((map) -> map == null ? false : map.containsKey(key));
 	}
 
 	@Override
 	public final boolean containsValue(Object value) {
-		return test((map) -> map == null ? false : map.containsValue(value));
+		return readAsBoolean((map) -> map == null ? false : map.containsValue(value));
 	}
 
 	private final Registrations<EntryRegistration<K, V>> convertToBatchRegistration(
@@ -311,13 +311,13 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 	}
 
 	@Override
-	public final Elements<KeyValue<K, V>> getServices() {
-		return new InternalElements();
+	public final Iterator<KeyValue<K, V>> iterator() {
+		return new InternalElements().iterator();
 	}
 
 	@Override
 	public final boolean isEmpty() {
-		return test((map) -> map == null ? true : map.isEmpty());
+		return readAsBoolean((map) -> map == null ? true : map.isEmpty());
 	}
 
 	@Override

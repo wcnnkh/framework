@@ -5,10 +5,10 @@ import io.basc.framework.convert.lang.Value;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConvertibleEnumeration;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.element.ConvertibleEnumeration;
-import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.MultiIterator;
 import lombok.Data;
 
 public class SystemProperties extends DefaultPropertyResolver {

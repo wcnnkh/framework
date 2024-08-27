@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 

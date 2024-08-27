@@ -5,7 +5,7 @@ import io.basc.framework.convert.lang.ValueFactory;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface PropertyFactory extends ValueFactory<String>, Properties {
 

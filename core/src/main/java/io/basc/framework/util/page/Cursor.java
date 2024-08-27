@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface Cursor<K, T> {
 	/**

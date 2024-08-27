@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.element.Elements;
 
 public interface ParentDiscover<T extends ParentDiscover<T>> {
 	@Nullable

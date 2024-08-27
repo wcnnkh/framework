@@ -6,8 +6,8 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.ElementsWrapper;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.ElementsWrapper;
 
 public class Values extends ElementsWrapper<Value, Elements<Value>> implements Elements<Value> {
 	public static Values of(Object... args) {

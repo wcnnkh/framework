@@ -1,53 +1,67 @@
 package io.basc.framework.util;
 
-import java.util.Objects;
+import lombok.NonNull;
 
-public class Wrapper<W> implements Decorator {
-	protected final W wrappedTarget;
-	private Object equalsAndHashCode;
+/**
+ * 对一个对象进行包装
+ * 
+ * @author shuchaowen
+ *
+ * @param <T>
+ */
+public interface Wrapper<T> {
 
-	public Wrapper(W wrappedTarget) {
-		Assert.requiredArgument(wrappedTarget != null, "wrappedTarget");
-		this.wrappedTarget = wrappedTarget;
-		this.equalsAndHashCode = wrappedTarget;
-	}
+	/**
+	 * 被包装的来源
+	 * 
+	 * @return
+	 */
+	T getSource();
 
-	public W getDelegateSource() {
-		return wrappedTarget;
-	}
-
-	public Object getEqualsAndHashCode() {
-		return equalsAndHashCode;
-	}
-
-	public void setEqualsAndHashCode(Object equalsAndHashCode) {
-		this.equalsAndHashCode = equalsAndHashCode;
-	}
-
-	@Override
-	public <T> T getDelegate(Class<T> targetType) {
-		return XUtils.getDelegate(wrappedTarget, targetType);
-	}
-
-	@Override
-	public String toString() {
-		return wrappedTarget.toString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
+	/**
+	 * 获取解除包装后指定类型的对象
+	 * 
+	 * @param <S>
+	 * @param requiredType
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	default <S> S unwrap(@NonNull Class<S> requiredType) {
+		if (requiredType.isInstance(this)) {
+			return (S) this;
 		}
 
-		if (obj instanceof Wrapper) {
-			return ObjectUtils.equals(equalsAndHashCode, ((Wrapper<?>) obj).equalsAndHashCode);
+		T source = getSource();
+		if (requiredType.isInstance(source)) {
+			return (S) source;
 		}
-		return obj.equals(equalsAndHashCode);
+
+		if (source instanceof Wrapper) {
+			return ((Wrapper<T>) source).unwrap(requiredType);
+		}
+
+		throw new IllegalArgumentException("Cannot unwrap for " + requiredType);
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(equalsAndHashCode);
+	/**
+	 * 是否包装了此类型
+	 * 
+	 * @param requiredType
+	 * @return
+	 */
+	default boolean isWrapperFor(@NonNull Class<?> requiredType) {
+		if (requiredType.isInstance(this)) {
+			return true;
+		}
+
+		T source = getSource();
+		if (requiredType.isInstance(source)) {
+			return true;
+		}
+
+		if (source instanceof Wrapper) {
+			return ((Wrapper<?>) source).isWrapperFor(requiredType);
+		}
+		return false;
 	}
 }

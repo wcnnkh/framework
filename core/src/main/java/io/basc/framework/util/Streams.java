@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.element.CloseableIterator;
 
 /**
  * 对{@link StreamSupport}和{@link Stream}的扩展

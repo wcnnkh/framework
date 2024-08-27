@@ -2,7 +2,7 @@ package io.basc.framework.util.register;
 
 import java.util.function.BooleanSupplier;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class CombinableKeyValueRegistration<K, V> extends CombinableRegistration<Registration>
 		implements KeyValueRegistration<K, V> {

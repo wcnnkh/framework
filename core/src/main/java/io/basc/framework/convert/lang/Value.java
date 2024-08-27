@@ -19,8 +19,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.Enumerable;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Enumerable;
 import io.basc.framework.util.function.Optional;
 import io.basc.framework.util.function.Source;
 

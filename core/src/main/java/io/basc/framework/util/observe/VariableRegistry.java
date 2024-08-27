@@ -1,6 +1,7 @@
 package io.basc.framework.util.observe;
 
-import io.basc.framework.util.element.Elements;
+import java.util.Iterator;
+
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
@@ -16,8 +17,8 @@ public class VariableRegistry<T extends Variable> extends Poller implements Regi
 	private final EventPublishService<ChangeEvent<T>> eventPublishService;
 
 	@Override
-	public Elements<T> getServices() {
-		return registry.getServices();
+	public Iterator<T> iterator() {
+		return registry.iterator();
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class VariableRegistry<T extends Variable> extends Poller implements Regi
 
 	@Override
 	public void run() {
-		for (T variable : registry.getServices()) {
+		for (T variable : registry) {
 			VariablePoller<T> variablePoller = new VariablePoller<>(variable, eventPublishService);
 			variablePoller.run();
 		}

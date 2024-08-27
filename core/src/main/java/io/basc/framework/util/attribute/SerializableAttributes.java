@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.element.Elements;
 
 public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;

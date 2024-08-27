@@ -2,7 +2,7 @@ package io.basc.framework.util.event.empty;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.DelayableEventDispatcher;
 import io.basc.framework.util.event.EventListener;
 import io.basc.framework.util.event.EventPushException;

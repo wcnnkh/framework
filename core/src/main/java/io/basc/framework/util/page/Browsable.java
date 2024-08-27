@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface Browsable<K, T> extends Cursor<K, T> {
 	Browsable<K, T> jumpTo(K cursorId);

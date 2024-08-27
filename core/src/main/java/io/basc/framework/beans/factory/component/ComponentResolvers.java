@@ -9,7 +9,7 @@ import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
 import io.basc.framework.env.EnvironmentCapable;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class ComponentResolvers extends ConfigurableServices<ComponentResolver> implements ComponentResolver {
 	public ComponentResolvers() {

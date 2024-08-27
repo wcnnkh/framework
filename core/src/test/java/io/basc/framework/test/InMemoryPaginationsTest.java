@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.page.Paginations;
 
 public class InMemoryPaginationsTest {

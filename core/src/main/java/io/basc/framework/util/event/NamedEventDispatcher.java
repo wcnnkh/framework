@@ -1,6 +1,6 @@
 package io.basc.framework.util.event;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.register.Registration;
 
 public interface NamedEventDispatcher<K, E> extends NamedEventPublishService<K, E>, NamedEventRegistry<K, E> {

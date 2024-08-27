@@ -12,8 +12,8 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.Processor;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement>, Properties {

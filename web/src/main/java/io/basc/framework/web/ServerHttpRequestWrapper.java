@@ -14,9 +14,9 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.net.InputMessageWrapper;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.util.element.Elements;
 
 public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequest> implements ServerHttpRequest {
 	private final boolean overrideBody;

@@ -1,6 +1,6 @@
 package io.basc.framework.util.register;
 
-import io.basc.framework.util.element.ServiceLoader;
+import io.basc.framework.util.ServiceLoader;
 
 /**
  * 定义一个注册表

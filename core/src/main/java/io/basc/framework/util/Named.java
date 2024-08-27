@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.util.element.Elements;
-
 public interface Named {
 	String getName();
 

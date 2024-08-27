@@ -2,7 +2,7 @@ package io.basc.framework.util.select;
 
 import java.util.Properties;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class PropertiesMerger implements Merger<Properties> {
 	public static final PropertiesMerger INSTANCE = new PropertiesMerger();

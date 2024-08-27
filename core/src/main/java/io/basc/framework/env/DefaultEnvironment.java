@@ -2,8 +2,8 @@ package io.basc.framework.env;
 
 import java.util.stream.Collectors;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.element.Elements;
 
 public class DefaultEnvironment extends DefaultPropertyResolver implements ConfigurableEnvironment {
 	private static final String ACTIVE_PROFILES_PROPERTY_NAME = System.getProperty("basc.profiles.active.property.name",

@@ -14,9 +14,9 @@ import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.ListElements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.element.ElementList;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.broadcast.BroadcastEventRegistry;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
@@ -69,7 +69,7 @@ public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFacto
 		for (String path : paths) {
 			list.add(getKey(path));
 		}
-		return new ElementList<>(paths);
+		return new ListElements<>(paths);
 	}
 
 	public boolean containsKey(String key) {

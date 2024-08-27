@@ -3,7 +3,7 @@ package io.basc.framework.beans;
 import java.beans.BeanInfo;
 
 import io.basc.framework.mapper.stereotype.Mapping;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NonNull;

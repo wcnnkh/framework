@@ -9,8 +9,8 @@ import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.element.Elements;
 
 public final class Methods extends ReflectionMembers<Method, Methods> {
 	private final Function<? super ReflectionMembers<Method, Methods>, ? extends Methods> memberDecorator = (

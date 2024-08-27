@@ -1,7 +1,7 @@
 package io.basc.framework.jdbc.template;
 
 import io.basc.framework.jdbc.ConnectionOperations;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface DatabaseDialect extends SqlDialect {
 	Elements<String> getDatabaseNames(ConnectionOperations operations);

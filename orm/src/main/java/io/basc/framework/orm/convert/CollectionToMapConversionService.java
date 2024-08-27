@@ -18,7 +18,7 @@ import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class CollectionToMapConversionService extends AbstractConversionService
 		implements ConditionalConversionService {

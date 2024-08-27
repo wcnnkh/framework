@@ -8,7 +8,7 @@ import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.properties.DynamicPropertyRegistry;
 import io.basc.framework.observe.properties.ObservablePropertyFactory;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class ApplicationContextPropertiesResourceImporter extends ConfigurablePropertiesResolver
 		implements ApplicationContextResourceImporter {

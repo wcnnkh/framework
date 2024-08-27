@@ -2,7 +2,7 @@ package io.basc.framework.execution.aop;
 
 import io.basc.framework.execution.Function;
 import io.basc.framework.execution.FunctionWrapper;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import lombok.NonNull;
 
 public class InterceptableFunction extends FunctionWrapper<Function> {

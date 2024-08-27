@@ -5,8 +5,8 @@ import java.util.Set;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.element.ElementSet;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.SetElements;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +58,6 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 
 	@Override
 	public Elements<String> keys() {
-		return new ElementSet<>(jsonObject.keySet());
+		return new SetElements<>(jsonObject.keySet());
 	}
 }

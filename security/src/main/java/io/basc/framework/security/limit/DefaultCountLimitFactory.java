@@ -7,8 +7,8 @@ import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.execution.param.ParameterUtils;
 import io.basc.framework.security.limit.annotation.CountLimitParameter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;
-import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.Indexed;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Indexed;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultCountLimitFactory implements CountLimitFactory {

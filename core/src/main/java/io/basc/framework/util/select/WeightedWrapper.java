@@ -1,17 +1,12 @@
 package io.basc.framework.util.select;
 
 import io.basc.framework.util.Wrapper;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public class WeightedWrapper<W> extends Wrapper<W> implements Weighted {
+@Getter
+@RequiredArgsConstructor
+public class WeightedWrapper<W> implements Weighted, Wrapper<W> {
+	private final W source;
 	private final int weight;
-
-	public WeightedWrapper(W wrappedTarget, int weight) {
-		super(wrappedTarget);
-		this.weight = weight;
-	}
-
-	@Override
-	public int getWeight() {
-		return weight;
-	}
 }

@@ -17,7 +17,7 @@ import io.basc.framework.execution.reflect.ReflectionMethodGetter;
 import io.basc.framework.execution.reflect.ReflectionMethodSetter;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public final class BeanFieldDescriptor implements FieldDescriptor {
 	private final Class<?> beanClass;

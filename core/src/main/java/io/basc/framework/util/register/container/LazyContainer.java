@@ -32,7 +32,7 @@ public class LazyContainer<C> {
 	 * @param predicate 回调参数可能为空
 	 * @return
 	 */
-	public boolean test(Predicate<? super C> predicate) {
+	public boolean readAsBoolean(Predicate<? super C> predicate) {
 		Lock lock = readWriteLock.readLock();
 		lock.lock();
 		try {
@@ -139,10 +139,10 @@ public class LazyContainer<C> {
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof LazyContainer) {
 			LazyContainer<?> other = (LazyContainer<?>) obj;
-			return test((o1) -> other.test((o2) -> ObjectUtils.equals(o1, o2)));
+			return readAsBoolean((o1) -> other.readAsBoolean((o2) -> ObjectUtils.equals(o1, o2)));
 		}
 
-		return test((conainer) -> ObjectUtils.equals(conainer, obj));
+		return readAsBoolean((conainer) -> ObjectUtils.equals(conainer, obj));
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.EventDispatcher;
 import io.basc.framework.util.event.support.DefaultEventDispatcher;
 import io.basc.framework.util.observe.ChangeEvent;
@@ -80,16 +80,16 @@ public class ObservableList<E> extends ObservableCollection<E, List<ElementRegis
 
 	@Override
 	public final ListIterator<E> listIterator() {
-		return getServices().toList().listIterator();
+		return toList().listIterator();
 	}
 
 	@Override
 	public final ListIterator<E> listIterator(int index) {
-		return getServices().toList().listIterator(index);
+		return toList().listIterator(index);
 	}
 
 	@Override
 	public final List<E> subList(int fromIndex, int toIndex) {
-		return getServices().toList().subList(fromIndex, toIndex);
+		return toList().subList(fromIndex, toIndex);
 	}
 }

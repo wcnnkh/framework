@@ -7,7 +7,7 @@ import java.util.List;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class WatchKeyPollingObserver<T> extends PollingObserver<WatchEvent<T>> {
 	@SuppressWarnings("unchecked")

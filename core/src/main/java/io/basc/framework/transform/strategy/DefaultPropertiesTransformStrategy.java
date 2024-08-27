@@ -10,7 +10,7 @@ import io.basc.framework.execution.param.ConfigurableParameterDescriptorPredicat
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

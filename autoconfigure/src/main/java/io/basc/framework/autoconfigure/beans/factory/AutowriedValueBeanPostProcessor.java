@@ -7,7 +7,7 @@ import io.basc.framework.env.PropertyFactory;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.mapper.stereotype.MappingRegistry;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 /**
  * value注解的实现

@@ -6,9 +6,9 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CloseableIterator;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.element.CloseableIterator;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.RunnableProcessor;

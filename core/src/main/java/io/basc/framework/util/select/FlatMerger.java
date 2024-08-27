@@ -2,7 +2,7 @@ package io.basc.framework.util.select;
 
 import java.util.function.Function;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class FlatMerger<E> implements Merger<Elements<E>> {
 	private static final FlatMerger<?> GLOBAL = new FlatMerger<>();

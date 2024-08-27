@@ -16,7 +16,6 @@ import java.util.function.IntPredicate;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
-import io.basc.framework.util.element.Elements;
 
 public final class StringUtils {
 	private static final String CURRENT_PATH = ".";

@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.comparator.TypeComparator;
-import io.basc.framework.util.element.ElementList;
-import io.basc.framework.util.element.ElementSet;
-import io.basc.framework.util.element.Elements;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -92,7 +89,7 @@ public class Symbol implements Serializable, Name {
 			List<Symbol> symbols = SYMBOL_MAP.values().stream()
 					.flatMap((map) -> map.values().stream().flatMap((list) -> list.stream()))
 					.collect(Collectors.toList());
-			return new ElementList<>(symbols);
+			return new StandardListElements<>(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -112,7 +109,7 @@ public class Symbol implements Serializable, Name {
 			List<T> symbols = (List<T>) tailMap.values().stream()
 					.flatMap((map) -> map.values().stream().flatMap((list) -> list.stream()))
 					.collect(Collectors.toList());
-			return new ElementList<>(symbols);
+			return new StandardListElements<>(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -137,7 +134,7 @@ public class Symbol implements Serializable, Name {
 				}
 				return list.stream();
 			}).collect(Collectors.toList());
-			return new ElementList<>(symbols);
+			return new StandardListElements<>(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -155,7 +152,7 @@ public class Symbol implements Serializable, Name {
 				}
 				return list.stream();
 			}).collect(Collectors.toList());
-			return new ElementList<>(symbols);
+			return new StandardListElements<>(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -167,7 +164,7 @@ public class Symbol implements Serializable, Name {
 		try {
 			Set<String> symbols = SYMBOL_MAP.values().stream().flatMap((map) -> map.keySet().stream())
 					.collect(Collectors.toSet());
-			return new ElementSet<>(symbols);
+			return new StandardSetElements<>(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -184,7 +181,7 @@ public class Symbol implements Serializable, Name {
 
 			Set<String> symbols = tailMap.values().stream().flatMap((map) -> map.keySet().stream())
 					.collect(Collectors.toSet());
-			return new ElementSet<>(symbols);
+			return new StandardSetElements<>(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -195,7 +192,7 @@ public class Symbol implements Serializable, Name {
 		lock.lock();
 		try {
 			Set<Class<?>> types = SYMBOL_MAP.keySet();
-			return new ElementSet<>(types);
+			return new StandardSetElements<>(types);
 		} finally {
 			lock.unlock();
 		}

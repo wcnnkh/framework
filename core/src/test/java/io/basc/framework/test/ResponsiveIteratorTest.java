@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import io.basc.framework.util.ResponsiveIterator;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.element.ResponsiveIterator;
 
 public class ResponsiveIteratorTest {
 	private static List<Object> pushList = new ArrayList<Object>();

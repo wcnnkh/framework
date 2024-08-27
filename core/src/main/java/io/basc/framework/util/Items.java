@@ -4,9 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.util.element.Elements;
-import io.basc.framework.util.element.NoUniqueElementException;
-
 public interface Items<T extends Item> {
 	/**
 	 * 通过索引位置获取元素

@@ -9,9 +9,9 @@ import java.util.stream.Stream;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Source;
 

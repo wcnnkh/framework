@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class PageableWrapper<K, T, W extends Pageable<K, T>> extends BrowsableWrapper<K, T, W> implements Pageable<K, T> {
 

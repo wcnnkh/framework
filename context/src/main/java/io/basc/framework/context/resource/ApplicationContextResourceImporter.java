@@ -3,7 +3,7 @@ package io.basc.framework.context.resource;
 import io.basc.framework.context.config.ApplicationContextSourceProcessor;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.io.Resource;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 /**
  * 资源导入

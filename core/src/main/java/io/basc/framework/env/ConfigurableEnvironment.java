@@ -1,6 +1,6 @@
 package io.basc.framework.env;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyResolver {
 	void addActiveProfile(String profile);

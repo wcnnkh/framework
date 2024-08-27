@@ -20,10 +20,9 @@ import java.util.Set;
 
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.element.ElementList;
 import io.basc.framework.util.page.Browsable;
-import io.basc.framework.util.page.StandardCursor;
 import io.basc.framework.util.page.StandardBrowsable;
+import io.basc.framework.util.page.StandardCursor;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -563,7 +562,7 @@ public final class ClassUtils {
 		return new StandardBrowsable<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new StandardCursor<>(c, new ElementList<>(list), c.getSuperclass());
+			return new StandardCursor<>(c, new StandardListElements<>(list), c.getSuperclass());
 		});
 	}
 

@@ -1,8 +1,8 @@
 package io.basc.framework.mapper.stereotype;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Items;
 import io.basc.framework.util.Named;
-import io.basc.framework.util.element.Elements;
 
 /**
  * 映射

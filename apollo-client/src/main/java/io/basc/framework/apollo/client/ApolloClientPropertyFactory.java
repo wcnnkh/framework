@@ -8,8 +8,8 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
 import io.basc.framework.convert.lang.Value;
 import io.basc.framework.env.PropertyFactory;
-import io.basc.framework.util.element.ElementSet;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.SetElements;
 import io.basc.framework.util.event.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.observe.ChangeType;
@@ -25,7 +25,7 @@ public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatche
 
 	@Override
 	public Elements<String> keys() {
-		return new ElementSet<>(config.getPropertyNames());
+		return new SetElements<>(config.getPropertyNames());
 	}
 
 	@Override

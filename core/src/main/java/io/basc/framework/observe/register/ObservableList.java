@@ -12,8 +12,8 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-import io.basc.framework.util.element.ElementList;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.ListElements;
 import io.basc.framework.util.observe.ChangeType;
 import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
@@ -33,7 +33,7 @@ public class ObservableList<E> extends ObservableCollection<E, List<PayloadRegis
 	public final boolean addAll(int index, Collection<? extends E> c) {
 		Elements<PayloadRegistration<E>> regs = write((list) -> {
 			PayloadBatchRegistration<E> batchRegistration = new PayloadBatchRegistration<>(c);
-			ElementList<PayloadRegistration<E>> elements = batchRegistration.getServices().toList();
+			ListElements<PayloadRegistration<E>> elements = batchRegistration.getServices().toList();
 			if (list.addAll(index, elements)) {
 				return elements;
 			}

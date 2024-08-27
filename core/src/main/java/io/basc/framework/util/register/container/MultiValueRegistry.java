@@ -1,14 +1,15 @@
 package io.basc.framework.util.register.container;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.match.Matcher;
 import io.basc.framework.util.observe.ChangeEvent;
@@ -78,17 +79,17 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 	}
 
 	@Override
-	public final Elements<KeyValue<K, V>> getServices() {
+	public Iterator<KeyValue<K, V>> iterator() {
 		return read((map) -> {
 			if (map == null) {
-				return Elements.empty();
+				return Collections.emptyIterator();
 			}
 
 			// 使用copy保证线程安全
 			// TODO 是否可以使用分段锁实现？
-			return Elements.of(map.entrySet())
-					.flatMap((entry) -> entry.getValue().getServices().map((v) -> KeyValue.of(entry.getKey(), v)))
-					.toList();
+			return map.entrySet().stream()
+					.flatMap((entry) -> entry.getValue().stream().map((value) -> KeyValue.of(entry.getKey(), value)))
+					.collect(Collectors.toList()).iterator();
 		});
 	}
 
@@ -137,11 +138,10 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 				return Elements
 						.of(map.entrySet().stream().filter((e) -> matcher.match(key, e.getKey()))
 								.collect(Collectors.toList()))
-						.flatMap((e) -> e.getValue().getServices().map((value) -> KeyValue.of(e.getKey(), value)));
+						.flatMap((e) -> e.getValue().map((value) -> KeyValue.of(e.getKey(), value)));
 			} else {
 				ElementRegistry<V, L> values = getElementRegistry(key);
-				return values == null ? Elements.empty()
-						: values.getServices().map(((value) -> KeyValue.of(key, value)));
+				return values == null ? Elements.empty() : values.map(((value) -> KeyValue.of(key, value)));
 			}
 		});
 	}
@@ -160,7 +160,7 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 
 	@Override
 	public final boolean isInvalid() {
-		return test((map) -> {
+		return readAsBoolean((map) -> {
 			if (map == null) {
 				return true;
 			}

@@ -1,7 +1,7 @@
 package io.basc.framework.execution.aop;
 
 import io.basc.framework.execution.Executor;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface Proxy extends Executor {
 	@Override

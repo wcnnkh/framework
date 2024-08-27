@@ -2,7 +2,7 @@ package io.basc.framework.util.page;
 
 import java.util.function.Function;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class ConvertiblePage<M extends Page<SK, ST>, SK, ST, K, T> extends ConvertibleCursor<M, SK, ST, K, T>
 		implements Page<K, T> {

@@ -2,8 +2,8 @@ package io.basc.framework.mapper.io.table;
 
 import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.mapper.io.template.Record;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.SimpleItem;
-import io.basc.framework.util.element.Elements;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.io.Importer;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public interface RecordImporter extends Importer {
 	RecordConverter getConverter();

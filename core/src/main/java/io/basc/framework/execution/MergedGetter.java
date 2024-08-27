@@ -2,7 +2,7 @@ package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.param.MergedParameterDescriptor;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class MergedGetter extends MergedParameterDescriptor<Getter> implements Getter {
 

@@ -1,6 +1,6 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 /**
  * 分页操作

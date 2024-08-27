@@ -1,7 +1,9 @@
 package io.basc.framework.util.register;
 
+import java.util.Iterator;
+
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.element.Elements;
 
 public interface BrowseableRegistry<T, R extends PayloadRegistration<T>> extends Registry<T, R>, Registrations<R> {
 	default void deregister(T element) {
@@ -13,8 +15,8 @@ public interface BrowseableRegistry<T, R extends PayloadRegistration<T>> extends
 	}
 
 	@Override
-	default Elements<T> getServices() {
-		return getRegistrations().filter((e) -> !e.isInvalid()).map((e) -> e.getPayload());
+	default Iterator<T> iterator() {
+		return getRegistrations().filter((e) -> !e.isInvalid()).map((e) -> e.getPayload()).iterator();
 	}
 
 	/**

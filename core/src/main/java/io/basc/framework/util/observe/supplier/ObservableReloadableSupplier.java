@@ -2,7 +2,7 @@ package io.basc.framework.util.observe.supplier;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.EventDispatcher;
 import io.basc.framework.util.event.EventListener;
 import io.basc.framework.util.event.EventRegistrationException;

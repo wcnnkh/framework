@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implements JsonObject {
 

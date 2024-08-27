@@ -9,10 +9,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.concurrent.ReadOnlyEntry;
-import io.basc.framework.util.element.Elements;
 import io.basc.framework.util.event.EventDispatcher;
 import io.basc.framework.util.event.EventListener;
 import io.basc.framework.util.event.EventRegistrationException;
@@ -55,12 +55,12 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 
 	@Override
 	public final boolean containsKey(Object key) {
-		return test((map) -> map == null ? false : map.containsKey(key));
+		return readAsBoolean((map) -> map == null ? false : map.containsKey(key));
 	}
 
 	@Override
 	public final boolean containsValue(Object value) {
-		return test((map) -> {
+		return readAsBoolean((map) -> {
 			if (map == null) {
 				return false;
 			}
@@ -72,7 +72,7 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 	@Override
 	public final List<V> get(Object key) {
 		ElementRegistry<V, L> registry = getElementRegistry(key);
-		return registry == null ? null : registry.getServices().toList();
+		return registry == null ? null : registry.toList();
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 				values = newValues(key);
 				map.put(key, values);
 			} else {
-				oldValues = values.getServices().toList();
+				oldValues = values.toList();
 				// 清空所有
 				values.clear();
 			}
@@ -107,7 +107,7 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 			}
 
 			try {
-				return values.getServices().toList();
+				return values.toList();
 			} finally {
 				values.clear();
 			}
@@ -145,14 +145,13 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 	@Override
 	public final Collection<List<V>> values() {
 		return read((map) -> map == null ? Collections.emptyList()
-				: map.values().stream().map((e) -> e.getServices().toList()).collect(Collectors.toList()));
+				: map.values().stream().map((e) -> e.toList()).collect(Collectors.toList()));
 	}
 
 	@Override
 	public final Set<Entry<K, List<V>>> entrySet() {
 		return read((map) -> map == null ? Collections.emptySet()
-				: map.entrySet().stream()
-						.map((e) -> new ReadOnlyEntry<>(e.getKey(), (List<V>) e.getValue().getServices().toList()))
+				: map.entrySet().stream().map((e) -> new ReadOnlyEntry<>(e.getKey(), (List<V>) e.getValue().toList()))
 						.collect(Collectors.toSet()));
 	}
 

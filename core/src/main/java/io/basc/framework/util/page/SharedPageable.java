@@ -1,7 +1,7 @@
 package io.basc.framework.util.page;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class SharedPageable<K, T> extends SharedPage<K, T> implements Pageable<K, T> {
 	private static final long serialVersionUID = 1L;

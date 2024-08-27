@@ -7,9 +7,9 @@ import java.util.function.Function;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.element.Elements;
 
 public final class Fields extends ReflectionMembers<Field, Fields> {
 	@SuppressWarnings("unchecked")

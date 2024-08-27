@@ -3,7 +3,7 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.Elements;
 
 public class ConvertibleCursor<M extends Cursor<SK, ST>, SK, ST, K, T> implements Cursor<K, T> {
 	protected final M source;
