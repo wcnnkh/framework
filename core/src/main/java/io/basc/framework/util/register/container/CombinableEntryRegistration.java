@@ -16,7 +16,7 @@ public class CombinableEntryRegistration<K, V, W extends EntryRegistration<K, V>
 
 	@Override
 	public K getKey() {
-		return source.getKey();
+		return getSource().getKey();
 	}
 
 	@Override

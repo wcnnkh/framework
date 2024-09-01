@@ -6,7 +6,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.select.Selector;
 
 public class MergedObservableValue<V> extends AtomicObservableValue<V> {
-	private final ServiceRegistry<? extends ObservableValue<V>> registry;
+	private final NavigableElementRegistry<? extends ObservableValue<V>> registry;
 	private Selector<V> selector = Selector.first();
 
 	public MergedObservableValue() {
@@ -18,7 +18,7 @@ public class MergedObservableValue<V> extends AtomicObservableValue<V> {
 		registry.registerBatchListener((e) -> reload());
 	}
 
-	public ServiceRegistry<? extends ObservableValue<V>> getRegistry() {
+	public NavigableElementRegistry<? extends ObservableValue<V>> getRegistry() {
 		return registry;
 	}
 

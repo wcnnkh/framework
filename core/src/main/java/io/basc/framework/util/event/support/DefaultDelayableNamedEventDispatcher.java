@@ -10,15 +10,13 @@ import io.basc.framework.util.event.DelayableNamedEventDispatcher;
 import io.basc.framework.util.event.EventDispatcher;
 import io.basc.framework.util.match.Matcher;
 import io.basc.framework.util.register.KeyValueRegistry;
-import io.basc.framework.util.register.Registration;
 import lombok.NonNull;
 
 public class DefaultDelayableNamedEventDispatcher<K, T> extends DefaultNamedEventDispatcher<K, T>
 		implements DelayableNamedEventDispatcher<K, T> {
 	private final DelayableExecutor delayableExecutor;
 
-	public DefaultDelayableNamedEventDispatcher(
-			@NonNull KeyValueRegistry<K, EventDispatcher<T>, ? extends Registration> dispatcherRegistry,
+	public DefaultDelayableNamedEventDispatcher(@NonNull KeyValueRegistry<K, EventDispatcher<T>> dispatcherRegistry,
 			@NonNull Function<? super K, ? extends EventDispatcher<T>> eventDispatcherFactory,
 			@NonNull Matcher<? super K> matcher, @NonNull DelayableExecutor delayableExecutor) {
 		super(dispatcherRegistry, eventDispatcherFactory, matcher);

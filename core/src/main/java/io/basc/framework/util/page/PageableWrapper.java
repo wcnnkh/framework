@@ -6,102 +6,99 @@ import java.util.function.Predicate;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Elements;
 
-public class PageableWrapper<K, T, W extends Pageable<K, T>> extends BrowsableWrapper<K, T, W> implements Pageable<K, T> {
+public interface PageableWrapper<K, T, W extends Pageable<K, T>>
+		extends BrowsableWrapper<K, T, W>, PageWrapper<K, T, W>, Pageable<K, T> {
 
-	public PageableWrapper(W wrappedTarget) {
-		super(wrappedTarget);
+	@Override
+	default Page<K, T> shared() {
+		return getSource().shared();
 	}
 
 	@Override
-	public Page<K, T> shared() {
-		return wrappedTarget.shared();
-	}
-
-	@Override
-	public <TK, TT> Page<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
+	default <TK, TT> Page<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(cursorIdConverter, elementsConverter);
+		return getSource().convert(cursorIdConverter, elementsConverter);
 	}
 
 	@Override
-	public <TT> Pageable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(elementsConverter);
+	default <TT> Pageable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return getSource().convert(elementsConverter);
 	}
 
 	@Override
-	public Elements<? extends Page<K, T>> pages() {
-		return wrappedTarget.pages();
+	default Elements<? extends Page<K, T>> pages() {
+		return getSource().pages();
 	}
 
 	@Override
-	public long getTotal() {
-		return wrappedTarget.getTotal();
+	default long getTotal() {
+		return getSource().getTotal();
 	}
 
 	@Override
-	public long getPageSize() {
-		return wrappedTarget.getPageSize();
+	default long getPageSize() {
+		return getSource().getPageSize();
 	}
 
 	@Override
-	public Pageable<K, T> jumpTo(K cursorId, long count) {
-		return wrappedTarget.jumpTo(cursorId, count);
+	default Pageable<K, T> jumpTo(K cursorId, long count) {
+		return getSource().jumpTo(cursorId, count);
 	}
 
 	@Override
-	public Pageable<K, T> jumpTo(K cursorId) {
-		return wrappedTarget.jumpTo(cursorId);
+	default Pageable<K, T> jumpTo(K cursorId) {
+		return getSource().jumpTo(cursorId);
 	}
 
 	@Override
-	public Pageable<K, T> next() {
-		return wrappedTarget.next();
+	default Pageable<K, T> next() {
+		return getSource().next();
 	}
 
 	@Override
-	public <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
+	default <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
 			Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(keyMapper, valueMapper);
+		return getSource().map(keyMapper, valueMapper);
 	}
 
 	@Override
-	public <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(valueMapper);
+	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
+		return getSource().map(valueMapper);
 	}
 
 	@Override
-	public Page<K, T> all() {
-		return wrappedTarget.all();
+	default Page<K, T> all() {
+		return getSource().all();
 	}
 
 	@Override
-	public <TK, TT> Pageable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
+	default <TK, TT> Pageable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(cursorIdCodec, elementsConverter);
+		return getSource().convert(cursorIdCodec, elementsConverter);
 	}
 
 	@Override
-	public Pageable<K, T> filter(Predicate<? super T> predicate) {
-		return wrappedTarget.filter(predicate);
+	default Pageable<K, T> filter(Predicate<? super T> predicate) {
+		return getSource().filter(predicate);
 	}
 
 	@Override
-	public <TT> Pageable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		return wrappedTarget.flatMap(mapper);
+	default <TT> Pageable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+		return getSource().flatMap(mapper);
 	}
 
 	@Override
-	public boolean hasNext() {
-		return wrappedTarget.hasNext();
+	default boolean hasNext() {
+		return getSource().hasNext();
 	}
 
 	@Override
-	public <TK, TT> Pageable<TK, TT> map(Codec<K, TK> cursorIdCodec, Function<? super T, ? extends TT> elementMapper) {
-		return wrappedTarget.map(cursorIdCodec, elementMapper);
+	default <TK, TT> Pageable<TK, TT> map(Codec<K, TK> cursorIdCodec, Function<? super T, ? extends TT> elementMapper) {
+		return getSource().map(cursorIdCodec, elementMapper);
 	}
 
 	@Override
-	public Paginations<T> toPaginations(long start, long limit) {
-		return wrappedTarget.toPaginations(start, limit);
+	default Paginations<T> toPaginations(long start, long limit) {
+		return getSource().toPaginations(start, limit);
 	}
 }

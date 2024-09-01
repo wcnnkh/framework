@@ -1,5 +1,6 @@
 package io.basc.framework.util.register;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
@@ -17,46 +18,45 @@ import lombok.ToString;
  * @param <T>
  */
 @ToString(callSuper = false)
-public class CombinableRegistration<T extends Registration> extends AbstractRegistration implements Registrations<T> {
+public class CombinableRegistration<T extends Registration> extends LimitableRegistration implements Registrations<T> {
 	@NonNull
-	private final Elements<T> registrations;
+	private final Elements<T> elements;
 
-	public CombinableRegistration(@NonNull Elements<T> registrations) {
-		this(new NoOpLimiter(), registrations);
+	public CombinableRegistration(@NonNull Elements<T> elements) {
+		this(new NoOpLimiter(), elements);
 	}
 
-	public CombinableRegistration(@NonNull Limiter limiter, @NonNull Elements<T> registrations) {
+	public CombinableRegistration(@NonNull Limiter limiter, @NonNull Elements<T> elements) {
 		super(limiter);
-		this.registrations = registrations;
+		this.elements = elements;
 	}
 
 	protected CombinableRegistration(CombinableRegistration<T> combinableRegistration) {
-		this(combinableRegistration, combinableRegistration.registrations);
+		this(combinableRegistration, combinableRegistration.elements);
 	}
 
-	private CombinableRegistration(@NonNull AbstractRegistration abstractRegistration,
-			@NonNull Elements<T> registrations) {
+	private CombinableRegistration(@NonNull LimitableRegistration abstractRegistration, @NonNull Elements<T> elements) {
 		super(abstractRegistration);
-		this.registrations = registrations;
+		this.elements = elements;
 	}
 
 	@Override
-	public Elements<T> getRegistrations() {
-		return registrations;
+	public Elements<T> getElements() {
+		return elements;
 	}
 
 	@Override
-	public final boolean isInvalid() {
-		return isInvalid(Registrations.super::isInvalid);
+	public boolean isInvalid(BooleanSupplier checker) {
+		return super.isInvalid(Registrations.super::isInvalid);
 	}
 
 	@Override
-	public final void deregister() throws RegistrationException {
-		deregister(Registrations.super::deregister);
+	public void deregister(Runnable runnable) throws RegistrationException {
+		super.deregister(Registrations.super::deregister);
 	}
 
 	public <R extends Registration> CombinableRegistration<R> map(@NonNull Function<? super T, ? extends R> mapper) {
-		return new CombinableRegistration<>(this, this.registrations.map(mapper));
+		return new CombinableRegistration<>(this, this.elements.map(mapper));
 	}
 
 	/**
@@ -78,6 +78,6 @@ public class CombinableRegistration<T extends Registration> extends AbstractRegi
 	 */
 	public CombinableRegistration<T> combineAll(@NonNull Elements<? extends T> registrations) {
 		Assert.requiredArgument(registrations != null, "registrations");
-		return new CombinableRegistration<>(this, this.registrations.concat(registrations));
+		return new CombinableRegistration<>(this, this.elements.concat(registrations));
 	}
 }

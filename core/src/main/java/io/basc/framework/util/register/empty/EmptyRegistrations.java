@@ -13,7 +13,7 @@ public class EmptyRegistrations<R extends Registration> extends EmptyRegistratio
 	}
 
 	@Override
-	public Elements<R> getRegistrations() {
+	public Elements<R> getElements() {
 		return Elements.empty();
 	}
 }

@@ -1,6 +1,6 @@
 package io.basc.framework.util.register;
 
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.Elements;
 
 /**
  * 定义一个注册表
@@ -9,7 +9,14 @@ import io.basc.framework.util.ServiceLoader;
  *
  * @param <T>
  */
-public interface Registry<T, R extends Registration> extends ServiceLoader<T> {
+public interface Registry<E> {
+	/**
+	 * 获取注册的元素
+	 * 
+	 * @return
+	 */
+	Elements<E> getElements();
+
 	/**
 	 * 注册一个
 	 * 
@@ -17,7 +24,7 @@ public interface Registry<T, R extends Registration> extends ServiceLoader<T> {
 	 * @return
 	 * @throws RegistrationException
 	 */
-	R register(T element) throws RegistrationException;
+	Registration register(E element) throws RegistrationException;
 
 	/**
 	 * 批量注册
@@ -26,7 +33,7 @@ public interface Registry<T, R extends Registration> extends ServiceLoader<T> {
 	 * @return
 	 * @throws RegistrationException
 	 */
-	default Registrations<R> registers(Iterable<? extends T> elements) throws RegistrationException {
+	default Registration registers(Iterable<? extends E> elements) throws RegistrationException {
 		return Registration.registers(elements, this::register);
 	}
 }

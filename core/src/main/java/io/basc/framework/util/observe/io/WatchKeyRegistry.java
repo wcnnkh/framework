@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.register.container.ElementRegistration;
@@ -36,7 +37,7 @@ public class WatchKeyRegistry extends ElementRegistry<WatchKey, Collection<Eleme
 	}
 
 	@Override
-	public Iterator<WatchKey> iterator() {
-		return super.filter((e) -> !e.isValid()).iterator();
+	public Elements<WatchKey> getElements() {
+		return super.getElements().filter((e) -> !e.isValid());
 	}
 }

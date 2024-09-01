@@ -21,15 +21,14 @@ import lombok.NonNull;
 
 public class DefaultNamedEventDispatcher<K, T> implements NamedEventDispatcher<K, T> {
 	@NonNull
-	private final KeyValueRegistry<K, EventDispatcher<T>, ? extends Registration> dispatcherRegistry;
+	private final KeyValueRegistry<K, EventDispatcher<T>> dispatcherRegistry;
 	@NonNull
 	private final Function<? super K, ? extends EventDispatcher<T>> eventDispatcherFactory;
 	@NonNull
 	private final Matcher<? super K> matcher;
 	private Executor publishEventExecutor;
 
-	public DefaultNamedEventDispatcher(
-			@NonNull KeyValueRegistry<K, EventDispatcher<T>, ? extends Registration> dispatcherRegistry,
+	public DefaultNamedEventDispatcher(@NonNull KeyValueRegistry<K, EventDispatcher<T>> dispatcherRegistry,
 			@NonNull Function<? super K, ? extends EventDispatcher<T>> eventDispatcherFactory,
 			@NonNull Matcher<? super K> matcher) {
 		this.dispatcherRegistry = dispatcherRegistry;

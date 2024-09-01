@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 public class DefaultEventDispatcher<T> implements EventDispatcher<T> {
 	@NonNull
-	private final Registry<EventListener<Elements<T>>, ? extends Registration> eventListenerRegistry;
+	private final Registry<EventListener<Elements<T>>> eventListenerRegistry;
 	@NonNull
 	private final Dispatcher<EventListener<Elements<T>>> eventListenerDispatcher;
 	private Executor publishEventExecutor;
@@ -50,8 +50,7 @@ public class DefaultEventDispatcher<T> implements EventDispatcher<T> {
 		this(new ElementRegistry<>(eventListenerSupplier, EmptyEventDispatcher.empty()), eventListenerDispatcher);
 	}
 
-	public DefaultEventDispatcher(
-			@NonNull Registry<EventListener<Elements<T>>, ? extends Registration> eventListenerRegistry,
+	public DefaultEventDispatcher(@NonNull Registry<EventListener<Elements<T>>> eventListenerRegistry,
 			@NonNull Dispatcher<EventListener<Elements<T>>> eventListenerDispatcher) {
 		this.eventListenerRegistry = eventListenerRegistry;
 		this.eventListenerDispatcher = eventListenerDispatcher;
@@ -84,7 +83,7 @@ public class DefaultEventDispatcher<T> implements EventDispatcher<T> {
 	}
 
 	private void syncPublishEvents(Elements<T> events) {
-		Elements<EventListener<Elements<T>>> selected = eventListenerRegistry.dispatch(eventListenerDispatcher);
+		Elements<EventListener<Elements<T>>> selected = eventListenerRegistry.getElements().dispatch(eventListenerDispatcher);
 		selected.forEach((e) -> e.onEvent(events));
 	}
 }

@@ -17,7 +17,7 @@ import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.FilterablePropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.PropertiesTransformFilter;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 
 public class DefaultPropertiesTransformerFactory<E extends Throwable>
@@ -82,7 +82,7 @@ public class DefaultPropertiesTransformerFactory<E extends Throwable>
 	public <T> Registration registerPropertiesTransformer(Class<T> requiredType,
 			PropertiesTransformer<T, ? extends E> propertiesTransformer) {
 		this.propertiesTransformerMap = register(requiredType, propertiesTransformer, propertiesTransformerMap);
-		return LimitedRegistration.of(() -> propertiesTransformerMap.remove(requiredType));
+		return StandardRegistration.of(() -> propertiesTransformerMap.remove(requiredType));
 	}
 
 	@Override

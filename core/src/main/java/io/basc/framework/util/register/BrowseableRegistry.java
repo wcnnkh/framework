@@ -1,13 +1,13 @@
 package io.basc.framework.util.register;
 
-import java.util.Iterator;
-
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 
-public interface BrowseableRegistry<T, R extends PayloadRegistration<T>> extends Registry<T, R>, Registrations<R> {
+public interface BrowseableRegistry<T, R extends PayloadRegistration<T>> extends Registry<T> {
+	Registrations<R> getRegistrations();
+
 	default void deregister(T element) {
-		for (PayloadRegistration<T> registration : getRegistrations()) {
+		for (PayloadRegistration<T> registration : getRegistrations().getElements()) {
 			if (ObjectUtils.equals(registration.getPayload(), element)) {
 				registration.deregister();
 			}
@@ -15,8 +15,8 @@ public interface BrowseableRegistry<T, R extends PayloadRegistration<T>> extends
 	}
 
 	@Override
-	default Iterator<T> iterator() {
-		return getRegistrations().filter((e) -> !e.isInvalid()).map((e) -> e.getPayload()).iterator();
+	default Elements<T> getElements() {
+		return getRegistrations().getElements().filter((e) -> !e.isInvalid()).map((e) -> e.getPayload());
 	}
 
 	/**
@@ -25,7 +25,7 @@ public interface BrowseableRegistry<T, R extends PayloadRegistration<T>> extends
 	@Override
 	default R register(T element) throws RegistrationException {
 		Registrations<R> registrations = registers(Elements.singleton(element));
-		return registrations.getRegistrations().first();
+		return registrations.getElements().first();
 	}
 
 	@Override

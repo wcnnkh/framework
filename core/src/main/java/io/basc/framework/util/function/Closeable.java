@@ -1,6 +1,4 @@
-package io.basc.framework.util;
-
-import io.basc.framework.util.function.RunnableProcessor;
+package io.basc.framework.util.function;
 
 public interface Closeable<E extends Throwable> {
 	void close() throws E;

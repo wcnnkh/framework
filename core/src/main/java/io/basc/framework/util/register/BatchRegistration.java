@@ -48,14 +48,14 @@ public class BatchRegistration<E extends CombinableRegistration<Registration>>
 	public BatchRegistration<E> batch(@NonNull Function<? super Elements<E>, ? extends Registration> batchMapper) {
 		return new BatchRegistration<>(super.pre(() -> {
 			// 限制各元素的行为
-			Elements<E> source = getRegistrations().filter((e) -> e.getLimiter().limited());
+			Elements<E> source = getElements().filter((e) -> e.getLimiter().limited());
 			Registration registration = batchMapper.apply(source);
 			try {
 				// 执行批量行为
 				registration.deregister();
 			} finally {
 				// 执行原始行为，一般是空的实现
-				source.forEach((e) -> e.getRegistrations().forEach(Registration::deregister));
+				source.forEach((e) -> e.getElements().forEach(Registration::deregister));
 			}
 		}).map((r) -> {
 			// 为每个元素添加行为

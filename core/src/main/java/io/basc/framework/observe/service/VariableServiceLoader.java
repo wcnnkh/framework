@@ -22,7 +22,7 @@ public class VariableServiceLoader<S> extends Observer<ChangeEvent> implements S
 	@NonNull
 	private final ServiceLoader<? extends S> serviceLoader;
 	@NonNull
-	private final ServiceRegistry<S> registry;
+	private final NavigableElementRegistry<S> registry;
 	private volatile Elements<PayloadRegistration<S>> registrations;
 	private volatile long lastModified = 0L;
 

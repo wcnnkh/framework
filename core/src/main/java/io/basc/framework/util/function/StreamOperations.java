@@ -1,7 +1,5 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.util.Closeable;
-
 public interface StreamOperations<T, E extends Throwable> extends StreamSource<T, E>, Closeable<E> {
 	@SuppressWarnings("unchecked")
 	public static <R, X extends Throwable> StreamOperations<R, X> of(Source<? extends R, ? extends X> source) {

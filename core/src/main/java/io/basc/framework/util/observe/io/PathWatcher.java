@@ -2,7 +2,6 @@ package io.basc.framework.util.observe.io;
 
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.Iterator;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -18,9 +17,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PathWatcher<T extends FileVariable> extends Poller implements Registry<T, Registration>, Lifecycle {
+public class PathWatcher<T extends FileVariable> extends Poller implements Registry<T>, Lifecycle {
 	@NonNull
-	private final Registry<PathPoller<T>, ? extends Registration> registry;
+	private final Registry<PathPoller<T>> registry;
 	@NonNull
 	private final EventPublishService<ChangeEvent<T>> eventPublishService;
 	@NonNull
@@ -38,7 +37,7 @@ public class PathWatcher<T extends FileVariable> extends Poller implements Regis
 			return;
 		}
 
-		for (PathPoller<T> poller : registry) {
+		for (PathPoller<T> poller : registry.getElements()) {
 			try {
 				poller.run(Elements.singleton(watchKey));
 			} finally {
@@ -52,13 +51,8 @@ public class PathWatcher<T extends FileVariable> extends Poller implements Regis
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return registry.map((e) -> e.getVariable()).iterator();
-	}
-
-	@Override
-	public void reload() {
-		registry.reload();
+	public Elements<T> getElements() {
+		return registry.getElements().map((e) -> e.getVariable());
 	}
 
 	@Override

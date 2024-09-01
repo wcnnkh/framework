@@ -6,71 +6,67 @@ import java.util.function.Predicate;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Elements;
 
-public class BrowsableWrapper<K, T, W extends Browsable<K, T>> extends CursorWrapper<K, T, W>
-		implements Browsable<K, T> {
+public interface BrowsableWrapper<K, T, W extends Browsable<K, T>> extends CursorWrapper<K, T, W>, Browsable<K, T> {
 
-	public BrowsableWrapper(W wrappedTarget) {
-		super(wrappedTarget);
-	}
-
-	public Cursor<K, T> shared() {
-		return wrappedTarget.shared();
+	default Cursor<K, T> shared() {
+		return getSource().shared();
 	}
 
 	@Override
-	public Browsable<K, T> jumpTo(K cursorId) {
-		return wrappedTarget.jumpTo(cursorId);
+	default Browsable<K, T> jumpTo(K cursorId) {
+		return getSource().jumpTo(cursorId);
 	}
 
 	@Override
-	public Browsable<K, T> next() {
-		return wrappedTarget.next();
+	default Browsable<K, T> next() {
+		return getSource().next();
 	}
 
 	@Override
-	public Cursor<K, T> all() {
-		return wrappedTarget.all();
+	default Cursor<K, T> all() {
+		return getSource().all();
 	}
 
 	@Override
-	public Elements<? extends Cursor<K, T>> pages() {
-		return wrappedTarget.pages();
+	default Elements<? extends Cursor<K, T>> pages() {
+		return getSource().pages();
 	}
 
 	@Override
-	public <TK, TT> Browsable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
+	default <TK, TT> Browsable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(cursorIdCodec, elementsConverter);
+		return getSource().convert(cursorIdCodec, elementsConverter);
 	}
 
 	@Override
-	public <TT> Browsable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(elementsConverter);
+	default <TT> Browsable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return getSource().convert(elementsConverter);
 	}
 
 	@Override
-	public Browsable<K, T> filter(Predicate<? super T> predicate) {
-		return wrappedTarget.filter(predicate);
+	default Browsable<K, T> filter(Predicate<? super T> predicate) {
+		return getSource().filter(predicate);
 	}
 
 	@Override
-	public <TT> Browsable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		return wrappedTarget.flatMap(mapper);
+	default <TT> Browsable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+		return getSource().flatMap(mapper);
 	}
 
 	@Override
-	public boolean hasNext() {
-		return wrappedTarget.hasNext();
+	default boolean hasNext() {
+		return getSource().hasNext();
 	}
 
 	@Override
-	public <TK, TT> Browsable<TK, TT> map(Codec<K, TK> cursorIdCodec, Function<? super T, ? extends TT> elementMapper) {
-		return wrappedTarget.map(cursorIdCodec, elementMapper);
+	default <TK, TT> Browsable<TK, TT> map(Codec<K, TK> cursorIdCodec,
+			Function<? super T, ? extends TT> elementMapper) {
+		return getSource().map(cursorIdCodec, elementMapper);
 	}
 
 	@Override
-	public <TT> Browsable<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(valueMapper);
+	default <TT> Browsable<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
+		return getSource().map(valueMapper);
 	}
 
 }

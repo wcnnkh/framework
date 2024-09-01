@@ -154,4 +154,8 @@ public class LazyContainer<C> {
 	public String toString() {
 		return read((e) -> e == null ? null : e.toString());
 	}
+
+	public ReadWriteLock getReadWriteLock() {
+		return readWriteLock;
+	}
 }

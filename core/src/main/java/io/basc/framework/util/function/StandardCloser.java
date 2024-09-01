@@ -1,7 +1,6 @@
 package io.basc.framework.util.function;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Closer;
 
 public class StandardCloser<T, E extends Throwable, C extends StandardCloser<T, E, C>> extends StandardCloseable<E, C>
 		implements Closer<T, E> {

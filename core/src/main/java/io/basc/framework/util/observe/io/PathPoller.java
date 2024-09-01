@@ -142,7 +142,7 @@ public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
 	@Override
 	public void run() {
 		try {
-			run(watchKeyRegistry);
+			run(watchKeyRegistry.getElements());
 		} finally {
 			super.run();
 		}

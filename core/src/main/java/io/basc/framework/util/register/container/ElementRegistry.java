@@ -1,13 +1,10 @@
 package io.basc.framework.util.register.container;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
@@ -15,6 +12,7 @@ import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.observe.ChangeType;
 import io.basc.framework.util.register.BrowseableRegistry;
+import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.Registrations;
@@ -23,7 +21,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> extends LazyContainer<C>
-		implements BrowseableRegistry<E, ElementRegistration<E>>, Collection<E> {
+		implements BrowseableRegistry<E, ElementRegistration<E>>, Registration {
 	@RequiredArgsConstructor
 	private class BatchRegistrations implements Registrations<ElementRegistration<E>> {
 		private final Elements<UpdateableElementRegistration> registrations;
@@ -37,7 +35,7 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 		}
 
 		@Override
-		public Elements<ElementRegistration<E>> getRegistrations() {
+		public Elements<ElementRegistration<E>> getElements() {
 			return registrations.map((e) -> e);
 		}
 	}
@@ -101,19 +99,11 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 		});
 	}
 
-	@Override
-	public final boolean add(E e) {
-		Registration registration = register(e);
-		return !registration.isInvalid();
+	public EventPublishService<ChangeEvent<E>> getEventPublishService() {
+		return eventPublishService;
 	}
 
-	@Override
-	public final boolean addAll(Collection<? extends E> c) {
-		Registrations<ElementRegistration<E>> registrations = registers(c);
-		return !registrations.getRegistrations().isEmpty();
-	}
-
-	private boolean batchDeregister(Elements<? extends ElementRegistration<E>> registrations) {
+	protected final boolean batchDeregister(Elements<? extends ElementRegistration<E>> registrations) {
 		if (registrations.isEmpty()) {
 			return false;
 		}
@@ -127,35 +117,15 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 	}
 
 	@Override
-	public final void clear() {
-		deregister();
-	}
-
-	@Override
-	public final boolean contains(Object o) {
-		return readAsBoolean((collection) -> collection.contains(o));
-	}
-
-	@Override
-	public final boolean containsAll(Collection<?> c) {
-		return readAsBoolean((collection) -> collection == null ? false : collection.containsAll(c));
-	}
-
-	@Override
-	public final void deregister() throws RegistrationException {
+	public final void deregister(E element) {
 		Elements<ElementRegistration<E>> registrations = read((collection) -> {
 			if (collection == null) {
 				return Elements.empty();
 			}
 
-			return Elements.of(collection).toList();
+			return Elements.of(collection).filter((e) -> ObjectUtils.equals(e.getPayload(), element)).toList();
 		});
 		batchDeregister(registrations);
-	}
-
-	@Override
-	public final void deregister(E element) {
-		remove(element);
 	}
 
 	public final ElementRegistration<E> getRegistration(Function<? super C, ? extends ElementRegistration<E>> reader) {
@@ -167,10 +137,9 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 	}
 
 	@Override
-	public final Elements<ElementRegistration<E>> getRegistrations() {
+	public final Registrations<ElementRegistration<E>> getRegistrations() {
 		return getRegistrations(
-				(collection) -> collection == null ? Elements.empty() : Elements.of(collection).toList())
-				.getRegistrations();
+				(collection) -> collection == null ? Elements.empty() : Elements.of(collection).toList());
 	}
 
 	public final Registrations<ElementRegistration<E>> getRegistrations(
@@ -185,17 +154,12 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 		return new BatchRegistrations(updateableRegistrations);
 	}
 
-	@Override
-	public final boolean isEmpty() {
-		return readAsBoolean((collection) -> collection == null ? true : collection.isEmpty());
-	}
-
 	protected ElementRegistration<E> newElementRegistration(E element) {
 		return new AtomicElementRegistration<>(element);
 	}
 
 	@Override
-	public final Registrations<ElementRegistration<E>> registers(Iterable<? extends E> elements)
+	public Registrations<ElementRegistration<E>> registers(Iterable<? extends E> elements)
 			throws RegistrationException {
 		Elements<ElementRegistration<E>> es = Elements.of(elements).map(this::newElementRegistration);
 		return writeRegistrations((collection) -> {
@@ -217,44 +181,15 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 		});
 	}
 
-	@Override
-	public void reload() {
-		cleanup();
-	}
-
-	@Override
-	public final boolean remove(Object o) {
-		Elements<ElementRegistration<E>> registrations = read((collection) -> {
-			if (collection == null) {
-				return Elements.empty();
+	public final E getPayload(Function<? super C, ? extends PayloadRegistration<E>> getter) {
+		return read((container) -> {
+			if (container == null) {
+				return null;
 			}
 
-			return Elements.of(collection).filter((e) -> ObjectUtils.equals(e.getPayload(), o)).toList();
+			PayloadRegistration<E> registration = getter.apply(container);
+			return registration == null ? null : registration.getPayload();
 		});
-
-		return batchDeregister(registrations);
-	}
-
-	@Override
-	public final boolean removeAll(Collection<?> c) {
-		Elements<ElementRegistration<E>> registrations = read((collection) -> {
-			if (collection == null) {
-				return Elements.empty();
-			}
-
-			return Elements.of(collection).filter((e) -> c.contains(e.getPayload())).toList();
-		});
-		return batchDeregister(registrations);
-	}
-
-	@Override
-	public final boolean retainAll(Collection<?> c) {
-		return readAsBoolean((collection) -> collection == null ? false : collection.retainAll(c));
-	}
-
-	@Override
-	public final int size() {
-		return readInt((collection) -> collection == null ? 0 : collection.size());
 	}
 
 	private final Registrations<ElementRegistration<E>> writeRegistrations(
@@ -267,19 +202,12 @@ public class ElementRegistry<E, C extends Collection<ElementRegistration<E>>> ex
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return read((collection) -> collection == null ? Collections.emptyIterator()
-				: collection.stream().filter((e) -> !e.isInvalid()).map((e) -> e.getPayload())
-						.collect(Collectors.toList()).iterator());
+	public boolean isInvalid() {
+		return getRegistrations().isInvalid();
 	}
 
 	@Override
-	public final Stream<E> stream() {
-		return BrowseableRegistry.super.stream();
-	}
-
-	@Override
-	public final Object[] toArray() {
-		return BrowseableRegistry.super.toArray();
+	public void deregister() throws RegistrationException {
+		getRegistrations().deregister();
 	}
 }

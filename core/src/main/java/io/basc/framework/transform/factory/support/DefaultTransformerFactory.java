@@ -7,7 +7,7 @@ import io.basc.framework.transform.Transformer;
 import io.basc.framework.transform.factory.config.TransformerRegistry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.comparator.TypeComparator;
-import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 
 public class DefaultTransformerFactory<S, E extends Throwable> implements TransformerRegistry<S, E> {
@@ -57,6 +57,6 @@ public class DefaultTransformerFactory<S, E extends Throwable> implements Transf
 	public <T> Registration registerTransformer(Class<T> targetType,
 			Transformer<? super S, ? extends T, ? extends E> converter) {
 		this.transformerMap = register(targetType, converter, transformerMap);
-		return LimitedRegistration.of(() -> transformerMap.remove(targetType));
+		return StandardRegistration.of(() -> transformerMap.remove(targetType));
 	}
 }

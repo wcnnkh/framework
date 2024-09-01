@@ -1,7 +1,6 @@
 package io.basc.framework.util.register.container;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +19,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V>>, M extends Map<K, ElementRegistry<V, L>>>
-		extends LazyContainer<M> implements KeyValueRegistry<K, V, EntryRegistration<K, V>>, Registration {
+		extends LazyContainer<M> implements KeyValueRegistry<K, V>, Registration {
 	@RequiredArgsConstructor
 	private static class InternalEntryRegistration<K, V> implements EntryRegistration<K, V> {
 		private final ElementRegistration<V> elementRegistration;
@@ -68,28 +67,26 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 
 	public final void cleanup() {
 		execute((map) -> {
-			for (Entry<K, ElementRegistry<V, L>> entry : map.entrySet()) {
-				entry.getValue().cleanup();
-			}
-
 			// 清理已经为空的元素注册器
-			map.entrySet().removeIf((entry) -> entry.getValue().isEmpty());
+			map.entrySet().removeIf((entry) -> entry.getValue().getRegistrations().isInvalid());
 			return true;
 		});
 	}
 
 	@Override
-	public Iterator<KeyValue<K, V>> iterator() {
+	public Elements<KeyValue<K, V>> getElements() {
 		return read((map) -> {
 			if (map == null) {
-				return Collections.emptyIterator();
+				return Elements.empty();
 			}
 
 			// 使用copy保证线程安全
 			// TODO 是否可以使用分段锁实现？
-			return map.entrySet().stream()
-					.flatMap((entry) -> entry.getValue().stream().map((value) -> KeyValue.of(entry.getKey(), value)))
-					.collect(Collectors.toList()).iterator();
+			return Elements
+					.of(map.entrySet().stream()
+							.flatMap((entry) -> entry.getValue().getElements()
+									.map((value) -> KeyValue.of(entry.getKey(), value)).stream())
+							.collect(Collectors.toList()));
 		});
 	}
 
@@ -138,23 +135,12 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 				return Elements
 						.of(map.entrySet().stream().filter((e) -> matcher.match(key, e.getKey()))
 								.collect(Collectors.toList()))
-						.flatMap((e) -> e.getValue().map((value) -> KeyValue.of(e.getKey(), value)));
+						.flatMap((e) -> e.getValue().getElements().map((value) -> KeyValue.of(e.getKey(), value)));
 			} else {
 				ElementRegistry<V, L> values = getElementRegistry(key);
-				return values == null ? Elements.empty() : values.map(((value) -> KeyValue.of(key, value)));
+				return values == null ? Elements.empty()
+						: values.getElements().map(((value) -> KeyValue.of(key, value)));
 			}
-		});
-	}
-
-	@Override
-	public void reload() {
-		cleanup();
-
-		execute((map) -> {
-			for (Entry<K, ElementRegistry<V, L>> entry : map.entrySet()) {
-				entry.getValue().reload();
-			}
-			return true;
 		});
 	}
 
@@ -169,7 +155,7 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 				return true;
 			}
 
-			return map.entrySet().stream().allMatch((e) -> e.getValue().isEmpty());
+			return map.entrySet().stream().allMatch((e) -> e.getValue().isInvalid());
 		});
 	}
 
@@ -179,7 +165,7 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 			Iterator<Entry<K, ElementRegistry<V, L>>> iterator = map.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Entry<K, ElementRegistry<V, L>> entry = iterator.next();
-				entry.getValue().clear();
+				entry.getValue().deregister();
 				iterator.remove();
 			}
 			return true;

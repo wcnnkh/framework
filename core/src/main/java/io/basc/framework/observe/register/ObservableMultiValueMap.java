@@ -153,7 +153,7 @@ public class ObservableMultiValueMap<K, V, L extends ObservableMultiValue<K, V>,
 				}
 
 				L list = multiValueCreator.apply(e.getKey());
-				list.setEntryEventPublishService(ObservableMultiValueMap.this);
+				list.setEntryEventPublishService(MultiValueMapRegistry.this);
 				list.addAll(e.getValue());
 				map.put(e.getKey(), list);
 				return true;

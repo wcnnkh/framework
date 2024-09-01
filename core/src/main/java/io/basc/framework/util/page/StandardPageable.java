@@ -6,12 +6,17 @@ import java.util.function.Predicate;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Elements;
 
-public class StandardPageable<K, T> extends PageWrapper<K, T, Page<K, T>> implements Pageable<K, T> {
+public class StandardPageable<K, T> implements PageWrapper<K, T, Page<K, T>>, Pageable<K, T> {
+	private final Page<K, T> source;
 	private final CursorProcessor<K, T> processor;
 
-	public StandardPageable(Page<K, T> page, CursorProcessor<K, T> processor) {
-		super(page);
+	public StandardPageable(Page<K, T> source, CursorProcessor<K, T> processor) {
+		this.source = source;
 		this.processor = processor;
+	}
+
+	public Page<K, T> getSource() {
+		return source;
 	}
 
 	public StandardPageable(long total, K cursorId, long count, CursorProcessor<K, T> processor) {

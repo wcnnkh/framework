@@ -18,12 +18,12 @@ public class CombinableElementRegistration<V, W extends ElementRegistration<V>>
 
 	@Override
 	public V getValue() {
-		return source.getValue();
+		return getSource().getValue();
 	}
 
 	@Override
 	public V setValue(V value) {
-		return source.setValue(value);
+		return getSource().setValue(value);
 	}
 
 	@Override

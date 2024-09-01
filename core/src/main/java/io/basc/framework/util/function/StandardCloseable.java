@@ -3,7 +3,6 @@ package io.basc.framework.util.function;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Closeable;
 import io.basc.framework.util.XUtils;
 
 public class StandardCloseable<E extends Throwable, C extends Closeable<E>> implements Closeable<E> {

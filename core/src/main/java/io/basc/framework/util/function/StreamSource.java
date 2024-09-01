@@ -1,7 +1,5 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.util.Closer;
-
 public interface StreamSource<T, E extends Throwable> extends Source<T, E>, Closer<T, E> {
 	T get() throws E;
 

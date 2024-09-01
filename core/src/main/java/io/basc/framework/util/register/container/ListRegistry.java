@@ -1,34 +1,28 @@
-package io.basc.framework.util.observe.container;
+package io.basc.framework.util.register.container;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.event.EventDispatcher;
-import io.basc.framework.util.event.support.DefaultEventDispatcher;
+import io.basc.framework.util.event.EventPublishService;
 import io.basc.framework.util.observe.ChangeEvent;
-import io.basc.framework.util.register.container.ElementRegistration;
 import lombok.NonNull;
 
-public class ObservableList<E> extends ObservableCollection<E, List<ElementRegistration<E>>> implements List<E> {
+public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends CollectionRegistry<E, C>
+		implements List<E> {
 
-	public ObservableList() {
-		this(ArrayList::new, new DefaultEventDispatcher<>());
-	}
-
-	public ObservableList(@NonNull Supplier<? extends List<ElementRegistration<E>>> containerSupplier,
-			@NonNull EventDispatcher<ChangeEvent<E>> eventDispatcher) {
-		super(containerSupplier, eventDispatcher);
+	public ListRegistry(@NonNull Supplier<? extends C> containerSupplier,
+			@NonNull EventPublishService<ChangeEvent<E>> eventPublishService) {
+		super(containerSupplier, eventPublishService);
 	}
 
 	@Override
 	public final boolean addAll(int index, Collection<? extends E> c) {
 		return !registers(c, (list, elements) -> {
 			list.addAll(index, elements.toList());
-		}).getRegistrations().isEmpty();
+		}).getElements().isEmpty();
 	}
 
 	@Override
@@ -80,16 +74,17 @@ public class ObservableList<E> extends ObservableCollection<E, List<ElementRegis
 
 	@Override
 	public final ListIterator<E> listIterator() {
-		return toList().listIterator();
+		return getElements().toList().listIterator();
 	}
 
 	@Override
 	public final ListIterator<E> listIterator(int index) {
-		return toList().listIterator(index);
+		return getElements().toList().listIterator(index);
 	}
 
 	@Override
 	public final List<E> subList(int fromIndex, int toIndex) {
-		return toList().subList(fromIndex, toIndex);
+		return getElements().toList().subList(fromIndex, toIndex);
 	}
+
 }

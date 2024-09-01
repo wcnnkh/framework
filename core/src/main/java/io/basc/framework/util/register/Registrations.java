@@ -4,21 +4,17 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.function.ConsumeProcessor;
 
 @FunctionalInterface
-public interface Registrations<T extends Registration> extends Registration {
-	/**
-	 * 获取所有的注册
-	 * 
-	 * @return
-	 */
-	Elements<T> getRegistrations();
+public interface Registrations<R extends Registration> extends Registration {
+
+	Elements<R> getElements();
 
 	@Override
 	default boolean isInvalid() {
-		return getRegistrations().allMatch(Registration::isInvalid);
+		return getElements().allMatch(Registration::isInvalid);
 	}
 
 	@Override
 	default void deregister() throws RegistrationException {
-		ConsumeProcessor.consumeAll(getRegistrations().reverse(), Registration::deregister);
+		ConsumeProcessor.consumeAll(getElements().reverse(), Registration::deregister);
 	}
 }

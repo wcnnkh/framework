@@ -5,61 +5,57 @@ import java.util.function.Predicate;
 
 import io.basc.framework.util.Elements;
 
-public class PageWrapper<K, T, W extends Page<K, T>> extends CursorWrapper<K, T, W> implements Page<K, T> {
+public interface PageWrapper<K, T, W extends Page<K, T>> extends CursorWrapper<K, T, W>, Page<K, T> {
 
-	public PageWrapper(W wrappedTarget) {
-		super(wrappedTarget);
+	@Override
+	default <TT> Page<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return getSource().convert(elementsConverter);
 	}
 
 	@Override
-	public <TT> Page<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(elementsConverter);
-	}
-
-	@Override
-	public <TK, TT> Page<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
+	default <TK, TT> Page<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(cursorIdConverter, elementsConverter);
+		return getSource().convert(cursorIdConverter, elementsConverter);
 	}
 
 	@Override
-	public Page<K, T> filter(Predicate<? super T> predicate) {
-		return wrappedTarget.filter(predicate);
+	default Page<K, T> filter(Predicate<? super T> predicate) {
+		return getSource().filter(predicate);
 	}
 
 	@Override
-	public <TT> Page<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		return wrappedTarget.flatMap(mapper);
+	default <TT> Page<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+		return getSource().flatMap(mapper);
 	}
 
 	@Override
-	public boolean hasNext() {
-		return wrappedTarget.hasNext();
+	default boolean hasNext() {
+		return getSource().hasNext();
 	}
 
 	@Override
-	public long getTotal() {
-		return wrappedTarget.getTotal();
+	default long getTotal() {
+		return getSource().getTotal();
 	}
 
 	@Override
-	public long getPageSize() {
-		return wrappedTarget.getPageSize();
+	default long getPageSize() {
+		return getSource().getPageSize();
 	}
 
 	@Override
-	public Page<K, T> shared() {
-		return wrappedTarget.shared();
+	default Page<K, T> shared() {
+		return getSource().shared();
 	}
 
 	@Override
-	public <TT> Page<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(valueMapper);
+	default <TT> Page<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
+		return getSource().map(valueMapper);
 	}
 
 	@Override
-	public <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
+	default <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
 			Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(keyMapper, valueMapper);
+		return getSource().map(keyMapper, valueMapper);
 	}
 }

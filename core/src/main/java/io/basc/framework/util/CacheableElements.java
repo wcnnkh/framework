@@ -13,13 +13,14 @@ import lombok.NonNull;
 public class CacheableElements<E, C extends Collection<E>>
 		implements ServiceLoader<E>, CollectionElementsWrapper<E, C>, Serializable {
 	private static final long serialVersionUID = 1L;
-	@NonNull
-	private final transient Streamable<E> streamable;
+	private volatile C cached;
 	@NonNull
 	private final transient Collector<? super E, ?, C> collector;
-	private volatile C cached;
+	@NonNull
+	private final transient Streamable<? extends E> streamable;
 
-	public CacheableElements(@NonNull Streamable<E> streamable, @NonNull Collector<? super E, ?, C> collector) {
+	public CacheableElements(@NonNull Streamable<? extends E> streamable,
+			@NonNull Collector<? super E, ?, C> collector) {
 		this.streamable = streamable;
 		this.collector = collector;
 	}
@@ -27,36 +28,6 @@ public class CacheableElements<E, C extends Collection<E>>
 	@Override
 	public ServiceLoader<E> cacheable() {
 		return this;
-	}
-
-	@Override
-	public C getSource() {
-		if (cached == null) {
-			reload(false);
-		}
-		return cached;
-	}
-
-	@Override
-	public void reload() {
-		reload(true);
-	}
-
-	public void reload(boolean force) {
-		if (collector == null || streamable == null) {
-			return;
-		}
-
-		synchronized (this) {
-			if (cached == null || force) {
-				cached = streamable.collect(collector);
-			}
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		return getSource().hashCode();
 	}
 
 	@Override
@@ -73,12 +44,16 @@ public class CacheableElements<E, C extends Collection<E>>
 	}
 
 	@Override
-	public String toString() {
-		return getSource().toString();
+	public C getSource() {
+		if (cached == null) {
+			reload(false);
+		}
+		return cached;
 	}
 
-	private void writeObject(ObjectOutputStream output) throws IOException {
-		output.writeObject(getSource());
+	@Override
+	public int hashCode() {
+		return getSource().hashCode();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -87,7 +62,37 @@ public class CacheableElements<E, C extends Collection<E>>
 	}
 
 	@Override
+	public void reload() {
+		reload(true);
+	}
+
+	public boolean reload(boolean force) {
+		if (collector == null || streamable == null) {
+			return false;
+		}
+
+		if(cached == null || force) {
+			synchronized (this) {
+				if (cached == null || force) {
+					cached = streamable.collect(collector);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public Stream<E> stream() {
 		return getSource().stream();
+	}
+
+	@Override
+	public String toString() {
+		return getSource().toString();
+	}
+
+	private void writeObject(ObjectOutputStream output) throws IOException {
+		output.writeObject(getSource());
 	}
 }

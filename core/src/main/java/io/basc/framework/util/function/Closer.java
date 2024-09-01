@@ -1,6 +1,4 @@
-package io.basc.framework.util;
-
-import io.basc.framework.util.function.ConsumeProcessor;
+package io.basc.framework.util.function;
 
 public interface Closer<T, E extends Throwable> {
 	void close(T source) throws E;

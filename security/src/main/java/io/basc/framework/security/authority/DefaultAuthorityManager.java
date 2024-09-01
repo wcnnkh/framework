@@ -16,7 +16,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
-import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 
 public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
@@ -126,7 +126,7 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 
 			authorityMap.put(authority.getId(), authority);
 		}
-		return LimitedRegistration.of(() -> unregister(authority));
+		return StandardRegistration.of(() -> unregister(authority));
 	}
 
 	public List<T> getParentList(String id, Predicate<T> authorityFilter) {

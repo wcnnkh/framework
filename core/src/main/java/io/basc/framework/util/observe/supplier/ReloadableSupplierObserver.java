@@ -22,14 +22,18 @@ public class ReloadableSupplierObserver<T> implements Supplier<T>, Reloadable {
 		reload(true);
 	}
 
-	public void reload(boolean forceUpdate) {
-		synchronized (this) {
-			if (cache == null || forceUpdate) {
-				T old = cache;
-				cache = supplier.get();
-				touchEvent(old, cache);
+	public boolean reload(boolean forceUpdate) {
+		if (cache == null || forceUpdate) {
+			synchronized (this) {
+				if (cache == null || forceUpdate) {
+					T old = cache;
+					cache = supplier.get();
+					touchEvent(old, cache);
+					return true;
+				}
 			}
 		}
+		return false;
 	}
 
 	private void touchEvent(T parent, T current) {

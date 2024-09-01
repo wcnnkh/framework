@@ -5,7 +5,7 @@ import java.util.TreeMap;
 import io.basc.framework.transform.ReversibleTransformer;
 import io.basc.framework.transform.Transformer;
 import io.basc.framework.transform.factory.config.ReversibleTransformerRegistry;
-import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 
 public class DefaultReversibleTransformerFactory<S, E extends Throwable> extends DefaultTransformerFactory<S, E>
@@ -31,6 +31,6 @@ public class DefaultReversibleTransformerFactory<S, E extends Throwable> extends
 	public <T> Registration registerReversibleTransformer(Class<T> targetType,
 			ReversibleTransformer<S, T, ? extends E> reversibleTransformer) {
 		this.reversibleTransformerMap = register(targetType, reversibleTransformer, reversibleTransformerMap);
-		return LimitedRegistration.of(() -> reversibleTransformerMap.remove(targetType));
+		return StandardRegistration.of(() -> reversibleTransformerMap.remove(targetType));
 	}
 }

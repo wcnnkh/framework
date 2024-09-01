@@ -12,7 +12,7 @@ import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.observe.ChangeType;
-import io.basc.framework.util.register.LimitedRegistration;
+import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.pattern.HttpPattern;
@@ -47,7 +47,7 @@ public class DefaultActionManager extends StandardBroadcastEventDispatcher<Chang
 			}
 
 			actionMap.put(action.getMethod(), action);
-			registration = LimitedRegistration.of(() -> {
+			registration = StandardRegistration.of(() -> {
 				synchronized (actionMap) {
 					actionMap.remove(action.getMethod());
 				}

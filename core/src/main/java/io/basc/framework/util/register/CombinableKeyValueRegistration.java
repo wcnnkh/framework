@@ -4,53 +4,47 @@ import java.util.function.BooleanSupplier;
 
 import io.basc.framework.util.Elements;
 
-public class CombinableKeyValueRegistration<K, V> extends CombinableRegistration<Registration>
-		implements KeyValueRegistration<K, V> {
-	private final KeyValueRegistration<K, V> keyValueRegistration;
+public class CombinableKeyValueRegistration<K, V, W extends KeyValueRegistration<K, V>>
+		extends CombinableRegistration<Registration> implements KeyValueRegistrationWrapper<K, V, W> {
+	private final W source;
 
-	public CombinableKeyValueRegistration(KeyValueRegistration<K, V> keyValueRegistration, Registration registration) {
+	public CombinableKeyValueRegistration(W source, Registration registration) {
 		super(Elements.singleton(registration));
-		this.keyValueRegistration = keyValueRegistration;
+		this.source = source;
 	}
 
-	protected CombinableKeyValueRegistration(CombinableKeyValueRegistration<K, V> combinableKeyValueRegistration) {
-		this(combinableKeyValueRegistration.keyValueRegistration, combinableKeyValueRegistration);
+	protected CombinableKeyValueRegistration(CombinableKeyValueRegistration<K, V, W> combinableKeyValueRegistration) {
+		this(combinableKeyValueRegistration.source, combinableKeyValueRegistration);
 	}
 
-	private CombinableKeyValueRegistration(KeyValueRegistration<K, V> keyValueRegistration,
-			CombinableRegistration<Registration> context) {
+	private CombinableKeyValueRegistration(W source, CombinableRegistration<Registration> context) {
 		super(context);
-		this.keyValueRegistration = keyValueRegistration;
+		this.source = source;
 	}
 
 	@Override
-	public K getKey() {
-		return keyValueRegistration.getKey();
-	}
-
-	@Override
-	public V getValue() {
-		return keyValueRegistration.getValue();
-	}
-
-	@Override
-	public CombinableKeyValueRegistration<K, V> and(Registration registration) {
-		return new CombinableKeyValueRegistration<>(keyValueRegistration, super.combine(registration));
+	public CombinableKeyValueRegistration<K, V, W> and(Registration registration) {
+		return new CombinableKeyValueRegistration<>(source, super.combine(registration));
 	}
 
 	@Override
 	public boolean isInvalid(BooleanSupplier checker) {
-		return super.isInvalid(() -> keyValueRegistration.isInvalid() && checker.getAsBoolean());
+		return super.isInvalid(() -> source.isInvalid() && checker.getAsBoolean());
 	}
 
 	@Override
 	public void deregister(Runnable runnable) throws RegistrationException {
 		super.deregister(() -> {
 			try {
-				keyValueRegistration.deregister();
+				source.deregister();
 			} finally {
 				runnable.run();
 			}
 		});
+	}
+
+	@Override
+	public W getSource() {
+		return source;
 	}
 }

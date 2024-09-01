@@ -6,66 +6,62 @@ import java.util.function.Predicate;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Wrapper;
 
-public class CursorWrapper<K, T, W extends Cursor<K, T>> extends Wrapper<W> implements Cursor<K, T> {
+public interface CursorWrapper<K, T, W extends Cursor<K, T>> extends Cursor<K, T>, Wrapper<W> {
 
-	public CursorWrapper(W wrappedTarget) {
-		super(wrappedTarget);
+	@Override
+	default K getCursorId() {
+		return getSource().getCursorId();
 	}
 
 	@Override
-	public K getCursorId() {
-		return wrappedTarget.getCursorId();
+	default Elements<T> getElements() {
+		return getSource().getElements();
 	}
 
 	@Override
-	public Elements<T> getElements() {
-		return wrappedTarget.getElements();
+	default boolean hasNext() {
+		return getSource().hasNext();
 	}
 
 	@Override
-	public boolean hasNext() {
-		return wrappedTarget.hasNext();
-	}
-
-	@Override
-	public <TK, TT> Cursor<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
+	default <TK, TT> Cursor<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
 			Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(keyMapper, valueMapper);
+		return getSource().map(keyMapper, valueMapper);
 	}
 
 	@Override
-	public <TT> Cursor<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
-		return wrappedTarget.map(valueMapper);
+	default <TT> Cursor<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
+		return getSource().map(valueMapper);
 	}
 
 	@Override
-	public Cursor<K, T> shared() {
-		return wrappedTarget.shared();
+	default Cursor<K, T> shared() {
+		return getSource().shared();
 	}
 
 	@Override
-	public K getNextCursorId() {
-		return wrappedTarget.getNextCursorId();
+	default K getNextCursorId() {
+		return getSource().getNextCursorId();
 	}
 
 	@Override
-	public <TT> Cursor<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(elementsConverter);
+	default <TT> Cursor<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return getSource().convert(elementsConverter);
 	}
 
 	@Override
-	public <TK, TT> Cursor<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
+	default <TK, TT> Cursor<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
 			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return wrappedTarget.convert(cursorIdConverter, elementsConverter);
+		return getSource().convert(cursorIdConverter, elementsConverter);
 	}
 
 	@Override
-	public Cursor<K, T> filter(Predicate<? super T> predicate) {
-		return wrappedTarget.filter(predicate);
+	default Cursor<K, T> filter(Predicate<? super T> predicate) {
+		return getSource().filter(predicate);
 	}
 
 	@Override
-	public <TT> Cursor<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		return wrappedTarget.flatMap(mapper);
+	default <TT> Cursor<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+		return getSource().flatMap(mapper);
 	}
 }

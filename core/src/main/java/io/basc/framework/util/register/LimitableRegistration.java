@@ -4,18 +4,21 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.BooleanSupplier;
 
 import io.basc.framework.util.concurrent.limit.Limiter;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.logging.LoggerFactory;
 import lombok.NonNull;
 
-public abstract class AbstractRegistration implements Registration {
+public abstract class LimitableRegistration implements Registration {
+	private static Logger logger = LoggerFactory.getLogger(LimitableRegistration.class);
 	@NonNull
 	private final Limiter limiter;
 
-	public AbstractRegistration(@NonNull Limiter limiter) {
+	public LimitableRegistration(@NonNull Limiter limiter) {
 		this.limiter = limiter;
 	}
 
-	public AbstractRegistration(@NonNull AbstractRegistration abstractRegistration) {
-		this.limiter = abstractRegistration.limiter;
+	public LimitableRegistration(@NonNull LimitableRegistration limitableRegistration) {
+		this.limiter = limitableRegistration.limiter;
 	}
 
 	/**
@@ -55,5 +58,14 @@ public abstract class AbstractRegistration implements Registration {
 	}
 
 	@Override
-	public abstract boolean isInvalid();
+	public final void deregister() throws RegistrationException {
+		deregister(() -> {
+			logger.trace("Execute {}#deregister", LimitableRegistration.this.getClass());
+		});
+	}
+
+	@Override
+	public final boolean isInvalid() {
+		return isInvalid(Registration.super::isInvalid);
+	}
 }

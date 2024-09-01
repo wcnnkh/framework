@@ -6,8 +6,8 @@ import io.basc.framework.util.Elements;
 import lombok.NonNull;
 
 public class CombinablePayloadRegistration<S, W extends PayloadRegistration<S>>
-		extends CombinableRegistration<Registration> implements PayloadRegistration<S> {
-	protected final W source;
+		extends CombinableRegistration<Registration> implements PayloadRegistrationWrapper<S, W> {
+	private final W source;
 
 	public CombinablePayloadRegistration(W source, Registration registration) {
 		super(Elements.singleton(registration));
@@ -52,6 +52,11 @@ public class CombinablePayloadRegistration<S, W extends PayloadRegistration<S>>
 				runnable.run();
 			}
 		});
+	}
+
+	@Override
+	public W getSource() {
+		return source;
 	}
 
 	@Override

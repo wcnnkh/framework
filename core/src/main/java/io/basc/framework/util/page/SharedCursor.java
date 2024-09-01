@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ListElements;
+import io.basc.framework.util.StandardListElements;
 
 public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -21,7 +22,7 @@ public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializ
 	}
 
 	public SharedCursor(K cursorId, List<T> list, K nextCursorId) {
-		super(cursorId, new ListElements<>(list), nextCursorId);
+		super(cursorId, new StandardListElements<>(list), nextCursorId);
 	}
 
 	public SharedCursor(Cursor<K, T> cursor) {
@@ -39,6 +40,6 @@ public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializ
 	}
 
 	public void setList(List<T> list) {
-		super.setElements(new ListElements<>(list));
+		super.setElements(new StandardListElements<>(list));
 	}
 }

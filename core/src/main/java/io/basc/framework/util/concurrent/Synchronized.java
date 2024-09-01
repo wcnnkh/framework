@@ -1,9 +1,11 @@
-package io.basc.framework.util;
+package io.basc.framework.util.concurrent;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import io.basc.framework.util.Assert;
 
 public final class Synchronized implements InvocationHandler, Serializable {
 	private static final long serialVersionUID = 1L;

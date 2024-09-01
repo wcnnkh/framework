@@ -1,4 +1,4 @@
-package io.basc.framework.util.observe.container;
+package io.basc.framework.util.register.container;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,17 +19,14 @@ import io.basc.framework.util.event.EventRegistrationException;
 import io.basc.framework.util.observe.ChangeEvent;
 import io.basc.framework.util.observe.Observable;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.container.ElementRegistration;
-import io.basc.framework.util.register.container.ElementRegistry;
-import io.basc.framework.util.register.container.MultiValueRegistry;
 import lombok.NonNull;
 
-public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistration<V>>, M extends Map<K, ElementRegistry<V, L>>>
+public class MultiValueMapRegistry<K, V, L extends Collection<ElementRegistration<V>>, M extends Map<K, ElementRegistry<V, L>>>
 		extends MultiValueRegistry<K, V, L, M> implements Observable<ChangeEvent<KeyValue<K, V>>>, MultiValueMap<K, V> {
 	@NonNull
 	private final EventDispatcher<ChangeEvent<KeyValue<K, V>>> eventDispatcher;
 
-	public ObservableMultiValueMap(@NonNull Supplier<? extends M> containerSupplier,
+	public MultiValueMapRegistry(@NonNull Supplier<? extends M> containerSupplier,
 			@NonNull Supplier<? extends L> valuesSupplier,
 			@NonNull EventDispatcher<ChangeEvent<KeyValue<K, V>>> eventDispatcher) {
 		super(containerSupplier, valuesSupplier, eventDispatcher);
@@ -72,7 +69,7 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 	@Override
 	public final List<V> get(Object key) {
 		ElementRegistry<V, L> registry = getElementRegistry(key);
-		return registry == null ? null : registry.toList();
+		return registry == null ? null : registry.getElements().toList();
 	}
 
 	@Override
@@ -84,12 +81,12 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 				values = newValues(key);
 				map.put(key, values);
 			} else {
-				oldValues = values.toList();
+				oldValues = values.getElements().toList();
 				// 清空所有
-				values.clear();
+				values.getRegistrations().deregister();
 			}
 
-			values.addAll(value);
+			values.registers(value);
 			return oldValues;
 		});
 	}
@@ -107,9 +104,9 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 			}
 
 			try {
-				return values.toList();
+				return values.getElements().toList();
 			} finally {
-				values.clear();
+				values.getRegistrations().deregister();
 			}
 		});
 	}
@@ -124,9 +121,9 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 					map.put(entry.getKey(), values);
 				} else {
 					// 清空所有
-					values.clear();
+					values.getRegistrations().deregister();
 				}
-				values.addAll(entry.getValue());
+				values.registers(entry.getValue());
 			}
 			return null;
 		});
@@ -145,13 +142,14 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 	@Override
 	public final Collection<List<V>> values() {
 		return read((map) -> map == null ? Collections.emptyList()
-				: map.values().stream().map((e) -> e.toList()).collect(Collectors.toList()));
+				: map.values().stream().map((e) -> e.getElements().toList()).collect(Collectors.toList()));
 	}
 
 	@Override
 	public final Set<Entry<K, List<V>>> entrySet() {
 		return read((map) -> map == null ? Collections.emptySet()
-				: map.entrySet().stream().map((e) -> new ReadOnlyEntry<>(e.getKey(), (List<V>) e.getValue().toList()))
+				: map.entrySet().stream()
+						.map((e) -> new ReadOnlyEntry<>(e.getKey(), (List<V>) e.getValue().getElements().toList()))
 						.collect(Collectors.toSet()));
 	}
 
@@ -180,7 +178,7 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 				values = newValues(key);
 				map.put(key, values);
 			}
-			values.add(value);
+			values.register(value);
 			return null;
 		});
 	}
@@ -193,9 +191,9 @@ public class ObservableMultiValueMap<K, V, L extends Collection<ElementRegistrat
 				values = newValues(key);
 				map.put(key, values);
 			} else {
-				values.clear();
+				values.getRegistrations().deregister();
 			}
-			values.add(value);
+			values.register(value);
 			return null;
 		});
 	}

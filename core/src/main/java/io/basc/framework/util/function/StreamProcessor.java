@@ -1,7 +1,5 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.util.Closer;
-
 public interface StreamProcessor<S, T, E extends Throwable> extends Processor<S, T, E>, Closer<T, E> {
 
 	@Override

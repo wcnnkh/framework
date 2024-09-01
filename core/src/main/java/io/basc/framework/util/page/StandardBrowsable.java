@@ -6,12 +6,18 @@ import java.util.function.Predicate;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Elements;
 
-public class StandardBrowsable<K, T> extends CursorWrapper<K, T, Cursor<K, T>> implements Browsable<K, T> {
+public class StandardBrowsable<K, T> implements CursorWrapper<K, T, Cursor<K, T>>, Browsable<K, T> {
+	private final Cursor<K, T> source;
 	private final Function<K, ? extends Cursor<K, T>> processor;
 
-	public StandardBrowsable(Cursor<K, T> pageable, Function<K, ? extends Cursor<K, T>> processor) {
-		super(pageable);
+	public StandardBrowsable(Cursor<K, T> source, Function<K, ? extends Cursor<K, T>> processor) {
+		this.source = source;
 		this.processor = processor;
+	}
+
+	@Override
+	public Cursor<K, T> getSource() {
+		return source;
 	}
 
 	public StandardBrowsable(K cursorId, Function<K, ? extends Cursor<K, T>> processor) {

@@ -166,12 +166,18 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		return new InheritableScheduledExecutorService<>(this, scheduledExecutorService);
 	}
 
-	private static class InhertableExecutor<X, Y, W extends Executor> extends Wrapper<W> implements Executor {
+	private static class InhertableExecutor<X, Y, W extends Executor> implements Executor, Wrapper<W> {
+		private final W source;
 		protected final InheriterDecorator<X, Y> inheriterDecorator;
 
-		public InhertableExecutor(InheriterDecorator<X, Y> inheriterDecorator, W wrappedTarget) {
-			super(wrappedTarget);
+		public InhertableExecutor(InheriterDecorator<X, Y> inheriterDecorator, W source) {
 			this.inheriterDecorator = inheriterDecorator;
+			this.source = source;
+		}
+
+		@Override
+		public W getSource() {
+			return source;
 		}
 
 		public boolean isNested(InheriterDecorator<?, ?> inheriterDecorator) {
@@ -179,75 +185,75 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 				return true;
 			}
 
-			if (this.wrappedTarget instanceof InhertableExecutor) {
-				return ((InhertableExecutor<?, ?, ?>) this.wrappedTarget).isNested(inheriterDecorator);
+			if (this.source instanceof InhertableExecutor) {
+				return ((InhertableExecutor<?, ?, ?>) this.source).isNested(inheriterDecorator);
 			}
 			return false;
 		}
 
 		@Override
 		public void execute(Runnable command) {
-			wrappedTarget.execute(inheriterDecorator.decorateRunnable(command));
+			source.execute(inheriterDecorator.decorateRunnable(command));
 		}
 	}
 
 	private static class InheritableExecutorService<X, Y, W extends ExecutorService> extends InhertableExecutor<X, Y, W>
 			implements ExecutorService {
 
-		public InheritableExecutorService(InheriterDecorator<X, Y> inheriterDecorator, W wrappedTarget) {
-			super(inheriterDecorator, wrappedTarget);
+		public InheritableExecutorService(InheriterDecorator<X, Y> inheriterDecorator, W source) {
+			super(inheriterDecorator, source);
 		}
 
 		@Override
 		public void shutdown() {
-			wrappedTarget.shutdown();
+			getSource().shutdown();
 		}
 
 		@Override
 		public List<Runnable> shutdownNow() {
-			return wrappedTarget.shutdownNow();
+			return getSource().shutdownNow();
 		}
 
 		@Override
 		public boolean isShutdown() {
-			return wrappedTarget.isShutdown();
+			return getSource().isShutdown();
 		}
 
 		@Override
 		public boolean isTerminated() {
-			return wrappedTarget.isTerminated();
+			return getSource().isTerminated();
 		}
 
 		@Override
 		public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-			return wrappedTarget.awaitTermination(timeout, unit);
+			return getSource().awaitTermination(timeout, unit);
 		}
 
 		@Override
 		public <T> Future<T> submit(Callable<T> task) {
-			return wrappedTarget.submit(inheriterDecorator.decorateCallable(task));
+			return getSource().submit(inheriterDecorator.decorateCallable(task));
 		}
 
 		@Override
 		public <T> Future<T> submit(Runnable task, T result) {
-			return wrappedTarget.submit(inheriterDecorator.decorateRunnable(task), result);
+			return getSource().submit(inheriterDecorator.decorateRunnable(task), result);
 		}
 
 		@Override
 		public Future<?> submit(Runnable task) {
-			return wrappedTarget.submit(inheriterDecorator.decorateRunnable(task));
+			return getSource().submit(inheriterDecorator.decorateRunnable(task));
 		}
 
 		@Override
 		public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-			return wrappedTarget.invokeAll(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
+			return getSource().invokeAll(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
 					: tasks.stream().map((e) -> inheriterDecorator.decorateCallable(e)).collect(Collectors.toList()));
 		}
 
 		@Override
 		public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
 				throws InterruptedException {
-			return wrappedTarget.invokeAll(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
+			return getSource().invokeAll(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
 					: tasks.stream().map((e) -> inheriterDecorator.decorateCallable(e)).collect(Collectors.toList()),
 					timeout, unit);
 		}
@@ -255,14 +261,14 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		@Override
 		public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
 				throws InterruptedException, ExecutionException {
-			return wrappedTarget.invokeAny(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
+			return getSource().invokeAny(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
 					: tasks.stream().map((e) -> inheriterDecorator.decorateCallable(e)).collect(Collectors.toList()));
 		}
 
 		@Override
 		public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
 				throws InterruptedException, ExecutionException, TimeoutException {
-			return wrappedTarget.invokeAny(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
+			return getSource().invokeAny(CollectionUtils.isEmpty(tasks) ? Collections.emptyList()
 					: tasks.stream().map((e) -> inheriterDecorator.decorateCallable(e)).collect(Collectors.toList()),
 					timeout, unit);
 		}
@@ -277,17 +283,17 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 
 		@Override
 		public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-			return wrappedTarget.schedule(inheriterDecorator.decorateRunnable(command), delay, unit);
+			return getSource().schedule(inheriterDecorator.decorateRunnable(command), delay, unit);
 		}
 
 		@Override
 		public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-			return wrappedTarget.schedule(inheriterDecorator.decorateCallable(callable), delay, unit);
+			return getSource().schedule(inheriterDecorator.decorateCallable(callable), delay, unit);
 		}
 
 		@Override
 		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-			return wrappedTarget.scheduleAtFixedRate(inheriterDecorator.decorateRunnable(command), initialDelay, period,
+			return getSource().scheduleAtFixedRate(inheriterDecorator.decorateRunnable(command), initialDelay, period,
 					unit);
 		}
 
