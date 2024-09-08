@@ -2,7 +2,7 @@ package io.basc.framework.observe.value;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeEvent;
 
 public class AtomicObservableValue<V> extends AbstractObservableValue<V> {
 	private AtomicReference<V> valueReference = new AtomicReference<>();

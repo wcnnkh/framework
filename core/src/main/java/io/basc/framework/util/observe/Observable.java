@@ -1,13 +1,18 @@
 package io.basc.framework.util.observe;
 
-import io.basc.framework.util.event.EventRegistry;
-
 /**
- * 可观察的定义
+ * 可观测的
  * 
  * @author shuchaowen
  *
- * @param <E>
+ * @param <T>
  */
-public interface Observable<E> extends EventRegistry<E> {
+public interface Observable<T> {
+	/**
+	 * 注册一个观察者
+	 * 
+	 * @param listener
+	 * @return
+	 */
+	Registration registerListener(Listener<? super T> listener);
 }

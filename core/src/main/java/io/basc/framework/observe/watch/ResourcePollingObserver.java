@@ -14,8 +14,8 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.event.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
-import io.basc.framework.util.observe.ChangeEvent;
-import io.basc.framework.util.observe.ChangeType;
+import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeType;
 import lombok.NonNull;
 
 /**

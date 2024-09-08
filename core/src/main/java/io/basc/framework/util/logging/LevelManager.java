@@ -1,15 +1,15 @@
 package io.basc.framework.util.logging;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.observe.properties.DynamicMap;
+import io.basc.framework.util.KeyValue;
+import io.basc.framework.util.event.EventPublishService;
+import io.basc.framework.util.match.StringMatcher;
+import io.basc.framework.util.match.StringMatchers;
+import io.basc.framework.util.observe.container.TreeMapRegistry;
+import io.basc.framework.util.observe.event.ChangeEvent;
+import lombok.NonNull;
 
 /**
  * 动态管理日志等级管理
@@ -17,42 +17,20 @@ import io.basc.framework.observe.properties.DynamicMap;
  * @author wcnnkh
  *
  */
-public class LevelManager extends DynamicMap<String, Level> {
-	private static final Function<Properties, Map<String, Level>> CONVERTER = (properties) -> {
-		Map<String, Level> map = new HashMap<>();
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			Object key = entry.getKey();
-			if (key == null) {
-				continue;
-			}
+public final class LevelManager extends TreeMapRegistry<String, Level> {
+	private StringMatcher nameMatcher = StringMatchers.PREFIX;
 
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
-			}
+	public LevelManager(@NonNull EventPublishService<ChangeEvent<KeyValue<String, Level>>> eventPublishService) {
+		super(eventPublishService);
+	}
 
-			Level level = CustomLevel.parse(value.toString());
-			if (level == null) {
-				continue;
-			}
+	public StringMatcher getNameMatcher() {
+		return nameMatcher;
+	}
 
-			map.put(String.valueOf(key), level);
-		}
-		return map;
-	};
-
-	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
-		public int compare(String o1, String o2) {
-			if (o1.equals(o2)) {
-				return 0;
-			}
-
-			return o1.length() > o2.length() ? -1 : 1;
-		};
-	};
-
-	public LevelManager() {
-		super(new TreeMap<>(LEVEL_NAME_COMPARATOR), CONVERTER);
+	public void setNameMatcher(StringMatcher nameMatcher) {
+		this.nameMatcher = nameMatcher;
+		setComparator(nameMatcher);
 	}
 
 	public boolean exists(String name) {
@@ -61,7 +39,7 @@ public class LevelManager extends DynamicMap<String, Level> {
 		}
 
 		for (String key : keySet()) {
-			if (name.startsWith(key)) {
+			if (nameMatcher.match(key, name)) {
 				return true;
 			}
 		}
@@ -77,7 +55,7 @@ public class LevelManager extends DynamicMap<String, Level> {
 		}
 
 		for (Entry<String, Level> entry : entrySet()) {
-			if (name.startsWith(entry.getKey())) {
+			if (nameMatcher.match(entry.getKey(), name)) {
 				return entry.getValue();
 			}
 		}

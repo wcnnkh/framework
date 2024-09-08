@@ -10,6 +10,7 @@ import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.event.support.DefaultBroadcastEventDispatcher;
 import io.basc.framework.util.function.ConsumeProcessor;
+import io.basc.framework.util.match.StringMatcher;
 import io.basc.framework.util.register.Registration;
 
 public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
@@ -44,6 +45,19 @@ public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelM
 
 		if (configured.compareAndSet(false, true) && loggerFactory != null) {
 			setLoggerFactory(loggerFactory);
+		}
+	}
+
+	public void setNameMatcher(StringMatcher nameMatcher) {
+		LevelManager levelManager = new LevelManager(nameMatcher, (events) -> {
+		});
+		
+		synchronized (this) {
+			
+			
+			if(levelManager == null) {
+				levelManager = 
+			}
 		}
 	}
 

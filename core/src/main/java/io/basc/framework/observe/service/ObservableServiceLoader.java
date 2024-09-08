@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.observe.container.ObservableSet;
+import io.basc.framework.util.observe.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.PayloadRegistration;
 import lombok.Getter;
 
 /**

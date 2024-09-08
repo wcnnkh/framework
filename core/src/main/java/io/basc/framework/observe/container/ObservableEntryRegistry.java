@@ -9,14 +9,14 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.event.EventRegistrationException;
 import io.basc.framework.util.event.batch.BatchEventListener;
-import io.basc.framework.util.observe.ChangeEvent;
-import io.basc.framework.util.observe.ChangeType;
-import io.basc.framework.util.observe.Observable;
+import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.container.AtomicEntryRegistration;
+import io.basc.framework.util.observe.container.EntryRegistry;
+import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeType;
+import io.basc.framework.util.observe_old.Observable;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.Registrations;
-import io.basc.framework.util.register.container.AtomicEntryRegistration;
-import io.basc.framework.util.register.container.EntryRegistry;
 import lombok.NonNull;
 
 public class ObservableEntryRegistry<K, V, C extends Map<K, AtomicEntryRegistration<K, V>>> extends EntryRegistry<K, V, C>

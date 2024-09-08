@@ -10,7 +10,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ParentDiscover;
-import io.basc.framework.util.observe.Observable;
+import io.basc.framework.util.observe_old.Observable;
 
 public interface ApplicationContext
 		extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext>, ResourcePatternResolver,

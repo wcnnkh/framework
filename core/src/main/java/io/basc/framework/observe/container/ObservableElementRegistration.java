@@ -2,9 +2,9 @@ package io.basc.framework.observe.container;
 
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.observe.UpdateEvent;
-import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.container.AtomicElementRegistration;
+import io.basc.framework.util.observe.event.ChangeEvent;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.container.AtomicElementRegistration;
 import lombok.NonNull;
 
 public class ObservableElementRegistration<E> extends AtomicElementRegistration<E> {

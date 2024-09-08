@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import io.basc.framework.util.event.EventRegistrationException;
 import io.basc.framework.util.event.batch.BatchEventListener;
-import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeEvent;
 import io.basc.framework.util.register.Registration;
 import lombok.Data;
 

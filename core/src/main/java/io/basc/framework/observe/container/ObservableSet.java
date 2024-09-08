@@ -7,10 +7,10 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import io.basc.framework.observe.PublishService;
-import io.basc.framework.util.observe.ChangeEvent;
-import io.basc.framework.util.observe.Observer;
-import io.basc.framework.util.register.PayloadRegistration;
-import io.basc.framework.util.register.container.AtomicElementRegistration;
+import io.basc.framework.util.observe.container.AtomicElementRegistration;
+import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.observe_old.Observer;
 import lombok.NonNull;
 
 public class ObservableSet<E> extends ObservableElementRegistry<E, Set<AtomicElementRegistration<E>>>

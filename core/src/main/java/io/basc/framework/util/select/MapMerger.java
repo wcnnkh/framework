@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Merger;
 
 public class MapMerger<K, V> implements Merger<Map<K, V>> {
 	private static final MapMerger<?, ?> SINGLETON = new MapMerger<>();

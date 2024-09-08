@@ -3,9 +3,6 @@ package io.basc.framework.util;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import io.basc.framework.util.select.FlatMerger;
-import io.basc.framework.util.select.Merger;
-
 public class MergedElements<E> implements ElementsWrapper<E, Elements<E>> {
 	private static final int JOIN_MAX_LENGTH = Integer.max(4,
 			Integer.getInteger(MergedElements.class.getName() + ".maxLength", 256));

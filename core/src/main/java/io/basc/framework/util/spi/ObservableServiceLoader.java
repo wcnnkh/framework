@@ -11,8 +11,8 @@ import io.basc.framework.util.CacheableElements;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.observe.ChangeEvent;
-import io.basc.framework.util.observe.ChangeType;
+import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeType;
 import lombok.NonNull;
 
 public class ObservableServiceLoader<S> extends CacheableElements<S, Collection<S>> {

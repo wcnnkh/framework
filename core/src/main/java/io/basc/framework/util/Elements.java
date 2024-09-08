@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.select.Dispatcher;
 
 /**
  * 和{@link Streamable}类似，但此接口可以返回无需关闭的{@link Iterator}
@@ -247,15 +246,5 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 			throw new IndexOutOfBoundsException("index out of range: " + index);
 		}
 		return indexed.getElement();
-	}
-
-	/**
-	 * 根据指定的分发器来分发
-	 * 
-	 * @param dispatcher
-	 * @return
-	 */
-	default Elements<E> dispatch(Dispatcher<E> dispatcher) {
-		return dispatcher.dispatch(this);
 	}
 }

@@ -11,8 +11,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.select.Dispatcher;
-
 public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, StreamableWrapper<E, W> {
 
 	@Override
@@ -128,10 +126,5 @@ public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, 
 	@Override
 	default void forEach(Consumer<? super E> action) {
 		getSource().forEach(action);
-	}
-
-	@Override
-	default Elements<E> dispatch(Dispatcher<E> dispatcher) {
-		return getSource().dispatch(dispatcher);
 	}
 }

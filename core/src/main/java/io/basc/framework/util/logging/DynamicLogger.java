@@ -7,9 +7,10 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.event.EventListener;
 
-public class DynamicLogger implements Logger, EventListener<LevelManager> {
+public class DynamicLogger implements Logger, EventListener<LevelManager>, Wrapper<Logger> {
 	private static final boolean NEED_TO_INFER_CALLER = Boolean
 			.getBoolean("io.basc.framework.logger.need.to.infer.caller");
 
@@ -122,14 +123,15 @@ public class DynamicLogger implements Logger, EventListener<LevelManager> {
 	public void onEvent(LevelManager event) {
 		Level oldLevel = getLevel();
 		Level newLevel = event.getLevel(getName());
-		if (!ObjectUtils.equals(oldLevel, newLevel)) {
-			info("Log level changed from {} to {}", oldLevel, newLevel);
-			setLevel(newLevel);
+		if (ObjectUtils.equals(oldLevel, newLevel)) {
+			return;
 		}
+		setLevel(newLevel);
 	}
 
 	@Override
 	public void setLevel(Level level) {
+		info("Log level changed from {} to {}", getLevel(), level);
 		this.level = level;
 		try {
 			source.setLevel(level);

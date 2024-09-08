@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.observe.ChangeType;
+import io.basc.framework.util.observe.event.ChangeType;
 
 public class StandardObservableMap<K, V> extends AbstractObservableMap<K, V> {
 	private final ReadWriteLock readWriteLock;

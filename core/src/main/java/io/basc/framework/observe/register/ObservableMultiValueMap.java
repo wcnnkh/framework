@@ -17,10 +17,10 @@ import io.basc.framework.observe.container.AbstractServiceRegistry;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.util.register.BatchRegistration;
-import io.basc.framework.util.register.PayloadRegistration;
+import io.basc.framework.util.observe.BatchRegistration;
+import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.RegistrationException;
 import lombok.NonNull;
 
 public class ObservableMultiValueMap<K, V, L extends ObservableMultiValue<K, V>, M extends Map<K, L>>

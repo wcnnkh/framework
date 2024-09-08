@@ -17,11 +17,11 @@ import io.basc.framework.observe.container.AbstractServiceRegistry;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.concurrent.limit.DisposableLimiter;
-import io.basc.framework.util.observe.ChangeType;
+import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.event.ChangeType;
+import io.basc.framework.util.observe.register.PayloadRegistration;
 import io.basc.framework.util.register.PayloadBatchRegistration;
-import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.register.RegistrationException;
 import lombok.NonNull;
 
 public class EntryRegistry<K, V, M extends Map<K, PayloadRegistration<Entry<K, V>>>>

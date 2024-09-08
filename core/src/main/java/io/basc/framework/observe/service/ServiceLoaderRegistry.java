@@ -4,13 +4,13 @@ import io.basc.framework.observe.register.ObservableList;
 import io.basc.framework.observe.register.RegistryEvent;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.observe.ChangeEvent;
-import io.basc.framework.util.observe.ChangeType;
-import io.basc.framework.util.observe.Observer;
-import io.basc.framework.util.register.PayloadRegistration;
-import io.basc.framework.util.register.BatchRegistration;
-import io.basc.framework.util.register.BrowseableRegistry;
-import io.basc.framework.util.register.RegistrationException;
+import io.basc.framework.util.observe.BatchRegistration;
+import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeType;
+import io.basc.framework.util.observe.register.BrowseableRegistry;
+import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.observe_old.Observer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

@@ -15,7 +15,7 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.event.EventListener;
-import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeEvent;
 
 public class RefreshablePeerEurekaNodes extends PeerEurekaNodes
 		implements EventListener<ChangeEvent<Elements<String>>> {

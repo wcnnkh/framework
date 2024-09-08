@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ListElements;
-import io.basc.framework.util.observe.ChangeType;
+import io.basc.framework.util.observe.event.ChangeType;
+import io.basc.framework.util.observe.register.PayloadRegistration;
 import io.basc.framework.util.register.PayloadBatchRegistration;
-import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class ObservableList<E> extends ObservableCollection<E, List<PayloadRegistration<E>>> implements List<E> {

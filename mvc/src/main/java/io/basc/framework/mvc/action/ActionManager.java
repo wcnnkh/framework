@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.event.EventListener;
 import io.basc.framework.util.event.broadcast.BroadcastEventRegistry;
-import io.basc.framework.util.observe.ChangeEvent;
+import io.basc.framework.util.observe.event.ChangeEvent;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 
