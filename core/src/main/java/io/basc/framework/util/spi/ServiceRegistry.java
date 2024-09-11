@@ -10,11 +10,11 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.Reloadable;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceLoaderWrapper;
-import io.basc.framework.util.observe.RegistrationException;
-import io.basc.framework.util.observe.Registry;
 import io.basc.framework.util.observe.event.ChangeEvent;
 import io.basc.framework.util.observe.event.ChangeType;
 import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.observe.register.RegistrationException;
+import io.basc.framework.util.observe.register.Registry;
 import io.basc.framework.util.observe.register.StandardPayloadRegistration;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.Registrations;
@@ -96,7 +96,7 @@ public class ServiceRegistry<S> implements Registry<S>, ServiceLoaderWrapper<S, 
 				Elements<PayloadRegistration<S>> elements = Elements.of(this.iterable).map((e) -> {
 					Registration registration = ServiceRegistry.this.register(e);
 					if (registration.isInvalid()) {
-						return EmptyPayloadRegistration.empty();
+						return PayloadCancelled.empty();
 					}
 
 					S payload = e;

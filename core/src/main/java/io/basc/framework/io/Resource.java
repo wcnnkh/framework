@@ -10,7 +10,7 @@ import java.net.URL;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.observe.poll.Variable;
+import io.basc.framework.util.observe.watch.Variable;
 
 public interface Resource extends InputStreamSource, Variable {
 	/**

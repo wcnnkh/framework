@@ -11,11 +11,16 @@ import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 
 public interface Registration {
-	/**
-	 * 是否可以取消 returns {@code true} if and only if the operation can be cancelled via
-	 * {@link #cancel(boolean)}.
-	 */
-	boolean isCancellable();
+	static final Registration CANCELLED = new Cancelled();
+
+	default Registration and(Registration registration) {
+		if (registration == null || registration.isCancelled()) {
+			return this;
+		}
+
+		Elements<Registration> elements = Elements.forArray(this, registration);
+		return Registrations.of(elements);
+	}
 
 	/**
 	 * 取消
@@ -25,20 +30,17 @@ public interface Registration {
 	boolean cancel();
 
 	/**
+	 * 是否可以取消 returns {@code true} if and only if the operation can be cancelled via
+	 * {@link #cancel()}.
+	 */
+	boolean isCancellable();
+
+	/**
 	 * 是否已取消
 	 * 
 	 * @return
 	 */
 	boolean isCancelled();
-
-	default Registration and(Registration registration) {
-		if (registration == null || registration == EMPTY) {
-			return this;
-		}
-		return new LimitableRegistrations<>(Elements.forArray(this, registration));
-	}
-
-	static final Registration EMPTY = new EmptyRegistration();
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
 			Iterable<? extends S> iterable, Processor<? super S, ? extends E, ? extends X> register) throws X {
@@ -81,6 +83,8 @@ public interface Registration {
 			}
 			registrations.add(registration);
 		}
-		return new LimitableRegistrations<>(Elements.of(registrations));
+
+		Elements<E> elements = Elements.of(registrations);
+		return () -> elements;
 	}
 }

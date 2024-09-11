@@ -18,7 +18,7 @@ public interface KeyValueRegistration<K, V> extends PayloadRegistration<KeyValue
 
 	@Override
 	default KeyValueRegistration<K, V> and(Registration registration) {
-		if (registration == null || registration == EMPTY) {
+		if (registration == null || registration.isCancelled()) {
 			return this;
 		}
 		return new StandardKeyValueRegistrationWrapper<>(this, Elements.singleton(registration));

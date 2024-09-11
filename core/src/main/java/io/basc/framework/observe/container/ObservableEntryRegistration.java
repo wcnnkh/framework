@@ -3,10 +3,10 @@ package io.basc.framework.observe.container;
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.observe.UpdateEvent;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.observe.RegistrationException;
-import io.basc.framework.util.observe.container.AtomicEntryRegistration;
 import io.basc.framework.util.observe.event.ChangeEvent;
 import io.basc.framework.util.observe.event.ChangeType;
+import io.basc.framework.util.observe.register.RegistrationException;
+import io.basc.framework.util.observe.register.container.AtomicEntryRegistration;
 import lombok.NonNull;
 
 public class ObservableEntryRegistration<K, V> extends AtomicEntryRegistration<K, V> {

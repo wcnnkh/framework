@@ -1,11 +1,16 @@
 package io.basc.framework.util.observe.future;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import io.basc.framework.util.observe.Listenable;
-import io.basc.framework.util.observe.Receipt;
+public interface ListenableFuture<V> extends ListenableReceipt<ListenableFuture<? extends V>>, Future<V> {
 
-public interface ListenableFuture<V> extends Listenable<ListenableFuture<? extends V>>, Receipt, Future<V> {
+	@Override
+	default boolean cancel() {
+		return cancel(false);
+	}
 
 	/**
 	 * 立刻获取结果，如果还未执行完或失败则返回空。但成功的结果集也可能为空所以应该综合{@link #isSuccess()}的结果
@@ -13,4 +18,14 @@ public interface ListenableFuture<V> extends Listenable<ListenableFuture<? exten
 	 * @return
 	 */
 	V getNow();
+
+	@Override
+	default boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+		try {
+			get(timeout, unit);
+			return true;
+		} catch (ExecutionException | TimeoutException e) {
+			return false;
+		}
+	}
 }

@@ -11,7 +11,7 @@ import javax.jms.Session;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.Source;
-import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.register.RegistrationException;
 import io.basc.framework.util.register.Registration;
 
 public class SessionOperations<T extends Session, D extends Destination>

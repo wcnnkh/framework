@@ -1,7 +1,5 @@
 package io.basc.framework.util.observe;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * 可监听的
  * 
@@ -9,14 +7,29 @@ import java.util.concurrent.TimeUnit;
  *
  * @param <T>
  */
-public interface Listenable<T> extends Observable<T> {
-	/**
-	 * Waits for this future to be completed within the specified time limit.
-	 *
-	 * @return {@code true} if and only if the future was completed within the
-	 *         specified time limit
-	 *
-	 * @throws InterruptedException if the current thread was interrupted
-	 */
-	boolean await(long timeout, TimeUnit unit) throws InterruptedException;
+public interface Listenable<T extends Receipt> extends Observable<T>, Registration {
+	default Listenable<T> onComplete(Listener<? super T> listener) {
+		registerListener((event) -> {
+			if (event.isDone()) {
+				listener.accept(event);
+			}
+		});
+		return this;
+	}
+
+	default Listenable<T> onFailure(Listener<? super T> listener) {
+		return onComplete((event) -> {
+			if (!event.isSuccess()) {
+				listener.accept(event);
+			}
+		});
+	}
+
+	default Listenable<T> onSuccess(Listener<? super T> listener) {
+		return onComplete((event) -> {
+			if (event.isSuccess()) {
+				listener.accept(event);
+			}
+		});
+	}
 }

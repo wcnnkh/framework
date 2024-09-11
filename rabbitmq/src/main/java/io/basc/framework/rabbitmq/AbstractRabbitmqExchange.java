@@ -15,7 +15,7 @@ import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.beans.factory.Init;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.register.StandardRegistration;
-import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.register.RegistrationException;
 import io.basc.framework.util.register.Registration;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> implements BinaryExchange, Init {

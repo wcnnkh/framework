@@ -6,7 +6,7 @@ public class EmptyValue implements Value, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Object getValue() {
+	public Object getSource() {
 		return null;
 	}
 }

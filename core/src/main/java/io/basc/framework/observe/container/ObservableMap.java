@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.observe.container.AtomicEntryRegistration;
 import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.observe.register.container.AtomicEntryRegistration;
 import io.basc.framework.util.observe_old.Observer;
 import lombok.NonNull;
 

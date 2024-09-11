@@ -14,4 +14,8 @@ public interface Document<E> {
 	 * @return
 	 */
 	Elements<E> getElements();
+
+	default boolean isEmpty() {
+		return getElements().isEmpty();
+	}
 }

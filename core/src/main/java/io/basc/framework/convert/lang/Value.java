@@ -21,10 +21,12 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Enumerable;
+import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.function.Optional;
 import io.basc.framework.util.function.Source;
 
-public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier, Optional<Value> {
+public interface Value
+		extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier, Optional<Value>, Wrapper<Object> {
 	static final Value EMPTY = new EmptyValue();
 
 	static final Value[] EMPTY_ARRAY = new Value[0];
@@ -117,7 +119,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	default <E extends Throwable> Object convert(TypeDescriptor targetType,
 			Converter<? super Object, ? extends Object, E> converter) throws E {
 		Assert.requiredArgument(converter != null, "converter");
-		Object source = getValue();
+		Object source = getSource();
 		if (source == null) {
 			return null;
 		}
@@ -138,17 +140,17 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			}
 
 			if (source instanceof Value) {
-				source = ((Value) source).getValue();
+				source = ((Value) source).getSource();
 				sourceType = ((Value) source).getTypeDescriptor();
 			}
 			break;
 		}
-		throw new ConversionFailedException(getTypeDescriptor(), targetType, getValue(), null);
+		throw new ConversionFailedException(getTypeDescriptor(), targetType, getSource(), null);
 	}
 
 	@Nullable
 	default BigDecimal getAsBigDecimal() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return null;
 		}
@@ -174,7 +176,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Nullable
 	default BigInteger getAsBigInteger() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return null;
 		}
@@ -195,7 +197,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	}
 
 	default boolean getAsBoolean() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return false;
 		}
@@ -215,7 +217,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	}
 
 	default byte getAsByte() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -236,7 +238,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	}
 
 	default char getAsChar() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -254,7 +256,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Override
 	default double getAsDouble() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -276,7 +278,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Nullable
 	default Enum<?> getAsEnum(Class<?> enumType) {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return null;
 		}
@@ -293,7 +295,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	}
 
 	default float getAsFloat() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -315,7 +317,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Override
 	default int getAsInt() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -337,7 +339,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Override
 	default long getAsLong() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -359,7 +361,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Nullable
 	default Number getAsNumber() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return null;
 		}
@@ -381,7 +383,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	 * @return
 	 */
 	default boolean isPresent() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return false;
 		}
@@ -456,7 +458,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	}
 
 	default short getAsShort() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return 0;
 		}
@@ -478,7 +480,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Nullable
 	default String getAsString() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return null;
 		}
@@ -498,11 +500,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		return (String) convert(TypeDescriptor.valueOf(String.class), Converter.unsupported());
 	}
 
-	@Nullable
-	Object getValue();
-
 	default TypeDescriptor getTypeDescriptor() {
-		Object value = getValue();
+		Object value = getSource();
 		if (value == null) {
 			return TypeDescriptor.valueOf(Object.class);
 		}
@@ -517,7 +516,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	 */
 	default boolean isNumber() {
 		// TODO 使用类型判断
-		Object value = getValue();
+		Object value = getSource();
 		if (value instanceof Number) {
 			return true;
 		}

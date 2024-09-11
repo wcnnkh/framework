@@ -2,7 +2,7 @@ package io.basc.framework.util.observe;
 
 import io.basc.framework.util.Elements;
 
-public class EmptyRegistrations<R extends Registration> extends EmptyRegistration implements Registrations<R> {
+public class EmptyRegistrations<R extends Registration> implements Registrations<R> {
 	private static final EmptyRegistrations<?> EMPTY = new EmptyRegistrations<>();
 
 	@SuppressWarnings("unchecked")

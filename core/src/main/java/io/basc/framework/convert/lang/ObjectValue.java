@@ -12,11 +12,11 @@ import lombok.Setter;
 @Getter
 public class ObjectValue implements Value, Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
-	private Object value;
+	private Object source;
 	private TypeDescriptor typeDescriptor;
 
-	public ObjectValue(Object value) {
-		this(value, null);
+	public ObjectValue(Object source) {
+		this(source, null);
 	}
 
 	@Override
@@ -29,19 +29,19 @@ public class ObjectValue implements Value, Cloneable, Serializable {
 
 	@Override
 	public ObjectValue clone() {
-		return new ObjectValue(value, typeDescriptor);
+		return new ObjectValue(source, typeDescriptor);
 	}
 
 	@Override
-	public Object getValue() {
-		return value;
+	public Object getSource() {
+		return source;
 	}
 
 	public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
 		this.typeDescriptor = typeDescriptor;
 	}
 
-	public void setValue(Object value) {
-		this.value = value;
+	public void setSource(Object source) {
+		this.source = source;
 	}
 }

@@ -2,7 +2,6 @@ package io.basc.framework.util.observe.register;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.observe.Registration;
-import io.basc.framework.util.observe.StandardRegistrationWrapper;
 import lombok.NonNull;
 
 public class StandardPayloadRegistration<W extends Registration, T> extends StandardRegistrationWrapper<W>

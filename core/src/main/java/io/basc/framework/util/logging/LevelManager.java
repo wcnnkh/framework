@@ -1,15 +1,17 @@
 package io.basc.framework.util.logging;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.match.StringMatcher;
-import io.basc.framework.util.match.StringMatchers;
-import io.basc.framework.util.observe.container.TreeMapRegistry;
 import io.basc.framework.util.observe.event.ChangeEvent;
-import lombok.NonNull;
+import io.basc.framework.util.observe.event.EventDispatcher;
+import io.basc.framework.util.observe.event.Exchange;
+import io.basc.framework.util.observe.register.container.TreeSetRegistry;
+import lombok.Getter;
 
 /**
  * 动态管理日志等级管理
@@ -17,48 +19,52 @@ import lombok.NonNull;
  * @author wcnnkh
  *
  */
-public final class LevelManager extends TreeMapRegistry<String, Level> {
-	private StringMatcher nameMatcher = StringMatchers.PREFIX;
+@Getter
+public class LevelManager extends LevelEditor {
+	private Exchange<Elements<ChangeEvent<String>>> exchange;
 
-	public LevelManager(@NonNull EventPublishService<ChangeEvent<KeyValue<String, Level>>> eventPublishService) {
-		super(eventPublishService);
+	private final TreeSetRegistry<LevelFactory> registry = new TreeSetRegistry<>((events) -> {
+		Map<String, ChangeEvent<String>> changeMap = events
+				.flatMap((e) -> e.getSource().getElements()
+						.map((keyValue) -> new ChangeEvent<>(keyValue.getKey(), e.getChangeType())))
+				.collect(Collectors.toMap((e) -> e.getSource(), (e) -> e, (a, b) -> b, LinkedHashMap::new));
+		return exchange.publish(Elements.of(changeMap.values()));
+	});
+
+	public LevelManager() {
+		this(new EventDispatcher<>());
 	}
 
-	public StringMatcher getNameMatcher() {
-		return nameMatcher;
+	public LevelManager(Exchange<Elements<ChangeEvent<String>>> exchange) {
+		super(exchange);
 	}
 
-	public void setNameMatcher(StringMatcher nameMatcher) {
-		this.nameMatcher = nameMatcher;
-		setComparator(nameMatcher);
-	}
-
-	public boolean exists(String name) {
-		if (containsKey(name)) {
-			return true;
-		}
-
-		for (String key : keySet()) {
-			if (nameMatcher.match(key, name)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	@Nullable
+	@Override
 	public Level getLevel(String name) {
-		Level level = get(name);
-		if (level != null) {
-			return level;
-		}
-
-		for (Entry<String, Level> entry : entrySet()) {
-			if (nameMatcher.match(entry.getKey(), name)) {
-				return entry.getValue();
+		Level level = super.getLevel(name);
+		if (level == null) {
+			for (LevelFactory factory : registry.getElements()) {
+				level = factory.getLevel(name);
+				if (level != null) {
+					break;
+				}
 			}
 		}
-		return null;
+		return level;
+	}
+
+	@Override
+	public Elements<KeyValue<String, Level>> getElements() {
+		return super.getElements().concat(registry.getElements().flatMap((e) -> e.getElements())).distinct();
+	}
+
+	@Override
+	public Elements<KeyValue<String, Level>> getElements(String key) {
+		return super.getElements(key).concat(registry.getElements().flatMap((e) -> e.getElements(key))).distinct();
+	}
+
+	@Override
+	public boolean match(String name, String config) {
+		return super.match(name, config) || registry.getElements().anyMatch((e) -> e.match(name, config));
 	}
 }

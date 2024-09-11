@@ -21,5 +21,5 @@ public interface Publisher<T> {
 	 * @param resource
 	 * @return
 	 */
-	Listenable<? extends Receipt> publish(T resource);
+	Receipt publish(T resource);
 }

@@ -1,8 +1,8 @@
 package io.basc.framework.observe.registry;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.observe.RegistrationException;
-import io.basc.framework.util.observe.Registry;
+import io.basc.framework.util.observe.register.RegistrationException;
+import io.basc.framework.util.observe.register.Registry;
 import io.basc.framework.util.observe_old.poll.Pollable;
 import io.basc.framework.util.register.Registration;
 

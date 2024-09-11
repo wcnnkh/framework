@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.DefaultOptional;
-import io.basc.framework.util.observe.poll.Variable;
+import io.basc.framework.util.observe.watch.Variable;
 
 public class CAS<V> extends DefaultOptional<V> implements Variable {
 	private static final long serialVersionUID = 1L;

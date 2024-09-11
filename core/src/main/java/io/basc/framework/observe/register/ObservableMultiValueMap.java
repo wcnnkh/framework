@@ -17,9 +17,9 @@ import io.basc.framework.observe.container.AbstractServiceRegistry;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.util.observe.BatchRegistration;
-import io.basc.framework.util.observe.RegistrationException;
+import io.basc.framework.util.observe.register.BatchRegistration;
 import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.observe.register.RegistrationException;
 import io.basc.framework.util.register.Registration;
 import lombok.NonNull;
 
