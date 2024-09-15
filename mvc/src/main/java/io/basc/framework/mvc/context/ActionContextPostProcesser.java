@@ -16,9 +16,9 @@ import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.BeanAction;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
+import io.basc.framework.util.event.ChangeType;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
-import io.basc.framework.util.observe.event.ChangeType;
 import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 

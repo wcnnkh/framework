@@ -1,7 +1,7 @@
 package io.basc.framework.observe.value;
 
+import io.basc.framework.util.event.ChangeEvent;
 import io.basc.framework.util.function.Optional;
-import io.basc.framework.util.observe.event.ChangeEvent;
 import io.basc.framework.util.observe_old.Observable;
 
 /**

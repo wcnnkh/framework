@@ -4,9 +4,9 @@ import java.util.concurrent.Executor;
 
 import com.alibaba.nacos.api.config.listener.Listener;
 
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.event.ChangeType;
 import io.basc.framework.util.event.EventListener;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.event.ChangeType;
 
 public class NacosConfigListener implements Listener {
 	private final EventListener<ChangeEvent<String>> eventListener;

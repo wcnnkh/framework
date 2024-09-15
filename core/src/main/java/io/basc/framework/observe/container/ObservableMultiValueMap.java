@@ -9,17 +9,17 @@ import io.basc.framework.observe.PublishService;
 import io.basc.framework.observe.UpdateEvent;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.event.ChangeType;
 import io.basc.framework.util.event.EventRegistrationException;
 import io.basc.framework.util.event.batch.BatchEventListener;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.event.ChangeType;
-import io.basc.framework.util.observe.register.RegistrationException;
-import io.basc.framework.util.observe.register.container.AtomicElementRegistration;
-import io.basc.framework.util.observe.register.container.MultiValueRegistry;
-import io.basc.framework.util.observe.register.container.ServiceBatchRegistration;
 import io.basc.framework.util.observe_old.Observable;
 import io.basc.framework.util.observe_old.Observer;
 import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.RegistrationException;
+import io.basc.framework.util.register.container.AtomicElementRegistration;
+import io.basc.framework.util.register.container.MultiValueRegistry;
+import io.basc.framework.util.register.container.ServiceBatchRegistration;
 import lombok.NonNull;
 
 public class ObservableMultiValueMap<K, V>

@@ -1,9 +1,9 @@
 package io.basc.framework.observe.register;
 
-import io.basc.framework.util.observe.event.ChangeType;
-import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.event.ChangeType;
 import io.basc.framework.util.observe_old.Observable;
 import io.basc.framework.util.register.PayloadBatchRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
 
 public class ObservableRegistry<E extends Observable<?>> extends ObservableList<E> {

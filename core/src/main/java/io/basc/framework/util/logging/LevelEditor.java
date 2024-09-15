@@ -6,21 +6,21 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Listener;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.event.EventsDispatcher;
+import io.basc.framework.util.event.Exchange;
 import io.basc.framework.util.match.StringMatcher;
 import io.basc.framework.util.match.StringMatchers;
-import io.basc.framework.util.observe.Listener;
-import io.basc.framework.util.observe.Registration;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.event.EventDispatcher;
-import io.basc.framework.util.observe.event.Exchange;
-import io.basc.framework.util.observe.register.container.TreeMapRegistry;
+import io.basc.framework.util.register.container.TreeMapRegistry;
 
 public class LevelEditor extends TreeMapRegistry<String, Level> implements LevelFactory {
 	private final Exchange<Elements<ChangeEvent<String>>> exchange;
 	private StringMatcher stringMatcher;
 
 	public LevelEditor() {
-		this(new EventDispatcher<>());
+		this(new EventsDispatcher<>());
 	}
 
 	public LevelEditor(Exchange<Elements<ChangeEvent<String>>> exchange) {

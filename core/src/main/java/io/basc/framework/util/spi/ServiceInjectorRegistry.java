@@ -1,15 +1,15 @@
 package io.basc.framework.util.spi;
 
-import io.basc.framework.core.OrderComparator;
-import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.register.container.TreeSetRegistry;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Publisher;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.register.container.TreeSetRegistry;
 import lombok.NonNull;
 
 public class ServiceInjectorRegistry<S> extends TreeSetRegistry<ServiceInjector<S>> implements ServiceInjector<S> {
 
-	public ServiceInjectorRegistry(@NonNull EventPublishService<ChangeEvent<ServiceInjector<S>>> eventPublishService) {
-		super(OrderComparator.INSTANCE, eventPublishService);
+	public ServiceInjectorRegistry(@NonNull Publisher<? super Elements<ChangeEvent<ServiceInjector<S>>>> publisher) {
+		super(publisher);
 	}
 
 	@Override

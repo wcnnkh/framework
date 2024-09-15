@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class ObservableSet<E> extends ObservableCollection<E, Set<PayloadRegistration<E>>> implements Set<E> {

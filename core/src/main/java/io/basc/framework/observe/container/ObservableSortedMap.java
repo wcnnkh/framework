@@ -7,8 +7,8 @@ import java.util.function.Supplier;
 
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.register.container.AtomicEntryRegistration;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.register.container.AtomicEntryRegistration;
 import lombok.NonNull;
 
 public class ObservableSortedMap<K, V, C extends SortedMap<K, AtomicEntryRegistration<K, V>>, R extends SortedMap<K, V>>

@@ -6,8 +6,8 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.observe.Registration;
-import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.event.ChangeEvent;
 import lombok.NonNull;
 
 public class DynamicLoggerFactory2 implements ILoggerFactory {

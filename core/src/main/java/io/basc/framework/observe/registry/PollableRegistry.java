@@ -1,10 +1,10 @@
 package io.basc.framework.observe.registry;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.observe.register.RegistrationException;
-import io.basc.framework.util.observe.register.Registry;
 import io.basc.framework.util.observe_old.poll.Pollable;
 import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.RegistrationException;
+import io.basc.framework.util.register.Registry;
 
 public class PollableRegistry<T extends Pollable> implements Registry<T, Registration> {
 	

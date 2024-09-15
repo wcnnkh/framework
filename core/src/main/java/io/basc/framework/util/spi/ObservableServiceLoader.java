@@ -9,28 +9,28 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.util.CacheableElements;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Publisher;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.event.ChangeType;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.event.ChangeType;
 import lombok.NonNull;
 
 public class ObservableServiceLoader<S> extends CacheableElements<S, Collection<S>> {
 	private static final long serialVersionUID = 1L;
 	private final BiPredicate<? super S, ? super S> equalsPredicate;
 	@NonNull
-	private final EventPublishService<ChangeEvent<S>> eventPublishService;
+	private final Publisher<? super Elements<ChangeEvent<S>>> eventsPublisher;
 	@NonNull
 	private final ServiceLoader<? extends S> serviceLoader;
 
 	public ObservableServiceLoader(@NonNull ServiceLoader<? extends S> serviceLoader,
 			@NonNull Collector<? super S, ?, Collection<S>> collector,
 			@NonNull BiPredicate<? super S, ? super S> equalsPredicate,
-			@NonNull EventPublishService<ChangeEvent<S>> eventPublishService) {
+			@NonNull Publisher<? super Elements<ChangeEvent<S>>> eventsPublisher) {
 		super(serviceLoader, collector);
 		this.serviceLoader = serviceLoader;
 		this.equalsPredicate = equalsPredicate;
-		this.eventPublishService = eventPublishService;
+		this.eventsPublisher = eventsPublisher;
 	}
 
 	private void onChange(List<S> leftList, List<S> rightList) {
@@ -63,7 +63,7 @@ public class ObservableServiceLoader<S> extends CacheableElements<S, Collection<
 					.map((e) -> new ChangeEvent<>(e, ChangeType.CREATE));
 			events = leftEvents.concat(rightEvents);
 		}
-		eventPublishService.publishBatchEvents(events);
+		eventsPublisher.publish(events);
 	}
 
 	@Override

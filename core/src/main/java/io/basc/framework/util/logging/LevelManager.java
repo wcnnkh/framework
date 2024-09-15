@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.event.EventDispatcher;
-import io.basc.framework.util.observe.event.Exchange;
-import io.basc.framework.util.observe.register.container.TreeSetRegistry;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.event.EventsDispatcher;
+import io.basc.framework.util.event.Exchange;
+import io.basc.framework.util.register.container.TreeSetRegistry;
 import lombok.Getter;
 
 /**
@@ -32,7 +32,7 @@ public class LevelManager extends LevelEditor {
 	});
 
 	public LevelManager() {
-		this(new EventDispatcher<>());
+		this(new EventsDispatcher<>());
 	}
 
 	public LevelManager(Exchange<Elements<ChangeEvent<String>>> exchange) {

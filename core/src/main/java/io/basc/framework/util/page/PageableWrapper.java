@@ -7,7 +7,7 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Elements;
 
 public interface PageableWrapper<K, T, W extends Pageable<K, T>>
-		extends BrowsableWrapper<K, T, W>, PageWrapper<K, T, W>, Pageable<K, T> {
+		extends BrowseableWrapper<K, T, W>, PageWrapper<K, T, W>, Pageable<K, T> {
 
 	@Override
 	default Page<K, T> shared() {

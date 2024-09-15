@@ -2,11 +2,11 @@ package io.basc.framework.observe;
 
 import java.io.IOException;
 
+import io.basc.framework.util.event.ChangeEvent;
 import io.basc.framework.util.event.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.watch.Variable;
+import io.basc.framework.util.watch.Variable;
 import lombok.NonNull;
 
 public class VariablePollingObserver<T extends Variable> extends VariablePolling<ChangeEvent<Long>> {

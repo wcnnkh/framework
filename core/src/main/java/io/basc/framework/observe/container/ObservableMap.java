@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.register.container.AtomicEntryRegistration;
+import io.basc.framework.util.event.ChangeEvent;
 import io.basc.framework.util.observe_old.Observer;
+import io.basc.framework.util.register.container.AtomicEntryRegistration;
 import lombok.NonNull;
 
 public class ObservableMap<K, V, C extends Map<K, AtomicEntryRegistration<K, V>>> extends ObservableEntryRegistry<K, V, C> {

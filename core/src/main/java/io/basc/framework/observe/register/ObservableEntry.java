@@ -2,7 +2,7 @@ package io.basc.framework.observe.register;
 
 import java.util.Map;
 
-import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.event.ChangeEvent;
 import io.basc.framework.util.observe_old.Observer;
 import lombok.AllArgsConstructor;
 import lombok.Data;

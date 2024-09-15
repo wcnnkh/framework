@@ -2,15 +2,15 @@ package io.basc.framework.util.logging;
 
 import java.util.logging.Level;
 
-import io.basc.framework.util.Dictionary;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.observe.Listener;
-import io.basc.framework.util.observe.Observable;
-import io.basc.framework.util.observe.Registration;
-import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.KeyValues;
+import io.basc.framework.util.Listener;
+import io.basc.framework.util.Observable;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.event.ChangeEvent;
 
-public interface LevelFactory extends Dictionary<String, Level>, Observable<Elements<ChangeEvent<String>>> {
+public interface LevelFactory extends KeyValues<String, Level>, Observable<Elements<ChangeEvent<String>>> {
 	/**
 	 * 获取日志等级
 	 * 

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class ObservableMap<K, V> extends EntryRegistry<K, V, Map<K, PayloadRegistration<Entry<K, V>>>> {

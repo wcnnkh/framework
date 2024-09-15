@@ -7,7 +7,7 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
-public interface Pageable<K, T> extends Page<K, T>, Browsable<K, T> {
+public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
 
 	@Override
 	default Pageable<K, T> next() {
@@ -22,7 +22,7 @@ public interface Pageable<K, T> extends Page<K, T>, Browsable<K, T> {
 	 * 获取所有页
 	 */
 	default Elements<? extends Page<K, T>> pages() {
-		return Elements.of(() -> new BrowsableIterator<>(this, (e) -> e.next()));
+		return Elements.of(() -> new BrowseableIterator<>(this, (e) -> e.next()));
 	}
 
 	Pageable<K, T> jumpTo(K cursorId, long count);

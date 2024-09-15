@@ -60,7 +60,7 @@ public class Paginations<T> extends Pagination<T> implements Pageable<Long, T> {
 
 	@Override
 	public Elements<? extends Pagination<T>> pages() {
-		return Elements.of(() -> new BrowsableIterator<>(this, (e) -> e.next()));
+		return Elements.of(() -> new BrowseableIterator<>(this, (e) -> e.next()));
 	}
 
 	@Override

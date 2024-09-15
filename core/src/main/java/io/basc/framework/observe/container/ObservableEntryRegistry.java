@@ -7,16 +7,16 @@ import java.util.function.Supplier;
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.event.ChangeType;
 import io.basc.framework.util.event.EventRegistrationException;
 import io.basc.framework.util.event.batch.BatchEventListener;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.event.ChangeType;
-import io.basc.framework.util.observe.register.RegistrationException;
-import io.basc.framework.util.observe.register.container.AtomicEntryRegistration;
-import io.basc.framework.util.observe.register.container.EntryRegistry;
 import io.basc.framework.util.observe_old.Observable;
 import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.Registrations;
+import io.basc.framework.util.register.container.AtomicEntryRegistration;
+import io.basc.framework.util.register.container.EntryRegistry;
 import lombok.NonNull;
 
 public class ObservableEntryRegistry<K, V, C extends Map<K, AtomicEntryRegistration<K, V>>> extends EntryRegistry<K, V, C>

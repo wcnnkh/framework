@@ -7,9 +7,9 @@ import java.util.logging.Level;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.Reloadable;
-import io.basc.framework.util.observe.Registration;
-import io.basc.framework.util.observe.event.ChangeEvent;
+import io.basc.framework.util.event.ChangeEvent;
 import lombok.NonNull;
 
 public class DynamicLoggerFactory3 implements ILoggerFactory, Reloadable {

@@ -14,8 +14,8 @@ import io.basc.framework.data.geo.Point;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.page.Browsable;
-import io.basc.framework.util.page.StandardBrowsable;
+import io.basc.framework.util.page.Browseable;
+import io.basc.framework.util.page.StandardBrowseable;
 
 @SuppressWarnings("unchecked")
 public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>,
@@ -414,8 +414,8 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 	}
 
 	@Override
-	default Browsable<Long, K> scan(long cursorId, ScanOptions<K> options) {
-		return new StandardBrowsable<Long, K>(cursorId,
+	default Browseable<Long, K> scan(long cursorId, ScanOptions<K> options) {
+		return new StandardBrowseable<Long, K>(cursorId,
 				(cursor) -> execute((commands) -> commands.scan(cursor, options)));
 	}
 
@@ -1201,8 +1201,8 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 	}
 
 	@Override
-	default Browsable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
-		return new StandardBrowsable<Long, K>(cursorId,
+	default Browseable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
+		return new StandardBrowseable<Long, K>(cursorId,
 				(cursor) -> execute((commands) -> commands.sScan(cursor, key, options)));
 	}
 

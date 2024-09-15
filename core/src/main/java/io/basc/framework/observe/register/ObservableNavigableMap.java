@@ -7,7 +7,7 @@ import java.util.SortedMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.observe.register.PayloadRegistration;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class ObservableNavigableMap<K, V, M extends NavigableMap<K, PayloadRegistration<Entry<K, V>>>, R extends NavigableMap<K, V>, T extends NavigableSet<K>>

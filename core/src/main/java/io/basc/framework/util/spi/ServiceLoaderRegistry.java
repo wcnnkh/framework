@@ -4,13 +4,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Publisher;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceLoaderWrapper;
-import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.event.empty.EmptyEventDispatcher;
-import io.basc.framework.util.observe.event.ChangeEvent;
-import io.basc.framework.util.observe.register.container.ElementRegistration;
-import io.basc.framework.util.observe.register.container.ElementRegistry;
+import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.register.container.ElementRegistration;
+import io.basc.framework.util.register.container.ElementRegistry;
 import lombok.NonNull;
 
 public class ServiceLoaderRegistry<S>
@@ -18,10 +17,11 @@ public class ServiceLoaderRegistry<S>
 		implements ServiceLoaderWrapper<S, Elements<S>> {
 
 	public ServiceLoaderRegistry() {
-		this(EmptyEventDispatcher.empty());
+		this(Publisher.empty());
 	}
 
-	public ServiceLoaderRegistry(@NonNull EventPublishService<ChangeEvent<ServiceLoader<S>>> eventPublishService) {
+	public ServiceLoaderRegistry(
+			@NonNull Publisher<? super Elements<ChangeEvent<ServiceLoader<S>>>> eventPublishService) {
 		super(LinkedHashSet::new, eventPublishService);
 	}
 

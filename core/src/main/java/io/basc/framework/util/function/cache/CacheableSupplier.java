@@ -5,11 +5,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Reloadable;
-import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.event.empty.EmptyEventDispatcher;
+import io.basc.framework.util.event.ChangeEvent;
 import io.basc.framework.util.function.Source;
-import io.basc.framework.util.observe.event.ChangeEvent;
 import lombok.NonNull;
 
 public class CacheableSupplier<T>
@@ -17,18 +16,18 @@ public class CacheableSupplier<T>
 		implements Supplier<T>, Reloadable {
 	private static final long serialVersionUID = 1L;
 
-	public CacheableSupplier(@NonNull EventPublishService<ChangeEvent<T>> eventPublishService,
+	public CacheableSupplier(@NonNull Publisher<? super ChangeEvent<T>> eventPublishService,
 			@NonNull ReadWriteLock readWriteLock, @NonNull Source<? extends T, ? extends RuntimeException> source) {
 		super(eventPublishService, readWriteLock, source);
 	}
 
-	public CacheableSupplier(@NonNull EventPublishService<ChangeEvent<T>> eventPublishService,
+	public CacheableSupplier(@NonNull Publisher<? super ChangeEvent<T>> eventPublishService,
 			@NonNull Source<? extends T, ? extends RuntimeException> source) {
 		this(eventPublishService, new ReentrantReadWriteLock(), source);
 	}
 
 	public CacheableSupplier(@NonNull Source<? extends T, ? extends RuntimeException> source) {
-		this(EmptyEventDispatcher.empty(), source);
+		this(Publisher.empty(), source);
 	}
 
 	@Override

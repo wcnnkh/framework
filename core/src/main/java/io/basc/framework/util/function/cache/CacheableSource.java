@@ -8,11 +8,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.event.EventPublishService;
-import io.basc.framework.util.event.empty.EmptyEventDispatcher;
+import io.basc.framework.util.event.ChangeEvent;
 import io.basc.framework.util.function.Source;
-import io.basc.framework.util.observe.event.ChangeEvent;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class CacheableSource<T, E extends Throwable, W extends Source<? extends 
 	private static final long serialVersionUID = 1L;
 	private volatile T cached;
 	@NonNull
-	private final transient EventPublishService<ChangeEvent<T>> eventPublishService;
+	private final transient Publisher<? super ChangeEvent<T>> publisher;
 	/**
 	 * 是否已加载
 	 */
@@ -34,12 +33,12 @@ public class CacheableSource<T, E extends Throwable, W extends Source<? extends 
 	@NonNull
 	private final transient W source;
 
-	public CacheableSource(@NonNull EventPublishService<ChangeEvent<T>> eventPublishService, @NonNull W source) {
-		this(eventPublishService, new ReentrantReadWriteLock(), source);
+	public CacheableSource(@NonNull Publisher<? super ChangeEvent<T>> publisher, @NonNull W source) {
+		this(publisher, new ReentrantReadWriteLock(), source);
 	}
 
 	public CacheableSource(@NonNull W source) {
-		this(EmptyEventDispatcher.empty(), source);
+		this(Publisher.empty(), source);
 	}
 
 	@Override
@@ -85,7 +84,7 @@ public class CacheableSource<T, E extends Throwable, W extends Source<? extends 
 		try {
 			T oldValue = this.cached;
 			this.cached = cached;
-			eventPublishService.publishEvent(new ChangeEvent<>(oldValue, this.cached));
+			publisher.publish(new ChangeEvent<>(oldValue, this.cached));
 			return oldValue;
 		} finally {
 			lock.unlock();
