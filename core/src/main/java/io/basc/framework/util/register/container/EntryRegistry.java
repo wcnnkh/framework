@@ -1,8 +1,9 @@
 package io.basc.framework.util.register.container;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BooleanSupplier;
@@ -15,22 +16,24 @@ import java.util.stream.Stream;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.EmptyRegistrations;
 import io.basc.framework.util.KeyValue;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Publisher;
+import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Registrations;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.ChangeType;
-import io.basc.framework.util.register.BrowseableRegistry;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.register.KeyValueRegistry;
 import io.basc.framework.util.register.RegistrationException;
+import io.basc.framework.util.register.ServiceRegistry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> extends LazyContainer<M>
-		implements KeyValueRegistry<K, V>, BrowseableRegistry<KeyValue<K, V>, EntryRegistration<K, V>> {
+		implements KeyValueRegistry<K, V>, ServiceRegistry<KeyValue<K, V>> {
 	@RequiredArgsConstructor
 	private class BatchRegistrations implements Registrations<EntryRegistration<K, V>> {
 		private final Elements<UpdateableEntryRegistration> registrations;
@@ -127,9 +130,41 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 		this.changeEventsPublisher = changeEventsPublisher;
 	}
 
-	protected final boolean batchDeregister(Elements<? extends EntryRegistration<K, V>> registrations) {
+	@Override
+	public Receipt deregisters(Iterable<? extends KeyValue<K, V>> services) {
+		return update((map) -> {
+			if (map == null) {
+				return Receipt.fail();
+			}
+
+			List<EntryRegistration<K, V>> removes = new ArrayList<>();
+			for (KeyValue<K, V> kv : services) {
+				if (!map.containsKey(kv.getKey())) {
+					continue;
+				}
+
+				EntryRegistration<K, V> registration = map.get(kv.getKey());
+				if (registration == null || !ObjectUtils.equals(kv.getValue(), registration.getValue())) {
+					continue;
+				}
+
+				registration = map.remove(kv.getKey());
+				if (registration != null) {
+					removes.add(registration);
+				}
+			}
+
+			if (removes.isEmpty()) {
+				return Receipt.fail();
+			}
+
+			return batchDeregister(Elements.of(removes));
+		});
+	}
+
+	protected final Receipt batchDeregister(Elements<? extends EntryRegistration<K, V>> registrations) {
 		if (registrations.isEmpty()) {
-			return false;
+			return Receipt.fail();
 		}
 
 		registrations.forEach(Registration::cancel);
@@ -139,8 +174,7 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 		});
 		Elements<ChangeEvent<KeyValue<K, V>>> events = registrations
 				.map((e) -> new ChangeEvent<>(e, ChangeType.DELETE));
-		changeEventsPublisher.publish(events);
-		return true;
+		return changeEventsPublisher.publish(events);
 	}
 
 	private final Registrations<EntryRegistration<K, V>> convertToBatchRegistration(
@@ -207,11 +241,6 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 		return new AtomicEntryRegistration<>(keyValue.getKey(), keyValue.getValue());
 	}
 
-	@Override
-	public final EntryRegistration<K, V> register(KeyValue<K, V> element) throws RegistrationException {
-		return registers(Arrays.asList(element)).getElements().first();
-	}
-
 	public final V getValue(Function<? super M, ? extends EntryRegistration<K, V>> getter) {
 		return read((map) -> {
 			if (map == null) {
@@ -224,7 +253,11 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 	}
 
 	@Override
-	public final Registrations<EntryRegistration<K, V>> registers(Iterable<? extends KeyValue<K, V>> elements)
+	public Registration registers(Iterable<? extends KeyValue<K, V>> elements) throws RegistrationException {
+		return batchRegister(elements);
+	}
+
+	public final Registrations<EntryRegistration<K, V>> batchRegister(Iterable<? extends KeyValue<K, V>> elements)
 			throws RegistrationException {
 		Elements<ChangeInfo<K, V>> changes = write((map) -> {
 			return Elements.of(elements).map((keyValue) -> {
@@ -247,8 +280,30 @@ public class EntryRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> exte
 		return convertToBatchRegistration(changes.map((e) -> e.registration).toList());
 	}
 
-	@Override
 	public Registrations<EntryRegistration<K, V>> getRegistrations() {
 		return getRegistrations((map) -> Elements.of(map.values()));
+	}
+
+	@Override
+	public Receipt deregisterKeys(Iterable<? extends K> keys) {
+		return update((map) -> {
+			if (map == null) {
+				return Receipt.fail();
+			}
+
+			List<EntryRegistration<K, V>> removes = new ArrayList<>();
+			for (K key : keys) {
+				EntryRegistration<K, V> registration = map.remove(key);
+				if (registration != null) {
+					removes.add(registration);
+				}
+			}
+
+			if (removes.isEmpty()) {
+				return Receipt.fail();
+			}
+
+			return batchDeregister(Elements.of(removes));
+		});
 	}
 }

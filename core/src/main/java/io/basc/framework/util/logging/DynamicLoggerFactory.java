@@ -3,74 +3,24 @@ package io.basc.framework.util.logging;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.event.support.DefaultBroadcastEventDispatcher;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.match.StringMatcher;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.Receipt;
+import io.basc.framework.util.Reloadable;
+import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.spi.Configurable;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
+import lombok.NonNull;
 
-public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
-	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();
-	public static final LevelManager GLOBAL_LEVEL_MANAGER = new LevelManager();
-
-	private AtomicBoolean configured = new AtomicBoolean();
-	private LevelManager levelManager = GLOBAL_LEVEL_MANAGER;
-	private final DynamicLogger logger;
-	private ILoggerFactory loggerFactory = GLOBA_LOGGER_FACTORY;
+public class DynamicLoggerFactory implements ILoggerFactory, Reloadable, Configurable {
+	@NonNull
+	private volatile ILoggerFactory loggerFactory;
 	private volatile Map<String, DynamicLogger> loggerMap = new HashMap<String, DynamicLogger>();
-	private Registration registration;
+	private volatile LevelFactory levelFactory;
 
-	public DynamicLoggerFactory() {
-		registration = this.levelManager.registerListener((e) -> publishEvent(this.levelManager));
-		this.logger = getLogger(DynamicLoggerFactory.class.getName());
-	}
-
-	public void configure() {
-		if (isConfigured()) {
-			return;
-		}
-
-		ILoggerFactory loggerFactory = null;
-		try {
-			loggerFactory = SPI.getServices(ILoggerFactory.class).first();
-		} catch (Throwable e) {
-			// 解决循环依赖问题,如果出现异常继续使用旧的日志工厂,待初始化完成后会被动态替换
-			logger.debug(e, "Configuration log factory exception");
-			return;
-		}
-
-		if (configured.compareAndSet(false, true) && loggerFactory != null) {
-			setLoggerFactory(loggerFactory);
-		}
-	}
-
-	public void setNameMatcher(StringMatcher nameMatcher) {
-		LevelManager levelManager = new LevelManager(nameMatcher, (events) -> {
-		});
-		
-		synchronized (this) {
-			
-			
-			if(levelManager == null) {
-				levelManager = 
-			}
-		}
-	}
-
-	public ILoggerFactory getILoggerFactory() {
-		return loggerFactory;
-	}
-
-	public LevelManager getLevelManager() {
-		return levelManager;
-	}
-
-	public DynamicLogger getLogger() {
-		return logger;
+	public DynamicLoggerFactory(@NonNull ILoggerFactory loggerFactory) {
+		Assert.requiredArgument(loggerFactory != null, "loggerFactory");
+		this.loggerFactory = loggerFactory;
 	}
 
 	@Override
@@ -81,17 +31,7 @@ public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelM
 				logger = loggerMap.get(name);
 				if (logger == null) {
 					Logger source = loggerFactory.getLogger(name);
-					if (source instanceof DynamicLogger) {
-						logger = (DynamicLogger) source;
-					} else {
-						logger = new DynamicLogger(source);
-					}
-
-					Level level = levelManager.getLevel(name);
-					if (level != null) {
-						logger.setLevel(level);
-					}
-					registerListener(logger);
+					logger = createDynamicLogger(name, source);
 					loggerMap.put(name, logger);
 				}
 			}
@@ -99,84 +39,80 @@ public class DynamicLoggerFactory extends DefaultBroadcastEventDispatcher<LevelM
 		return logger;
 	}
 
+	protected DynamicLogger createDynamicLogger(String name, Logger source) {
+		if (source instanceof DynamicLogger) {
+			return (DynamicLogger) source;
+		} else {
+			return new DynamicLogger(source);
+		}
+	}
+
 	public ILoggerFactory getLoggerFactory() {
-		return loggerFactory;
-	}
-
-	public boolean isConfigured() {
-		return configured.get();
-	}
-
-	/**
-	 * 设置一个新的日志等级管理
-	 * 
-	 * @param levelManager
-	 * @return 旧的日志等级管理
-	 */
-	public LevelManager setLevelManager(LevelManager levelManager) {
-		Assert.requiredArgument(levelManager != null, "levelManager");
-		if (levelManager == this.levelManager) {
-			return this.levelManager;
-		}
-
 		synchronized (this) {
-			LevelManager old = this.levelManager;
-			this.levelManager = levelManager;
-			this.registration.unregister();
-			this.registration = levelManager.registerListener((e) -> publishEvent(levelManager));
-			publishEvent(levelManager);
-			logger.info("Set level manager [" + levelManager + "]");
-			return old;
+			return loggerFactory;
 		}
 	}
 
-	/**
-	 * 设置日志工厂
-	 * 
-	 * @param loggerFactory
-	 * @return 旧的日志工厂
-	 */
-	public ILoggerFactory setLoggerFactory(ILoggerFactory loggerFactory) {
+	private volatile ServiceLoader<ILoggerFactory> serviceLoader;
+
+	@Override
+	public void reload() {
+		synchronized (this) {
+			if (this.serviceLoader != null) {
+				this.serviceLoader.reload();
+				ILoggerFactory loggerFactory = this.serviceLoader.first();
+				if (loggerFactory != null) {
+					this.loggerFactory = loggerFactory;
+				}
+			}
+
+			for (Entry<String, DynamicLogger> entry : this.loggerMap.entrySet()) {
+				reload(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	protected void reload(String name, DynamicLogger dynamicLogger) {
+		if (loggerFactory != null) {
+			Logger logger = loggerFactory.getLogger(name);
+			if (logger != null) {
+				dynamicLogger.setSource(logger);
+			}
+		}
+	}
+
+	public void setLoggerFactory(@NonNull ILoggerFactory loggerFactory) {
 		Assert.requiredArgument(loggerFactory != null, "loggerFactory");
-		if (loggerFactory == this.loggerFactory) {
-			return this.loggerFactory;
-		}
-
 		synchronized (this) {
-			ILoggerFactory old = this.loggerFactory;
+			if (this.loggerFactory == loggerFactory) {
+				return;
+			}
+
 			this.loggerFactory = loggerFactory;
-			logger.setSource(loggerFactory.getLogger(logger.getName()));
-			logger.info("Set logger factory [" + loggerFactory + "]");
-			for (Entry<String, DynamicLogger> entry : loggerMap.entrySet()) {
-				if (entry.getValue() == logger) {
-					continue;
-				}
+			reload();
+		}
+	}
 
-				String name = entry.getKey();
-				Logger oldLogger = entry.getValue().getSource();
-				Logger logger = loggerFactory.getLogger(name);
-				entry.getValue().setSource(logger);
-				try {
-					if (oldLogger instanceof AutoCloseable) {
-						((AutoCloseable) oldLogger).close();
+	@Override
+	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
+		if (this.serviceLoader == null) {
+			synchronized (this) {
+				if (this.serviceLoader == null) {
+					try {
+						ServiceLoader<ILoggerFactory> serviceLoader = discovery
+								.getServiceProvider(ILoggerFactory.class);
+						ILoggerFactory loggerFactory = serviceLoader.first();
+						if (loggerFactory != null) {
+							setLoggerFactory(loggerFactory);
+						}
+					} catch (Throwable e) {
+						return Receipt.fail(e);
 					}
-				} catch (Throwable e) {
-					entry.getValue().error(e, "Failed to close the old logger {}", oldLogger);
-				}
-			}
-			return old;
-		}
-	}
-
-	public <E extends Throwable> void update(ConsumeProcessor<? super DynamicLogger, ? extends E> updateProcessor) {
-		synchronized (this) {
-			for (Entry<String, DynamicLogger> entry : loggerMap.entrySet()) {
-				try {
-					updateProcessor.process(entry.getValue());
-				} catch (Throwable e) {
-					entry.getValue().error(e, "Failed to close the old logger {}", entry.getKey());
 				}
 			}
 		}
+		return Receipt.success();
 	}
+	
+	
 }

@@ -1,8 +1,8 @@
 package io.basc.framework.observe.properties;
 
 import io.basc.framework.convert.lang.Value;
-import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.batch.BatchEventListener;
+import io.basc.framework.util.actor.EventRegistrationException;
+import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.register.Registration;
 import lombok.Data;
 

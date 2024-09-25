@@ -7,7 +7,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import io.basc.framework.observe.PublishService;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.observe_old.Observer;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.container.AtomicElementRegistration;

@@ -4,12 +4,12 @@ import javax.jms.JMSException;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.event.EventsDispatcher;
-import io.basc.framework.util.event.EventListener;
-import io.basc.framework.util.event.EventPushException;
-import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.broadcast.BroadcastEventDispatcher;
-import io.basc.framework.util.event.unicast.UnicastEventDispatcher;
+import io.basc.framework.util.actor.EventListener;
+import io.basc.framework.util.actor.EventPushException;
+import io.basc.framework.util.actor.EventRegistrationException;
+import io.basc.framework.util.actor.EventsDispatcher;
+import io.basc.framework.util.actor.broadcast.BroadcastEventDispatcher;
+import io.basc.framework.util.actor.unicast.UnicastEventDispatcher;
 import io.basc.framework.util.register.Registration;
 
 public class JmsEventDispatcher<T>

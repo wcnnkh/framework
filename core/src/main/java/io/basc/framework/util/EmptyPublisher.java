@@ -1,6 +1,6 @@
 package io.basc.framework.util;
 
-import io.basc.framework.util.future.ListenableReceipt;
+import io.basc.framework.util.actor.ListenableReceipt;
 
 public class EmptyPublisher<T> implements Publisher<T> {
 

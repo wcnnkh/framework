@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.ChangeType;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.ChangeType;
 import lombok.NonNull;
 
 public class MapRegistry<K, V, M extends Map<K, EntryRegistration<K, V>>> extends EntryRegistry<K, V, M>

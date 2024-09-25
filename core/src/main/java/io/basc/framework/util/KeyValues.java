@@ -1,32 +1,18 @@
 package io.basc.framework.util;
 
 /**
- * 一对多
+ * 多个键值对
  * 
  * @author shuchaowen
  *
  * @param <K>
  * @param <V>
  */
-public interface KeyValues<K, V> extends Listable<KeyValue<K, V>> {
+public interface KeyValues<K, V> extends Listable<KeyValue<K, V>>, Keys<K> {
 
-	/**
-	 * 所有的key
-	 * 
-	 * @return
-	 */
-	default Elements<K> keys() {
+	@Override
+	default Elements<K> fetchKeys() {
 		return getElements().map((e) -> e.getKey());
-	}
-
-	/**
-	 * 是否存在此key
-	 * 
-	 * @param key
-	 * @return
-	 */
-	default boolean hasKey(K key) {
-		return !getElements(key).isEmpty();
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.actor.ListenableFuture;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

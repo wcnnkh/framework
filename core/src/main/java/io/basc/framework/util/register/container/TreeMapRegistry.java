@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.ChangeType;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.ChangeType;
 import lombok.NonNull;
 
 public class TreeMapRegistry<K, V> extends NavigableMapRegistry<K, V, TreeMap<K, EntryRegistration<K, V>>> {

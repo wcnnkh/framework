@@ -12,7 +12,7 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Registrations;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import lombok.NonNull;
 
 public class CollectionRegistry<E, C extends Collection<ElementRegistration<E>>> extends ElementRegistry<E, C>
@@ -31,7 +31,7 @@ public class CollectionRegistry<E, C extends Collection<ElementRegistration<E>>>
 
 	@Override
 	public final boolean addAll(Collection<? extends E> c) {
-		Registrations<ElementRegistration<E>> registrations = registers(c);
+		Registrations<ElementRegistration<E>> registrations = batchRegister(c, getChangeEventsPublisher());
 		return !registrations.getElements().isEmpty();
 	}
 
@@ -60,7 +60,7 @@ public class CollectionRegistry<E, C extends Collection<ElementRegistration<E>>>
 			return Elements.of(collection).filter((e) -> ObjectUtils.equals(e.getPayload(), o)).toList();
 		});
 
-		return batchDeregister(registrations);
+		return batchDeregister(registrations, getChangeEventsPublisher()).isSuccess();
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class CollectionRegistry<E, C extends Collection<ElementRegistration<E>>>
 
 			return Elements.of(collection).filter((e) -> c.contains(e.getPayload())).toList();
 		});
-		return batchDeregister(registrations);
+		return batchDeregister(registrations, getChangeEventsPublisher()).isSuccess();
 	}
 
 	@Override

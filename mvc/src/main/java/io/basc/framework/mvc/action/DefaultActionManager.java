@@ -7,9 +7,9 @@ import java.util.Map;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.ChangeType;
-import io.basc.framework.util.event.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.ChangeType;
+import io.basc.framework.util.actor.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.register.StandardRegistration;

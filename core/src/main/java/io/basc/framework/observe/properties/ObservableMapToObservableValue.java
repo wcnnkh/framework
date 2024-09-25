@@ -3,9 +3,9 @@ package io.basc.framework.observe.properties;
 import java.util.Map;
 
 import io.basc.framework.observe.value.ObservableValue;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.batch.BatchEventListener;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.EventRegistrationException;
+import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.register.Registration;
 
 class ObservableMapToObservableValue<K, V> implements ObservableValue<Map<K, V>> {

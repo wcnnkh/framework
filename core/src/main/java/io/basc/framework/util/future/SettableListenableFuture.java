@@ -24,6 +24,8 @@ import java.util.concurrent.TimeoutException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.actor.Promise;
+import io.basc.framework.util.actor.ListenableFuture;
 
 /**
  * A {@link ListenableFuture} whose value can be set via {@link #set(Object)} or

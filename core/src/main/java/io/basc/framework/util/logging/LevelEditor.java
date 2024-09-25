@@ -6,32 +6,24 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Listener;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.EventsDispatcher;
-import io.basc.framework.util.event.Exchange;
+import io.basc.framework.util.Publisher;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.match.StringMatcher;
 import io.basc.framework.util.match.StringMatchers;
 import io.basc.framework.util.register.container.TreeMapRegistry;
+import lombok.NonNull;
 
 public class LevelEditor extends TreeMapRegistry<String, Level> implements LevelFactory {
-	private final Exchange<Elements<ChangeEvent<String>>> exchange;
 	private StringMatcher stringMatcher;
 
-	public LevelEditor() {
-		this(new EventsDispatcher<>());
-	}
-
-	public LevelEditor(Exchange<Elements<ChangeEvent<String>>> exchange) {
+	public LevelEditor(@NonNull Publisher<? super Elements<ChangeEvent<String>>> publisher) {
 		super((events) -> {
 			// 转换并去重
 			Map<String, ChangeEvent<String>> changeMap = events
 					.map((e) -> new ChangeEvent<>(e.getSource().getKey(), e.getChangeType()))
 					.collect(Collectors.toMap((e) -> e.getSource(), (e) -> e, (a, b) -> b, LinkedHashMap::new));
-			return exchange.publish(Elements.of(changeMap.values()));
+			return publisher.publish(Elements.of(changeMap.values()));
 		});
-		this.exchange = exchange;
 		setComparator(StringMatchers.PREFIX);
 	}
 
@@ -57,15 +49,5 @@ public class LevelEditor extends TreeMapRegistry<String, Level> implements Level
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public boolean match(String name, String config) {
-		return stringMatcher.match(config, name);
-	}
-
-	@Override
-	public Registration registerListener(Listener<? super Elements<ChangeEvent<String>>> listener) {
-		return exchange.registerListener(listener);
 	}
 }

@@ -5,8 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.observe.Polling;
-import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.batch.BatchEventListener;
+import io.basc.framework.util.actor.EventRegistrationException;
+import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.Registration;
 

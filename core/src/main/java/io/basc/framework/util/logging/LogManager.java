@@ -1,51 +1,25 @@
 package io.basc.framework.util.logging;
 
-import io.basc.framework.util.Reloadable;
-import io.basc.framework.util.spi.NativeServiceLoader;
+import io.basc.framework.util.Assert;
 
-public class LogManager implements ILoggerFactory, Reloadable {
+public class LogManager {
 	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();
-	private final DynamicLoggerFactory3 dynamicLoggerFactory = new DynamicLoggerFactory3(GLOBA_LOGGER_FACTORY);
-	private final LevelManager levelManager = new LevelManager();
-	private volatile ILoggerFactory loggerFactory;
+	private static DynamicLoggerFactory loggerFactory = new DynamicLoggerFactory(GLOBA_LOGGER_FACTORY);
+	private static LevelManager levelManager = new LevelManager();
 
-	public LogManager() {
-		dynamicLoggerFactory.setLevelFactory(levelManager);
+	static {
+		loggerFactory.doNativeConfigure();
 	}
 
-	public LevelManager getLevelManager() {
-		return levelManager;
+	public static Logger getLogger(String name) {
+		Assert.requiredArgument(name != null, "name");
+		loggerFactory.doNativeConfigure();
+		return loggerFactory.getLogger(name);
 	}
 
-	@Override
-	public Logger getLogger(String name) {
-		getLoggerFactory();
-		return dynamicLoggerFactory.getLogger(name);
-	}
-
-	public ILoggerFactory getLoggerFactory() {
-		if (loggerFactory == null) {
-			synchronized (this) {
-				if (loggerFactory == null) {
-					loggerFactory = loadLoggerFactory();
-					reloadLoggerFactory();
-				}
-			}
-		}
-		return loggerFactory;
-	}
-
-	public void setLoggerFactory(ILoggerFactory loggerFactory) {
-		this.loggerFactory = loggerFactory;
-		dynamicLoggerFactory.setLoggerFactory(loggerFactory);
-	}
-
-	public ILoggerFactory loadLoggerFactory() throws Throwable {
-		return NativeServiceLoader.load(ILoggerFactory.class).first();
-	}
-
-	@Override
-	public void reload() {
-
+	public static Logger getLogger(Class<?> clazz) {
+		Assert.requiredArgument(clazz != null, "clazz");
+		loggerFactory.doNativeConfigure();
+		return loggerFactory.getLogger(clazz.getName());
 	}
 }

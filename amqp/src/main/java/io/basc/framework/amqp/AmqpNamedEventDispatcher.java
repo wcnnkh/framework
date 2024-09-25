@@ -4,12 +4,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.event.DelayableNamedEventDispatcher;
-import io.basc.framework.util.event.EventListener;
-import io.basc.framework.util.event.EventPushException;
-import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.broadcast.BroadcastDelayableNamedEventDispatcher;
-import io.basc.framework.util.event.unicast.UnicastDelayableNamedEventDispatcher;
+import io.basc.framework.util.actor.DelayableNamedEventDispatcher;
+import io.basc.framework.util.actor.EventListener;
+import io.basc.framework.util.actor.EventPushException;
+import io.basc.framework.util.actor.EventRegistrationException;
+import io.basc.framework.util.actor.broadcast.BroadcastDelayableNamedEventDispatcher;
+import io.basc.framework.util.actor.unicast.UnicastDelayableNamedEventDispatcher;
 import io.basc.framework.util.register.Registration;
 
 public class AmqpNamedEventDispatcher<T> implements UnicastDelayableNamedEventDispatcher<String, T>,

@@ -6,7 +6,7 @@ import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.Registry;
 
-public class PollableRegistry<T extends Pollable> implements Registry<T, Registration> {
+public class PollableRegistry<T extends Poller> implements Registry<T, Registration> {
 	
 	@Override
 	public Elements<Registration> getRegistrations() {

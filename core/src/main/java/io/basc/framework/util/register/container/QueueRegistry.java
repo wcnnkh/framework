@@ -6,12 +6,12 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import lombok.NonNull;
 
 public class QueueRegistry<E, Q extends Queue<ElementRegistration<E>>> extends CollectionRegistry<E, Q>
 		implements Queue<E> {
-	
+
 	public QueueRegistry(@NonNull Supplier<? extends Q> containerSupplier,
 			@NonNull Publisher<? super Elements<ChangeEvent<E>>> changeEventsPublisher) {
 		super(containerSupplier, changeEventsPublisher);
@@ -25,7 +25,7 @@ public class QueueRegistry<E, Q extends Queue<ElementRegistration<E>>> extends C
 					r.cancel();
 				}
 			});
-		}).isCancelled();
+		}, getChangeEventsPublisher()).isCancelled();
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class QueueRegistry<E, Q extends Queue<ElementRegistration<E>>> extends C
 			while (registration.isCancelled()) {
 				registration = q.remove();
 			}
-			batchDeregister(Elements.singleton(registration));
+			batchDeregister(Elements.singleton(registration), getChangeEventsPublisher());
 			return registration.getPayload();
 		});
 	}
@@ -60,7 +60,7 @@ public class QueueRegistry<E, Q extends Queue<ElementRegistration<E>>> extends C
 				return null;
 			}
 
-			batchDeregister(Elements.singleton(registration));
+			batchDeregister(Elements.singleton(registration), getChangeEventsPublisher());
 			return registration.getPayload();
 		});
 	}

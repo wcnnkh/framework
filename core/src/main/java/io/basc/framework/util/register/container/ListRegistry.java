@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import lombok.NonNull;
 
 public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends CollectionRegistry<E, C>
@@ -22,7 +22,7 @@ public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends Col
 	public final boolean addAll(int index, Collection<? extends E> c) {
 		return !registers(c, (list, elements) -> {
 			list.addAll(index, elements.toList());
-		}).getElements().isEmpty();
+		}, getChangeEventsPublisher()).getElements().isEmpty();
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends Col
 	public final void add(int index, E element) {
 		registers(Elements.singleton(element), (list, elements) -> {
 			elements.forEach((e) -> list.add(index, e));
-		});
+		}, getChangeEventsPublisher());
 	}
 
 	@Override

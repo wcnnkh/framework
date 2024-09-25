@@ -10,8 +10,9 @@ import java.util.stream.Collectors;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Publisher;
+import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.register.KeyValueRegistry;
 import io.basc.framework.util.register.LifecycleRegistrationWrapper;
 import io.basc.framework.util.register.RegistrationException;
@@ -111,6 +112,11 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 		});
 	}
 
+	@Override
+	public Registration registers(Iterable<? extends KeyValue<K, V>> elements) throws RegistrationException {
+		return Registration.registers(elements, this::register);
+	}
+
 	public final ElementRegistry<V, L> getElementRegistry(Object key) {
 		return read((map) -> {
 			if (map == null) {
@@ -156,6 +162,28 @@ public class MultiValueRegistry<K, V, L extends Collection<ElementRegistration<V
 				iterator.remove();
 			}
 			return true;
+		});
+	}
+
+	@Override
+	public Receipt deregisterKeys(Iterable<? extends K> keys) {
+		return update((map) -> {
+			if (map == null) {
+				return Receipt.fail();
+			}
+
+			Receipt receipt = Receipt.fail();
+			for (K key : keys) {
+				ElementRegistry<V, L> values = map.remove(key);
+				if (values == null) {
+					continue;
+				}
+
+				// TODO 想办法合并通知事件
+				values.clear();
+				receipt = Receipt.success();
+			}
+			return receipt;
 		});
 	}
 }

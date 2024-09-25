@@ -9,7 +9,8 @@ import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 
 public interface Registration {
-	static final Registration CANCELLED = new Cancelled();
+	static final Registration CANCELLED = new Registed(true);
+	static final Registration SUCCESS = new Registed(false);
 
 	default Registration and(Registration registration) {
 		if (registration == null || registration.isCancelled()) {

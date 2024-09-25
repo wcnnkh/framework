@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Reloadable;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.function.Source;
 import lombok.NonNull;
 

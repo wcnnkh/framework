@@ -18,7 +18,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.observe.PollingService;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
 import lombok.NonNull;

@@ -4,22 +4,22 @@ import io.basc.framework.observe.register.ObservableList;
 import io.basc.framework.observe.register.RegistryEvent;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.ChangeType;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.observe_old.Observer;
 import io.basc.framework.util.register.BatchRegistration;
-import io.basc.framework.util.register.BrowseableRegistry;
+import io.basc.framework.util.register.PayloadRegistry;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.RegistrationException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ServiceLoaderRegistry<S> extends Observer<ChangeEvent<ServiceLoader<? extends S>>>
-		implements BrowseableRegistry<ServiceLoader<? extends S>> {
-	private final BrowseableRegistry<ServiceLoader<? extends S>> registry;
-	private final BrowseableRegistry<S> serviceRegistry;
+		implements PayloadRegistry<ServiceLoader<? extends S>> {
+	private final PayloadRegistry<ServiceLoader<? extends S>> registry;
+	private final PayloadRegistry<S> serviceRegistry;
 
-	public ServiceLoaderRegistry(BrowseableRegistry<S> serviceRegistry) {
+	public ServiceLoaderRegistry(PayloadRegistry<S> serviceRegistry) {
 		this(new ObservableList<>(), serviceRegistry);
 	}
 

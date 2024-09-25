@@ -3,7 +3,7 @@ package io.basc.framework.observe;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.observe.Observer;
 import lombok.NonNull;
 

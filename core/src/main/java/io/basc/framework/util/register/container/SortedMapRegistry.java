@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import lombok.NonNull;
 
 public abstract class SortedMapRegistry<K, V, M extends SortedMap<K, EntryRegistration<K, V>>>

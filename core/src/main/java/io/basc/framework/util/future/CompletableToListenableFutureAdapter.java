@@ -25,7 +25,8 @@ import java.util.function.BiFunction;
 
 import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.event.Stage;
+import io.basc.framework.util.actor.ListenableFuture;
+import io.basc.framework.util.actor.Stage;
 
 public class CompletableToListenableFutureAdapter<T> implements ListenableFuture<T> {
 

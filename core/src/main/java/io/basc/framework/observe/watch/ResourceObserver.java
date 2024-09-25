@@ -9,12 +9,12 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.io.Resource;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.observe.container.ObservableList;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.EventRegistrationException;
+import io.basc.framework.util.actor.batch.BatchEventDispatcher;
+import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.EventRegistrationException;
-import io.basc.framework.util.event.batch.BatchEventDispatcher;
-import io.basc.framework.util.event.batch.BatchEventListener;
 import lombok.NonNull;
 
 public class ResourceObserver extends PollingObserver<ChangeEvent<Resource>> {

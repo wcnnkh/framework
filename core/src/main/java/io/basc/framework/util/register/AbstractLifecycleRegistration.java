@@ -6,8 +6,8 @@ import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Listener;
 import io.basc.framework.util.Observable;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.actor.LifecycleDispatcher;
 import io.basc.framework.util.concurrent.limit.DisposableLimiter;
-import io.basc.framework.util.event.LifecycleDispatcher;
 
 public abstract class AbstractLifecycleRegistration extends LimitableRegistration
 		implements LifecycleRegistration, Observable<Lifecycle> {

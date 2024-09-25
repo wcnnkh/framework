@@ -2,6 +2,9 @@ package io.basc.framework.util.future;
 
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.util.actor.ListenableReceiptWrapper;
+import io.basc.framework.util.actor.ListenableFuture;
+
 public interface ListenableFutureWrapper<V, W extends ListenableFuture<V>>
 		extends ListenableFuture<V>, ListenableReceiptWrapper<ListenableFuture<? extends V>, W> {
 

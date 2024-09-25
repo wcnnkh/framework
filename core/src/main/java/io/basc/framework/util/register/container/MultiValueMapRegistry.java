@@ -12,9 +12,9 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Publisher;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.concurrent.ReadOnlyEntry;
-import io.basc.framework.util.event.ChangeEvent;
 import lombok.NonNull;
 
 public class MultiValueMapRegistry<K, V, L extends Collection<ElementRegistration<V>>, M extends Map<K, ElementRegistry<V, L>>>

@@ -2,7 +2,7 @@ package io.basc.framework.observe.container;
 
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.observe.UpdateEvent;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.container.AtomicElementRegistration;
 import lombok.NonNull;

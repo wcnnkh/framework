@@ -11,7 +11,7 @@ import java.util.TreeSet;
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 

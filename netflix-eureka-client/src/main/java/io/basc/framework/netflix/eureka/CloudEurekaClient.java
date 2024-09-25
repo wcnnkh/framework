@@ -4,7 +4,7 @@ import io.basc.framework.boot.ApplicationEvent;
 import io.basc.framework.cloud.event.HeartbeatEvent;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.util.event.EventsDispatcher;
+import io.basc.framework.util.actor.EventsDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
 

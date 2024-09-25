@@ -8,9 +8,9 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.event.EventListener;
+import io.basc.framework.util.actor.EventListener;
 
-public class DynamicLogger implements Logger, EventListener<LevelManager>, Wrapper<Logger> {
+public class DynamicLogger implements Logger, Wrapper<Logger> {
 	private static final boolean NEED_TO_INFER_CALLER = Boolean
 			.getBoolean("io.basc.framework.logger.need.to.infer.caller");
 

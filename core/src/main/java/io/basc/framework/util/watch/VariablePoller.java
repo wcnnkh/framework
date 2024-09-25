@@ -4,8 +4,9 @@ import java.io.IOException;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.ChangeType;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.ChangeType;
+import io.basc.framework.util.actor.Poller;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class VariablePoller<T extends Variable> extends Pollable {
+public class VariablePoller<T extends Variable> extends Poller {
 	private static Logger logger = LoggerFactory.getLogger(VariablePoller.class);
 
 	@NonNull

@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.function.Source;
 import lombok.Getter;
 import lombok.NonNull;

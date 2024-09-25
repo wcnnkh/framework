@@ -1,5 +1,7 @@
 package io.basc.framework.util.register;
 
+import java.util.Arrays;
+
 import io.basc.framework.util.Listable;
 import io.basc.framework.util.Registration;
 
@@ -18,7 +20,9 @@ public interface Registry<E> extends Listable<E> {
 	 * @return
 	 * @throws RegistrationException
 	 */
-	Registration register(E element) throws RegistrationException;
+	default Registration register(E element) throws RegistrationException {
+		return registers(Arrays.asList(element));
+	}
 
 	/**
 	 * 批量注册
@@ -27,7 +31,5 @@ public interface Registry<E> extends Listable<E> {
 	 * @return
 	 * @throws RegistrationException
 	 */
-	default Registration registers(Iterable<? extends E> elements) throws RegistrationException {
-		return Registration.registers(elements, this::register);
-	}
+	Registration registers(Iterable<? extends E> elements) throws RegistrationException;
 }

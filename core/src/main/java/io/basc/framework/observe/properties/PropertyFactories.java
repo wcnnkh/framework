@@ -4,7 +4,7 @@ import io.basc.framework.convert.lang.Value;
 import io.basc.framework.observe.register.ElementRegistration;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.event.batch.BatchEventListener;
+import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.observe_old.Observer;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;

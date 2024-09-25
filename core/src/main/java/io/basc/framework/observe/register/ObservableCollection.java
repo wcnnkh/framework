@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.observe.container.AbstractServiceRegistry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.event.ChangeType;
+import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.RegistrationException;

@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.register.container.ArrayListRegistry;
 import io.basc.framework.util.register.container.ElementRegistration;
 import lombok.NonNull;

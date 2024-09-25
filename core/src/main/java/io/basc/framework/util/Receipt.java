@@ -7,10 +7,14 @@ package io.basc.framework.util;
  *
  */
 public interface Receipt extends Registration {
-	public static final Receipt SUCCESS_RECEIPT = new FinalStateReceipt();
+	public static final Receipt SUCCESS_RECEIPT = new Receipted(true, null);
 
 	public static Receipt fail(Throwable cause) {
-		return new FinalStateReceipt(cause);
+		return new Receipted(false, cause);
+	}
+
+	public static Receipt fail() {
+		return fail(null);
 	}
 
 	public static Receipt success() {
@@ -37,4 +41,14 @@ public interface Receipt extends Registration {
 	 * @return
 	 */
 	boolean isSuccess();
+
+	/**
+	 * 
+	 * 同步
+	 * 
+	 * @return 返回一个同步后的回执
+	 */
+	default Receipt sync() {
+		return this;
+	}
 }

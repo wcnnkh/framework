@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import lombok.NonNull;
 
 public class ArrayListRegistry<E> extends ListRegistry<E, ArrayList<ElementRegistration<E>>> implements RandomAccess {

@@ -2,8 +2,8 @@ package io.basc.framework.observe;
 
 import java.io.IOException;
 
-import io.basc.framework.util.event.ChangeEvent;
-import io.basc.framework.util.event.batch.BatchEventDispatcher;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.watch.Variable;

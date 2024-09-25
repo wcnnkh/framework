@@ -7,13 +7,14 @@ import java.util.List;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
+import io.basc.framework.util.actor.Poller;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class WatchKeyPoller<T> extends Pollable {
+public class WatchKeyPoller<T> extends Poller {
 	@SuppressWarnings("unchecked")
 	public static <T> Elements<WatchEvent<T>> pollEvents(WatchKey watchKey, Class<T> contextType) {
 		if (!watchKey.isValid()) {

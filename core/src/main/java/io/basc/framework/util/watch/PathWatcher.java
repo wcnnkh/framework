@@ -9,14 +9,15 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.actor.Poller;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.Registry;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PathWatcher<T extends FileVariable> extends Pollable implements Registry<T>, Lifecycle {
+public class PathWatcher<T extends FileVariable> extends Poller implements Registry<T>, Lifecycle {
 	@NonNull
 	private final Registry<PathPoller<T>> registry;
 	@NonNull

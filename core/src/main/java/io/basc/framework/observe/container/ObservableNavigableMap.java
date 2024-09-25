@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.observe.PublishService;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.event.ChangeEvent;
+import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.register.container.AtomicEntryRegistration;
 import lombok.NonNull;
 
