@@ -12,10 +12,10 @@ import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class DownLoadResponseExtractor implements ClientHttpResponseExtractor<File> {
-	private static Logger logger = LoggerFactory.getLogger(DownLoadResponseExtractor.class);
+	private static Logger logger = LogManager.getLogger(DownLoadResponseExtractor.class);
 
 	public static final ClientHttpResponseExtractor<File> INSTANCE = new DownLoadResponseExtractor();
 

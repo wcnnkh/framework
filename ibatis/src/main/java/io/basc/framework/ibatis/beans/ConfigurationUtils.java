@@ -28,10 +28,10 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class ConfigurationUtils {
-	private static Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
+	private static Logger logger = LogManager.getLogger(ConfigurationUtils.class);
 
 	public static void configurationEnvironment(Configuration configuration, InstanceFactory instanceFactory) {
 		Environment environment = configuration.getEnvironment();

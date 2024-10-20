@@ -17,7 +17,7 @@
 package io.basc.framework.websocket.server.support;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.websocket.WebSocketHandler;
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class HandshakeInterceptorChain {
 
-	private static final Logger logger = LoggerFactory.getLogger(HandshakeInterceptorChain.class);
+	private static final Logger logger = LogManager.getLogger(HandshakeInterceptorChain.class);
 
 	private final List<HandshakeInterceptor> interceptors;
 

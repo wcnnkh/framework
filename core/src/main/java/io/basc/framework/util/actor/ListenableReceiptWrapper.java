@@ -6,7 +6,7 @@ import io.basc.framework.util.Receipt;
 import io.basc.framework.util.ReceiptWrapper;
 
 public interface ListenableReceiptWrapper<T extends Receipt, W extends ListenableReceipt<T>>
-		extends ListenableReceipt<T>, ListenableWrapper<T, W>, ReceiptWrapper<W> {
+		extends ListenableReceipt<T>, ListenableRegistrationWrapper<T, W>, ReceiptWrapper<W> {
 
 	@Override
 	default boolean await(long timeout, TimeUnit unit) throws InterruptedException {

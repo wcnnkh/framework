@@ -7,7 +7,7 @@ import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * Type filter that is aware of traversing over hierarchy.
@@ -22,7 +22,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  * @author Mark Fisher
  */
 public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilter {
-	private static Logger logger = LoggerFactory.getLogger(AbstractTypeHierarchyTraversingFilter.class);
+	private static Logger logger = LogManager.getLogger(AbstractTypeHierarchyTraversingFilter.class);
 
 	private final boolean considerInherited;
 

@@ -33,7 +33,7 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -44,7 +44,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	private static final String BOUNDARY_APPEND = "--";
 	private static final String BOUNDARY_NAME = "boundary";
 	private static final String LINE = "\r\n";
-	private static Logger logger = LoggerFactory.getLogger(Logger.class);
+	private static Logger logger = LogManager.getLogger(Logger.class);
 	@NonNull
 	private ConversionService conversionService = GlobalConversionService.getInstance();
 	@NonNull

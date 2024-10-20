@@ -11,7 +11,7 @@ import freemarker.template.TemplateNumberModel;
 import freemarker.template.TemplateScalarModel;
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.NumberUtils;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * freemarker工具类
@@ -21,7 +21,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  */
 public class FreemarkerUtils {
 	private static final String NOT_MATCH = "The '%s' parameter not a %s";
-	private static io.basc.framework.util.logging.Logger logger = LoggerFactory.getLogger(FreemarkerUtils.class);
+	private static io.basc.framework.util.logging.Logger logger = LogManager.getLogger(FreemarkerUtils.class);
 
 	public static void ensureLoggerLibrary() {
 		String library = Sys.getEnv().getProperties().get(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY)

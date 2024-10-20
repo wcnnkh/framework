@@ -15,12 +15,12 @@ import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 
 public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
-	private static Logger logger = LoggerFactory.getLogger(DefaultAuthorityManager.class);
+	private static Logger logger = LogManager.getLogger(DefaultAuthorityManager.class);
 	public Map<String, T> authorityMap = new HashMap<String, T>();
 
 	public T getAuthority(String id) {

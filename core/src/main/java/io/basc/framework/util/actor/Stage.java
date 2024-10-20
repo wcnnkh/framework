@@ -4,7 +4,7 @@ import io.basc.framework.util.Listener;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
 
-public class Stage implements Listenable<Stage>, Receipt {
+public class Stage implements ListenableRegistration<Stage>, Receipt {
 	private enum State {
 		CANCELLED, FAILURE, NEW, SUCCESS
 	}

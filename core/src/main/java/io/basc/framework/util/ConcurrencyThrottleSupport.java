@@ -21,7 +21,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * Support class for throttling concurrent access to a specific resource.
@@ -58,7 +58,7 @@ public abstract class ConcurrencyThrottleSupport implements Serializable {
 	public static final int NO_CONCURRENCY = 0;
 
 	/** Transient to optimize serialization */
-	protected transient Logger logger = LoggerFactory.getLogger(getClass());
+	protected transient Logger logger = LogManager.getLogger(getClass());
 
 	private transient Object monitor = new Object();
 
@@ -151,7 +151,7 @@ public abstract class ConcurrencyThrottleSupport implements Serializable {
 		ois.defaultReadObject();
 
 		// Initialize transient fields.
-		this.logger = LoggerFactory.getLogger(getClass());
+		this.logger = LogManager.getLogger(getClass());
 		this.monitor = new Object();
 	}
 

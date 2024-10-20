@@ -8,7 +8,7 @@ import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.Poller;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class VariablePoller<T extends Variable> extends Poller {
-	private static Logger logger = LoggerFactory.getLogger(VariablePoller.class);
+	private static Logger logger = LogManager.getLogger(VariablePoller.class);
 
 	@NonNull
 	private final T variable;

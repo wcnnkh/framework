@@ -2,10 +2,10 @@ package io.basc.framework.slf4j;
 
 import org.slf4j.LoggerFactory;
 
-import io.basc.framework.util.logging.ILoggerFactory;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.logging.Logger;
 
-public class Slf4jLoggerFactory implements ILoggerFactory {
+public class Slf4jLoggerFactory implements LoggerFactory {
 
 	@Override
 	public Logger getLogger(String name) {

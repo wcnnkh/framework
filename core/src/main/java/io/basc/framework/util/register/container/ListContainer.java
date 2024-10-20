@@ -6,23 +6,20 @@ import java.util.ListIterator;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Publisher;
-import io.basc.framework.util.actor.ChangeEvent;
 import lombok.NonNull;
 
-public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends CollectionRegistry<E, C>
+public class ListContainer<E, C extends List<ElementRegistration<E>>> extends CollectionContainer<E, C>
 		implements List<E> {
 
-	public ListRegistry(@NonNull Supplier<? extends C> containerSupplier,
-			@NonNull Publisher<? super Elements<ChangeEvent<E>>> changeEventsPublisher) {
-		super(containerSupplier, changeEventsPublisher);
+	public ListContainer(@NonNull Supplier<? extends C> containerSupplier) {
+		super(containerSupplier);
 	}
 
 	@Override
 	public final boolean addAll(int index, Collection<? extends E> c) {
 		return !registers(c, (list, elements) -> {
 			list.addAll(index, elements.toList());
-		}, getChangeEventsPublisher()).getElements().isEmpty();
+		}, getPublisher()).getElements().isEmpty();
 	}
 
 	@Override
@@ -52,7 +49,7 @@ public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends Col
 	public final void add(int index, E element) {
 		registers(Elements.singleton(element), (list, elements) -> {
 			elements.forEach((e) -> list.add(index, e));
-		}, getChangeEventsPublisher());
+		}, getPublisher());
 	}
 
 	@Override
@@ -74,17 +71,17 @@ public class ListRegistry<E, C extends List<ElementRegistration<E>>> extends Col
 
 	@Override
 	public final ListIterator<E> listIterator() {
-		return getElements().toList().listIterator();
+		return toList().listIterator();
 	}
 
 	@Override
 	public final ListIterator<E> listIterator(int index) {
-		return getElements().toList().listIterator(index);
+		return toList().listIterator(index);
 	}
 
 	@Override
 	public final List<E> subList(int fromIndex, int toIndex) {
-		return getElements().toList().subList(fromIndex, toIndex);
+		return toList().subList(fromIndex, toIndex);
 	}
 
 }

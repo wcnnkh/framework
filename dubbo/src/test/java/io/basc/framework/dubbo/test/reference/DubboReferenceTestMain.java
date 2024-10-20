@@ -7,11 +7,11 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @ImportResource("reference.xml")
 public class DubboReferenceTestMain {
-	private static Logger logger = LoggerFactory.getLogger(DubboReferenceTestMain.class);
+	private static Logger logger = LogManager.getLogger(DubboReferenceTestMain.class);
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		Application application = MainApplication.run(DubboReferenceTestMain.class, args).get();

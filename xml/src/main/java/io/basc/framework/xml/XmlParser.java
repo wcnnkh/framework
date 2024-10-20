@@ -30,10 +30,10 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class XmlParser implements DocumentParser, ConversionService {
-	private static Logger logger = LoggerFactory.getLogger(XmlParser.class);
+	private static Logger logger = LogManager.getLogger(XmlParser.class);
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	@Nullable
 	private static final EntityResolver ENTITY_RESOLVER = SPI.getServices(EntityResolver.class).first();

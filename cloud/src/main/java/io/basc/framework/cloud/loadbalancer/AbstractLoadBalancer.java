@@ -13,11 +13,11 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.select.Selector;
 
 public abstract class AbstractLoadBalancer<T extends Node> implements LoadBalancer<T>, EnvironmentAware {
-	private static Logger logger = LoggerFactory.getLogger(AbstractLoadBalancer.class);
+	private static Logger logger = LogManager.getLogger(AbstractLoadBalancer.class);
 	private static final Timer TIMER = new Timer(AbstractLoadBalancer.class.getName(), true);
 	private volatile TimerTask autoReloadTask;
 	private Environment environment;

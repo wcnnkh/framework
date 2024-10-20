@@ -14,10 +14,10 @@ import io.basc.framework.excel.WritableSheet;
 import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.mapper.io.template.AbstractRecordExporter;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class PoiSheet extends AbstractRecordExporter implements Sheet, WritableSheet {
-	private static Logger logger = LoggerFactory.getLogger(PoiSheet.class);
+	private static Logger logger = LogManager.getLogger(PoiSheet.class);
 	private final org.apache.poi.ss.usermodel.Sheet sheet;
 	private final int positionIndex;
 

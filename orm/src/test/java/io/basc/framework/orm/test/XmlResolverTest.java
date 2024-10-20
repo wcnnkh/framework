@@ -14,10 +14,10 @@ import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.orm.stereotype.PrimaryKey;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class XmlResolverTest {
-	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);
+	private static Logger logger = LogManager.getLogger(XmlResolverTest.class);
 
 	@SuppressWarnings("unchecked")
 	@Test

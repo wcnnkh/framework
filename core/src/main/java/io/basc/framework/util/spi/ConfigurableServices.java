@@ -1,24 +1,14 @@
 package io.basc.framework.util.spi;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Publisher;
+import java.util.concurrent.locks.Lock;
+
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.actor.ChangeEvent;
-import lombok.NonNull;
 
-public class ConfigurableServices<S> extends InjectableServices<S> implements Configurable {
-	protected volatile Registration configureRegistration;
+public class ConfigurableServices<S> extends Services<S> implements Configurable {
+	private volatile Registration configureRegistration;
 	private volatile Class<S> serviceClass;
-
-	public ConfigurableServices() {
-		this(Publisher.empty());
-	}
-
-	public ConfigurableServices(@NonNull Publisher<? super Elements<ChangeEvent<S>>> publisher) {
-		super(publisher);
-	}
 
 	@Override
 	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
@@ -48,8 +38,17 @@ public class ConfigurableServices<S> extends InjectableServices<S> implements Co
 	}
 
 	public void setServiceClass(Class<S> serviceClass) {
-		synchronized (this) {
+		Lock lock = getReadWriteLock().writeLock();
+		lock.lock();
+		try {
+			if (this.serviceClass == serviceClass) {
+				return;
+			}
+
 			this.serviceClass = serviceClass;
+			// 如果已经初始化了需要reload
+		} finally {
+			lock.unlock();
 		}
 	}
 }

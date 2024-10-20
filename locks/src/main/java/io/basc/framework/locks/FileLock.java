@@ -5,7 +5,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.concurrent.locks.AbstractLock;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.io.IOException;
  *
  */
 public class FileLock extends AbstractLock {
-	private static Logger logger = LoggerFactory.getLogger(FileLock.class);
+	private static Logger logger = LogManager.getLogger(FileLock.class);
 	private final File file;
 	private final String version;
 

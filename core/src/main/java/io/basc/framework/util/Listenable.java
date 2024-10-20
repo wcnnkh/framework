@@ -1,15 +1,15 @@
 package io.basc.framework.util;
 
 /**
- * 可观测的
+ * 可监听的
  * 
  * @author shuchaowen
  *
  * @param <T>
  */
-public interface Observable<T> {
+public interface Listenable<T> {
 	/**
-	 * 注册一个观察者
+	 * 注册一个监听
 	 * 
 	 * @param listener
 	 * @return

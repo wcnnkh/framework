@@ -15,14 +15,14 @@ import io.basc.framework.security.session.UserSession;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Decorator {
-	private static Logger defaultLogger = LoggerFactory.getLogger(DefaultHttpChannel.class);
+	private static Logger defaultLogger = LogManager.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private boolean completed = false;
 	private final ServerHttpResponse response;

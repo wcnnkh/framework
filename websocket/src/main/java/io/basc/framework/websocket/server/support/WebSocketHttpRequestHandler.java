@@ -18,7 +18,7 @@ package io.basc.framework.websocket.server.support;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.websocket.WebSocketHandler;
@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class WebSocketHttpRequestHandler {
 
-	private final Logger logger = LoggerFactory.getLogger(WebSocketHttpRequestHandler.class);
+	private final Logger logger = LogManager.getLogger(WebSocketHttpRequestHandler.class);
 
 	private final WebSocketHandler wsHandler;
 

@@ -9,7 +9,7 @@ import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * 以aop的方式管理事务
@@ -19,7 +19,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  */
 public final class TransactionExecutionInterceptor extends DefaultTransactionDefinitionLoader
 		implements ExecutionInterceptor {
-	private static Logger logger = LoggerFactory.getLogger(TransactionExecutionInterceptor.class);
+	private static Logger logger = LogManager.getLogger(TransactionExecutionInterceptor.class);
 
 	private void invokerAfter(Transaction transaction, Object rtn, Function function) {
 		if (rtn != null && (rtn instanceof RollbackOnly)) {

@@ -10,11 +10,11 @@ import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.env.PropertyFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.match.StringMatchers;
 
 public class EnableConditionUtils {
-	private static Logger logger = LoggerFactory.getLogger(EnableConditionUtils.class);
+	private static Logger logger = LogManager.getLogger(EnableConditionUtils.class);
 
 	private EnableConditionUtils() {
 	}

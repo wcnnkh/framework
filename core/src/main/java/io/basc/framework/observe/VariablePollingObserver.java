@@ -5,7 +5,7 @@ import java.io.IOException;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.watch.Variable;
 import lombok.NonNull;
 
@@ -20,7 +20,7 @@ public class VariablePollingObserver<T extends Variable> extends VariablePolling
 		}
 	}
 
-	private static Logger logger = LoggerFactory.getLogger(VariablePollingObserver.class);
+	private static Logger logger = LogManager.getLogger(VariablePollingObserver.class);
 	private final T variable;
 
 	protected Long lastModified(T variable) {

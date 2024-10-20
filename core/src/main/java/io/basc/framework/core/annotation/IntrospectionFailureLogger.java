@@ -18,7 +18,7 @@ package io.basc.framework.core.annotation;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * Log facade used to handle annotation introspection failures (in particular
@@ -69,7 +69,7 @@ enum IntrospectionFailureLogger {
 	private static Logger getLogger() {
 		Logger logger = IntrospectionFailureLogger.logger;
 		if (logger == null) {
-			logger = LoggerFactory.getLogger(MergedAnnotation.class);
+			logger = LogManager.getLogger(MergedAnnotation.class);
 			IntrospectionFailureLogger.logger = logger;
 		}
 		return logger;

@@ -10,13 +10,13 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.Data;
 import lombok.NonNull;
 
 @Data
 public class MetadataReaders implements ServiceLoader<MetadataReader> {
-	private static Logger logger = LoggerFactory.getLogger(MetadataReaders.class);
+	private static Logger logger = LogManager.getLogger(MetadataReaders.class);
 	@NonNull
 	private final ServiceLoader<? extends Resource> resources;
 	@NonNull

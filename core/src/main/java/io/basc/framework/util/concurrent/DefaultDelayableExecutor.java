@@ -2,7 +2,7 @@ package io.basc.framework.util.concurrent;
 
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +12,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultDelayableExecutor implements DelayableExecutor {
-	private static Logger logger = LoggerFactory.getLogger(DefaultDelayableExecutor.class);
+	private static Logger logger = LogManager.getLogger(DefaultDelayableExecutor.class);
 	private final ScheduledExecutorService scheduledExecutorService;
 
 	public DefaultDelayableExecutor() {

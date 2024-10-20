@@ -18,10 +18,10 @@ import io.basc.framework.netflix.eureka.server.event.EurekaInstanceCanceledEvent
 import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRegisteredEvent;
 import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRenewedEvent;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements ApplicationAware {
-	private static Logger logger = LoggerFactory.getLogger(InstanceRegistry.class);
+	private static Logger logger = LogManager.getLogger(InstanceRegistry.class);
 	private io.basc.framework.boot.Application application;
 	private int defaultOpenForTrafficCount;
 

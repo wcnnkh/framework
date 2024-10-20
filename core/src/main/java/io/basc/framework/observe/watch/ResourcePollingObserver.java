@@ -15,7 +15,7 @@ import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.NonNull;
 
 /**
@@ -25,7 +25,7 @@ import lombok.NonNull;
  *
  */
 public class ResourcePollingObserver extends PollingObserver<ChangeEvent<Resource>> {
-	private static Logger logger = LoggerFactory.getLogger(ResourcePollingObserver.class);
+	private static Logger logger = LogManager.getLogger(ResourcePollingObserver.class);
 	private volatile Long lastModified;
 	private final Resource resource;
 

@@ -3,7 +3,7 @@ package io.basc.framework.rabbitmq;
 import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 public class RabbitmqMessageListener extends DefaultConsumer {
-	private static Logger logger = LoggerFactory.getLogger(RabbitmqMessageListener.class);
+	private static Logger logger = LogManager.getLogger(RabbitmqMessageListener.class);
 	private final MessageListener<byte[]> messageListener;
 	private final boolean multiple;
 

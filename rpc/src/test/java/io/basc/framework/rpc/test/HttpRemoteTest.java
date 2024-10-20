@@ -7,14 +7,14 @@ import org.junit.Test;
 import io.basc.framework.context.support.DefaultApplicationContext;
 import io.basc.framework.util.logging.Levels;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class HttpRemoteTest {
-	private static Logger logger = LoggerFactory.getLogger(HttpRemoteTest.class);
+	private static Logger logger = LogManager.getLogger(HttpRemoteTest.class);
 
 	@Test
 	public void test() throws Throwable {
-		LoggerFactory.getSource().getLevelManager().getMaster().put("io.basc.framework.rpc",
+		LogManager.getSource().getLevelManager().getMaster().put("io.basc.framework.rpc",
 				Levels.DEBUG.getValue());
 		DefaultApplicationContext beanFactory = new DefaultApplicationContext();
 		beanFactory.init();

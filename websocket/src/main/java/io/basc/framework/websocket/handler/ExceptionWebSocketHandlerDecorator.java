@@ -2,13 +2,13 @@ package io.basc.framework.websocket.handler;
 
 import io.basc.framework.messageing.Message;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;
 
 public class ExceptionWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(ExceptionWebSocketHandlerDecorator.class);
+	private static final Logger logger = LogManager.getLogger(ExceptionWebSocketHandlerDecorator.class);
 
 	public ExceptionWebSocketHandlerDecorator(WebSocketHandler delegate) {
 		super(delegate);

@@ -20,12 +20,12 @@ import io.basc.framework.observe.PollingService;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.NonNull;
 
 public class Watcher<T> extends PollingObserver<WatchEvent<T>> implements PollingService<Elements<WatchEvent<T>>> {
 	private static volatile WatchService defaultWatchService;
-	private static Logger logger = LoggerFactory.getLogger(Watcher.class);
+	private static Logger logger = LogManager.getLogger(Watcher.class);
 	private static volatile boolean newDefaultWatchServieError = false;
 
 	/**

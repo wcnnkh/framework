@@ -38,11 +38,11 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.pattern.HttpPattern;
 
 public class TomcatApplicationServer implements ApplicationServer, DisposableBean {
-	private static Logger logger = LoggerFactory.getLogger(TomcatApplicationServer.class);
+	private static Logger logger = LogManager.getLogger(TomcatApplicationServer.class);
 	private Tomcat tomcat;
 
 	protected String getContextPath(Environment environment) {

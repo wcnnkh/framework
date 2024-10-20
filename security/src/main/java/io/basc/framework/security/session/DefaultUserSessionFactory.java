@@ -13,7 +13,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultUserSessionFactory implements UserSessionFactory {
@@ -22,7 +22,7 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 			.or(StringUtils.replace(UserSessionFactory.class.getPackage().getName(), '.', ':') + ":user:")
 			.getAsString();
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
+	private static Logger logger = LogManager.getLogger(DefaultUserSessionFactory.class);
 	private final TemporaryDataOperations dataOperations;
 	private final SessionFactory sessionFactory;
 	private String prefix = USER_SESSION_PREFIX;

@@ -6,7 +6,7 @@ import io.basc.framework.messageing.TextFragmentMessage;
 import io.basc.framework.messageing.TextMessage;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.PongMessage;
 import io.basc.framework.websocket.WebSocketHandler;
@@ -20,7 +20,7 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 
 public class StandardWebSocketHandlerAdapter extends Endpoint {
-	private static final Logger logger = LoggerFactory.getLogger(StandardWebSocketHandlerAdapter.class);
+	private static final Logger logger = LogManager.getLogger(StandardWebSocketHandlerAdapter.class);
 
 	private final WebSocketHandler handler;
 

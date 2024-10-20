@@ -10,10 +10,10 @@ import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class DefaultTemplateLoader implements TemplateLoader {
-	private static Logger logger = LoggerFactory.getLogger(DefaultTemplateLoader.class);
+	private static Logger logger = LogManager.getLogger(DefaultTemplateLoader.class);
 	
 	private final ResourceLoader resourceLoader;
 

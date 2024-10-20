@@ -13,11 +13,11 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.select.Selector;
 
 public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> implements DiscoveryLoadBalancer {
-	private static Logger logger = LoggerFactory.getLogger(DefaultDiscoveryLoadBalancer.class);
+	private static Logger logger = LogManager.getLogger(DefaultDiscoveryLoadBalancer.class);
 	private final DiscoveryClient discoveryClient;
 	private volatile Map<String, Service[]> serviceMap;
 	private final ConcurrentHashMap<String, State> stateMap = new ConcurrentHashMap<>();

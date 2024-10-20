@@ -14,12 +14,12 @@ import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.netflix.eureka.boot.EnableEurekaClient;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @EnableEurekaClient
 @Path("/")
 public class EurekaClientStart {
-	private static Logger logger = LoggerFactory.getLogger(EurekaClientStart.class);
+	private static Logger logger = LogManager.getLogger(EurekaClientStart.class);
 	@Autowired
 	private Application application;
 

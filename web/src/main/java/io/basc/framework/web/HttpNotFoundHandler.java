@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.cors.CorsUtils;
 
 public class HttpNotFoundHandler implements HttpServiceTerminator {
-	private static Logger logger = LoggerFactory.getLogger(HttpNotFoundHandler.class);
+	private static Logger logger = LogManager.getLogger(HttpNotFoundHandler.class);
 
 	@Override
 	public boolean test(ServerHttpRequest serverHttpRequest) {

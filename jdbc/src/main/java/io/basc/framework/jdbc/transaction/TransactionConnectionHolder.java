@@ -10,10 +10,10 @@ import io.basc.framework.transaction.Savepoint;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionException;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class TransactionConnectionHolder implements Resource {
-	private static Logger logger = LoggerFactory.getLogger(TransactionConnectionHolder.class);
+	private static Logger logger = LogManager.getLogger(TransactionConnectionHolder.class);
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
 	private final Transaction transaction;
 	private int savepointCounter;

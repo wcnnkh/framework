@@ -12,10 +12,10 @@ import io.basc.framework.mapper.io.template.AbstractRecordImporter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.CloseableRegistry;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class CSVImporter extends AbstractRecordImporter implements Closeable {
-	private static Logger logger = LoggerFactory.getLogger(CSVImporter.class);
+	private static Logger logger = LogManager.getLogger(CSVImporter.class);
 	private final CloseableRegistry<IOException> closeableRegistry = new CloseableRegistry<>();
 	private final CSVParser csvParser;
 

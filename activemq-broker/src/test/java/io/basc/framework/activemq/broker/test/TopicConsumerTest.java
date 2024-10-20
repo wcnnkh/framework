@@ -12,10 +12,10 @@ import io.basc.framework.jms.MessageBuilder;
 import io.basc.framework.jms.MessageCodec;
 import io.basc.framework.jms.TopicConnectionOperations;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class TopicConsumerTest {
-	private static Logger logger = LoggerFactory.getLogger(TopicConsumerTest.class);
+	private static Logger logger = LogManager.getLogger(TopicConsumerTest.class);
 
 	public static void main(String[] args) throws JMSException {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();

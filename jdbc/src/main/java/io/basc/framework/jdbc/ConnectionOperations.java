@@ -11,10 +11,10 @@ import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.RunnableProcessor;
 import io.basc.framework.util.function.Source;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class ConnectionOperations extends Operations<Connection, ConnectionOperations> {
-	private static Logger logger = LoggerFactory.getLogger(ConnectionOperations.class);
+	private static Logger logger = LogManager.getLogger(ConnectionOperations.class);
 
 	public static ConnectionOperations of(Connection connection) {
 		return new ConnectionOperations(() -> connection);

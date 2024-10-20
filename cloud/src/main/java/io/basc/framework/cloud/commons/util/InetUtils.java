@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * @author Spencer Gibb
@@ -45,7 +45,7 @@ public class InetUtils implements Closeable {
 
 	private final InetUtilsProperties properties;
 
-	private final Logger log = LoggerFactory.getLogger(InetUtils.class);
+	private final Logger log = LogManager.getLogger(InetUtils.class);
 
 	public InetUtils(final InetUtilsProperties properties) {
 		this.properties = properties;

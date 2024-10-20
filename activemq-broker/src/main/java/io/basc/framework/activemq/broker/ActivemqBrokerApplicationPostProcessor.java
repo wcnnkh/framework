@@ -7,11 +7,11 @@ import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Component;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @Component
 public class ActivemqBrokerApplicationPostProcessor implements ApplicationPostProcessor {
-	private static Logger logger = LoggerFactory.getLogger(ActivemqBrokerApplicationPostProcessor.class);
+	private static Logger logger = LogManager.getLogger(ActivemqBrokerApplicationPostProcessor.class);
 
 	@Override
 	public void postProcessApplication(ConfigurableApplication application) throws Throwable {

@@ -9,13 +9,13 @@ import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.pattern.HttpPattern;
 
 final class HttpRemoteCallable implements Callable<Object> {
-	private static Logger logger = LoggerFactory.getLogger(HttpRemoteCallable.class);
+	private static Logger logger = LogManager.getLogger(HttpRemoteCallable.class);
 	private final WebMessageConverter webMessageConverter;
 	private final HttpClient httpClient;
 	private final HttpPattern httpPattern;

@@ -6,7 +6,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.CompareUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  *
  */
 public final class LocalLogger {
-	private static Logger logger = LoggerFactory.getLogger(LocalLogger.class);
+	private static Logger logger = LogManager.getLogger(LocalLogger.class);
 	private final String directory;
 
 	public LocalLogger(String directory) {

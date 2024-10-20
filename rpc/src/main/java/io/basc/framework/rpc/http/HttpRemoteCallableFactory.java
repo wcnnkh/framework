@@ -14,7 +14,7 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.support.DefaultWebMessageConverters;
 import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
@@ -22,7 +22,7 @@ import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 public class HttpRemoteCallableFactory implements CallableFactory, Configurable {
-	private static Logger logger = LoggerFactory.getLogger(HttpRemoteCallableFactory.class);
+	private static Logger logger = LogManager.getLogger(HttpRemoteCallableFactory.class);
 
 	private final WebMessageConverters webMessageConverters;
 	private final HttpPatternResolvers httpPatternResolvers = new DefaultHttpPatternResolvers();

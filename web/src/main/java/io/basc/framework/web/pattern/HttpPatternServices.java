@@ -7,11 +7,11 @@ import java.util.TreeSet;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 
 class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, ServerHttpRequestAccept {
-	private static Logger logger = LoggerFactory.getLogger(HttpPatternServices.class);
+	private static Logger logger = LogManager.getLogger(HttpPatternServices.class);
 	private Set<HttpPatternService<T>> services = new TreeSet<HttpPatternService<T>>(this);
 
 	@Override

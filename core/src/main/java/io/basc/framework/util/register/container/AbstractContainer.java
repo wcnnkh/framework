@@ -8,7 +8,12 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Publisher;
+import io.basc.framework.util.actor.ChangeEvent;
+import io.basc.framework.util.register.Container;
+import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -20,11 +25,12 @@ import lombok.RequiredArgsConstructor;
  * @param <C>
  */
 @RequiredArgsConstructor
-public class LazyContainer<C> {
+public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>> implements Container<E, P> {
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 	private volatile C container;
 	@NonNull
 	private final Supplier<? extends C> containerSupplier;
+	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
 	/**
 	 * 测试container
@@ -137,8 +143,8 @@ public class LazyContainer<C> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof LazyContainer) {
-			LazyContainer<?> other = (LazyContainer<?>) obj;
+		if (obj != null && obj instanceof AbstractContainer) {
+			AbstractContainer<?, ?, ?> other = (AbstractContainer<?, ?, ?>) obj;
 			return readAsBoolean((o1) -> other.readAsBoolean((o2) -> ObjectUtils.equals(o1, o2)));
 		}
 
@@ -157,5 +163,25 @@ public class LazyContainer<C> {
 
 	public ReadWriteLock getReadWriteLock() {
 		return readWriteLock;
+	}
+
+	public Publisher<? super Elements<ChangeEvent<E>>> getPublisher() {
+		Lock lock = getReadWriteLock().readLock();
+		lock.lock();
+		try {
+			return publisher;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public void setPublisher(Publisher<? super Elements<ChangeEvent<E>>> publisher) {
+		Lock lock = getReadWriteLock().writeLock();
+		lock.lock();
+		try {
+			this.publisher = publisher == null ? Publisher.empty() : publisher;
+		} finally {
+			lock.unlock();
+		}
 	}
 }

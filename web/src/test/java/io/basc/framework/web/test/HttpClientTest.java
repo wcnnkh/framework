@@ -5,7 +5,7 @@ import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.http.client.HttpClientErrorException;
 import io.basc.framework.http.client.HttpClientResourceAccessException;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,7 +14,7 @@ import org.junit.Test;
 import io.basc.framework.http.HttpResponseEntity;
 
 public class HttpClientTest {
-	private static Logger logger = LoggerFactory.getLogger(HttpClientTest.class);
+	private static Logger logger = LogManager.getLogger(HttpClientTest.class);
 
 	@Test
 	public void test() {

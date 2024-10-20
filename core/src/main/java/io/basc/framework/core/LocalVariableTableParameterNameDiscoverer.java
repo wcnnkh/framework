@@ -36,7 +36,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * Implementation of {@link ParameterNameDiscoverer} that uses the
@@ -65,7 +65,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  */
 public class LocalVariableTableParameterNameDiscoverer implements ParameterNameDiscoverer {
 
-	private static final Logger logger = LoggerFactory.getLogger(LocalVariableTableParameterNameDiscoverer.class);
+	private static final Logger logger = LogManager.getLogger(LocalVariableTableParameterNameDiscoverer.class);
 
 	// marker object for classes that do not have any debug info
 	private static final Map<Executable, String[]> NO_DEBUG_INFO_MAP = Collections.emptyMap();

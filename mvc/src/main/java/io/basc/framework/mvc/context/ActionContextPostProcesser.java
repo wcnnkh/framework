@@ -18,13 +18,13 @@ import io.basc.framework.mvc.action.BeanAction;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class ActionContextPostProcesser implements ContextPostProcessor {
-	private static Logger logger = LoggerFactory.getLogger(ActionContextPostProcesser.class);
+	private static Logger logger = LogManager.getLogger(ActionContextPostProcesser.class);
 
 	@Override
 	public void postProcessContext(ConfigurableContext context) {

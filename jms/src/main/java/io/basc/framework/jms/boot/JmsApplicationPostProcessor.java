@@ -18,11 +18,11 @@ import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class JmsApplicationPostProcessor implements ApplicationPostProcessor {
-	private static Logger logger = LoggerFactory.getLogger(JmsApplicationPostProcessor.class);
+	private static Logger logger = LogManager.getLogger(JmsApplicationPostProcessor.class);
 
 	private List<JmsSupplier> getJmsResolvers(BeanFactory beanFactory) {
 		List<JmsSupplier> resolvers = beanFactory.getServiceLoader(JmsSupplier.class).toList();

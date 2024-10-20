@@ -3,13 +3,13 @@ package io.basc.framework.mvc;
 import java.io.IOException;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpAsyncEvent;
 import io.basc.framework.web.ServerHttpAsyncListener;
 import io.basc.framework.web.WebUtils;
 
 public class HttpChannelDestroy implements ServerHttpAsyncListener {
-	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
+	private static Logger logger = LogManager.getLogger(HttpChannelDestroy.class);
 	private final HttpChannel httpChannel;
 
 	public HttpChannelDestroy(HttpChannel httpChannel) {

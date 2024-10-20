@@ -10,13 +10,13 @@ import org.apache.poi.xssf.usermodel.XSSFComment;
 import io.basc.framework.excel.StandardSheetContext;
 import io.basc.framework.mapper.io.Exporter;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class DefaultSheetContentsHandler implements SheetContentsHandler {
-	private static Logger logger = LoggerFactory.getLogger(DefaultSheetContentsHandler.class);
+	private static Logger logger = LogManager.getLogger(DefaultSheetContentsHandler.class);
 	@NonNull
 	private final Exporter exporter;
 	private List<String> contents = new ArrayList<String>();

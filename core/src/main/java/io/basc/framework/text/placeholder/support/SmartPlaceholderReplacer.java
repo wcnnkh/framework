@@ -5,7 +5,7 @@ import io.basc.framework.text.placeholder.PlaceholderResolver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SmartPlaceholderReplacer implements PlaceholderReplacer {
-	private static final Logger logger = LoggerFactory.getLogger(SmartPlaceholderReplacer.class);
+	private static final Logger logger = LogManager.getLogger(SmartPlaceholderReplacer.class);
 	/** Value separator for system property placeholders: ":" */
 	private static final String VALUE_SEPARATOR = ":";
 

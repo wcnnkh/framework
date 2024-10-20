@@ -12,7 +12,7 @@ import io.basc.framework.retry.RetryPolicy;
 import io.basc.framework.retry.TerminatedRetryException;
 import io.basc.framework.retry.policy.SimpleRetryPolicy;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class RetryTemplate implements RetryOperations {
 	/**
@@ -20,7 +20,7 @@ public class RetryTemplate implements RetryOperations {
 	 */
 	public static final RetryOperations DEFAULT = new RetryTemplate();
 
-	private static Logger logger = LoggerFactory.getLogger(RetryTemplate.class);
+	private static Logger logger = LogManager.getLogger(RetryTemplate.class);
 	private volatile RetryListener[] listeners = new RetryListener[0];
 	private final RetryPolicy retryPolicy;
 	private boolean throwLastExceptionOnExhausted;

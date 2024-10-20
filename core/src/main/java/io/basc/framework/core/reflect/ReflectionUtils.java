@@ -28,7 +28,7 @@ import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Source;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public abstract class ReflectionUtils {
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).getElements().filter((method) -> {
@@ -432,7 +432,7 @@ public abstract class ReflectionUtils {
 		if (logger == null) {
 			synchronized (ReflectionUtils.class) {
 				if (logger == null) {
-					logger = LoggerFactory.getLogger(ReflectionUtils.class);
+					logger = LogManager.getLogger(ReflectionUtils.class);
 				}
 			}
 		}

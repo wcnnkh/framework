@@ -40,7 +40,7 @@ import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.mapper.stereotype.ObjectMapping;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class DubboRegistry {
 	private static interface ConfigFilter<T> {
@@ -53,7 +53,7 @@ public class DubboRegistry {
 
 	private static final String DUBBO_SERVICE_REF = "ref";
 
-	private static Logger logger = LoggerFactory.getLogger(DubboRegistry.class);
+	private static Logger logger = LogManager.getLogger(DubboRegistry.class);
 
 	private static final String TAG_NAME_PREFIX = "dubbo:";
 

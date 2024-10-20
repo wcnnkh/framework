@@ -12,10 +12,10 @@ import io.basc.framework.io.scan.TypeScanner;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class TestRunner {
-	private static Logger logger = LoggerFactory.getLogger(TestRunner.class);
+	private static Logger logger = LogManager.getLogger(TestRunner.class);
 
 	public static void main(String[] args) throws IOException {
 		long t = System.currentTimeMillis();

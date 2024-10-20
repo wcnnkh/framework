@@ -3,7 +3,7 @@ package io.basc.framework.netflix.eureka;
 import static com.netflix.appinfo.InstanceInfo.InstanceStatus.UNKNOWN;
 import io.basc.framework.cloud.ServiceRegistry;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.util.HashMap;
 
@@ -12,7 +12,7 @@ import com.netflix.appinfo.InstanceInfo;
 
 public class EurekaServiceRegistry implements ServiceRegistry<EurekaRegistration> {
 
-	private static final Logger log = LoggerFactory.getLogger(EurekaServiceRegistry.class);
+	private static final Logger log = LogManager.getLogger(EurekaServiceRegistry.class);
 
 	@Override
 	public void register(EurekaRegistration reg) {

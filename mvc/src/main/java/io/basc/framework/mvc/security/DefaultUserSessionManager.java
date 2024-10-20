@@ -14,7 +14,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.WebUtils;
 
 @ConditionalOnParameters
@@ -27,7 +27,7 @@ public class DefaultUserSessionManager implements UserSessionManager {
 	private static final String UID_NAME = Sys.getEnv().getProperties().get(UID_ATTRIBUTE).or("uid").getAsString();
 	private static final boolean SINGLE_SESSION = Sys.getEnv().getProperties().getAsBoolean(SINGLE_ATTRIBUTE);
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionManager.class);
+	private static Logger logger = LogManager.getLogger(DefaultUserSessionManager.class);
 
 	private final UserSessionFactory userSessionFactory;
 	private String uidName = UID_NAME;

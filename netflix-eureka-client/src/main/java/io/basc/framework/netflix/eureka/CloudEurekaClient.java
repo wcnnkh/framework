@@ -6,7 +6,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.util.actor.EventsDispatcher;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,7 +28,7 @@ import com.netflix.discovery.shared.transport.EurekaHttpResponse;
  */
 public class CloudEurekaClient extends DiscoveryClient {
 
-	private static final Logger log = LoggerFactory.getLogger(CloudEurekaClient.class);
+	private static final Logger log = LogManager.getLogger(CloudEurekaClient.class);
 
 	private final AtomicLong cacheRefreshedCount = new AtomicLong(0);
 

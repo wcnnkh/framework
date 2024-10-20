@@ -9,6 +9,7 @@ import io.basc.framework.util.Receipt;
  *
  */
 public interface Configurable {
+
 	/**
 	 * 执行配置
 	 * 

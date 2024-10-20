@@ -6,7 +6,7 @@ import io.basc.framework.util.register.PayloadBatchRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
 
-public class ObservableRegistry<E extends Observable<?>> extends ObservableList<E> {
+public class ObservableRegistry<E extends Listenable<?>> extends ObservableList<E> {
 
 	@Override
 	protected PayloadBatchRegistration<E> batch(PayloadBatchRegistration<E> batchRegistration) {

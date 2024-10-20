@@ -4,7 +4,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 
 public class ZooKeeperServerStart extends Thread {
-	private Logger logger = LoggerFactory.getLogger(ZooKeeperServerStart.class);
+	private Logger logger = LogManager.getLogger(ZooKeeperServerStart.class);
 	private static final String DATA_DIR = "dataDir";
 	private static final String DATA_LOG_DIR = "dataLogDir";
 	private static final String CLIENT_PORT = "clientPort";

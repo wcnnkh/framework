@@ -6,9 +6,7 @@ import java.util.logging.LogRecord;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.actor.EventListener;
 
 public class DynamicLogger implements Logger, Wrapper<Logger> {
 	private static final boolean NEED_TO_INFER_CALLER = Boolean
@@ -117,16 +115,6 @@ public class DynamicLogger implements Logger, Wrapper<Logger> {
 		if (isLoggable(record.getLevel())) {
 			source.log(record);
 		}
-	}
-
-	@Override
-	public void onEvent(LevelManager event) {
-		Level oldLevel = getLevel();
-		Level newLevel = event.getLevel(getName());
-		if (ObjectUtils.equals(oldLevel, newLevel)) {
-			return;
-		}
-		setLevel(newLevel);
 	}
 
 	@Override

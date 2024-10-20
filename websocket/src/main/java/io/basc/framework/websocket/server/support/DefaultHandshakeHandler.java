@@ -22,7 +22,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.websocket.SubProtocolCapable;
@@ -56,7 +56,7 @@ import java.util.Map;
  * @author Juergen Hoeller
  */
 public abstract class DefaultHandshakeHandler implements HandshakeHandler {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LogManager.getLogger(getClass());
 
 	private final RequestUpgradeStrategy requestUpgradeStrategy;
 

@@ -18,7 +18,7 @@ import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * 非对称加密签名
@@ -27,7 +27,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  *
  */
 public class AsymmetricSigner implements BytesEncoder, Cloneable {
-	private static Logger logger = LoggerFactory.getLogger(AsymmetricSigner.class);
+	private static Logger logger = LogManager.getLogger(AsymmetricSigner.class);
 
 	private final String algorithm;
 	private final Object verifyKey;

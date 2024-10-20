@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.ElementsWrapper;
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Registration;
@@ -17,16 +18,22 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PathWatcher<T extends FileVariable> extends Poller implements Registry<T>, Lifecycle {
+public class PathWatcher<T extends FileVariable> extends Poller
+		implements Registry<T>, Lifecycle, ElementsWrapper<T, Elements<T>> {
 	@NonNull
 	private final Registry<PathPoller<T>> registry;
 	@NonNull
-	private final Publisher<? super Elements<ChangeEvent<T>>> changeEventProducer;
+	private final Publisher<? super Elements<ChangeEvent<T>>> publisher;
 	@NonNull
 	private final ThreadFactory threadFactory;
 	private WatchService watchService;
 	private long timeout = 5;
 	private TimeUnit timeUnit = TimeUnit.SECONDS;
+
+	@Override
+	public Elements<T> getSource() {
+		return registry.map((e) -> e.getVariable());
+	}
 
 	@Override
 	public void run() {
@@ -37,7 +44,7 @@ public class PathWatcher<T extends FileVariable> extends Poller implements Regis
 			return;
 		}
 
-		for (PathPoller<T> poller : registry.getElements()) {
+		for (PathPoller<T> poller : registry) {
 			try {
 				poller.run(Elements.singleton(watchKey));
 			} finally {
@@ -51,16 +58,13 @@ public class PathWatcher<T extends FileVariable> extends Poller implements Regis
 	}
 
 	@Override
-	public Elements<T> getElements() {
-		return registry.getElements().map((e) -> e.getVariable());
-	}
-
-	@Override
-	public Registration register(T element) throws RegistrationException {
-		PathPoller<T> pathPoller = new PathPoller<T>(element, changeEventProducer);
-		if (!isRunning()) {
-			start();
-		}
-		return registry.register(pathPoller);
+	public Registration registers(Iterable<? extends T> elements) throws RegistrationException {
+		return Registration.registers(elements, (element) -> {
+			PathPoller<T> pathPoller = new PathPoller<T>(element, publisher);
+			if (!isRunning()) {
+				start();
+			}
+			return registry.register(pathPoller);
+		});
 	}
 }

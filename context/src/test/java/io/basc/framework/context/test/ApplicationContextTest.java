@@ -9,10 +9,10 @@ import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.support.ContextLoader;
 import io.basc.framework.context.support.GenericApplicationContext;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class ApplicationContextTest {
-	private static Logger logger = LoggerFactory.getLogger(ApplicationContextTest.class);
+	private static Logger logger = LogManager.getLogger(ApplicationContextTest.class);
 
 	@Test
 	public void test() {

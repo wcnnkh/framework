@@ -16,10 +16,10 @@ import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.Registrations;
 import io.basc.framework.util.register.container.AtomicEntryRegistration;
-import io.basc.framework.util.register.container.EntryRegistry;
+import io.basc.framework.util.register.container.MapContainer;
 import lombok.NonNull;
 
-public class ObservableEntryRegistry<K, V, C extends Map<K, AtomicEntryRegistration<K, V>>> extends EntryRegistry<K, V, C>
+public class ObservableEntryRegistry<K, V, C extends Map<K, AtomicEntryRegistration<K, V>>> extends MapContainer<K, V, C>
 		implements Observable<ChangeEvent<KeyValue<K, V>>> {
 	private final PublishService<ChangeEvent<KeyValue<K, V>>> publishService;
 

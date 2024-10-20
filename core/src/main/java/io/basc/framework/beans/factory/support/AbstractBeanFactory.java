@@ -28,11 +28,11 @@ import io.basc.framework.execution.param.Parameters;
 import io.basc.framework.observe.service.ServiceInjectors;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.Registration;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
-	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
+	private static Logger logger = LogManager.getLogger(AbstractBeanFactory.class);
 	private final AutowireParameterExtractors autowireParameterExtractors = new DefaultAutowireParameterExtractors();
 	private final BeanPostProcessors beanPostProcessors = new BeanPostProcessors();
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();

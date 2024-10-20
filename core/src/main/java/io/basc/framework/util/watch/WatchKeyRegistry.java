@@ -1,21 +1,16 @@
 package io.basc.framework.util.watch;
 
 import java.nio.file.WatchKey;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Publisher;
-import io.basc.framework.util.actor.ChangeEvent;
-import io.basc.framework.util.register.container.ArrayListRegistry;
+import io.basc.framework.util.register.container.ArrayListContainer;
 import io.basc.framework.util.register.container.ElementRegistration;
-import lombok.NonNull;
 
-public class WatchKeyRegistry extends ArrayListRegistry<WatchKey> {
+public class WatchKeyRegistry extends ArrayListContainer<WatchKey> {
 
-	public WatchKeyRegistry(int initialCapacity,
-			@NonNull Publisher<? super Elements<ChangeEvent<WatchKey>>> changeEventsProducter) {
-		super(() -> new ArrayList<>(initialCapacity), changeEventsProducter);
+	public WatchKeyRegistry(int initialCapacity) {
+		super(initialCapacity);
 	}
 
 	@Override
@@ -36,7 +31,7 @@ public class WatchKeyRegistry extends ArrayListRegistry<WatchKey> {
 	}
 
 	@Override
-	public Elements<WatchKey> getElements() {
-		return super.getElements().filter((e) -> !e.isValid());
+	public Elements<ElementRegistration<WatchKey>> getElements() {
+		return super.getElements().filter((e) -> !e.getPayload().isValid());
 	}
 }

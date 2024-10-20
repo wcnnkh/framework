@@ -20,10 +20,10 @@ import io.basc.framework.dom.DocumentTransformer;
 import io.basc.framework.dom.DomException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class XmlTransformer implements DocumentTransformer {
-	private static Logger logger = LoggerFactory.getLogger(XmlTransformer.class);
+	private static Logger logger = LogManager.getLogger(XmlTransformer.class);
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 	static {
 		try {

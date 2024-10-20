@@ -7,7 +7,7 @@ import io.basc.framework.messageing.Message;
 import io.basc.framework.messageing.TextMessage;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.PingMessage;
 import io.basc.framework.websocket.PongMessage;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractWebSocketSession<T> implements NativeWebSocketSession {
-	protected static final Logger logger = LoggerFactory.getLogger(NativeWebSocketSession.class);
+	protected static final Logger logger = LogManager.getLogger(NativeWebSocketSession.class);
 
 	private final Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 

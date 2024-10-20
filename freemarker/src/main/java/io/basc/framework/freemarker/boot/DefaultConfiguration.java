@@ -11,12 +11,12 @@ import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.freemarker.EnvConfiguration;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @Component
 @ConditionalOnMissingBean(DefaultConfiguration.class)
 public class DefaultConfiguration extends EnvConfiguration {
-	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
+	private static Logger logger = LogManager.getLogger(DefaultConfiguration.class);
 
 	public DefaultConfiguration(ApplicationContext context) throws IOException {
 		super(context);

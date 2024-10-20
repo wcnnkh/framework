@@ -18,11 +18,11 @@ import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor
 		implements ClientHttpRequestFactory {
-	private static Logger logger = LoggerFactory.getLogger(SimpleClientHttpRequestFactory.class);
+	private static Logger logger = LogManager.getLogger(SimpleClientHttpRequestFactory.class);
 
 	public static void truseAll() {
 		System.setProperty("io.basc.framework.http.truse.all.sll", "true");

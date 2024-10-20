@@ -13,13 +13,13 @@ import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.net.Entity;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class EntityMessageConverter extends AbstractWebMessageConverter {
-	private static Logger logger = LoggerFactory.getLogger(EntityMessageConverter.class);
+	private static Logger logger = LogManager.getLogger(EntityMessageConverter.class);
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {

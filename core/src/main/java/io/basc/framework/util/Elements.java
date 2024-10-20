@@ -163,7 +163,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		Streamable.super.forEach(action);
 	}
 
-	default Elements<Indexed<E>> index() {
+	default Elements<Indexed<E>> indexed() {
 		return Elements.of(() -> {
 			AtomicLong lineNumber = new AtomicLong();
 			return stream().sequential().map((e) -> new Indexed<>(lineNumber.getAndIncrement(), e));
@@ -240,8 +240,8 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return convert((e) -> e.unordered());
 	}
 
-	default E get(long index) throws IndexOutOfBoundsException {
-		Indexed<E> indexed = index == 0 ? index().first() : index().filter((e) -> e.getIndex() == index).first();
+	default E index(long index) throws IndexOutOfBoundsException {
+		Indexed<E> indexed = index == 0 ? indexed().first() : indexed().filter((e) -> e.getIndex() == index).first();
 		if (indexed == null) {
 			throw new IndexOutOfBoundsException("index out of range: " + index);
 		}

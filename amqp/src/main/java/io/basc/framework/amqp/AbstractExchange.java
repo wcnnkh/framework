@@ -17,7 +17,7 @@ import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.Registration;
 
 /**
@@ -27,7 +27,7 @@ import io.basc.framework.util.register.Registration;
  *
  */
 public abstract class AbstractExchange<T> implements Exchange<T> {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LogManager.getLogger(getClass());
 	private final ExchangeDeclare exchangeDeclare;
 	private RetryOperations retryOperations = new RetryTemplate();
 

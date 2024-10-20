@@ -12,7 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * 任务队列 默认是一个守护线程自动退出
@@ -21,7 +21,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  *
  */
 public class TaskQueue extends Thread implements AsyncExecutor {
-	private static Logger logger = LoggerFactory.getLogger(TaskQueue.class);
+	private static Logger logger = LogManager.getLogger(TaskQueue.class);
 	private final BlockingQueue<Runnable> queue;
 	private boolean tryGet = true;
 	private AtomicBoolean started = new AtomicBoolean();

@@ -8,14 +8,14 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 public class FileMimeTypeUitls {
-	private static Logger logger = LoggerFactory.getLogger(FileMimeTypeUitls.class);
+	private static Logger logger = LogManager.getLogger(FileMimeTypeUitls.class);
 	private static MultiValueMap<String, MimeType> fileExtensionToMediaTypes;
 
 	static {

@@ -14,13 +14,13 @@ import io.basc.framework.util.observe_old.Observable;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.container.AtomicElementRegistration;
-import io.basc.framework.util.register.container.ElementRegistry;
+import io.basc.framework.util.register.container.CollectionContainer;
 import io.basc.framework.util.register.container.ServiceBatchRegistration;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class ObservableElementRegistry<E, C extends Collection<AtomicElementRegistration<E>>> extends ElementRegistry<E, C>
+public class ObservableElementRegistry<E, C extends Collection<AtomicElementRegistration<E>>> extends CollectionContainer<E, C>
 		implements Observable<ChangeEvent<E>> {
 	private final PublishService<ChangeEvent<E>> publishService;
 

@@ -7,7 +7,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.LeaseInfo;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * See com.netflix.appinfo.providers.EurekaConfigBasedInstanceInfoProvider.
@@ -15,7 +15,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  */
 public class InstanceInfoFactory {
 
-	private static final Logger log = LoggerFactory.getLogger(InstanceInfoFactory.class);
+	private static final Logger log = LogManager.getLogger(InstanceInfoFactory.class);
 
 	public InstanceInfo create(EurekaInstanceConfig config) {
 		LeaseInfo.Builder leaseInfoBuilder = LeaseInfo.Builder.newBuilder()

@@ -6,7 +6,7 @@ import java.net.URL;
 import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * Default implementation of {@link DefaultManagementMetadataProvider}.
@@ -16,7 +16,7 @@ public class DefaultManagementMetadataProvider implements ManagementMetadataProv
 
 	private static final int RANDOM_PORT = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(DefaultManagementMetadataProvider.class);
+	private static final Logger log = LogManager.getLogger(DefaultManagementMetadataProvider.class);
 
 	@Override
 	public ManagementMetadata get(EurekaInstanceConfigBean instance, int serverPort, String serverContextPath,

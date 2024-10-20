@@ -20,7 +20,7 @@ import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.websocket.WebSocketHandler;
@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LogManager.getLogger(getClass());
 
 	private final Set<String> allowedOrigins = new LinkedHashSet<String>();
 

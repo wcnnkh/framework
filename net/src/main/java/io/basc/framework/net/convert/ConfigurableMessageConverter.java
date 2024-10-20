@@ -13,7 +13,7 @@ import io.basc.framework.net.OutputMessage;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.Registration;
 import lombok.Getter;
 import lombok.NonNull;
@@ -37,7 +37,7 @@ public class ConfigurableMessageConverter extends ConfigurableServices<MessageCo
 	}
 
 	private static final ComparatorMessageConverter COMPARATOR_MESSAGE_CONVERTER = new ComparatorMessageConverter();
-	private static Logger logger = LoggerFactory.getLogger(ConfigurableMessageConverter.class);
+	private static Logger logger = LogManager.getLogger(ConfigurableMessageConverter.class);
 
 	private static final NestingChecker<MessageConverter> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
 

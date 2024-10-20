@@ -12,11 +12,11 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.xml.XmlUtils;
 
 public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority> {
-	private static Logger logger = LoggerFactory.getLogger(XmlHttpAuthorityManager.class);
+	private static Logger logger = LogManager.getLogger(XmlHttpAuthorityManager.class);
 	private final Environment environment;
 
 	public XmlHttpAuthorityManager(Environment environment, Resource resource) {

@@ -14,11 +14,11 @@ import io.basc.framework.mvc.annotation.IPSecurity;
 import io.basc.framework.security.ip.IPValidationFailedException;
 import io.basc.framework.security.ip.IPVerification;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public final class IPSecurityActionInterceptor implements ActionInterceptor, ActionInterceptorAccept {
-	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionInterceptor.class);
+	private static Logger logger = LogManager.getLogger(IPSecurityActionInterceptor.class);
 	private BeanFactory beanFactory;
 
 	public IPSecurityActionInterceptor(BeanFactory beanFactory) {

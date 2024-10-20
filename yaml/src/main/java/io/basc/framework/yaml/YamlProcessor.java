@@ -38,10 +38,10 @@ import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class YamlProcessor implements Function<Resource, Properties>, PropertiesResolver {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LogManager.getLogger(getClass());
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
 

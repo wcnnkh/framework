@@ -2,7 +2,7 @@ package io.basc.framework.util.spi;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Keys;
-import io.basc.framework.util.Observable;
+import io.basc.framework.util.Listenable;
 import io.basc.framework.util.actor.ChangeEvent;
 
 /**
@@ -12,5 +12,5 @@ import io.basc.framework.util.actor.ChangeEvent;
  *
  * @param <K>
  */
-public interface ObservableKeys<K> extends Observable<Elements<ChangeEvent<K>>>, Keys<K> {
+public interface ObservableKeys<K> extends Listenable<Elements<ChangeEvent<K>>>, Keys<K> {
 }

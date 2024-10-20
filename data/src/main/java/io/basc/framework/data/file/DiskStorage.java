@@ -16,10 +16,10 @@ import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class DiskStorage extends TimerTask implements DataStorage {
-	private static Logger logger = LoggerFactory.getLogger(DiskStorage.class);
+	private static Logger logger = LogManager.getLogger(DiskStorage.class);
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DiskStorage.class.getSimpleName(), true);
 	private final long exp;

@@ -20,7 +20,7 @@ import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
 import io.basc.framework.util.MultiIterable;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
@@ -140,7 +140,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		if (action != null) {
-			httpChannel.setLogger(LoggerFactory.getLogger(action.getSourceClass().getName()));
+			httpChannel.setLogger(LogManager.getLogger(action.getSourceClass().getName()));
 		}
 
 		if (httpChannel.getLogger().isDebugEnabled()) {

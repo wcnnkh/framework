@@ -25,13 +25,13 @@ import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.pattern.HttpPattern;
 
 @ConditionalOnParameters
 public class AnnotationActionResolverExtend implements ActionResolverExtend {
-	private static Logger logger = LoggerFactory.getLogger(AnnotationActionResolverExtend.class);
+	private static Logger logger = LogManager.getLogger(AnnotationActionResolverExtend.class);
 	private static final Encoder<String, String> ID_ENCODER = CharsetCodec.UTF_8.toBase64();
 
 	@Override

@@ -51,13 +51,18 @@ public interface ListElementsWrapper<E, W extends List<E>> extends ListWrapper<E
 	}
 
 	@Override
-	default E get(long index) throws IndexOutOfBoundsException {
+	default E get(int index) throws IndexOutOfBoundsException {
+		List<E> list = getSource();
+		return list.get((int) index);
+	}
+
+	@Override
+	default E index(long index) throws IndexOutOfBoundsException {
 		if (index > Integer.MAX_VALUE) {
 			throw new IndexOutOfBoundsException("index out of range: " + index);
 		}
 
-		List<E> list = getSource();
-		return list.get((int) index);
+		return get((int) index);
 	}
 
 	@Override

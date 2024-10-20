@@ -13,16 +13,16 @@ import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
 
 public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
-	private static Logger logger = LoggerFactory.getLogger(PathPoller.class);
+	private static Logger logger = LogManager.getLogger(PathPoller.class);
 	private volatile Path watchable;
 	// 初始容量给小了，因为大部分情况下只会有一个WatchKey
-	private final WatchKeyRegistry watchKeyRegistry = new WatchKeyRegistry(2, Publisher.empty());
+	private final WatchKeyRegistry watchKeyRegistry = new WatchKeyRegistry(2);
 
 	public PathPoller(@NonNull T variable, @NonNull Publisher<? super Elements<ChangeEvent<T>>> changeEventProducer) {
 		super(variable, changeEventProducer);
@@ -140,7 +140,7 @@ public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
 	@Override
 	public void run() {
 		try {
-			run(watchKeyRegistry.getElements());
+			run(watchKeyRegistry);
 		} finally {
 			super.run();
 		}

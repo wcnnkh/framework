@@ -4,13 +4,13 @@ import java.util.function.BooleanSupplier;
 
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Listener;
-import io.basc.framework.util.Observable;
+import io.basc.framework.util.Listenable;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.actor.LifecycleDispatcher;
 import io.basc.framework.util.concurrent.limit.DisposableLimiter;
 
 public abstract class AbstractLifecycleRegistration extends LimitableRegistration
-		implements LifecycleRegistration, Observable<Lifecycle> {
+		implements LifecycleRegistration, Listenable<Lifecycle> {
 	private final LifecycleDispatcher dispatcher = new LifecycleDispatcher();
 
 	public AbstractLifecycleRegistration() {

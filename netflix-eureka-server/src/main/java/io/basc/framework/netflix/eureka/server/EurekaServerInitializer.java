@@ -8,7 +8,7 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * 自动启动eureka服务端
@@ -18,7 +18,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  */
 @ConditionalOnParameters
 public class EurekaServerInitializer implements ServletContextInitialization, Destroy {
-	private static Logger logger = LoggerFactory.getLogger(EurekaServerInitializer.class);
+	private static Logger logger = LogManager.getLogger(EurekaServerInitializer.class);
 
 	@Autowired
 	private EurekaServerBootstrap eurekaServerBootstrap;

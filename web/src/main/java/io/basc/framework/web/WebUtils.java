@@ -35,12 +35,12 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.xml.XmlUtils;
 
 public final class WebUtils {
-	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
+	private static Logger logger = LogManager.getLogger(WebUtils.class);
 	private static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_lOCAL = new NamedThreadLocal<ServerHttpRequest>(
 			ServerHttpRequest.class.getName());
 

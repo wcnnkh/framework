@@ -21,7 +21,7 @@ import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.broadcast.BroadcastEventRegistry;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.value.AbstractEditablePropertyFactory;
 
 /**
@@ -31,7 +31,7 @@ import io.basc.framework.value.AbstractEditablePropertyFactory;
  *
  */
 public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFactory implements Watcher {
-	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
+	private static Logger logger = LogManager.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 	private Serializer serializer;

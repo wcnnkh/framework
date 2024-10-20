@@ -34,7 +34,7 @@ import io.basc.framework.util.Status;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.TimeUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.MultiPartServerHttpRequest;
 import io.basc.framework.web.ServerHttpRequest;
@@ -52,7 +52,7 @@ import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 @ConditionalOnParameters
 public class Uploader implements ResourceStorageService, HttpService, ServerHttpRequestAccept {
 	public static final String CONTROLLER = "${upload.controller:/upload}";
-	private static Logger logger = LoggerFactory.getLogger(Uploader.class);
+	private static Logger logger = LogManager.getLogger(Uploader.class);
 	private final String directory;
 	private String baseUrl;
 	@Value(CONTROLLER)

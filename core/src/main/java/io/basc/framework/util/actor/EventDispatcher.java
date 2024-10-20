@@ -4,7 +4,7 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.register.Registry;
-import io.basc.framework.util.register.container.ArrayListRegistry;
+import io.basc.framework.util.register.container.ArrayListContainer;
 import io.basc.framework.util.select.Dispatcher;
 import lombok.Getter;
 import lombok.NonNull;
@@ -23,7 +23,7 @@ public class EventDispatcher<T> extends AbstractExchange<T> {
 	private final Registry<Listener<? super T>> registry;
 
 	public EventDispatcher() {
-		this(Dispatcher.identity(), new ArrayListRegistry<>());
+		this(Dispatcher.identity(), new ArrayListContainer<>());
 	}
 
 	@Override
@@ -37,8 +37,7 @@ public class EventDispatcher<T> extends AbstractExchange<T> {
 	}
 
 	public void syncPublish(T resource) {
-		Elements<Listener<? super T>> elements = registry.getElements();
-		elements = dispatcher.dispatch(elements);
+		Elements<Listener<? super T>> elements = dispatcher.dispatch(registry);
 		elements.forEach((e) -> e.accept(resource));
 	}
 }

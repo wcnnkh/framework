@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.util.Receipt;
 
-public interface ListenableReceipt<T extends Receipt> extends Listenable<T>, Receipt {
+public interface ListenableReceipt<T extends Receipt> extends ListenableRegistration<T>, Receipt {
 
 	/**
 	 * 等待

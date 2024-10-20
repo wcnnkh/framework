@@ -1,25 +1,22 @@
 package io.basc.framework.util.logging;
 
-import io.basc.framework.util.Assert;
+public final class LogManager {
+	private static final JdkLoggerFactory JDK_LOGGER_FACTORY = new JdkLoggerFactory();
+	private static DynamicLoggerFactory source = new DynamicLoggerFactory(JDK_LOGGER_FACTORY);
 
-public class LogManager {
-	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();
-	private static DynamicLoggerFactory loggerFactory = new DynamicLoggerFactory(GLOBA_LOGGER_FACTORY);
-	private static LevelManager levelManager = new LevelManager();
-
-	static {
-		loggerFactory.doNativeConfigure();
+	public static Logger getLogger(Class<?> clazz) {
+		return getLogger(clazz.getName());
 	}
 
 	public static Logger getLogger(String name) {
-		Assert.requiredArgument(name != null, "name");
-		loggerFactory.doNativeConfigure();
-		return loggerFactory.getLogger(name);
+		return source.getLogger(name);
 	}
 
-	public static Logger getLogger(Class<?> clazz) {
-		Assert.requiredArgument(clazz != null, "clazz");
-		loggerFactory.doNativeConfigure();
-		return loggerFactory.getLogger(clazz.getName());
+	public static DynamicLoggerFactory getSource() {
+		return source;
 	}
+
+	private LogManager() {
+		throw new UnsupportedOperationException();
+	};
 }

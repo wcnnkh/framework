@@ -4,14 +4,14 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Callable;
 
 public class RemoteMethodInterceptor implements MethodInterceptor{
-	private static Logger logger = LoggerFactory.getLogger(RemoteMethodInterceptor.class);
+	private static Logger logger = LogManager.getLogger(RemoteMethodInterceptor.class);
 	private final CallableFactory callableFactory;
 
 	public RemoteMethodInterceptor(CallableFactory callableFactory){

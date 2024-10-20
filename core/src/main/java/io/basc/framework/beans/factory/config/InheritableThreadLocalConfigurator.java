@@ -6,7 +6,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Status;
 import io.basc.framework.util.function.Source;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.transmittable.AnyInheriterRegistry;
 
 /**
@@ -17,7 +17,7 @@ import io.basc.framework.util.transmittable.AnyInheriterRegistry;
  * @param <T>
  */
 public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLocal<T> implements Configurable {
-	private static Logger logger = LoggerFactory.getLogger(InheritableThreadLocalConfigurator.class);
+	private static Logger logger = LogManager.getLogger(InheritableThreadLocalConfigurator.class);
 	private final Class<T> serviceClass;
 	private boolean configured;
 	private volatile T defaultService;

@@ -3,35 +3,61 @@ package io.basc.framework.util.logging;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
+import java.util.logging.Level;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Reloadable;
-import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.spi.Configurable;
-import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 import lombok.NonNull;
 
-public class DynamicLoggerFactory implements ILoggerFactory, Reloadable, Configurable {
-	@NonNull
-	private volatile ILoggerFactory loggerFactory;
-	private volatile Map<String, DynamicLogger> loggerMap = new HashMap<String, DynamicLogger>();
+public class DynamicLoggerFactory implements LoggerFactory {
 	private volatile LevelFactory levelFactory;
+	@NonNull
+	private volatile LoggerFactory loggerFactory;
+	private volatile Map<String, DynamicLogger> loggerMap = new HashMap<String, DynamicLogger>();
 
-	public DynamicLoggerFactory(@NonNull ILoggerFactory loggerFactory) {
+	public DynamicLoggerFactory(@NonNull LoggerFactory loggerFactory) {
 		Assert.requiredArgument(loggerFactory != null, "loggerFactory");
 		this.loggerFactory = loggerFactory;
 	}
 
+	public LevelFactory getLevelFactory() {
+		return levelFactory;
+	}
+
 	@Override
 	public DynamicLogger getLogger(String name) {
+		return getDynamicLogger(name, true);
+	}
+
+	protected Logger getSource(String name) {
+		return loggerFactory.getLogger(name);
+	}
+
+	protected Level getLevel(String name) {
+		if (levelFactory == null) {
+			return null;
+		}
+
+		return levelFactory.getLevel(name);
+	}
+
+	public DynamicLogger getDynamicLogger(String name, boolean create) {
 		DynamicLogger logger = loggerMap.get(name);
-		if (logger == null) {
+		if (logger == null && create) {
 			synchronized (this) {
 				logger = loggerMap.get(name);
-				if (logger == null) {
-					Logger source = loggerFactory.getLogger(name);
-					logger = createDynamicLogger(name, source);
+				if (logger == null && create) {
+					Logger source = getSource(name);
+					if (source instanceof DynamicLogger) {
+						logger = (DynamicLogger) source;
+					} else {
+						logger = new DynamicLogger(source);
+					}
+
+					Level level = getLevel(name);
+					if (level != null) {
+						logger.setLevel(level);
+					}
 					loggerMap.put(name, logger);
 				}
 			}
@@ -39,49 +65,72 @@ public class DynamicLoggerFactory implements ILoggerFactory, Reloadable, Configu
 		return logger;
 	}
 
-	protected DynamicLogger createDynamicLogger(String name, Logger source) {
-		if (source instanceof DynamicLogger) {
-			return (DynamicLogger) source;
-		} else {
-			return new DynamicLogger(source);
-		}
-	}
-
-	public ILoggerFactory getLoggerFactory() {
+	public LoggerFactory getLoggerFactory() {
 		synchronized (this) {
 			return loggerFactory;
 		}
 	}
 
-	private volatile ServiceLoader<ILoggerFactory> serviceLoader;
-
-	@Override
-	public void reload() {
+	public void setLogger(String name, Logger source) {
 		synchronized (this) {
-			if (this.serviceLoader != null) {
-				this.serviceLoader.reload();
-				ILoggerFactory loggerFactory = this.serviceLoader.first();
-				if (loggerFactory != null) {
-					this.loggerFactory = loggerFactory;
-				}
+			DynamicLogger logger = getLogger(name);
+			logger.setSource(source);
+		}
+	}
+
+	public void setLevel(String name, Level level) {
+		synchronized (this) {
+			DynamicLogger logger = getLogger(name);
+			logger.setLevel(level);
+		}
+	}
+
+	public boolean update(@NonNull String name, @NonNull Predicate<? super DynamicLogger> consumer) {
+		synchronized (this) {
+			DynamicLogger logger = getDynamicLogger(name, false);
+			if (logger == null) {
+				// 还没有初始化可以忽略
+				return false;
 			}
 
+			return consumer.test(logger);
+		}
+	}
+
+	public boolean updateLevel(@NonNull String name, @NonNull LevelFactory levelFactory) {
+		return update(name, (logger) -> {
+			Level level = levelFactory.getLevel(name);
+			logger.setLevel(level);
+			return true;
+		});
+	}
+
+	public boolean updateLogger(@NonNull String name, @NonNull LoggerFactory loggerFactory) {
+		return update(name, (logger) -> {
+			Logger source = loggerFactory.getLogger(name);
+			if (source == null) {
+				return false;
+			}
+
+			logger.setSource(source);
+			return true;
+		});
+	}
+
+	public void setLevelFactory(@NonNull LevelFactory levelFactory) {
+		synchronized (this) {
+			if (this.levelFactory == levelFactory) {
+				return;
+			}
+
+			this.levelFactory = levelFactory;
 			for (Entry<String, DynamicLogger> entry : this.loggerMap.entrySet()) {
-				reload(entry.getKey(), entry.getValue());
+				updateLevel(entry.getKey(), levelFactory);
 			}
 		}
 	}
 
-	protected void reload(String name, DynamicLogger dynamicLogger) {
-		if (loggerFactory != null) {
-			Logger logger = loggerFactory.getLogger(name);
-			if (logger != null) {
-				dynamicLogger.setSource(logger);
-			}
-		}
-	}
-
-	public void setLoggerFactory(@NonNull ILoggerFactory loggerFactory) {
+	public void setLoggerFactory(@NonNull LoggerFactory loggerFactory) {
 		Assert.requiredArgument(loggerFactory != null, "loggerFactory");
 		synchronized (this) {
 			if (this.loggerFactory == loggerFactory) {
@@ -89,30 +138,9 @@ public class DynamicLoggerFactory implements ILoggerFactory, Reloadable, Configu
 			}
 
 			this.loggerFactory = loggerFactory;
-			reload();
-		}
-	}
-
-	@Override
-	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
-		if (this.serviceLoader == null) {
-			synchronized (this) {
-				if (this.serviceLoader == null) {
-					try {
-						ServiceLoader<ILoggerFactory> serviceLoader = discovery
-								.getServiceProvider(ILoggerFactory.class);
-						ILoggerFactory loggerFactory = serviceLoader.first();
-						if (loggerFactory != null) {
-							setLoggerFactory(loggerFactory);
-						}
-					} catch (Throwable e) {
-						return Receipt.fail(e);
-					}
-				}
+			for (Entry<String, DynamicLogger> entry : this.loggerMap.entrySet()) {
+				updateLogger(entry.getKey(), loggerFactory);
 			}
 		}
-		return Receipt.success();
 	}
-	
-	
 }

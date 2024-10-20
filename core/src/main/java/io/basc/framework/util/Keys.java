@@ -8,7 +8,7 @@ package io.basc.framework.util;
  * @param <K>
  */
 public interface Keys<K> {
-	Elements<K> fetchKeys();
+	Elements<K> keys();
 
 	/**
 	 * 是否存在此key
@@ -17,6 +17,6 @@ public interface Keys<K> {
 	 * @return
 	 */
 	default boolean hasKey(K key) {
-		return fetchKeys().contains(key);
+		return keys().contains(key);
 	}
 }

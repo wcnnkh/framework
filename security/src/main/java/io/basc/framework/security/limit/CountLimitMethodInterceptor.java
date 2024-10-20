@@ -10,7 +10,7 @@ import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * count limit 实现
@@ -20,7 +20,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  */
 @ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public final class CountLimitMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
-	private static Logger logger = LoggerFactory.getLogger(CountLimitMethodInterceptor.class);
+	private static Logger logger = LogManager.getLogger(CountLimitMethodInterceptor.class);
 	private final InstanceFactory instanceFactory;
 
 	public CountLimitMethodInterceptor(InstanceFactory instanceFactory) {

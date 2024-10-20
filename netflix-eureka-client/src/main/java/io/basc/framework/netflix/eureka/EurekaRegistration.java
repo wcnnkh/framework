@@ -19,7 +19,7 @@ import io.basc.framework.cloud.Service;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.Data;
 
 /**
@@ -28,7 +28,7 @@ import lombok.Data;
  */
 @Data
 public class EurekaRegistration implements Service {
-	private static final Logger log = LoggerFactory.getLogger(EurekaRegistration.class);
+	private static final Logger log = LogManager.getLogger(EurekaRegistration.class);
 
 	private final EurekaClient eurekaClient;
 

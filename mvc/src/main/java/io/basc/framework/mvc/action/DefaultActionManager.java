@@ -11,7 +11,7 @@ import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.broadcast.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.web.ServerHttpRequest;
@@ -21,7 +21,7 @@ import io.basc.framework.web.pattern.HttpPatternMatcher;
 @ConditionalOnParameters
 public class DefaultActionManager extends StandardBroadcastEventDispatcher<ChangeEvent<Action>>
 		implements ActionManager {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LogManager.getLogger(getClass());
 	private HttpPatternMatcher<Action> registry = new HttpPatternMatcher<Action>();
 	private Map<Method, Action> actionMap = new HashMap<Method, Action>();
 

@@ -2,10 +2,10 @@ package io.basc.framework.log4j2;
 
 import org.apache.logging.log4j.LogManager;
 
-import io.basc.framework.util.logging.ILoggerFactory;
+import io.basc.framework.util.logging.LoggerFactory;
 import io.basc.framework.util.logging.Logger;
 
-public class Log4j2LoggerFactory implements ILoggerFactory {
+public class Log4j2LoggerFactory implements LoggerFactory {
 
 	static {
 		Log4j2Utils.reconfigure();

@@ -16,7 +16,7 @@ import io.basc.framework.rpc.remote.RemoteRequestMessage;
 import io.basc.framework.rpc.remote.RemoteResponseMessage;
 import io.basc.framework.rpc.support.ServiceCallableFactory;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -30,7 +30,7 @@ import io.basc.framework.web.pattern.HttpPattern;
  */
 @ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)
 public class RemoteHttpServiceHandler extends HttpPattern implements HttpService {
-	private static Logger logger = LoggerFactory.getLogger(RemoteHttpServiceHandler.class);
+	private static Logger logger = LogManager.getLogger(RemoteHttpServiceHandler.class);
 	private final CallableFactory callableFactory;
 	private final RemoteMessageCodec messageCodec;
 

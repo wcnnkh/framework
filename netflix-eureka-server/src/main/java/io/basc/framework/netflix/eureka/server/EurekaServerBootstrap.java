@@ -19,10 +19,10 @@ import com.netflix.eureka.util.EurekaMonitors;
 import com.thoughtworks.xstream.XStream;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class EurekaServerBootstrap {
-	private static Logger log = LoggerFactory.getLogger(EurekaServerBootstrap.class);
+	private static Logger log = LogManager.getLogger(EurekaServerBootstrap.class);
 
 	protected EurekaServerConfig eurekaServerConfig;
 

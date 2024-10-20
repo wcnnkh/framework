@@ -9,7 +9,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class LocationPatternResources implements ServiceLoader<Resource> {
-	private static Logger logger = LoggerFactory.getLogger(LocationPatternResources.class);
+	private static Logger logger = LogManager.getLogger(LocationPatternResources.class);
 	@NonNull
 	private final ResourcePatternResolver resourcePatternResolver;
 	@NonNull

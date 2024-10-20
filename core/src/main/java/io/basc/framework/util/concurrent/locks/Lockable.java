@@ -5,10 +5,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public interface Lockable extends Lock {
-	static Logger defaultLogger = LoggerFactory.getLogger(Lockable.class);
+	static Logger defaultLogger = LogManager.getLogger(Lockable.class);
 
 	@Override
 	default void lock() {

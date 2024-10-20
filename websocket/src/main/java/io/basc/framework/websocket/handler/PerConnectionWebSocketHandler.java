@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.support.BeanFactoryAccessor;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;
@@ -41,7 +41,7 @@ import io.basc.framework.websocket.WebSocketSession;
  */
 public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implements WebSocketHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(PerConnectionWebSocketHandler.class);
+	private static final Logger logger = LogManager.getLogger(PerConnectionWebSocketHandler.class);
 	private Class<? extends WebSocketHandler> handlerType;
 
 	private final Map<WebSocketSession, WebSocketHandler> handlers = new ConcurrentHashMap<WebSocketSession, WebSocketHandler>();

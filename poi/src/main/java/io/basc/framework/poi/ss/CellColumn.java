@@ -7,14 +7,14 @@ import io.basc.framework.excel.SheetContext;
 import io.basc.framework.util.Item;
 import io.basc.framework.util.SimpleItem;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class CellColumn implements SheetColumn {
-	private static Logger logger = LoggerFactory.getLogger(CellColumn.class);
+	private static Logger logger = LogManager.getLogger(CellColumn.class);
 	private final Cell cell;
 	private final Item row;
 	private final SheetContext sheetContext;

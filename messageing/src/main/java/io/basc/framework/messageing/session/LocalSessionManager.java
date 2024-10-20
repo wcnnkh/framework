@@ -5,10 +5,10 @@ import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class LocalSessionManager extends AbstractSessionManager {
-	private static Logger logger = LoggerFactory.getLogger(LocalSessionManager.class);
+	private static Logger logger = LogManager.getLogger(LocalSessionManager.class);
 	private ConcurrentHashMap<String, Session> sessionMap = new ConcurrentHashMap<String, Session>();
 
 	public Session getSession(String sessionId) {

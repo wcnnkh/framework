@@ -2,7 +2,7 @@ package io.basc.framework.util.register;
 
 import java.util.Arrays;
 
-import io.basc.framework.util.Listable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
 
 /**
@@ -12,7 +12,7 @@ import io.basc.framework.util.Registration;
  *
  * @param <T>
  */
-public interface Registry<E> extends Listable<E> {
+public interface Registry<E> extends Elements<E> {
 	/**
 	 * 注册一个
 	 * 

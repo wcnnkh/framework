@@ -8,20 +8,38 @@ package io.basc.framework.util;
  * @param <K>
  * @param <V>
  */
-public interface KeyValues<K, V> extends Listable<KeyValue<K, V>>, Keys<K> {
+public interface KeyValues<K, V> extends Elements<KeyValue<K, V>>, Keys<K> {
+
+	public static <K, V> KeyValues<K, V> of(Elements<KeyValue<K, V>> elements) {
+		return new KeyValuesWrapper<K, V>() {
+			@Override
+			public Elements<KeyValue<K, V>> getSource() {
+				return elements;
+			}
+		};
+	}
 
 	@Override
-	default Elements<K> fetchKeys() {
-		return getElements().map((e) -> e.getKey());
+	default Elements<K> keys() {
+		return map((e) -> e.getKey());
 	}
 
 	/**
 	 * 获取key对应的键值对
 	 * 
-	 * @param key
+	 * @param keys
 	 * @return
 	 */
-	default Elements<KeyValue<K, V>> getElements(K key) {
-		return getElements().filter((e) -> ObjectUtils.equals(key, e.getKey()));
+	default KeyValues<K, V> gets(Iterable<? extends K> keys) {
+		Elements<KeyValue<K, V>> elements = filter((keyValue) -> {
+			for (K key : keys) {
+				if (ObjectUtils.equals(key, keyValue.getKey())) {
+					return true;
+				}
+			}
+			return false;
+		});
+
+		return KeyValues.of(elements);
 	}
 }

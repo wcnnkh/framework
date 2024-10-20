@@ -13,7 +13,7 @@ import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * 一个json请求
@@ -22,7 +22,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  *
  */
 public class JsonServerHttpRequest extends CachingServerHttpRequest {
-	private static Logger logger = LoggerFactory.getLogger(JsonServerHttpRequest.class);
+	private static Logger logger = LogManager.getLogger(JsonServerHttpRequest.class);
 	private JsonSupport jsonSupport;
 
 	public JsonServerHttpRequest(ServerHttpRequest targetRequest) {

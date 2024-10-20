@@ -16,10 +16,10 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class StandardSessionManager<T> {
-	private static Logger logger = LoggerFactory.getLogger(StandardSessionManager.class);
+	private static Logger logger = LogManager.getLogger(StandardSessionManager.class);
 	private final String groupKey;
 	private final ConcurrentHashMap<T, ConcurrentHashMap<String, Session>> groupMap = new ConcurrentHashMap<>();
 

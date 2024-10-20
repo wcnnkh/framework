@@ -1,9 +1,9 @@
 package io.basc.framework.util.actor;
 
-import io.basc.framework.util.Observable;
+import io.basc.framework.util.Listenable;
 import io.basc.framework.util.Publisher;
 
-public interface Exchange<T> extends Observable<T>, Publisher<T> {
+public interface Exchange<T> extends Listenable<T>, Publisher<T> {
 
 	/**
 	 * 批处理

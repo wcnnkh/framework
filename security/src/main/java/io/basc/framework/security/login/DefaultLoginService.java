@@ -6,11 +6,11 @@ import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private Logger logger = LogManager.getLogger(getClass());
 	private static final String DEFAULT_PREFIX = "login:";
 	private final String prefix;
 

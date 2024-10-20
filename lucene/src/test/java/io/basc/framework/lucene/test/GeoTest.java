@@ -27,7 +27,7 @@ import io.basc.framework.lucene.LuceneWriteException;
 import io.basc.framework.lucene.SearchParameters;
 import io.basc.framework.lucene.SearchResults;
 import io.basc.framework.util.logging.Levels;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class GeoTest {
 	private final LuceneTemplate luceneTemplate = new DefaultLuceneTemplate("geo");
@@ -36,7 +36,7 @@ public class GeoTest {
 
 	@Test
 	public void test() throws LuceneWriteException, InterruptedException, ExecutionException {
-		LoggerFactory.getSource().getLevelManager().put("io.basc.framework.util.concurrent.TaskQueue",
+		LogManager.getSource().getLevelManager().put("io.basc.framework.util.concurrent.TaskQueue",
 				Levels.DEBUG.getValue());
 
 		// SpatialPrefixTree也可以通过SpatialPrefixTreeFactory工厂类构建

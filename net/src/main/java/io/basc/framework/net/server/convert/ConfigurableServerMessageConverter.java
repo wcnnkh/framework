@@ -12,11 +12,11 @@ import io.basc.framework.net.MimeType;
 import io.basc.framework.net.OutputMessage;
 import io.basc.framework.net.Request;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class ConfigurableServerMessageConverter extends ConfigurableServices<ServerMessageConverter>
 		implements ServerMessageConverter {
-	private static Logger logger = LoggerFactory.getLogger(ServerMessageConverter.class);
+	private static Logger logger = LogManager.getLogger(ServerMessageConverter.class);
 
 	public ConfigurableServerMessageConverter() {
 		setServiceClass(ServerMessageConverter.class);

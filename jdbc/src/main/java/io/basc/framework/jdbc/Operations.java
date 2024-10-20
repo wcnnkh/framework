@@ -10,11 +10,11 @@ import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StandardStreamOperations;
 import io.basc.framework.util.function.StreamOperations;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class Operations<T, C extends Operations<T, C>> extends StandardStreamOperations<T, SQLException, C>
 		implements AutoCloseable {
-	private static Logger logger = LoggerFactory.getLogger(Operations.class);
+	private static Logger logger = LogManager.getLogger(Operations.class);
 
 	// 测试用代码
 //	static {

@@ -9,7 +9,7 @@ import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.net.multipart.MultipartMessageResolver;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 /**
  * 一个MultiPart请求
@@ -19,7 +19,7 @@ import io.basc.framework.util.logging.LoggerFactory;
  *
  */
 public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper implements MultiPartServerHttpRequest {
-	private static Logger logger = LoggerFactory.getLogger(DefaultMultiPartServerHttpRequest.class);
+	private static Logger logger = LogManager.getLogger(DefaultMultiPartServerHttpRequest.class);
 	private final MultipartMessageResolver multipartMessageResolver;
 
 	public DefaultMultiPartServerHttpRequest(ServerHttpRequest targetRequest,

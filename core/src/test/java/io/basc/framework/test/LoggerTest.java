@@ -5,12 +5,12 @@ import java.util.logging.Level;
 import org.junit.Test;
 
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class LoggerTest {
 	@Test
 	public void test() {
-		Logger logger = LoggerFactory.getLogger(LoggerTest.class);
+		Logger logger = LogManager.getLogger(LoggerTest.class);
 		logger.info("message: {}", "a");
 		logger.debug("debug message: {}", "b");
 		logger.warn("error message: {}", "c");

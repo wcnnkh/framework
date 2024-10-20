@@ -7,13 +7,13 @@ import org.junit.Test;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.CustomLevel;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 
 public class Log4j2Test {
 	@Test
 	public void test() {
-		LoggerFactory.getSource().getLevelManager().put("io.basc.framework.log4j2", CustomLevel.DEBUG);
-		Logger logger = LoggerFactory.getLogger(Log4j2Test.class.getName());
+		LogManager.getSource().getLevelManager().put("io.basc.framework.log4j2", CustomLevel.DEBUG);
+		Logger logger = LogManager.getLogger(Log4j2Test.class.getName());
 		// assertTrue(logger.isInfoEnabled());
 		logger.info(XUtils.getUUID());
 		logger.debug(XUtils.getUUID());

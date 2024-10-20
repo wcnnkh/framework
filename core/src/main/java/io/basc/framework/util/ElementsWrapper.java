@@ -54,8 +54,8 @@ public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, 
 	}
 
 	@Override
-	default Elements<Indexed<E>> index() {
-		return getSource().index();
+	default Elements<Indexed<E>> indexed() {
+		return getSource().indexed();
 	}
 
 	@Override
@@ -119,8 +119,8 @@ public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, 
 	}
 
 	@Override
-	default E get(long index) throws IndexOutOfBoundsException {
-		return getSource().get(index);
+	default E index(long index) throws IndexOutOfBoundsException {
+		return getSource().index(index);
 	}
 
 	@Override

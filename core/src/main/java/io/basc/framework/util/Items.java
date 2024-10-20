@@ -17,7 +17,7 @@ public interface Items<T extends Item> {
 		}
 
 		return getElements().filter((e) -> e.getPositionIndex() == index).findFirst()
-				.orElseGet(() -> getElements().get(index));
+				.orElseGet(() -> getElements().index(index));
 	}
 
 	/**

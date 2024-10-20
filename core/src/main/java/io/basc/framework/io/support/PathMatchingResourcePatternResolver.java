@@ -37,7 +37,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LoggerFactory;
+import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.match.AntPathMatcher;
 import io.basc.framework.util.match.PathMatcher;
 
@@ -184,7 +184,7 @@ import io.basc.framework.util.match.PathMatcher;
  */
 public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
 
-	private static final Logger logger = LoggerFactory.getLogger(PathMatchingResourcePatternResolver.class);
+	private static final Logger logger = LogManager.getLogger(PathMatchingResourcePatternResolver.class);
 
 	@Nullable
 	private static Method equinoxResolveMethod;
