@@ -1,8 +1,8 @@
 package io.basc.framework.security.session;
 
-import io.basc.framework.util.attribute.SerializableAttributes;
+import io.basc.framework.util.attribute.MapAttributes;
 
-public final class SessionData extends SerializableAttributes<String, Object> {
+public final class SessionData extends MapAttributes<String, Object> {
 	private static final long serialVersionUID = 1L;
 	private long createTime;
 	private int maxInactiveInterval;

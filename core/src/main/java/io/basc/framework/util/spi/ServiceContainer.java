@@ -173,15 +173,6 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 			// 初始化一下
 			include.reload(false);
 			return registration.and(include);
-		} else if (elements instanceof Listenable) {
-			Include include = new Include(elements, null);
-			// 先注册事件再初始化
-			Registration registration = includes.register(include);
-			Listenable<?> observable = (Listenable<?>) elements;
-			registration = registration.and(observable.registerListener((events) -> include.reload()));
-			// 初始化一下
-			include.reload(false);
-			return registration.and(include);
 		}
 		return super.registers(elements);
 	}

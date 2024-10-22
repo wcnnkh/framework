@@ -5,44 +5,40 @@ import io.basc.framework.util.Wrapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class AnnotatedElementWrapper<A extends AnnotatedElement> extends Wrapper<A> implements AnnotatedElement {
+public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends AnnotatedElement, Wrapper<W> {
 
-	public AnnotatedElementWrapper(A wrappedTarget) {
-		super(wrappedTarget);
+	@Override
+	default Annotation[] getAnnotations() {
+		return getSource().getAnnotations();
 	}
 
 	@Override
-	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-		return wrappedTarget.getAnnotation(annotationClass);
+	default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+		return getSource().getAnnotation(annotationClass);
 	}
 
 	@Override
-	public Annotation[] getAnnotations() {
-		return wrappedTarget.getAnnotations();
+	default Annotation[] getDeclaredAnnotations() {
+		return getSource().getDeclaredAnnotations();
 	}
 
 	@Override
-	public Annotation[] getDeclaredAnnotations() {
-		return wrappedTarget.getDeclaredAnnotations();
+	default <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+		return getSource().getAnnotationsByType(annotationClass);
 	}
 
 	@Override
-	public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-		return wrappedTarget.getAnnotationsByType(annotationClass);
+	default <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+		return getSource().getDeclaredAnnotation(annotationClass);
 	}
 
 	@Override
-	public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-		return wrappedTarget.getDeclaredAnnotation(annotationClass);
+	default <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+		return getSource().getDeclaredAnnotationsByType(annotationClass);
 	}
 
 	@Override
-	public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-		return wrappedTarget.getDeclaredAnnotationsByType(annotationClass);
-	}
-
-	@Override
-	public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-		return wrappedTarget.isAnnotationPresent(annotationClass);
+	default boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+		return getSource().isAnnotationPresent(annotationClass);
 	}
 }

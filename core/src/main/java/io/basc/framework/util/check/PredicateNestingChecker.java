@@ -3,7 +3,7 @@ package io.basc.framework.util.check;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.Registration;
 
 public class PredicateNestingChecker<E> implements NestingChecker<E> {
 	private final Predicate<? super E> predicate;
@@ -20,7 +20,7 @@ public class PredicateNestingChecker<E> implements NestingChecker<E> {
 
 	@Override
 	public Registration registerNestedElement(E element) {
-		return Registration.EMPTY;
+		return Registration.CANCELLED;
 	}
 
 	public Predicate<? super E> getPredicate() {

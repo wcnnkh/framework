@@ -2,7 +2,8 @@ package io.basc.framework.lang;
 
 import java.util.LinkedList;
 
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.register.DisposableRegistration;
 
 /**
  * 线程上下文管理
@@ -33,7 +34,7 @@ public class ThreadLocalContextManagement<T> extends NamedThreadLocal<LinkedList
 		}
 		list.add(context);
 		set(list);
-		return () -> {
+		return new DisposableRegistration(() -> {
 			LinkedList<T> oldList = get();
 			if (oldList == null || oldList.isEmpty()) {
 				throw new UnsupportedException("No context[" + getName() + "] exists");
@@ -45,6 +46,6 @@ public class ThreadLocalContextManagement<T> extends NamedThreadLocal<LinkedList
 						"Inconsistent sequence of context[" + getName() + "] registration and deregistration");
 			}
 			oldList.removeLast();
-		};
+		});
 	}
 }

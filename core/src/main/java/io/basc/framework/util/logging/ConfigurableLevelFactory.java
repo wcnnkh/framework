@@ -12,7 +12,7 @@ public class ConfigurableLevelFactory extends ConfigurableServices<LevelFactory>
 
 	@Override
 	public Level getLevel(String name) {
-		for (LevelFactory factory : getElements()) {
+		for (LevelFactory factory : this) {
 			Level level = factory.getLevel(name);
 			if (level != null) {
 				return level;

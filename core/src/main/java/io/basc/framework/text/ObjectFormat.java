@@ -25,7 +25,7 @@ import io.basc.framework.mapper.stereotype.Mapping;
 import io.basc.framework.mapper.stereotype.MappingFactory;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.MultiValueMap;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 	private MappingFactory mappingFactory = BeanUtils.getMapper();
 
 	@Override
-	public final String format(Stream<Pair<String, Value>> source) {
+	public final String format(Stream<KeyValue<String, Value>> source) {
 		return PairFormat.super.format(source);
 	}
 
@@ -143,8 +143,8 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 			formatArray(sourceKey, source, sourceType, target);
 		} else {
 			Value value = new ObjectValue(source, sourceType);
-			Pair<String, Value> pair = new Pair<>(sourceKey, value);
-			Stream<Pair<String, Value>> stream = Stream.of(pair);
+			KeyValue<String, Value> pair = KeyValue.of(sourceKey, value);
+			Stream<KeyValue<String, Value>> stream = Stream.of(pair);
 			// 开始format
 			format(stream, target);
 		}
@@ -155,7 +155,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 	}
 
 	@Override
-	public final Stream<Pair<String, Value>> parse(String source) {
+	public final Stream<KeyValue<String, Value>> parse(String source) {
 		return PairFormat.super.parse(source);
 	}
 

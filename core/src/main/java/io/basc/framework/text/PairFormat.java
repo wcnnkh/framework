@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
@@ -20,14 +20,14 @@ import io.basc.framework.util.collect.MultiValueMap;
  * @param <K>
  * @param <V>
  */
-public interface PairFormat<K, V> extends Format<Stream<Pair<K, V>>> {
+public interface PairFormat<K, V> extends Format<Stream<KeyValue<K, V>>> {
 
 	default void formatMap(Map<? extends K, ? extends V> sourceMap, Appendable target) throws IOException {
 		if (CollectionUtils.isEmpty(sourceMap)) {
 			return;
 		}
 
-		format(sourceMap.entrySet().stream().map((e) -> new Pair<>(e.getKey(), e.getValue())), target);
+		format(sourceMap.entrySet().stream().map((e) -> KeyValue.of(e.getKey(), e.getValue())), target);
 	}
 
 	default String formatMap(Map<? extends K, ? extends V> sourceMap) {
@@ -46,8 +46,8 @@ public interface PairFormat<K, V> extends Format<Stream<Pair<K, V>>> {
 			return;
 		}
 
-		Stream<Pair<K, V>> stream = sourceMap.entrySet().stream()
-				.flatMap((e) -> e.getValue().stream().map((v) -> new Pair<>(e.getKey(), v)));
+		Stream<KeyValue<K, V>> stream = sourceMap.entrySet().stream()
+				.flatMap((e) -> e.getValue().stream().map((v) -> KeyValue.of(e.getKey(), v)));
 		format(stream, target);
 	}
 
@@ -62,7 +62,7 @@ public interface PairFormat<K, V> extends Format<Stream<Pair<K, V>>> {
 	}
 
 	default Map<K, V> parseMap(Readable source) throws IOException {
-		Stream<Pair<K, V>> stream = parse(source);
+		Stream<KeyValue<K, V>> stream = parse(source);
 		return stream.collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
 	}
 
@@ -82,7 +82,7 @@ public interface PairFormat<K, V> extends Format<Stream<Pair<K, V>>> {
 	}
 
 	default MultiValueMap<K, V> parseMultiValueMap(Readable source) throws IOException {
-		Stream<Pair<K, V>> stream = parse(source);
+		Stream<KeyValue<K, V>> stream = parse(source);
 		MultiValueMap<K, V> map = new LinkedMultiValueMap<K, V>();
 		stream.forEach((e) -> map.add(e.getKey(), e.getValue()));
 		return map;

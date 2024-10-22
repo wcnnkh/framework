@@ -1,6 +1,6 @@
 package io.basc.framework.util.check;
 
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.Registration;
 
 public class EmptyNestingChecker<E> implements NestingChecker<E> {
 	public static final EmptyNestingChecker<Object> EMPTY = new EmptyNestingChecker<>();
@@ -12,7 +12,7 @@ public class EmptyNestingChecker<E> implements NestingChecker<E> {
 
 	@Override
 	public Registration registerNestedElement(E element) {
-		return Registration.EMPTY;
+		return Registration.CANCELLED;
 	}
 
 	@Override

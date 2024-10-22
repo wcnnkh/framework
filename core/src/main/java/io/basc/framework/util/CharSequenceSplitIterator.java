@@ -18,7 +18,7 @@ public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegm
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;
 	private int index;
-	private Supplier<Pair<Integer, CharSequence>> current;
+	private Supplier<KeyValue<Integer, CharSequence>> current;
 
 	public CharSequenceSplitIterator(CharSequence charSequence, Collection<? extends CharSequence> filters,
 			int beginIndex, int endIndex) {
@@ -42,8 +42,7 @@ public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegm
 
 				int index = StringUtils.indexOf(charSequence, filter, this.index, endIndex);
 				if (index != -1) {
-					current = new StaticSupplier<Pair<Integer, CharSequence>>(
-							new Pair<Integer, CharSequence>(index, filter));
+					current = new StaticSupplier<>(KeyValue.of(index, filter));
 					break;
 				}
 			}

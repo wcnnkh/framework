@@ -1,17 +1,20 @@
 package io.basc.framework.util.attribute;
 
-public class EditableAttributesWrapper<W extends EditableAttributes<K, V>, K, V> extends AttributesWrapper<W, K, V>
-		implements EditableAttributes<K, V> {
+public interface EditableAttributesWrapper<K, V, W extends EditableAttributes<K, V>>
+		extends EditableAttributes<K, V>, AttributesWrapper<K, V, W> {
 
-	public EditableAttributesWrapper(W targetAttributes) {
-		super(targetAttributes);
+	@Override
+	default void setAttributes(Attributes<K, ? extends V> attributes) {
+		getSource().setAttributes(attributes);
 	}
 
-	public void setAttribute(K name, V o) {
-		wrappedTarget.setAttribute(name, o);
+	@Override
+	default void setAttribute(K name, V value) {
+		getSource().setAttribute(name, value);
 	}
 
-	public void removeAttribute(K name) {
-		wrappedTarget.removeAttribute(name);
+	@Override
+	default void removeAttribute(K name) {
+		getSource().removeAttribute(name);
 	}
 }

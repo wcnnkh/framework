@@ -2,15 +2,15 @@ package io.basc.framework.util.check;
 
 import java.util.function.Predicate;
 
-import io.basc.framework.observe.register.ObservableList;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.spi.ConfigurableServices;
 
-public class NestingCheckerRegistry<E> extends ObservableList<NestingChecker<E>> implements NestingChecker<E> {
+public class NestingCheckerRegistry<E> extends ConfigurableServices<NestingChecker<E>> implements NestingChecker<E> {
 
 	@Override
 	public boolean isNestingExists(E element) {
-		for (NestingChecker<E> nestingChecker : getServices()) {
+		for (NestingChecker<E> nestingChecker : this) {
 			if (nestingChecker.isNestingExists(element)) {
 				return true;
 			}
@@ -20,7 +20,7 @@ public class NestingCheckerRegistry<E> extends ObservableList<NestingChecker<E>>
 
 	@Override
 	public Registration registerNestedElement(E element) {
-		return Registration.registers(getServices(), (e) -> e.registerNestedElement(element));
+		return Registration.registers(this, (e) -> e.registerNestedElement(element));
 	}
 
 	public Registration register(Predicate<? super E> predicate) {

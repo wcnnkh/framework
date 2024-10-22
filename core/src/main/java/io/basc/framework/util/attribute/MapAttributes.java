@@ -8,19 +8,19 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 
-public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, Serializable {
+public class MapAttributes<K, V> implements EditableAttributes<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Map<K, V> attrbitues;
 
-	public SerializableAttributes() {
+	public MapAttributes() {
 	}
 
-	public SerializableAttributes(Map<K, V> attrbitues) {
+	public MapAttributes(Map<K, V> attrbitues) {
 		Assert.requiredArgument(attrbitues != null, "attrbitues");
 		this.attrbitues = attrbitues;
 	}
 
-	public SerializableAttributes(Attributes<K, V> attributes) {
+	public MapAttributes(Attributes<K, V> attributes) {
 		this();
 		Assert.requiredArgument(attrbitues != null, "attrbitues");
 		attributes.getAttributeNames().forEach((key) -> setAttribute(key, attributes.getAttribute(key)));
@@ -81,8 +81,8 @@ public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, S
 			return false;
 		}
 
-		if (obj instanceof SerializableAttributes) {
-			return ObjectUtils.equals(this.attrbitues, ((SerializableAttributes<?, ?>) obj).attrbitues);
+		if (obj instanceof MapAttributes) {
+			return ObjectUtils.equals(this.attrbitues, ((MapAttributes<?, ?>) obj).attrbitues);
 		}
 		return false;
 	}

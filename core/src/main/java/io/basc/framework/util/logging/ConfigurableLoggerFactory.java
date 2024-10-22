@@ -10,9 +10,9 @@ public class ConfigurableLoggerFactory extends ConfigurableServices<LoggerFactor
 
 	@Override
 	public Logger getLogger(String name) {
-		for(LoggerFactory factory : getElements()) {
+		for (LoggerFactory factory : this) {
 			Logger logger = factory.getLogger(name);
-			if(logger != null) {
+			if (logger != null) {
 				return logger;
 			}
 		}

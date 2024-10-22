@@ -798,7 +798,7 @@ public final class StringUtils {
 	 * @param endIndex
 	 * @return
 	 */
-	public static Pair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
+	public static Range<Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
 			int endIndex) {
 		if (source == null || prefix == null || suffix == null) {
 			return null;
@@ -839,7 +839,7 @@ public final class StringUtils {
 				}
 			}
 		}
-		return new Pair<Integer, Integer>(begin, tempEnd);
+		return Range.closed(begin, tempEnd);
 	}
 
 	public static int indexOf(char[] source, char[] target, int fromIndex) {
@@ -914,7 +914,7 @@ public final class StringUtils {
 	 * @param suffix
 	 * @return
 	 */
-	public static Pair<Integer, Integer> indexOf(CharSequence text, CharSequence prefix, CharSequence suffix) {
+	public static Range<Integer> indexOf(CharSequence text, CharSequence prefix, CharSequence suffix) {
 		return indexOf(text, prefix, suffix, 0);
 	}
 
@@ -922,7 +922,7 @@ public final class StringUtils {
 	// Convenience methods for working with String arrays
 	// ---------------------------------------------------------------------
 
-	public static Pair<Integer, Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
+	public static Range<Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
 			int fromIndex) {
 		if (source == null) {
 			return null;
@@ -931,7 +931,7 @@ public final class StringUtils {
 		return indexOf(source, prefix, suffix, fromIndex, source.length());
 	}
 
-	public static Pair<Integer, Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
+	public static Range<Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
 			int fromIndex, int endIndex) {
 		if (source == null || prefix == null || suffix == null) {
 			return null;
@@ -974,7 +974,7 @@ public final class StringUtils {
 				}
 			}
 		}
-		return new Pair<Integer, Integer>(begin, tempEnd);
+		return Range.closed(begin, tempEnd);
 	}
 
 	public static int indexOf(CharSequence source, CharSequence target, int fromIndex) {
@@ -1309,13 +1309,13 @@ public final class StringUtils {
 	}
 
 	@Nullable
-	public static Pair<String, String> parseKV(String text, String separator) {
+	public static Range<String> parseKV(String text, String separator) {
 		int index = text.indexOf(separator);
 		if (index == -1) {
 			return null;
 		}
 
-		return new Pair<String, String>(text.substring(0, index), text.substring(index + separator.length()));
+		return Range.closed(text.substring(0, index), text.substring(index + separator.length()));
 	}
 
 	/**

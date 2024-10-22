@@ -3,20 +3,15 @@ package io.basc.framework.util.attribute;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Wrapper;
 
-public class AttributesWrapper<W extends Attributes<K, V>, K, V> extends Wrapper<W> implements Attributes<K, V> {
+public interface AttributesWrapper<K, V, W extends Attributes<K, V>> extends Attributes<K, V>, Wrapper<W> {
 
-	public AttributesWrapper(W wrappedTarget) {
-		super(wrappedTarget);
+	@Override
+	default V getAttribute(K name) {
+		return getSource().getAttribute(name);
 	}
 
 	@Override
-	public V getAttribute(K name) {
-		return wrappedTarget.getAttribute(name);
+	default Elements<K> getAttributeNames() {
+		return getSource().getAttributeNames();
 	}
-
-	@Override
-	public Elements<K> getAttributeNames() {
-		return wrappedTarget.getAttributeNames();
-	}
-
 }
