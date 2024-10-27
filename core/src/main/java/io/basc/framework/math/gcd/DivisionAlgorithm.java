@@ -1,10 +1,10 @@
 package io.basc.framework.math.gcd;
 
-import io.basc.framework.math.BigIntegerHolder;
-import io.basc.framework.math.NumberHolder;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import io.basc.framework.math.BigIntegerValue;
+import io.basc.framework.math.NumberValue;
 
 /**
  * 辗转相除法
@@ -47,13 +47,13 @@ public class DivisionAlgorithm implements GreatestCommonDivisor {
 		}
 	}
 
-	public NumberHolder gcd(NumberHolder m, NumberHolder n) {
-		NumberHolder a = m.abs();
-		NumberHolder b = n.abs();
+	public NumberValue gcd(NumberValue m, NumberValue n) {
+		NumberValue a = m.abs();
+		NumberValue b = n.abs();
 		while (true) {
-			if ((a = a.remainder(b)).equals(BigIntegerHolder.ZERO))
+			if ((a = a.remainder(b)).equals(BigIntegerValue.ZERO))
 				return b;
-			if ((b = b.remainder(a)).equals(BigIntegerHolder.ZERO))
+			if ((b = b.remainder(a)).equals(BigIntegerValue.ZERO))
 				return a;
 		}
 	}

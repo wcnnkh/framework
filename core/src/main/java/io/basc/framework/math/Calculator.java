@@ -10,24 +10,24 @@ import io.basc.framework.util.Assert;
  * @author wcnnkh
  *
  */
-public interface Calculator extends MathFunction<NumberHolder, NumberHolder> {
+public interface Calculator extends MathFunction<NumberValue, NumberValue> {
 
-	default NumberHolder eval(String left, String right) {
+	default NumberValue eval(String left, String right) {
 		Assert.requiredArgument(left != null, "left");
 		Assert.requiredArgument(right != null, "right");
-		return eval(new BigDecimalHolder(left), new BigDecimalHolder(right));
+		return eval(new BigDecimalValue(left), new BigDecimalValue(right));
 	}
 
-	default NumberHolder eval(BigDecimal left, BigDecimal right) {
+	default NumberValue eval(BigDecimal left, BigDecimal right) {
 		Assert.requiredArgument(left != null, "left");
 		Assert.requiredArgument(right != null, "right");
-		return eval(new BigDecimalHolder(left), new BigDecimalHolder(right));
+		return eval(new BigDecimalValue(left), new BigDecimalValue(right));
 	}
 
-	default NumberHolder eval(BigDecimal left, String right) {
+	default NumberValue eval(BigDecimal left, String right) {
 		Assert.requiredArgument(left != null, "left");
 		Assert.requiredArgument(right != null, "right");
-		return eval(new BigDecimalHolder(left), new BigDecimalHolder(right));
+		return eval(new BigDecimalValue(left), new BigDecimalValue(right));
 	}
 
 	/**

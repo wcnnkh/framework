@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.URLCodec;
+import io.basc.framework.convert.lang.DefaultObjectValue;
 import io.basc.framework.convert.lang.ObjectValue;
-import io.basc.framework.convert.lang.Value;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.ObjectFormat;
@@ -45,10 +45,10 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public void format(Stream<Pair<String, Value>> source, Appendable target) throws IOException {
-		Iterator<Pair<String, Value>> iterator = source.iterator();
+	public void format(Stream<Pair<String, ObjectValue>> source, Appendable target) throws IOException {
+		Iterator<Pair<String, ObjectValue>> iterator = source.iterator();
 		while (iterator.hasNext()) {
-			Pair<String, Value> pair = iterator.next();
+			Pair<String, ObjectValue> pair = iterator.next();
 			String key = pair.getKey();
 			String value = pair.getValue().getAsString();
 			if (codec != null) {
@@ -70,7 +70,7 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public Stream<Pair<String, Value>> parse(Readable source) throws IOException {
+	public Stream<Pair<String, ObjectValue>> parse(Readable source) throws IOException {
 		return IOUtils.split(source, connector).map((e) -> {
 			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
 			if (kv.length == 0) {
@@ -84,7 +84,7 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.decode(value);
 			}
 
-			return new Pair<>(key, new ObjectValue(value, null));
+			return new Pair<>(key, new DefaultObjectValue(value, null));
 		});
 	}
 }

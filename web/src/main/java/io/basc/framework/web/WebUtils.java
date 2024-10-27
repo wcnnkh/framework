@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import io.basc.framework.codec.Decoder;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.codec.support.URLCodec;
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
@@ -87,7 +87,7 @@ public final class WebUtils {
 		IOUtils.copy(resource.getInputStream(), response.getOutputStream());
 	}
 
-	public static Value getParameter(ServerHttpRequest request, String name) {
+	public static ObjectValue getParameter(ServerHttpRequest request, String name) {
 		String value = request.getParameterMap().getFirst(name);
 		if (value == null) {
 			Map<String, String> parameterMap = getRestfulParameterMap(request);
@@ -98,7 +98,7 @@ public final class WebUtils {
 
 		if (value != null) {
 			value = decodeGETParameter(request, value);
-			return Value.of(value);
+			return ObjectValue.of(value);
 		}
 
 		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
@@ -117,19 +117,19 @@ public final class WebUtils {
 		if (multiPartServerHttpRequest != null) {
 			MultipartMessage multipartMessage = multiPartServerHttpRequest.getMultipartMessageMap().getFirst(name);
 			if (multipartMessage != null) {
-				return Value.of(multipartMessage);
+				return ObjectValue.of(multipartMessage);
 			}
 		}
-		return Value.EMPTY;
+		return ObjectValue.EMPTY;
 	}
 
-	public static Value[] getParameterValues(ServerHttpRequest request, String name) {
+	public static ObjectValue[] getParameterValues(ServerHttpRequest request, String name) {
 		List<String> valueList = request.getParameterMap().get(name);
 		if (!CollectionUtils.isEmpty(valueList)) {
-			Value[] values = new Value[valueList.size()];
+			ObjectValue[] values = new ObjectValue[valueList.size()];
 			int index = 0;
 			for (String value : valueList) {
-				values[index++] = Value.of(decodeGETParameter(request, value));
+				values[index++] = ObjectValue.of(decodeGETParameter(request, value));
 			}
 			return values;
 		}
@@ -141,7 +141,7 @@ public final class WebUtils {
 				JsonElement jsonElement = jsonObject.get(name);
 				if (jsonElement.isJsonArray()) {
 					JsonArray jsonArray = jsonElement.getAsJsonArray();
-					Value[] values = new Value[jsonArray.size()];
+					ObjectValue[] values = new ObjectValue[jsonArray.size()];
 					int index = 0;
 					for (JsonElement element : jsonElement.getAsJsonArray()) {
 						values[index++] = element;
@@ -155,15 +155,15 @@ public final class WebUtils {
 				MultiPartServerHttpRequest.class);
 		if (multiPartServerHttpRequest != null) {
 			List<MultipartMessage> items = multiPartServerHttpRequest.getMultipartMessageMap().get(name);
-			Value[] values = new Value[items.size()];
+			ObjectValue[] values = new ObjectValue[items.size()];
 			int index = 0;
 			for (MultipartMessage element : items) {
-				values[index++] = Value.of(element);
+				values[index++] = ObjectValue.of(element);
 			}
 			return values;
 		}
 
-		return Value.EMPTY_ARRAY;
+		return ObjectValue.EMPTY_ARRAY;
 	}
 
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request) {

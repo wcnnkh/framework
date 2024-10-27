@@ -3,10 +3,10 @@ package io.basc.framework.io.resolver;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.WritableResource;
 import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver> implements PropertiesResolver {
 
@@ -15,7 +15,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 	}
 
 	public boolean canResolveProperties(Resource resource) {
-		for (PropertiesResolver resolver : getServices()) {
+		for (PropertiesResolver resolver : this) {
 			if (resolver.canResolveProperties(resource)) {
 				return true;
 			}
@@ -28,7 +28,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 			return;
 		}
 
-		for (PropertiesResolver resolver : getServices()) {
+		for (PropertiesResolver resolver : this) {
 			if (resolver.canResolveProperties(resource)) {
 				resolver.resolveProperties(properties, resource, charset);
 				return;
@@ -43,7 +43,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 			return;
 		}
 
-		for (PropertiesResolver resolver : getServices()) {
+		for (PropertiesResolver resolver : this) {
 			if (resolver.canResolveProperties(resource)) {
 				resolver.persistenceProperties(properties, resource, charset);
 				return;

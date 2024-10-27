@@ -13,7 +13,7 @@ import io.basc.framework.util.Registration;
  * if(isNestingExists(element)){ return ; }
  * 
  * Registration registration = registerNestedElement(element); try{ xxxxxx
- * }finally{ registration.unregister(); }
+ * }finally{ registration.cancel(); }
  * 
  * <pre>
  * 

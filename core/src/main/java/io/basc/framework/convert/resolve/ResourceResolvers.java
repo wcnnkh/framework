@@ -4,16 +4,17 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.function.Supplier;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Receipt;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.function.StaticSupplier;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.spi.ConfigurableServices;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 
 public class ResourceResolvers extends ConfigurableServices<ResourceResolver> implements ResourceResolver {
 	private static final TypeDescriptor PROPERTIES_TYPE = TypeDescriptor.valueOf(Properties.class);
@@ -39,18 +40,18 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 		this.propertiesResolvers = propertiesResolvers;
 		this.conversionService = conversionService;
 		this.charset = charset;
-		getServiceInjectors().register((service) -> {
+		getInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				((ConversionServiceAware) service).setConversionService(getConversionService());
 			}
-			return Registration.EMPTY;
+			return Registration.SUCCESS;
 		});
 	}
 
 	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		propertiesResolvers.configure(serviceLoaderFactory);
-		super.configure(serviceLoaderFactory);
+	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
+		propertiesResolvers.doConfigure(discovery);
+		return super.doConfigure(discovery);
 	}
 
 	public PropertiesResolvers getPropertiesResolvers() {
@@ -62,7 +63,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 	}
 
 	public boolean canResolveResource(Resource resource, TypeDescriptor targetType) {
-		for (ResourceResolver resolver : getServices()) {
+		for (ResourceResolver resolver : this) {
 			if (resolver.canResolveResource(resource, targetType)) {
 				return true;
 			}
@@ -72,7 +73,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 	}
 
 	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
-		for (ResourceResolver resolver : getServices()) {
+		for (ResourceResolver resolver : this) {
 			if (resolver.canResolveResource(resource, targetType)) {
 				return resolver.resolveResource(resource, targetType);
 			}

@@ -13,7 +13,7 @@ import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -37,13 +37,13 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 		TypeDescriptor keyDesc = targetType.getMapKeyTypeDescriptor();
 		TypeDescriptor valueDesc = targetType.getMapValueTypeDescriptor();
 
-		List<Pair> targetEntries = new ArrayList<Pair>(sourceMap.size());
+		List<KeyValue> targetEntries = new ArrayList<>(sourceMap.size());
 		for (Map.Entry<Object, Object> entry : sourceMap.entrySet()) {
 			Object sourceKey = entry.getKey();
 			Object sourceValue = entry.getValue();
 			Object targetKey = convertKey(sourceKey, sourceType, keyDesc);
 			Object targetValue = convertValue(sourceValue, sourceType, valueDesc);
-			targetEntries.add(new Pair(targetKey, targetValue));
+			targetEntries.add(KeyValue.of(targetKey, targetValue));
 			if (sourceKey != targetKey || sourceValue != targetValue) {
 				copyRequired = true;
 			}
@@ -54,7 +54,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 
 		Map<Object, Object> targetMap = CollectionFactory.createMap(targetType.getType(),
 				(keyDesc != null ? keyDesc.getType() : null), sourceMap.size());
-		for (Pair entry : targetEntries) {
+		for (KeyValue entry : targetEntries) {
 			targetMap.put(entry.getKey(), entry.getValue());
 		}
 		return targetMap;

@@ -20,7 +20,7 @@ public class PredicateNestingChecker<E> implements NestingChecker<E> {
 
 	@Override
 	public Registration registerNestedElement(E element) {
-		return Registration.CANCELLED;
+		return Registration.FAILURE;
 	}
 
 	public Predicate<? super E> getPredicate() {

@@ -1,34 +1,34 @@
 package io.basc.framework.convert.config;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
 		implements ConversionService {
 	private static final NestingChecker<ConversionService> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
 
 	public ConfigurableConversionService() {
-		super(ConversionComparator.INSTANCE);
+		setComparator(ConversionComparator.INSTANCE);
 		setServiceClass(ConversionService.class);
-		getServiceInjectors().register((service) -> {
+		getInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				ConversionServiceAware conversionServiceAware = (ConversionServiceAware) service;
 				conversionServiceAware.setConversionService(this);
 			}
-			return Registration.EMPTY;
+			return Registration.SUCCESS;
 		});
 	}
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		for (ConversionService service : getServices()) {
+		for (ConversionService service : this) {
 			if (NESTING_CHECKERS.isNestingExists(service)) {
 				continue;
 			}
@@ -39,7 +39,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 					return service.convert(source, sourceType, targetType);
 				}
 			} finally {
-				registration.unregister();
+				registration.cancel();
 			}
 		}
 		throw new ConverterNotFoundException(sourceType, targetType);
@@ -47,7 +47,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		for (ConversionService service : getServices()) {
+		for (ConversionService service : this) {
 			if (NESTING_CHECKERS.isNestingExists(service)) {
 				continue;
 			}
@@ -58,7 +58,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 					return true;
 				}
 			} finally {
-				registration.unregister();
+				registration.cancel();
 			}
 		}
 		return false;

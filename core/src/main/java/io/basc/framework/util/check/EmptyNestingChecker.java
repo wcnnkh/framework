@@ -12,7 +12,7 @@ public class EmptyNestingChecker<E> implements NestingChecker<E> {
 
 	@Override
 	public Registration registerNestedElement(E element) {
-		return Registration.CANCELLED;
+		return Registration.FAILURE;
 	}
 
 	@Override

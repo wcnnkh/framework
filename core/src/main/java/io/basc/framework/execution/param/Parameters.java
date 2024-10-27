@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Items;
 
@@ -25,7 +25,7 @@ public interface Parameters
 
 	public static Parameters forArgs(Iterable<? extends Object> args) {
 		Elements<Parameter> parameters = Elements.of(args).index()
-				.map((e) -> new Arg((int) e.getIndex(), Value.of(e.getElement())));
+				.map((e) -> new Arg((int) e.getIndex(), ObjectValue.of(e.getElement())));
 		return new Args(parameters);
 	}
 

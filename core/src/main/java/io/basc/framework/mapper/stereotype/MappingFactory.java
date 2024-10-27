@@ -1,7 +1,7 @@
 package io.basc.framework.mapper.stereotype;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 
@@ -23,7 +23,7 @@ public interface MappingFactory {
 	 * @return
 	 */
 	default boolean isEntity(TypeDescriptor source) {
-		return !Value.isBaseType(source.getType()) && !source.isArray() && source.getType() != Object.class
+		return !ObjectValue.isBaseType(source.getType()) && !source.isArray() && source.getType() != Object.class
 				&& ReflectionUtils.isInstance(source.getType()) && !source.isMap() && !source.isCollection();
 	}
 }

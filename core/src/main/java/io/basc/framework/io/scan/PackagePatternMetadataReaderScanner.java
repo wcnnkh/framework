@@ -26,7 +26,7 @@ public class PackagePatternMetadataReaderScanner implements TypeScanner {
 
 	@Override
 	public Elements<MetadataReader> scan(String locationPattern, ResourceFilter resourceFilter, TypeFilter typeFilter) {
-		return getMetadataReaders(locationPattern, resourceFilter, typeFilter).getServices();
+		return getMetadataReaders(locationPattern, resourceFilter, typeFilter);
 	}
 
 	public ServiceLoader<MetadataReader> getMetadataReaders(ResourcePatternResolver resourcePatternResolver,

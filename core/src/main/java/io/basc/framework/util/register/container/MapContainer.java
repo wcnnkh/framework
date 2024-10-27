@@ -182,7 +182,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 
 	protected final Receipt batchDeregister(Elements<? extends EntryRegistration<K, V>> registrations) {
 		if (registrations.isEmpty()) {
-			return Receipt.fail();
+			return Receipt.FAILURE;
 		}
 
 		registrations.forEach(Registration::cancel);
@@ -248,7 +248,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	public Receipt deregisterKeys(Iterable<? extends K> keys) {
 		return update((map) -> {
 			if (map == null) {
-				return Receipt.fail();
+				return Receipt.FAILURE;
 			}
 
 			List<EntryRegistration<K, V>> removes = new ArrayList<>();
@@ -260,7 +260,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 			}
 
 			if (removes.isEmpty()) {
-				return Receipt.fail();
+				return Receipt.FAILURE;
 			}
 
 			return batchDeregister(Elements.of(removes));
@@ -271,7 +271,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	public Receipt deregisters(Iterable<? extends KeyValue<K, V>> services) {
 		return update((map) -> {
 			if (map == null) {
-				return Receipt.fail();
+				return Receipt.FAILURE;
 			}
 
 			List<EntryRegistration<K, V>> removes = new ArrayList<>();
@@ -292,7 +292,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 			}
 
 			if (removes.isEmpty()) {
-				return Receipt.fail();
+				return Receipt.FAILURE;
 			}
 
 			return batchDeregister(Elements.of(removes));

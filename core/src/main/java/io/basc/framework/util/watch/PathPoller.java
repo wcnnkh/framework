@@ -132,7 +132,7 @@ public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
 	public PayloadRegistration<WatchKey> registerTo(WatchService watchService) {
 		WatchKey watchKey = newWatchKey(watchService);
 		if (watchKey == null) {
-			return PayloadRegistration.cancelled();
+			return PayloadRegistration.failure();
 		}
 		return watchKeyRegistry.register(watchKey);
 	}

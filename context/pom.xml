@@ -11,7 +11,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>beans</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>

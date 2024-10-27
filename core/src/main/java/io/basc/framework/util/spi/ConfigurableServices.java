@@ -14,12 +14,12 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
 		synchronized (this) {
 			if (serviceClass == null) {
-				return Receipt.fail();
+				return Receipt.FAILURE;
 			}
 
 			ServiceLoader<S> serviceLoader = discovery.getServiceLoader(serviceClass);
 			if (serviceLoader == null) {
-				return Receipt.fail();
+				return Receipt.FAILURE;
 			}
 
 			if (configureRegistration != null) {
@@ -27,7 +27,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 			}
 
 			configureRegistration = registers(serviceLoader);
-			return Receipt.success();
+			return Receipt.SUCCESS;
 		}
 	}
 

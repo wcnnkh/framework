@@ -79,7 +79,7 @@ public class ThreadLocalNestingChecker<E> extends ThreadLocal<LinkedList<E>> imp
 	@Override
 	public Registration registerNestedElement(E element) {
 		if (element == null) {
-			return Registration.CANCELLED;
+			return Registration.FAILURE;
 		}
 
 		LinkedList<E> list = get();

@@ -7,13 +7,13 @@ import java.util.Map;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.util.CollectionUtils;
 
 public interface ObjectOperations<K> extends KeyValueOperations<K, Object> {
 
 	default ConversionService getConversionService() {
-		return GlobalConversionService.getInstance();
+		return DefaultConversionService.getInstance();
 	}
 
 	default <T> T get(Class<T> type, K key) {

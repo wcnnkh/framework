@@ -7,18 +7,15 @@ package io.basc.framework.util;
  *
  */
 public interface Receipt extends Registration {
-	public static final Receipt SUCCESS_RECEIPT = new Receipted(true, null);
+	public static final Receipt FAILURE = new Receipted(false, null);
+	public static final Receipt SUCCESS = new Receipted(true, null);
 
-	public static Receipt fail(Throwable cause) {
+	public static Receipt failure(Throwable cause) {
 		return new Receipted(false, cause);
 	}
 
-	public static Receipt fail() {
-		return fail(null);
-	}
-
-	public static Receipt success() {
-		return SUCCESS_RECEIPT;
+	public static Receipt success(Throwable cause) {
+		return new Receipted(true, cause);
 	}
 
 	/**

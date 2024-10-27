@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.DefaultPropertiesResolver;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -26,7 +26,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ObservableProperties extends Observer<PropertyChangeEvent<String, Value>>
+public class ObservableProperties extends Observer<PropertyChangeEvent<String, ObjectValue>>
 		implements ObservablePropertyFactory, EditablePropertyFactory {
 	private Charset charset = Constants.UTF_8;
 	private final Properties properties;
@@ -57,20 +57,20 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, V
 		return registration;
 	}
 
-	private Value convert(String key, Object value) {
+	private ObjectValue convert(String key, Object value) {
 		if (value == null) {
 			return null;
 		}
 
-		if (value instanceof Value) {
-			return (Value) value;
+		if (value instanceof ObjectValue) {
+			return (ObjectValue) value;
 		}
 
 		return propertyWrapper.wrap(key, value);
 	}
 
 	@Override
-	public Value get(String key) {
+	public ObjectValue get(String key) {
 		Object value = properties.get(key);
 		return convert(key, value);
 	}
@@ -130,19 +130,19 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, V
 	}
 
 	@Override
-	public Value put(String key, Object value) {
+	public ObjectValue put(String key, Object value) {
 		Object oldValue = put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public Value put(String key, Value value) {
+	public ObjectValue put(String key, ObjectValue value) {
 		Object oldValue = properties.put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public Value remove(String key) {
+	public ObjectValue remove(String key) {
 		Object value = properties.remove(key);
 		return convert(key, value);
 	}

@@ -16,8 +16,8 @@ import java.util.Map.Entry;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.lang.Value;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.generator.string.StringGenerator;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
@@ -46,7 +46,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	private static final String LINE = "\r\n";
 	private static Logger logger = LogManager.getLogger(Logger.class);
 	@NonNull
-	private ConversionService conversionService = GlobalConversionService.getInstance();
+	private ConversionService conversionService = DefaultConversionService.getInstance();
 	@NonNull
 	private MultipartMessageResolver multipartMessageResolver = GlobalMultipartMessageResolver.getInstance();
 	@NonNull
@@ -106,7 +106,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	protected void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException {
+	protected void doWrite(ObjectValue source, MimeType contentType, OutputMessage outputMessage) throws IOException {
 		String boundary;
 		MimeType mimeType = contentType;
 		if (contentType != null) {
@@ -181,9 +181,9 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 			}
 			MultipartMessage multipartMessage = new ResourceMultipartMessage(fieldName, resource);
 			writeMultipartMessage(boundary, multipartMessage, target, targetContentType);
-		} else if (Value.isElements(sourceTypeDescriptor)) {
-			Elements<Value> elements = Value.asElements(source, sourceTypeDescriptor);
-			for (Value item : elements) {
+		} else if (ObjectValue.isElements(sourceTypeDescriptor)) {
+			Elements<ObjectValue> elements = ObjectValue.asElements(source, sourceTypeDescriptor);
+			for (ObjectValue item : elements) {
 				writeItem(boundary, fieldName, item.getValue(), item.getTypeDescriptor(), target, targetContentType);
 			}
 		} else {
@@ -220,9 +220,9 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 				String fieldName = toString(key, keyTypeDescriptor);
 				writeItem(boundary, fieldName, value, valueTypeDescriptor, target, targetContentType);
 			}
-		} else if (Value.isElements(sourceTypeDescriptor)) {
-			Elements<Value> elements = Value.asElements(source, sourceTypeDescriptor);
-			for (Value item : elements) {
+		} else if (ObjectValue.isElements(sourceTypeDescriptor)) {
+			Elements<ObjectValue> elements = ObjectValue.asElements(source, sourceTypeDescriptor);
+			for (ObjectValue item : elements) {
 				write(boundary, item.getValue(), item.getTypeDescriptor(), target, targetContentType);
 			}
 		} else {

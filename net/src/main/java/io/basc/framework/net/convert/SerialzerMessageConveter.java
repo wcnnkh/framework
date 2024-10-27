@@ -3,7 +3,7 @@ package io.basc.framework.net.convert;
 import java.io.IOException;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
@@ -29,7 +29,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter {
 	}
 
 	@Override
-	protected void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException {
+	protected void doWrite(ObjectValue source, MimeType contentType, OutputMessage outputMessage) throws IOException {
 		serializer.serialize(source.getValue(), outputMessage.getOutputStream());
 	}
 

@@ -3,7 +3,7 @@ package io.basc.framework.net.convert;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class TextMessageConverter extends StringMessageConverter<Object> impleme
 	}
 
 	public ConversionService getConversionService() {
-		return conversionService == null ? GlobalConversionService.getInstance() : conversionService;
+		return conversionService == null ? DefaultConversionService.getInstance() : conversionService;
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package io.basc.framework.convert.lang;
 
 import java.io.Serializable;
 
-public class EmptyValue implements Value, Serializable {
+public class EmptyValue implements ObjectValue, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Override

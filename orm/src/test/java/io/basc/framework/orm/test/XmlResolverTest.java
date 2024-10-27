@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolvers;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.orm.stereotype.PrimaryKey;
@@ -22,12 +22,12 @@ public class XmlResolverTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		System.out.println(GlobalConversionService.getInstance());
+		System.out.println(DefaultConversionService.getInstance());
 		TypeDescriptor mapType = TypeDescriptor.map(Map.class, String.class, TestBean.class);
 		TypeDescriptor listType = TypeDescriptor.collection(List.class, TestBean.class);
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 		Resource resource = resourceLoader.getResource("test.xml");
-		ResourceResolvers resourceResolvers = new ResourceResolvers(GlobalConversionService.getInstance());
+		ResourceResolvers resourceResolvers = new ResourceResolvers(DefaultConversionService.getInstance());
 		Map<String, TestBean> map = (Map<String, TestBean>) resourceResolvers.resolveResource(resource, mapType);
 		logger.info(map.toString());
 		assertTrue(map.size() == 3);

@@ -15,9 +15,9 @@ import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
+import io.basc.framework.convert.lang.DefaultObjectValue;
 import io.basc.framework.convert.lang.ObjectValue;
-import io.basc.framework.convert.lang.Value;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
@@ -34,14 +34,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class ObjectFormat implements PairFormat<String, Value>, ConversionServiceAware {
+public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, ConversionServiceAware {
 	@NonNull
-	private ConversionService conversionService = GlobalConversionService.getInstance();
+	private ConversionService conversionService = DefaultConversionService.getInstance();
 	@NonNull
 	private MappingFactory mappingFactory = BeanUtils.getMapper();
 
 	@Override
-	public final String format(Stream<KeyValue<String, Value>> source) {
+	public final String format(Stream<KeyValue<String, ObjectValue>> source) {
 		return PairFormat.super.format(source);
 	}
 
@@ -65,7 +65,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 	}
 
 	@Override
-	public final String formatMap(Map<? extends String, ? extends Value> sourceMap) {
+	public final String formatMap(Map<? extends String, ? extends ObjectValue> sourceMap) {
 		return PairFormat.super.formatMap(sourceMap);
 	}
 
@@ -85,7 +85,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 	}
 
 	@Override
-	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends Value>> sourceMap) {
+	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends ObjectValue>> sourceMap) {
 		return PairFormat.super.formatMultiValueMap(sourceMap);
 	}
 
@@ -142,9 +142,9 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 		} else if (sourceType.isArray()) {
 			formatArray(sourceKey, source, sourceType, target);
 		} else {
-			Value value = new ObjectValue(source, sourceType);
-			KeyValue<String, Value> pair = KeyValue.of(sourceKey, value);
-			Stream<KeyValue<String, Value>> stream = Stream.of(pair);
+			ObjectValue value = new DefaultObjectValue(source, sourceType);
+			KeyValue<String, ObjectValue> pair = KeyValue.of(sourceKey, value);
+			Stream<KeyValue<String, ObjectValue>> stream = Stream.of(pair);
 			// 开始format
 			format(stream, target);
 		}
@@ -155,27 +155,27 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 	}
 
 	@Override
-	public final Stream<KeyValue<String, Value>> parse(String source) {
+	public final Stream<KeyValue<String, ObjectValue>> parse(String source) {
 		return PairFormat.super.parse(source);
 	}
 
 	@Override
-	public final Map<String, Value> parseMap(Readable source) throws IOException {
+	public final Map<String, ObjectValue> parseMap(Readable source) throws IOException {
 		return PairFormat.super.parseMap(source);
 	}
 
 	@Override
-	public final Map<String, Value> parseMap(String source) {
+	public final Map<String, ObjectValue> parseMap(String source) {
 		return PairFormat.super.parseMap(source);
 	}
 
 	@Override
-	public final MultiValueMap<String, Value> parseMultiValueMap(Readable source) throws IOException {
+	public final MultiValueMap<String, ObjectValue> parseMultiValueMap(Readable source) throws IOException {
 		return PairFormat.super.parseMultiValueMap(source);
 	}
 
 	@Override
-	public final MultiValueMap<String, Value> parseMultiValueMap(String source) {
+	public final MultiValueMap<String, ObjectValue> parseMultiValueMap(String source) {
 		return PairFormat.super.parseMultiValueMap(source);
 	}
 
@@ -186,7 +186,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object parseObject(Readable source, TypeDescriptor targetType) throws IOException {
-		MultiValueMap<String, Value> sourceMap = parseMultiValueMap(source);
+		MultiValueMap<String, ObjectValue> sourceMap = parseMultiValueMap(source);
 		TypeDescriptor sourceType = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class),
 				TypeDescriptor.collection(List.class, String.class));
 		if (conversionService.canConvert(sourceType, targetType)) {
@@ -200,7 +200,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 
 			Map targetMap = CollectionFactory.createMap(targetType.getType(),
 					targetType.getMapKeyTypeDescriptor().getType(), sourceMap.size());
-			for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
+			for (Entry<String, List<ObjectValue>> entry : sourceMap.entrySet()) {
 				Object key = entry.getKey();
 				key = conversionService.convert(key, targetType.getMapKeyTypeDescriptor());
 
@@ -216,7 +216,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 		// 兜底处理
 		Object target = ReflectionUtils.newInstance(targetType.getType());
 		Mapping<?> mapping = mappingFactory.getMapping(targetType.getType());
-		for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
+		for (Entry<String, List<ObjectValue>> entry : sourceMap.entrySet()) {
 			FieldDescriptor element = mapping.getElements(entry.getKey()).first();
 			if (element == null) {
 				continue;

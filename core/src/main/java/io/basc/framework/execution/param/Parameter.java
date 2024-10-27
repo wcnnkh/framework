@@ -1,13 +1,13 @@
 package io.basc.framework.execution.param;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 
-public interface Parameter extends ParameterDescriptor, Value {
+public interface Parameter extends ParameterDescriptor, ObjectValue {
 
 	@Override
 	default TypeDescriptor getTypeDescriptor() {
-		return Value.super.getTypeDescriptor();
+		return ObjectValue.super.getTypeDescriptor();
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package io.basc.framework.util;
 
 import java.util.Map;
 
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
 
@@ -14,10 +14,10 @@ public class JavaVersion extends Version {
 	static {
 		Version version = new Version(System.getProperty("java.version"));
 		if (version.length() > 1) {
-			Value fragment = version.get(0);
+			ObjectValue fragment = version.get(0);
 			if (fragment.isNumber() && fragment.getAsInt() > 1) {// java9以上
-				Value[] fragments = new Value[version.length() + 1];
-				fragments[0] = Value.of(1);
+				ObjectValue[] fragments = new ObjectValue[version.length() + 1];
+				fragments[0] = ObjectValue.of(1);
 				System.arraycopy(version.getFragments(), 0, fragments, 1, version.length());
 				version = new Version(fragments, version.getDividers());
 			}
@@ -25,7 +25,7 @@ public class JavaVersion extends Version {
 		INSTANCE = new JavaVersion(version.getFragments(), version.getDividers());
 	}
 
-	JavaVersion(Value[] fragments, String dividers) {
+	JavaVersion(ObjectValue[] fragments, String dividers) {
 		super(fragments, dividers);
 	}
 

@@ -9,13 +9,14 @@ import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.ServiceLoaderWrapper;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class MetadataReaders implements ServiceLoader<MetadataReader> {
+public class MetadataReaders implements ServiceLoaderWrapper<MetadataReader, Elements<MetadataReader>> {
 	private static Logger logger = LogManager.getLogger(MetadataReaders.class);
 	@NonNull
 	private final ServiceLoader<? extends Resource> resources;
@@ -48,8 +49,8 @@ public class MetadataReaders implements ServiceLoader<MetadataReader> {
 	}
 
 	@Override
-	public Elements<MetadataReader> getServices() {
-		return resources.getServices().map((resource) -> {
+	public Elements<MetadataReader> getSource() {
+		return resources.map((resource) -> {
 			MetadataReader metadataReader;
 			try {
 				metadataReader = metadataReaderFactory.getMetadataReader(resource);

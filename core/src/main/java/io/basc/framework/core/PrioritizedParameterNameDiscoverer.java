@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.spi.NativeServiceLoader;
 
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {
-	private static final ParameterNameDiscoverer[] PARAMETER_NAME_DISCOVERERS = SPI
-			.getServices(ParameterNameDiscoverer.class).toArray(ParameterNameDiscoverer[]::new);
+	private static final ParameterNameDiscoverer[] PARAMETER_NAME_DISCOVERERS = NativeServiceLoader
+			.load(ParameterNameDiscoverer.class).toArray(ParameterNameDiscoverer[]::new);
 
 	private final List<ParameterNameDiscoverer> parameterNameDiscoverers = new ArrayList<>(2);
 

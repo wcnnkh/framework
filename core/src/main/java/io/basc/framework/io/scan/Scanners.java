@@ -1,8 +1,8 @@
 package io.basc.framework.io.scan;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.select.Selector;
+import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -15,18 +15,16 @@ public class Scanners<T extends Scanner<S>, S> extends ConfigurableServices<T> i
 
 	@Override
 	public boolean canScan(String location) {
-		return getServices().anyMatch((e) -> e.canScan(location));
+		return anyMatch((e) -> e.canScan(location));
 	}
 
 	@Override
 	public Elements<S> scan(String locationPattern) {
-		return getSelector()
-				.apply(getServices().filter((e) -> e.canScan(locationPattern)).map((e) -> e.scan(locationPattern)));
+		return getSelector().select(this.filter((e) -> e.canScan(locationPattern)).map((e) -> e.scan(locationPattern)));
 	}
 
 	@Override
 	public Elements<S> scan(String location, ResourceFilter filter) {
-		return getSelector()
-				.apply(getServices().filter((e) -> e.canScan(location)).map((e) -> e.scan(location, filter)));
+		return getSelector().select(this.filter((e) -> e.canScan(location)).map((e) -> e.scan(location, filter)));
 	}
 }

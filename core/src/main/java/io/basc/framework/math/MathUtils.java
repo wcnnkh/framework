@@ -1,12 +1,12 @@
 package io.basc.framework.math;
 
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.math.gcd.DivisionAlgorithm;
 import io.basc.framework.math.gcd.GreatestCommonDivisor;
+import io.basc.framework.util.spi.NativeServiceLoader;
 
 public final class MathUtils {
-	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = SPI.global()
-			.getServiceLoader(GreatestCommonDivisor.class, DivisionAlgorithm.class).getServices().first();
+	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = NativeServiceLoader
+			.load(GreatestCommonDivisor.class).findFirst().orElseGet(DivisionAlgorithm::new);
 
 	private MathUtils() {
 	};

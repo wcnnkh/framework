@@ -66,7 +66,7 @@ public class InheriterRegistry<A, B> extends InheriterDecorator<InheriterCapture
 	 */
 	public Registration register(Inheriter<A, B> inheriter) {
 		return registers.add(inheriter) ? new DisposableRegistration(() -> registers.remove(inheriter))
-				: Registration.CANCELLED;
+				: Registration.FAILURE;
 	}
 
 	/**
@@ -77,6 +77,6 @@ public class InheriterRegistry<A, B> extends InheriterDecorator<InheriterCapture
 	 */
 	public Registration unregister(Inheriter<A, B> inheriter) {
 		return registers.remove(inheriter) ? new DisposableRegistration(() -> registers.add(inheriter))
-				: Registration.CANCELLED;
+				: Registration.FAILURE;
 	}
 }

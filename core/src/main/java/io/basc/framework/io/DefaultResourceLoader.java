@@ -3,12 +3,13 @@ package io.basc.framework.io;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.DefaultClassLoaderAccessor;
+import io.basc.framework.util.Receipt;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.spi.Configurable;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 
 public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 		implements ConfigurableResourceLoader, Configurable {
@@ -25,15 +26,11 @@ public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 		super(classLoaderProvider);
 	}
 
-	private boolean configured;
-
 	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		protocolResolver.configure(serviceLoaderFactory);
-		configured = true;
+	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
+		return protocolResolver.doConfigure(discovery);
 	}
 
-	@Override
 	public ConfigurableProtocolResolver getProtocolResolver() {
 		return protocolResolver;
 	}
@@ -82,10 +79,4 @@ public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 			return new ClassPathContextResource(pathToUse, getClassLoader());
 		}
 	}
-
-	@Override
-	public boolean isConfigured() {
-		return configured;
-	}
-
 }

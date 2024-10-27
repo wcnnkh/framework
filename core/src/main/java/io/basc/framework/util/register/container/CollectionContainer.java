@@ -99,7 +99,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 	protected final Receipt batchDeregister(Elements<? extends ElementRegistration<E>> registrations,
 			Publisher<? super Elements<ChangeEvent<E>>> publisher) {
 		if (registrations.isEmpty()) {
-			return Receipt.fail();
+			return Receipt.FAILURE;
 		}
 
 		registrations.forEach(Registration::cancel);

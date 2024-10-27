@@ -20,7 +20,7 @@ public abstract class AbstractExchange<T> implements Exchange<T> {
 	public Receipt publish(T resource) {
 		if (publishExecutor == null) {
 			syncPublish(resource);
-			return Receipt.success();
+			return Receipt.SUCCESS;
 		} else {
 			ListenableFutureTask<?> task = new ListenableFutureTask<>(() -> syncPublish(resource), null);
 			publishExecutor.execute(task);

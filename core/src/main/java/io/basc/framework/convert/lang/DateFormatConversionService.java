@@ -72,7 +72,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return Value.of(source).getAsObject(targetType);
+				return ObjectValue.of(source).getAsObject(targetType);
 			}
 		}
 
@@ -126,11 +126,11 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return Value.of(source.getTime()).getAsObject(targetType);
+		return ObjectValue.of(source.getTime()).getAsObject(targetType);
 	}
 
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		long time = Value.of(source).getAsLong();
+		long time = ObjectValue.of(source).getAsLong();
 		return new Date(time);
 	}
 

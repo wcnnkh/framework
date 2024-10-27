@@ -82,7 +82,7 @@ public class Stage implements ListenableRegistration<Stage>, Receipt {
 				// 已经结果
 				exchange.publish(this);
 				listener.accept(this);
-				return Receipt.success();
+				return Receipt.SUCCESS;
 			}
 			return exchange.registerListener(listener);
 		}

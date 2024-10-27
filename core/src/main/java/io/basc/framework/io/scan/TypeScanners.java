@@ -14,8 +14,8 @@ public class TypeScanners extends Scanners<TypeScanner, MetadataReader> implemen
 	@Override
 	public Elements<MetadataReader> scan(String location, @Nullable ResourceFilter resourceFilter,
 			@Nullable TypeFilter typeFilter) {
-		return getSelector().apply(getServices().filter((e) -> e.canScan(location))
-				.map((e) -> e.scan(location, resourceFilter, typeFilter)));
+		return getSelector().select(
+				this.filter((e) -> e.canScan(location)).map((e) -> e.scan(location, resourceFilter, typeFilter)));
 	}
 
 }

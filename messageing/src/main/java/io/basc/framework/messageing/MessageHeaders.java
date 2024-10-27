@@ -2,17 +2,17 @@ package io.basc.framework.messageing;
 
 import java.util.HashMap;
 
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 
 public class MessageHeaders extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Value get(Object key) {
+	public ObjectValue get(Object key) {
 		Object value = super.get(key);
 		if (value == null) {
-			return Value.EMPTY;
+			return ObjectValue.EMPTY;
 		}
-		return Value.of(value);
+		return ObjectValue.of(value);
 	}
 }

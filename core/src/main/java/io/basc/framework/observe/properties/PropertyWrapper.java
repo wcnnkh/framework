@@ -1,15 +1,15 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 
 @FunctionalInterface
 public interface PropertyWrapper {
 	static final PropertyWrapper CREATOR = new PropertyWrapper() {
 
-		public Value wrap(String key, Object value) {
-			return Value.of(value);
+		public ObjectValue wrap(String key, Object value) {
+			return ObjectValue.of(value);
 		}
 	};
 
-	Value wrap(String key, Object value);
+	ObjectValue wrap(String key, Object value);
 }

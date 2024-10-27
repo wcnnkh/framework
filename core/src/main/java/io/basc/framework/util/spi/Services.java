@@ -29,7 +29,7 @@ public class Services<S> extends ServiceContainer<S> implements ServiceInjector<
 				event.getSource().inject(service);
 			});
 		}
-		return Receipt.success();
+		return Receipt.SUCCESS;
 	}
 
 	public ServiceInjectors<S> getInjectors() {

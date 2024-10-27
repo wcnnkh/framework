@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.orm.stereotype.Entity;
 
 public class DateConvertTest {
@@ -22,7 +22,7 @@ public class DateConvertTest {
 		Target target = new Target();
 		target.a = new Date();
 		target.b = new java.sql.Date(System.currentTimeMillis());
-		Object value = GlobalConversionService.getInstance().convert(target, TypeDescriptor.forObject(target),
+		Object value = DefaultConversionService.getInstance().convert(target, TypeDescriptor.forObject(target),
 				TypeDescriptor.map(Map.class, String.class, String.class));
 		System.out.println(value);
 	}

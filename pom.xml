@@ -320,6 +320,11 @@
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>beans</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
                 <groupId>io.basc.framework</groupId>
                 <artifactId>locks</artifactId>
                 <version>1.8.4</version>
@@ -829,6 +834,7 @@
 		<module>poi</module>
 		<module>net</module>
 		<module>json</module>
+		<module>beans</module>
 	</modules>
 	<profiles>
 		<profile>

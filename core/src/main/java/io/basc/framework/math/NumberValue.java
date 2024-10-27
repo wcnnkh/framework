@@ -1,6 +1,6 @@
-package io.basc.framework.core.number;
+package io.basc.framework.math;
 
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.util.Value;
 
 public interface NumberValue extends Value, Comparable<NumberValue> {
 	/**
@@ -57,4 +57,9 @@ public interface NumberValue extends Value, Comparable<NumberValue> {
 	 * @return
 	 */
 	NumberValue abs();
+
+	@Override
+	default boolean isNumber() {
+		return true;
+	}
 }

@@ -7,9 +7,9 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.ServiceLoaderWrapper;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class LocationPatternResources implements ServiceLoader<Resource> {
+public class LocationPatternResources implements ServiceLoaderWrapper<Resource, Elements<Resource>> {
 	private static Logger logger = LogManager.getLogger(LocationPatternResources.class);
 	@NonNull
 	private final ResourcePatternResolver resourcePatternResolver;
@@ -32,7 +32,7 @@ public class LocationPatternResources implements ServiceLoader<Resource> {
 	}
 
 	@Override
-	public Elements<Resource> getServices() {
+	public Elements<Resource> getSource() {
 		String locationPattern = locationPatternSupplier.get();
 		Resource[] resources;
 		try {

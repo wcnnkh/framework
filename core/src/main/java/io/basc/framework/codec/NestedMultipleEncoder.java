@@ -1,26 +1,23 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.util.Wrapper;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public class NestedMultipleEncoder<W extends MultipleEncoder<E>, E> extends Wrapper<W> implements MultipleEncoder<E> {
+@RequiredArgsConstructor
+@Getter
+public class NestedMultipleEncoder<E, W extends MultipleEncoder<E>> implements MultipleEncoderWrapper<E, W> {
+	@NonNull
+	private final W source;
 	private final int count;
-
-	public NestedMultipleEncoder(W encoder, int count) {
-		super(encoder);
-		this.count = count;
-	}
-
-	public int getCount() {
-		return count;
-	}
 
 	@Override
 	public E encode(E source) throws EncodeException {
-		return wrappedTarget.encode(source, count);
+		return getSource().encode(source, count);
 	}
 
 	@Override
-	public E encode(E encode, int count) throws EncodeException {
-		return wrappedTarget.encode(encode, count);
+	public E encode(E source, int count) throws EncodeException {
+		return getSource().encode(source, count * this.count);
 	}
 }

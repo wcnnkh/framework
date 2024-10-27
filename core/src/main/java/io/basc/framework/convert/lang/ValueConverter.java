@@ -3,7 +3,7 @@ package io.basc.framework.convert.lang;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -29,7 +29,7 @@ public class ValueConverter implements ConversionService {
 	}
 
 	@NonNull
-	private ConversionService conversionService = GlobalConversionService.getInstance();
+	private ConversionService conversionService = DefaultConversionService.getInstance();
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {

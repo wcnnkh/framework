@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.convert.lang.Value;
+import io.basc.framework.convert.lang.ObjectValue;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -26,10 +26,10 @@ public final class ContentDisposition {
 
 	private final Charset charset;
 
-	private final Map<String, Value> attributes;
+	private final Map<String, ObjectValue> attributes;
 
 	private ContentDisposition(String type, String name, String filename, Charset charset,
-			Map<String, Value> attributes) {
+			Map<String, ObjectValue> attributes) {
 		this.type = type;
 		this.name = name;
 		this.filename = filename;
@@ -53,14 +53,14 @@ public final class ContentDisposition {
 		return this.charset;
 	}
 
-	public Map<String, Value> getAttributes() {
+	public Map<String, ObjectValue> getAttributes() {
 		if (attributes == null) {
 			return Collections.emptyMap();
 		}
 		return attributes;
 	}
 
-	public Value getAttribute(String name) {
+	public ObjectValue getAttribute(String name) {
 		return getAttributes().get(name);
 	}
 
@@ -108,7 +108,7 @@ public final class ContentDisposition {
 		}
 
 		if (!CollectionUtils.isEmpty(attributes)) {
-			for (Entry<String, Value> entry : attributes.entrySet()) {
+			for (Entry<String, ObjectValue> entry : attributes.entrySet()) {
 				sb.append("; ").append(entry.getKey()).append("=");
 				if (entry.getValue().isNumber()) {
 					sb.append(entry.getValue().getAsNumber());
@@ -148,7 +148,7 @@ public final class ContentDisposition {
 		String name = null;
 		String filename = null;
 		Charset charset = null;
-		Map<String, Value> attributes = new LinkedHashMap<String, Value>(8);
+		Map<String, ObjectValue> attributes = new LinkedHashMap<String, ObjectValue>(8);
 		for (int i = 1; i < parts.size(); i++) {
 			String part = parts.get(i);
 			int eqIndex = part.indexOf('=');
@@ -173,7 +173,7 @@ public final class ContentDisposition {
 				} else if (attribute.equals("filename") && (filename == null)) {
 					filename = value;
 				} else {
-					attributes.put(attribute, Value.of(value));
+					attributes.put(attribute, ObjectValue.of(value));
 				}
 			} else {
 				throw new IllegalArgumentException("Invalid content disposition format");
@@ -321,7 +321,7 @@ public final class ContentDisposition {
 
 		Builder filename(String filename, @Nullable Charset charset);
 
-		Builder attributes(Map<String, Value> attributes);
+		Builder attributes(Map<String, ObjectValue> attributes);
 
 		ContentDisposition build();
 	}
@@ -339,7 +339,7 @@ public final class ContentDisposition {
 		@Nullable
 		private Charset charset;
 
-		private Map<String, Value> attributes;
+		private Map<String, ObjectValue> attributes;
 
 		public BuilderImpl(String type) {
 			Assert.hasText(type, "'type' must not be not empty");
@@ -364,7 +364,7 @@ public final class ContentDisposition {
 			return this;
 		}
 
-		public Builder attributes(Map<String, Value> attributes) {
+		public Builder attributes(Map<String, ObjectValue> attributes) {
 			this.attributes = attributes;
 			return this;
 		}

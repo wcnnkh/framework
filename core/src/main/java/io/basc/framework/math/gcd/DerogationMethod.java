@@ -1,9 +1,9 @@
 package io.basc.framework.math.gcd;
 
-import io.basc.framework.math.NumberHolder;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import io.basc.framework.math.NumberValue;
 
 /**
  * 更相减损法
@@ -49,9 +49,9 @@ public class DerogationMethod implements GreatestCommonDivisor {
 		return a;
 	}
 
-	public NumberHolder gcd(NumberHolder m, NumberHolder n) {
-		NumberHolder a = m.abs();
-		NumberHolder b = n.abs();
+	public NumberValue gcd(NumberValue m, NumberValue n) {
+		NumberValue a = m.abs();
+		NumberValue b = n.abs();
 		while (!a.equals(b)) {
 			if (a.compareTo(b) > 0)
 				a = a.subtract(b);

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.support.GlobalConversionService;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.Elements;
@@ -25,7 +25,7 @@ public class MapProperties implements Properties {
 	private final Map map;
 	private final TypeDescriptor typeDescriptor;
 	@NonNull
-	private ConversionService conversionService = GlobalConversionService.getInstance();
+	private ConversionService conversionService = DefaultConversionService.getInstance();
 
 	@SuppressWarnings("rawtypes")
 	public MapProperties(Map map) {
