@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.convert.strings.StringConverter;
 import io.basc.framework.math.NumberHolder;
 import io.basc.framework.script.MathScriptEngine;
@@ -80,9 +80,9 @@ public class MessageProperties implements Serializable, Cloneable {
 		return headers.get(name);
 	}
 
-	public ObjectValue getHeaderValue(String name) {
+	public ValueWrapper getHeaderValue(String name) {
 		Object value = getHeader(name);
-		return ObjectValue.of(value);
+		return ValueWrapper.of(value);
 	}
 
 	public MessageProperties removeHeader(String name) {
@@ -136,7 +136,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	}
 
 	public int getRetryCount() {
-		ObjectValue value = getHeaderValue(RETRY_COUNT);
+		ValueWrapper value = getHeaderValue(RETRY_COUNT);
 		return value == null ? 0 : value.getAsInt();
 	}
 
@@ -150,7 +150,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 * @return
 	 */
 	public int getMaxRetryCount() {
-		ObjectValue value = getHeaderValue(MAX_RETRY_COUNT);
+		ValueWrapper value = getHeaderValue(MAX_RETRY_COUNT);
 		return value == null ? 0 : value.getAsInt();
 	}
 
@@ -164,7 +164,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 * @return
 	 */
 	public double getRetryDelayMultiple() {
-		ObjectValue multiple = getHeaderValue(RETRY_DELAY_MULTIPLE);
+		ValueWrapper multiple = getHeaderValue(RETRY_DELAY_MULTIPLE);
 		return multiple == null ? 0 : multiple.getAsDouble();
 	}
 
@@ -185,7 +185,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	public long getRetryDelay() {
 		Object script = getHeader(RETRY_DELAY_SCRIPT);
 		if (script == null) {
-			ObjectValue value = getHeaderValue(RETRY_DELAY);
+			ValueWrapper value = getHeaderValue(RETRY_DELAY);
 			if (value == null) {
 				return 0;
 			}
@@ -226,7 +226,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 * @return
 	 */
 	public long getTransactionMessageConfirmDelay() {
-		ObjectValue value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
+		ValueWrapper value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
 		return (value == null || value.isEmpty()) ? TimeUnit.MINUTES.toMillis(10) : value.getAsLong();
 	}
 

@@ -2,7 +2,7 @@ package io.basc.framework.servlet;
 
 import javax.servlet.ServletContext;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
@@ -14,9 +14,9 @@ public class ServletContextPropertyFactory implements PropertyFactory {
 		this.servletContext = servletContext;
 	}
 
-	public ObjectValue get(String key) {
+	public ValueWrapper get(String key) {
 		String value = servletContext.getInitParameter(key);
-		return ObjectValue.of(value);
+		return ValueWrapper.of(value);
 	}
 
 	@Override

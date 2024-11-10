@@ -1,12 +1,12 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.util.Elements;
 
 class ObservableMapToObservablePropertyFactory extends ObservableMapToObservableValueFactory<String>
 		implements ObservablePropertyFactory {
 
-	public ObservableMapToObservablePropertyFactory(ObservableMap<String, ObjectValue> observableMap) {
+	public ObservableMapToObservablePropertyFactory(ObservableMap<String, ValueWrapper> observableMap) {
 		super(observableMap);
 	}
 

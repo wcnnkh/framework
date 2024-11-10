@@ -1,7 +1,7 @@
 package io.basc.framework.transform;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.convert.lang.ValueWrapper;
 
 /**
  * 属性定义
@@ -9,16 +9,7 @@ import io.basc.framework.execution.param.Parameter;
  * @author wcnnkh
  *
  */
-public interface Property extends Parameter {
-
-	/**
-	 * 是否只读
-	 * 
-	 * @return
-	 */
-	default boolean isReadOnly() {
-		return false;
-	}
+public interface Property extends PropertyDescriptor, ValueWrapper {
 
 	/**
 	 * 插入值时需要的类型, 默认情况下和{@link #getTypeDescriptor()}相同
@@ -30,19 +21,33 @@ public interface Property extends Parameter {
 		return getTypeDescriptor();
 	}
 
-	/**
-	 * 设置值
-	 * 
-	 * @param value
-	 * @throws UnsupportedOperationException 只读属性,不能操作
-	 */
-	void setValue(Object value) throws UnsupportedOperationException;
+	@Override
+	default TypeDescriptor getTypeDescriptor() {
+		return ValueWrapper.super.getTypeDescriptor();
+	}
 
 	/**
 	 * 属性是否存在
 	 */
 	@Override
 	default boolean isPresent() {
-		return Parameter.super.isPresent();
+		return ValueWrapper.super.isPresent();
 	}
+
+	/**
+	 * 是否只读
+	 * 
+	 * @return
+	 */
+	default boolean isReadOnly() {
+		return false;
+	}
+
+	/**
+	 * 设置值
+	 * 
+	 * @param value
+	 * @throws UnsupportedOperationException 只读属性,不能操作
+	 */
+	void set(Object value) throws UnsupportedOperationException;
 }

@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 
+import lombok.NonNull;
+
 public final class Range<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -158,22 +160,40 @@ public final class Range<T> implements Serializable {
 
 	/**
 	 * Returns whether the {@link Range} contains the given value.
-	 *
-	 * @param value must not be {@literal null}.
+	 * 
+	 * @param value      value must not be {@literal null}.
+	 * @param comparator
 	 * @return
 	 */
-	public boolean contains(T value, Comparator<T> comparator) {
-		Assert.notNull(value, "Reference value must not be null!");
-		boolean greaterThanLowerBound = lowerBound //
-				.map(it -> lowerBound.isInclusive() ? comparator.compare(it, value) <= 0
-						: comparator.compare(it, value) < 0) //
-				.orElse(true);
+	public boolean contains(@NonNull T value, @NonNull Comparator<T> comparator) {
+		return lowerBound.rightContains(value, comparator) && upperBound.leftContains(value, comparator);
+	}
 
-		boolean lessThanUpperBound = upperBound //
-				.map(it -> upperBound.isInclusive() ? comparator.compare(it, value) >= 0
-						: comparator.compare(it, value) > 0) //
-				.orElse(true);
-		return greaterThanLowerBound && lessThanUpperBound;
+	public boolean contains(@NonNull Range<T> range, @NonNull Comparator<T> comparator) {
+		if (lowerBound.isBounded()) {
+			if (range.getLowerBound().isBounded()) {
+				// 都有边界
+				if (!lowerBound.rightContains(range.getLowerBound().get(), comparator)) {
+					return false;
+				}
+			} else {
+				// 在一个有边界的范围里无边界的数据不会是他的子集
+				return false;
+			}
+		}
+
+		if (upperBound.isBounded()) {
+			if (range.getUpperBound().isBounded()) {
+				// 都有边界
+				if (!lowerBound.leftContains(range.getUpperBound().get(), comparator)) {
+					return false;
+				}
+			} else {
+				// 在一个有边界的范围里无边界的数据不会是他的子集
+				return false;
+			}
+		}
+		return true;
 	}
 
 	String toPrefixString() {

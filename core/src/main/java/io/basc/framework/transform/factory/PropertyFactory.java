@@ -1,6 +1,6 @@
 package io.basc.framework.transform.factory;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.convert.lang.ValueFactory;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
@@ -10,7 +10,7 @@ import io.basc.framework.util.Elements;
 public interface PropertyFactory extends ValueFactory<String>, Properties {
 
 	default boolean containsKey(String key) {
-		ObjectValue value = get(key);
+		ValueWrapper value = get(key);
 		return value != null && value.isPresent();
 	}
 

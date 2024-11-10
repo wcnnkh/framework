@@ -1,6 +1,7 @@
 package io.basc.framework.transform;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.transform.ReversibleTransformer;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.transform.strategy.DefaultPropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.PropertiesTransformContext;

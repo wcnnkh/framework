@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.util.CollectionFactory;
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class RecursiveConversionService implements ConversionService {
 	private final ConversionService objectConversionService;
 
 	protected boolean isUnconvertibleType(TypeDescriptor typeDescriptor) {
-		return ObjectValue.isUnconvertibleType(typeDescriptor.getType());
+		return ValueWrapper.isUnconvertibleType(typeDescriptor.getType());
 	}
 
 	@SuppressWarnings({ "unchecked" })

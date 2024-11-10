@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypes;
@@ -138,7 +138,7 @@ public class ConfigurableMessageConverter extends ConfigurableServices<MessageCo
 	}
 
 	@Override
-	public void writeTo(ObjectValue value, MimeType contentType, OutputMessage outputMessage) throws IOException {
+	public void writeTo(ValueWrapper value, MimeType contentType, OutputMessage outputMessage) throws IOException {
 		for (MessageConverter converter : getServices()) {
 			if (NESTING_CHECKERS.isNestingExists(converter)) {
 				continue;

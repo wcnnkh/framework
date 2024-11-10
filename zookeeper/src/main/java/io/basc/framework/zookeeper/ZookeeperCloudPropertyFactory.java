@@ -9,7 +9,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.util.Assert;
@@ -81,20 +81,20 @@ public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFacto
 		return ZooKeeperUtils.isExist(zooKeeper, path);
 	}
 
-	public ObjectValue get(String key) {
+	public ValueWrapper get(String key) {
 		if (StringUtils.isEmpty(key)) {
-			return ObjectValue.EMPTY;
+			return ValueWrapper.EMPTY;
 		}
 
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		byte[] data = ZooKeeperUtils.getData(zooKeeper, path);
 		if (data == null) {
-			return ObjectValue.EMPTY;
+			return ValueWrapper.EMPTY;
 		}
 
 		try {
 			Object value = getSerializer().deserialize(data);
-			return ObjectValue.of(value);
+			return ValueWrapper.of(value);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -148,11 +148,11 @@ public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFacto
 		ZooKeeperUtils.setData(zooKeeper, path, data);
 	}
 
-	public void put(String key, ObjectValue value) {
+	public void put(String key, ValueWrapper value) {
 		put(key, value.getAsString());
 	}
 
-	public boolean putIfAbsent(String key, ObjectValue value) {
+	public boolean putIfAbsent(String key, ValueWrapper value) {
 		return putIfAbsent(key, value.getAsString());
 	}
 

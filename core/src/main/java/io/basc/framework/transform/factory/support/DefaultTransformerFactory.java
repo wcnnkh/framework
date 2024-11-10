@@ -3,7 +3,7 @@ package io.basc.framework.transform.factory.support;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import io.basc.framework.transform.Transformer;
+import io.basc.framework.convert.transform.Transformer;
 import io.basc.framework.transform.factory.config.TransformerRegistry;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.comparator.TypeComparator;

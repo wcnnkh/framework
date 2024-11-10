@@ -9,7 +9,7 @@ public class Field extends AbstractField {
 	}
 
 	@Override
-	public Object getValue() {
+	public Object getSource() {
 		return getFieldDescriptor().getter().get(target);
 	}
 

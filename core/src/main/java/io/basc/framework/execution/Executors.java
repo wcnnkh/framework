@@ -1,6 +1,6 @@
 package io.basc.framework.execution;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.annotation.MergedAnnotationsElements;
 import io.basc.framework.execution.param.Parameters;
@@ -41,34 +41,34 @@ public interface Executors<T extends Executor> extends Executor, ServiceLoader<T
 	}
 
 	@Override
-	default ObjectValue execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
+	default ValueWrapper execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
 			throws Throwable {
 		for (T service : getServices()) {
 			if (service.canExecuted(parameterTypes)) {
 				Object value = service.execute(parameterTypes, args);
-				return ObjectValue.of(value, service.getReturnTypeDescriptor());
+				return ValueWrapper.of(value, service.getReturnTypeDescriptor());
 			}
 		}
 		throw new UnsupportedException(parameterTypes.toString());
 	}
 
 	@Override
-	default ObjectValue execute() throws Throwable {
+	default ValueWrapper execute() throws Throwable {
 		for (T service : getServices()) {
 			if (service.canExecuted()) {
 				Object value = service.execute();
-				return ObjectValue.of(value, service.getReturnTypeDescriptor());
+				return ValueWrapper.of(value, service.getReturnTypeDescriptor());
 			}
 		}
 		throw new UnsupportedException("");
 	}
 
 	@Override
-	default ObjectValue execute(Parameters parameters) throws Throwable {
+	default ValueWrapper execute(Parameters parameters) throws Throwable {
 		for (T service : getServices()) {
 			if (service.canExecuted()) {
 				Object value = service.execute(parameters);
-				return ObjectValue.of(value, service.getReturnTypeDescriptor());
+				return ValueWrapper.of(value, service.getReturnTypeDescriptor());
 			}
 		}
 		throw new UnsupportedException("");

@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryDataOperations;
@@ -59,7 +59,7 @@ public final class Redis
 			String v = getValueCodec().decode((byte[]) value);
 			return Long.parseLong(v);
 		}
-		return ObjectValue.of(value).getAsLong();
+		return ValueWrapper.of(value).getAsLong();
 	}
 
 	@Override

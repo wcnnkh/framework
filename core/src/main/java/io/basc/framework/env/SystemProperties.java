@@ -1,7 +1,7 @@
 package io.basc.framework.env;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
@@ -33,8 +33,8 @@ public class SystemProperties extends DefaultPropertyResolver {
 	}
 
 	@Override
-	public ObjectValue get(String key) {
-		ObjectValue value = super.get(key);
+	public ValueWrapper get(String key) {
+		ValueWrapper value = super.get(key);
 		if (value != null && value.isPresent()) {
 			return value;
 		}
@@ -43,7 +43,7 @@ public class SystemProperties extends DefaultPropertyResolver {
 		if (systemProperty == null) {
 			systemProperty = System.getenv(key);
 		}
-		return ObjectValue.of(systemProperty);
+		return ValueWrapper.of(systemProperty);
 	}
 
 	@Override

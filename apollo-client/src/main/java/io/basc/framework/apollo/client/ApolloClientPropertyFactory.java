@@ -6,7 +6,7 @@ import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.env.PropertyFactory;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.SetElements;
@@ -29,9 +29,9 @@ public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatche
 	}
 
 	@Override
-	public ObjectValue get(String key) {
+	public ValueWrapper get(String key) {
 		String value = config.getProperty(key, null);
-		return ObjectValue.of(value);
+		return ValueWrapper.of(value);
 	}
 
 	@Override

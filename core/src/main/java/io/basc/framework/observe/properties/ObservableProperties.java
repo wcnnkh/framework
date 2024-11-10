@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.DefaultPropertiesResolver;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -26,7 +26,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ObservableProperties extends Observer<PropertyChangeEvent<String, ObjectValue>>
+public class ObservableProperties extends Observer<PropertyChangeEvent<String, ValueWrapper>>
 		implements ObservablePropertyFactory, EditablePropertyFactory {
 	private Charset charset = Constants.UTF_8;
 	private final Properties properties;
@@ -57,20 +57,20 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, O
 		return registration;
 	}
 
-	private ObjectValue convert(String key, Object value) {
+	private ValueWrapper convert(String key, Object value) {
 		if (value == null) {
 			return null;
 		}
 
-		if (value instanceof ObjectValue) {
-			return (ObjectValue) value;
+		if (value instanceof ValueWrapper) {
+			return (ValueWrapper) value;
 		}
 
 		return propertyWrapper.wrap(key, value);
 	}
 
 	@Override
-	public ObjectValue get(String key) {
+	public ValueWrapper get(String key) {
 		Object value = properties.get(key);
 		return convert(key, value);
 	}
@@ -130,19 +130,19 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, O
 	}
 
 	@Override
-	public ObjectValue put(String key, Object value) {
+	public ValueWrapper put(String key, Object value) {
 		Object oldValue = put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public ObjectValue put(String key, ObjectValue value) {
+	public ValueWrapper put(String key, ValueWrapper value) {
 		Object oldValue = properties.put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public ObjectValue remove(String key) {
+	public ValueWrapper remove(String key) {
 		Object value = properties.remove(key);
 		return convert(key, value);
 	}

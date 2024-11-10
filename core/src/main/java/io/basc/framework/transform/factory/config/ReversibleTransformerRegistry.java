@@ -1,6 +1,6 @@
 package io.basc.framework.transform.factory.config;
 
-import io.basc.framework.transform.ReversibleTransformer;
+import io.basc.framework.convert.transform.ReversibleTransformer;
 import io.basc.framework.transform.factory.ReversibleTransformerFactory;
 import io.basc.framework.util.register.Registration;
 

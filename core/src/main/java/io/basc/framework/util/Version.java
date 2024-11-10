@@ -3,16 +3,16 @@ package io.basc.framework.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 
-public class Version implements Serializable, Comparable<Version>, Comparator<ObjectValue> {
+public class Version implements Serializable, Comparable<Version>, Comparator<ValueWrapper> {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 默认的版本分割符
 	 */
 	public static final String DIVIDEERS = ".";
 
-	private final ObjectValue[] fragments;
+	private final ValueWrapper[] fragments;
 	private final String dividers;
 
 	public Version(String version) {
@@ -23,13 +23,13 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Ob
 		Assert.requiredArgument(version != null, "version");
 		this.dividers = dividers;
 		String[] arr = StringUtils.splitToArray(version, dividers);
-		fragments = new ObjectValue[arr.length];
+		fragments = new ValueWrapper[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			this.fragments[i] = ObjectValue.of(arr[i]);
+			this.fragments[i] = ValueWrapper.of(arr[i]);
 		}
 	}
 
-	public Version(ObjectValue[] fragments, String dividers) {
+	public Version(ValueWrapper[] fragments, String dividers) {
 		this.fragments = fragments;
 		this.dividers = dividers;
 	}
@@ -38,7 +38,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Ob
 		return dividers;
 	}
 
-	public ObjectValue[] getFragments() {
+	public ValueWrapper[] getFragments() {
 		return fragments.clone();
 	}
 
@@ -46,7 +46,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Ob
 		return fragments.length;
 	}
 
-	public ObjectValue get(int index) {
+	public ValueWrapper get(int index) {
 		return fragments[index];
 	}
 
@@ -56,10 +56,10 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Ob
 	 * @param fragments
 	 * @return
 	 */
-	public int compareTo(ObjectValue[] fragments) {
+	public int compareTo(ValueWrapper[] fragments) {
 		for (int i = 0; i < fragments.length && i < this.fragments.length; i++) {
-			ObjectValue fragment1 = this.fragments[i];
-			ObjectValue fragment2 = fragments[i];
+			ValueWrapper fragment1 = this.fragments[i];
+			ValueWrapper fragment2 = fragments[i];
 			int compare = compare(fragment1, fragment2);
 			if (compare == 0) {
 				continue;
@@ -141,7 +141,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Ob
 	}
 
 	@Override
-	public int compare(ObjectValue v1, ObjectValue v2) {
+	public int compare(ValueWrapper v1, ValueWrapper v2) {
 		if (v1.isNumber() && v2.isNumber()) {
 			return Double.compare(v1.getAsDouble(), v2.getAsDouble());
 		}

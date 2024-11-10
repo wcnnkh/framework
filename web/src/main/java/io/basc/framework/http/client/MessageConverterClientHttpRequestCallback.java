@@ -2,7 +2,7 @@ package io.basc.framework.http.client;
 
 import java.io.IOException;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.http.HttpEntity;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.net.convert.MessageConverter;
@@ -32,7 +32,7 @@ public class MessageConverterClientHttpRequestCallback implements ClientHttpRequ
 				throw new UnsupportedException("not supported write " + httpEntity);
 			}
 
-			messageConverter.writeTo(ObjectValue.of(httpEntity.getBody(), httpEntity.getTypeDescriptor()),
+			messageConverter.writeTo(ValueWrapper.of(httpEntity.getBody(), httpEntity.getTypeDescriptor()),
 					httpEntity.getContentType(), clientRequest);
 		}
 		return clientRequest;

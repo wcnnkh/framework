@@ -4,12 +4,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 
-public class DynamicValueRegistry<K> extends DynamicMap<K, ObjectValue> implements ObservableValueFactory<K> {
+public class DynamicValueRegistry<K> extends DynamicMap<K, ValueWrapper> implements ObservableValueFactory<K> {
 
-	public DynamicValueRegistry(Map<K, ObjectValue> targetMap,
-			Function<? super Properties, ? extends Map<K, ObjectValue>> propertiesMapper) {
+	public DynamicValueRegistry(Map<K, ValueWrapper> targetMap,
+			Function<? super Properties, ? extends Map<K, ValueWrapper>> propertiesMapper) {
 		super(targetMap, propertiesMapper);
 	}
 }

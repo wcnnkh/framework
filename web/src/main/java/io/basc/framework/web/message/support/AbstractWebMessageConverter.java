@@ -5,7 +5,7 @@ import java.io.IOException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.net.convert.MessageConverter;
@@ -54,7 +54,7 @@ public abstract class AbstractWebMessageConverter
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) throws IOException, WebMessagelConverterException {
 		if (response.getContentType() == null) {
-			if (ObjectValue.isBaseType(typeDescriptor.getType())) {
+			if (ValueWrapper.isBaseType(typeDescriptor.getType())) {
 				response.setContentType(MediaType.TEXT_HTML);
 			} else {
 				response.setContentType(MediaType.APPLICATION_JSON);

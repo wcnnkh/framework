@@ -1,6 +1,6 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ParentDiscover;
@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public final class MappingContext extends SimpleAttributes<String, ObjectValue> implements ParentDiscover<MappingContext> {
+public final class MappingContext extends SimpleAttributes<String, ValueWrapper> implements ParentDiscover<MappingContext> {
 	private final Mapping<? extends FieldDescriptor> mapping;
 	private final FieldDescriptor field;
 	private final MappingContext parent;

@@ -1,10 +1,12 @@
 package io.basc.framework.util;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.function.DefaultOptional;
+import lombok.NonNull;
 
 public final class Bound<T> extends DefaultOptional<T> {
 	private static final long serialVersionUID = 1L;
@@ -21,6 +23,38 @@ public final class Bound<T> extends DefaultOptional<T> {
 
 	public boolean isInclusive() {
 		return inclusive;
+	}
+
+	/**
+	 * 右包含
+	 * 
+	 * @param bound
+	 * @param comparator
+	 * @return
+	 */
+	public boolean leftContains(@NonNull T value, @NonNull Comparator<T> comparator) {
+		if (isBounded()) {
+			// 都有边界
+			int compare = comparator.compare(get(), value);
+			return inclusive ? compare <= 0 : compare < 0;
+		}
+		return true;
+	}
+
+	/**
+	 * 右包含
+	 * 
+	 * @param value
+	 * @param comparator
+	 * @return
+	 */
+	public boolean rightContains(@NonNull T value, @NonNull Comparator<T> comparator) {
+		if (isBounded()) {
+			// 都有边界
+			int compare = comparator.compare(get(), value);
+			return inclusive ? compare >= 0 : compare > 0;
+		}
+		return true;
 	}
 
 	public <U> Bound<U> convert(Function<? super T, ? extends U> converter) {

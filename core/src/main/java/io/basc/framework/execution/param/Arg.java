@@ -3,7 +3,7 @@ package io.basc.framework.execution.param;
 import java.io.Serializable;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,13 +13,13 @@ public class Arg implements Parameter, Serializable {
 	private static final long serialVersionUID = 1L;
 	private int positionIndex;
 	private String name;
-	private ObjectValue valueSource;
+	private ValueWrapper valueSource;
 
-	public Arg(int positionIndex, ObjectValue valueSource) {
+	public Arg(int positionIndex, ValueWrapper valueSource) {
 		this(positionIndex, null, valueSource);
 	}
 
-	public Arg(String name, ObjectValue valueSource) {
+	public Arg(String name, ValueWrapper valueSource) {
 		this(-1, name, valueSource);
 	}
 

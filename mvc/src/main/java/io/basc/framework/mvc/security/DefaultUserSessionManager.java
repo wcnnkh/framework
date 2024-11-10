@@ -3,7 +3,7 @@ package io.basc.framework.mvc.security;
 import java.net.HttpCookie;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.security.login.UserToken;
@@ -80,8 +80,8 @@ public class DefaultUserSessionManager implements UserSessionManager {
 		this.singleSession = singleSession;
 	}
 
-	protected ObjectValue getParameter(HttpChannel httpChannel, String name) {
-		ObjectValue value = httpChannel.get(name);
+	protected ValueWrapper getParameter(HttpChannel httpChannel, String name) {
+		ValueWrapper value = httpChannel.get(name);
 		if (value == null || value.isEmpty()) {
 			String token = httpChannel.getRequest().getHeaders().getFirst(name);
 			if (token == null) {
@@ -92,7 +92,7 @@ public class DefaultUserSessionManager implements UserSessionManager {
 			}
 
 			if (token != null) {
-				value = ObjectValue.of(token);
+				value = ValueWrapper.of(token);
 			}
 		}
 		return value;
@@ -100,8 +100,8 @@ public class DefaultUserSessionManager implements UserSessionManager {
 
 	@Override
 	public <T> UserToken<T> read(HttpChannel httpChannel, Class<T> type) {
-		ObjectValue uid = getParameter(httpChannel, getUidName());
-		ObjectValue token = getParameter(httpChannel, getTokenName());
+		ValueWrapper uid = getParameter(httpChannel, getUidName());
+		ValueWrapper token = getParameter(httpChannel, getTokenName());
 		if (uid == null || uid.isEmpty() || token == null || token.isEmpty()) {
 			return null;
 		}

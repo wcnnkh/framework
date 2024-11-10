@@ -1,13 +1,13 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.observe.value.AbstractObservableValue;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.EventRegistrationException;
 import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.register.Registration;
 
-public class DynamicValue<K> extends AbstractObservableValue<ObjectValue> implements AutoCloseable {
+public class DynamicValue<K> extends AbstractObservableValue<ValueWrapper> implements AutoCloseable {
 	private final K key;
 	private final ObservableValueFactory<K> observableValueFactory;
 	private volatile Registration registration;
@@ -18,8 +18,8 @@ public class DynamicValue<K> extends AbstractObservableValue<ObjectValue> implem
 	}
 
 	@Override
-	public ObjectValue orElse(ObjectValue other) {
-		ObjectValue value = observableValueFactory.get(key);
+	public ValueWrapper orElse(ValueWrapper other) {
+		ValueWrapper value = observableValueFactory.get(key);
 		if (value == null || !value.isPresent()) {
 			return other;
 		}

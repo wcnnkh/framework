@@ -1,0 +1,89 @@
+package io.basc.framework.math;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class IntValue implements NumberValue {
+	private final int value;
+
+	@Override
+	public BigDecimal getAsBigDecimal() {
+		return new BigDecimal(value);
+	}
+
+	@Override
+	public BigInteger getAsBigInteger() {
+		return new BigInteger("" + value);
+	}
+	
+	@Override
+	public int getAsInt() {
+		return value;
+	}
+
+	@Override
+	public Number getAsNumber() {
+		return value;
+	}
+
+	@Override
+	public String getAsString() {
+		return Integer.toString(value);
+	}
+
+	@Override
+	public int compareTo(NumberValue o) {
+		BigInteger value = o.getAsBigInteger();
+		if (value.compareTo(INTEGER_MAX_VALUE) >= 0) {
+			return -1;
+		}
+
+		return Integer.compare(this.value, value.intValue());
+	}
+
+	@Override
+	public NumberValue add(NumberValue value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NumberValue subtract(NumberValue value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NumberValue multiply(NumberValue value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NumberValue divide(NumberValue value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NumberValue remainder(NumberValue value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NumberValue pow(NumberValue value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NumberValue abs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -15,8 +15,8 @@ import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.lang.DefaultObjectValue;
 import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
@@ -34,14 +34,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, ConversionServiceAware {
+public abstract class ObjectFormat implements PairFormat<String, ValueWrapper>, ConversionServiceAware {
 	@NonNull
 	private ConversionService conversionService = DefaultConversionService.getInstance();
 	@NonNull
 	private MappingFactory mappingFactory = BeanUtils.getMapper();
 
 	@Override
-	public final String format(Stream<KeyValue<String, ObjectValue>> source) {
+	public final String format(Stream<KeyValue<String, ValueWrapper>> source) {
 		return PairFormat.super.format(source);
 	}
 
@@ -65,7 +65,7 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 	}
 
 	@Override
-	public final String formatMap(Map<? extends String, ? extends ObjectValue> sourceMap) {
+	public final String formatMap(Map<? extends String, ? extends ValueWrapper> sourceMap) {
 		return PairFormat.super.formatMap(sourceMap);
 	}
 
@@ -85,7 +85,7 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 	}
 
 	@Override
-	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends ObjectValue>> sourceMap) {
+	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends ValueWrapper>> sourceMap) {
 		return PairFormat.super.formatMultiValueMap(sourceMap);
 	}
 
@@ -142,9 +142,9 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 		} else if (sourceType.isArray()) {
 			formatArray(sourceKey, source, sourceType, target);
 		} else {
-			ObjectValue value = new DefaultObjectValue(source, sourceType);
-			KeyValue<String, ObjectValue> pair = KeyValue.of(sourceKey, value);
-			Stream<KeyValue<String, ObjectValue>> stream = Stream.of(pair);
+			ValueWrapper value = new ObjectValue(source, sourceType);
+			KeyValue<String, ValueWrapper> pair = KeyValue.of(sourceKey, value);
+			Stream<KeyValue<String, ValueWrapper>> stream = Stream.of(pair);
 			// 开始format
 			format(stream, target);
 		}
@@ -155,27 +155,27 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 	}
 
 	@Override
-	public final Stream<KeyValue<String, ObjectValue>> parse(String source) {
+	public final Stream<KeyValue<String, ValueWrapper>> parse(String source) {
 		return PairFormat.super.parse(source);
 	}
 
 	@Override
-	public final Map<String, ObjectValue> parseMap(Readable source) throws IOException {
+	public final Map<String, ValueWrapper> parseMap(Readable source) throws IOException {
 		return PairFormat.super.parseMap(source);
 	}
 
 	@Override
-	public final Map<String, ObjectValue> parseMap(String source) {
+	public final Map<String, ValueWrapper> parseMap(String source) {
 		return PairFormat.super.parseMap(source);
 	}
 
 	@Override
-	public final MultiValueMap<String, ObjectValue> parseMultiValueMap(Readable source) throws IOException {
+	public final MultiValueMap<String, ValueWrapper> parseMultiValueMap(Readable source) throws IOException {
 		return PairFormat.super.parseMultiValueMap(source);
 	}
 
 	@Override
-	public final MultiValueMap<String, ObjectValue> parseMultiValueMap(String source) {
+	public final MultiValueMap<String, ValueWrapper> parseMultiValueMap(String source) {
 		return PairFormat.super.parseMultiValueMap(source);
 	}
 
@@ -186,7 +186,7 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object parseObject(Readable source, TypeDescriptor targetType) throws IOException {
-		MultiValueMap<String, ObjectValue> sourceMap = parseMultiValueMap(source);
+		MultiValueMap<String, ValueWrapper> sourceMap = parseMultiValueMap(source);
 		TypeDescriptor sourceType = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class),
 				TypeDescriptor.collection(List.class, String.class));
 		if (conversionService.canConvert(sourceType, targetType)) {
@@ -200,7 +200,7 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 
 			Map targetMap = CollectionFactory.createMap(targetType.getType(),
 					targetType.getMapKeyTypeDescriptor().getType(), sourceMap.size());
-			for (Entry<String, List<ObjectValue>> entry : sourceMap.entrySet()) {
+			for (Entry<String, List<ValueWrapper>> entry : sourceMap.entrySet()) {
 				Object key = entry.getKey();
 				key = conversionService.convert(key, targetType.getMapKeyTypeDescriptor());
 
@@ -216,7 +216,7 @@ public abstract class ObjectFormat implements PairFormat<String, ObjectValue>, C
 		// 兜底处理
 		Object target = ReflectionUtils.newInstance(targetType.getType());
 		Mapping<?> mapping = mappingFactory.getMapping(targetType.getType());
-		for (Entry<String, List<ObjectValue>> entry : sourceMap.entrySet()) {
+		for (Entry<String, List<ValueWrapper>> entry : sourceMap.entrySet()) {
 			FieldDescriptor element = mapping.getElements(entry.getKey()).first();
 			if (element == null) {
 				continue;

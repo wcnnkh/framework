@@ -11,7 +11,7 @@ import io.basc.framework.convert.ConvertiblePair;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.config.ConditionalConversionService;
 import io.basc.framework.convert.lang.AbstractConversionService;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.dom.DomUtils;
 
 public class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
@@ -31,8 +31,8 @@ public class NodeToObjectConversionService extends AbstractConversionService imp
 	}
 
 	public Object convert(Node node, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (ObjectValue.isBaseType(targetType.getType())) {
-			return ObjectValue.of(node.getTextContent()).getAsObject(targetType.getResolvableType().getType());
+		if (ValueWrapper.isBaseType(targetType.getType())) {
+			return ValueWrapper.of(node.getTextContent()).getAsObject(targetType.getResolvableType().getType());
 		}
 
 		NodeList nodeList = node.getChildNodes();

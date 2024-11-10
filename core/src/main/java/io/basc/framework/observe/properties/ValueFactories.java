@@ -1,22 +1,22 @@
 package io.basc.framework.observe.properties;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.convert.lang.ValueFactory;
 
 public class ValueFactories<K, F extends ValueFactory<K>> extends ConfigurableServices<F> implements ValueFactory<K> {
 	@Override
-	public ObjectValue get(K key) {
+	public ValueWrapper get(K key) {
 		for (F factory : getServices()) {
 			if (factory == null || factory == this) {
 				continue;
 			}
 
-			ObjectValue value = factory.get(key);
+			ValueWrapper value = factory.get(key);
 			if (value != null && value.isPresent()) {
 				return value;
 			}
 		}
-		return ObjectValue.EMPTY;
+		return ValueWrapper.EMPTY;
 	}
 }

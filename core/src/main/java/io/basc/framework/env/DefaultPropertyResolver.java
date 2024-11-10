@@ -4,8 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.convert.lang.DefaultObjectValue;
 import io.basc.framework.convert.lang.ObjectValue;
+import io.basc.framework.convert.lang.ValueWrapper;
 import io.basc.framework.observe.properties.DynamicPropertyRegistry;
 import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
 import io.basc.framework.transform.factory.PropertyFactory;
@@ -17,10 +17,10 @@ public class DefaultPropertyResolver extends DynamicPropertyRegistry
 	private static interface FinalProperty {
 	}
 
-	private class AnyFormatValue extends DefaultObjectValue implements FinalProperty {
+	private class AnyFormatValue extends ObjectValue implements FinalProperty {
 		private static final long serialVersionUID = 1L;
 
-		public AnyFormatValue(ObjectValue value) {
+		public AnyFormatValue(ValueWrapper value) {
 			super(value.getValue(), value.getTypeDescriptor());
 		}
 
@@ -80,10 +80,10 @@ public class DefaultPropertyResolver extends DynamicPropertyRegistry
 		}
 	}
 
-	public ObjectValue get(String key) {
-		ObjectValue value = super.get(key);
+	public ValueWrapper get(String key) {
+		ValueWrapper value = super.get(key);
 		if (value == null || !value.isPresent()) {
-			return ObjectValue.EMPTY;
+			return ValueWrapper.EMPTY;
 		}
 
 		if (value instanceof FinalProperty) {
