@@ -18,12 +18,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;
-import io.basc.framework.env.SystemProperties;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;

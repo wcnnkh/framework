@@ -3,7 +3,7 @@ package io.basc.framework.rpc.http;
 import java.lang.reflect.Method;
 import java.net.URI;
 
-import io.basc.framework.env.Environment;
+import io.basc.framework.core.env.Environment;
 import io.basc.framework.lang.Nullable;
 
 public interface HttpRemoteResolver {

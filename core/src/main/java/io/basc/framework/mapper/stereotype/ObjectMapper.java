@@ -1,9 +1,9 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.transform.ReversibleMapper;
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.ReversibleMapper;
 import io.basc.framework.transform.PropertiesTransformer;
 
 public interface ObjectMapper extends ReversibleMapper<Object, Object, ConversionException>, ConversionService,

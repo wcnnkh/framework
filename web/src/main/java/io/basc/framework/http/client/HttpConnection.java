@@ -3,7 +3,7 @@ package io.basc.framework.http.client;
 import java.io.File;
 import java.nio.charset.Charset;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;

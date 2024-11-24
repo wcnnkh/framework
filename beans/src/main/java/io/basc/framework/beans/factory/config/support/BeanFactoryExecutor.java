@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.execution.reflect.ReflectionMethod;
+import io.basc.framework.core.execution.reflect.ReflectionMethod;
 
 public class BeanFactoryExecutor extends ReflectionMethod {
 	private final String targetBeanName;

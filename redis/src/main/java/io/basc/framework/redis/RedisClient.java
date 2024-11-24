@@ -12,8 +12,8 @@ import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.page.Browseable;
 import io.basc.framework.util.page.StandardBrowseable;
 

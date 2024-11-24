@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.basc.framework.core.execution.Getter;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.InsertOperationSymbol;
 import io.basc.framework.data.repository.Repository;
-import io.basc.framework.execution.Getter;
 import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.SimpleSql;
 import io.basc.framework.jdbc.Sql;

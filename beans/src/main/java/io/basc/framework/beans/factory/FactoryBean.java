@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 
 /**
  * BeanFactory生成的bean

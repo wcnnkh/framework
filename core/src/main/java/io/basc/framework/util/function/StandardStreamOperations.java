@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
 public class StandardStreamOperations<T, E extends Throwable, C extends StandardStreamOperations<T, E, C>>
 		extends StandardCloser<T, E, C> implements StreamOperations<T, E> {
 	private final Processor<? super C, ? extends T, ? extends E> sourceProcesor;
@@ -17,8 +15,7 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 	}
 
 	public StandardStreamOperations(Source<? extends T, ? extends E> source,
-			@Nullable ConsumeProcessor<? super T, ? extends E> closeProcessor,
-			@Nullable RunnableProcessor<? extends E> closeHandler) {
+			ConsumeProcessor<? super T, ? extends E> closeProcessor, RunnableProcessor<? extends E> closeHandler) {
 		this(new Processor<C, T, E>() {
 
 			@Override
@@ -38,16 +35,14 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 	}
 
 	public StandardStreamOperations(Processor<? super C, ? extends T, ? extends E> sourceProcesor,
-			@Nullable ConsumeProcessor<? super T, ? extends E> closeProcessor,
-			@Nullable RunnableProcessor<? extends E> closeHandler) {
+			ConsumeProcessor<? super T, ? extends E> closeProcessor, RunnableProcessor<? extends E> closeHandler) {
 		super(closeHandler, closeProcessor);
 		this.sourceProcesor = sourceProcesor;
 	}
 
 	public <S> StandardStreamOperations(StreamOperations<S, ? extends E> sourceStreamOperations,
 			Processor<? super S, ? extends T, ? extends E> processor,
-			@Nullable ConsumeProcessor<? super T, ? extends E> closeProcessor,
-			@Nullable RunnableProcessor<? extends E> closeHandler) {
+			ConsumeProcessor<? super T, ? extends E> closeProcessor, RunnableProcessor<? extends E> closeHandler) {
 		this(new Processor<C, T, E>() {
 
 			@Override

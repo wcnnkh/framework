@@ -5,7 +5,7 @@ import java.net.CookieHandler;
 import java.net.URI;
 import java.util.Map;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.BodyBuilder;

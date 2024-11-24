@@ -19,10 +19,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.page.Browseable;
 import io.basc.framework.util.page.StandardBrowseable;
 import io.basc.framework.util.page.StandardCursor;
+import lombok.NonNull;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -270,7 +271,7 @@ public final class ClassUtils {
 	 * @throws LinkageError           if the class file could not be loaded
 	 * @see Class#forName(String, boolean, ClassLoader)
 	 */
-	public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
+	public static Class<?> forName(@NonNull String name, ClassLoader classLoader)
 			throws ClassNotFoundException, LinkageError {
 		Assert.notNull(name, "Name must not be null");
 
@@ -453,8 +454,7 @@ public final class ClassUtils {
 	 * @param classLoader
 	 * @return
 	 */
-	@Nullable
-	public static Class<?> getClass(String className, @Nullable ClassLoader classLoader) {
+	public static Class<?> getClass(@NonNull String className, ClassLoader classLoader) {
 		Class<?> clazz = null;
 		try {
 			clazz = forName(className, classLoader);
@@ -468,7 +468,7 @@ public final class ClassUtils {
 		return clazz;
 	}
 
-	public static Optional<Class<?>> findClass(String className, @Nullable ClassLoader classLoader) {
+	public static Optional<Class<?>> findClass(@NonNull String className, ClassLoader classLoader) {
 		Class<?> clazz = getClass(className, classLoader);
 		return clazz == null ? Optional.empty() : Optional.of(clazz);
 	}
@@ -883,7 +883,7 @@ public final class ClassUtils {
 	 *                               module definition for a superclass or interface
 	 *                               implemented by the class to be checked here)
 	 */
-	public static boolean isPresent(String className, @Nullable ClassLoader classLoader) {
+	public static boolean isPresent(@NonNull String className, ClassLoader classLoader) {
 		try {
 			forName(className, classLoader);
 			return true;
@@ -1059,7 +1059,7 @@ public final class ClassUtils {
 	 *                                  class to be loaded here)
 	 * @see #forName(String, ClassLoader)
 	 */
-	public static Class<?> resolveClassName(String className, @Nullable ClassLoader classLoader)
+	public static Class<?> resolveClassName(@NonNull String className, ClassLoader classLoader)
 			throws IllegalArgumentException {
 
 		try {

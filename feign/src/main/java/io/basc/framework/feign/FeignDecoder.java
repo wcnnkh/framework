@@ -1,6 +1,6 @@
 package io.basc.framework.feign;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.net.convert.MessageConverter;
 
 import java.io.IOException;

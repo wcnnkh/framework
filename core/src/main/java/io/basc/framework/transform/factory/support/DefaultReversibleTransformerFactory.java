@@ -2,8 +2,8 @@ package io.basc.framework.transform.factory.support;
 
 import java.util.TreeMap;
 
-import io.basc.framework.convert.transform.ReversibleTransformer;
-import io.basc.framework.convert.transform.Transformer;
+import io.basc.framework.core.convert.transform.ReversibleTransformer;
+import io.basc.framework.core.convert.transform.Transformer;
 import io.basc.framework.transform.factory.config.ReversibleTransformerRegistry;
 import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;

@@ -1,6 +1,6 @@
 package io.basc.framework.transform.strategy;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 
 public interface PropertiesTransformStrategyFactory {
 	/**

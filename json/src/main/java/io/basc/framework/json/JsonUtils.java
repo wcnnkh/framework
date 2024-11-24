@@ -2,7 +2,7 @@ package io.basc.framework.json;
 
 import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.gson.GsonSupport;
 
 public final class JsonUtils implements JsonSupport {

@@ -2,7 +2,6 @@ package io.basc.framework.util.function;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 
@@ -15,7 +14,7 @@ public class CacheableSource<T, E extends Throwable> implements Source<T, E> {
 		this.caching = new StaticSupplier<T>(source);
 	}
 
-	public CacheableSource(Source<? extends T, ? extends E> source, @Nullable Object lock) {
+	public CacheableSource(Source<? extends T, ? extends E> source, Object lock) {
 		Assert.requiredArgument(source != null, "source");
 		this.lock = lock;
 		this.source = source;

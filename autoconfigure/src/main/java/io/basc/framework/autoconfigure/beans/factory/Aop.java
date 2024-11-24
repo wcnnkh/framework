@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 
 /**
  * 是否启用aop

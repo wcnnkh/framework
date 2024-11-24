@@ -2,8 +2,8 @@ package io.basc.framework.transform.map;
 
 import java.util.Map;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.ObjectUtils;
 import lombok.RequiredArgsConstructor;

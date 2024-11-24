@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.function.StaticSupplier;
 
 /**
@@ -210,10 +209,9 @@ public class ResponsiveIterator<E> implements CloseableIterator<E> {
 		/**
 		 * 消息类型 0是普通消息， 1是关闭消息
 		 */
-		@Nullable
 		public final int type;
 
-		public ResponsiveMessage(int type, @Nullable V value) {
+		public ResponsiveMessage(int type, V value) {
 			this.value = value;
 			this.type = type;
 		}

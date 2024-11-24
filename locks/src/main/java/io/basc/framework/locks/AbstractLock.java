@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.env.SystemProperties;
+import io.basc.framework.core.env.SystemProperties;
 
 public abstract class AbstractLock implements Lock {
 	private static final long DEFAULT_SLEEP_TIME = SystemProperties.getInstance().get("lock.sleep.time").as(Long.class)

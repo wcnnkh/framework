@@ -5,15 +5,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.execution.param.Parameter;
-import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityRepository;

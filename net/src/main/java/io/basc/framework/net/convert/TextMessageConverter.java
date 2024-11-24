@@ -1,9 +1,9 @@
 package io.basc.framework.net.convert;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.config.ConversionServiceAware;
-import io.basc.framework.convert.support.DefaultConversionService;
+import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.support.DefaultConversionService;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import lombok.Getter;

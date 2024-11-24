@@ -3,7 +3,7 @@ package io.basc.framework.util.select;
 import java.util.Collections;
 import java.util.Map;
 
-import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Merger;
 

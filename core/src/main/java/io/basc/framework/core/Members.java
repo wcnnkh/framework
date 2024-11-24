@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.MergedElements;
@@ -22,9 +21,9 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	private final ResolvableType source;
 	private volatile Elements<E> elements;
 	private final Function<? super ResolvableType, ? extends Elements<E>> processor;
-	@Nullable
+	
 	private volatile Elements<? extends Members<E>> interfaces;
-	@Nullable
+	
 	private volatile Members<E> superclass;
 
 	/**
@@ -47,7 +46,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 		this.superclass = members.superclass;
 	}
 
-	public Members(Class<?> source, @Nullable final Function<? super Class<?>, ? extends Elements<E>> processor) {
+	public Members(Class<?> source,  final Function<? super Class<?>, ? extends Elements<E>> processor) {
 		this(ResolvableType.forClass(Assert.requiredArgument(source != null, "source", source)), null,
 				processor == null ? null : (type) -> processor.apply(type.getRawClass()));
 	}
@@ -59,8 +58,8 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	 * @param elements  如果为空但processor不为空会自动加载
 	 * @param processor 如果为空不会自动加载
 	 */
-	public Members(ResolvableType source, @Nullable Elements<E> elements,
-			@Nullable final Function<? super ResolvableType, ? extends Elements<E>> processor) {
+	public Members(ResolvableType source,  Elements<E> elements,
+			 final Function<? super ResolvableType, ? extends Elements<E>> processor) {
 		Assert.requiredArgument(source != null, "source");
 		this.source = source;
 		this.elements = elements;

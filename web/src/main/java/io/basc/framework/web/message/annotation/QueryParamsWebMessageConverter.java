@@ -1,6 +1,6 @@
 package io.basc.framework.web.message.annotation;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.web.message.support.AbstractParamsWebMessageConverter;
 

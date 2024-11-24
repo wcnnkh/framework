@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.io.IOUtils;
 
 public interface JsonSupport extends JsonConverter {

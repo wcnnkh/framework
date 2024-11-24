@@ -7,8 +7,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import io.basc.framework.lang.Constants;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.collect.MultiValueMap;
 
 public class UriUtils {

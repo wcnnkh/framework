@@ -1,6 +1,6 @@
 package io.basc.framework.transform.factory;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.PropertiesTransformer;
 

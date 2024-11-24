@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.json.JsonConverter;
 import io.basc.framework.json.JsonException;
 import lombok.Data;

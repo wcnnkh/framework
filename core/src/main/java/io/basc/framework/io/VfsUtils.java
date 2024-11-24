@@ -9,8 +9,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
  * Utility for detecting and accessing JBoss VFS in the classpath.

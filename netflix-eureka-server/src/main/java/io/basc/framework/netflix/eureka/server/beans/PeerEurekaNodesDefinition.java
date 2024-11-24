@@ -11,8 +11,8 @@ import com.netflix.eureka.resources.ServerCodecs;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.EnvironmentBeanDefinition;
+import io.basc.framework.core.env.Environment;
+import io.basc.framework.core.env.EnvironmentBeanDefinition;
 import io.basc.framework.netflix.eureka.server.RefreshablePeerEurekaNodes;
 import io.basc.framework.netflix.eureka.server.ReplicationClientAdditionalFilters;
 

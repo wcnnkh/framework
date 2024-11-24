@@ -3,7 +3,6 @@ package io.basc.framework.util.logging;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Wrapper;
@@ -56,7 +55,6 @@ public class DynamicLogger implements Logger, Wrapper<Logger> {
 	 * 
 	 * @return
 	 */
-	@Nullable
 	public StackTraceElement getStackTraceElement() {
 		StackTraceElement[] stackTraceElements = new Throwable().getStackTrace();
 		for (StackTraceElement stackTraceElement : stackTraceElements) {

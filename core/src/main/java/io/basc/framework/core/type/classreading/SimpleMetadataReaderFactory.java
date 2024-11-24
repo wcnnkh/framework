@@ -6,7 +6,6 @@ import java.io.IOException;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
@@ -26,7 +25,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
 	 *                       ClassLoader to use)
 	 */
-	public SimpleMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
+	public SimpleMetadataReaderFactory( ResourceLoader resourceLoader) {
 		this.resourceLoader = (resourceLoader != null ? resourceLoader : new DefaultResourceLoader());
 	}
 
@@ -35,7 +34,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	 * 
 	 * @param classLoader the ClassLoader to use
 	 */
-	public SimpleMetadataReaderFactory(@Nullable ClassLoader classLoader) {
+	public SimpleMetadataReaderFactory( ClassLoader classLoader) {
 		this.resourceLoader = (classLoader != null ? new DefaultResourceLoader(classLoader)
 				: new DefaultResourceLoader());
 	}

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.spi.NativeServiceLoader;
 
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {
@@ -46,7 +45,7 @@ public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscover
 	}
 
 	@Override
-	@Nullable
+	
 	public String[] getParameterNames(Method method) {
 		String[] result = getParameterNames(Arrays.asList(PARAMETER_NAME_DISCOVERERS), method);
 		if (result == null) {
@@ -66,7 +65,7 @@ public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscover
 	}
 
 	@Override
-	@Nullable
+	
 	public String[] getParameterNames(Constructor<?> ctor) {
 		String[] result = getParameterNames(Arrays.asList(PARAMETER_NAME_DISCOVERERS), ctor);
 		if (result == null) {

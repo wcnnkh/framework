@@ -2,8 +2,8 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public class GetDeclaredMethodsTest {
 	@Test

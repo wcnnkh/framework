@@ -1,7 +1,5 @@
 package io.basc.framework.retry;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * A {@link RetryPolicy} is responsible for allocating and managing resources
  * needed by {@link RetryOperations}. The {@link RetryPolicy} allows retry
@@ -29,7 +27,7 @@ public interface RetryPolicy {
 	 * @return a {@link RetryContext} object specific to this policy.
 	 *
 	 */
-	RetryContext open(@Nullable RetryContext parent);
+	RetryContext open(RetryContext parent);
 
 	/**
 	 * @param context a retry status created by the {@link #open(RetryContext)}

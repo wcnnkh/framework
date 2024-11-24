@@ -3,8 +3,6 @@ package io.basc.framework.util;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
 public class SplitLine implements Supplier<String>, Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -16,7 +14,7 @@ public class SplitLine implements Supplier<String>, Serializable {
 		this(null);
 	}
 
-	public SplitLine(@Nullable Object body) {
+	public SplitLine(Object body) {
 		this.body = body;
 	}
 

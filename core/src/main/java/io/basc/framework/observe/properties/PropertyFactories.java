@@ -1,6 +1,6 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.observe.register.ElementRegistration;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Elements;

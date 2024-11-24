@@ -1,8 +1,8 @@
 package io.basc.framework.transform.factory;
 
-import io.basc.framework.convert.ConverterNotFoundException;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.transform.Transformer;
+import io.basc.framework.core.convert.ConverterNotFoundException;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.Transformer;
 
 @FunctionalInterface
 public interface TransformerFactory<S, E extends Throwable> extends Transformer<S, Object, E> {

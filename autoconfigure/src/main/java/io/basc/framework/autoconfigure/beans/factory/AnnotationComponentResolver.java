@@ -7,10 +7,10 @@ import io.basc.framework.beans.factory.component.ComponentResolver;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
 import io.basc.framework.beans.factory.ioc.IocResolver;
+import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.env.EnvironmentCapable;
 import io.basc.framework.util.Elements;
 
 public class AnnotationComponentResolver implements ComponentResolver, IocResolver {

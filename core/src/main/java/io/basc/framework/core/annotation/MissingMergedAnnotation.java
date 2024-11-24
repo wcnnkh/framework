@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * An {@link AbstractMergedAnnotation} used as the implementation of
  * {@link MergedAnnotation#missing()}.
@@ -53,13 +51,13 @@ final class MissingMergedAnnotation<A extends Annotation> extends AbstractMerged
 	}
 
 	@Override
-	@Nullable
+
 	public Object getSource() {
 		return null;
 	}
 
 	@Override
-	@Nullable
+
 	public MergedAnnotation<?> getMetaSource() {
 		return null;
 	}
@@ -100,7 +98,7 @@ final class MissingMergedAnnotation<A extends Annotation> extends AbstractMerged
 	}
 
 	@Override
-	public <T> Optional<T> getDefaultValue(@Nullable String attributeName, Class<T> type) {
+	public <T> Optional<T> getDefaultValue(String attributeName, Class<T> type) {
 		return Optional.empty();
 	}
 

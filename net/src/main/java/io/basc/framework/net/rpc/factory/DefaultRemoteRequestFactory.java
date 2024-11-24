@@ -2,8 +2,8 @@ package io.basc.framework.net.rpc.factory;
 
 import java.io.IOException;
 
-import io.basc.framework.execution.Function;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.client.factory.DefaultClientRequestFactory;
 import io.basc.framework.net.pattern.RequestPattern;

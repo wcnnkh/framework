@@ -3,7 +3,7 @@ package io.basc.framework.gson;
 import java.io.IOException;
 import java.io.Reader;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonSupport;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonException;

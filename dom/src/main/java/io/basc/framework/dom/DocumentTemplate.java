@@ -14,7 +14,7 @@ import org.w3c.dom.NodeList;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.dom.writer.ArrayWriter;
 import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;

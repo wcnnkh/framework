@@ -11,7 +11,7 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 import com.netflix.eureka.transport.JerseyReplicationClient;
 
-import io.basc.framework.env.Environment;
+import io.basc.framework.core.env.Environment;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.actor.ChangeEvent;

@@ -1,6 +1,6 @@
 package io.basc.framework.dom.writer;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.dom.DocumentWriter;
 
 import java.lang.reflect.Array;

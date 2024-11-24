@@ -5,9 +5,9 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;

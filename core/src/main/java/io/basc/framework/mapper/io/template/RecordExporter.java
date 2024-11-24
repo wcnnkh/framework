@@ -2,7 +2,7 @@ package io.basc.framework.mapper.io.template;
 
 import java.io.IOException;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.mapper.io.Exporter;
 
 public interface RecordExporter extends Exporter {

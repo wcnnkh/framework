@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
@@ -24,7 +23,6 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 		this.aliasMap = aliasMap;
 	}
 
-	@Nullable
 	public AliasFactory getParentAliasFactory() {
 		return parentAliasFactory;
 	}

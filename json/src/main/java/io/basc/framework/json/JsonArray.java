@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement>, Properties {
 	static final String PREFIX = "[";

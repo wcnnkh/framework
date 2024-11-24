@@ -14,7 +14,6 @@ import org.objectweb.asm.Type;
 import io.basc.framework.core.annotation.AnnotationFilter;
 import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
 /**
@@ -26,10 +25,10 @@ import io.basc.framework.util.ClassUtils;
  */
 class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVisitor {
 
-	@Nullable
+	
 	private final ClassLoader classLoader;
 
-	@Nullable
+	
 	private final Object source;
 
 	private final Class<A> annotationType;
@@ -38,7 +37,7 @@ class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVis
 
 	private final Map<String, Object> attributes = new LinkedHashMap<>(4);
 
-	public MergedAnnotationReadingVisitor(@Nullable ClassLoader classLoader, @Nullable Object source,
+	public MergedAnnotationReadingVisitor( ClassLoader classLoader,  Object source,
 			Class<A> annotationType, Consumer<MergedAnnotation<A>> consumer) {
 
 		super(Constants.ASM_VERSION);
@@ -62,7 +61,7 @@ class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVis
 	}
 
 	@Override
-	@Nullable
+	
 	public AnnotationVisitor visitAnnotation(String name, String descriptor) {
 		return visitAnnotation(descriptor, annotation -> this.attributes.put(name, annotation));
 	}
@@ -87,7 +86,7 @@ class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVis
 	}
 
 	@SuppressWarnings("unchecked")
-	@Nullable
+	
 	private <T extends Annotation> AnnotationVisitor visitAnnotation(String descriptor,
 			Consumer<MergedAnnotation<T>> consumer) {
 
@@ -100,8 +99,8 @@ class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVis
 	}
 
 	@SuppressWarnings("unchecked")
-	@Nullable
-	static <A extends Annotation> AnnotationVisitor get(@Nullable ClassLoader classLoader, @Nullable Object source,
+	
+	static <A extends Annotation> AnnotationVisitor get( ClassLoader classLoader,  Object source,
 			String descriptor, boolean visible, Consumer<MergedAnnotation<A>> consumer) {
 
 		if (!visible) {
@@ -149,7 +148,7 @@ class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVis
 		}
 
 		@Override
-		@Nullable
+		
 		public AnnotationVisitor visitAnnotation(String name, String descriptor) {
 			return MergedAnnotationReadingVisitor.this.visitAnnotation(descriptor, this.elements::add);
 		}

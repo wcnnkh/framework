@@ -5,7 +5,7 @@ import io.basc.framework.beans.factory.BeanResolverExtend;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.util.StringUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 

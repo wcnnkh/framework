@@ -7,10 +7,10 @@ import javax.servlet.ServletContainerInitializer;
 
 import org.apache.catalina.Context;
 
-import io.basc.framework.convert.strings.StringConverter;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Environment;
+import io.basc.framework.core.convert.strings.StringConverter;
+import io.basc.framework.core.env.Environment;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public final class TomcatUtils {
 	private TomcatUtils() {

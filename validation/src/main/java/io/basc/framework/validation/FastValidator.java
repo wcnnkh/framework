@@ -9,7 +9,7 @@ import javax.validation.Validator;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.function.Source;
 
 /**

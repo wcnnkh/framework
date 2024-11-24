@@ -9,7 +9,7 @@ import java.util.Map;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;
@@ -18,8 +18,8 @@ import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.net.uri.DefaultUriTemplateHandler;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.retry.RetryOperations;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.collect.CollectionUtils;
 
 public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	private ClientHttpRequestFactory requestFactory;

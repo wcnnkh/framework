@@ -6,8 +6,8 @@ import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.env.PropertyFactory;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.env.PropertyFactory;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.SetElements;
 import io.basc.framework.util.actor.ChangeEvent;

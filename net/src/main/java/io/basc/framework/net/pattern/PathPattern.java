@@ -2,12 +2,12 @@ package io.basc.framework.net.pattern;
 
 import java.util.Map;
 
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Request;
 import io.basc.framework.transform.map.MapProperties;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.match.PathMatcher;
 
 public interface PathPattern extends RequestPattern {

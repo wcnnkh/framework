@@ -1,7 +1,7 @@
 package io.basc.framework.data.repository;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.SimpleParameter;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.SimpleParameter;
 import io.basc.framework.lang.Nullable;
 
 /**

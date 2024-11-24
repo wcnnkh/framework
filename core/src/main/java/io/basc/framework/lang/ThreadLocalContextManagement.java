@@ -18,7 +18,7 @@ public class ThreadLocalContextManagement<T> extends NamedThreadLocal<LinkedList
 		super(name);
 	}
 
-	@Nullable
+	
 	public T getContext() {
 		LinkedList<T> list = get();
 		if (list == null || list.isEmpty()) {

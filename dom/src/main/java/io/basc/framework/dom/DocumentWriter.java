@@ -1,9 +1,9 @@
 package io.basc.framework.dom;
 
-import io.basc.framework.convert.TypeDescriptor;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import io.basc.framework.core.convert.TypeDescriptor;
 
 public interface DocumentWriter {
 	boolean canWrite(TypeDescriptor typeDescriptor);

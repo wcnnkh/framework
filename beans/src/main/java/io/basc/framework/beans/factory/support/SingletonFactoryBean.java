@@ -1,8 +1,8 @@
 package io.basc.framework.beans.factory.support;
 
 import io.basc.framework.beans.factory.FactoryBean;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.core.convert.TypeDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;

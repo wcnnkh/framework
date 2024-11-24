@@ -2,12 +2,10 @@ package io.basc.framework.util.function;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
 public class StandardOptional<T> implements Optional<T> {
 	private final Supplier<? extends T> valueSupplier;
 
-	public StandardOptional(@Nullable Supplier<? extends T> valueSupplier) {
+	public StandardOptional(Supplier<? extends T> valueSupplier) {
 		this.valueSupplier = valueSupplier;
 	}
 

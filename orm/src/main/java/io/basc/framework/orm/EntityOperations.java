@@ -6,7 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.data.repository.Condition;
@@ -22,7 +23,6 @@ import io.basc.framework.data.repository.RepositoryOperations;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.data.repository.UpdateOperationSymbol;
-import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;

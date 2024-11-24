@@ -18,7 +18,6 @@ package io.basc.framework.core.annotation;
 
 import java.util.Arrays;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
@@ -57,7 +56,7 @@ final class PackagesAnnotationFilter implements AnnotationFilter {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
 		}

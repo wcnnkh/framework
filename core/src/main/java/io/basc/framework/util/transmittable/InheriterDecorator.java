@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.function.ConsumeProcessor;
 import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.function.Source;

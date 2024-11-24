@@ -13,13 +13,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.domain.CAS;
 import io.basc.framework.memcached.Memcached;
 import io.basc.framework.memcached.config.MemcachedNodeProperties;
 import io.basc.framework.memcached.config.MemcachedProperties;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;

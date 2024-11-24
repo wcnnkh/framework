@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryDataOperations;

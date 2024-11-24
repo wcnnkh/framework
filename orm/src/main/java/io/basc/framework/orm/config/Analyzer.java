@@ -1,13 +1,13 @@
 package io.basc.framework.orm.config;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.execution.param.Parameter;
-import io.basc.framework.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;

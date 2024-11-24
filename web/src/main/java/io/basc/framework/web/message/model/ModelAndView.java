@@ -1,6 +1,6 @@
 package io.basc.framework.web.message.model;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 

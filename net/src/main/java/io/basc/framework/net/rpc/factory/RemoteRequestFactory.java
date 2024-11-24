@@ -3,8 +3,8 @@ package io.basc.framework.net.rpc.factory;
 import java.io.IOException;
 import java.util.function.Predicate;
 
-import io.basc.framework.execution.Function;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.net.client.ClientRequest;
 
 /**

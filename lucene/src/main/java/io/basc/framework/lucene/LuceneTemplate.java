@@ -15,7 +15,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TermQuery;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.repository.DeleteOperation;
 import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.QueryOperation;

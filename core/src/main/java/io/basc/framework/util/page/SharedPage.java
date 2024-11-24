@@ -2,7 +2,6 @@ package io.basc.framework.util.page;
 
 import java.util.List;
 
-import io.basc.framework.lang.Nullable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -28,7 +27,7 @@ public class SharedPage<K, T> extends SharedCursor<K, T> implements Page<K, T> {
 		this(cursorId, rows, null, pageSize, total);
 	}
 
-	public SharedPage(K cursorId, List<T> rows, @Nullable K nextCursorId, long pageSize, long total) {
+	public SharedPage(K cursorId, List<T> rows, K nextCursorId, long pageSize, long total) {
 		super(cursorId, rows, nextCursorId);
 		this.total = total;
 		this.pageSize = pageSize;

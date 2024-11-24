@@ -7,11 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.convert.strings.StringConverter;
-import io.basc.framework.math.NumberHolder;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.strings.StringConverter;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.math.NumberHolder;
 import lombok.Data;
 
 @Data

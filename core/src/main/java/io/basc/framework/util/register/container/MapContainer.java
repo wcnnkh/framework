@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.EmptyRegistrations;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.KeyValues;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
@@ -363,18 +362,23 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	}
 
 	@Override
-	public KeyValues<K, V> gets(Iterable<? extends K> keys) {
-		Elements<KeyValue<K, V>> elements = read((map) -> {
+	public Elements<KeyValue<K, V>> getKeyValues(K key) {
+		return read((map) -> {
 			if (map == null) {
 				return Elements.empty();
 			}
 
-			return Elements.of(keys).filter(map::containsKey).map((key) -> {
-				EntryRegistration<K, V> registration = map.get(key);
-				return (KeyValue<K, V>) registration;
-			}).toList();
+			if (!map.containsKey(key)) {
+				return Elements.empty();
+			}
+
+			EntryRegistration<K, V> registration = map.get(key);
+			if (registration == null) {
+				return Elements.empty();
+			}
+
+			return Elements.singleton(registration);
 		});
-		return KeyValues.of(elements);
 	}
 
 	public final V getValue(Function<? super M, ? extends EntryRegistration<K, V>> getter) {

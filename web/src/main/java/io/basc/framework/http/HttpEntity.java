@@ -2,7 +2,7 @@ package io.basc.framework.http;
 
 import java.io.Serializable;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Entity;
 import io.basc.framework.util.ObjectUtils;

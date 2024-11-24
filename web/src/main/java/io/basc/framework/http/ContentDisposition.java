@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 
 public final class ContentDisposition {
 	private static final String INVALID_HEADER_FIELD_PARAMETER_FORMAT = "Invalid header field parameter format (as defined in RFC 5987)";

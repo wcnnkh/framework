@@ -1,6 +1,6 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ParentDiscover;

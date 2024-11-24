@@ -2,7 +2,7 @@ package io.basc.framework.jms.messageing;
 
 import javax.jms.Message;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.messageing.MessageHeaders;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

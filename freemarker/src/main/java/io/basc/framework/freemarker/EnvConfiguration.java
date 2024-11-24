@@ -10,9 +10,9 @@ import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.PropertyFactory;
-import io.basc.framework.env.Sys;
+import io.basc.framework.core.env.Environment;
+import io.basc.framework.core.env.PropertyFactory;
+import io.basc.framework.core.env.Sys;
 import io.basc.framework.util.StringUtils;
 
 public class EnvConfiguration extends Configuration implements Configurable {

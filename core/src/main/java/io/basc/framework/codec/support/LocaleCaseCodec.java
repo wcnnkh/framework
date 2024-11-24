@@ -5,7 +5,6 @@ import java.util.Locale;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.lang.Nullable;
 
 /**
  * 大小写转换,默认是小写--&gt;大写
@@ -22,7 +21,7 @@ public class LocaleCaseCodec implements Codec<String, String> {
 		this(null);
 	}
 
-	public LocaleCaseCodec(@Nullable Locale locale) {
+	public LocaleCaseCodec(Locale locale) {
 		this.locale = locale;
 	}
 

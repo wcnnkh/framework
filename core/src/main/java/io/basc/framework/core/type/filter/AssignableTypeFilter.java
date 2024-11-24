@@ -1,6 +1,5 @@
 package io.basc.framework.core.type.filter;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
 /**
@@ -38,18 +37,18 @@ public class AssignableTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 	}
 
 	@Override
-	@Nullable
+	
 	protected Boolean matchSuperClass(String superClassName) {
 		return matchTargetType(superClassName);
 	}
 
 	@Override
-	@Nullable
+	
 	protected Boolean matchInterface(String interfaceName) {
 		return matchTargetType(interfaceName);
 	}
 
-	@Nullable
+	
 	protected Boolean matchTargetType(String typeName) {
 		if (this.targetType.getName().equals(typeName)) {
 			return true;

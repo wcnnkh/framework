@@ -19,8 +19,8 @@ import io.basc.framework.beans.factory.support.BeanDefinitionLoader;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.EnvironmentBeanDefinition;
+import io.basc.framework.core.env.Environment;
+import io.basc.framework.core.env.EnvironmentBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 
 @ConditionalOnParameters

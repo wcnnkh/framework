@@ -6,7 +6,6 @@ import java.lang.annotation.Inherited;
 import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
 /**
@@ -90,18 +89,18 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 	}
 
 	@Override
-	@Nullable
+	
 	protected Boolean matchSuperClass(String superClassName) {
 		return hasAnnotation(superClassName);
 	}
 
 	@Override
-	@Nullable
+	
 	protected Boolean matchInterface(String interfaceName) {
 		return hasAnnotation(interfaceName);
 	}
 
-	@Nullable
+	
 	protected Boolean hasAnnotation(String typeName) {
 		if (Object.class.getName().equals(typeName)) {
 			return false;

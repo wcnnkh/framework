@@ -8,8 +8,6 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * 对{@link StreamSupport}和{@link Stream}的扩展
  * 
@@ -50,7 +48,7 @@ public class Streams {
 	 * @param iterator
 	 * @return
 	 */
-	public static <T> Stream<T> stream(@Nullable Iterator<? extends T> iterator) {
+	public static <T> Stream<T> stream(Iterator<? extends T> iterator) {
 		if (iterator == null) {
 			return Stream.empty();
 		}
@@ -65,7 +63,7 @@ public class Streams {
 	 * @param iterator
 	 * @return
 	 */
-	public static <T> Stream<T> stream(@Nullable Spliterator<T> iterator) {
+	public static <T> Stream<T> stream(Spliterator<T> iterator) {
 		if (iterator == null) {
 			return Stream.empty();
 		}

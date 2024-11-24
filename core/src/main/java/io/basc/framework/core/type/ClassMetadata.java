@@ -16,8 +16,6 @@
 
 package io.basc.framework.core.type;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * Interface that defines abstract metadata of a specific class, in a form that
  * does not require that class to be loaded yet.
@@ -85,7 +83,7 @@ public interface ClassMetadata {
 	 * Return the name of the enclosing class of the underlying class, or
 	 * {@code null} if the underlying class is a top-level class.
 	 */
-	@Nullable
+	
 	String getEnclosingClassName();
 
 	/**
@@ -99,7 +97,7 @@ public interface ClassMetadata {
 	 * Return the name of the superclass of the underlying class, or {@code null} if
 	 * there is no superclass defined.
 	 */
-	@Nullable
+	
 	String getSuperClassName();
 
 	/**

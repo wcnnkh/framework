@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import io.basc.framework.env.SystemProperties;
+import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
 import io.basc.framework.text.placeholder.PlaceholderFormatAware;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

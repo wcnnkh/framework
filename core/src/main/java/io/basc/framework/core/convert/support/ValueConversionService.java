@@ -1,0 +1,39 @@
+package io.basc.framework.core.convert.support;
+
+import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.lang.ObjectValue;
+
+class ValueConversionService implements ConversionService {
+
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		ValueWrapper value = new ObjectValue(source, sourceType);
+		if (targetType.getType() == ValueWrapper.class) {
+			return value;
+		}
+
+		return value.getAsObject(targetType);
+	}
+
+	private boolean isValueType(Class<?> type, boolean isAssignableFrom) {
+		// 用来处理基本数据类型之前的转换 如：int->long
+		if (ValueWrapper.isBaseType(type)) {
+			return true;
+		}
+
+		if (isAssignableFrom) {
+			return ValueWrapper.class.isAssignableFrom(type);
+		} else {
+			return ValueWrapper.class == type;
+		}
+	}
+
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType == null || targetType == null) {
+			return false;
+		}
+
+		return isValueType(sourceType.getType(), true) || isValueType(targetType.getType(), false);
+	}
+}

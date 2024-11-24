@@ -1,6 +1,6 @@
 package io.basc.framework.transform.factory.config;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.transform.factory.PropertyFactory;
 
 public interface EditablePropertyFactory extends PropertyFactory {

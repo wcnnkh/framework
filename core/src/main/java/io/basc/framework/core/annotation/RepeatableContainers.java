@@ -21,7 +21,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
@@ -44,10 +43,9 @@ import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
  */
 public abstract class RepeatableContainers {
 
-	@Nullable
 	private final RepeatableContainers parent;
 
-	private RepeatableContainers(@Nullable RepeatableContainers parent) {
+	private RepeatableContainers(RepeatableContainers parent) {
 		this.parent = parent;
 	}
 
@@ -64,7 +62,6 @@ public abstract class RepeatableContainers {
 		return new ExplicitRepeatableContainer(this, repeatable, container);
 	}
 
-	@Nullable
 	Annotation[] findRepeatedAnnotations(Annotation annotation) {
 		if (this.parent == null) {
 			return null;
@@ -73,7 +70,7 @@ public abstract class RepeatableContainers {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals(Object other) {
 		if (other == this) {
 			return true;
 		}
@@ -117,7 +114,7 @@ public abstract class RepeatableContainers {
 	 *                                          for a repeatable annotation
 	 */
 	public static RepeatableContainers of(Class<? extends Annotation> repeatable,
-			@Nullable Class<? extends Annotation> container) {
+			Class<? extends Annotation> container) {
 
 		return new ExplicitRepeatableContainer(null, repeatable, container);
 	}
@@ -149,7 +146,7 @@ public abstract class RepeatableContainers {
 		}
 
 		@Override
-		@Nullable
+
 		Annotation[] findRepeatedAnnotations(Annotation annotation) {
 			Method method = getRepeatedAnnotationsMethod(annotation.annotationType());
 			if (method != null) {
@@ -158,7 +155,6 @@ public abstract class RepeatableContainers {
 			return super.findRepeatedAnnotations(annotation);
 		}
 
-		@Nullable
 		private static Method getRepeatedAnnotationsMethod(Class<? extends Annotation> annotationType) {
 			Object result = cache.computeIfAbsent(annotationType,
 					StandardRepeatableContainers::computeRepeatedAnnotationsMethod);
@@ -193,8 +189,8 @@ public abstract class RepeatableContainers {
 
 		private final Method valueMethod;
 
-		ExplicitRepeatableContainer(@Nullable RepeatableContainers parent, Class<? extends Annotation> repeatable,
-				@Nullable Class<? extends Annotation> container) {
+		ExplicitRepeatableContainer(RepeatableContainers parent, Class<? extends Annotation> repeatable,
+				Class<? extends Annotation> container) {
 
 			super(parent);
 			Assert.notNull(repeatable, "Repeatable must not be null");
@@ -230,7 +226,7 @@ public abstract class RepeatableContainers {
 		}
 
 		@Override
-		@Nullable
+
 		Annotation[] findRepeatedAnnotations(Annotation annotation) {
 			if (this.container.isAssignableFrom(annotation.annotationType())) {
 				return (Annotation[]) AnnotationUtils.invokeAnnotationMethod(this.valueMethod, annotation);
@@ -239,7 +235,7 @@ public abstract class RepeatableContainers {
 		}
 
 		@Override
-		public boolean equals(@Nullable Object other) {
+		public boolean equals(Object other) {
 			if (!super.equals(other)) {
 				return false;
 			}

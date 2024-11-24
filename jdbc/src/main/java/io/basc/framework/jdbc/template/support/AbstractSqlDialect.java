@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.DeleteOperation;
@@ -31,11 +31,11 @@ import io.basc.framework.jdbc.template.SqlDialect;
 import io.basc.framework.jdbc.template.SqlDialectException;
 import io.basc.framework.jdbc.template.SqlType;
 import io.basc.framework.orm.ColumnDescriptor;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 
 /**
  * 标准的sql方言

@@ -27,11 +27,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
  * {@link InvocationHandler} for an {@link Annotation} that Spring has
@@ -54,10 +53,8 @@ final class SynthesizedMergedAnnotationInvocationHandler<A extends Annotation> i
 
 	private final Map<String, Object> valueCache = new ConcurrentHashMap<>(8);
 
-	@Nullable
 	private volatile Integer hashCode;
 
-	@Nullable
 	private volatile String string;
 
 	private SynthesizedMergedAnnotationInvocationHandler(MergedAnnotation<A> annotation, Class<A> type) {

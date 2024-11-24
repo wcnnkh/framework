@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.RedisSortedSetsCommands;
 import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
-import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Range;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.function.Processor;
 
 @SuppressWarnings("unchecked")

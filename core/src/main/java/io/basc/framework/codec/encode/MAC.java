@@ -16,8 +16,8 @@ import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import lombok.NonNull;
 
 /**
  * 
@@ -35,7 +35,7 @@ public class MAC implements BytesEncoder, Cloneable {
 		this(algorithm, key, null);
 	}
 
-	public MAC(String algorithm, byte[] key, @Nullable AlgorithmParameterSpec algorithmParameterSpec) {
+	public MAC(@NonNull String algorithm, @NonNull byte[] key, AlgorithmParameterSpec algorithmParameterSpec) {
 		this(new SecretKeySpec(key, algorithm), algorithmParameterSpec);
 	}
 
@@ -43,7 +43,7 @@ public class MAC implements BytesEncoder, Cloneable {
 		this(key, (AlgorithmParameterSpec) null);
 	}
 
-	public MAC(Key key, @Nullable AlgorithmParameterSpec algorithmParameterSpec) {
+	public MAC(@NonNull Key key, AlgorithmParameterSpec algorithmParameterSpec) {
 		Assert.requiredArgument(key != null, "key");
 		this.key = key;
 		this.algorithmParameterSpec = algorithmParameterSpec;

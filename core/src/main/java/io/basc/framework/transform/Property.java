@@ -1,7 +1,8 @@
 package io.basc.framework.transform;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.env.PropertyDescriptor;
 
 /**
  * 属性定义

@@ -4,8 +4,8 @@ import org.apache.lucene.index.DocValuesType;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.IndexableFieldType;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.Parameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

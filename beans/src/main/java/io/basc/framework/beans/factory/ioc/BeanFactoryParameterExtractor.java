@@ -8,11 +8,11 @@ import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.ListableBeanFactory;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.Parameter;
-import io.basc.framework.execution.param.ParameterDescriptor;
-import io.basc.framework.execution.param.SimpleParameter;
-import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.execution.param.SimpleParameter;
 import io.basc.framework.util.ServiceLoader;
 
 public class BeanFactoryParameterExtractor implements AutowireParameterExtractor {

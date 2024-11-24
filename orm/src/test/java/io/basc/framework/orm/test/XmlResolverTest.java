@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.resolve.ResourceResolvers;
-import io.basc.framework.convert.support.DefaultConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.resolve.ResourceResolvers;
+import io.basc.framework.core.convert.support.DefaultConversionService;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.orm.stereotype.PrimaryKey;

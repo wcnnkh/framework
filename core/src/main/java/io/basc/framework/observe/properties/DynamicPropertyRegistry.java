@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.transform.factory.config.EditablePropertyFactory;
 import io.basc.framework.util.Elements;

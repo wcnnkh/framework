@@ -9,8 +9,8 @@ import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.reflect.MethodInvoker;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 @ConditionalOnParameters
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {

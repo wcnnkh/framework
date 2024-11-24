@@ -4,7 +4,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.ObjectUtils;

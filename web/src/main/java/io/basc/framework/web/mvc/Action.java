@@ -1,6 +1,6 @@
 package io.basc.framework.web.mvc;
 
-import io.basc.framework.execution.test.Executor;
+import io.basc.framework.core.execution.test.Executor;
 import io.basc.framework.web.WebServiceDispatcher;
 
 /**

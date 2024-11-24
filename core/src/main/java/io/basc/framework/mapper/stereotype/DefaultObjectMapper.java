@@ -2,8 +2,8 @@ package io.basc.framework.mapper.stereotype;
 
 import java.util.TreeMap;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.factory.support.DefaultPropertiesTransformerFactory;

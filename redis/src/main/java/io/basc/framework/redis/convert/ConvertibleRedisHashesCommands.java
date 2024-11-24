@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.redis.RedisHashesCommands;
-import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisHashesCommands<SK, K, SV, V>

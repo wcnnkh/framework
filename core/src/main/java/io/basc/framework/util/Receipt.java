@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import lombok.NonNull;
+
 /**
  * 回执
  * 
@@ -16,6 +18,10 @@ public interface Receipt extends Registration {
 
 	public static Receipt success(Throwable cause) {
 		return new Receipted(true, cause);
+	}
+
+	public static Receipt success(@NonNull Registration registration) {
+		return new SuccessfullyRegistered(registration);
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package io.basc.framework.retry.support;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RecoveryCallback;
 import io.basc.framework.retry.RetryCallback;
@@ -11,8 +10,9 @@ import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.RetryPolicy;
 import io.basc.framework.retry.TerminatedRetryException;
 import io.basc.framework.retry.policy.SimpleRetryPolicy;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
+import lombok.NonNull;
 
 public class RetryTemplate implements RetryOperations {
 	/**
@@ -53,8 +53,8 @@ public class RetryTemplate implements RetryOperations {
 		return execute(retryCallback, null);
 	}
 
-	public <T, E extends Throwable> T execute(RetryCallback<T, E> retryCallback,
-			@Nullable RecoveryCallback<T, E> recoveryCallback) throws E, RetryException {
+	public <T, E extends Throwable> T execute(@NonNull RetryCallback<T, E> retryCallback,
+			RecoveryCallback<T, E> recoveryCallback) throws E, RetryException {
 		RetryPolicy retryPolicy = this.retryPolicy;
 		RetryContext context = open(retryPolicy);
 		if (logger.isTraceEnabled()) {

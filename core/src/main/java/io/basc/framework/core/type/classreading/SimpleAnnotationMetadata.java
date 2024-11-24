@@ -9,7 +9,6 @@ import org.objectweb.asm.Opcodes;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.lang.Nullable;
 
 /**
  * {@link AnnotationMetadata} created from a
@@ -24,10 +23,10 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 
 	private final int access;
 
-	@Nullable
+	
 	private final String enclosingClassName;
 
-	@Nullable
+	
 	private final String superClassName;
 
 	private final boolean independentInnerClass;
@@ -40,11 +39,11 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 
 	private final MergedAnnotations annotations;
 
-	@Nullable
+	
 	private Set<String> annotationTypes;
 
-	SimpleAnnotationMetadata(String className, int access, @Nullable String enclosingClassName,
-			@Nullable String superClassName, boolean independentInnerClass, String[] interfaceNames,
+	SimpleAnnotationMetadata(String className, int access,  String enclosingClassName,
+			 String superClassName, boolean independentInnerClass, String[] interfaceNames,
 			String[] memberClassNames, MethodMetadata[] annotatedMethods, MergedAnnotations annotations) {
 
 		this.className = className;
@@ -89,13 +88,13 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 	}
 
 	@Override
-	@Nullable
+	
 	public String getEnclosingClassName() {
 		return this.enclosingClassName;
 	}
 
 	@Override
-	@Nullable
+	
 	public String getSuperClassName() {
 		return this.superClassName;
 	}
@@ -140,7 +139,7 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals( Object obj) {
 		return ((this == obj) || ((obj instanceof SimpleAnnotationMetadata)
 				&& this.className.equals(((SimpleAnnotationMetadata) obj).className)));
 	}

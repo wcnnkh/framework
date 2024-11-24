@@ -1,7 +1,7 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
+import lombok.NonNull;
 
 public class SharedPageable<K, T> extends SharedPage<K, T> implements Pageable<K, T> {
 	private static final long serialVersionUID = 1L;
@@ -10,11 +10,11 @@ public class SharedPageable<K, T> extends SharedPage<K, T> implements Pageable<K
 	public SharedPageable() {
 	}
 
-	public SharedPageable(Pageable<K, T> pages) {
+	public SharedPageable(@NonNull Pageable<K, T> pages) {
 		this(pages, pages);
 	}
 
-	public SharedPageable(Page<K, T> currentPage, @Nullable Pageable<K, T> pages) {
+	public SharedPageable(@NonNull Page<K, T> currentPage, Pageable<K, T> pages) {
 		super(currentPage);
 		this.pages = pages;
 	}

@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import io.basc.framework.lang.Nullable;
-
 public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
@@ -23,13 +21,10 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 
 	private final Locale locale;
 
-	@Nullable
 	private transient volatile Set<String> keySet;
 
-	@Nullable
 	private transient volatile Collection<V> values;
 
-	@Nullable
 	private transient volatile Set<Entry<String, V>> entrySet;
 
 	/**
@@ -49,7 +44,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * @param locale the Locale to use for case-insensitive key conversion
 	 * @see #convertKey(String)
 	 */
-	public LinkedCaseInsensitiveMap(@Nullable Locale locale) {
+	public LinkedCaseInsensitiveMap(Locale locale) {
 		this(16, locale);
 	}
 
@@ -74,7 +69,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * @param locale          the Locale to use for case-insensitive key conversion
 	 * @see #convertKey(String)
 	 */
-	public LinkedCaseInsensitiveMap(int initialCapacity, @Nullable Locale locale) {
+	public LinkedCaseInsensitiveMap(int initialCapacity, Locale locale) {
 		this.targetMap = new LinkedHashMap<String, V>(initialCapacity) {
 			private static final long serialVersionUID = 1L;
 
@@ -124,7 +119,6 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		return this.targetMap.containsValue(value);
 	}
 
-	@Nullable
 	public V get(Object key) {
 		if (key instanceof String) {
 			String caseInsensitiveKey = this.caseInsensitiveKeys.get(convertKey((String) key));
@@ -135,7 +129,6 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		return null;
 	}
 
-	@Nullable
 	public V getOrDefault(Object key, V defaultValue) {
 		if (key instanceof String) {
 			String caseInsensitiveKey = this.caseInsensitiveKeys.get(convertKey((String) key));
@@ -146,8 +139,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		return defaultValue;
 	}
 
-	@Nullable
-	public V put(String key, @Nullable V value) {
+	public V put(String key, V value) {
 		String oldKey = this.caseInsensitiveKeys.put(convertKey(key), key);
 		V oldKeyValue = null;
 		if (oldKey != null && !oldKey.equals(key)) {
@@ -167,8 +159,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		}
 	}
 
-	@Nullable
-	public V putIfAbsent(String key, @Nullable V value) {
+	public V putIfAbsent(String key, V value) {
 		String oldKey = this.caseInsensitiveKeys.putIfAbsent(convertKey(key), key);
 		if (oldKey != null) {
 			return this.targetMap.get(oldKey);
@@ -176,7 +167,6 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		return this.targetMap.putIfAbsent(key, value);
 	}
 
-	@Nullable
 	public V computeIfAbsent(String key, Function<? super String, ? extends V> mappingFunction) {
 		String oldKey = this.caseInsensitiveKeys.putIfAbsent(convertKey(key), key);
 		if (oldKey != null) {
@@ -185,7 +175,6 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		return this.targetMap.computeIfAbsent(key, mappingFunction);
 	}
 
-	@Nullable
 	public V remove(Object key) {
 		if (key instanceof String) {
 			String caseInsensitiveKey = removeCaseInsensitiveKey((String) key);
@@ -234,7 +223,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals(Object obj) {
 		return this.targetMap.equals(obj);
 	}
 
@@ -286,7 +275,6 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 		return false;
 	}
 
-	@Nullable
 	private String removeCaseInsensitiveKey(String key) {
 		return this.caseInsensitiveKeys.remove(convertKey(key));
 	}
@@ -397,7 +385,6 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 
 		private final Iterator<Entry<String, V>> delegate;
 
-		@Nullable
 		private Entry<String, V> last;
 
 		public EntryIterator() {

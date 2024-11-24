@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Map;
 
 import io.basc.framework.cloud.loadbalancer.Node;
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 
 /**
  * Represents an instance of a service in a discovery system.

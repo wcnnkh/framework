@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.function.Processor;
 
 @FunctionalInterface
@@ -21,7 +20,6 @@ public interface Decoder<E, D> {
 		return sources.stream().map((e) -> decode(e)).collect(Collectors.toList());
 	}
 
-	@Nullable
 	@SuppressWarnings("unchecked")
 	default D[] decodeAll(E... sources) throws DecodeException {
 		return toDecodeProcessor().processAll(sources);

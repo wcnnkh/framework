@@ -2,7 +2,7 @@ package io.basc.framework.data.kv;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 
 public interface TemporaryObjectOperations<K> extends ObjectOperations<K>, TemporaryKeyValueOperations<K, Object> {
 

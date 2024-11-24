@@ -6,11 +6,11 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.Function;
-import io.basc.framework.execution.Method;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.Executor;
+import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.Method;
+import io.basc.framework.core.execution.param.Parameters;
 
 public class DefinitionFactoryBean implements FactoryBean<Object> {
 	private AutowireCapableBeanFactory autowireCapableBeanFactory;

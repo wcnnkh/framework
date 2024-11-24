@@ -3,11 +3,11 @@ package io.basc.framework.redis.convert;
 import java.util.List;
 import java.util.Map;
 
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.redis.BitOP;
 import io.basc.framework.redis.ExpireOption;
 import io.basc.framework.redis.RedisStringCommands;
 import io.basc.framework.redis.SetOption;
-import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisStringCommands<SK, K, SV, V>

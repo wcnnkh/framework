@@ -1,6 +1,6 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.convert.ConversionException;
+import io.basc.framework.core.convert.ConversionException;
 
 public class MappingException extends ConversionException {
 	private static final long serialVersionUID = 1L;

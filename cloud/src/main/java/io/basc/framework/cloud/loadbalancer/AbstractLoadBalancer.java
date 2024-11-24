@@ -6,9 +6,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.EnvironmentAware;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.env.Environment;
+import io.basc.framework.core.env.EnvironmentAware;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;

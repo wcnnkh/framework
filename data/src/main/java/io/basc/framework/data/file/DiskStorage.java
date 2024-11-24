@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.FileUtils;

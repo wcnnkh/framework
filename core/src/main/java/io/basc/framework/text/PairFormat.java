@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
 

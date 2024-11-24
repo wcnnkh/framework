@@ -1,8 +1,8 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.convert.IdentityConversionService;
-import io.basc.framework.convert.RecursiveConversionService;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.IdentityConversionService;
+import io.basc.framework.core.convert.RecursiveConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.transform.strategy.DefaultPropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Assert;

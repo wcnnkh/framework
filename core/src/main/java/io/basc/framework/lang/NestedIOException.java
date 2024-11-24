@@ -43,7 +43,7 @@ public class NestedIOException extends IOException {
 	 * @param msg   the detail message
 	 * @param cause the nested exception
 	 */
-	public NestedIOException(@Nullable String msg, @Nullable Throwable cause) {
+	public NestedIOException( String msg,  Throwable cause) {
 		super(msg, cause);
 	}
 
@@ -52,7 +52,7 @@ public class NestedIOException extends IOException {
 	 * there is one.
 	 */
 	@Override
-	@Nullable
+	
 	public String getMessage() {
 		return NestedExceptionUtils.buildMessage(super.getMessage(), getCause());
 	}

@@ -9,7 +9,7 @@ import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.support.SerializerCodec;
 import io.basc.framework.codec.support.ToBytesCodec;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 
 /**
  * 序列化与反序列化

@@ -7,7 +7,7 @@ import java.security.Key;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.BufferProcessor;
-import io.basc.framework.lang.Nullable;
+import lombok.NonNull;
 
 /**
  * 非对称加密 一次能加密的明文长度与密钥长度成正比： len_in_byte(raw_data) = len_in_bit(key)/8 -11，如
@@ -22,8 +22,8 @@ public class AsymmetricCodec extends CryptoCodec {
 
 	private final int maxBlock;
 
-	public AsymmetricCodec(String algorithm, @Nullable Key encodeKey, @Nullable Key decodeKey, int maxBlock) {
-		super(algorithm, encodeKey, decodeKey, null, null);
+	public AsymmetricCodec(@NonNull String algorithm, Key encodeKey, Key decodeKey, int maxBlock) {
+		super(algorithm, encodeKey, decodeKey, null);
 		this.maxBlock = maxBlock;
 	}
 

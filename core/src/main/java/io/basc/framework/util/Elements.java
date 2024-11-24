@@ -15,8 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * 和{@link Streamable}类似，但此接口可以返回无需关闭的{@link Iterator}
  * <p>
@@ -94,7 +92,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new StandardStreamableElements<>((Streamable<T>) streamable);
 	}
 
-	public static <T> Elements<T> singleton(@Nullable T element) {
+	public static <T> Elements<T> singleton(T element) {
 		return of(Collections.singleton(element));
 	}
 

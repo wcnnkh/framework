@@ -5,8 +5,8 @@ import java.lang.reflect.Proxy;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import io.basc.framework.execution.aop.Aop;
-import io.basc.framework.execution.reflect.ReflectionMethod;
+import io.basc.framework.core.execution.aop.Aop;
+import io.basc.framework.core.execution.reflect.ReflectionMethod;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.function.Processor;
@@ -71,9 +71,9 @@ public final class MybatisUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyMapper(Aop aop, Class<? extends T> mapperClass,
-			Processor<io.basc.framework.execution.aop.Proxy, Object, IbatisException> processor,
+			Processor<io.basc.framework.core.execution.aop.Proxy, Object, IbatisException> processor,
 			Processor<? super ReflectionMethod, SqlSession, Throwable> openSessionProcessor) {
-		io.basc.framework.execution.aop.Proxy proxy = aop.getProxy(mapperClass, null,
+		io.basc.framework.core.execution.aop.Proxy proxy = aop.getProxy(mapperClass, null,
 				new MapperMethodInterceptor(mapperClass, openSessionProcessor));
 		return (T) processor.process(proxy);
 	}

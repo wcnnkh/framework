@@ -2,7 +2,7 @@ package io.basc.framework.transform.collection;
 
 import java.util.List;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.transform.Property;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

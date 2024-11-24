@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.convert.ConversionFailedException;
-import io.basc.framework.convert.ConvertiblePair;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.config.ConditionalConversionService;
-import io.basc.framework.convert.lang.AbstractConversionService;
-import io.basc.framework.execution.Getter;
+import io.basc.framework.core.convert.ConversionFailedException;
+import io.basc.framework.core.convert.ConvertiblePair;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.execution.Getter;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.support.OrmUtils;
-import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.Elements;
 
 public class CollectionToMapConversionService extends AbstractConversionService

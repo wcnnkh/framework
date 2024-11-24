@@ -4,11 +4,11 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.execution.Executors;
-import io.basc.framework.execution.Function;
-import io.basc.framework.execution.Method;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.execution.Executors;
+import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.Method;
+import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Name;

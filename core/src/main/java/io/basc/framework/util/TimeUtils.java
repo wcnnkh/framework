@@ -14,8 +14,7 @@ import java.util.TimeZone;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.Decoder;
 import io.basc.framework.codec.support.DateCodec;
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.core.convert.ConversionException;
 
 public class TimeUtils extends DateCodec {
 	public static final TimeUtils YEAR = new TimeUtils(Calendar.DAY_OF_YEAR, "yyyy");
@@ -130,7 +129,7 @@ public class TimeUtils extends DateCodec {
 		return getMinDate().getTime();
 	}
 
-	public static Calendar getCalendar(@Nullable TimeZone zone, @Nullable Locale locale) {
+	public static Calendar getCalendar(TimeZone zone, Locale locale) {
 		if (zone == null) {
 			if (locale == null) {
 				return Calendar.getInstance();
@@ -184,7 +183,7 @@ public class TimeUtils extends DateCodec {
 		return parse(source, null, null, patterns);
 	}
 
-	public static Date parse(String source, @Nullable TimeZone timeZone, @Nullable Locale locale, String... patterns)
+	public static Date parse(String source, TimeZone timeZone, Locale locale, String... patterns)
 			throws DecodeException {
 		if (StringUtils.isEmpty(source)) {
 			return null;
@@ -223,7 +222,7 @@ public class TimeUtils extends DateCodec {
 		return format(source, null, null, pattern);
 	}
 
-	public static String format(Date source, @Nullable TimeZone zone, @Nullable Locale locale, String pattern) {
+	public static String format(Date source, TimeZone zone, Locale locale, String pattern) {
 		if (source == null) {
 			return null;
 		}
@@ -244,7 +243,7 @@ public class TimeUtils extends DateCodec {
 		return format(d, pattern);
 	}
 
-	public static String format(long source, @Nullable TimeZone zone, @Nullable Locale locale, String pattern) {
+	public static String format(long source, TimeZone zone, Locale locale, String pattern) {
 		Date d = new Date();
 		d.setTime(source);
 		return format(d, zone, locale, pattern);
@@ -261,7 +260,7 @@ public class TimeUtils extends DateCodec {
 		return getTime(source, null, null, patterns);
 	}
 
-	public static long getTime(String source, @Nullable TimeZone zone, @Nullable Locale locale, String... patterns) {
+	public static long getTime(String source, TimeZone zone, Locale locale, String... patterns) {
 		Date date = parse(source, zone, locale, patterns);
 		return date == null ? 0L : date.getTime();
 	}

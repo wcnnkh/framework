@@ -1,6 +1,7 @@
 package io.basc.framework.util.spi;
 
 import io.basc.framework.util.Receipt;
+import lombok.NonNull;
 
 /**
  * 可配置的
@@ -16,7 +17,7 @@ public interface Configurable {
 	 * @param discovery
 	 * @return
 	 */
-	Receipt doConfigure(ServiceLoaderDiscovery discovery);
+	Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery);
 
 	/**
 	 * 执行原生的spi配置

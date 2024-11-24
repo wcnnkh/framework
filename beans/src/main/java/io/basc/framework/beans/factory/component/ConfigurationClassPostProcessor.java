@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
+import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.core.type.share.SharableMethodMetadata;
-import io.basc.framework.env.EnvironmentCapable;
 
 public final class ConfigurationClassPostProcessor extends ComponentRegistryPostProcessor {
 

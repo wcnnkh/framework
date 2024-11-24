@@ -1,7 +1,7 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.execution.Getter;
-import io.basc.framework.execution.Setter;
+import io.basc.framework.core.execution.Getter;
+import io.basc.framework.core.execution.Setter;
 import io.basc.framework.util.ItemWrapper;
 
 public class FieldDescriptorWrapper<W extends FieldDescriptor> extends ItemWrapper<W> implements FieldDescriptor {

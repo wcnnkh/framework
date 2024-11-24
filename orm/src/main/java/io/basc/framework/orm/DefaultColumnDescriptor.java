@@ -1,6 +1,6 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.mapper.stereotype.FieldDescriptorWrapper;

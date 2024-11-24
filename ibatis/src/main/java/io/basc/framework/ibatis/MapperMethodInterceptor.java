@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.session.SqlSession;
 
-import io.basc.framework.execution.Function;
-import io.basc.framework.execution.aop.ExecutionInterceptor;
-import io.basc.framework.execution.reflect.ReflectionMethod;
+import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.aop.ExecutionInterceptor;
+import io.basc.framework.core.execution.reflect.ReflectionMethod;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.function.Processor;
 

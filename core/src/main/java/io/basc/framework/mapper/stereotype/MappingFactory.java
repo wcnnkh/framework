@@ -1,9 +1,9 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 @FunctionalInterface
 public interface MappingFactory {

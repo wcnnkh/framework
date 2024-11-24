@@ -3,7 +3,6 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
@@ -13,7 +12,6 @@ public interface Cursor<K, T> {
 	 * 
 	 * @return
 	 */
-	@Nullable
 	K getCursorId();
 
 	/**
@@ -21,7 +19,6 @@ public interface Cursor<K, T> {
 	 * 
 	 * @return
 	 */
-	@Nullable
 	K getNextCursorId();
 
 	Elements<T> getElements();

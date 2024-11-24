@@ -1,6 +1,5 @@
 package io.basc.framework.retry.context;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.util.attribute.SimpleAttributes;
 
@@ -10,7 +9,7 @@ public class DefaultRetryContext extends SimpleAttributes<String, Object> implem
 	private Throwable lastThrowable;
 	private boolean exhaustedOnly;
 
-	public DefaultRetryContext(@Nullable RetryContext parent) {
+	public DefaultRetryContext(RetryContext parent) {
 		this.parent = parent;
 	}
 

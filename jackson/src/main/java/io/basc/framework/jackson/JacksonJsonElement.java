@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Converter;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonObject;

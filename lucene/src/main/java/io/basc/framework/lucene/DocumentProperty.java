@@ -3,7 +3,7 @@ package io.basc.framework.lucene;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 
-import io.basc.framework.execution.param.SimpleParameter;
+import io.basc.framework.core.execution.param.SimpleParameter;
 import io.basc.framework.transform.Property;
 
 public class DocumentProperty extends IndexableFieldParameter implements Property {

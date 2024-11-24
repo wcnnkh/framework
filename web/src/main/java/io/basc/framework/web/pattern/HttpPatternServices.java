@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;

@@ -5,9 +5,8 @@ import java.io.IOException;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 
 /**
  * Type filter that is aware of traversing over hierarchy.
@@ -121,7 +120,7 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 	/**
 	 * Override this to match on supertype name.
 	 */
-	@Nullable
+	
 	protected Boolean matchSuperClass(String superClassName) {
 		return null;
 	}
@@ -129,7 +128,7 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 	/**
 	 * Override this to match on interface type name.
 	 */
-	@Nullable
+	
 	protected Boolean matchInterface(String interfaceName) {
 		return null;
 	}

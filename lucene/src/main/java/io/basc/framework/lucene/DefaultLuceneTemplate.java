@@ -15,7 +15,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 
-import io.basc.framework.env.SystemProperties;
+import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;

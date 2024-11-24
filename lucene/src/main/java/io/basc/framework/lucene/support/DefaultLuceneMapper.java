@@ -21,21 +21,21 @@ import org.apache.lucene.util.BytesRef;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.RelationshipSymbol;
 import io.basc.framework.data.repository.SortOrder;
-import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.lucene.DocumentProperties;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
 import io.basc.framework.orm.support.DefaultEntityMapper;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.NumberUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 
 public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMapper {
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(

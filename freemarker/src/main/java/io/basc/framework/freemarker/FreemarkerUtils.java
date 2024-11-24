@@ -9,7 +9,7 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateNumberModel;
 import freemarker.template.TemplateScalarModel;
-import io.basc.framework.env.Sys;
+import io.basc.framework.core.env.Sys;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.logging.LogManager;
 

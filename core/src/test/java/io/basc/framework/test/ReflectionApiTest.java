@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionApi;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.reflect.ReflectionApi;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public class ReflectionApiTest {
 	@Test

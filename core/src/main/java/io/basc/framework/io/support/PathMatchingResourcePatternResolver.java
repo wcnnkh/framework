@@ -22,7 +22,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.Resource;
@@ -40,6 +39,7 @@ import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.match.AntPathMatcher;
 import io.basc.framework.util.match.PathMatcher;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
  * A {@link ResourcePatternResolver} implementation that is able to resolve a

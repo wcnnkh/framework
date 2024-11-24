@@ -7,6 +7,7 @@ import java.util.List;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ListElements;
 import io.basc.framework.util.StandardListElements;
+import lombok.NonNull;
 
 public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +26,7 @@ public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializ
 		super(cursorId, new StandardListElements<>(list), nextCursorId);
 	}
 
-	public SharedCursor(Cursor<K, T> cursor) {
+	public SharedCursor(@NonNull Cursor<K, T> cursor) {
 		super(cursor.getCursorId(), cursor.getElements().toList(), cursor.getNextCursorId());
 	}
 

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
+import lombok.NonNull;
 
 public final class FormatUtils {
 	private static final String DEFAULT_PLACEHOLDER = "{}";
@@ -13,8 +13,7 @@ public final class FormatUtils {
 	private FormatUtils() {
 	};
 
-	public static String formatPlaceholder(Object text, String placeholder,
-			Object... args) {
+	public static String formatPlaceholder(Object text, String placeholder, Object... args) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			formatPlaceholder(sb, text, placeholder, args);
@@ -24,16 +23,15 @@ public final class FormatUtils {
 		return sb.toString();
 	}
 
-	public static void formatPlaceholder(Appendable appendable, Object format,
-			@Nullable String placeholder, Object... args) throws IOException {
+	public static void formatPlaceholder(@NonNull Appendable appendable, Object format, String placeholder,
+			Object... args) throws IOException {
 		String text = format == null ? null : format.toString();
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
 			return;
 		}
 
-		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER
-				: placeholder;
+		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder;
 		int lastFind = 0;
 		for (int i = 0; i < args.length; i++) {
 			int index = text.indexOf(findText, lastFind);
@@ -62,12 +60,11 @@ public final class FormatUtils {
 		}
 	}
 
-	public static Properties format(Properties properties,
-			PlaceholderFormat placeholderFormat) {
-		if(placeholderFormat == null) {
+	public static Properties format(Properties properties, PlaceholderFormat placeholderFormat) {
+		if (placeholderFormat == null) {
 			return properties;
 		}
-		
+
 		if (properties == null || properties.isEmpty()) {
 			return properties;
 		}
@@ -80,8 +77,7 @@ public final class FormatUtils {
 			}
 
 			if (value instanceof String) {
-				props.put(entry.getKey(),
-						placeholderFormat.replacePlaceholders((String) value));
+				props.put(entry.getKey(), placeholderFormat.replacePlaceholders((String) value));
 			} else {
 				props.put(entry.getKey(), entry.getValue());
 			}

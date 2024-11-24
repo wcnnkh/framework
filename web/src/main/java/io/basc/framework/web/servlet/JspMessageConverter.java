@@ -6,8 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;

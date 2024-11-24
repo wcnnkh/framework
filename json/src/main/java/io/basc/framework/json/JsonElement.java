@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.lang.Nullable;
 
 public interface JsonElement extends ValueWrapper, JsonAware {

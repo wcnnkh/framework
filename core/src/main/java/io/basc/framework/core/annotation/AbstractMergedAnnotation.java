@@ -22,7 +22,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 /**
@@ -34,7 +33,6 @@ import io.basc.framework.util.Assert;
  */
 abstract class AbstractMergedAnnotation<A extends Annotation> implements MergedAnnotation<A> {
 
-	@Nullable
 	private volatile A synthesizedAnnotation;
 
 	@Override
@@ -230,7 +228,6 @@ abstract class AbstractMergedAnnotation<A extends Annotation> implements MergedA
 	 * @throws IllegalArgumentException if the source type is not compatible
 	 * @throws NoSuchElementException   if the value is required but not found
 	 */
-	@Nullable
 	protected abstract <T> T getAttributeValue(String attributeName, Class<T> type);
 
 	/**

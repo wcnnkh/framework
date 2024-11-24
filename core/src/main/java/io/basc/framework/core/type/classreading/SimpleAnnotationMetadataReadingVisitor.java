@@ -14,7 +14,6 @@ import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.type.MethodMetadata;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
@@ -26,19 +25,19 @@ import io.basc.framework.util.StringUtils;
  */
 final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 
-	@Nullable
+	
 	private final ClassLoader classLoader;
 
 	private String className = "";
 
 	private int access;
 
-	@Nullable
+	
 	private String superClassName;
 
 	private String[] interfaceNames = new String[0];
 
-	@Nullable
+	
 	private String enclosingClassName;
 
 	private boolean independentInnerClass;
@@ -49,19 +48,19 @@ final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 
 	private List<SimpleMethodMetadata> annotatedMethods = new ArrayList<>();
 
-	@Nullable
+	
 	private SimpleAnnotationMetadata metadata;
 
-	@Nullable
+	
 	private Source source;
 
-	SimpleAnnotationMetadataReadingVisitor(@Nullable ClassLoader classLoader) {
+	SimpleAnnotationMetadataReadingVisitor( ClassLoader classLoader) {
 		super(Constants.ASM_VERSION);
 		this.classLoader = classLoader;
 	}
 
 	@Override
-	public void visit(int version, int access, String name, String signature, @Nullable String supername,
+	public void visit(int version, int access, String name, String signature,  String supername,
 			String[] interfaces) {
 
 		this.className = toClassName(name);
@@ -81,7 +80,7 @@ final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 	}
 
 	@Override
-	public void visitInnerClass(String name, @Nullable String outerName, String innerName, int access) {
+	public void visitInnerClass(String name,  String outerName, String innerName, int access) {
 		if (outerName != null) {
 			String className = toClassName(name);
 			String outerClassName = toClassName(outerName);
@@ -95,14 +94,14 @@ final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 	}
 
 	@Override
-	@Nullable
+	
 	public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
 		return MergedAnnotationReadingVisitor.get(this.classLoader, getSource(), descriptor, visible,
 				this.annotations::add);
 	}
 
 	@Override
-	@Nullable
+	
 	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 			String[] exceptions) {
 
@@ -169,7 +168,7 @@ final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 		}
 
 		@Override
-		public boolean equals(@Nullable Object obj) {
+		public boolean equals( Object obj) {
 			if (this == obj) {
 				return true;
 			}

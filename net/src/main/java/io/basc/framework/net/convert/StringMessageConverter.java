@@ -3,7 +3,7 @@ package io.basc.framework.net.convert;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.net.InputMessage;

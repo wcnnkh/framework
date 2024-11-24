@@ -1,6 +1,6 @@
 package io.basc.framework.autoconfigure.transaction;
 
-import io.basc.framework.execution.Function;
+import io.basc.framework.core.execution.Function;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.aop.TransactionDefinitionLoader;
 

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;

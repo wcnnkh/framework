@@ -14,8 +14,9 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.function.IntPredicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
+import io.basc.framework.util.collect.CollectionUtils;
+import lombok.NonNull;
 
 public final class StringUtils {
 	private static final String CURRENT_PATH = ".";
@@ -626,7 +627,7 @@ public final class StringUtils {
 	 * @param filter
 	 * @return
 	 */
-	public static String filter(@Nullable CharSequence source, @Nullable IntPredicate filter) {
+	public static String filter(CharSequence source, IntPredicate filter) {
 		if (source == null) {
 			return null;
 		}
@@ -798,8 +799,7 @@ public final class StringUtils {
 	 * @param endIndex
 	 * @return
 	 */
-	public static Range<Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
-			int endIndex) {
+	public static Range<Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex, int endIndex) {
 		if (source == null || prefix == null || suffix == null) {
 			return null;
 		}
@@ -922,8 +922,7 @@ public final class StringUtils {
 	// Convenience methods for working with String arrays
 	// ---------------------------------------------------------------------
 
-	public static Range<Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
-			int fromIndex) {
+	public static Range<Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix, int fromIndex) {
 		if (source == null) {
 			return null;
 		}
@@ -931,8 +930,8 @@ public final class StringUtils {
 		return indexOf(source, prefix, suffix, fromIndex, source.length());
 	}
 
-	public static Range<Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
-			int fromIndex, int endIndex) {
+	public static Range<Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix, int fromIndex,
+			int endIndex) {
 		if (source == null || prefix == null || suffix == null) {
 			return null;
 		}
@@ -1256,7 +1255,7 @@ public final class StringUtils {
 	 * @param paths
 	 * @return
 	 */
-	public static String mergePaths(Collection<String> paths, @Nullable PlaceholderFormat placeholderFormat) {
+	public static String mergePaths(@NonNull Collection<String> paths, PlaceholderFormat placeholderFormat) {
 		StringBuilder sb = new StringBuilder();
 		for (String path : paths) {
 			if (StringUtils.isEmpty(path)) {
@@ -1308,7 +1307,6 @@ public final class StringUtils {
 		return toStringArray(result);
 	}
 
-	@Nullable
 	public static Range<String> parseKV(String text, String separator) {
 		int index = text.indexOf(separator);
 		if (index == -1) {

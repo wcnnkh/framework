@@ -1,8 +1,8 @@
 package io.basc.framework.swagger.convert;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.web.message.support.AbstractRequestBodyWebMessageConverter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;

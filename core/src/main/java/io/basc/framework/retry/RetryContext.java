@@ -1,6 +1,5 @@
 package io.basc.framework.retry;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.attribute.EditableAttributes;
 
 public interface RetryContext extends EditableAttributes<String, Object> {
@@ -9,7 +8,6 @@ public interface RetryContext extends EditableAttributes<String, Object> {
 	 * 
 	 * @return the parent or null if there is none.
 	 */
-	@Nullable
 	RetryContext getParent();
 
 	/**
@@ -29,7 +27,6 @@ public interface RetryContext extends EditableAttributes<String, Object> {
 	 *         decides not to provide it (e.g. because of concerns about memory
 	 *         usage).
 	 */
-	@Nullable
 	Throwable getLastThrowable();
 
 	/**

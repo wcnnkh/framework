@@ -29,7 +29,7 @@ public class Receipted extends Registed implements Receipt {
 		this(true, success, cause);
 	}
 
-	public Receipted(boolean done, boolean success, Throwable cause) {
+	protected Receipted(boolean done, boolean success, Throwable cause) {
 		super(false);
 		this.done = done;
 		this.success = success;

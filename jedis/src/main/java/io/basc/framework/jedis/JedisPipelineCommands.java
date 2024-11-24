@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.convert.lang.NumberToBooleanConverter;
+import io.basc.framework.core.convert.lang.NumberToBooleanConverter;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;

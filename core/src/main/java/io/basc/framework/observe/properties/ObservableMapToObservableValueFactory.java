@@ -1,6 +1,6 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.util.actor.EventRegistrationException;
 import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.register.Registration;

@@ -1,7 +1,7 @@
 package io.basc.framework.transaction.aop;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.execution.Function;
+import io.basc.framework.core.execution.Function;
 import io.basc.framework.transaction.TransactionDefinition;
 import lombok.Getter;
 import lombok.Setter;

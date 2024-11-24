@@ -2,10 +2,10 @@ package io.basc.framework.json.convert;
 
 import java.util.function.Function;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.annotation.JSON;
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.Converter;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.annotation.JSON;
 import io.basc.framework.json.JsonSupportAccessor;
 import io.basc.framework.util.ObjectUtils;
 

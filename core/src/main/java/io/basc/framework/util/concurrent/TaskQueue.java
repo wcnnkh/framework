@@ -36,7 +36,6 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 		setDaemon(true);
 	}
 
-	@Nullable
 	public Runnable poll() {
 		synchronized (queue) {
 			return queue.poll();

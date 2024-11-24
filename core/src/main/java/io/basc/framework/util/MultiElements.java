@@ -3,6 +3,8 @@ package io.basc.framework.util;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.collect.CollectionUtils;
+
 public class MultiElements<E> implements Elements<E> {
 	private final Elements<? extends Elements<? extends E>> elements;
 

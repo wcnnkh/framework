@@ -21,12 +21,11 @@ import java.util.Map;
 
 import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
+import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.core.annotation.MergedAnnotationCollectors;
 import io.basc.framework.core.annotation.MergedAnnotationPredicates;
 import io.basc.framework.core.annotation.MergedAnnotationSelectors;
 import io.basc.framework.core.annotation.MergedAnnotations;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.collect.MultiValueMap;
 
 /**
  * Defines access to the annotations of a specific type
@@ -78,7 +77,7 @@ public interface AnnotatedTypeMetadata {
 	 *         and the defined attribute value as Map value. This return value will
 	 *         be {@code null} if no matching annotation is defined.
 	 */
-	@Nullable
+	
 	default Map<String, Object> getAnnotationAttributes(String annotationName) {
 		return getAnnotationAttributes(annotationName, false);
 	}
@@ -98,7 +97,7 @@ public interface AnnotatedTypeMetadata {
 	 *         and the defined attribute value as Map value. This return value will
 	 *         be {@code null} if no matching annotation is defined.
 	 */
-	@Nullable
+	
 	default Map<String, Object> getAnnotationAttributes(String annotationName, boolean classValuesAsString) {
 
 		MergedAnnotation<Annotation> annotation = getAnnotations().get(annotationName, null,
@@ -122,7 +121,7 @@ public interface AnnotatedTypeMetadata {
 	 *         defined.
 	 * @see #getAllAnnotationAttributes(String, boolean)
 	 */
-	@Nullable
+	
 	default MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationName) {
 		return getAllAnnotationAttributes(annotationName, false);
 	}
@@ -141,7 +140,7 @@ public interface AnnotatedTypeMetadata {
 	 *         defined.
 	 * @see #getAllAnnotationAttributes(String)
 	 */
-	@Nullable
+	
 	default MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationName,
 			boolean classValuesAsString) {
 

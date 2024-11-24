@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import io.basc.framework.core.SerializableTypeWrapper.FieldTypeProvider;
 import io.basc.framework.core.SerializableTypeWrapper.MethodParameterTypeProvider;
 import io.basc.framework.core.SerializableTypeWrapper.TypeProvider;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -87,44 +86,44 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Optional provider for the type.
 	 */
-	@Nullable
+	
 	private final TypeProvider typeProvider;
 
 	/**
 	 * The {@code VariableResolver} to use or {@code null} if no resolver is
 	 * available.
 	 */
-	@Nullable
+	
 	private final VariableResolver variableResolver;
 
 	/**
 	 * The component type for an array or {@code null} if the type should be
 	 * deduced.
 	 */
-	@Nullable
+	
 	private final ResolvableType componentType;
 
-	@Nullable
+	
 	private final Integer hash;
 
-	@Nullable
+	
 	private Class<?> resolved;
 
-	@Nullable
+	
 	private volatile ResolvableType superType;
 
-	@Nullable
+	
 	private volatile ResolvableType[] interfaces;
 
-	@Nullable
+	
 	private volatile ResolvableType[] generics;
 
 	/**
 	 * Private constructor used to create a new {@link ResolvableType} for cache key
 	 * purposes, with no upfront resolution.
 	 */
-	private ResolvableType(Type type, @Nullable TypeProvider typeProvider,
-			@Nullable VariableResolver variableResolver) {
+	private ResolvableType(Type type,  TypeProvider typeProvider,
+			 VariableResolver variableResolver) {
 
 		this.type = type;
 		this.typeProvider = typeProvider;
@@ -139,8 +138,8 @@ public class ResolvableType implements Serializable {
 	 * value purposes, with upfront resolution and a pre-calculated hash.
 	 * 
 	 */
-	private ResolvableType(Type type, @Nullable TypeProvider typeProvider, @Nullable VariableResolver variableResolver,
-			@Nullable Integer hash) {
+	private ResolvableType(Type type,  TypeProvider typeProvider,  VariableResolver variableResolver,
+			 Integer hash) {
 
 		this.type = type;
 		this.typeProvider = typeProvider;
@@ -154,8 +153,8 @@ public class ResolvableType implements Serializable {
 	 * Private constructor used to create a new {@link ResolvableType} for uncached
 	 * purposes, with upfront resolution but lazily calculated hash.
 	 */
-	private ResolvableType(Type type, @Nullable TypeProvider typeProvider, @Nullable VariableResolver variableResolver,
-			@Nullable ResolvableType componentType) {
+	private ResolvableType(Type type,  TypeProvider typeProvider,  VariableResolver variableResolver,
+			 ResolvableType componentType) {
 
 		this.type = type;
 		this.typeProvider = typeProvider;
@@ -171,7 +170,7 @@ public class ResolvableType implements Serializable {
 	 * a straight {@link Class} wrapper.
 	 * 
 	 */
-	private ResolvableType(@Nullable Class<?> clazz) {
+	private ResolvableType( Class<?> clazz) {
 		this.resolved = (clazz != null ? clazz : Object.class);
 		this.type = this.resolved;
 		this.typeProvider = null;
@@ -191,7 +190,7 @@ public class ResolvableType implements Serializable {
 	 * Return the underlying Java {@link Class} being managed, if available;
 	 * otherwise {@code null}.
 	 */
-	@Nullable
+	
 	public Class<?> getRawClass() {
 		if (this.type == this.resolved) {
 			return this.resolved;
@@ -235,7 +234,7 @@ public class ResolvableType implements Serializable {
 	 * @param obj the object to check
 	 * @see #isAssignableFrom(Class)
 	 */
-	public boolean isInstance(@Nullable Object obj) {
+	public boolean isInstance( Object obj) {
 		return (obj != null && isAssignableFrom(obj.getClass()));
 	}
 
@@ -267,7 +266,7 @@ public class ResolvableType implements Serializable {
 		return isAssignableFrom(other, null);
 	}
 
-	private boolean isAssignableFrom(ResolvableType other, @Nullable Map<Type, Type> matchedBefore) {
+	private boolean isAssignableFrom(ResolvableType other,  Map<Type, Type> matchedBefore) {
 		Assert.notNull(other, "ResolvableType must not be null");
 
 		// If we cannot resolve types, we are not assignable
@@ -644,7 +643,7 @@ public class ResolvableType implements Serializable {
 	 *                            nesting level (may be {@code null})
 	 * @return a {@link ResolvableType} for the nested level, or {@link #NONE}
 	 */
-	public ResolvableType getNested(int nestingLevel, @Nullable Map<Integer, Integer> typeIndexesPerLevel) {
+	public ResolvableType getNested(int nestingLevel,  Map<Integer, Integer> typeIndexesPerLevel) {
 		ResolvableType result = this;
 		for (int i = 2; i <= nestingLevel; i++) {
 			if (result.isArray()) {
@@ -682,7 +681,7 @@ public class ResolvableType implements Serializable {
 	 * @see #resolveGeneric(int...)
 	 * @see #resolveGenerics()
 	 */
-	public ResolvableType getGeneric(@Nullable int... indexes) {
+	public ResolvableType getGeneric( int... indexes) {
 		ResolvableType[] generics = getGenerics();
 		if (indexes == null || indexes.length == 0) {
 			return (generics.length == 0 ? NONE : generics[0]);
@@ -785,7 +784,7 @@ public class ResolvableType implements Serializable {
 	 * @see #getGeneric(int...)
 	 * @see #resolve()
 	 */
-	@Nullable
+	
 	public Class<?> resolveGeneric(int... indexes) {
 		return getGeneric(indexes).resolve();
 	}
@@ -806,7 +805,7 @@ public class ResolvableType implements Serializable {
 	 * @see #resolveGeneric(int...)
 	 * @see #resolveGenerics()
 	 */
-	@Nullable
+	
 	public Class<?> resolve() {
 		return this.resolved;
 	}
@@ -828,7 +827,7 @@ public class ResolvableType implements Serializable {
 		return (this.resolved != null ? this.resolved : fallback);
 	}
 
-	@Nullable
+	
 	private Class<?> resolveClass() {
 		if (this.type == EmptyType.INSTANCE) {
 			return null;
@@ -876,7 +875,7 @@ public class ResolvableType implements Serializable {
 		return NONE;
 	}
 
-	@Nullable
+	
 	private Type resolveBounds(Type[] bounds) {
 		if (bounds.length == 0 || bounds[0] == Object.class) {
 			return null;
@@ -884,7 +883,7 @@ public class ResolvableType implements Serializable {
 		return bounds[0];
 	}
 
-	@Nullable
+	
 	private ResolvableType resolveVariable(TypeVariable<?> variable) {
 		if (this.type instanceof TypeVariable) {
 			return resolveType().resolveVariable(variable);
@@ -920,7 +919,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals( Object other) {
 		if (this == other) {
 			return true;
 		}
@@ -969,7 +968,7 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Adapts this {@link ResolvableType} to a {@link VariableResolver}.
 	 */
-	@Nullable
+	
 	VariableResolver asVariableResolver() {
 		if (this == NONE) {
 			return null;
@@ -1023,7 +1022,7 @@ public class ResolvableType implements Serializable {
 	 * @see #forClass(Class, Class)
 	 * @see #forClassWithGenerics(Class, Class...)
 	 */
-	public static ResolvableType forClass(@Nullable Class<?> clazz) {
+	public static ResolvableType forClass( Class<?> clazz) {
 		return new ResolvableType(clazz);
 	}
 
@@ -1039,7 +1038,7 @@ public class ResolvableType implements Serializable {
 	 * @see #forClass(Class)
 	 * @see #getRawClass()
 	 */
-	public static ResolvableType forRawClass(@Nullable Class<?> clazz) {
+	public static ResolvableType forRawClass( Class<?> clazz) {
 		return new ResolvableType(clazz) {
 			private static final long serialVersionUID = 1L;
 
@@ -1188,7 +1187,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified field
 	 * @see #forField(Field)
 	 */
-	public static ResolvableType forField(Field field, @Nullable ResolvableType implementationType) {
+	public static ResolvableType forField(Field field,  ResolvableType implementationType) {
 		Assert.notNull(field, "Field must not be null");
 		ResolvableType owner = (implementationType != null ? implementationType : NONE);
 		owner = owner.as(field.getDeclaringClass());
@@ -1223,7 +1222,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified field
 	 * @see #forField(Field)
 	 */
-	public static ResolvableType forField(Field field, int nestingLevel, @Nullable Class<?> implementationClass) {
+	public static ResolvableType forField(Field field, int nestingLevel,  Class<?> implementationClass) {
 		Assert.notNull(field, "Field must not be null");
 		ResolvableType owner = forType(implementationClass).as(field.getDeclaringClass());
 		return forType(null, new FieldTypeProvider(field), owner.asVariableResolver()).getNested(nestingLevel);
@@ -1351,7 +1350,7 @@ public class ResolvableType implements Serializable {
 	 * @see #forMethodParameter(MethodParameter)
 	 */
 	public static ResolvableType forMethodParameter(MethodParameter methodParameter,
-			@Nullable ResolvableType implementationType) {
+			 ResolvableType implementationType) {
 
 		Assert.notNull(methodParameter, "MethodParameter must not be null");
 		implementationType = (implementationType != null ? implementationType
@@ -1371,7 +1370,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified method parameter
 	 * @see #forMethodParameter(Method, int)
 	 */
-	public static ResolvableType forMethodParameter(MethodParameter methodParameter, @Nullable Type targetType) {
+	public static ResolvableType forMethodParameter(MethodParameter methodParameter,  Type targetType) {
 		Assert.notNull(methodParameter, "MethodParameter must not be null");
 		return forMethodParameter(methodParameter, targetType, methodParameter.getNestingLevel());
 	}
@@ -1388,7 +1387,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified method parameter
 	 * @see #forMethodParameter(Method, int)
 	 */
-	static ResolvableType forMethodParameter(MethodParameter methodParameter, @Nullable Type targetType,
+	static ResolvableType forMethodParameter(MethodParameter methodParameter,  Type targetType,
 			int nestingLevel) {
 
 		ResolvableType owner = forType(methodParameter.getContainingClass()).as(methodParameter.getDeclaringClass());
@@ -1419,7 +1418,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified {@link Type}
 	 * @see #forType(Type, ResolvableType)
 	 */
-	public static ResolvableType forType(@Nullable Type type) {
+	public static ResolvableType forType( Type type) {
 		return forType(type, null, null);
 	}
 
@@ -1435,7 +1434,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified {@link Type} and owner
 	 * @see #forType(Type)
 	 */
-	public static ResolvableType forType(@Nullable Type type, @Nullable ResolvableType owner) {
+	public static ResolvableType forType( Type type,  ResolvableType owner) {
 		VariableResolver variableResolver = null;
 		if (owner != null) {
 			variableResolver = owner.asVariableResolver();
@@ -1468,7 +1467,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified {@link Type} and
 	 *         {@link VariableResolver}
 	 */
-	static ResolvableType forType(@Nullable Type type, @Nullable VariableResolver variableResolver) {
+	static ResolvableType forType( Type type,  VariableResolver variableResolver) {
 		return forType(type, null, variableResolver);
 	}
 
@@ -1482,8 +1481,8 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specified {@link Type} and
 	 *         {@link VariableResolver}
 	 */
-	static ResolvableType forType(@Nullable Type type, @Nullable TypeProvider typeProvider,
-			@Nullable VariableResolver variableResolver) {
+	static ResolvableType forType( Type type,  TypeProvider typeProvider,
+			 VariableResolver variableResolver) {
 
 		if (type == null && typeProvider != null) {
 			type = SerializableTypeWrapper.forTypeProvider(typeProvider);
@@ -1540,7 +1539,7 @@ public class ResolvableType implements Serializable {
 		 * @param variable the variable to resolve
 		 * @return the resolved variable, or {@code null} if not found
 		 */
-		@Nullable
+		
 		ResolvableType resolveVariable(TypeVariable<?> variable);
 	}
 
@@ -1553,7 +1552,7 @@ public class ResolvableType implements Serializable {
 		}
 
 		@Override
-		@Nullable
+		
 		public ResolvableType resolveVariable(TypeVariable<?> variable) {
 			return this.source.resolveVariable(variable);
 		}
@@ -1577,7 +1576,7 @@ public class ResolvableType implements Serializable {
 		}
 
 		@Override
-		@Nullable
+		
 		public ResolvableType resolveVariable(TypeVariable<?> variable) {
 			TypeVariable<?> variableToCompare = SerializableTypeWrapper.unwrap(variable);
 			for (int i = 0; i < this.variables.length; i++) {
@@ -1621,7 +1620,7 @@ public class ResolvableType implements Serializable {
 		}
 
 		@Override
-		@Nullable
+		
 		public Type getOwnerType() {
 			return null;
 		}
@@ -1637,7 +1636,7 @@ public class ResolvableType implements Serializable {
 		}
 
 		@Override
-		public boolean equals(@Nullable Object other) {
+		public boolean equals( Object other) {
 			if (this == other) {
 				return true;
 			}
@@ -1725,7 +1724,7 @@ public class ResolvableType implements Serializable {
 		 * @param type the source type
 		 * @return a {@link WildcardBounds} instance or {@code null}
 		 */
-		@Nullable
+		
 		public static WildcardBounds get(ResolvableType type) {
 			ResolvableType resolveToWildcard = type;
 			while (!(resolveToWildcard.getType() instanceof WildcardType)) {

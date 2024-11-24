@@ -28,10 +28,9 @@ import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
  * Scanner to search for relevant annotations in the annotation hierarchy of an
@@ -66,7 +65,7 @@ abstract class AnnotationsScanner {
 	 * @param processor      the processor that receives the annotations
 	 * @return the result of {@link AnnotationsProcessor#finish(Object)}
 	 */
-	@Nullable
+	
 	static <C, R> R scan(C context, AnnotatedElement source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -74,7 +73,7 @@ abstract class AnnotationsScanner {
 		return processor.finish(result);
 	}
 
-	@Nullable
+	
 	private static <C, R> R process(C context, AnnotatedElement source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -87,7 +86,7 @@ abstract class AnnotationsScanner {
 		return processElement(context, source, processor);
 	}
 
-	@Nullable
+	
 	private static <C, R> R processClass(C context, Class<?> source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -106,7 +105,7 @@ abstract class AnnotationsScanner {
 		throw new IllegalStateException("Unsupported search strategy " + searchStrategy);
 	}
 
-	@Nullable
+	
 	private static <C, R> R processClassInheritedAnnotations(C context, Class<?> source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -158,14 +157,14 @@ abstract class AnnotationsScanner {
 		return null;
 	}
 
-	@Nullable
+	
 	private static <C, R> R processClassHierarchy(C context, Class<?> source, AnnotationsProcessor<C, R> processor,
 			boolean includeInterfaces, boolean includeEnclosing) {
 
 		return processClassHierarchy(context, new int[] { 0 }, source, processor, includeInterfaces, includeEnclosing);
 	}
 
-	@Nullable
+	
 	private static <C, R> R processClassHierarchy(C context, int[] aggregateIndex, Class<?> source,
 			AnnotationsProcessor<C, R> processor, boolean includeInterfaces, boolean includeEnclosing) {
 
@@ -225,7 +224,7 @@ abstract class AnnotationsScanner {
 		return null;
 	}
 
-	@Nullable
+	
 	private static <C, R> R processMethod(C context, Method source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -244,7 +243,7 @@ abstract class AnnotationsScanner {
 		throw new IllegalStateException("Unsupported search strategy " + searchStrategy);
 	}
 
-	@Nullable
+	
 	private static <C, R> R processMethodInheritedAnnotations(C context, Method source,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -257,7 +256,7 @@ abstract class AnnotationsScanner {
 		return null;
 	}
 
-	@Nullable
+	
 	private static <C, R> R processMethodHierarchy(C context, int[] aggregateIndex, Class<?> sourceClass,
 			AnnotationsProcessor<C, R> processor, Method rootMethod, boolean includeInterfaces) {
 
@@ -379,7 +378,7 @@ abstract class AnnotationsScanner {
 		return true;
 	}
 
-	@Nullable
+	
 	private static <C, R> R processMethodAnnotations(C context, int aggregateIndex, Method source,
 			AnnotationsProcessor<C, R> processor) {
 
@@ -401,7 +400,7 @@ abstract class AnnotationsScanner {
 		return null;
 	}
 
-	@Nullable
+	
 	private static <C, R> R processElement(C context, AnnotatedElement source, AnnotationsProcessor<C, R> processor) {
 
 		try {
@@ -415,7 +414,7 @@ abstract class AnnotationsScanner {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Nullable
+	
 	static <A extends Annotation> A getDeclaredAnnotation(AnnotatedElement source, Class<A> annotationType) {
 		Annotation[] annotations = getDeclaredAnnotations(source, false);
 		for (Annotation annotation : annotations) {
@@ -474,7 +473,7 @@ abstract class AnnotationsScanner {
 		return false;
 	}
 
-	static boolean hasPlainJavaAnnotationsOnly(@Nullable Object annotatedElement) {
+	static boolean hasPlainJavaAnnotationsOnly( Object annotatedElement) {
 		if (annotatedElement instanceof Class) {
 			return hasPlainJavaAnnotationsOnly((Class<?>) annotatedElement);
 		} else if (annotatedElement instanceof Member) {

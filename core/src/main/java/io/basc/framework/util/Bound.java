@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.function.DefaultOptional;
 import lombok.NonNull;
 

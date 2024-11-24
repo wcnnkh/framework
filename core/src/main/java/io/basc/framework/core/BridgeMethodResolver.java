@@ -22,10 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
  * Helper for resolving synthetic {@link Method#isBridge bridge Methods} to the
@@ -113,7 +112,7 @@ public final class BridgeMethodResolver {
 	 * @param bridgeMethod     the bridge method
 	 * @return the bridged method, or {@code null} if none found
 	 */
-	@Nullable
+	
 	private static Method searchCandidates(List<Method> candidateMethods, Method bridgeMethod) {
 		if (candidateMethods.isEmpty()) {
 			return null;
@@ -180,7 +179,7 @@ public final class BridgeMethodResolver {
 	 * 
 	 * @throws IllegalStateException if the generic declaration cannot be found
 	 */
-	@Nullable
+	
 	private static Method findGenericDeclaration(Method bridgeMethod) {
 		// Search parent types for method that has same signature as bridge.
 		Class<?> superclass = bridgeMethod.getDeclaringClass().getSuperclass();
@@ -196,7 +195,7 @@ public final class BridgeMethodResolver {
 		return searchInterfaces(interfaces, bridgeMethod);
 	}
 
-	@Nullable
+	
 	private static Method searchInterfaces(Class<?>[] interfaces, Method bridgeMethod) {
 		for (Class<?> ifc : interfaces) {
 			Method method = searchForMatch(ifc, bridgeMethod);
@@ -217,7 +216,7 @@ public final class BridgeMethodResolver {
 	 * matches that of the supplied {@link Method}, then this matching
 	 * {@link Method} is returned, otherwise {@code null} is returned.
 	 */
-	@Nullable
+	
 	private static Method searchForMatch(Class<?> type, Method bridgeMethod) {
 		try {
 			return type.getDeclaredMethod(bridgeMethod.getName(), bridgeMethod.getParameterTypes());

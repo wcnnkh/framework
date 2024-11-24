@@ -5,9 +5,9 @@ import java.util.stream.IntStream;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.execution.param.Arg;
-import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.execution.param.Arg;
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;

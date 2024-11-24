@@ -3,7 +3,6 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Predicate;
@@ -27,63 +26,6 @@ public final class XUtils {
 
 	private XUtils() {
 	};
-
-	public static boolean isEnableCommonPool() {
-		return ENABLE_COMMON_POOL;
-	}
-
-	public static Executor getCommonExecutor() {
-		return COMMON_EXECUTOR;
-	}
-
-	/**
-	 * 获取UUID，已经移除了‘-’
-	 * 
-	 * @return
-	 */
-	public static String getUUID() {
-		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
-	}
-
-	/**
-	 * @see Decorator#getDelegate(Class)
-	 * @param wrapper
-	 * @param targetType
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public static <T> T getDelegate(Object wrapper, Class<T> targetType) {
-		if (targetType.isInstance(wrapper)) {
-			return (T) wrapper;
-		}
-
-		if (wrapper instanceof Decorator) {
-			return ((Decorator) wrapper).getDelegate(targetType);
-		}
-		return null;
-	}
-
-	/**
-	 * 获取名称
-	 * 
-	 * @see Name#getName()
-	 * @param instance
-	 * @param defaultName
-	 * @return
-	 */
-	public static String getName(Object instance, String defaultName) {
-		if (instance == null) {
-			return defaultName;
-		}
-
-		if (instance instanceof Name) {
-			String name = ((Name) instance).getName();
-			return name == null ? defaultName : name;
-		}
-
-		return defaultName;
-	}
 
 	/**
 	 * 获取运行时所在的目录

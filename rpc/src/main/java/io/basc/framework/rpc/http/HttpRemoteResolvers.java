@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.EnvironmentAware;
+import io.basc.framework.core.env.Environment;
+import io.basc.framework.core.env.EnvironmentAware;
 
 public class HttpRemoteResolvers extends ConfigurableServices<HttpRemoteResolver>
 		implements HttpRemoteResolver, EnvironmentAware {

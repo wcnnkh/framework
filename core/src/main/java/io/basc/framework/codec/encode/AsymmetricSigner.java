@@ -15,10 +15,10 @@ import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
+import lombok.NonNull;
 
 /**
  * 非对称加密签名
@@ -36,12 +36,12 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 	private final NamedThreadLocal<Signature> verifyLocal;
 	private final SecureRandom secureRandom;
 
-	public AsymmetricSigner(String algorithm, @Nullable PrivateKey privateKey, @Nullable PublicKey publicKey) {
+	public AsymmetricSigner(@NonNull String algorithm, PrivateKey privateKey, PublicKey publicKey) {
 		this(algorithm, privateKey, null, publicKey);
 	}
 
-	public AsymmetricSigner(String algorithm, @Nullable PrivateKey privateKey, @Nullable SecureRandom secureRandom,
-			@Nullable PublicKey publicKey) {
+	public AsymmetricSigner(@NonNull String algorithm, PrivateKey privateKey, SecureRandom secureRandom,
+			PublicKey publicKey) {
 		this.algorithm = algorithm;
 		this.privateKey = privateKey;
 		this.verifyKey = publicKey;
@@ -50,12 +50,12 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 		this.verifyLocal = new NamedThreadLocal<Signature>(algorithm);
 	}
 
-	public AsymmetricSigner(String algorithm, @Nullable PrivateKey privateKey, @Nullable Certificate certificate) {
+	public AsymmetricSigner(@NonNull String algorithm, PrivateKey privateKey, Certificate certificate) {
 		this(algorithm, privateKey, null, certificate);
 	}
 
-	public AsymmetricSigner(String algorithm, @Nullable PrivateKey privateKey, @Nullable SecureRandom secureRandom,
-			@Nullable Certificate certificate) {
+	public AsymmetricSigner(@NonNull String algorithm, PrivateKey privateKey, SecureRandom secureRandom,
+			Certificate certificate) {
 		this.algorithm = algorithm;
 		this.privateKey = privateKey;
 		this.verifyKey = certificate;

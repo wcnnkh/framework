@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 /**
@@ -110,8 +109,8 @@ final class AnnotationTypeMappings {
 		addIfPossible(queue, source, ann.annotationType(), ann, new HashSet<>());
 	}
 
-	private void addIfPossible(Deque<AnnotationTypeMapping> queue, @Nullable AnnotationTypeMapping source,
-			Class<? extends Annotation> annotationType, @Nullable Annotation ann,
+	private void addIfPossible(Deque<AnnotationTypeMapping> queue,  AnnotationTypeMapping source,
+			Class<? extends Annotation> annotationType,  Annotation ann,
 			Set<Class<? extends Annotation>> visitedAnnotationTypes) {
 
 		try {
@@ -126,7 +125,7 @@ final class AnnotationTypeMappings {
 		}
 	}
 
-	private boolean isMappable(AnnotationTypeMapping source, @Nullable Annotation metaAnnotation) {
+	private boolean isMappable(AnnotationTypeMapping source,  Annotation metaAnnotation) {
 		return (metaAnnotation != null && !this.filter.matches(metaAnnotation) &&
 				!AnnotationFilter.PLAIN.matches(source.getAnnotationType()) &&
 				!isAlreadyMapped(source, metaAnnotation));

@@ -8,9 +8,10 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.math.Addition;
-import io.basc.framework.math.NumberComparator;
 import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.math.Addition;
+import io.basc.framework.util.math.NumberComparator;
+import lombok.NonNull;
 
 public final class RandomUtils {
 	private RandomUtils() {
@@ -483,9 +484,9 @@ public final class RandomUtils {
 	 * @return
 	 * @throws E
 	 */
-	@Nullable
-	public static <T, E extends Throwable> T random(Number totalWeight, Number weight, Iterator<? extends T> iterator,
-			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+	public static <T, E extends Throwable> T random(@NonNull Number totalWeight, @NonNull Number weight,
+			@NonNull Iterator<? extends T> iterator, @NonNull Processor<T, Number, E> weightProcessor,
+			Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
 		Assert.isTrue(totalWeight != null && NumberComparator.INSTANCE.compare(totalWeight, 0) > 0,

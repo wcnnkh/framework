@@ -11,7 +11,6 @@ import org.objectweb.asm.Type;
 import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.Nullable;
 
 /**
  * ASM method visitor that creates {@link SimpleMethodMetadata}.
@@ -21,7 +20,7 @@ import io.basc.framework.lang.Nullable;
  */
 final class SimpleMethodMetadataReadingVisitor extends MethodVisitor {
 
-	@Nullable
+	
 	private final ClassLoader classLoader;
 
 	private final String declaringClassName;
@@ -36,10 +35,10 @@ final class SimpleMethodMetadataReadingVisitor extends MethodVisitor {
 
 	private final Consumer<SimpleMethodMetadata> consumer;
 
-	@Nullable
+	
 	private Source source;
 
-	SimpleMethodMetadataReadingVisitor(@Nullable ClassLoader classLoader, String declaringClassName, int access,
+	SimpleMethodMetadataReadingVisitor( ClassLoader classLoader, String declaringClassName, int access,
 			String methodName, String descriptor, Consumer<SimpleMethodMetadata> consumer) {
 
 		super(Constants.ASM_VERSION);
@@ -52,7 +51,7 @@ final class SimpleMethodMetadataReadingVisitor extends MethodVisitor {
 	}
 
 	@Override
-	@Nullable
+	
 	public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
 		return MergedAnnotationReadingVisitor.get(this.classLoader, getSource(), descriptor, visible,
 				this.annotations::add);
@@ -89,7 +88,7 @@ final class SimpleMethodMetadataReadingVisitor extends MethodVisitor {
 
 		private final String descriptor;
 
-		@Nullable
+		
 		private String toStringValue;
 
 		Source(String declaringClassName, String methodName, String descriptor) {
@@ -108,7 +107,7 @@ final class SimpleMethodMetadataReadingVisitor extends MethodVisitor {
 		}
 
 		@Override
-		public boolean equals(@Nullable Object other) {
+		public boolean equals( Object other) {
 			if (this == other) {
 				return true;
 			}

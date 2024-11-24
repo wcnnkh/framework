@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.io.SerializerException;
-import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.XUtils;
 import lombok.ToString;
 

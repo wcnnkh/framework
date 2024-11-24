@@ -3,8 +3,8 @@ package io.basc.framework.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.orm.support.DefaultEntityMapper;
 
 public class ResultSetMapper extends DefaultEntityMapper {

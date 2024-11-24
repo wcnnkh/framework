@@ -2,6 +2,7 @@ package io.basc.framework.util.spi;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -27,7 +28,9 @@ import io.basc.framework.util.register.container.AtomicElementRegistration;
 import io.basc.framework.util.register.container.CollectionContainer;
 import io.basc.framework.util.register.container.ElementRegistration;
 import io.basc.framework.util.register.container.TreeSetContainer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 public class ServiceContainer<E> extends TreeSetContainer<E> implements ListenableServiceLoader<E> {
 	private final EventDispatcher<Elements<ChangeEvent<E>>> eventDispatcher = new EventDispatcher<>();
@@ -52,11 +55,14 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 	}
 
 	@RequiredArgsConstructor
-	private class Include extends LimitableRegistration implements Reloadable {
+	@Getter
+	@Setter
+	private class InternalInclude extends LimitableRegistration implements Include<E> {
 		private AtomicBoolean initialized = new AtomicBoolean();
 		private final Iterable<? extends E> iterable;
 		private volatile Elements<ElementRegistration<E>> registrations;
 		private final Reloadable reloadable;
+		private Registration registration;
 
 		@Override
 		public boolean cancel(BooleanSupplier cancel) {
@@ -67,6 +73,10 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 					if (registrations != null) {
 						deregisters(registrations.filter((e) -> !e.isCancelled()).map((e) -> e.getPayload()));
 						registrations = null;
+					}
+
+					if (registration != null) {
+						registration.cancel();
 					}
 				} finally {
 					lock.unlock();
@@ -109,9 +119,15 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 				this.registrations = this.registrations.concat(append).filter((e) -> !e.isCancelled()).toList();
 			}
 		}
+
+		@Override
+		public Iterator<E> iterator() {
+			return registrations == null ? Collections.emptyIterator()
+					: registrations.filter((e) -> !e.isCancelled()).map((e) -> e.getPayload()).iterator();
+		}
 	}
 
-	private CollectionContainer<Include, Collection<ElementRegistration<Include>>> includes = new CollectionContainer<>(
+	private CollectionContainer<Include<E>, Collection<ElementRegistration<Include<E>>>> includes = new CollectionContainer<>(
 			LinkedHashSet::new);
 
 	protected boolean equals(E left, E right) {
@@ -164,17 +180,17 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 	}
 
 	@Override
-	public Registration registers(Iterable<? extends E> elements) throws RegistrationException {
+	public Include<E> registers(Iterable<? extends E> elements) throws RegistrationException {
+		Reloadable reloadable = null;
 		if (elements instanceof Reloadable) {
-			Reloadable reloadable = (Reloadable) elements;
-			Include include = new Include(elements, reloadable);
-
-			Registration registration = includes.register(include);
-			// 初始化一下
-			include.reload(false);
-			return registration.and(include);
+			reloadable = (Reloadable) elements;
 		}
-		return super.registers(elements);
+		InternalInclude include = new InternalInclude(elements, reloadable);
+		Registration registration = includes.register(include);
+		// 初始化一下
+		include.reload(false);
+		include.setRegistration(registration);
+		return include;
 	}
 
 	@Override

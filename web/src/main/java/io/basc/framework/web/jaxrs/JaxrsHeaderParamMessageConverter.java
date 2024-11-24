@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import javax.ws.rs.HeaderParam;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.util.StringUtils;

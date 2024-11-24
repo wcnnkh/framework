@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
@@ -17,8 +16,8 @@ import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.BufferProcessor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import lombok.NonNull;
 
 /**
  * 需要encodeKey和decoderKey的为非对称加解密
@@ -30,18 +29,16 @@ public class CryptoCodec extends SecurityCodec implements Cloneable {
 	private final CipherFactory encoder;
 	private final CipherFactory decoder;
 
-	public CryptoCodec(String transformation, Object key, @Nullable Object params,
-			@Nullable SecureRandom secureRandom) {
-		this(transformation, key, key, params, secureRandom);
+	public CryptoCodec(@NonNull String transformation, @NonNull Object key, Object params) {
+		this(transformation, key, key, params);
 	}
 
-	public CryptoCodec(String transformation, @Nullable Object encoderKey, @Nullable Object decoderKey,
-			@Nullable Object params, @Nullable SecureRandom secureRandom) {
+	public CryptoCodec(@NonNull String transformation, Object encoderKey, Object decoderKey, Object params) {
 		this(encoderKey == null ? null : new CipherFactory(transformation, Cipher.ENCRYPT_MODE, encoderKey, params),
 				decoderKey == null ? null : new CipherFactory(transformation, Cipher.DECRYPT_MODE, decoderKey, params));
 	}
 
-	public CryptoCodec(@Nullable CipherFactory encoder, @Nullable CipherFactory decoder) {
+	public CryptoCodec(CipherFactory encoder, CipherFactory decoder) {
 		this.encoder = encoder;
 		this.decoder = decoder;
 	}
@@ -77,12 +74,10 @@ public class CryptoCodec extends SecurityCodec implements Cloneable {
 		return new SecretKeySpec(secretKey, algorithm);
 	}
 
-	@Nullable
 	public final CipherFactory getEncoder() {
 		return encoder;
 	}
 
-	@Nullable
 	public final CipherFactory getDecoder() {
 		return decoder;
 	}

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import io.basc.framework.util.collect.CollectionUtils;
+
 public final class MultiEnumeration<E> implements Enumeration<E> {
 	private Iterator<Enumeration<E>> iterator;
 	private Enumeration<? extends E> enumeration;

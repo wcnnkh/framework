@@ -11,7 +11,6 @@ import java.util.TimeZone;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -27,12 +26,11 @@ public class DateCodec implements Codec<Date, String> {
 	private final DateFormatSymbols dateFormatSymbols;
 	private final String pattern;
 
-	public DateCodec(@Nullable String pattern) {
+	public DateCodec(String pattern) {
 		this(pattern, null, null, null);
 	}
 
-	public DateCodec(@Nullable String pattern, @Nullable TimeZone timeZone, @Nullable Locale locale,
-			@Nullable DateFormatSymbols dateFormatSymbols) {
+	public DateCodec(String pattern, TimeZone timeZone, Locale locale, DateFormatSymbols dateFormatSymbols) {
 		this.locale = locale;
 		this.timeZone = timeZone;
 		this.dateFormatSymbols = dateFormatSymbols;

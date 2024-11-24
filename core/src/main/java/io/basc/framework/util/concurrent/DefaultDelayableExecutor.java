@@ -1,9 +1,5 @@
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LogManager;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -11,9 +7,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.sequences.StringSequence;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
+
 public class DefaultDelayableExecutor implements DelayableExecutor {
 	private static Logger logger = LogManager.getLogger(DefaultDelayableExecutor.class);
 	private final ScheduledExecutorService scheduledExecutorService;
+	private StringSequence taskIdSequence = UUIDSequences.getInstance();
 
 	public DefaultDelayableExecutor() {
 		this(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
@@ -25,7 +27,7 @@ public class DefaultDelayableExecutor implements DelayableExecutor {
 
 	@Override
 	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit delayTimeUnit) {
-		final String taskId = XUtils.getUUID();
+		final String taskId = taskIdSequence.next();
 		Callable<V> use = new Callable<V>() {
 
 			@Override

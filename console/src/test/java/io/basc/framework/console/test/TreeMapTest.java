@@ -6,8 +6,8 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 
 public class TreeMapTest {
 	@Test

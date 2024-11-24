@@ -1,9 +1,9 @@
 package io.basc.framework.transform;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.execution.param.Arg;
-import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.execution.param.Arg;
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.util.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

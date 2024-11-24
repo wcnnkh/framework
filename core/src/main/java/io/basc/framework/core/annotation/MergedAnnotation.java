@@ -29,7 +29,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.lang.Nullable;
 
 /**
  * A single merged annotation returned from a {@link MergedAnnotations}
@@ -140,7 +139,7 @@ public interface MergedAnnotation<A extends Annotation> {
 	 * 
 	 * @return the source, or {@code null}
 	 */
-	@Nullable
+	
 	Object getSource();
 
 	/**
@@ -153,7 +152,7 @@ public interface MergedAnnotation<A extends Annotation> {
 	 * @return the meta-annotation source or {@code null}
 	 * @see #getRoot()
 	 */
-	@Nullable
+	
 	MergedAnnotation<?> getMetaSource();
 
 	/**
@@ -434,7 +433,7 @@ public interface MergedAnnotation<A extends Annotation> {
 		return from(null, annotation);
 	}
 
-	static <A extends Annotation> MergedAnnotation<A> from(@Nullable Object source, A annotation) {
+	static <A extends Annotation> MergedAnnotation<A> from( Object source, A annotation) {
 		return TypeMappedAnnotation.from(source, annotation);
 	}
 
@@ -442,19 +441,19 @@ public interface MergedAnnotation<A extends Annotation> {
 		return of(null, annotationType, null);
 	}
 
-	static <A extends Annotation> MergedAnnotation<A> of(Class<A> annotationType, @Nullable Map<String, ?> attributes) {
+	static <A extends Annotation> MergedAnnotation<A> of(Class<A> annotationType,  Map<String, ?> attributes) {
 
 		return of(null, annotationType, attributes);
 	}
 
-	static <A extends Annotation> MergedAnnotation<A> of(@Nullable AnnotatedElement source, Class<A> annotationType,
-			@Nullable Map<String, ?> attributes) {
+	static <A extends Annotation> MergedAnnotation<A> of( AnnotatedElement source, Class<A> annotationType,
+			 Map<String, ?> attributes) {
 
 		return of(null, source, annotationType, attributes);
 	}
 
-	static <A extends Annotation> MergedAnnotation<A> of(@Nullable ClassLoader classLoader, @Nullable Object source,
-			Class<A> annotationType, @Nullable Map<String, ?> attributes) {
+	static <A extends Annotation> MergedAnnotation<A> of( ClassLoader classLoader,  Object source,
+			Class<A> annotationType,  Map<String, ?> attributes) {
 
 		return TypeMappedAnnotation.of(classLoader, source, annotationType, attributes);
 	}

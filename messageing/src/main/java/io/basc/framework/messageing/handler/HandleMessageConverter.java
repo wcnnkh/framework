@@ -1,6 +1,6 @@
 package io.basc.framework.messageing.handler;
 
-import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.messageing.Message;
 

@@ -1,9 +1,9 @@
 package io.basc.framework.jxl;
 
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.excel.SheetColumn;
 import io.basc.framework.excel.SheetContext;
 import io.basc.framework.excel.SheetRow;
-import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.SimpleItem;
 import lombok.Getter;

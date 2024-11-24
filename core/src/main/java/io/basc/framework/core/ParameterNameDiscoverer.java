@@ -19,8 +19,6 @@ package io.basc.framework.core;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * Interface to discover parameter names for methods and constructors.
  *
@@ -48,7 +46,7 @@ public interface ParameterNameDiscoverer {
 	 * @return an array of parameter names if the names can be resolved, or
 	 *         {@code null} if they cannot
 	 */
-	@Nullable
+	
 	String[] getParameterNames(Method method);
 
 	/**
@@ -64,7 +62,7 @@ public interface ParameterNameDiscoverer {
 	 * @return an array of parameter names if the names can be resolved, or
 	 *         {@code null} if they cannot
 	 */
-	@Nullable
+	
 	String[] getParameterNames(Constructor<?> ctor);
 
 }

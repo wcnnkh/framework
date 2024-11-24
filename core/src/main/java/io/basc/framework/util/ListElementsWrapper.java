@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.collect.ListWrapper;
 
 public interface ListElementsWrapper<E, W extends List<E>> extends ListWrapper<E, W>, CollectionElementsWrapper<E, W> {

@@ -4,7 +4,6 @@ import org.objectweb.asm.Opcodes;
 
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.lang.Nullable;
 
 /**
  * {@link MethodMetadata} created from a
@@ -85,7 +84,7 @@ final class SimpleMethodMetadata implements MethodMetadata {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals( Object obj) {
 		return ((this == obj)
 				|| ((obj instanceof SimpleMethodMetadata) && this.source.equals(((SimpleMethodMetadata) obj).source)));
 	}

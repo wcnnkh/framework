@@ -7,11 +7,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.ConvertiblePair;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.config.ConditionalConversionService;
-import io.basc.framework.convert.lang.AbstractConversionService;
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ConvertiblePair;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.lang.AbstractConversionService;
 import io.basc.framework.dom.DomUtils;
 
 public class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {

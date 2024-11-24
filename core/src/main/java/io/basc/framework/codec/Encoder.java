@@ -5,10 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.check.Validator;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.function.Processor;
 
 @FunctionalInterface
@@ -28,7 +27,6 @@ public interface Encoder<D, E> extends Validator<D, E> {
 		return sources.stream().map((e) -> encode(e)).collect(Collectors.toList());
 	}
 
-	@Nullable
 	@SuppressWarnings("unchecked")
 	default E[] encodeAll(D... sources) throws EncodeException {
 		return toEncodeProcessor().processAll(sources);

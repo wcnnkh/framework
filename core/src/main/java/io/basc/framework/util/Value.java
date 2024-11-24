@@ -10,8 +10,6 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
 	static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);
 	static final BigDecimal DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE);
@@ -135,7 +133,6 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	Number getAsNumber();
 
-	@Nullable
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
 		Object v = null;

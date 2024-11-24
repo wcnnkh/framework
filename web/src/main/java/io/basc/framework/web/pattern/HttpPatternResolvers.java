@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.env.SystemProperties;
+import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.text.placeholder.PlaceholderFormat;
 import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.register.Registration;

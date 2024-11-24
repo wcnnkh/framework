@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.w3c.dom.Document;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.dom.DocumentTemplate;
 
 public class XmlTemplate extends DocumentTemplate {

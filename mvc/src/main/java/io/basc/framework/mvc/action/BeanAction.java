@@ -8,8 +8,8 @@ import java.util.function.Supplier;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.beans.factory.support.InstanceIterable;
-import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.function.SingletonSupplier;
+import io.basc.framework.util.reflect.MethodInvoker;
 import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public class BeanAction extends AbstractAction {

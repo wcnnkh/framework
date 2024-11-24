@@ -1,39 +1,120 @@
 package io.basc.framework.util.spi;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
+import lombok.RequiredArgsConstructor;
 
 public class ConfigurableServices<S> extends Services<S> implements Configurable {
-	private volatile Registration configureRegistration;
+	@RequiredArgsConstructor
+	private final class Configuration implements Configured<S>, IncludeWrapper<S, Include<S>> {
+		private final Receipt receipt;
+		private final ServiceLoaderDiscovery serviceLoaderDiscovery;
+		private final Include<S> source;
+
+		@Override
+		public boolean cancel() {
+			Lock lock = getReadWriteLock().writeLock();
+			lock.lock();
+			try {
+				if (discoveryMap == null) {
+					return false;
+				}
+
+				if (discoveryMap.remove(serviceLoaderDiscovery) != null) {
+					return IncludeWrapper.super.cancel();
+				}
+				return false;
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		@Override
+		public Throwable cause() {
+			return receipt.cause();
+		}
+
+		@Override
+		public Include<S> getSource() {
+			return source;
+		}
+
+		@Override
+		public boolean isCancelled() {
+			Lock lock = getReadWriteLock().readLock();
+			lock.lock();
+			try {
+				return discoveryMap == null ? false : discoveryMap.containsKey(serviceLoaderDiscovery);
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		@Override
+		public boolean isDone() {
+			return receipt.isDone();
+		}
+
+		@Override
+		public boolean isSuccess() {
+			return receipt.isSuccess();
+		}
+	}
+
+	private volatile Map<ServiceLoaderDiscovery, Include<S>> discoveryMap;
 	private volatile Class<S> serviceClass;
 
 	@Override
 	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
-		synchronized (this) {
+		return doConfigure(discovery, true);
+	}
+
+	public Configured<S> doConfigure(ServiceLoaderDiscovery discovery, boolean reloadable) {
+		Lock lock = getReadWriteLock().writeLock();
+		lock.lock();
+		try {
 			if (serviceClass == null) {
-				return Receipt.FAILURE;
+				return Configured.failure();
 			}
 
 			ServiceLoader<S> serviceLoader = discovery.getServiceLoader(serviceClass);
 			if (serviceLoader == null) {
-				return Receipt.FAILURE;
+				return Configured.failure();
 			}
 
-			if (configureRegistration != null) {
-				configureRegistration.cancel();
-			}
-
-			configureRegistration = registers(serviceLoader);
-			return Receipt.SUCCESS;
+			return doConfigure(discovery, serviceLoader, reloadable);
+		} finally {
+			lock.unlock();
 		}
 	}
 
+	private Configuration doConfigure(ServiceLoaderDiscovery discovery, ServiceLoader<S> serviceLoader,
+			boolean reloadable) {
+		if (discoveryMap == null) {
+			discoveryMap = new HashMap<>(2, 1);
+		}
+
+		Include<S> include = discoveryMap.get(discovery);
+		if (include == null) {
+			include = registers(serviceLoader);
+			discoveryMap.put(discovery, include);
+		} else if (reloadable) {
+			include.reload();
+		}
+		return new Configuration(Receipt.SUCCESS, discovery, include);
+	}
+
 	public Class<S> getServiceClass() {
-		synchronized (this) {
+		Lock lock = getReadWriteLock().readLock();
+		lock.lock();
+		try {
 			return serviceClass;
+		} finally {
+			lock.unlock();
 		}
 	}
 

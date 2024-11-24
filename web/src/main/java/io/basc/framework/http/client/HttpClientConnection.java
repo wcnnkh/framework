@@ -2,7 +2,7 @@ package io.basc.framework.http.client;
 
 import java.net.URI;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpResponseEntity;
 
 public class HttpClientConnection extends AbstractHttpConnection {

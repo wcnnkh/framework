@@ -3,7 +3,7 @@ package io.basc.framework.mapper.io;
 import java.io.Flushable;
 import java.io.IOException;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 
 public interface Exporter extends Flushable {
 	default void doWrite(Object data) throws IOException {

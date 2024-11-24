@@ -5,22 +5,18 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
 
-import io.basc.framework.lang.Nullable;
-
 public class SHA1WithRSASigner extends AsymmetricSigner {
 	public static final String SHA1_WITH_RSA = "SHA1WithRSA";
 
-	public SHA1WithRSASigner(@Nullable PrivateKey privateKey, @Nullable PublicKey publicKey) {
+	public SHA1WithRSASigner(PrivateKey privateKey, PublicKey publicKey) {
 		this(privateKey, null, publicKey);
 	}
 
-	public SHA1WithRSASigner(@Nullable PrivateKey privateKey, @Nullable SecureRandom secureRandom,
-			@Nullable PublicKey publicKey) {
+	public SHA1WithRSASigner(PrivateKey privateKey, SecureRandom secureRandom, PublicKey publicKey) {
 		super(SHA1_WITH_RSA, privateKey, secureRandom, publicKey);
 	}
 
-	public SHA1WithRSASigner(@Nullable PrivateKey privateKey, @Nullable SecureRandom secureRandom,
-			@Nullable Certificate certificate) {
+	public SHA1WithRSASigner(PrivateKey privateKey, SecureRandom secureRandom, Certificate certificate) {
 		super(SHA1_WITH_RSA, privateKey, secureRandom, certificate);
 	}
 

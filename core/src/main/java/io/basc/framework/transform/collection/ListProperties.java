@@ -3,7 +3,7 @@ package io.basc.framework.transform.collection;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.Elements;

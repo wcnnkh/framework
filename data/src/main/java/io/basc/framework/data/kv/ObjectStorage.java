@@ -1,6 +1,6 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 
 public interface ObjectStorage<K> extends Storage<K, Object>, ObjectOperations<K> {
 

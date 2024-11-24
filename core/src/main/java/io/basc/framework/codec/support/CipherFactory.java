@@ -15,13 +15,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import io.basc.framework.codec.CodecException;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
+import lombok.NonNull;
 
 public class CipherFactory implements Cloneable {
 	private final ThreadLocal<Cipher> threadLocal;
@@ -32,17 +32,17 @@ public class CipherFactory implements Cloneable {
 	private final SecureRandom secureRandom;
 	private final Object provider;
 
-	public CipherFactory(String transformation, int opmode, Object key, @Nullable Object params) {
+	public CipherFactory(@NonNull String transformation, int opmode, @NonNull Object key, Object params) {
 		this(transformation, null, opmode, key, params, null);
 	}
 
-	public CipherFactory(String transformation, @Nullable Object provider, int opmode, Object key,
-			@Nullable Object params) {
+	public CipherFactory(@NonNull String transformation, Object provider, int opmode, @NonNull Object key,
+			Object params) {
 		this(transformation, provider, opmode, key, params, null);
 	}
 
-	public CipherFactory(String transformation, @Nullable Object provider, int opmode, Object key,
-			@Nullable Object params, @Nullable SecureRandom secureRandom) {
+	public CipherFactory(@NonNull String transformation, Object provider, int opmode, @NonNull Object key,
+			Object params, SecureRandom secureRandom) {
 		Assert.requiredArgument(StringUtils.hasText(transformation), "transformation");
 		Assert.requiredArgument(key != null, "key");
 		this.threadLocal = new NamedThreadLocal<Cipher>(transformation);

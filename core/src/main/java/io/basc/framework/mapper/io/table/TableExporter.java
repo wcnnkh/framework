@@ -2,7 +2,7 @@ package io.basc.framework.mapper.io.table;
 
 import java.io.IOException;
 
-import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.util.Indexed;
 
 public interface TableExporter extends TableImporter, RowExporter {

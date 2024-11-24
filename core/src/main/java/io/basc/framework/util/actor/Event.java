@@ -3,13 +3,14 @@ package io.basc.framework.util.actor;
 import java.util.EventObject;
 
 import io.basc.framework.util.TimeUtils;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
 /**
  * 一个基础事件的定义
+ * 
  * @author shuchaowen
  *
  */
@@ -37,7 +38,7 @@ public class Event extends EventObject {
 	 * @param source
 	 */
 	public Event(@NonNull Object source) {
-		this(source, XUtils.getUUID(), System.currentTimeMillis());
+		this(source, UUIDSequences.getInstance().next(), System.currentTimeMillis());
 	}
 
 	/**

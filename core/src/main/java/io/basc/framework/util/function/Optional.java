@@ -6,8 +6,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
 @FunctionalInterface
 public interface Optional<T> extends Supplier<T> {
 
@@ -16,7 +14,7 @@ public interface Optional<T> extends Supplier<T> {
 		return (Optional<U>) DefaultOptional.EMPTY;
 	}
 
-	public static <U> Optional<U> of(@Nullable U value) {
+	public static <U> Optional<U> of(U value) {
 		if (value == null) {
 			return empty();
 		}

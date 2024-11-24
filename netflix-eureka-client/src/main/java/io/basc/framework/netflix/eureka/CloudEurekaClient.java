@@ -2,10 +2,10 @@ package io.basc.framework.netflix.eureka;
 
 import io.basc.framework.boot.ApplicationEvent;
 import io.basc.framework.cloud.event.HeartbeatEvent;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.util.actor.EventsDispatcher;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.reflect.ReflectionUtils;
 import io.basc.framework.util.logging.LogManager;
 
 import java.lang.reflect.Field;

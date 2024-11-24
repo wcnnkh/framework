@@ -4,8 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
+import lombok.NonNull;
 
 public final class Annotations {
 	public static final Annotation[] EMPTY = new Annotation[0];
@@ -19,8 +19,8 @@ public final class Annotations {
 	 * @param annotatedElements
 	 * @return
 	 */
-	@Nullable
-	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotatedElement... annotatedElements) {
+	public static <T extends Annotation> T getAnnotation(@NonNull Class<T> type,
+			AnnotatedElement... annotatedElements) {
 		T old = null;
 		for (AnnotatedElement annotatedElement : annotatedElements) {
 			T a = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, type);
@@ -37,21 +37,5 @@ public final class Annotations {
 			return defaultSupplier == null ? null : defaultSupplier.get();
 		}
 		return charsetName.value();
-	}
-
-	public static Boolean isNullable(AnnotatedElement annotatedElement) {
-		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Nullable.class);
-		if (nullable == null) {
-			return false;
-		}
-		return nullable.value();
-	}
-
-	public static Boolean isNullable(AnnotatedElement annotatedElement, Supplier<Boolean> defaultSupplier) {
-		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Nullable.class);
-		if (nullable == null) {
-			return defaultSupplier == null ? null : defaultSupplier.get();
-		}
-		return nullable.value();
 	}
 }

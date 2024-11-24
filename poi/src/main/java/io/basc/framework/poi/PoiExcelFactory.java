@@ -14,7 +14,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.excel.Excel;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.excel.ExcelFactory;
@@ -29,6 +28,7 @@ import io.basc.framework.poi.hssf.HssfRecordImporter;
 import io.basc.framework.poi.ss.PoiExcel;
 import io.basc.framework.poi.xssf.XssfRecordImporter;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public class PoiExcelFactory implements ExcelFactory {
 

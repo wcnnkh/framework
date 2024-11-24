@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import lombok.NonNull;
 
 public interface MergedAnnotations extends Elements<MergedAnnotation<Annotation>> {
 
@@ -40,19 +40,19 @@ public interface MergedAnnotations extends Elements<MergedAnnotation<Annotation>
 
 	<A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType);
 
-	<A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
-			@Nullable Predicate<? super MergedAnnotation<A>> predicate);
+	<A extends Annotation> MergedAnnotation<A> get(@NonNull Class<A> annotationType,
+			Predicate<? super MergedAnnotation<A>> predicate);
 
-	<A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
-			@Nullable Predicate<? super MergedAnnotation<A>> predicate, @Nullable MergedAnnotationSelector<A> selector);
+	<A extends Annotation> MergedAnnotation<A> get(@NonNull Class<A> annotationType,
+			Predicate<? super MergedAnnotation<A>> predicate, MergedAnnotationSelector<A> selector);
 
-	<A extends Annotation> MergedAnnotation<A> get(String annotationType);
+	<A extends Annotation> MergedAnnotation<A> get(@NonNull String annotationType);
+
+	<A extends Annotation> MergedAnnotation<A> get(@NonNull String annotationType,
+			Predicate<? super MergedAnnotation<A>> predicate);
 
 	<A extends Annotation> MergedAnnotation<A> get(String annotationType,
-			@Nullable Predicate<? super MergedAnnotation<A>> predicate);
-
-	<A extends Annotation> MergedAnnotation<A> get(String annotationType,
-			@Nullable Predicate<? super MergedAnnotation<A>> predicate, @Nullable MergedAnnotationSelector<A> selector);
+			Predicate<? super MergedAnnotation<A>> predicate, MergedAnnotationSelector<A> selector);
 
 	<A extends Annotation> Stream<MergedAnnotation<A>> stream(Class<A> annotationType);
 

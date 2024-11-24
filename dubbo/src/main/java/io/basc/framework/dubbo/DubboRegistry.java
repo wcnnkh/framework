@@ -27,10 +27,9 @@ import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.xml.XmlBeanUtils;
-import io.basc.framework.core.reflect.ReflectionApi;
+import io.basc.framework.core.env.Environment;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.scan.TypeScanner;
 import io.basc.framework.lang.Nullable;
@@ -40,6 +39,7 @@ import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.mapper.stereotype.ObjectMapping;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.reflect.ReflectionApi;
 import io.basc.framework.util.logging.LogManager;
 
 public class DubboRegistry {

@@ -24,7 +24,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.function.IntPredicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.function.Processor;
 
 /**
@@ -471,9 +470,7 @@ public abstract class NumberUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	@Nullable
-	public static String extractNumberic(int radix, boolean unsigned, @Nullable CharSequence source,
-			@Nullable IntPredicate filter) {
+	public static String extractNumberic(int radix, boolean unsigned, CharSequence source, IntPredicate filter) {
 		if (StringUtils.isEmpty(source)) {
 			return null;
 		}
@@ -529,8 +526,7 @@ public abstract class NumberUtils {
 				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
 	}
 
-	public static boolean isNumeric(int radix, boolean unsigned, @Nullable CharSequence source,
-			@Nullable IntPredicate filter) {
+	public static boolean isNumeric(int radix, boolean unsigned, CharSequence source, IntPredicate filter) {
 		if (StringUtils.isEmpty(source)) {
 			return false;
 		}

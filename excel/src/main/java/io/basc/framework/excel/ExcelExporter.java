@@ -2,7 +2,7 @@ package io.basc.framework.excel;
 
 import java.io.IOException;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.mapper.io.Exporter;
 
 public interface ExcelExporter extends ExcelImporter, Exporter {

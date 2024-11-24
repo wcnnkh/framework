@@ -2,7 +2,7 @@ package io.basc.framework.data.kv;
 
 import java.util.Collection;
 
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 
 public interface KeyOperations<K> {
 	boolean exists(K key);

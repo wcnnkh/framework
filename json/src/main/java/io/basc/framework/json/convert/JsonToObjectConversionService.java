@@ -1,9 +1,9 @@
 package io.basc.framework.json.convert;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.annotation.JSON;
-import io.basc.framework.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.annotation.JSON;
+import io.basc.framework.core.convert.lang.AbstractConversionService;
 
 public class JsonToObjectConversionService extends AbstractConversionService {
 

@@ -1,0 +1,60 @@
+package io.basc.framework.core.convert.support;
+
+import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.config.ConfigurableConversionService;
+import io.basc.framework.core.convert.lang.DateFormatConversionService;
+import io.basc.framework.core.convert.lang.StringConversionService;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
+
+/**
+ * 全局的ConversionService
+ * 
+ * @author shuchaowen
+ *
+ */
+public final class DefaultConversionService extends ConfigurableConversionService {
+
+	private static volatile DefaultConversionService instance;
+
+	public static DefaultConversionService getInstance() {
+		if (instance == null) {
+			synchronized (DefaultConversionService.class) {
+				if (instance == null) {
+					instance = new DefaultConversionService();
+					instance.doNativeConfigure();
+				}
+			}
+		}
+		return instance;
+	}
+
+	private DefaultConversionService() {
+		register(new ArrayToArrayConversionService(this));
+		register(new ArrayToCollectionConversionService(this));
+
+		register(new ByteBufferConversionService(this));
+
+		register(new CollectionToArrayConversionService(this));
+		register(new CollectionToCollectionConversionService(this));
+		register(new CollectionToObjectConversionService(this));
+
+		register(new DateFormatConversionService());
+		register(new LocalDateTimeConversion());
+
+		register(new MapToMapConversionService(this));
+
+		register(new ValueConversionService());
+
+		register(StringConversionService.DEFAULT);
+
+		register(new ObjectToArrayConversionService(this));
+		register(new ObjectToCollectionConversionService(this));
+
+		// 并非所有的环境都支持sql类型
+		if (ClassUtils.isPresent("io.basc.framework.convert.lang.SqlDateConversionService", null)) {
+			register((ConversionService) ReflectionUtils
+					.newInstance(ClassUtils.getClass("io.basc.framework.convert.lang.SqlDateConversionService", null)));
+		}
+	}
+}

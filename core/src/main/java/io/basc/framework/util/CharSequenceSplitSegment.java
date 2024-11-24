@@ -2,18 +2,15 @@ package io.basc.framework.util;
 
 import java.util.function.Function;
 
-import io.basc.framework.lang.Nullable;
-
 public class CharSequenceSplitSegment implements CharSequence {
 	private final CharSequence source;
-	@Nullable
 	private final CharSequence separator;
 
 	public CharSequenceSplitSegment(CharSequence source) {
 		this(source, null);
 	}
 
-	public CharSequenceSplitSegment(CharSequence source, @Nullable CharSequence separator) {
+	public CharSequenceSplitSegment(CharSequence source, CharSequence separator) {
 		Assert.requiredArgument(source != null, "source");
 		this.source = source;
 		this.separator = separator;
@@ -32,7 +29,6 @@ public class CharSequenceSplitSegment implements CharSequence {
 	 * 
 	 * @return
 	 */
-	@Nullable
 	public CharSequence getSeparator() {
 		return separator;
 	}

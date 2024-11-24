@@ -3,7 +3,7 @@ package io.basc.framework.context;
 import io.basc.framework.beans.factory.HierarchicalBeanFactory;
 import io.basc.framework.beans.factory.ListableBeanFactory;
 import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
-import io.basc.framework.env.EnvironmentCapable;
+import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.lang.Nullable;

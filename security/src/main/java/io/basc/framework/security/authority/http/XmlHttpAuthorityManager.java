@@ -6,9 +6,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.env.Environment;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;

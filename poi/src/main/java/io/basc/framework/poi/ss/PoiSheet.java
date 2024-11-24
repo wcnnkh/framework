@@ -7,11 +7,11 @@ import java.util.Iterator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.excel.Sheet;
 import io.basc.framework.excel.SheetRow;
 import io.basc.framework.excel.WritableSheet;
-import io.basc.framework.execution.param.Parameter;
 import io.basc.framework.mapper.io.template.AbstractRecordExporter;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;

@@ -5,7 +5,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.lang.Nullable;

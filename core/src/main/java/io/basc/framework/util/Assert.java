@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import io.basc.framework.io.FilenameUtils;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.collect.CollectionUtils;
 
 /**
  * Assertion utility class that assists in validating arguments. Useful for
@@ -146,7 +146,7 @@ public abstract class Assert {
 	 * @param value
 	 * @return
 	 */
-	public static <T> T requiredArgument(boolean expression, String name, @Nullable T value) {
+	public static <T> T requiredArgument(boolean expression, String name, T value) {
 		isTrue(expression, "[Assertion failed] - [" + name + "] argument is required");
 		return value;
 	}

@@ -1,7 +1,5 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.lang.Nullable;
-
 public class DecoratedConsumeProcessor<S, E extends Throwable> implements ConsumeProcessor<S, E> {
 	private DecoratedConsumeProcessor<S, E> beforeProcessor;
 	private DecoratedConsumeProcessor<S, E> afterProcessor;
@@ -11,7 +9,7 @@ public class DecoratedConsumeProcessor<S, E extends Throwable> implements Consum
 		this(null);
 	}
 
-	public DecoratedConsumeProcessor(@Nullable ConsumeProcessor<? super S, ? extends E> processor) {
+	public DecoratedConsumeProcessor(ConsumeProcessor<? super S, ? extends E> processor) {
 		this.processor = processor;
 	}
 

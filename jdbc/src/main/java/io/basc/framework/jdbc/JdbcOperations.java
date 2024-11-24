@@ -1,6 +1,6 @@
 package io.basc.framework.jdbc;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.orm.EntityMapper;
 

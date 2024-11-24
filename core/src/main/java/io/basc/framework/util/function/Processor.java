@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 /**
@@ -143,7 +142,6 @@ public interface Processor<S, T, E extends Throwable> {
 		return processAll(sources.iterator(), new LinkedHashSet<>(sources.size()));
 	}
 
-	@Nullable
 	@SuppressWarnings("unchecked")
 	default T[] processAll(S... sources) throws E {
 		if (sources == null) {

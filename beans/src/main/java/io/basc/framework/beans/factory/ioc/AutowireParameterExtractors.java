@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory.ioc;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.execution.param.ParameterExtractors;
+import io.basc.framework.core.execution.param.ParameterExtractors;
 
 public class AutowireParameterExtractors extends ParameterExtractors<BeanFactory>
 		implements AutowireParameterExtractor {

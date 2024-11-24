@@ -2,7 +2,6 @@ package io.basc.framework.util.function;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.XUtils;
 
 public class StandardCloseable<E extends Throwable, C extends Closeable<E>> implements Closeable<E> {
@@ -13,7 +12,7 @@ public class StandardCloseable<E extends Throwable, C extends Closeable<E>> impl
 		this(null);
 	}
 
-	public StandardCloseable(@Nullable RunnableProcessor<? extends E> closeHandler) {
+	public StandardCloseable(RunnableProcessor<? extends E> closeHandler) {
 		this.closeHandler = closeHandler;
 	}
 

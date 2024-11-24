@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.convert.lang.ValueFactory;
+import io.basc.framework.core.convert.lang.ValueFactory;
 
 public interface Json<K> extends ValueFactory<K>, JsonAware {
 	int size();

@@ -23,7 +23,6 @@ import java.util.List;
 import io.basc.framework.core.DecoratingProxy;
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.lang.Nullable;
 
 public class AnnotationAwareOrderComparator extends OrderComparator {
 
@@ -33,7 +32,6 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	public static final AnnotationAwareOrderComparator INSTANCE = new AnnotationAwareOrderComparator();
 
 	@Override
-	@Nullable
 	protected Integer findOrder(Object obj) {
 		Integer order = super.findOrder(obj);
 		if (order != null) {
@@ -42,7 +40,6 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 		return findOrderFromAnnotation(obj);
 	}
 
-	@Nullable
 	private Integer findOrderFromAnnotation(Object obj) {
 		AnnotatedElement element = (obj instanceof AnnotatedElement ? (AnnotatedElement) obj : obj.getClass());
 		MergedAnnotations annotations = MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY);
@@ -54,7 +51,6 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	}
 
 	@Override
-	@Nullable
 	public Integer getPriority(Object obj) {
 		if (obj instanceof Class) {
 			return OrderUtils.getPriority((Class<?>) obj);

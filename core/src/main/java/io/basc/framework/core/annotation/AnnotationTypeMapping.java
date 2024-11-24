@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import io.basc.framework.core.annotation.AnnotationTypeMapping.MirrorSets.MirrorSet;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
@@ -46,7 +45,7 @@ final class AnnotationTypeMapping {
 
 	private static final MirrorSet[] EMPTY_MIRROR_SETS = new MirrorSet[0];
 
-	@Nullable
+	
 	private final AnnotationTypeMapping source;
 
 	private final AnnotationTypeMapping root;
@@ -57,7 +56,7 @@ final class AnnotationTypeMapping {
 
 	private final List<Class<? extends Annotation>> metaTypes;
 
-	@Nullable
+	
 	private final Annotation annotation;
 
 	private final AttributeMethods attributes;
@@ -78,8 +77,8 @@ final class AnnotationTypeMapping {
 
 	private final Set<Method> claimedAliases = new HashSet<>();
 
-	AnnotationTypeMapping(@Nullable AnnotationTypeMapping source, Class<? extends Annotation> annotationType,
-			@Nullable Annotation annotation, Set<Class<? extends Annotation>> visitedAnnotationTypes) {
+	AnnotationTypeMapping( AnnotationTypeMapping source, Class<? extends Annotation> annotationType,
+			 Annotation annotation, Set<Class<? extends Annotation>> visitedAnnotationTypes) {
 
 		this.source = source;
 		this.root = (source != null ? source.getRoot() : this);
@@ -100,7 +99,7 @@ final class AnnotationTypeMapping {
 		this.synthesizable = computeSynthesizableFlag(visitedAnnotationTypes);
 	}
 
-	private static <T> List<T> merge(@Nullable List<T> existing, T element) {
+	private static <T> List<T> merge( List<T> existing, T element) {
 		if (existing == null) {
 			return Collections.singletonList(element);
 		}
@@ -409,7 +408,7 @@ final class AnnotationTypeMapping {
 	 * 
 	 * @return the source of the mapping
 	 */
-	@Nullable
+	
 	AnnotationTypeMapping getSource() {
 		return this.source;
 	}
@@ -442,7 +441,7 @@ final class AnnotationTypeMapping {
 	 * 
 	 * @return the source annotation of the mapping
 	 */
-	@Nullable
+	
 	Annotation getAnnotation() {
 		return this.annotation;
 	}
@@ -494,7 +493,7 @@ final class AnnotationTypeMapping {
 	 *                            within the annotation will also be considered.
 	 * @return the mapped annotation value, or {@code null}
 	 */
-	@Nullable
+	
 	Object getMappedAnnotationValue(int attributeIndex, boolean metaAnnotationsOnly) {
 		int mappedIndex = this.annotationValueMappings[attributeIndex];
 		if (mappedIndex == -1) {
@@ -554,7 +553,7 @@ final class AnnotationTypeMapping {
 		return areEquivalent(attribute.getDefaultValue(), value, valueExtractor);
 	}
 
-	private static boolean areEquivalent(@Nullable Object value, @Nullable Object extractedValue,
+	private static boolean areEquivalent( Object value,  Object extractedValue,
 			ValueExtractor valueExtractor) {
 
 		if (ObjectUtils.equals(value, extractedValue)) {
@@ -588,7 +587,7 @@ final class AnnotationTypeMapping {
 		return value.getName().equals(extractedValue);
 	}
 
-	private static boolean areEquivalent(Annotation annotation, @Nullable Object extractedValue,
+	private static boolean areEquivalent(Annotation annotation,  Object extractedValue,
 			ValueExtractor valueExtractor) {
 
 		AttributeMethods attributes = AttributeMethods.forAnnotationType(annotation.annotationType());
@@ -657,12 +656,12 @@ final class AnnotationTypeMapping {
 			return this.mirrorSets[index];
 		}
 
-		@Nullable
+		
 		MirrorSet getAssigned(int attributeIndex) {
 			return this.assigned[attributeIndex];
 		}
 
-		int[] resolve(@Nullable Object source, @Nullable Object annotation, ValueExtractor valueExtractor) {
+		int[] resolve( Object source,  Object annotation, ValueExtractor valueExtractor) {
 			int[] result = new int[attributes.size()];
 			for (int i = 0; i < result.length; i++) {
 				result[i] = i;
@@ -697,7 +696,7 @@ final class AnnotationTypeMapping {
 				}
 			}
 
-			<A> int resolve(@Nullable Object source, @Nullable A annotation, ValueExtractor valueExtractor) {
+			<A> int resolve( Object source,  A annotation, ValueExtractor valueExtractor) {
 				int result = -1;
 				Object lastValue = null;
 				for (int i = 0; i < this.size; i++) {

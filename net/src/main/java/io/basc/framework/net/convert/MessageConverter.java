@@ -1,6 +1,6 @@
 package io.basc.framework.net.convert;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.net.MimeTypes;
 
 public interface MessageConverter extends MessageReader, MessageWriter {

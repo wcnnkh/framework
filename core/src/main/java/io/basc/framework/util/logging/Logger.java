@@ -3,7 +3,6 @@ package io.basc.framework.util.logging;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
 public interface Logger {
@@ -54,10 +53,7 @@ public interface Logger {
 		log(createRecord(CustomLevel.ERROR, e, msg, args));
 	}
 
-	@Nullable
-	default Level getLevel() {
-		return null;
-	}
+	Level getLevel();
 
 	String getName();
 
@@ -124,9 +120,7 @@ public interface Logger {
 
 	void log(LogRecord record);
 
-	default void setLevel(Level level) {
-		// 默认无需任何操作
-	}
+	void setLevel(Level level);
 
 	default void trace(String msg) {
 		log(createRecord(CustomLevel.TRACE, null, msg, ObjectUtils.EMPTY_ARRAY));

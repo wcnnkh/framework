@@ -3,8 +3,8 @@ package io.basc.framework.transform.factory.support;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.param.Parameters;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.observe.service.ObservableServiceLoader;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.PropertiesTransformer;
@@ -16,9 +16,9 @@ import io.basc.framework.transform.strategy.DefaultPropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.FilterablePropertiesTransformStrategy;
 import io.basc.framework.transform.strategy.filter.PropertiesTransformFilter;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.register.StandardRegistration;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class DefaultPropertiesTransformerFactory<E extends Throwable>
 		extends DefaultReversibleTransformerFactory<Object, E> implements PropertiesTransformerRegistry<E> {
@@ -32,7 +32,7 @@ public class DefaultPropertiesTransformerFactory<E extends Throwable>
 		}
 	}
 
-	private final String id = XUtils.getUUID();
+	private final String id = UUIDSequences.getInstance().next();
 	private TreeMap<Class<?>, PropertiesTransformer<?, ? extends E>> propertiesTransformerMap;
 
 	private final ObservableServiceLoader<PropertiesTransformFilter> propertiesTransformFilterRegistry = new ObservableServiceLoader<>();

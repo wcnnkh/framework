@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.protostuff.LinkedBuffer;

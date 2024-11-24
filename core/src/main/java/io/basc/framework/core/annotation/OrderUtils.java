@@ -20,7 +20,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 public abstract class OrderUtils {
@@ -38,23 +37,19 @@ public abstract class OrderUtils {
 		return (order != null ? order : defaultOrder);
 	}
 
-	@Nullable
-	public static Integer getOrder(Class<?> type, @Nullable Integer defaultOrder) {
+	public static Integer getOrder(Class<?> type, Integer defaultOrder) {
 		Integer order = getOrder(type);
 		return (order != null ? order : defaultOrder);
 	}
 
-	@Nullable
 	public static Integer getOrder(Class<?> type) {
 		return getOrder((AnnotatedElement) type);
 	}
 
-	@Nullable
 	public static Integer getOrder(AnnotatedElement element) {
 		return getOrderFromAnnotations(element, MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY));
 	}
 
-	@Nullable
 	static Integer getOrderFromAnnotations(AnnotatedElement element, MergedAnnotations annotations) {
 		if (!(element instanceof Class)) {
 			return findOrder(annotations);
@@ -68,7 +63,6 @@ public abstract class OrderUtils {
 		return result;
 	}
 
-	@Nullable
 	private static Integer findOrder(MergedAnnotations annotations) {
 		MergedAnnotation<Order> orderAnnotation = annotations.get(Order.class);
 		if (orderAnnotation.isPresent()) {
@@ -81,7 +75,6 @@ public abstract class OrderUtils {
 		return null;
 	}
 
-	@Nullable
 	public static Integer getPriority(Class<?> type) {
 		return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).get(JAVAX_PRIORITY_ANNOTATION)
 				.getValue(MergedAnnotation.VALUE, Integer.class).orElse(null);

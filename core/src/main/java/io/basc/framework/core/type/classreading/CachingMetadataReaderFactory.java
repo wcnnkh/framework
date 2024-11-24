@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.lang.Nullable;
 
 /**
  * Caching implementation of the {@link MetadataReaderFactory} interface,
@@ -23,7 +22,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 	public static final int DEFAULT_CACHE_LIMIT = 256;
 
 	/** MetadataReader cache: either local or shared at the ResourceLoader level. */
-	@Nullable
+	
 	private Map<Resource, MetadataReader> metadataReaderCache;
 
 	/**
@@ -41,7 +40,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 	 * 
 	 * @param classLoader the ClassLoader to use
 	 */
-	public CachingMetadataReaderFactory(@Nullable ClassLoader classLoader) {
+	public CachingMetadataReaderFactory( ClassLoader classLoader) {
 		super(classLoader);
 		setCacheLimit(DEFAULT_CACHE_LIMIT);
 	}
@@ -54,7 +53,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
 	 *                       ClassLoader to use)
 	 */
-	public CachingMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
+	public CachingMetadataReaderFactory( ResourceLoader resourceLoader) {
 		super(resourceLoader);
 		setCacheLimit(DEFAULT_CACHE_LIMIT);
 	}

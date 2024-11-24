@@ -1,7 +1,7 @@
 package io.basc.framework.transaction.aop;
 
-import io.basc.framework.execution.Function;
-import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.transaction.RollbackOnly;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;

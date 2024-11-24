@@ -22,10 +22,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
  * Provides a quick way to access the attribute methods of an {@link Annotation}
@@ -50,7 +49,7 @@ final class AttributeMethods {
 	};
 
 
-	@Nullable
+	
 	private final Class<? extends Annotation> annotationType;
 
 	private final Method[] attributeMethods;
@@ -62,7 +61,7 @@ final class AttributeMethods {
 	private final boolean hasNestedAnnotation;
 
 
-	private AttributeMethods(@Nullable Class<? extends Annotation> annotationType, Method[] attributeMethods) {
+	private AttributeMethods( Class<? extends Annotation> annotationType, Method[] attributeMethods) {
 		this.annotationType = annotationType;
 		this.attributeMethods = attributeMethods;
 		this.canThrowTypeNotPresentException = new boolean[attributeMethods.length];
@@ -145,7 +144,7 @@ final class AttributeMethods {
 	 * @param name the attribute name to find
 	 * @return the attribute method or {@code null}
 	 */
-	@Nullable
+	
 	Method get(String name) {
 		int index = indexOf(name);
 		return index != -1 ? this.attributeMethods[index] : null;
@@ -234,7 +233,7 @@ final class AttributeMethods {
 	 * @param annotationType the annotation type
 	 * @return the attribute methods for the annotation type
 	 */
-	static AttributeMethods forAnnotationType(@Nullable Class<? extends Annotation> annotationType) {
+	static AttributeMethods forAnnotationType( Class<? extends Annotation> annotationType) {
 		if (annotationType == null) {
 			return NONE;
 		}
@@ -268,7 +267,7 @@ final class AttributeMethods {
 	 * @param attribute the attribute to describe
 	 * @return a description of the attribute
 	 */
-	static String describe(@Nullable Method attribute) {
+	static String describe( Method attribute) {
 		if (attribute == null) {
 			return "(none)";
 		}
@@ -282,7 +281,7 @@ final class AttributeMethods {
 	 * @param attributeName the attribute name
 	 * @return a description of the attribute
 	 */
-	static String describe(@Nullable Class<?> annotationType, @Nullable String attributeName) {
+	static String describe( Class<?> annotationType,  String attributeName) {
 		if (attributeName == null) {
 			return "(none)";
 		}

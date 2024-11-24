@@ -18,7 +18,6 @@ package io.basc.framework.core;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
 /**
@@ -32,7 +31,7 @@ public final class MethodClassKey implements Comparable<MethodClassKey> {
 
 	private final Method method;
 
-	@Nullable
+	
 	private final Class<?> targetClass;
 
 	/**
@@ -42,13 +41,13 @@ public final class MethodClassKey implements Comparable<MethodClassKey> {
 	 * @param targetClass the target class that the method will be invoked on (may
 	 *                    be {@code null} if identical to the declaring class)
 	 */
-	public MethodClassKey(Method method, @Nullable Class<?> targetClass) {
+	public MethodClassKey(Method method,  Class<?> targetClass) {
 		this.method = method;
 		this.targetClass = targetClass;
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals( Object other) {
 		if (this == other) {
 			return true;
 		}

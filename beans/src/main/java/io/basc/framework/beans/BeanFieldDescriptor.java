@@ -6,18 +6,18 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.execution.Getter;
-import io.basc.framework.execution.MergedGetter;
-import io.basc.framework.execution.MergedSetter;
-import io.basc.framework.execution.Setter;
-import io.basc.framework.execution.reflect.ReflectionFieldGetter;
-import io.basc.framework.execution.reflect.ReflectionFieldSetter;
-import io.basc.framework.execution.reflect.ReflectionMethodGetter;
-import io.basc.framework.execution.reflect.ReflectionMethodSetter;
+import io.basc.framework.core.execution.Getter;
+import io.basc.framework.core.execution.MergedGetter;
+import io.basc.framework.core.execution.MergedSetter;
+import io.basc.framework.core.execution.Setter;
+import io.basc.framework.core.execution.reflect.ReflectionFieldGetter;
+import io.basc.framework.core.execution.reflect.ReflectionFieldSetter;
+import io.basc.framework.core.execution.reflect.ReflectionMethodGetter;
+import io.basc.framework.core.execution.reflect.ReflectionMethodSetter;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public final class BeanFieldDescriptor implements FieldDescriptor {
 	private final Class<?> beanClass;

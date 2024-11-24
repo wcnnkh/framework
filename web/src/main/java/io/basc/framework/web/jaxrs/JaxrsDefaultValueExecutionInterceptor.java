@@ -2,10 +2,10 @@ package io.basc.framework.web.jaxrs;
 
 import javax.ws.rs.DefaultValue;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.aop.support.DefaultValueExecutionInterceptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.Executor;
+import io.basc.framework.core.execution.aop.support.DefaultValueExecutionInterceptor;
 
 public class JaxrsDefaultValueExecutionInterceptor extends DefaultValueExecutionInterceptor {
 

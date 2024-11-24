@@ -3,9 +3,9 @@ package io.basc.framework.net.server.convert;
 import java.io.IOException;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ValueWrapper;
-import io.basc.framework.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;

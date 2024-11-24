@@ -8,8 +8,8 @@ import com.alibaba.fastjson.JSONValidator;
 import com.alibaba.fastjson.JSONValidator.Type;
 import com.alibaba.fastjson.parser.Feature;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Converter;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonObject;

@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.collect.MultiValueMap;
+import lombok.NonNull;
 
 /**
  * General utility methods for finding annotations, meta-annotations, and
@@ -157,7 +157,7 @@ public abstract class AnnotatedElementUtils {
 		return Collections.emptySet();
 	}
 
-	private static Set<String> getMetaAnnotationTypes(AnnotatedElement element, @Nullable Annotation annotation) {
+	private static Set<String> getMetaAnnotationTypes(@NonNull AnnotatedElement element, Annotation annotation) {
 		if (annotation == null) {
 			return Collections.emptySet();
 		}
@@ -268,7 +268,6 @@ public abstract class AnnotatedElementUtils {
 	 * @see #getMergedAnnotation(AnnotatedElement, Class)
 	 * @see #findMergedAnnotation(AnnotatedElement, Class)
 	 */
-	@Nullable
 	public static AnnotationAttributes getMergedAnnotationAttributes(AnnotatedElement element,
 			Class<? extends Annotation> annotationType) {
 		MergedAnnotation<?> mergedAnnotation = getAnnotations(element).get(annotationType, null,
@@ -301,8 +300,8 @@ public abstract class AnnotatedElementUtils {
 	 * @see #findMergedAnnotation(AnnotatedElement, Class)
 	 * @see #getAllAnnotationAttributes(AnnotatedElement, String)
 	 */
-	@Nullable
-	public static AnnotationAttributes getMergedAnnotationAttributes(AnnotatedElement element, String annotationName) {
+	public static AnnotationAttributes getMergedAnnotationAttributes(@NonNull AnnotatedElement element,
+			String annotationName) {
 		return getMergedAnnotationAttributes(element, annotationName, false, false);
 	}
 
@@ -340,9 +339,8 @@ public abstract class AnnotatedElementUtils {
 	 *      boolean)
 	 * @see #getAllAnnotationAttributes(AnnotatedElement, String, boolean, boolean)
 	 */
-	@Nullable
-	public static AnnotationAttributes getMergedAnnotationAttributes(AnnotatedElement element, String annotationName,
-			boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
+	public static AnnotationAttributes getMergedAnnotationAttributes(@NonNull AnnotatedElement element,
+			String annotationName, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 		MergedAnnotation<?> mergedAnnotation = getAnnotations(element).get(annotationName, null,
 				MergedAnnotationSelectors.firstDirectlyDeclared());
 		return getAnnotationAttributes(mergedAnnotation, classValuesAsString, nestedAnnotationsAsMap);
@@ -364,8 +362,8 @@ public abstract class AnnotatedElementUtils {
 	 *         found
 	 * @see #findMergedAnnotation(AnnotatedElement, Class)
 	 */
-	@Nullable
-	public static <A extends Annotation> A getMergedAnnotation(AnnotatedElement element, Class<A> annotationType) {
+	public static <A extends Annotation> A getMergedAnnotation(@NonNull AnnotatedElement element,
+			Class<A> annotationType) {
 		// Shortcut: directly present on the element, with no merging needed?
 		if (AnnotationFilter.PLAIN.matches(annotationType) || AnnotationsScanner.hasPlainJavaAnnotationsOnly(element)) {
 			return element.getDeclaredAnnotation(annotationType);
@@ -507,8 +505,8 @@ public abstract class AnnotatedElementUtils {
 	 * @see #getMergedAnnotation(AnnotatedElement, Class)
 	 * @see #getAllMergedAnnotations(AnnotatedElement, Class)
 	 */
-	public static <A extends Annotation> Set<A> getMergedRepeatableAnnotations(AnnotatedElement element,
-			Class<A> annotationType, @Nullable Class<? extends Annotation> containerType) {
+	public static <A extends Annotation> Set<A> getMergedRepeatableAnnotations(@NonNull AnnotatedElement element,
+			@NonNull Class<A> annotationType, Class<? extends Annotation> containerType) {
 
 		return getRepeatableAnnotations(element, containerType, annotationType).stream(annotationType)
 				.collect(MergedAnnotationCollectors.toAnnotationSet());
@@ -535,10 +533,8 @@ public abstract class AnnotatedElementUtils {
 	 *         not found
 	 * @see #getAllAnnotationAttributes(AnnotatedElement, String, boolean, boolean)
 	 */
-	@Nullable
-	public static MultiValueMap<String, Object> getAllAnnotationAttributes(AnnotatedElement element,
-			String annotationName) {
-
+	public static MultiValueMap<String, Object> getAllAnnotationAttributes(@NonNull AnnotatedElement element,
+			@NonNull String annotationName) {
 		return getAllAnnotationAttributes(element, annotationName, false, false);
 	}
 
@@ -567,9 +563,8 @@ public abstract class AnnotatedElementUtils {
 	 *         annotation attributes from all annotations found, or {@code null} if
 	 *         not found
 	 */
-	@Nullable
-	public static MultiValueMap<String, Object> getAllAnnotationAttributes(AnnotatedElement element,
-			String annotationName, final boolean classValuesAsString, final boolean nestedAnnotationsAsMap) {
+	public static MultiValueMap<String, Object> getAllAnnotationAttributes(@NonNull AnnotatedElement element,
+			@NonNull String annotationName, final boolean classValuesAsString, final boolean nestedAnnotationsAsMap) {
 
 		Adapt[] adaptations = Adapt.values(classValuesAsString, nestedAnnotationsAsMap);
 		return getAnnotations(element).stream(annotationName)
@@ -635,9 +630,9 @@ public abstract class AnnotatedElementUtils {
 	 * @see #getMergedAnnotationAttributes(AnnotatedElement, String, boolean,
 	 *      boolean)
 	 */
-	@Nullable
-	public static AnnotationAttributes findMergedAnnotationAttributes(AnnotatedElement element,
-			Class<? extends Annotation> annotationType, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
+	public static AnnotationAttributes findMergedAnnotationAttributes(@NonNull AnnotatedElement element,
+			@NonNull Class<? extends Annotation> annotationType, boolean classValuesAsString,
+			boolean nestedAnnotationsAsMap) {
 
 		MergedAnnotation<?> mergedAnnotation = findAnnotations(element).get(annotationType, null,
 				MergedAnnotationSelectors.firstDirectlyDeclared());
@@ -677,9 +672,8 @@ public abstract class AnnotatedElementUtils {
 	 * @see #getMergedAnnotationAttributes(AnnotatedElement, String, boolean,
 	 *      boolean)
 	 */
-	@Nullable
-	public static AnnotationAttributes findMergedAnnotationAttributes(AnnotatedElement element, String annotationName,
-			boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
+	public static AnnotationAttributes findMergedAnnotationAttributes(@NonNull AnnotatedElement element,
+			@NonNull String annotationName, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 
 		MergedAnnotation<?> mergedAnnotation = findAnnotations(element).get(annotationName, null,
 				MergedAnnotationSelectors.firstDirectlyDeclared());
@@ -708,8 +702,8 @@ public abstract class AnnotatedElementUtils {
 	 *      boolean)
 	 * @see #getMergedAnnotationAttributes(AnnotatedElement, Class)
 	 */
-	@Nullable
-	public static <A extends Annotation> A findMergedAnnotation(AnnotatedElement element, Class<A> annotationType) {
+	public static <A extends Annotation> A findMergedAnnotation(@NonNull AnnotatedElement element,
+			@NonNull Class<A> annotationType) {
 		// Shortcut: directly present on the element, with no merging needed?
 		if (AnnotationFilter.PLAIN.matches(annotationType) || AnnotationsScanner.hasPlainJavaAnnotationsOnly(element)) {
 			return element.getDeclaredAnnotation(annotationType);
@@ -850,8 +844,8 @@ public abstract class AnnotatedElementUtils {
 	 * @see #findMergedAnnotation(AnnotatedElement, Class)
 	 * @see #findAllMergedAnnotations(AnnotatedElement, Class)
 	 */
-	public static <A extends Annotation> Set<A> findMergedRepeatableAnnotations(AnnotatedElement element,
-			Class<A> annotationType, @Nullable Class<? extends Annotation> containerType) {
+	public static <A extends Annotation> Set<A> findMergedRepeatableAnnotations(@NonNull AnnotatedElement element,
+			@NonNull Class<A> annotationType, Class<? extends Annotation> containerType) {
 
 		return findRepeatableAnnotations(element, containerType, annotationType).stream(annotationType)
 				.sorted(highAggregateIndexesFirst()).collect(MergedAnnotationCollectors.toAnnotationSet());
@@ -861,8 +855,8 @@ public abstract class AnnotatedElementUtils {
 		return MergedAnnotations.from(element, SearchStrategy.INHERITED_ANNOTATIONS, RepeatableContainers.none());
 	}
 
-	private static MergedAnnotations getRepeatableAnnotations(AnnotatedElement element,
-			@Nullable Class<? extends Annotation> containerType, Class<? extends Annotation> annotationType) {
+	private static MergedAnnotations getRepeatableAnnotations(@NonNull AnnotatedElement element,
+			Class<? extends Annotation> containerType, @NonNull Class<? extends Annotation> annotationType) {
 
 		RepeatableContainers repeatableContainers;
 		if (containerType == null) {
@@ -888,8 +882,8 @@ public abstract class AnnotatedElementUtils {
 		return MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY, RepeatableContainers.none());
 	}
 
-	private static MergedAnnotations findRepeatableAnnotations(AnnotatedElement element,
-			@Nullable Class<? extends Annotation> containerType, Class<? extends Annotation> annotationType) {
+	private static MergedAnnotations findRepeatableAnnotations(@NonNull AnnotatedElement element,
+			Class<? extends Annotation> containerType, @NonNull Class<? extends Annotation> annotationType) {
 
 		RepeatableContainers repeatableContainers;
 		if (containerType == null) {
@@ -911,7 +905,6 @@ public abstract class AnnotatedElementUtils {
 		return MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY, repeatableContainers);
 	}
 
-	@Nullable
 	private static MultiValueMap<String, Object> nullIfEmpty(MultiValueMap<String, Object> map) {
 		return (map.isEmpty() ? null : map);
 	}
@@ -920,7 +913,6 @@ public abstract class AnnotatedElementUtils {
 		return Comparator.<MergedAnnotation<A>>comparingInt(MergedAnnotation::getAggregateIndex).reversed();
 	}
 
-	@Nullable
 	private static AnnotationAttributes getAnnotationAttributes(MergedAnnotation<?> annotation,
 			boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 

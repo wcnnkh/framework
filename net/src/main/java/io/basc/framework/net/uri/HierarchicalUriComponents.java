@@ -1,9 +1,9 @@
 package io.basc.framework.net.uri;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
 

@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.basc.framework.core.Members;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.reflect.ReflectionUtils;
 
 public class MembersTest {
 

@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.convert.lang.EmptyValue;
+import io.basc.framework.core.convert.lang.EmptyValue;
 
 public class EmptyJsonElement extends EmptyValue implements JsonElement {
 	private static final long serialVersionUID = 1L;

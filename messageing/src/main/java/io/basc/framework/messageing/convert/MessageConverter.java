@@ -1,6 +1,6 @@
 package io.basc.framework.messageing.convert;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.messageing.Message;
 import io.basc.framework.messageing.MessageHeaders;

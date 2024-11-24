@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import org.apache.lucene.document.Field;
 
-import io.basc.framework.execution.param.Parameter;
+import io.basc.framework.core.execution.param.Parameter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lucene.LuceneResolver;
 import io.basc.framework.util.Assert;

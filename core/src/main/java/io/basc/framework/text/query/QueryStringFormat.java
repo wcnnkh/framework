@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.URLCodec;
-import io.basc.framework.convert.lang.ObjectValue;
-import io.basc.framework.convert.lang.ValueWrapper;
+import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.lang.ObjectValue;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.ObjectFormat;

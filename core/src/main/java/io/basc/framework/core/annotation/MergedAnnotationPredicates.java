@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 
@@ -101,7 +100,6 @@ public abstract class MergedAnnotationPredicates {
 
 		private boolean hasLastValue;
 
-		@Nullable
 		private Object lastValue;
 
 		FirstRunOfPredicate(Function<? super MergedAnnotation<A>, ?> valueExtractor) {
@@ -110,7 +108,7 @@ public abstract class MergedAnnotationPredicates {
 		}
 
 		@Override
-		public boolean test(@Nullable MergedAnnotation<A> annotation) {
+		public boolean test(MergedAnnotation<A> annotation) {
 			if (!this.hasLastValue) {
 				this.hasLastValue = true;
 				this.lastValue = this.valueExtractor.apply(annotation);
@@ -137,7 +135,7 @@ public abstract class MergedAnnotationPredicates {
 		}
 
 		@Override
-		public boolean test(@Nullable MergedAnnotation<A> annotation) {
+		public boolean test(MergedAnnotation<A> annotation) {
 			K key = this.keyExtractor.apply(annotation);
 			return this.seen.add(key);
 		}
