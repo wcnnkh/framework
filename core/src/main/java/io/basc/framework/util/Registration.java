@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
-
 public interface Registration {
 	static final Registration FAILURE = new Registed(true);
 	static final Registration SUCCESS = new Registed(false);
@@ -42,13 +39,13 @@ public interface Registration {
 	boolean isCancelled();
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
-			Iterable<? extends S> iterable, Processor<? super S, ? extends E, ? extends X> register) throws X {
+			Iterable<? extends S> iterable, Pipeline<? super S, ? extends E, ? extends X> register) throws X {
 		Assert.requiredArgument(iterable != null, "iterable");
 		return registers(iterable.iterator(), register);
 	}
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
-			Iterator<? extends S> iterator, Processor<? super S, ? extends E, ? extends X> register) throws X {
+			Iterator<? extends S> iterator, Pipeline<? super S, ? extends E, ? extends X> register) throws X {
 		Assert.requiredArgument(iterator != null, "iterator");
 		Assert.requiredArgument(register != null, "registry");
 		List<E> registrations = null;
@@ -65,7 +62,7 @@ public interface Registration {
 				if (registrations != null) {
 					try {
 						Collections.reverse(registrations);
-						ConsumeProcessor.consumeAll(registrations, (reg) -> reg.cancel());
+						Endpoint.consumeAll(registrations, (reg) -> reg.cancel());
 					} catch (Throwable e2) {
 						e.addSuppressed(e2);
 					}

@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.support.RecordCodec;
 
 /**
  * 线程不安全的
@@ -98,7 +98,7 @@ public final class FileRecords<T> implements Elements<T> {
 	 * @param consumer
 	 * @throws E
 	 */
-	public <E extends Throwable> void consume(ConsumeProcessor<? super T, ? extends E> consumer) throws E {
+	public <E extends Throwable> void consume(Endpoint<? super T, ? extends E> consumer) throws E {
 		Assert.requiredArgument(consumer != null, "consumer");
 		if (file != null) {
 			synchronized (this) {

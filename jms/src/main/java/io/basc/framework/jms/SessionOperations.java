@@ -9,8 +9,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
 
@@ -21,12 +21,12 @@ public class SessionOperations<T extends Session, D extends Destination>
 
 	private volatile MessageProducer messageProducer;
 
-	private final Processor<? super T, ? extends D, ? extends JMSException> processor;
+	private final Pipeline<? super T, ? extends D, ? extends JMSException> processor;
 
 	private volatile T session;
 
 	public SessionOperations(Source<? extends T, ? extends JMSException> source,
-			Processor<? super T, ? extends D, ? extends JMSException> processor) {
+			Pipeline<? super T, ? extends D, ? extends JMSException> processor) {
 		super(source);
 		Assert.requiredArgument(processor != null, "processor");
 		this.processor = processor;

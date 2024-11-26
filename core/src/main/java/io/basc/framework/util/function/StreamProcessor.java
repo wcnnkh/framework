@@ -1,9 +1,12 @@
 package io.basc.framework.util.function;
 
-public interface StreamProcessor<S, T, E extends Throwable> extends Processor<S, T, E>, Closer<T, E> {
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+
+public interface StreamProcessor<S, T, E extends Throwable> extends Pipeline<S, T, E>, Closer<T, E> {
 
 	@Override
-	default <V> StreamProcessor<S, V, E> andThen(Processor<? super T, ? extends V, ? extends E> after) {
+	default <V> StreamProcessor<S, V, E> andThen(Pipeline<? super T, ? extends V, ? extends E> after) {
 		return of((source) -> {
 			T s = process(source);
 			try {
@@ -17,11 +20,11 @@ public interface StreamProcessor<S, T, E extends Throwable> extends Processor<S,
 	}
 
 	@Override
-	StreamProcessor<S, T, E> onClose(ConsumeProcessor<? super T, ? extends E> closeHandler);
+	StreamProcessor<S, T, E> onClose(Endpoint<? super T, ? extends E> closeHandler);
 
 	@SuppressWarnings("unchecked")
 	public static <A, B, X extends Throwable> StreamProcessor<A, B, X> of(
-			Processor<? super A, ? extends B, ? extends X> processor) {
+			Pipeline<? super A, ? extends B, ? extends X> processor) {
 		if (processor instanceof StreamProcessor) {
 			return (StreamProcessor<A, B, X>) processor;
 		}

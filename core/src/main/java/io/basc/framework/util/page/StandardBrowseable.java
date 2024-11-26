@@ -3,8 +3,8 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.codec.Codec;
 
 public class StandardBrowseable<K, T> implements CursorWrapper<K, T, Cursor<K, T>>, Browseable<K, T> {
 	private final Cursor<K, T> source;

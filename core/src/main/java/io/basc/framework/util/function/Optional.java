@@ -6,8 +6,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
+import lombok.NonNull;
+
 @FunctionalInterface
-public interface Optional<T> extends Supplier<T> {
+public interface Optional<T> extends Source<T, RuntimeException> {
 
 	@SuppressWarnings("unchecked")
 	public static <U> Optional<U> empty() {
@@ -36,7 +41,7 @@ public interface Optional<T> extends Supplier<T> {
 		return map((value) -> predicate.test(value) ? null : value);
 	}
 
-	default <U> Optional<U> flatMap(Function<? super T, ? extends Optional<U>> mapper) {
+	default <U> Optional<U> flatMap(Pipeline<? super T, ? extends Optional<U>, ? extends RuntimeException> mapper) {
 		Objects.requireNonNull(mapper);
 		T value = orElse(null);
 		if (value == null) {
@@ -78,10 +83,10 @@ public interface Optional<T> extends Supplier<T> {
 		return this;
 	}
 
-	default <E extends Throwable> void ifPresent(ConsumeProcessor<? super T, ? extends E> consumer) throws E {
+	default <E extends Throwable> void ifPresent(Endpoint<? super T, ? extends E> consumer) throws E {
 		T value = orElse(null);
 		if (value != null) {
-			consumer.process(value);
+			consumer.accept(value);
 		}
 	}
 
@@ -89,7 +94,8 @@ public interface Optional<T> extends Supplier<T> {
 		return orElse(null) != null;
 	}
 
-	default <U> Optional<U> map(Function<? super T, ? extends U> mapper) {
+	@Override
+	default <R> Optional<R> map(@NonNull Pipeline<? super T, ? extends R, ? extends RuntimeException> mapper) {
 		Objects.requireNonNull(mapper);
 		return flatMap((e) -> ofSupplier(() -> mapper.apply(e)));
 	}

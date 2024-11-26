@@ -2,17 +2,18 @@ package io.basc.framework.util.function;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.XUtils;
 
 public class StandardCloseable<E extends Throwable, C extends Closeable<E>> implements Closeable<E> {
 	private final AtomicBoolean closed = new AtomicBoolean(false);
-	private RunnableProcessor<? extends E> closeHandler;
+	private Processor<? extends E> closeHandler;
 
 	public StandardCloseable() {
 		this(null);
 	}
 
-	public StandardCloseable(RunnableProcessor<? extends E> closeHandler) {
+	public StandardCloseable(Processor<? extends E> closeHandler) {
 		this.closeHandler = closeHandler;
 	}
 
@@ -30,7 +31,7 @@ public class StandardCloseable<E extends Throwable, C extends Closeable<E>> impl
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public C onClose(RunnableProcessor<? extends E> closeHandler) {
+	public C onClose(Processor<? extends E> closeHandler) {
 		if (closeHandler == null) {
 			return (C) this;
 		}

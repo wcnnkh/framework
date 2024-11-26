@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 import lombok.Data;
 
 /**
@@ -45,9 +45,9 @@ public class Tree<T> implements Serializable {
 	}
 
 	public static <T, O, E extends Throwable, K> List<Tree<T>> parse(Collection<? extends O> options,
-			Processor<? super O, ? extends K, ? extends E> keyProcessor, @Nullable K parentId,
-			Processor<? super O, ? extends K, ? extends E> parentKeyProcessor,
-			Processor<? super O, ? extends T, ? extends E> processor) throws E {
+			Pipeline<? super O, ? extends K, ? extends E> keyProcessor, @Nullable K parentId,
+			Pipeline<? super O, ? extends K, ? extends E> parentKeyProcessor,
+			Pipeline<? super O, ? extends T, ? extends E> processor) throws E {
 		if (options == null) {
 			return null;
 		}
@@ -72,7 +72,7 @@ public class Tree<T> implements Serializable {
 	}
 
 	public static <S, K, V, E extends Throwable> List<Tree<Pair<K, V>>> parse(Collection<? extends S> sourceList,
-			int depth, int maxDepth, Processor<? super Pair<Integer, S>, ? extends Pair<K, V>, ? extends E> processor)
+			int depth, int maxDepth, Pipeline<? super Pair<Integer, S>, ? extends Pair<K, V>, ? extends E> processor)
 			throws E {
 		if (sourceList == null) {
 			return null;

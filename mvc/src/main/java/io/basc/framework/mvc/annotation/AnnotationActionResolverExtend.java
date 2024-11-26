@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import io.basc.framework.codec.Encoder;
-import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.annotation.KeyValuePair;
@@ -23,6 +21,8 @@ import io.basc.framework.security.authority.http.DefaultHttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.codec.Encoder;
+import io.basc.framework.util.codec.support.CharsetCodec;
 import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;

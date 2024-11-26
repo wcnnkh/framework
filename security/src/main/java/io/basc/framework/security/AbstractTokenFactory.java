@@ -2,10 +2,10 @@ package io.basc.framework.security;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.retry.RetryOperations;
-import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.retry.RetryOperations;
+import io.basc.framework.util.retry.support.RetryTemplate;
 
 public abstract class AbstractTokenFactory implements TokenFactory {
 	private RetryOperations retryOperations = RetryTemplate.DEFAULT;
@@ -49,7 +49,7 @@ public abstract class AbstractTokenFactory implements TokenFactory {
 	}
 
 	@Override
-	public final <V, E extends Throwable> V process(Processor<? super Token, ? extends V, ? extends E> processor)
+	public final <V, E extends Throwable> V process(Pipeline<? super Token, ? extends V, ? extends E> processor)
 			throws E, InvalidTokenException {
 		return process(getRetryOperations(), processor);
 	}

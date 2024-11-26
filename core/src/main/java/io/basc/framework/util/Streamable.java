@@ -22,9 +22,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
-
 /**
  * 就像{@link Iterable}可以返回{@link Iterator}一样，{@link Streamable}可以返回{@link Stream}
  * 此类其他方法调用{@link Streamable#stream()}后会自动关闭
@@ -59,7 +56,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Processor)}
+	 * 调用{@link #export(Pipeline)}
 	 * 
 	 * @param <R>
 	 * @param <A>
@@ -120,7 +117,7 @@ public interface Streamable<E> {
 		}
 	}
 
-	default <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
+	default <T, X extends Throwable> T export(Pipeline<? super Stream<E>, ? extends T, ? extends X> processor)
 			throws X {
 		Stream<E> stream = stream();
 		try {
@@ -131,7 +128,7 @@ public interface Streamable<E> {
 	}
 	
 	/**
-	 * 调用{@link #export(Processor)}
+	 * 调用{@link #export(Pipeline)}
 	 * 
 	 * @return
 	 */
@@ -140,7 +137,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Processor)}
+	 * 调用{@link #export(Pipeline)}
 	 * 
 	 * @return
 	 */
@@ -149,7 +146,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Processor)}
+	 * 调用{@link #export(Pipeline)}
 	 * 
 	 * @return
 	 */
@@ -306,7 +303,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * @see #export(Processor)
+	 * @see #export(Pipeline)
 	 * @param <A>
 	 * @param generator
 	 * @return
@@ -382,7 +379,7 @@ public interface Streamable<E> {
 		return collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 	}
 
-	default <X extends Throwable> void transfer(ConsumeProcessor<? super Stream<E>, ? extends X> processor) throws X {
+	default <X extends Throwable> void transfer(Endpoint<? super Stream<E>, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			processor.process(stream);

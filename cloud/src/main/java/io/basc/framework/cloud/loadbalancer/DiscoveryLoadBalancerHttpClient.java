@@ -11,9 +11,9 @@ import io.basc.framework.http.client.ClientHttpResponseExtractor;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClientErrorException;
 import io.basc.framework.http.client.RedirectManager;
-import io.basc.framework.retry.RetryOperations;
-import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.retry.RetryOperations;
+import io.basc.framework.util.retry.support.RetryTemplate;
 
 public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient {
 	private final DiscoveryLoadBalancer loadbalancer;

@@ -1,11 +1,11 @@
 package io.basc.framework.upload.ueditor.upload;
 
-import io.basc.framework.codec.support.Base64;
 import io.basc.framework.upload.ueditor.PathFormat;
 import io.basc.framework.upload.ueditor.define.AppInfo;
 import io.basc.framework.upload.ueditor.define.BaseState;
 import io.basc.framework.upload.ueditor.define.FileType;
 import io.basc.framework.upload.ueditor.define.State;
+import io.basc.framework.util.codec.support.Base64;
 
 import java.util.Map;
 

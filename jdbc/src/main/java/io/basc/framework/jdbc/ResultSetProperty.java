@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import io.basc.framework.transform.Property;
-import io.basc.framework.util.SimpleNamed;
+import io.basc.framework.util.alias.SimpleNamed;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

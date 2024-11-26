@@ -1,9 +1,5 @@
 package io.basc.framework.rpc.remote;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.codec.support.DES;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
@@ -11,6 +7,10 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.support.CharsetCodec;
+import io.basc.framework.util.codec.support.DES;
 
 import java.io.IOException;
 import java.io.InputStream;

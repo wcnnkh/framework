@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import io.basc.framework.codec.encode.UnicodeEncoder;
+import io.basc.framework.util.codec.encode.UnicodeEncoder;
 
 public class BaseState implements State {
 

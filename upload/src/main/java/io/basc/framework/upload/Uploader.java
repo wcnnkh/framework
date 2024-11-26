@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.annotation.Value;
 import io.basc.framework.data.DataException;
@@ -33,6 +32,7 @@ import io.basc.framework.util.Return;
 import io.basc.framework.util.Status;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.TimeUtils;
+import io.basc.framework.util.codec.support.CharsetCodec;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.HttpService;

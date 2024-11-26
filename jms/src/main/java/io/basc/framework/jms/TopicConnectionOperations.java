@@ -6,8 +6,8 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.Topic;
 
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
 
 public class TopicConnectionOperations extends ConnectionOperations<Connection, Session, Topic> {
 
@@ -20,14 +20,14 @@ public class TopicConnectionOperations extends ConnectionOperations<Connection, 
 	}
 
 	public TopicConnectionOperations(ConnectionFactory connectionFactory,
-			Processor<? super Connection, ? extends Session, ? extends JMSException> connectionProcessor,
+			Pipeline<? super Connection, ? extends Session, ? extends JMSException> connectionProcessor,
 			String topicName) {
 		this(() -> connectionFactory.createConnection(), connectionProcessor, topicName);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Connection> TopicConnectionOperations(Source<? extends T, ? extends JMSException> source,
-			Processor<? super T, ? extends Session, ? extends JMSException> connectionProcessor, String topicName) {
+			Pipeline<? super T, ? extends Session, ? extends JMSException> connectionProcessor, String topicName) {
 		super(source, (t) -> connectionProcessor.process((T) t), (s) -> s.createTopic(topicName));
 	}
 }

@@ -1,6 +1,6 @@
 package io.basc.framework.xmemcached;
 
-import io.basc.framework.codec.Codec;
+import io.basc.framework.util.codec.Codec;
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;
 
 public class MyTranscoder extends SerializingTranscoder {

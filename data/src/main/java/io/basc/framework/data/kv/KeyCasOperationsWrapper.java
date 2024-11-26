@@ -1,6 +1,6 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.codec.Encoder;
+import io.basc.framework.util.codec.Encoder;
 
 public interface KeyCasOperationsWrapper<K> extends KeyCasOperations<K>, KeyOperationsWrapper<K> {
 

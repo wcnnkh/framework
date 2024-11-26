@@ -15,8 +15,8 @@ import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Processor;
 
 public final class DomUtils {
 	private static final DocumentTemplate TEMPLATE = SPI.global()
@@ -48,7 +48,7 @@ public final class DomUtils {
 		});
 	}
 
-	public static <E extends Throwable> List<Object> toList(Node node, Processor<Node, Object, E> nodeConvert)
+	public static <E extends Throwable> List<Object> toList(Node node, Pipeline<Node, Object, E> nodeConvert)
 			throws E {
 		if (ignoreNode(node)) {
 			return null;
@@ -83,7 +83,7 @@ public final class DomUtils {
 	}
 
 	public static <E extends Throwable> Map<String, Object> toMap(Node node,
-			Processor<Node, Pair<String, Object>, E> nodeParse) throws E {
+			Pipeline<Node, Pair<String, Object>, E> nodeParse) throws E {
 		if (ignoreNode(node)) {
 			return null;
 		}

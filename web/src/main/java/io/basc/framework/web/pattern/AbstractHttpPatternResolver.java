@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import io.basc.framework.core.env.SystemProperties;
-import io.basc.framework.text.placeholder.PlaceholderFormat;
-import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

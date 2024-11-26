@@ -1,16 +1,20 @@
 package io.basc.framework.util.function;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
+
 public interface StreamSource<T, E extends Throwable> extends Source<T, E>, Closer<T, E> {
 	T get() throws E;
 
 	@Override
-	StreamSource<T, E> onClose(ConsumeProcessor<? super T, ? extends E> closeHandler);
+	StreamSource<T, E> onClose(Endpoint<? super T, ? extends E> closeHandler);
 
-	default <R> StreamSource<R, E> stream(Processor<? super T, ? extends R, ? extends E> mapper) {
+	default <R> StreamSource<R, E> stream(Pipeline<? super T, ? extends R, ? extends E> mapper) {
 		return of(() -> process(mapper));
 	}
 
-	default <R, X extends Throwable> R process(Processor<? super T, ? extends R, ? extends X> processor) throws E, X {
+	default <R, X extends Throwable> R process(Pipeline<? super T, ? extends R, ? extends X> processor) throws E, X {
 		T source = get();
 		try {
 			return processor.process(source);
@@ -19,7 +23,7 @@ public interface StreamSource<T, E extends Throwable> extends Source<T, E>, Clos
 		}
 	}
 
-	default <X extends Throwable> void consume(ConsumeProcessor<? super T, ? extends X> processor) throws E, X {
+	default <X extends Throwable> void consume(Endpoint<? super T, ? extends X> processor) throws E, X {
 		T source = get();
 		try {
 			processor.process(source);

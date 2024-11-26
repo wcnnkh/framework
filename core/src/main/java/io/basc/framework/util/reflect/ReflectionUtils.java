@@ -21,11 +21,11 @@ import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Endpoint;
 import io.basc.framework.util.ImpossibleException;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Source;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
 
@@ -673,7 +673,7 @@ public abstract class ReflectionUtils {
 	 * @throws E
 	 */
 	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
-			 ConsumeProcessor<Throwable, E> accept) throws E {
+			 Endpoint<Throwable, E> accept) throws E {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);

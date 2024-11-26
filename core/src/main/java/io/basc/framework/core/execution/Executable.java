@@ -8,7 +8,7 @@ import io.basc.framework.core.execution.param.ParameterMatchingResults;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Name;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 
 /**
  * 所有执行的基类
@@ -28,7 +28,7 @@ public interface Executable extends Executed, Name {
 	}
 
 	default <T, E extends Throwable> T execute(Parameters parameters,
-			Processor<? super ParameterMatchingResults, ? extends T, ? extends E> processor) throws E {
+			Pipeline<? super ParameterMatchingResults, ? extends T, ? extends E> processor) throws E {
 		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
 		if (!results.isSuccessful()) {
 			throw new IllegalArgumentException("Parameter mismatch");

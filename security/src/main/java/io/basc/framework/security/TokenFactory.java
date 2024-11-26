@@ -1,8 +1,8 @@
 package io.basc.framework.security;
 
-import io.basc.framework.retry.RetryOperations;
-import io.basc.framework.retry.support.RetryTemplate;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.retry.RetryOperations;
+import io.basc.framework.util.retry.support.RetryTemplate;
 
 public interface TokenFactory {
 
@@ -12,13 +12,13 @@ public interface TokenFactory {
 
 	Token getToken(boolean forceUpdate) throws InvalidTokenException;
 
-	default <V, E extends Throwable> V process(Processor<? super Token, ? extends V, ? extends E> processor)
+	default <V, E extends Throwable> V process(Pipeline<? super Token, ? extends V, ? extends E> processor)
 			throws E, InvalidTokenException {
 		return process(RetryTemplate.DEFAULT, processor);
 	}
 
 	default <V, E extends Throwable> V process(RetryOperations retryOperations,
-			Processor<? super Token, ? extends V, ? extends E> processor) throws E, InvalidTokenException {
+			Pipeline<? super Token, ? extends V, ? extends E> processor) throws E, InvalidTokenException {
 		if (retryOperations == null) {
 			return processor.process(getToken());
 		}

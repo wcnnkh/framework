@@ -1,7 +1,7 @@
 package io.basc.framework.data;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.data.kv.KeyOperationsWrapper;
+import io.basc.framework.util.codec.Codec;
 
 public interface CounterWrapper extends Counter, KeyOperationsWrapper<String> {
 	@Override

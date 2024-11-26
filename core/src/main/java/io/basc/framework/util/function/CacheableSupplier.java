@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Source;
 
 public class CacheableSupplier<T> extends CacheableSource<T, RuntimeException> implements Supplier<T> {
 	public CacheableSupplier(T source) {

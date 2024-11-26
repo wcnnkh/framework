@@ -3,7 +3,6 @@ package io.basc.framework.jms;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import io.basc.framework.codec.DecodeException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.actor.EventListener;
 import io.basc.framework.util.actor.EventPushException;
@@ -11,6 +10,7 @@ import io.basc.framework.util.actor.EventRegistrationException;
 import io.basc.framework.util.actor.NamedEventDispatcher;
 import io.basc.framework.util.actor.broadcast.BroadcastNamedEventDispatcher;
 import io.basc.framework.util.actor.unicast.UnicastNamedEventDispatcher;
+import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.register.Registration;
 
 public class JmsNamedEventDispatcher<K, T>

@@ -1,6 +1,6 @@
 package io.basc.framework.amqp;
 
-import io.basc.framework.codec.Codec;
+import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.register.Registration;
 
 public interface Exchange<T> {

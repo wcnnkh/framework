@@ -2,8 +2,8 @@ package io.basc.framework.redis;
 
 import java.io.Serializable;
 
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.comparator.Sort;
-import io.basc.framework.util.function.Processor;
 
 public class GeoRadiusArgs<K> implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -66,7 +66,7 @@ public class GeoRadiusArgs<K> implements Serializable {
 		return this;
 	}
 
-	public <T, E extends Throwable> GeoRadiusArgs<T> convert(Processor<? super K, ? extends T, ? extends E> convert)
+	public <T, E extends Throwable> GeoRadiusArgs<T> convert(Pipeline<? super K, ? extends T, ? extends E> convert)
 			throws E {
 		GeoRadiusArgs<T> geoRadiusArgs = new GeoRadiusArgs<T>();
 		geoRadiusArgs.count = count;

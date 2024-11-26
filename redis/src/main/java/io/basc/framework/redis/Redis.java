@@ -3,8 +3,6 @@ package io.basc.framework.redis;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.data.DataStorage;
@@ -17,6 +15,8 @@ import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.support.CharsetCodec;
 
 public final class Redis
 		extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String, Redis>

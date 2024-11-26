@@ -1,7 +1,7 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.Encoder;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.Encoder;
 
 public interface StorageWrapper<K, V> extends Storage<K, V>, KeyValueOperationsWrapper<K, V> {
 	@Override

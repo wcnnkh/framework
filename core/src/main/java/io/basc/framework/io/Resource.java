@@ -9,7 +9,7 @@ import java.net.URL;
 
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.watch.Variable;
 
 public interface Resource extends InputStreamSource, Variable {
@@ -63,7 +63,7 @@ public interface Resource extends InputStreamSource, Variable {
 	String getDescription();
 
 	@Override
-	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)
+	default <T, E extends Throwable> T read(Pipeline<? super InputStream, ? extends T, ? extends E> processor)
 			throws IOException, E {
 		if (!exists()) {
 			throw new NotFoundException("not found: " + getDescription());

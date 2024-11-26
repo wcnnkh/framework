@@ -1,9 +1,10 @@
 package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
-import io.basc.framework.codec.support.CharsetCodec;
 
 import org.junit.Test;
+
+import io.basc.framework.util.codec.support.CharsetCodec;
 
 public class GzipTest {
 	@Test

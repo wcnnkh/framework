@@ -1,8 +1,8 @@
 package io.basc.framework.jedis;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.EncodeException;
 import redis.clients.jedis.util.SafeEncoder;
 
 public class JedisCodec implements Codec<String, byte[]> {

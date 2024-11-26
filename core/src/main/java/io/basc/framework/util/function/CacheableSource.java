@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Source;
 
 public class CacheableSource<T, E extends Throwable> implements Source<T, E> {
 	private Source<? extends T, ? extends E> source;

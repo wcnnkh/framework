@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.math.Addition;
 import io.basc.framework.util.math.NumberComparator;
 import lombok.NonNull;
@@ -485,7 +484,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Number totalWeight, @NonNull Number weight,
-			@NonNull Iterator<? extends T> iterator, @NonNull Processor<T, Number, E> weightProcessor,
+			@NonNull Iterator<? extends T> iterator, @NonNull Pipeline<T, Number, E> weightProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
@@ -543,7 +542,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> Number getWeight(Iterator<? extends T> iterator,
-			Processor<T, Number, E> weightProcessor) throws E {
+			Pipeline<T, Number, E> weightProcessor) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
 		Number totalWegith = 0;
@@ -586,7 +585,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(Number totalWeight, Iterator<? extends T> iterator,
-			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+			Pipeline<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		return random(totalWeight, random(1, Addition.INSTANCE.eval(totalWeight, 1)), iterator, weightProcessor,
 				removePredicate);
 	}
@@ -604,7 +603,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
-			Processor<T, Number, E> weightProcessor, Processor<Number, Number, E> randomProcessor,
+			Pipeline<T, Number, E> weightProcessor, Pipeline<Number, Number, E> randomProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(randomProcessor != null, "randomProcessor");
@@ -632,7 +631,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
-			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+			Pipeline<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		return random(iterable, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}
 }

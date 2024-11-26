@@ -1,7 +1,7 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.codec.Encoder;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.codec.Encoder;
 
 public interface KeyOperationsWrapper<K> extends KeyOperations<K> {
 

@@ -5,9 +5,9 @@ import java.net.HttpCookie;
 
 import javax.servlet.http.Cookie;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.EncodeException;
 
 public class ServletCookieCodec implements Codec<Cookie, HttpCookie> {
 	public static final ServletCookieCodec INSTANCE = new ServletCookieCodec();

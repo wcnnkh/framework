@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.Directory;
 
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Pool;
-import io.basc.framework.util.function.Processor;
 
 public abstract class LucenePool<T> implements Pool<T> {
 	private final Directory directory;
@@ -37,7 +37,7 @@ public abstract class LucenePool<T> implements Pool<T> {
 	}
 
 	@Override
-	public <V, E extends Throwable> V process(Processor<? super T, ? extends V, ? extends E> processor) throws E {
+	public <V, E extends Throwable> V process(Pipeline<? super T, ? extends V, ? extends E> processor) throws E {
 		try {
 			return Pool.super.process(processor);
 		} catch (Throwable e) {

@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
 
 public class InputStreamSourceWrapper<W extends InputStreamSource> extends Wrapper<W> implements InputStreamSource {
 
@@ -22,7 +22,7 @@ public class InputStreamSourceWrapper<W extends InputStreamSource> extends Wrapp
 	}
 
 	@Override
-	public <E extends Throwable> void consume(ConsumeProcessor<? super InputStream, ? extends E> processor)
+	public <E extends Throwable> void consume(Endpoint<? super InputStream, ? extends E> processor)
 			throws IOException, E {
 		wrappedTarget.consume(processor);
 	}
@@ -33,7 +33,7 @@ public class InputStreamSourceWrapper<W extends InputStreamSource> extends Wrapp
 	}
 
 	@Override
-	public <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)
+	public <T, E extends Throwable> T read(Pipeline<? super InputStream, ? extends T, ? extends E> processor)
 			throws IOException, E {
 		return wrappedTarget.read(processor);
 	}

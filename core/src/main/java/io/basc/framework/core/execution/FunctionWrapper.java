@@ -8,9 +8,9 @@ import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.core.execution.param.ParameterMatchingResults;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.util.function.Processor;
 
 public class FunctionWrapper<W extends Function> extends Wrapper<W> implements Function {
 
@@ -20,7 +20,7 @@ public class FunctionWrapper<W extends Function> extends Wrapper<W> implements F
 
 	@Override
 	public <T, E extends Throwable> T execute(Parameters parameters,
-			Processor<? super ParameterMatchingResults, ? extends T, ? extends E> processor) throws E {
+			Pipeline<? super ParameterMatchingResults, ? extends T, ? extends E> processor) throws E {
 		return wrappedTarget.execute(parameters, processor);
 	}
 

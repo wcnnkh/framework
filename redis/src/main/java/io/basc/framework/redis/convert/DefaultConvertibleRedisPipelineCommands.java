@@ -1,7 +1,7 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.RedisPipelineCommands;
+import io.basc.framework.util.codec.Codec;
 
 public class DefaultConvertibleRedisPipelineCommands<P extends RedisPipelineCommands<SK, SV>, SK, K, SV, V, T extends DefaultConvertibleRedisPipelineCommands<P, SK, K, SV, V, T>>
 		extends RedisCodecAccess<SK, K, SV, V, T> implements ConvertibleRedisPipelineCommands<SK, K, SV, V> {

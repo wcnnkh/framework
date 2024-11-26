@@ -4,8 +4,8 @@ import java.net.URI;
 
 import io.basc.framework.cloud.Service;
 import io.basc.framework.net.uri.UriComponentsBuilder;
-import io.basc.framework.retry.ExhaustedRetryException;
-import io.basc.framework.retry.RetryOperations;
+import io.basc.framework.util.retry.ExhaustedRetryException;
+import io.basc.framework.util.retry.RetryOperations;
 
 public interface DiscoveryLoadBalancer extends LoadBalancer<Service> {
 

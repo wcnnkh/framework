@@ -3,7 +3,7 @@ package io.basc.framework.jms;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.function.StandardStreamOperations;
 import io.basc.framework.util.register.Registration;
 

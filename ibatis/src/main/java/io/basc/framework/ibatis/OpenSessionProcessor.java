@@ -4,11 +4,11 @@ import org.apache.ibatis.session.SqlSession;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.transaction.Transaction;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
 
 public interface OpenSessionProcessor
-		extends Processor<Transaction, SqlSession, IbatisException>, Source<SqlSession, IbatisException> {
+		extends Pipeline<Transaction, SqlSession, IbatisException>, Source<SqlSession, IbatisException> {
 	SqlSession process(@Nullable Transaction source) throws IbatisException;
 
 	@Override

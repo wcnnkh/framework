@@ -1,7 +1,7 @@
 package io.basc.framework.amqp;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.register.Registration;
 
 public class ConvertibleExchange<S, T> implements Exchange<T> {

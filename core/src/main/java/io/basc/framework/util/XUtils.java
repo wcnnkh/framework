@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.concurrent.ThreadPerTaskExecutor;
-import io.basc.framework.util.function.RunnableProcessor;
 
 public final class XUtils {
 	private static final boolean ENABLE_COMMON_POOL = (ForkJoinPool.getCommonPoolParallelism() > 1);
@@ -145,8 +144,8 @@ public final class XUtils {
 		return null;
 	}
 
-	public static <E extends Throwable> RunnableProcessor<E> composeWithExceptions(RunnableProcessor<? extends E> a,
-			RunnableProcessor<? extends E> b) {
+	public static <E extends Throwable> Processor<E> composeWithExceptions(Processor<? extends E> a,
+			Processor<? extends E> b) {
 		return () -> {
 			try {
 				a.process();

@@ -6,10 +6,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.RunnableProcessor;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 
@@ -27,14 +27,14 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public ConnectionOperations(
-			Processor<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor) {
+			Pipeline<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor) {
 		super(sourceProcesor);
 	}
 
 	public ConnectionOperations(
-			Processor<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor,
-			@Nullable ConsumeProcessor<? super Connection, ? extends SQLException> closeProcessor,
-			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+			Pipeline<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor,
+			@Nullable Endpoint<? super Connection, ? extends SQLException> closeProcessor,
+			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
@@ -43,13 +43,13 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source,
-			@Nullable ConsumeProcessor<? super Connection, ? extends SQLException> closeProcessor,
-			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+			@Nullable Endpoint<? super Connection, ? extends SQLException> closeProcessor,
+			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);
 	}
 
 	public <T extends PreparedStatement> PreparedStatementOperations<T, ?> prepare(
-			Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
+			Pipeline<? super Connection, ? extends T, ? extends SQLException> processor) {
 		return new PreparedStatementOperations<>(this, processor, (e) -> e.close(), null);
 	}
 
@@ -79,7 +79,7 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public <T extends Statement, R extends StatementOperations<T, R>> StatementOperations<T, R> statement(
-			Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
+			Pipeline<? super Connection, ? extends T, ? extends SQLException> processor) {
 		return new StatementOperations<>(this, processor, (e) -> e.close(), null);
 	}
 }

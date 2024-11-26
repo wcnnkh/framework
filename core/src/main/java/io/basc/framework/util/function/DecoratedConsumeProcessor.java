@@ -1,15 +1,17 @@
 package io.basc.framework.util.function;
 
-public class DecoratedConsumeProcessor<S, E extends Throwable> implements ConsumeProcessor<S, E> {
+import io.basc.framework.util.Endpoint;
+
+public class DecoratedConsumeProcessor<S, E extends Throwable> implements Endpoint<S, E> {
 	private DecoratedConsumeProcessor<S, E> beforeProcessor;
 	private DecoratedConsumeProcessor<S, E> afterProcessor;
-	private final ConsumeProcessor<? super S, ? extends E> processor;
+	private final Endpoint<? super S, ? extends E> processor;
 
 	public DecoratedConsumeProcessor() {
 		this(null);
 	}
 
-	public DecoratedConsumeProcessor(ConsumeProcessor<? super S, ? extends E> processor) {
+	public DecoratedConsumeProcessor(Endpoint<? super S, ? extends E> processor) {
 		this.processor = processor;
 	}
 
@@ -35,7 +37,7 @@ public class DecoratedConsumeProcessor<S, E extends Throwable> implements Consum
 	 * @param processor
 	 * @return
 	 */
-	public DecoratedConsumeProcessor<S, E> before(ConsumeProcessor<? super S, ? extends E> processor) {
+	public DecoratedConsumeProcessor<S, E> before(Endpoint<? super S, ? extends E> processor) {
 		if (beforeProcessor == null) {
 			this.beforeProcessor = new DecoratedConsumeProcessor<>(processor);
 		} else {
@@ -50,7 +52,7 @@ public class DecoratedConsumeProcessor<S, E extends Throwable> implements Consum
 	 * @param processor
 	 * @return
 	 */
-	public DecoratedConsumeProcessor<S, E> after(ConsumeProcessor<? super S, ? extends E> processor) {
+	public DecoratedConsumeProcessor<S, E> after(Endpoint<? super S, ? extends E> processor) {
 		if (this.afterProcessor == null) {
 			this.afterProcessor = new DecoratedConsumeProcessor<>(processor);
 		} else {

@@ -12,8 +12,8 @@ import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement>, Properties {
@@ -41,7 +41,7 @@ public interface JsonArray extends Json<Integer>, Iterable<JsonElement>, Propert
 		});
 	}
 
-	default <T, E extends Throwable> List<T> convert(Processor<JsonElement, T, E> converter) throws E {
+	default <T, E extends Throwable> List<T> convert(Pipeline<JsonElement, T, E> converter) throws E {
 		if (isEmpty()) {
 			return Collections.emptyList();
 		}

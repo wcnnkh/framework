@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.function.Function;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.MessageListener;
 import io.basc.framework.redis.RedisInvalidSubscriptionException;
 import io.basc.framework.redis.Subscription;
+import io.basc.framework.util.codec.Codec;
 
 @SuppressWarnings("unchecked")
 public class ConvertibleSubscription<TK, TV, K, V> implements Subscription<K, V> {

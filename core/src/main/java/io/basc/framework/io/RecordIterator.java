@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CloseableIterator;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Source;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.support.RecordCodec;
 import io.basc.framework.util.function.StaticSupplier;
 
 /**

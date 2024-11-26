@@ -8,11 +8,11 @@ import java.util.function.Supplier;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CloseableIterator;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.RunnableProcessor;
-import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StaticSupplier;
 import io.basc.framework.util.function.StreamOperations;
 
@@ -23,31 +23,31 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 	}
 
 	public ResultSetOperations(Source<? extends ResultSet, ? extends SQLException> source,
-			@Nullable ConsumeProcessor<? super ResultSet, ? extends SQLException> closeProcessor,
-			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);
 	}
 
 	public ResultSetOperations(
-			Processor<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor) {
+			Pipeline<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor) {
 		super(sourceProcesor);
 	}
 
 	public ResultSetOperations(
-			Processor<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor,
-			@Nullable ConsumeProcessor<? super ResultSet, ? extends SQLException> closeProcessor,
-			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+			Pipeline<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor,
+			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
 	public <S> ResultSetOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
-			Processor<? super S, ? extends ResultSet, ? extends SQLException> processor,
-			@Nullable ConsumeProcessor<? super ResultSet, ? extends SQLException> closeProcessor,
-			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+			Pipeline<? super S, ? extends ResultSet, ? extends SQLException> processor,
+			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
-	public <E> Elements<E> rows(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
+	public <E> Elements<E> rows(Pipeline<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
 		return Elements.of(() -> {
 			ResultSetIterator resultSetIterator = new ResultSetIterator();
 			return Streams.stream(resultSetIterator).map((e) -> {

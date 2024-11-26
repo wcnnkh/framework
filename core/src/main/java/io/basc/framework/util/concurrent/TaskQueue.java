@@ -8,11 +8,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.sequences.StringSequence;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * 任务队列 默认是一个守护线程自动退出
@@ -25,6 +28,10 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 	private final BlockingQueue<Runnable> queue;
 	private boolean tryGet = true;
 	private AtomicBoolean started = new AtomicBoolean();
+	@NonNull
+	@Getter
+	@Setter
+	private StringSequence taskIdSequence = UUIDSequences.getInstance();
 
 	public TaskQueue() {
 		this(new LinkedBlockingQueue<>());
@@ -98,7 +105,7 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 	@Override
 	public <T> Future<T> submit(Callable<T> task) {
 		Assert.requiredArgument(task != null, "task");
-		final String taskId = XUtils.getUUID();
+		final String taskId = taskIdSequence.next();
 		FutureTask<T> future = new FutureTask<T>(task) {
 			@Override
 			public String toString() {

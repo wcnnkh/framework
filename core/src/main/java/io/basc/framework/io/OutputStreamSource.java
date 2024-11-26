@@ -5,8 +5,8 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
 
 public interface OutputStreamSource {
 	OutputStream getOutputStream() throws IOException;
@@ -15,7 +15,7 @@ public interface OutputStreamSource {
 		return Channels.newChannel(getOutputStream());
 	}
 
-	default <T, E extends Throwable> T write(Processor<? super OutputStream, ? extends T, ? extends E> processor)
+	default <T, E extends Throwable> T write(Pipeline<? super OutputStream, ? extends T, ? extends E> processor)
 			throws IOException, E {
 		OutputStream os = null;
 		try {
@@ -28,7 +28,7 @@ public interface OutputStreamSource {
 		}
 	}
 
-	default <E extends Throwable> void produce(ConsumeProcessor<? super OutputStream, ? extends E> processor)
+	default <E extends Throwable> void produce(Endpoint<? super OutputStream, ? extends E> processor)
 			throws IOException, E {
 		write((is) -> {
 			processor.process(is);

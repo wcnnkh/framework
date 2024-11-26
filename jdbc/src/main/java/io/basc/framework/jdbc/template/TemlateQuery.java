@@ -11,7 +11,7 @@ import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ElementsWrapper;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.page.Paginations;
 
 public class TemlateQuery<T> extends Query<T> {
@@ -19,7 +19,7 @@ public class TemlateQuery<T> extends Query<T> {
 	private transient final ConnectionFactory connectionFactory;
 	private transient final SqlDialect sqlDialect;
 	private transient final Sql sql;
-	private transient final Processor<ResultSet, T, ? extends Throwable> mapProcessor;
+	private transient final Pipeline<ResultSet, T, ? extends Throwable> mapProcessor;
 
 	@SuppressWarnings("unchecked")
 	public TemlateQuery(ConnectionFactory connectionFactory, Sql sql, SqlDialect sqlDialect, TypeDescriptor resultType) {
@@ -27,7 +27,7 @@ public class TemlateQuery<T> extends Query<T> {
 	}
 
 	public TemlateQuery(ConnectionFactory connectionFactory, Sql sql,
-			Processor<ResultSet, T, ? extends Throwable> mapProcessor, SqlDialect sqlDialect) {
+			Pipeline<ResultSet, T, ? extends Throwable> mapProcessor, SqlDialect sqlDialect) {
 		super(connectionFactory.operations().prepare(sql).query().rows(mapProcessor));
 		this.sql = sql;
 		this.connectionFactory = connectionFactory;

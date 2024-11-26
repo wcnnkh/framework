@@ -2,8 +2,8 @@ package io.basc.framework.data.kv;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.codec.Encoder;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.util.codec.Encoder;
 
 public interface TemporaryObjectCasOperationsWrapper<K> extends TemporaryObjectCasOperations<K>,
 		TemporaryObjectOperationsWrapper<K>, TemporaryKeyValueCasOperations<K, Object>, ObjectCasOperationsWrapper<K> {

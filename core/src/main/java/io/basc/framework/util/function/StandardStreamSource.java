@@ -1,5 +1,7 @@
 package io.basc.framework.util.function;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Source;
 import lombok.NonNull;
 
 public class StandardStreamSource<T, E extends Throwable, C extends StandardStreamSource<T, E, C>>
@@ -11,7 +13,7 @@ public class StandardStreamSource<T, E extends Throwable, C extends StandardStre
 	}
 
 	public StandardStreamSource(@NonNull Source<? extends T, ? extends E> source,
-			ConsumeProcessor<? super T, ? extends E> closeHandler) {
+			Endpoint<? super T, ? extends E> closeHandler) {
 		super(closeHandler);
 		this.source = source;
 	}

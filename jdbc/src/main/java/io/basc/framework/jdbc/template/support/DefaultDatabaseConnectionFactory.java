@@ -16,9 +16,9 @@ import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.Source;
 
 public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> implements DatabaseConnectionFactory {
 	private final F rawConnectionFactory;
@@ -48,7 +48,7 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 
 	protected <E extends Throwable> DefaultDatabaseConnectionFactory<F> getDatabaseConnectionFactory(
 			String databaseName, @Nullable Source<? extends F, ? extends E> defaultSource,
-			Processor<? super F, ? extends DefaultDatabaseConnectionFactory<F>, ? extends E> creator) throws E {
+			Pipeline<? super F, ? extends DefaultDatabaseConnectionFactory<F>, ? extends E> creator) throws E {
 		if (StringUtils.equals(getDatabaseName(), databaseName)) {
 			return this;
 		}

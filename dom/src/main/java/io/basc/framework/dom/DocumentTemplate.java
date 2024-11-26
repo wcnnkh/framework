@@ -22,9 +22,9 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
 
 public class DocumentTemplate implements Configurable, DocumentParser, DocumentWriter, DocumentTransformer {
 	protected final ConfigurableServices<DocumentTransformer> transformers = new ConfigurableServices<DocumentTransformer>(
@@ -101,7 +101,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource,
-			Processor<? super Document, ? extends T, ? extends E> processor) throws DomException {
+			Pipeline<? super Document, ? extends T, ? extends E> processor) throws DomException {
 		if (resource == null || !resource.exists()) {
 			return null;
 		}
@@ -121,7 +121,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		throw new UnsupportedException(resource.getDescription());
 	}
 
-	public <E extends Throwable> void read(Resource resource, ConsumeProcessor<Document, E> processor)
+	public <E extends Throwable> void read(Resource resource, Endpoint<Document, E> processor)
 			throws DomException {
 		parse(resource, (document) -> {
 			processor.process(document);

@@ -24,8 +24,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.function.IntPredicate;
 
-import io.basc.framework.util.function.Processor;
-
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
  * internal use within the framework; consider Jakarta's Commons Lang for a more
@@ -356,7 +354,7 @@ public abstract class NumberUtils {
 	 * @param units
 	 * @return
 	 */
-	public static <E extends Throwable> String format(BigDecimal number, Processor<BigDecimal, String, E> toString,
+	public static <E extends Throwable> String format(BigDecimal number, Pipeline<BigDecimal, String, E> toString,
 			NumberUnit... units) throws E {
 		Assert.requiredArgument(number != null, "number");
 		Assert.requiredArgument(toString != null, "toString");
@@ -370,7 +368,7 @@ public abstract class NumberUtils {
 	}
 
 	protected static <E extends Throwable> void format(StringBuilder sb, BigDecimal number,
-			Processor<BigDecimal, String, E> toString, int startUnitsIndex, int endUnitsIndex, NumberUnit... units)
+			Pipeline<BigDecimal, String, E> toString, int startUnitsIndex, int endUnitsIndex, NumberUnit... units)
 			throws E {
 		BigDecimal surplus = number;
 		for (int i = startUnitsIndex; i < Math.min(endUnitsIndex, units.length); i++) {
@@ -417,7 +415,7 @@ public abstract class NumberUtils {
 		}
 	}
 
-	public static <E extends Throwable> BigDecimal parse(String source, Processor<String, BigDecimal, E> converter,
+	public static <E extends Throwable> BigDecimal parse(String source, Pipeline<String, BigDecimal, E> converter,
 			NumberUnit... units) throws E {
 		for (NumberUnit unit : units) {
 			int index = source.indexOf(unit.getName());

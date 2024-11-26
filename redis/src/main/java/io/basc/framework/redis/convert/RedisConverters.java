@@ -1,8 +1,8 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.codec.Encoder;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Bound;
+import io.basc.framework.util.codec.Encoder;
 
 public class RedisConverters {
 	private static final String INCLUSIVE_LEFT = "[";

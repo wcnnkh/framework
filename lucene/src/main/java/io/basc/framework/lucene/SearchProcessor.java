@@ -10,11 +10,11 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 import lombok.Data;
 
 @Data
-public class SearchProcessor<T> implements Processor<IndexSearcher, SearchResults<T>, LuceneException> {
+public class SearchProcessor<T> implements Pipeline<IndexSearcher, SearchResults<T>, LuceneException> {
 	private final ScoreDoc after;
 	private final SearchParameters parameters;
 	private final LuceneTemplate luceneTemplete;

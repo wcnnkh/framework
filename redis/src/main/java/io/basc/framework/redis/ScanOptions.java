@@ -1,7 +1,7 @@
 package io.basc.framework.redis;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 
 public class ScanOptions<P> {
 
@@ -17,7 +17,7 @@ public class ScanOptions<P> {
 		return new ScanOptionsBuilder<P>();
 	}
 
-	public <T, E extends Throwable> ScanOptions<T> convert(Processor<? super P, ? extends T, ? extends E> converter)
+	public <T, E extends Throwable> ScanOptions<T> convert(Pipeline<? super P, ? extends T, ? extends E> converter)
 			throws E {
 		return new ScanOptions<T>(count, converter.process(pattern));
 	}

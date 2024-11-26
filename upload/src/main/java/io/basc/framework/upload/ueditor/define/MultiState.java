@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.codec.encode.UnicodeEncoder;
+import io.basc.framework.util.codec.encode.UnicodeEncoder;
 
 /**
  * 多状态集合状态 其包含了多个状态的集合, 其本身自己也是一个状态

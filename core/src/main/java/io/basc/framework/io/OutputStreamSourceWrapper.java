@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
 
 public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W> implements OutputStreamSource {
 
@@ -20,13 +20,13 @@ public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wra
 	}
 
 	@Override
-	public <E extends Throwable> void produce(ConsumeProcessor<? super OutputStream, ? extends E> processor)
+	public <E extends Throwable> void produce(Endpoint<? super OutputStream, ? extends E> processor)
 			throws IOException, E {
 		wrappedTarget.produce(processor);
 	}
 
 	@Override
-	public <T, E extends Throwable> T write(Processor<? super OutputStream, ? extends T, ? extends E> processor)
+	public <T, E extends Throwable> T write(Pipeline<? super OutputStream, ? extends T, ? extends E> processor)
 			throws IOException, E {
 		return wrappedTarget.write(processor);
 	}

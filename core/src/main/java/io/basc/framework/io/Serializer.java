@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
-import io.basc.framework.codec.support.SerializerCodec;
-import io.basc.framework.codec.support.ToBytesCodec;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.codec.support.SerializerCodec;
+import io.basc.framework.util.codec.support.ToBytesCodec;
 
 /**
  * 序列化与反序列化

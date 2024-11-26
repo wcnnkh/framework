@@ -6,8 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.Encoder;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.Encoder;
 import io.basc.framework.util.collect.CollectionUtils;
 
 public interface KeyValueOperationsWrapper<K, V> extends KeyValueOperations<K, V>, KeyOperationsWrapper<K> {

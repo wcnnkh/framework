@@ -5,9 +5,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 
-public interface OutputStreamProcessor<T> extends Processor<OutputStream, T, IOException> {
+public interface OutputStreamProcessor<T> extends Pipeline<OutputStream, T, IOException> {
 
 	public static OutputStreamProcessor<OutputStreamWriter> toOutputStreamWriter() {
 		return (os) -> new OutputStreamWriter(os);

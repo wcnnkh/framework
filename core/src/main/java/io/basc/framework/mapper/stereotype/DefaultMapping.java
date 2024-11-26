@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.SimpleNamed;
+import io.basc.framework.util.alias.SimpleNamed;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
 import lombok.Getter;

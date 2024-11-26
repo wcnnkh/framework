@@ -24,12 +24,12 @@ import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityRepository;
 import io.basc.framework.orm.config.AnalyzeExtender;
 import io.basc.framework.orm.config.Analyzer;
-import io.basc.framework.text.placeholder.PlaceholderFormat;
-import io.basc.framework.text.placeholder.PlaceholderFormatAware;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Symbol;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
 public class AnnotationAnalyzeExtender implements AnalyzeExtender, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;

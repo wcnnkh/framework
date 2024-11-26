@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.redis.convert.ConvertibleRedisResponse;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 
 public interface RedisResponse<T> extends Future<T> {
 	@Override
@@ -14,7 +14,7 @@ public interface RedisResponse<T> extends Future<T> {
 	@Override
 	T get(long timeout, TimeUnit unit) throws TimeoutException, RedisSystemException;
 
-	default <R> RedisResponse<R> map(Processor<? super T, ? extends R, ? extends RedisSystemException> converter) {
+	default <R> RedisResponse<R> map(Pipeline<? super T, ? extends R, ? extends RedisSystemException> converter) {
 		return new ConvertibleRedisResponse<>(this, converter);
 	}
 }

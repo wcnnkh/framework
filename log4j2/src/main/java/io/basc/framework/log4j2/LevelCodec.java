@@ -2,9 +2,9 @@ package io.basc.framework.log4j2;
 
 import java.util.logging.Level;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.EncodeException;
 import io.basc.framework.util.logging.CustomLevel;
 
 public class LevelCodec implements Codec<Level, org.apache.logging.log4j.Level> {

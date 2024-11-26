@@ -11,18 +11,18 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.Encoder;
-import io.basc.framework.codec.encode.MD5;
-import io.basc.framework.codec.encode.SHA1WithRSASigner;
-import io.basc.framework.codec.support.AES;
-import io.basc.framework.codec.support.Base64;
-import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.codec.support.DES;
-import io.basc.framework.codec.support.HexCodec;
-import io.basc.framework.codec.support.RSA;
-import io.basc.framework.codec.support.URLCodec;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.Encoder;
+import io.basc.framework.util.codec.encode.MD5;
+import io.basc.framework.util.codec.encode.SHA1WithRSASigner;
+import io.basc.framework.util.codec.support.AES;
+import io.basc.framework.util.codec.support.Base64;
+import io.basc.framework.util.codec.support.CharsetCodec;
+import io.basc.framework.util.codec.support.DES;
+import io.basc.framework.util.codec.support.HexCodec;
+import io.basc.framework.util.codec.support.RSA;
+import io.basc.framework.util.codec.support.URLCodec;
 
 public class CodecTest {
 	public static String content = XUtils.getUUID() + "这是一段加解密测试内容!";
@@ -116,7 +116,7 @@ public class CodecTest {
 	@Test
 	public void HmacSHA1() {
 		Encoder<String, String> mac = charsetCodec
-				.toEncoder(new io.basc.framework.codec.encode.HmacSHA1("1234".getBytes()).toHex());
+				.toEncoder(new io.basc.framework.util.codec.encode.HmacSHA1("1234".getBytes()).toHex());
 		String sign = mac.encode(content);
 		System.out.println("HmacSHA1:" + sign);
 		assertTrue(mac.verify(content, sign));
@@ -125,7 +125,7 @@ public class CodecTest {
 	@Test
 	public void HmacMD5() {
 		Encoder<String, String> mac = charsetCodec
-				.toEncoder(new io.basc.framework.codec.encode.HmacMD5("1234".getBytes()).toHex());
+				.toEncoder(new io.basc.framework.util.codec.encode.HmacMD5("1234".getBytes()).toHex());
 		String sign = mac.encode(content);
 		System.out.println("HmacMD5:" + sign);
 		assertTrue(mac.verify(content, sign));

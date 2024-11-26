@@ -1,7 +1,7 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.util.codec.Codec;
 
 public interface ObjectStorageWrapper<K>
 		extends ObjectStorage<K>, StorageWrapper<K, Object>, ObjectOperationsWrapper<K> {

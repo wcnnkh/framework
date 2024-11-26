@@ -3,9 +3,9 @@ package io.basc.framework.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.EncodeException;
 
 public final class MoneyFormat implements Codec<BigDecimal, String> {
 	/**

@@ -7,8 +7,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
 
 /**
  * Simple interface for objects that are sources for an {@link InputStream}.
@@ -39,7 +39,7 @@ public interface InputStreamSource {
 		return Channels.newChannel(getInputStream());
 	}
 
-	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)
+	default <T, E extends Throwable> T read(Pipeline<? super InputStream, ? extends T, ? extends E> processor)
 			throws IOException, E {
 		InputStream is = null;
 		try {
@@ -52,7 +52,7 @@ public interface InputStreamSource {
 		}
 	}
 
-	default <E extends Throwable> void consume(ConsumeProcessor<? super InputStream, ? extends E> processor)
+	default <E extends Throwable> void consume(Endpoint<? super InputStream, ? extends E> processor)
 			throws IOException, E {
 		read((is) -> {
 			processor.process(is);

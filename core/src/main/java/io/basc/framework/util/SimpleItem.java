@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import io.basc.framework.util.alias.Named;
+import io.basc.framework.util.alias.SimpleNamed;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

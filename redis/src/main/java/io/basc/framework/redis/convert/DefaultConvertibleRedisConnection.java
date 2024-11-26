@@ -1,7 +1,7 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.RedisConnection;
+import io.basc.framework.util.codec.Codec;
 
 public class DefaultConvertibleRedisConnection<C extends RedisConnection<SK, SV>, SK, K, SV, V, T extends DefaultConvertibleRedisConnection<C, SK, K, SV, V, T>>
 		extends RedisCodecAccess<SK, K, SV, V, T> implements ConvertibleRedisConnection<SK, K, SV, V> {

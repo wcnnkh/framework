@@ -1,5 +1,10 @@
 package io.basc.framework.util.function;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Source;
+
 public interface StreamOperations<T, E extends Throwable> extends StreamSource<T, E>, Closeable<E> {
 	@SuppressWarnings("unchecked")
 	public static <R, X extends Throwable> StreamOperations<R, X> of(Source<? extends R, ? extends X> source) {
@@ -10,7 +15,7 @@ public interface StreamOperations<T, E extends Throwable> extends StreamSource<T
 	}
 
 	@Override
-	default <X extends Throwable> void consume(ConsumeProcessor<? super T, ? extends X> processor) throws E, X {
+	default <X extends Throwable> void consume(Endpoint<? super T, ? extends X> processor) throws E, X {
 		try {
 			StreamSource.super.consume(processor);
 		} finally {
@@ -19,12 +24,12 @@ public interface StreamOperations<T, E extends Throwable> extends StreamSource<T
 	}
 
 	@Override
-	StreamOperations<T, E> onClose(ConsumeProcessor<? super T, ? extends E> closeHandler);
+	StreamOperations<T, E> onClose(Endpoint<? super T, ? extends E> closeHandler);
 
-	StreamOperations<T, E> onClose(RunnableProcessor<? extends E> closeHandler);
+	StreamOperations<T, E> onClose(Processor<? extends E> closeHandler);
 
 	@Override
-	default <R, X extends Throwable> R process(Processor<? super T, ? extends R, ? extends X> processor) throws E, X {
+	default <R, X extends Throwable> R process(Pipeline<? super T, ? extends R, ? extends X> processor) throws E, X {
 		try {
 			return StreamSource.super.process(processor);
 		} finally {
@@ -33,7 +38,7 @@ public interface StreamOperations<T, E extends Throwable> extends StreamSource<T
 	}
 
 	@Override
-	default <R> StreamOperations<R, E> stream(Processor<? super T, ? extends R, ? extends E> mapper) {
+	default <R> StreamOperations<R, E> stream(Pipeline<? super T, ? extends R, ? extends E> mapper) {
 		return new StandardStreamOperations<>(this, mapper, null, null);
 	}
 }

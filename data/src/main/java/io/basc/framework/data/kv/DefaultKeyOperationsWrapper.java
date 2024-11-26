@@ -1,7 +1,7 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.codec.Encoder;
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.codec.Encoder;
 
 public class DefaultKeyOperationsWrapper<K, KF extends Encoder<K, K>, W extends KeyOperations<K>> extends Wrapper<W>
 		implements KeyOperationsWrapper<K> {

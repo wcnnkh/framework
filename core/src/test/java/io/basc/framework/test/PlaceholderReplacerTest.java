@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.text.placeholder.support.SmartPlaceholderReplacer;
+import io.basc.framework.util.placeholder.support.SmartPlaceholderReplacer;
 
 public class PlaceholderReplacerTest {
 	@Test

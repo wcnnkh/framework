@@ -24,8 +24,8 @@ import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.function.Processor;
 
 @SuppressWarnings("unchecked")
 public interface LuceneTemplate extends EntityOperations {
@@ -122,7 +122,7 @@ public interface LuceneTemplate extends EntityOperations {
 		}
 	}
 
-	default <T, E extends Exception> T search(Processor<? super IndexSearcher, ? extends T, ? extends E> processor)
+	default <T, E extends Exception> T search(Pipeline<? super IndexSearcher, ? extends T, ? extends E> processor)
 			throws LuceneSearchException {
 		try {
 			return read((reader) -> {
@@ -147,7 +147,7 @@ public interface LuceneTemplate extends EntityOperations {
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters,
-			Processor<? super Document, ? extends T, ? extends LuceneException> mapProcessor)
+			Pipeline<? super Document, ? extends T, ? extends LuceneException> mapProcessor)
 			throws LuceneSearchException {
 		return search(parameters, new ScoreDocMapper<T>() {
 
@@ -160,7 +160,7 @@ public interface LuceneTemplate extends EntityOperations {
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
-			Processor<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
+			Pipeline<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
 		return searchAfter(after, parameters, new ScoreDocMapper<T>() {
 
 			@Override
@@ -191,9 +191,9 @@ public interface LuceneTemplate extends EntityOperations {
 		return searchAfter(after, parameters, TypeDescriptor.valueOf(resultType));
 	}
 
-	<T> Future<T> write(Processor<? super IndexWriter, ? extends T, ? extends Exception> processor);
+	<T> Future<T> write(Pipeline<? super IndexWriter, ? extends T, ? extends Exception> processor);
 
-	<T, E extends Throwable> T read(Processor<? super IndexReader, ? extends T, ? extends E> processor)
+	<T, E extends Throwable> T read(Pipeline<? super IndexReader, ? extends T, ? extends E> processor)
 			throws LuceneReadException, E;
 
 	default Future<Long> deleteAll() {

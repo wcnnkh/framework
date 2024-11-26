@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.retry.RetryCallback;
-import io.basc.framework.retry.RetryContext;
-import io.basc.framework.retry.RetryOperations;
-import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.transaction.Status;
 import io.basc.framework.transaction.Synchronization;
 import io.basc.framework.transaction.Transaction;
@@ -19,6 +15,10 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.retry.RetryCallback;
+import io.basc.framework.util.retry.RetryContext;
+import io.basc.framework.util.retry.RetryOperations;
+import io.basc.framework.util.retry.support.RetryTemplate;
 
 /**
  * 此实现通过重试来保证消息的可靠消费

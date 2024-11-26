@@ -6,8 +6,8 @@ import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Session;
 
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
 
 public class QueueConnectionOperations extends ConnectionOperations<Connection, Session, Queue> {
 
@@ -20,14 +20,14 @@ public class QueueConnectionOperations extends ConnectionOperations<Connection, 
 	}
 
 	public QueueConnectionOperations(ConnectionFactory connectionFactory,
-			Processor<? super Connection, ? extends Session, ? extends JMSException> connectionProcessor,
+			Pipeline<? super Connection, ? extends Session, ? extends JMSException> connectionProcessor,
 			String queueName) {
 		this(() -> connectionFactory.createConnection(), connectionProcessor, queueName);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Connection> QueueConnectionOperations(Source<? extends T, ? extends JMSException> source,
-			Processor<? super T, ? extends Session, ? extends JMSException> connectionProcessor, String queueName) {
+			Pipeline<? super T, ? extends Session, ? extends JMSException> connectionProcessor, String queueName) {
 		super(source, (t) -> connectionProcessor.process((T) t), (s) -> s.createQueue(queueName));
 	}
 }

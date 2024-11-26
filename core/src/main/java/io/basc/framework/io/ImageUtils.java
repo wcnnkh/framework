@@ -18,8 +18,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import io.basc.framework.codec.support.Base64;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.codec.support.Base64;
 
 public final class ImageUtils {
 	private ImageUtils() {

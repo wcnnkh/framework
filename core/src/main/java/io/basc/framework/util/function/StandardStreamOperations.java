@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Source;
+
 public class StandardStreamOperations<T, E extends Throwable, C extends StandardStreamOperations<T, E, C>>
 		extends StandardCloser<T, E, C> implements StreamOperations<T, E> {
-	private final Processor<? super C, ? extends T, ? extends E> sourceProcesor;
-	private List<ConsumeProcessor<? super T, ? extends E>> consumers;
+	private final Pipeline<? super C, ? extends T, ? extends E> sourceProcesor;
+	private List<Endpoint<? super T, ? extends E>> consumers;
 	private Supplier<? extends String> toString;
 
 	public StandardStreamOperations(Source<? extends T, ? extends E> source) {
@@ -15,8 +20,8 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 	}
 
 	public StandardStreamOperations(Source<? extends T, ? extends E> source,
-			ConsumeProcessor<? super T, ? extends E> closeProcessor, RunnableProcessor<? extends E> closeHandler) {
-		this(new Processor<C, T, E>() {
+			Endpoint<? super T, ? extends E> closeProcessor, Processor<? extends E> closeHandler) {
+		this(new Pipeline<C, T, E>() {
 
 			@Override
 			public T process(C operations) throws E {
@@ -30,20 +35,20 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 		}, closeProcessor, closeHandler);
 	}
 
-	public StandardStreamOperations(Processor<? super C, ? extends T, ? extends E> sourceProcesor) {
+	public StandardStreamOperations(Pipeline<? super C, ? extends T, ? extends E> sourceProcesor) {
 		this(sourceProcesor, null, null);
 	}
 
-	public StandardStreamOperations(Processor<? super C, ? extends T, ? extends E> sourceProcesor,
-			ConsumeProcessor<? super T, ? extends E> closeProcessor, RunnableProcessor<? extends E> closeHandler) {
+	public StandardStreamOperations(Pipeline<? super C, ? extends T, ? extends E> sourceProcesor,
+			Endpoint<? super T, ? extends E> closeProcessor, Processor<? extends E> closeHandler) {
 		super(closeHandler, closeProcessor);
 		this.sourceProcesor = sourceProcesor;
 	}
 
 	public <S> StandardStreamOperations(StreamOperations<S, ? extends E> sourceStreamOperations,
-			Processor<? super S, ? extends T, ? extends E> processor,
-			ConsumeProcessor<? super T, ? extends E> closeProcessor, RunnableProcessor<? extends E> closeHandler) {
-		this(new Processor<C, T, E>() {
+			Pipeline<? super S, ? extends T, ? extends E> processor,
+			Endpoint<? super T, ? extends E> closeProcessor, Processor<? extends E> closeHandler) {
+		this(new Pipeline<C, T, E>() {
 
 			@Override
 			public T process(C operations) throws E {
@@ -67,12 +72,12 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 	}
 
 	@Override
-	public C onClose(ConsumeProcessor<? super T, ? extends E> closeHandler) {
+	public C onClose(Endpoint<? super T, ? extends E> closeHandler) {
 		return super.onClose(closeHandler);
 	}
 
 	@Override
-	public C onClose(RunnableProcessor<? extends E> closeHandler) {
+	public C onClose(Processor<? extends E> closeHandler) {
 		return super.onClose(closeHandler);
 	}
 
@@ -82,7 +87,7 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 		T target = sourceProcesor.process((C) this);
 		if (consumers != null) {
 			try {
-				for (ConsumeProcessor<? super T, ? extends E> consumer : consumers) {
+				for (Endpoint<? super T, ? extends E> consumer : consumers) {
 					consumer.process(target);
 				}
 			} catch (Throwable e) {
@@ -98,7 +103,7 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 	}
 
 	@SuppressWarnings("unchecked")
-	public C after(ConsumeProcessor<? super T, ? extends E> consumer) {
+	public C after(Endpoint<? super T, ? extends E> consumer) {
 		if (consumers == null) {
 			consumers = new ArrayList<>();
 		}

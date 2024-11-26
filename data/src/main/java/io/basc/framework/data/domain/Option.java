@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.function.Processor;
+import io.basc.framework.util.Pipeline;
 
 public class Option<K, V> extends Pair<K, V> {
 	private static final long serialVersionUID = 1L;
@@ -23,7 +23,7 @@ public class Option<K, V> extends Pair<K, V> {
 	}
 
 	public static <K, V, S extends Option<K, V>, T, E extends Throwable> List<Tree<T>> parse(List<? extends S> options,
-			@Nullable K parentKey, Processor<? super S, ? extends T, ? extends E> processor) throws E {
+			@Nullable K parentKey, Pipeline<? super S, ? extends T, ? extends E> processor) throws E {
 		return Tree.parse(options, Option::getKey, parentKey, Option::getParentKey, processor);
 	}
 }

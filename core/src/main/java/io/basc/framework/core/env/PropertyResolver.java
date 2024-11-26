@@ -1,7 +1,7 @@
 package io.basc.framework.core.env;
 
-import io.basc.framework.text.placeholder.PlaceholderFormat;
-import io.basc.framework.text.placeholder.PlaceholderReplacer;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderReplacer;
 
 public interface PropertyResolver extends Properties, PlaceholderFormat {
 	PlaceholderReplacer getPlaceholderReplacer();

@@ -1,6 +1,6 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.codec.Codec;
+import io.basc.framework.util.codec.Codec;
 
 public interface RedisCodec<SK, K, SV, V> {
 	Codec<K, SK> getKeyCodec();

@@ -1,7 +1,7 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.RedisTransaction;
+import io.basc.framework.util.codec.Codec;
 
 public class DefaultConvertibleRedisTransactionsCommands<C extends RedisTransaction<SK, SV>, SK, K, SV, V, T extends DefaultConvertibleRedisTransactionsCommands<C, SK, K, SV, V, T>>
 		extends DefaultConvertibleRedisPipelineCommands<C, SK, K, SV, V, T>

@@ -18,11 +18,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.collect.CollectionUtils;
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
-import io.basc.framework.util.function.Source;
 
 public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 	/**
@@ -38,11 +38,11 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		this.nestedExecutor = nestedExecutor;
 	}
 
-	private final class InheritableProcessor<S, T, E extends Throwable> implements Processor<S, T, E> {
+	private final class InheritableProcessor<S, T, E extends Throwable> implements Pipeline<S, T, E> {
 		private A capture = capture();
-		private final Processor<? super S, ? extends T, ? extends E> processor;
+		private final Pipeline<? super S, ? extends T, ? extends E> processor;
 
-		InheritableProcessor(Processor<? super S, ? extends T, ? extends E> processor) {
+		InheritableProcessor(Pipeline<? super S, ? extends T, ? extends E> processor) {
 			this.processor = processor;
 		}
 
@@ -81,10 +81,10 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		return decorateSource(callable::call)::get;
 	}
 
-	public final <S, E extends Throwable> ConsumeProcessor<S, E> decorateConsumeProcessor(
-			ConsumeProcessor<? super S, ? extends E> consumeProcessor) {
+	public final <S, E extends Throwable> Endpoint<S, E> decorateConsumeProcessor(
+			Endpoint<? super S, ? extends E> consumeProcessor) {
 		Assert.requiredArgument(consumeProcessor != null, "consumeProcessor");
-		Processor<S, ?, E> processor = decorateProcessor((s) -> {
+		Pipeline<S, ?, E> processor = decorateProcessor((s) -> {
 			consumeProcessor.process(s);
 			return null;
 		});
@@ -93,18 +93,18 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 
 	public final <T> Consumer<T> decorateConsumer(Consumer<? super T> consumer) {
 		Assert.requiredArgument(consumer != null, "consumer");
-		ConsumeProcessor<T, RuntimeException> consumeProcessor = decorateConsumeProcessor(consumer::accept);
+		Endpoint<T, RuntimeException> consumeProcessor = decorateConsumeProcessor(consumer::accept);
 		return (s) -> consumeProcessor.process(s);
 	}
 
 	public final <T, R> Function<T, R> decorateFunction(Function<? super T, ? extends R> function) {
 		Assert.requiredArgument(function != null, "function");
-		Processor<T, R, RuntimeException> processor = decorateProcessor(function::apply);
+		Pipeline<T, R, RuntimeException> processor = decorateProcessor(function::apply);
 		return (s) -> processor.process(s);
 	}
 
-	public <S, T, E extends Throwable> Processor<S, T, E> decorateProcessor(
-			Processor<? super S, ? extends T, ? extends E> processor) {
+	public <S, T, E extends Throwable> Pipeline<S, T, E> decorateProcessor(
+			Pipeline<? super S, ? extends T, ? extends E> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		return new InheritableProcessor<>(processor);
 	}

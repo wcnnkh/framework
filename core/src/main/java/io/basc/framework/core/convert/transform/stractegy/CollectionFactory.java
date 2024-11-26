@@ -27,11 +27,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.SortedProperties;
 import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.collect.LinkedMultiValueMap;
 import io.basc.framework.util.collect.MultiValueMap;
-import io.basc.framework.util.function.Processor;
 import io.basc.framework.util.reflect.Fields;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
@@ -579,8 +579,8 @@ public final class CollectionFactory {
 	}
 
 	public static <K, V, SK, SV, E extends Throwable> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
-			Processor<? super SK, ? extends K, ? extends E> keyConverter,
-			Processor<? super SV, ? extends V, ? extends E> valueConverter) throws E {
+			Pipeline<? super SK, ? extends K, ? extends E> keyConverter,
+			Pipeline<? super SV, ? extends V, ? extends E> valueConverter) throws E {
 		if (CollectionUtils.isEmpty(sourceMap)) {
 			return Collections.emptyMap();
 		}

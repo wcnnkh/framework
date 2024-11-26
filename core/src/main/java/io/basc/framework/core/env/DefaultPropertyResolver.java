@@ -6,9 +6,9 @@ import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.core.convert.lang.ObjectValue;
 import io.basc.framework.observe.properties.DynamicPropertyRegistry;
-import io.basc.framework.text.placeholder.support.HierarchicalPlaceholderReplacer;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.placeholder.support.HierarchicalPlaceholderReplacer;
 import io.basc.framework.util.spi.Configurable;
 
 public class DefaultPropertyResolver extends DynamicPropertyRegistry

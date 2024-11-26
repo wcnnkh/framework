@@ -2,9 +2,11 @@ package io.basc.framework.util;
 
 import java.io.IOException;
 import java.util.Map.Entry;
+
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+
 import java.util.Properties;
 
-import io.basc.framework.text.placeholder.PlaceholderFormat;
 import lombok.NonNull;
 
 public final class FormatUtils {

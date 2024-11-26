@@ -18,9 +18,6 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.function.ConsumeProcessor;
-import io.basc.framework.util.function.Processor;
-
 public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamable<E>, Wrapper<W> {
 
 	@Override
@@ -59,7 +56,7 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
+	default <T, X extends Throwable> T export(Pipeline<? super Stream<E>, ? extends T, ? extends X> processor)
 			throws X {
 		return getSource().export(processor);
 	}
@@ -192,7 +189,7 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default <X extends Throwable> void transfer(ConsumeProcessor<? super Stream<E>, ? extends X> processor) throws X {
+	default <X extends Throwable> void transfer(Endpoint<? super Stream<E>, ? extends X> processor) throws X {
 		getSource().transfer(processor);
 	}
 

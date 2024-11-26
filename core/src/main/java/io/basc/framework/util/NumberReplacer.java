@@ -2,9 +2,9 @@ package io.basc.framework.util;
 
 import java.math.BigDecimal;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
+import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.codec.DecodeException;
+import io.basc.framework.util.codec.EncodeException;
 
 public final class NumberReplacer implements Codec<BigDecimal, String> {
 	private static final String[] CHINESE_NUMBERS = new String[] { "零", "一",
