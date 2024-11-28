@@ -3,13 +3,12 @@ package io.basc.framework.util;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
+import io.basc.framework.util.Optional.SharedOptional;
 import io.basc.framework.util.collect.CollectionUtils;
-import io.basc.framework.util.function.DefaultOptional;
 import lombok.NonNull;
 
-public final class Bound<T> extends DefaultOptional<T> {
+public final class Bound<T> extends SharedOptional<T, RuntimeException> {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" }) //
@@ -60,16 +59,6 @@ public final class Bound<T> extends DefaultOptional<T> {
 
 	public <U> Bound<U> convert(Function<? super T, ? extends U> converter) {
 		return new Bound<U>(converter.apply(orElse(null)), inclusive);
-	}
-
-	@Override
-	public <U> Bound<U> map(Function<? super T, ? extends U> mapper) {
-		return convert((e) -> e == null ? null : mapper.apply(e));
-	}
-
-	@Override
-	public Bound<T> filter(Predicate<? super T> predicate) {
-		return convert((e) -> (e != null && predicate.test(e)) ? e : null);
 	}
 
 	/**

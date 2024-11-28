@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.math.Addition;
 import io.basc.framework.util.math.NumberComparator;
 import lombok.NonNull;
@@ -501,7 +500,7 @@ public final class RandomUtils {
 				continue;
 			}
 
-			Number itemWeight = weightProcessor.process(item);
+			Number itemWeight = weightProcessor.apply(item);
 			if (itemWeight == null) {
 				continue;
 			}
@@ -552,7 +551,7 @@ public final class RandomUtils {
 				continue;
 			}
 
-			Number weight = weightProcessor.process(item);
+			Number weight = weightProcessor.apply(item);
 			if (weight == null) {
 				continue;
 			}
@@ -584,8 +583,9 @@ public final class RandomUtils {
 	 * @return
 	 * @throws E
 	 */
-	public static <T, E extends Throwable> T random(Number totalWeight, Iterator<? extends T> iterator,
-			Pipeline<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+	public static <T, E extends Throwable> T random(@NonNull Number totalWeight,
+			@NonNull Iterator<? extends T> iterator, @NonNull Pipeline<T, Number, E> weightProcessor,
+			Predicate<? super T> removePredicate) throws E {
 		return random(totalWeight, random(1, Addition.INSTANCE.eval(totalWeight, 1)), iterator, weightProcessor,
 				removePredicate);
 	}
@@ -603,16 +603,14 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
-			Pipeline<T, Number, E> weightProcessor, Pipeline<Number, Number, E> randomProcessor,
-			@Nullable Predicate<? super T> removePredicate) throws E {
-		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
-		Assert.requiredArgument(randomProcessor != null, "randomProcessor");
+			@NonNull Pipeline<T, Number, E> weightProcessor, @NonNull Pipeline<Number, Number, E> randomProcessor,
+			Predicate<? super T> removePredicate) throws E {
 		if (iterable == null) {
 			return null;
 		}
 
 		Number totalWegith = getWeight(iterable.iterator(), weightProcessor);
-		Number randomWeight = randomProcessor.process(totalWegith);
+		Number randomWeight = randomProcessor.apply(totalWegith);
 		if (randomWeight == null) {
 			return null;
 		}
@@ -630,8 +628,8 @@ public final class RandomUtils {
 	 * @return
 	 * @throws E
 	 */
-	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
-			Pipeline<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+	public static <T, E extends Throwable> T random(@NonNull Iterable<? extends T> iterable,
+			@NonNull Pipeline<T, Number, E> weightProcessor, Predicate<? super T> removePredicate) throws E {
 		return random(iterable, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}
 }

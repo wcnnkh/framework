@@ -1,25 +1,68 @@
 package io.basc.framework.util;
 
-import java.util.function.Supplier;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public interface Pool<T> extends Supplier<T> {
-	T get();
+public interface Pool<T, E extends Throwable> extends Source<T, E> {
+	public static class PoolChannel<T, E extends Throwable, W extends Pool<T, E>> extends SourceChannel<T, E, W> {
 
-	void release(T resource);
+		public PoolChannel(@NonNull W source, Processor<? extends E> processor) {
+			super(source, processor);
+		}
 
-	default <V, E extends Throwable> V process(Pipeline<? super T, ? extends V, ? extends E> processor) throws E {
-		T resource = get();
-		try {
-			return processor.process(resource);
-		} finally {
-			release(resource);
+		@Override
+		public void close() throws E {
+			synchronized (this) {
+				if (!isClosed()) {
+					try {
+						super.close();
+					} finally {
+						source.close(get());
+					}
+				}
+			}
 		}
 	}
 
-	default <E extends Throwable> void consume(Endpoint<? super T, ? extends E> processor) throws E {
-		process((e) -> {
-			processor.process(e);
-			return null;
-		});
+	@RequiredArgsConstructor
+	public static class MappedPool<S, T, E extends Throwable, W extends Pool<S, E>> implements Pool<T, E> {
+		@NonNull
+		protected final W source;
+		@NonNull
+		protected final Pipeline<? super S, ? extends T, ? extends E> pipeline;
+		protected final Endpoint<? super T, ? extends E> endpoint;
+
+		@Override
+		public T get() throws E {
+			S target = this.source.get();
+			try {
+				return pipeline.apply(target);
+			} finally {
+				source.close(target);
+			}
+		}
+
+		@Override
+		public void close(T target) throws E {
+			if (endpoint != null) {
+				endpoint.accept(target);
+			}
+		}
+	}
+
+	@Override
+	default <R> Pool<R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
+		return new MappedPool<>(this, pipeline, null);
+	}
+
+	void close(T target) throws E;
+
+	@Override
+	default Channel<T, E> onClose(@NonNull Processor<? extends E> processor) {
+		return new PoolChannel<>(this, processor);
+	}
+
+	default Channel<T, E> newChannel() {
+		return new PoolChannel<>(this, null);
 	}
 }

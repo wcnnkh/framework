@@ -121,12 +121,12 @@ public interface Streamable<E> {
 			throws X {
 		Stream<E> stream = stream();
 		try {
-			return processor.process(stream);
+			return processor.apply(stream);
 		} finally {
 			stream.close();
 		}
 	}
-	
+
 	/**
 	 * 调用{@link #export(Pipeline)}
 	 * 
@@ -382,7 +382,7 @@ public interface Streamable<E> {
 	default <X extends Throwable> void transfer(Endpoint<? super Stream<E>, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
-			processor.process(stream);
+			processor.accept(stream);
 		} finally {
 			stream.close();
 		}

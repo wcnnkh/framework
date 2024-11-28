@@ -19,42 +19,6 @@ import lombok.RequiredArgsConstructor;
 @FunctionalInterface
 public interface Pipeline<S, T, E extends Throwable> {
 
-	@RequiredArgsConstructor
-	@Getter
-	public static class CloseablePipeline<S, T, E extends Throwable, W extends Pipeline<S, T, E>>
-			implements PipelineWrapper<S, T, E, W> {
-		@NonNull
-		private final W source;
-		@NonNull
-		private final Endpoint<? super T, ? extends E> closeHandler;
-
-		@Override
-		public T apply(S source) throws E {
-			T target = PipelineWrapper.super.apply(source);
-			try {
-				return target;
-			} finally {
-				closeHandler.accept(target);
-			}
-		}
-
-		@Override
-		public Pipeline<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> closeHandler) {
-			return new CloseablePipeline<>(this.source, (s) -> {
-				try {
-					closeHandler.accept(s);
-				} finally {
-					Pipeline.CloseablePipeline.this.closeHandler.accept(s);
-				}
-			});
-		}
-
-		@Override
-		public <R> Pipeline<S, R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> mapper) {
-			return new MappedPipeline<>(this.source, mapper, this.closeHandler);
-		}
-	}
-
 	public static class IdentityPipeline<T, E extends Throwable> implements Pipeline<T, T, E> {
 
 		@Override
@@ -146,11 +110,46 @@ public interface Pipeline<S, T, E extends Throwable> {
 
 	T apply(S source) throws E;
 
-	default <R> Pipeline<S, R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> mapper) {
-		return new MappedPipeline<>(this, mapper, null);
+	default <R> Pipeline<S, R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
+		return new MappedPipeline<>(this, pipeline, null);
 	}
 
-	default Pipeline<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> closeHandler) {
-		return new CloseablePipeline<>(this, closeHandler);
+	@RequiredArgsConstructor
+	@Getter
+	public static class PipelineReactor<S, T, E extends Throwable> implements Reactor<S, T, E> {
+		@NonNull
+		private final Pipeline<S, T, E> source;
+		@NonNull
+		private final Endpoint<? super T, ? extends E> endpoint;
+
+		@Override
+		public T apply(S source) throws E {
+			T target = this.source.apply(source);
+			try {
+				return target;
+			} finally {
+				close(target);
+			}
+		}
+
+		@Override
+		public void close(T target) throws E {
+			endpoint.accept(target);
+		}
+
+		@Override
+		public Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+			return new PipelineReactor<>(this.source, (target) -> {
+				try {
+					endpoint.accept(target);
+				} finally {
+					Pipeline.PipelineReactor.this.close(target);
+				}
+			});
+		}
+	}
+
+	default Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+		return new PipelineReactor<>(this, endpoint);
 	}
 }

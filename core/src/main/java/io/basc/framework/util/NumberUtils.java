@@ -359,7 +359,7 @@ public abstract class NumberUtils {
 		Assert.requiredArgument(number != null, "number");
 		Assert.requiredArgument(toString != null, "toString");
 		if (units == null || units.length == 0 || number.compareTo(BigDecimal.ZERO) == 0) {
-			return toString.process(number.abs());
+			return toString.apply(number.abs());
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -397,7 +397,7 @@ public abstract class NumberUtils {
 			// 如果小于1那个取模就会越来越大
 					|| unit.getRadix().compareTo(BigDecimal.ONE) < 0;
 			if (notNested) {
-				sb.append(toString.process(decimals[0]));
+				sb.append(toString.apply(decimals[0]));
 			} else {
 				format(sb, decimals[0], toString, i, units.length - 1, units);
 			}
@@ -405,13 +405,13 @@ public abstract class NumberUtils {
 			sb.append(unit.getName());
 			if (!notNested && i < units.length - 1
 					&& decimals[1].divideToIntegralValue(units[i + 1].getRadix()).compareTo(BigDecimal.ZERO) == 0) {
-				sb.append(toString.process(BigDecimal.ZERO));
+				sb.append(toString.apply(BigDecimal.ZERO));
 			}
 			surplus = decimals[1];
 		}
 
 		if (surplus.compareTo(BigDecimal.ZERO) > 0) {
-			sb.append(toString.process(surplus));
+			sb.append(toString.apply(surplus));
 		}
 	}
 
@@ -431,7 +431,7 @@ public abstract class NumberUtils {
 			}
 			return value;
 		}
-		return converter.process(source);
+		return converter.apply(source);
 	}
 
 	/**

@@ -80,4 +80,8 @@ public interface Endpoint<S, E extends Throwable> {
 	default <T> Endpoint<T, E> map(@NonNull Pipeline<? super T, ? extends S, ? extends E> mapper) {
 		return new MappedEndpoint<>(this, mapper);
 	}
+
+	default Endpoint<S, E> onClose(Endpoint<? super S, ? extends E> endpoint) {
+		return null;
+	}
 }

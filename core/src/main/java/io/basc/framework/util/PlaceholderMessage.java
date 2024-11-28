@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
 public final class PlaceholderMessage implements AppendTo, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;
 	private final Object msg;
 	private final Object[] args;
 	private final String placeholder;
 
-	public PlaceholderMessage(Object msg, @Nullable String placeholder, Object[] args) {
+	public PlaceholderMessage(Object msg, String placeholder, Object[] args) {
 		this.msg = msg;
 		this.placeholder = placeholder;
 		this.args = args;
@@ -33,7 +31,7 @@ public final class PlaceholderMessage implements AppendTo, Serializable, Supplie
 	public void appendTo(Appendable appendable) throws IOException {
 		FormatUtils.formatPlaceholder(appendable, msg, placeholder, args);
 	}
-	
+
 	@Override
 	public String get() {
 		return toString();

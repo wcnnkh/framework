@@ -23,6 +23,7 @@ import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.collect.CollectionUtils;
+import lombok.NonNull;
 
 public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 	/**
@@ -47,10 +48,10 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		}
 
 		@Override
-		public T process(S source) throws E {
+		public T apply(S source) throws E {
 			B backup = replay(capture);
 			try {
-				return processor.process(source);
+				return processor.apply(source);
 			} finally {
 				restore(backup);
 			}
@@ -82,25 +83,23 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 	}
 
 	public final <S, E extends Throwable> Endpoint<S, E> decorateConsumeProcessor(
-			Endpoint<? super S, ? extends E> consumeProcessor) {
-		Assert.requiredArgument(consumeProcessor != null, "consumeProcessor");
+			@NonNull Endpoint<? super S, ? extends E> consumeProcessor) {
 		Pipeline<S, ?, E> processor = decorateProcessor((s) -> {
-			consumeProcessor.process(s);
+			consumeProcessor.accept(s);
 			return null;
 		});
-		return (s) -> processor.process(s);
+		return (s) -> processor.apply(s);
 	}
 
-	public final <T> Consumer<T> decorateConsumer(Consumer<? super T> consumer) {
-		Assert.requiredArgument(consumer != null, "consumer");
+	public final <T> Consumer<T> decorateConsumer(@NonNull Consumer<? super T> consumer) {
 		Endpoint<T, RuntimeException> consumeProcessor = decorateConsumeProcessor(consumer::accept);
-		return (s) -> consumeProcessor.process(s);
+		return (s) -> consumeProcessor.accept(s);
 	}
 
 	public final <T, R> Function<T, R> decorateFunction(Function<? super T, ? extends R> function) {
 		Assert.requiredArgument(function != null, "function");
 		Pipeline<T, R, RuntimeException> processor = decorateProcessor(function::apply);
-		return (s) -> processor.process(s);
+		return (s) -> processor.apply(s);
 	}
 
 	public <S, T, E extends Throwable> Pipeline<S, T, E> decorateProcessor(

@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * Simple stop watch, allowing for timing of a number of tasks, exposing total
  * running time and running time for each named task.
@@ -43,10 +41,8 @@ public class StopWatch {
 	private long startTimeNanos;
 
 	/** Name of the current task. */
-	@Nullable
 	private String currentTaskName;
 
-	@Nullable
 	private TaskInfo lastTaskInfo;
 
 	private int taskCount;
@@ -168,7 +164,6 @@ public class StopWatch {
 	 * 
 	 * @see #isRunning()
 	 */
-	@Nullable
 	public String currentTaskName() {
 		return this.currentTaskName;
 	}
