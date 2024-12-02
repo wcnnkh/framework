@@ -21,9 +21,9 @@ import io.basc.framework.core.SerializableTypeWrapper.MethodParameterTypeProvide
 import io.basc.framework.core.SerializableTypeWrapper.TypeProvider;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 /**
  * Encapsulates a Java {@link java.lang.reflect.Type}, providing access to

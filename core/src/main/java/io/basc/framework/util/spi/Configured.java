@@ -1,7 +1,6 @@
 package io.basc.framework.util.spi;
 
 import io.basc.framework.util.Receipt;
-import io.basc.framework.util.ReceiptWrapper;
 import io.basc.framework.util.Registration;
 import lombok.NonNull;
 

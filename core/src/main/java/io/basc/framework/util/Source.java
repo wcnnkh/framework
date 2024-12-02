@@ -81,12 +81,13 @@ public interface Source<T, E extends Throwable> {
 	}
 
 	@RequiredArgsConstructor
-	public static class SourceChannel<T, E extends Throwable, W extends Source<T, E>> implements Channel<T, E> {
+	public static class SourceChannel<T, E extends Throwable, W extends Source<? extends T, ? extends E>>
+			implements Channel<T, E> {
 		@NonNull
 		@Getter
 		protected final W source;
 		protected final Processor<? extends E> processor;
-		private final AtomicBoolean closed = new AtomicBoolean(true);
+		private final AtomicBoolean closed = new AtomicBoolean(false);
 		private volatile Supplier<T> supplier;
 
 		@Override
@@ -96,7 +97,6 @@ public interface Source<T, E extends Throwable> {
 					if (supplier == null) {
 						T target = source.get();
 						supplier = () -> target;
-						closed.compareAndSet(true, false);
 					}
 				}
 			}

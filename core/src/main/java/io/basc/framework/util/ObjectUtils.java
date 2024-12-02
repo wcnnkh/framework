@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
-import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**

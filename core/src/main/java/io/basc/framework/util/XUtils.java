@@ -3,23 +3,12 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.basc.framework.io.FileUtils;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.concurrent.ThreadPerTaskExecutor;
 
 public final class XUtils {
-	private static final boolean ENABLE_COMMON_POOL = (ForkJoinPool.getCommonPoolParallelism() > 1);
-	/**
-	 * Default executor -- ForkJoinPool.commonPool() unless it cannot support
-	 * parallelism.
-	 */
-	private static final Executor COMMON_EXECUTOR = ENABLE_COMMON_POOL ? ForkJoinPool.commonPool()
-			: new ThreadPerTaskExecutor();
 
 	private static final Predicate<?> ALWAYS_TRUE_PREDICATE = (e) -> true;
 
@@ -142,26 +131,6 @@ public final class XUtils {
 			}
 		}
 		return null;
-	}
-
-	public static <E extends Throwable> Processor<E> composeWithExceptions(Processor<? extends E> a,
-			Processor<? extends E> b) {
-		return () -> {
-			try {
-				a.process();
-			} catch (Throwable e1) {
-				try {
-					b.process();
-				} catch (Throwable e2) {
-					try {
-						e1.addSuppressed(e2);
-					} catch (Throwable ignore) {
-					}
-				}
-				throw e1;
-			}
-			b.process();
-		};
 	}
 
 	/**

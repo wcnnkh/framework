@@ -10,10 +10,10 @@ import java.util.function.Supplier;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 /**
  * 使用反射调用api，不安全的调用
@@ -54,7 +54,7 @@ public class ReflectionApi implements Supplier<Object> {
 		}
 
 		try {
-			return processor.process(this.declaringClass);
+			return processor.apply(this.declaringClass);
 		} catch (Throwable e) {
 			throw new IllegalStateException(this.declaringClass.getName(), e);
 		}

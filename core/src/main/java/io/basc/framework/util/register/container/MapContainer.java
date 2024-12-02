@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.EmptyRegistrations;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Receipt;
@@ -29,6 +28,7 @@ import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.register.KeyValueRegistry;
 import io.basc.framework.util.register.RegistrationException;
+import io.basc.framework.util.register.container.EntryRegistration.StandardEntryRegistrationWrapper;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

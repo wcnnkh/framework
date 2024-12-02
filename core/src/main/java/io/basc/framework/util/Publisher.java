@@ -8,6 +8,16 @@ package io.basc.framework.util;
  * @param <T>
  */
 public interface Publisher<T> {
+
+	public static class EmptyPublisher<T> implements Publisher<T> {
+
+		@Override
+		public Receipt publish(T resource) {
+			return Receipt.SUCCESS;
+		}
+
+	}
+
 	public static Publisher<?> EMPTY_PUBLISHER = new EmptyPublisher<>();
 
 	@SuppressWarnings("unchecked")

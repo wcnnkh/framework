@@ -8,9 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.AbstractMultiValueMap;
+import io.basc.framework.util.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.AbstractMultiValueMap;
-import io.basc.framework.util.collect.LinkedCaseInsensitiveMap;
 
 public class Headers extends AbstractMultiValueMap<String, String> {
 	private static final long serialVersionUID = 1L;

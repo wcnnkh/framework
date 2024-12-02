@@ -1,11 +1,53 @@
 package io.basc.framework.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
 public interface Registration {
+
+	public static interface RegistrationWrapper<W extends Registration> extends Registration, Wrapper<W> {
+		@Override
+		default boolean isCancellable() {
+			return getSource().isCancellable();
+		}
+
+		@Override
+		default boolean cancel() {
+			return getSource().cancel();
+		}
+
+		@Override
+		default boolean isCancelled() {
+			return getSource().isCancelled();
+		}
+	}
+
+	@RequiredArgsConstructor
+	public static class Registed implements Registration, Serializable {
+		private static final long serialVersionUID = 1L;
+		private final boolean cancelled;
+
+		@Override
+		public boolean cancel() {
+			return false;
+		}
+
+		@Override
+		public boolean isCancellable() {
+			return false;
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return cancelled;
+		}
+	}
+
 	static final Registration FAILURE = new Registed(true);
 	static final Registration SUCCESS = new Registed(false);
 
@@ -57,12 +99,12 @@ public interface Registration {
 
 			E registration;
 			try {
-				registration = register.process(service);
+				registration = register.apply(service);
 			} catch (Throwable e) {
 				if (registrations != null) {
 					try {
 						Collections.reverse(registrations);
-						Endpoint.consumeAll(registrations, (reg) -> reg.cancel());
+						Endpoint.acceptAll(registrations.iterator(), (reg) -> reg.cancel());
 					} catch (Throwable e2) {
 						e.addSuppressed(e2);
 					}

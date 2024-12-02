@@ -4,7 +4,7 @@ import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

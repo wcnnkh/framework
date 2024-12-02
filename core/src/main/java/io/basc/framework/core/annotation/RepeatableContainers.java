@@ -22,8 +22,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 
 /**
  * Strategy used to determine annotations that act as containers for other

@@ -10,6 +10,25 @@ import io.basc.framework.util.Registration;
  *
  */
 public interface LifecycleRegistration extends Registration, Lifecycle {
+
+	public static interface LifecycleRegistrationWrapper<W extends LifecycleRegistration>
+			extends LifecycleRegistration, RegistrationWrapper<W> {
+		@Override
+		default void start() {
+			getSource().start();
+		}
+
+		@Override
+		default void stop() {
+			getSource().stop();
+		}
+
+		@Override
+		default boolean isRunning() {
+			return getSource().isRunning();
+		}
+	}
+
 	/**
 	 * 在注册成功后调用此方法
 	 */

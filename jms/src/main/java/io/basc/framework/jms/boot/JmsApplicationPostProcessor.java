@@ -17,7 +17,7 @@ import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.MethodInvoker;
-import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)

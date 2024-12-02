@@ -10,6 +10,12 @@ public class SourceTest {
 			System.out.println("get:" + t);
 			return t;
 		};
+		
+		source.onClose((e) -> System.out.println("映射结束")).newChannel().map((e) -> {
+			System.out.println("进行映射");
+			return e;
+		}).export().isPresent();
+		
 		Pool<Object, Throwable> pool = source.onClose((e) -> System.out.println("close1:" + e));
 		Channel<?, ?> channel = pool.newChannel().map((t) -> "-" + t).onClose((e) -> System.out.println("close2:" + e))
 				.map((e) -> "-" + e).newChannel().newChannel().map((e) -> "-" + e)

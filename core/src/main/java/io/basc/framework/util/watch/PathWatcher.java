@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ElementsWrapper;
+import io.basc.framework.util.Elements.ElementsWrapper;
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Registration;

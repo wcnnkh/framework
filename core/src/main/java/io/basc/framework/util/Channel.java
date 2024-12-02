@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public interface Channel<T, E extends Throwable> extends Source<T, E> {
+public interface Channel<T, E extends Throwable> extends Source<T, E>, Target<T, E> {
 
 	public static class ChannelPool<T, E extends Throwable, W extends Channel<T, E>> extends SourcePool<T, E, W>
 			implements Pool<T, E> {
@@ -73,7 +73,11 @@ public interface Channel<T, E extends Throwable> extends Source<T, E> {
 
 		@Override
 		public void close() throws E {
-			source.close();
+			try {
+				get();
+			} finally {
+				source.close();
+			}
 		}
 
 		@Override

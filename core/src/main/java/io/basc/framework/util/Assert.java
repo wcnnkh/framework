@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import io.basc.framework.io.FilenameUtils;
-import io.basc.framework.util.collect.CollectionUtils;
 
 /**
  * Assertion utility class that assists in validating arguments. Useful for

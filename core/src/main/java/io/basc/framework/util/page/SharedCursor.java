@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ListElements;
-import io.basc.framework.util.StandardListElements;
+import io.basc.framework.util.Elements.ListElementsWrapper;
+import io.basc.framework.util.Elements.StandardListElements;
 import lombok.NonNull;
 
 public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {
@@ -31,8 +31,8 @@ public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializ
 	}
 
 	@Override
-	public ListElements<T> getElements() {
-		return (ListElements<T>) super.getElements();
+	public ListElementsWrapper<T, ?> getElements() {
+		return (ListElementsWrapper<T, ?>) super.getElements();
 	}
 
 	@Override

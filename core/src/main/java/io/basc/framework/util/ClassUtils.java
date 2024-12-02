@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.basc.framework.lang.Ignore;
-import io.basc.framework.util.collect.CollectionUtils;
 import io.basc.framework.util.page.Browseable;
 import io.basc.framework.util.page.StandardBrowseable;
 import io.basc.framework.util.page.StandardCursor;
@@ -562,7 +561,7 @@ public final class ClassUtils {
 		return new StandardBrowseable<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new StandardCursor<>(c, new StandardListElements<>(list), c.getSuperclass());
+			return new StandardCursor<>(c, Elements.of(list), c.getSuperclass());
 		});
 	}
 

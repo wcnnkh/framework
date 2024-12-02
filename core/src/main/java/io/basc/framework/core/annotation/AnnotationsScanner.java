@@ -28,8 +28,8 @@ import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**

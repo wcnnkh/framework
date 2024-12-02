@@ -14,7 +14,7 @@ import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 public final class ParameterUtils {

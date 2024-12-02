@@ -13,6 +13,31 @@ import io.basc.framework.util.Registration;
  * @param <T>
  */
 public interface ListenableRegistration<T extends Receipt> extends Listenable<T>, Registration {
+
+	public static interface ListenableRegistrationWrapper<T extends Receipt, W extends ListenableRegistration<T>>
+			extends ListenableRegistration<T>, RegistrationWrapper<W> {
+
+		@Override
+		default Registration registerListener(Listener<? super T> listener) {
+			return getSource().registerListener(listener);
+		}
+
+		@Override
+		default ListenableRegistration<T> onComplete(Listener<? super T> listener) {
+			return getSource().onComplete(listener);
+		}
+
+		@Override
+		default ListenableRegistration<T> onFailure(Listener<? super T> listener) {
+			return getSource().onFailure(listener);
+		}
+
+		@Override
+		default ListenableRegistration<T> onSuccess(Listener<? super T> listener) {
+			return getSource().onSuccess(listener);
+		}
+	}
+
 	default ListenableRegistration<T> onComplete(Listener<? super T> listener) {
 		registerListener((event) -> {
 			if (event.isDone()) {

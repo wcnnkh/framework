@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 
 /**
  * Provides {@link AnnotationTypeMapping} information for a single source

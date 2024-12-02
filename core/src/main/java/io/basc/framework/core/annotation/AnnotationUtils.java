@@ -33,8 +33,8 @@ import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.annotation.AnnotationTypeMapping.MirrorSets.MirrorSet;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**

@@ -13,9 +13,9 @@ import io.basc.framework.redis.RedisSortedSetsCommands;
 import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collect.CollectionUtils;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>

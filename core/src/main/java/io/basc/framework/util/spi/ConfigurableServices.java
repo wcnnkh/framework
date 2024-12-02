@@ -6,6 +6,7 @@ import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.spi.Include.IncludeWrapper;
 import lombok.RequiredArgsConstructor;
 
 public class ConfigurableServices<S> extends Services<S> implements Configurable {

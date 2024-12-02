@@ -21,7 +21,7 @@ import java.util.Map;
 
 import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
-import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.core.annotation.MergedAnnotationCollectors;
 import io.basc.framework.core.annotation.MergedAnnotationPredicates;
 import io.basc.framework.core.annotation.MergedAnnotationSelectors;

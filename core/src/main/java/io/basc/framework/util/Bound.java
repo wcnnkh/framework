@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import io.basc.framework.util.Optional.SharedOptional;
-import io.basc.framework.util.collect.CollectionUtils;
 import lombok.NonNull;
 
 public final class Bound<T> extends SharedOptional<T, RuntimeException> {

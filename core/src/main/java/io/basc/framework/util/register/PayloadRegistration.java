@@ -2,8 +2,67 @@ package io.basc.framework.util.register;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
+import lombok.NonNull;
 
 public interface PayloadRegistration<T> extends Registration {
+
+	public static class StandardPayloadRegistrationWrapper<S, W extends PayloadRegistration<S>>
+			extends StandardRegistrationWrapper<W> implements PayloadRegistrationWrapper<S, W> {
+
+		public StandardPayloadRegistrationWrapper(@NonNull W source,
+				@NonNull Elements<Registration> relatedRegistrations) {
+			super(source, relatedRegistrations);
+		}
+
+		protected StandardPayloadRegistrationWrapper(StandardRegistrationWrapper<W> context) {
+			super(context);
+		}
+
+		@Override
+		public StandardPayloadRegistrationWrapper<S, W> and(@NonNull Registration registration) {
+			return combine(registration);
+		}
+
+		@Override
+		public StandardPayloadRegistrationWrapper<S, W> combine(@NonNull Registration registration) {
+			return new StandardPayloadRegistrationWrapper<>(super.combine(registration));
+		}
+	}
+
+	public static interface PayloadRegistrationWrapper<T, W extends PayloadRegistration<T>>
+			extends RegistrationWrapper<W>, PayloadRegistration<T> {
+
+		@Override
+		default PayloadRegistration<T> and(Registration registration) {
+			return getSource().and(registration);
+		}
+
+		@Override
+		default T getPayload() {
+			return getSource().getPayload();
+		}
+	}
+
+	public static class PayloadRegisted<T> extends Registed implements PayloadRegistration<T> {
+		private static final long serialVersionUID = 1L;
+		private final T payload;
+
+		public PayloadRegisted(boolean cancelled, T payload) {
+			super(cancelled);
+			this.payload = payload;
+		}
+
+		@Override
+		public PayloadRegistration<T> and(Registration registration) {
+			return PayloadRegistration.super.and(registration);
+		}
+
+		@Override
+		public T getPayload() {
+			return payload;
+		}
+	}
+
 	static final PayloadRegistration<?> FAILURE = new PayloadRegisted<>(true, null);
 	static final PayloadRegistration<?> SUCCESS = new PayloadRegisted<>(false, null);
 

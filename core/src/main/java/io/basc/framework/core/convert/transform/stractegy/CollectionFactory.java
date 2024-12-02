@@ -26,12 +26,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.SortedProperties;
-import io.basc.framework.util.collect.CollectionUtils;
-import io.basc.framework.util.collect.LinkedMultiValueMap;
-import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.reflect.Fields;
 import io.basc.framework.util.reflect.ReflectionUtils;
 

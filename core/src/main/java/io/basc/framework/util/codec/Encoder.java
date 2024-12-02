@@ -1,14 +1,10 @@
 package io.basc.framework.util.codec;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.check.Validator;
-import io.basc.framework.util.collect.CollectionUtils;
+import lombok.NonNull;
 
 @FunctionalInterface
 public interface Encoder<D, E> extends Validator<D, E> {
@@ -19,17 +15,8 @@ public interface Encoder<D, E> extends Validator<D, E> {
 		return ObjectUtils.equals(this.encode(source), encode);
 	}
 
-	default List<E> encodeAll(Collection<? extends D> sources) throws EncodeException {
-		if (CollectionUtils.isEmpty(sources)) {
-			return Collections.emptyList();
-		}
-
-		return sources.stream().map((e) -> encode(e)).collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("unchecked")
-	default E[] encodeAll(D... sources) throws EncodeException {
-		return toEncodeProcessor().processAll(sources);
+	default Elements<E> encodeAll(@NonNull Elements<? extends D> sources) throws EncodeException {
+		return sources.map((e) -> encode(e)).toList();
 	}
 
 	default <F> Encoder<F, E> fromEncoder(Encoder<F, D> encoder) {

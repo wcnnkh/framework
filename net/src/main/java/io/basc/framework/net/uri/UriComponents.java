@@ -1,7 +1,7 @@
 package io.basc.framework.net.uri;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;

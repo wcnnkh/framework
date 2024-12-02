@@ -44,7 +44,7 @@ public interface InputStreamSource {
 		InputStream is = null;
 		try {
 			is = getInputStream();
-			return processor.process(is);
+			return processor.apply(is);
 		} finally {
 			if (is != null) {
 				is.close();
@@ -55,7 +55,7 @@ public interface InputStreamSource {
 	default <E extends Throwable> void consume(Endpoint<? super InputStream, ? extends E> processor)
 			throws IOException, E {
 		read((is) -> {
-			processor.process(is);
+			processor.accept(processor)
 			return null;
 		});
 	}

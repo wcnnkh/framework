@@ -1,5 +1,9 @@
 package io.basc.framework.util;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 /**
  * 多个键值对
  * 
@@ -9,6 +13,23 @@ package io.basc.framework.util;
  * @param <V>
  */
 public interface KeyValues<K, V> extends Elements<KeyValue<K, V>>, Keys<K> {
+
+	@RequiredArgsConstructor
+	@Getter
+	public static class SimpleKeyValues<K, V, W extends Elements<KeyValue<K, V>>>
+			implements KeyValues<K, V>, ElementsWrapper<KeyValue<K, V>, W> {
+		@NonNull
+		private final W source;
+	}
+
+	public static interface KeyValuesWrapper<K, V, W extends KeyValues<K, V>>
+			extends KeyValues<K, V>, ElementsWrapper<KeyValue<K, V>, W> {
+
+		@Override
+		default Elements<K> keys() {
+			return getSource().keys();
+		}
+	}
 
 	public static <K, V> KeyValues<K, V> of(Elements<KeyValue<K, V>> elements) {
 		return new SimpleKeyValues<>(elements);

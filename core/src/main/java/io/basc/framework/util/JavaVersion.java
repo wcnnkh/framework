@@ -5,7 +5,6 @@ import java.util.Map;
 import io.basc.framework.core.convert.ValueWrapper;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.util.collect.CollectionUtils;
 
 public class JavaVersion extends Version {
 	private static final long serialVersionUID = 1L;

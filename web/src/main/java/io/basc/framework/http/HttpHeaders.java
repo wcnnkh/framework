@@ -27,9 +27,9 @@ import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.CollectionUtils;
 
 /**
  * A data structure representing HTTP request or response headers, mapping

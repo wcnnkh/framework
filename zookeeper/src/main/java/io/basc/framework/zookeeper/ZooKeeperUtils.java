@@ -11,8 +11,8 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.CollectionUtils;
 
 public final class ZooKeeperUtils {
 	public static final String PATH_PREFIX = "/";

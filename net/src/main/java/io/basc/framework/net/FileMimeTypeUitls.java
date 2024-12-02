@@ -3,10 +3,10 @@ package io.basc.framework.net;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.CollectionUtils;
-import io.basc.framework.util.collect.LinkedMultiValueMap;
-import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 

@@ -2,9 +2,9 @@ package io.basc.framework.websocket;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.CollectionUtils;
-import io.basc.framework.util.collect.LinkedCaseInsensitiveMap;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -5,8 +5,8 @@ import java.io.Serializable;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Entity;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collect.MultiValueMap;
 
 public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	private static final long serialVersionUID = 1L;

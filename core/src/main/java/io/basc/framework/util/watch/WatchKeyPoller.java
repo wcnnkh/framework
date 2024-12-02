@@ -4,10 +4,10 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.List;
 
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Publisher;
 import io.basc.framework.util.actor.Poller;
-import io.basc.framework.util.collect.CollectionUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

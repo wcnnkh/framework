@@ -1,6 +1,8 @@
 package io.basc.framework.util;
 
+import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -76,6 +78,32 @@ public interface Endpoint<S, E extends Throwable> {
 	}
 
 	void accept(S source) throws E;
+
+	public static <S, E extends Throwable> void acceptAll(@NonNull Streamable<? extends S> streamable,
+			@NonNull Endpoint<? super S, ? extends E> endpoint) throws E {
+		Stream<? extends S> stream = streamable.stream();
+		try {
+			endpoint.acceptAll(stream.iterator());
+		} finally {
+			stream.close();
+		}
+	}
+
+	public static <S, E extends Throwable> void acceptAll(@NonNull Iterator<? extends S> iterator,
+			@NonNull Endpoint<? super S, ? extends E> endpoint) throws E {
+		endpoint.acceptAll(iterator);
+	}
+
+	default void acceptAll(@NonNull Iterator<? extends S> iterator) throws E {
+		if (iterator.hasNext()) {
+			S source = iterator.next();
+			try {
+				accept(source);
+			} finally {
+				acceptAll(iterator);
+			}
+		}
+	}
 
 	default <T> Endpoint<T, E> map(@NonNull Pipeline<? super T, ? extends S, ? extends E> mapper) {
 		return new MappedEndpoint<>(this, mapper);

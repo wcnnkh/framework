@@ -6,6 +6,25 @@ import io.basc.framework.util.Receipt;
 
 public interface ListenableReceipt<T extends Receipt> extends ListenableRegistration<T>, Receipt {
 
+	public static interface ListenableReceiptWrapper<T extends Receipt, W extends ListenableReceipt<T>>
+			extends ListenableReceipt<T>, ListenableRegistrationWrapper<T, W>, ReceiptWrapper<W> {
+
+		@Override
+		default boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+			return getSource().await(timeout, unit);
+		}
+
+		@Override
+		default ListenableReceipt<T> sync() {
+			return getSource().sync();
+		}
+
+		@Override
+		default ListenableReceipt<T> syncInterruptibly() throws InterruptedException {
+			return getSource().syncInterruptibly();
+		}
+	}
+
 	/**
 	 * 等待
 	 * 

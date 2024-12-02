@@ -1,6 +1,6 @@
 package io.basc.framework.core;
 
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 import java.io.IOException;

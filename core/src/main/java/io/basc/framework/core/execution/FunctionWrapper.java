@@ -8,9 +8,9 @@ import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.core.execution.param.ParameterMatchingResults;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.collect.MultiValueMap;
 
 public class FunctionWrapper<W extends Function> extends Wrapper<W> implements Function {
 

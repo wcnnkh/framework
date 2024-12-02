@@ -4,7 +4,7 @@ import java.net.HttpCookie;
 
 import io.basc.framework.http.HttpInputMessage;
 import io.basc.framework.http.HttpRequest;
-import io.basc.framework.util.collect.MultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 
 public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, ServerRequest {
 	String getPath();

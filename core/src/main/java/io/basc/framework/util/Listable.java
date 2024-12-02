@@ -8,6 +8,18 @@ package io.basc.framework.util;
  * @param <E>
  */
 public interface Listable<E> {
+	public static interface ListableWrapper<E, W extends Listable<E>> extends Listable<E>, Wrapper<W> {
+		@Override
+		default Elements<E> getElements() {
+			return getSource().getElements();
+		}
+
+		@Override
+		default boolean isEmpty() {
+			return getSource().isEmpty();
+		}
+	}
+
 	/**
 	 * 列出所有元素
 	 * 

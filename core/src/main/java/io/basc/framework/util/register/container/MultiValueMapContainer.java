@@ -11,9 +11,9 @@ import java.util.stream.Stream;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.collect.MultiValueMap;
 import io.basc.framework.util.register.KeyValueRegistry;
 import io.basc.framework.util.register.RegistrationException;
 import lombok.NonNull;

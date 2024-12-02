@@ -12,7 +12,7 @@ import io.basc.framework.data.domain.CAS;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
-import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 public class RedisCASOperations implements TemporaryDataCasOperations, DataStorage {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";

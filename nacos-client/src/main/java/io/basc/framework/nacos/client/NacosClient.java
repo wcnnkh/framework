@@ -14,7 +14,7 @@ import io.basc.framework.cloud.DiscoveryClientException;
 import io.basc.framework.cloud.Service;
 import io.basc.framework.cloud.ServiceRegistry;
 import io.basc.framework.cloud.ServiceRegistryException;
-import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 /**
  * nacos客户端

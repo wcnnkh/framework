@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import io.basc.framework.net.multipart.MultipartMessage;
-import io.basc.framework.util.collect.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.web.MultiPartServerHttpRequest;
 import io.basc.framework.web.WebException;
 

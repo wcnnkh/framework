@@ -20,12 +20,12 @@ import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Endpoint;
 import io.basc.framework.util.ImpossibleException;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collect.ConcurrentReferenceHashMap;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
 
@@ -194,7 +194,7 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> getConstructor(String className,  ClassLoader classLoader,
+	public static <T> Constructor<T> getConstructor(String className, ClassLoader classLoader,
 			Class<?>... parameterTypes) {
 		Class<T> clazz = (Class<T>) ClassUtils.getClass(className, classLoader);
 		if (clazz == null) {
@@ -223,7 +223,7 @@ public abstract class ReflectionUtils {
 	 * @param type
 	 * @return
 	 */
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getDeclaredConstructor(Class<T> type) {
 		Assert.requiredArgument(type != null, "type");
@@ -283,7 +283,7 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> getDeclaredConstructor(String className,  ClassLoader classLoader,
+	public static <T> Constructor<T> getDeclaredConstructor(String className, ClassLoader classLoader,
 			Class<?>... parameterTypes) {
 		Class<T> clazz = (Class<T>) ClassUtils.getClass(className, classLoader);
 		if (clazz == null) {
@@ -308,7 +308,7 @@ public abstract class ReflectionUtils {
 	 * @param name
 	 * @return
 	 */
-	
+
 	public static Field getDeclaredField(Class<?> clazz, String name) {
 		try {
 			return clazz.getDeclaredField(name);
@@ -353,7 +353,7 @@ public abstract class ReflectionUtils {
 	 * @param parameterTypes
 	 * @return
 	 */
-	public static Method getDeclaredMethod(String className,  ClassLoader classLoader, String methodName,
+	public static Method getDeclaredMethod(String className, ClassLoader classLoader, String methodName,
 			Class<?>... parameterTypes) {
 		Class<?> clz = ClassUtils.getClass(className, classLoader);
 		if (clz == null) {
@@ -462,7 +462,7 @@ public abstract class ReflectionUtils {
 	 * @param parameterTypes
 	 * @return
 	 */
-	public static Method getMethod(String className,  ClassLoader classLoader, String methodName,
+	public static Method getMethod(String className, ClassLoader classLoader, String methodName,
 			Class<?>... parameterTypes) {
 		Class<?> clz = ClassUtils.getClass(className, classLoader);
 		if (clz == null) {
@@ -510,7 +510,7 @@ public abstract class ReflectionUtils {
 	 *               {@code null} to indicate the method's declaring class)
 	 * @return the qualified name of the method
 	 */
-	public static String getQualifiedMethodName(Method method,  Class<?> clazz) {
+	public static String getQualifiedMethodName(Method method, Class<?> clazz) {
 		Assert.notNull(method, "Method must not be null");
 		return (clazz != null ? clazz : method.getDeclaringClass()).getName() + '.' + method.getName();
 	}
@@ -578,7 +578,7 @@ public abstract class ReflectionUtils {
 	 * @param args   the invocation arguments (may be {@code null})
 	 * @return the invocation result, if any
 	 */
-	public static Object invoke(Method method,  Object target, Object... args) {
+	public static Object invoke(Method method, Object target, Object... args) {
 		makeAccessible(method);
 		try {
 			return method.invoke(target, args == null ? new Object[0] : args);
@@ -654,7 +654,7 @@ public abstract class ReflectionUtils {
 	}
 
 	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
-			 Source<? extends Logger, ? extends E> loggerSource) throws E {
+			Source<? extends Logger, ? extends E> loggerSource) throws E {
 		return isAvailable(clazz, loggerSource == null ? null : (e) -> {
 			Logger logger = loggerSource.get();
 			if (logger == null) {
@@ -672,22 +672,21 @@ public abstract class ReflectionUtils {
 	 * @return
 	 * @throws E
 	 */
-	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
-			 Endpoint<Throwable, E> accept) throws E {
+	public static <E extends Throwable> boolean isAvailable(Class<?> clazz, Endpoint<Throwable, E> accept) throws E {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);
 			}
 		} catch (Throwable e) {
 			if (accept != null) {
-				accept.process(e);
+				accept.accept(e);
 			}
 			return false;
 		}
 		return true;
 	}
 
-	public static boolean isAvailable(Class<?> clazz,  Logger logger) {
+	public static boolean isAvailable(Class<?> clazz, Logger logger) {
 		return isAvailable(clazz, logger == null ? null : (e) -> isAvailableLogger(clazz, logger, e));
 	}
 

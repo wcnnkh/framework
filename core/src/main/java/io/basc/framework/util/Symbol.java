@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.Elements.StandardListElements;
 import io.basc.framework.util.comparator.TypeComparator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -89,7 +90,7 @@ public class Symbol implements Serializable, Name {
 			List<Symbol> symbols = SYMBOL_MAP.values().stream()
 					.flatMap((map) -> map.values().stream().flatMap((list) -> list.stream()))
 					.collect(Collectors.toList());
-			return new StandardListElements<>(symbols);
+			return Elements.of(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -164,7 +165,7 @@ public class Symbol implements Serializable, Name {
 		try {
 			Set<String> symbols = SYMBOL_MAP.values().stream().flatMap((map) -> map.keySet().stream())
 					.collect(Collectors.toSet());
-			return new StandardSetElements<>(symbols);
+			return Elements.of(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -181,7 +182,7 @@ public class Symbol implements Serializable, Name {
 
 			Set<String> symbols = tailMap.values().stream().flatMap((map) -> map.keySet().stream())
 					.collect(Collectors.toSet());
-			return new StandardSetElements<>(symbols);
+			return Elements.of(symbols);
 		} finally {
 			lock.unlock();
 		}
@@ -192,7 +193,7 @@ public class Symbol implements Serializable, Name {
 		lock.lock();
 		try {
 			Set<Class<?>> types = SYMBOL_MAP.keySet();
-			return new StandardSetElements<>(types);
+			return Elements.of(types);
 		} finally {
 			lock.unlock();
 		}
