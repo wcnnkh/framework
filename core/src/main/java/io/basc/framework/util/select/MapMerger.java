@@ -3,7 +3,7 @@ package io.basc.framework.util.select;
 import java.util.Collections;
 import java.util.Map;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Merger;
 
@@ -24,7 +24,7 @@ public class MapMerger<K, V> implements Merger<Map<K, V>> {
 			}
 
 			if (target == null) {
-				target = CollectionFactory.createApproximateMap(map, 16);
+				target = CollectionUtils.createApproximateMap(map, 16);
 			}
 
 			target.putAll(map);

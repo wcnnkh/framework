@@ -19,6 +19,8 @@ public class DefaultInstanceFatory extends ConfigurableServices<InstanceFactory>
 
 	public DefaultInstanceFatory() {
 		setServiceClass(InstanceFactory.class);
+		register(new CollectionFactory(16));
+		
 	}
 
 	@Override

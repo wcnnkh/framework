@@ -15,12 +15,21 @@ public interface Access extends ValueWrapper {
 	}
 
 	/**
-	 * 是否只读
+	 * 是否可读
 	 * 
 	 * @return
 	 */
-	default boolean isReadOnly() {
-		return false;
+	default boolean isReadable() {
+		return true;
+	}
+
+	/**
+	 * 是否可写
+	 * 
+	 * @return
+	 */
+	default boolean isWriteable() {
+		return true;
 	}
 
 	/**

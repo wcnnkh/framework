@@ -130,5 +130,10 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		return new MappedOptional<>(this, pipeline);
 	}
 
+	default <X extends Throwable> T orElseGet(@NonNull Source<? extends T, ? extends X> source) throws E, X {
+		T target = orElse(null);
+		return target == null ? source.get() : target;
+	}
+
 	T orElse(T other) throws E;
 }

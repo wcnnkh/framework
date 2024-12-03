@@ -1,6 +1,8 @@
 package io.basc.framework.util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -76,6 +78,85 @@ public interface Pipeline<S, T, E extends Throwable> {
 		}
 	}
 
+	@RequiredArgsConstructor
+	public static class PipelineChannel<S, T, E extends Throwable, W extends Source<? extends S, ? extends E>, P extends Pipeline<? super S, ? extends T, ? extends E>>
+			implements Channel<T, E> {
+		@NonNull
+		protected final W source;
+		@NonNull
+		protected final P pipeline;
+		protected final Processor<? extends E> processor;
+		private volatile Supplier<? extends S> supplier;
+		private final AtomicBoolean closed = new AtomicBoolean(false);
+
+		@Override
+		public void close() throws E {
+			synchronized (this) {
+				if (closed.compareAndSet(false, true)) {
+					if (processor != null) {
+						processor.run();
+					}
+				}
+			}
+		}
+
+		@Override
+		public T get() throws E {
+			if (supplier == null) {
+				synchronized (this) {
+					if (supplier == null) {
+						S target = source.get();
+						supplier = () -> target;
+					}
+				}
+			}
+
+			S target = supplier.get();
+			return pipeline.apply(target);
+		}
+
+		@Override
+		public boolean isClosed() {
+			return closed.get();
+		}
+	}
+
+	@RequiredArgsConstructor
+	@Getter
+	public static class PipelineReactor<S, T, E extends Throwable, W extends Pipeline<S, T, E>>
+			implements Reactor<S, T, E> {
+		@NonNull
+		private final W source;
+		@NonNull
+		private final Endpoint<? super T, ? extends E> endpoint;
+
+		@Override
+		public T apply(S source) throws E {
+			T target = this.source.apply(source);
+			try {
+				return target;
+			} finally {
+				close(target);
+			}
+		}
+
+		@Override
+		public void close(T target) throws E {
+			endpoint.accept(target);
+		}
+
+		@Override
+		public Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+			return new PipelineReactor<>(this.source, (target) -> {
+				try {
+					endpoint.accept(target);
+				} finally {
+					Pipeline.PipelineReactor.this.close(target);
+				}
+			});
+		}
+	}
+
 	@FunctionalInterface
 	public interface PipelineWrapper<S, T, E extends Throwable, W extends Pipeline<S, T, E>>
 			extends Pipeline<S, T, E>, Wrapper<W> {
@@ -114,39 +195,8 @@ public interface Pipeline<S, T, E extends Throwable> {
 		return new MappedPipeline<>(this, pipeline, null);
 	}
 
-	@RequiredArgsConstructor
-	@Getter
-	public static class PipelineReactor<S, T, E extends Throwable> implements Reactor<S, T, E> {
-		@NonNull
-		private final Pipeline<S, T, E> source;
-		@NonNull
-		private final Endpoint<? super T, ? extends E> endpoint;
-
-		@Override
-		public T apply(S source) throws E {
-			T target = this.source.apply(source);
-			try {
-				return target;
-			} finally {
-				close(target);
-			}
-		}
-
-		@Override
-		public void close(T target) throws E {
-			endpoint.accept(target);
-		}
-
-		@Override
-		public Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
-			return new PipelineReactor<>(this.source, (target) -> {
-				try {
-					endpoint.accept(target);
-				} finally {
-					Pipeline.PipelineReactor.this.close(target);
-				}
-			});
-		}
+	default Channel<T, E> newChannel(@NonNull Source<? extends S, ? extends E> source) {
+		return new PipelineChannel<>(source, this, null);
 	}
 
 	default Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {

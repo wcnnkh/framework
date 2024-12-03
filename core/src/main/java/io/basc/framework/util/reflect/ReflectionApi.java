@@ -23,7 +23,7 @@ import io.basc.framework.util.StringUtils;
  */
 public class ReflectionApi implements Supplier<Object> {
 	private final Class<?> declaringClass;
-	private final Pipeline<Class<?>, Object, ? extends Throwable> processor;
+	private final Pipeline<? super Class<?>, ? extends Object, ? extends Throwable> processor;
 
 	public ReflectionApi( Class<?> declaringClass,
 			 Pipeline<Class<?>, Object, ? extends Throwable> processor) {

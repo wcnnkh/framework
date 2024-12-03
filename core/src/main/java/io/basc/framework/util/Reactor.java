@@ -30,40 +30,36 @@ public interface Reactor<S, T, E extends Throwable> extends Pipeline<S, T, E> {
 		}
 	}
 
-	@RequiredArgsConstructor
-	public static class ReactorChannel<S, T, E extends Throwable> implements Channel<T, E> {
-		@NonNull
-		protected final Reactor<S, T, E> reactor;
-		@NonNull
-		protected final Source<? extends S, ? extends E> source;
+	public static class ReactorChannel<S, T, E extends Throwable, P extends Reactor<? super S, T, ? extends E>>
+			extends PipelineChannel<S, T, E, Source<? extends S, ? extends E>, P> {
 
-		@Override
-		public T get() throws E {
-			// TODO Auto-generated method stub
-			return null;
+		public ReactorChannel(@NonNull Source<? extends S, ? extends E> source, @NonNull P pipeline,
+				Processor<? extends E> processor) {
+			super(source, pipeline, processor);
 		}
 
 		@Override
 		public void close() throws E {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public boolean isClosed() {
-			// TODO Auto-generated method stub
-			return false;
+			synchronized (this) {
+				if (!isClosed()) {
+					try {
+						super.close();
+					} finally {
+						pipeline.close(get());
+					}
+				}
+			}
 		}
 	}
+
+	void close(T target) throws E;
 
 	@Override
 	default <R> Reactor<S, R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
 		return new MappedReactor<>(this, pipeline, null);
 	}
 
-	void close(T target) throws E;
-
 	default Channel<T, E> newChannel(Source<? extends S, ? extends E> source) {
-		return new ReactorChannel<>(this, source);
+		return new ReactorChannel<>(source, this, null);
 	}
 }

@@ -43,140 +43,6 @@ import lombok.ToString;
  */
 public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
-	@Data
-	public static class ParallelElements<L, R> implements Elements<ParallelElement<L, R>>, Serializable {
-		private static final long serialVersionUID = 1L;
-		private final Elements<? extends L> leftElements;
-		private final Elements<? extends R> rightElements;
-
-		@Override
-		public Stream<ParallelElement<L, R>> stream() {
-			return Streams.stream(iterator());
-		}
-
-		@Override
-		public Iterator<ParallelElement<L, R>> iterator() {
-			return new ParallelElementIterator<>(leftElements.iterator(), rightElements.iterator());
-		}
-	}
-
-	@RequiredArgsConstructor
-	public static class ParallelElementIterator<L, R> implements Iterator<ParallelElement<L, R>> {
-		@NonNull
-		private final Iterator<? extends L> leftIterator;
-		@NonNull
-		private final Iterator<? extends R> rightIterator;
-
-		@Override
-		public boolean hasNext() {
-			return leftIterator.hasNext() || rightIterator.hasNext();
-		}
-
-		@Override
-		public ParallelElement<L, R> next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-
-			IterativeElement<L> left = leftIterator.hasNext()
-					? new IterativeElement<>(leftIterator.next(), leftIterator.hasNext())
-					: null;
-			IterativeElement<R> right = rightIterator.hasNext()
-					? new IterativeElement<>(rightIterator.next(), rightIterator.hasNext())
-					: null;
-			return new ParallelElement<>(left, right);
-		}
-	}
-
-	@Data
-	public static class ParallelElement<L, R> implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private final IterativeElement<L> left;
-		private final IterativeElement<R> right;
-
-		/**
-		 * 并行分支是否都存在
-		 * 
-		 * @return
-		 */
-		public boolean isPresent() {
-			return left != null && right != null;
-		}
-
-		public L getLeftValue() {
-			return left == null ? null : left.getValue();
-		}
-
-		public R getRightValue() {
-			return right == null ? null : right.getValue();
-		}
-	}
-
-	@Data
-	@EqualsAndHashCode(of = "element")
-	@AllArgsConstructor
-	public static final class Indexed<E> implements Serializable {
-		private static final long serialVersionUID = 1L;
-		/**
-		 * 索引，从0开始
-		 */
-		private final long index;
-		/**
-		 * 对应的元素
-		 */
-		private final E element;
-	}
-
-	@AllArgsConstructor
-	public static class IterativeElementIterator<E> implements Iterator<IterativeElement<E>> {
-		@NonNull
-		private final Iterator<E> iterator;
-
-		@Override
-		public boolean hasNext() {
-			return iterator.hasNext();
-		}
-
-		@Override
-		public IterativeElement<E> next() {
-			if (!iterator.hasNext()) {
-				throw new NoSuchElementException();
-			}
-
-			E value = iterator.next();
-			return new IterativeElement<>(value, iterator.hasNext());
-		}
-
-	}
-
-	@AllArgsConstructor
-	public static class IterativeElements<E> implements Elements<IterativeElement<E>>, Serializable {
-		private static final long serialVersionUID = 1L;
-		@NonNull
-		private final Elements<E> source;
-
-		@Override
-		public Stream<IterativeElement<E>> stream() {
-			return Streams.stream(iterator());
-		}
-
-		@Override
-		public Iterator<IterativeElement<E>> iterator() {
-			return new IterativeElementIterator<>(source.iterator());
-		}
-	}
-
-	@Data
-	public static class IterativeElement<T> implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private final T value;
-		private final boolean hashNext;
-
-		public boolean hasNext() {
-			return hashNext;
-		}
-	}
-
 	public static class CacheableElements<E, C extends Collection<E>>
 			implements ServiceLoader<E>, CollectionElementsWrapper<E, C>, Serializable {
 		private static final long serialVersionUID = 1L;
@@ -273,18 +139,28 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		public int size() {
-			return getSource().size();
+		public Iterator<E> iterator() {
+			return getSource().iterator();
 		}
 
 		@Override
-		public Iterator<E> iterator() {
-			return getSource().iterator();
+		public int size() {
+			return getSource().size();
 		}
 	}
 
 	public static interface CollectionElementsWrapper<E, W extends Collection<E>>
 			extends CollectionWrapper<E, W>, IterableElementsWrapper<E, W> {
+
+		@Override
+		default boolean contains(Object element) {
+			return CollectionWrapper.super.contains(element);
+		}
+
+		@Override
+		default boolean isEmpty() {
+			return CollectionWrapper.super.isEmpty();
+		}
 
 		@Override
 		default boolean isUnique() {
@@ -297,18 +173,8 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		default boolean isEmpty() {
-			return CollectionWrapper.super.isEmpty();
-		}
-
-		@Override
 		default Stream<E> stream() {
 			return CollectionWrapper.super.stream();
-		}
-
-		@Override
-		default boolean contains(Object element) {
-			return CollectionWrapper.super.contains(element);
 		}
 
 		@Override
@@ -510,6 +376,21 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 	}
 
+	@Data
+	@EqualsAndHashCode(of = "element")
+	@AllArgsConstructor
+	public static final class Indexed<E> implements Serializable {
+		private static final long serialVersionUID = 1L;
+		/**
+		 * 索引，从0开始
+		 */
+		private final long index;
+		/**
+		 * 对应的元素
+		 */
+		private final E element;
+	}
+
 	public static interface IterableElementsWrapper<E, W extends Iterable<E>>
 			extends Elements<E>, IterableWrapper<E, W> {
 
@@ -529,165 +410,58 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 	}
 
+	@Data
+	public static class IterativeElement<T> implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private final T value;
+		private final boolean last;
+	}
+
+	@AllArgsConstructor
+	public static class IterativeElementIterator<E> implements Iterator<IterativeElement<E>> {
+		@NonNull
+		private final Iterator<E> iterator;
+
+		@Override
+		public boolean hasNext() {
+			return iterator.hasNext();
+		}
+
+		@Override
+		public IterativeElement<E> next() {
+			if (!iterator.hasNext()) {
+				throw new NoSuchElementException();
+			}
+
+			E value = iterator.next();
+			return new IterativeElement<>(value, !iterator.hasNext());
+		}
+
+	}
+
+	@AllArgsConstructor
+	public static class IterativeElements<E> implements Elements<IterativeElement<E>>, Serializable {
+		private static final long serialVersionUID = 1L;
+		@NonNull
+		private final Elements<E> source;
+
+		@Override
+		public Iterator<IterativeElement<E>> iterator() {
+			return new IterativeElementIterator<>(source.iterator());
+		}
+
+		@Override
+		public Stream<IterativeElement<E>> stream() {
+			return Streams.stream(iterator());
+		}
+	}
+
 	public static class ListElements<E> extends CollectionElements<E, List<E>>
 			implements ListElementsWrapper<E, List<E>> {
 		private static final long serialVersionUID = 1L;
 
 		public ListElements(Elements<E> elements) {
 			super(elements, Collectors.toList());
-		}
-	}
-
-	public static interface ListWrapper<E, W extends List<E>> extends List<E>, CollectionWrapper<E, W> {
-
-		@Override
-		default boolean addAll(int index, Collection<? extends E> c) {
-			return getSource().addAll(index, c);
-		}
-
-		@Override
-		default E get(int index) {
-			return getSource().get(index);
-		}
-
-		@Override
-		default E set(int index, E element) {
-			return getSource().set(index, element);
-		}
-
-		@Override
-		default void add(int index, E element) {
-			getSource().add(index, element);
-		}
-
-		@Override
-		default E remove(int index) {
-			return getSource().remove(index);
-		}
-
-		@Override
-		default int indexOf(Object o) {
-			return getSource().indexOf(o);
-		}
-
-		@Override
-		default int lastIndexOf(Object o) {
-			return getSource().lastIndexOf(o);
-		}
-
-		@Override
-		default ListIterator<E> listIterator() {
-			return getSource().listIterator();
-		}
-
-		@Override
-		default ListIterator<E> listIterator(int index) {
-			return getSource().listIterator(index);
-		}
-
-		@Override
-		default List<E> subList(int fromIndex, int toIndex) {
-			return getSource().subList(fromIndex, toIndex);
-		}
-
-		@Override
-		default void sort(Comparator<? super E> c) {
-			getSource().sort(c);
-		}
-
-		@Override
-		default void replaceAll(UnaryOperator<E> operator) {
-			getSource().replaceAll(operator);
-		}
-
-		@Override
-		default int size() {
-			return getSource().size();
-		}
-
-		@Override
-		default boolean isEmpty() {
-			return getSource().isEmpty();
-		}
-
-		@Override
-		default boolean contains(Object o) {
-			return getSource().contains(o);
-		}
-
-		@Override
-		default Iterator<E> iterator() {
-			return getSource().iterator();
-		}
-
-		@Override
-		default Object[] toArray() {
-			return getSource().toArray();
-		}
-
-		@Override
-		default <T> T[] toArray(T[] a) {
-			return getSource().toArray(a);
-		}
-
-		@Override
-		default boolean add(E e) {
-			return getSource().add(e);
-		}
-
-		@Override
-		default boolean remove(Object o) {
-			return getSource().remove(o);
-		}
-
-		@Override
-		default boolean containsAll(Collection<?> c) {
-			return getSource().containsAll(c);
-		}
-
-		@Override
-		default boolean addAll(Collection<? extends E> c) {
-			return getSource().addAll(c);
-		}
-
-		@Override
-		default boolean retainAll(Collection<?> c) {
-			return getSource().retainAll(c);
-		}
-
-		@Override
-		default void clear() {
-			getSource().clear();
-		}
-
-		@Override
-		default void forEach(Consumer<? super E> action) {
-			getSource().forEach(action);
-		}
-
-		@Override
-		default Stream<E> parallelStream() {
-			return getSource().parallelStream();
-		}
-
-		@Override
-		default boolean removeIf(Predicate<? super E> filter) {
-			return getSource().removeIf(filter);
-		}
-
-		@Override
-		default Spliterator<E> spliterator() {
-			return getSource().spliterator();
-		}
-
-		@Override
-		default Stream<E> stream() {
-			return getSource().stream();
-		}
-
-		@Override
-		default boolean removeAll(Collection<?> c) {
-			return getSource().removeAll(c);
 		}
 	}
 
@@ -769,6 +543,159 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	}
 
+	public static interface ListWrapper<E, W extends List<E>> extends List<E>, CollectionWrapper<E, W> {
+
+		@Override
+		default boolean add(E e) {
+			return getSource().add(e);
+		}
+
+		@Override
+		default void add(int index, E element) {
+			getSource().add(index, element);
+		}
+
+		@Override
+		default boolean addAll(Collection<? extends E> c) {
+			return getSource().addAll(c);
+		}
+
+		@Override
+		default boolean addAll(int index, Collection<? extends E> c) {
+			return getSource().addAll(index, c);
+		}
+
+		@Override
+		default void clear() {
+			getSource().clear();
+		}
+
+		@Override
+		default boolean contains(Object o) {
+			return getSource().contains(o);
+		}
+
+		@Override
+		default boolean containsAll(Collection<?> c) {
+			return getSource().containsAll(c);
+		}
+
+		@Override
+		default void forEach(Consumer<? super E> action) {
+			getSource().forEach(action);
+		}
+
+		@Override
+		default E get(int index) {
+			return getSource().get(index);
+		}
+
+		@Override
+		default int indexOf(Object o) {
+			return getSource().indexOf(o);
+		}
+
+		@Override
+		default boolean isEmpty() {
+			return getSource().isEmpty();
+		}
+
+		@Override
+		default Iterator<E> iterator() {
+			return getSource().iterator();
+		}
+
+		@Override
+		default int lastIndexOf(Object o) {
+			return getSource().lastIndexOf(o);
+		}
+
+		@Override
+		default ListIterator<E> listIterator() {
+			return getSource().listIterator();
+		}
+
+		@Override
+		default ListIterator<E> listIterator(int index) {
+			return getSource().listIterator(index);
+		}
+
+		@Override
+		default Stream<E> parallelStream() {
+			return getSource().parallelStream();
+		}
+
+		@Override
+		default E remove(int index) {
+			return getSource().remove(index);
+		}
+
+		@Override
+		default boolean remove(Object o) {
+			return getSource().remove(o);
+		}
+
+		@Override
+		default boolean removeAll(Collection<?> c) {
+			return getSource().removeAll(c);
+		}
+
+		@Override
+		default boolean removeIf(Predicate<? super E> filter) {
+			return getSource().removeIf(filter);
+		}
+
+		@Override
+		default void replaceAll(UnaryOperator<E> operator) {
+			getSource().replaceAll(operator);
+		}
+
+		@Override
+		default boolean retainAll(Collection<?> c) {
+			return getSource().retainAll(c);
+		}
+
+		@Override
+		default E set(int index, E element) {
+			return getSource().set(index, element);
+		}
+
+		@Override
+		default int size() {
+			return getSource().size();
+		}
+
+		@Override
+		default void sort(Comparator<? super E> c) {
+			getSource().sort(c);
+		}
+
+		@Override
+		default Spliterator<E> spliterator() {
+			return getSource().spliterator();
+		}
+
+		@Override
+		default Stream<E> stream() {
+			return getSource().stream();
+		}
+
+		@Override
+		default List<E> subList(int fromIndex, int toIndex) {
+			return getSource().subList(fromIndex, toIndex);
+		}
+
+		@Override
+		default Object[] toArray() {
+			return getSource().toArray();
+		}
+
+		@Override
+		default <T> T[] toArray(T[] a) {
+			return getSource().toArray(a);
+		}
+	}
+
 	public static class MergedElements<E> implements ElementsWrapper<E, Elements<E>> {
 		private static final int JOIN_MAX_LENGTH = Integer.max(4,
 				Integer.getInteger(MergedElements.class.getName() + ".maxLength", 256));
@@ -808,104 +735,80 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 	}
 
+	@Data
+	public static class ParallelElement<L, R> implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private final IterativeElement<L> left;
+		private final IterativeElement<R> right;
+
+		public L getLeftValue() {
+			return left == null ? null : left.getValue();
+		}
+
+		public R getRightValue() {
+			return right == null ? null : right.getValue();
+		}
+
+		/**
+		 * 并行分支是否都存在
+		 * 
+		 * @return
+		 */
+		public boolean isPresent() {
+			return left != null && right != null;
+		}
+	}
+
+	@RequiredArgsConstructor
+	public static class ParallelElementIterator<L, R> implements Iterator<ParallelElement<L, R>> {
+		@NonNull
+		private final Iterator<? extends L> leftIterator;
+		@NonNull
+		private final Iterator<? extends R> rightIterator;
+
+		@Override
+		public boolean hasNext() {
+			return leftIterator.hasNext() || rightIterator.hasNext();
+		}
+
+		@Override
+		public ParallelElement<L, R> next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+
+			IterativeElement<L> left = leftIterator.hasNext()
+					? new IterativeElement<>(leftIterator.next(), !leftIterator.hasNext())
+					: null;
+			IterativeElement<R> right = rightIterator.hasNext()
+					? new IterativeElement<>(rightIterator.next(), !rightIterator.hasNext())
+					: null;
+			return new ParallelElement<>(left, right);
+		}
+	}
+
+	@Data
+	public static class ParallelElements<L, R> implements Elements<ParallelElement<L, R>>, Serializable {
+		private static final long serialVersionUID = 1L;
+		private final Elements<? extends L> leftElements;
+		private final Elements<? extends R> rightElements;
+
+		@Override
+		public Iterator<ParallelElement<L, R>> iterator() {
+			return new ParallelElementIterator<>(leftElements.iterator(), rightElements.iterator());
+		}
+
+		@Override
+		public Stream<ParallelElement<L, R>> stream() {
+			return Streams.stream(iterator());
+		}
+	}
+
 	public static class SetElements<E> extends CollectionElements<E, Set<E>> implements SetElementsWrapper<E, Set<E>> {
 		private static final long serialVersionUID = 1L;
 
 		public SetElements(@NonNull Elements<E> elements) {
 			super(elements, Collectors.toSet());
-		}
-	}
-
-	public static interface SetWrapper<E, W extends Set<E>> extends Set<E>, CollectionWrapper<E, W> {
-
-		@Override
-		default int size() {
-			return getSource().size();
-		}
-
-		@Override
-		default boolean isEmpty() {
-			return getSource().isEmpty();
-		}
-
-		@Override
-		default boolean contains(Object o) {
-			return getSource().contains(o);
-		}
-
-		@Override
-		default Iterator<E> iterator() {
-			return getSource().iterator();
-		}
-
-		@Override
-		default Object[] toArray() {
-			return getSource().toArray();
-		}
-
-		@Override
-		default <T> T[] toArray(T[] a) {
-			return getSource().toArray(a);
-		}
-
-		@Override
-		default boolean add(E e) {
-			return getSource().add(e);
-		}
-
-		@Override
-		default boolean remove(Object o) {
-			return getSource().remove(o);
-		}
-
-		@Override
-		default boolean containsAll(Collection<?> c) {
-			return getSource().containsAll(c);
-		}
-
-		@Override
-		default boolean addAll(Collection<? extends E> c) {
-			return getSource().addAll(c);
-		}
-
-		@Override
-		default boolean retainAll(Collection<?> c) {
-			return getSource().retainAll(c);
-		}
-
-		@Override
-		default void clear() {
-			getSource().clear();
-		}
-
-		@Override
-		default void forEach(Consumer<? super E> action) {
-			getSource().forEach(action);
-		}
-
-		@Override
-		default Stream<E> parallelStream() {
-			return getSource().parallelStream();
-		}
-
-		@Override
-		default boolean removeIf(Predicate<? super E> filter) {
-			return getSource().removeIf(filter);
-		}
-
-		@Override
-		default Spliterator<E> spliterator() {
-			return getSource().spliterator();
-		}
-
-		@Override
-		default Stream<E> stream() {
-			return getSource().stream();
-		}
-
-		@Override
-		default boolean removeAll(Collection<?> c) {
-			return getSource().removeAll(c);
 		}
 	}
 
@@ -955,6 +858,99 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		@Override
 		default SetElementsWrapper<E, W> toSet() {
 			return this;
+		}
+	}
+
+	public static interface SetWrapper<E, W extends Set<E>> extends Set<E>, CollectionWrapper<E, W> {
+
+		@Override
+		default boolean add(E e) {
+			return getSource().add(e);
+		}
+
+		@Override
+		default boolean addAll(Collection<? extends E> c) {
+			return getSource().addAll(c);
+		}
+
+		@Override
+		default void clear() {
+			getSource().clear();
+		}
+
+		@Override
+		default boolean contains(Object o) {
+			return getSource().contains(o);
+		}
+
+		@Override
+		default boolean containsAll(Collection<?> c) {
+			return getSource().containsAll(c);
+		}
+
+		@Override
+		default void forEach(Consumer<? super E> action) {
+			getSource().forEach(action);
+		}
+
+		@Override
+		default boolean isEmpty() {
+			return getSource().isEmpty();
+		}
+
+		@Override
+		default Iterator<E> iterator() {
+			return getSource().iterator();
+		}
+
+		@Override
+		default Stream<E> parallelStream() {
+			return getSource().parallelStream();
+		}
+
+		@Override
+		default boolean remove(Object o) {
+			return getSource().remove(o);
+		}
+
+		@Override
+		default boolean removeAll(Collection<?> c) {
+			return getSource().removeAll(c);
+		}
+
+		@Override
+		default boolean removeIf(Predicate<? super E> filter) {
+			return getSource().removeIf(filter);
+		}
+
+		@Override
+		default boolean retainAll(Collection<?> c) {
+			return getSource().retainAll(c);
+		}
+
+		@Override
+		default int size() {
+			return getSource().size();
+		}
+
+		@Override
+		default Spliterator<E> spliterator() {
+			return getSource().spliterator();
+		}
+
+		@Override
+		default Stream<E> stream() {
+			return getSource().stream();
+		}
+
+		@Override
+		default Object[] toArray() {
+			return getSource().toArray();
+		}
+
+		@Override
+		default <T> T[] toArray(T[] a) {
+			return getSource().toArray(a);
 		}
 	}
 

@@ -13,13 +13,13 @@ import io.basc.framework.core.convert.lang.ObjectValue;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Enumerable;
+import io.basc.framework.util.Optional;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Value;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.function.Optional;
 import lombok.NonNull;
 
-public interface ValueWrapper extends Value, Optional<ValueWrapper>, Wrapper<Object> {
+public interface ValueWrapper extends Value, Optional<ValueWrapper, ConversionException>, Wrapper<Object> {
 	static final ValueWrapper EMPTY = new EmptyValue();
 
 	static final ValueWrapper[] EMPTY_ARRAY = new ValueWrapper[0];
@@ -108,7 +108,7 @@ public interface ValueWrapper extends Value, Optional<ValueWrapper>, Wrapper<Obj
 		return new ObjectValue(value, type);
 	}
 
-	default <T> Optional<T> as(Class<? extends T> type) {
+	default <T> Optional<T, ConversionException> as(Class<? extends T> type) {
 		return map((e) -> getAsObject(type));
 	}
 

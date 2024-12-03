@@ -1,9 +1,6 @@
 package io.basc.framework.util;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
-
-import lombok.Getter;
+import io.basc.framework.util.Pipeline.PipelineChannel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -80,44 +77,11 @@ public interface Source<T, E extends Throwable> {
 		}
 	}
 
-	@RequiredArgsConstructor
 	public static class SourceChannel<T, E extends Throwable, W extends Source<? extends T, ? extends E>>
-			implements Channel<T, E> {
-		@NonNull
-		@Getter
-		protected final W source;
-		protected final Processor<? extends E> processor;
-		private final AtomicBoolean closed = new AtomicBoolean(false);
-		private volatile Supplier<T> supplier;
+			extends PipelineChannel<T, T, E, W, Pipeline<? super T, ? extends T, ? extends E>> {
 
-		@Override
-		public T get() throws E {
-			if (supplier == null) {
-				synchronized (this) {
-					if (supplier == null) {
-						T target = source.get();
-						supplier = () -> target;
-					}
-				}
-			}
-			return supplier.get();
-		}
-
-		@Override
-		public void close() throws E {
-			synchronized (this) {
-				if (closed.compareAndSet(false, true)) {
-					if (processor != null) {
-						processor.run();
-					}
-
-				}
-			}
-		}
-
-		@Override
-		public boolean isClosed() {
-			return closed.get();
+		public SourceChannel(@NonNull W source, Processor<? extends E> processor) {
+			super(source, Pipeline.identity(), processor);
 		}
 	}
 

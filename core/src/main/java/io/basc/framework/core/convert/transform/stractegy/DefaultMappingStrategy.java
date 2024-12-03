@@ -21,9 +21,13 @@ public class DefaultMappingStrategy<K, V extends Access, M extends Mapping<K, V>
 	@Override
 	public void doMapping(MappingContext<K, V, M> sourceContext, @NonNull M sourceMapping,
 			@NonNull KeyValue<K, V> entry, MappingContext<K, V, M> targetContext, @NonNull M targetMapping) throws E {
+		if (!entry.getValue().isReadable()) {
+			return;
+		}
+
 		Elements<V> accesses = targetMapping.getAccesses(entry.getKey());
 		for (V access : accesses) {
-			if (access.isReadOnly()) {
+			if (access.isWriteable()) {
 				continue;
 			}
 

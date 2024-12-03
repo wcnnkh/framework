@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.convert.transform.stractegy.InstanceFactory.CollectionFactory;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**
@@ -364,11 +364,11 @@ public abstract class ObjectUtils {
 		}
 
 		if (source instanceof Collection) {
-			return (T) CollectionFactory.clone((Collection<?>) source, deep);
+			return (T) CollectionUtils.clone((Collection<?>) source, deep);
 		}
 
 		if (source instanceof Map) {
-			return (T) CollectionFactory.clone((Map<?, ?>) source, deep);
+			return (T) CollectionUtils.clone((Map<?, ?>) source, deep);
 		}
 
 		if (!deep) {
