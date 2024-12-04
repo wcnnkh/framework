@@ -1,10 +1,10 @@
-package io.basc.framework.core.env;
+package io.basc.framework.core.convert.transform.collection;
 
 import java.util.Map;
 
 import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.collection.GenericMapAccess;
+import io.basc.framework.core.convert.transform.Property;
 import lombok.NonNull;
 
 public class MapProperty extends GenericMapAccess implements Property {

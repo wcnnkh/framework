@@ -9,7 +9,7 @@ import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 
 class ObjectToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ObjectToCollectionConversionService(ConversionService conversionService) {
@@ -26,7 +26,7 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 		}
 
 		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
-		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
+		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), 1);
 
 		if (elementDesc == null || elementDesc.isCollection()) {

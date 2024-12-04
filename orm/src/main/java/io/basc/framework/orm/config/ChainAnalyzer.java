@@ -3,8 +3,8 @@ package io.basc.framework.orm.config;
 import java.util.Iterator;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.execution.param.Parameter;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.IndexInfo;

@@ -23,6 +23,7 @@ public interface ValueWrapper extends Value, Optional<ValueWrapper, ConversionEx
 	static final ValueWrapper EMPTY = new EmptyValue();
 
 	static final ValueWrapper[] EMPTY_ARRAY = new ValueWrapper[0];
+	
 
 	static Elements<ValueWrapper> asElements(Object value, TypeDescriptor typeDescriptor) {
 		if (value instanceof Collection) {

@@ -2,7 +2,7 @@ package io.basc.framework.security.limit;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.execution.param.ParameterUtils;
 import io.basc.framework.security.limit.annotation.CountLimitParameter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;

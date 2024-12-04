@@ -16,7 +16,7 @@ public class ConverterConversionService implements ConditionalConversionService 
 	private final Set<ConvertiblePair> convertibleTypes;
 
 	public <S, T> ConverterConversionService(Class<S> sourceType, Class<T> targetType,
-			Pipeline<S, ? extends T, ? extends Throwable> converter) {
+			Pipeline<? super S, ? extends T, ? extends Throwable> converter) {
 		this.convertibleTypes = Collections.singleton(new ConvertiblePair(sourceType, targetType));
 		this.converter = converter;
 	}
@@ -28,7 +28,7 @@ public class ConverterConversionService implements ConditionalConversionService 
 	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		try {
-			return converter.process(source);
+			return converter.apply(source);
 		} catch (Throwable e) {
 			if (e instanceof ConversionException) {
 				throw (ConversionException) e;

@@ -15,7 +15,7 @@ public interface MappingStrategy<K, V extends Access, M extends Mapping<K, V>, E
 
 	default void doMapping(MappingContext<K, V, M> sourceContext, @NonNull M sourceMapping,
 			MappingContext<K, V, M> targetContext, @NonNull M targetMapping) throws E {
-		for (KeyValue<K, V> entry : sourceMapping.getElements()) {
+		for (KeyValue<K, V> entry : sourceMapping.getMembers()) {
 			doMapping(sourceContext, sourceMapping, entry, targetContext, targetMapping);
 		}
 	}

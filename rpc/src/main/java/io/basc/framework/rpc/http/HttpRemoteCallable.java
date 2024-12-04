@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.concurrent.Callable;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.net.uri.UriComponentsBuilder;

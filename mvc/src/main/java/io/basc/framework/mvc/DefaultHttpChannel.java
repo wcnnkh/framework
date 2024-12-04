@@ -6,7 +6,7 @@ import io.basc.framework.context.Context;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.ValueWrapper;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.execution.param.SimpleParameterDescriptor;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.mvc.view.View;

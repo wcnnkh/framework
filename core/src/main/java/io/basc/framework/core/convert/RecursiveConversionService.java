@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import lombok.Data;
 
 /**
@@ -40,7 +40,7 @@ public class RecursiveConversionService implements ConversionService {
 		if (targetType.isMap()) {
 			Map<Object, Object> sourceMap = (Map<Object, Object>) source;
 			TypeDescriptor targetKeyTypeDescriptor = targetTypeDescriptor.getMapKeyTypeDescriptor();
-			Map<Object, Object> map = CollectionFactory.createMap(targetTypeDescriptor.getType(),
+			Map<Object, Object> map = CollectionUtils.createMap(targetTypeDescriptor.getType(),
 					targetKeyTypeDescriptor == null ? null : targetKeyTypeDescriptor.getType(), sourceMap.size());
 			TypeDescriptor sourceKeyTypeDescriptor = sourceTypeDescriptor.getMapKeyTypeDescriptor();
 			TypeDescriptor sourceValueTypeDescriptor = sourceTypeDescriptor.getMapValueTypeDescriptor();
@@ -72,7 +72,7 @@ public class RecursiveConversionService implements ConversionService {
 
 			Collection<Object> sourceCollection = (Collection<Object>) source;
 			TypeDescriptor targetElementTypeDescriptor = targetTypeDescriptor.getElementTypeDescriptor();
-			Collection<Object> target = CollectionFactory.createCollection(targetTypeDescriptor.getType(),
+			Collection<Object> target = CollectionUtils.createCollection(targetTypeDescriptor.getType(),
 					targetElementTypeDescriptor == null ? null : targetElementTypeDescriptor.getType(),
 					sourceCollection.size());
 			TypeDescriptor sourceElementTypeDescriptor = sourceTypeDescriptor.getElementTypeDescriptor();

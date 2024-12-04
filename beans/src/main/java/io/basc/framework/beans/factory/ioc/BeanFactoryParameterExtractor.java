@@ -9,9 +9,9 @@ import io.basc.framework.beans.factory.BeanProvider;
 import io.basc.framework.beans.factory.ListableBeanFactory;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
-import io.basc.framework.core.execution.param.Parameter;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
 import io.basc.framework.core.execution.param.SimpleParameter;
 import io.basc.framework.util.ServiceLoader;
 

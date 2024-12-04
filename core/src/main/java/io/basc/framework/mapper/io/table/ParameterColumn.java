@@ -1,7 +1,7 @@
 package io.basc.framework.mapper.io.table;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Item;
 import lombok.AllArgsConstructor;

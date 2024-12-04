@@ -13,8 +13,8 @@ import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 
-import io.basc.framework.core.execution.param.Parameter;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.lucene.LuceneResolver;
 import io.basc.framework.util.ClassUtils;
 

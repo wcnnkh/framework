@@ -2,7 +2,7 @@ package io.basc.framework.csv;
 
 import org.apache.commons.csv.CSVRecord;
 
-import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.mapper.io.template.Record;
 import io.basc.framework.util.Elements;

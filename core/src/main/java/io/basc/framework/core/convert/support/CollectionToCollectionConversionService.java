@@ -9,7 +9,7 @@ import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 class CollectionToCollectionConversionService extends AbstractConversionService
@@ -47,7 +47,7 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 
 		// At this point, we need a collection copy in any case, even if just for
 		// finding out about element copies...
-		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
+		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
 
 		if (elementDesc == null) {

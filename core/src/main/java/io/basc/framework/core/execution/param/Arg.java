@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.transform.Parameter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

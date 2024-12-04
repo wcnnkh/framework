@@ -1,7 +1,7 @@
 package io.basc.framework.messageing.handler;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.messageing.Message;
 
 public class HandleMessageConverters extends ConfigurableServices<HandleMessageConverter>

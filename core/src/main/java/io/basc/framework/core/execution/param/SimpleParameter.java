@@ -1,6 +1,8 @@
 package io.basc.framework.core.execution.param;
 
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

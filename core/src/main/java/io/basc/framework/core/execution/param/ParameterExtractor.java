@@ -1,5 +1,7 @@
 package io.basc.framework.core.execution.param;
 
+import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.execution.Executable;
 import io.basc.framework.util.Elements;
 

@@ -29,13 +29,13 @@ public class KeyValuesMapping<K, V extends Access> implements Mapping<K, V>, Key
 	}
 
 	@Override
-	public Elements<KeyValue<K, V>> getElements() {
+	public Elements<KeyValue<K, V>> getMembers() {
 		return keys().map((key) -> KeyValue.of(key, creator.apply(key)));
 	}
 
 	@Override
 	public Iterator<KeyValue<K, V>> iterator() {
-		return getElements().iterator();
+		return getMembers().iterator();
 	}
 
 	@Override
@@ -45,12 +45,6 @@ public class KeyValuesMapping<K, V extends Access> implements Mapping<K, V>, Key
 
 	@Override
 	public Stream<KeyValue<K, V>> stream() {
-		return getElements().stream();
+		return getMembers().stream();
 	}
-
-	@Override
-	public boolean isEmpty() {
-		return Mapping.super.isEmpty();
-	}
-
 }

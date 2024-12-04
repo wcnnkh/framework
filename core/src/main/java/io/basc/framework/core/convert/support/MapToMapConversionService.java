@@ -11,7 +11,7 @@ import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.KeyValue;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
@@ -51,7 +51,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 			return sourceMap;
 		}
 
-		Map<Object, Object> targetMap = CollectionFactory.createMap(targetType.getType(),
+		Map<Object, Object> targetMap = CollectionUtils.createMap(targetType.getType(),
 				(keyDesc != null ? keyDesc.getType() : null), sourceMap.size());
 		for (KeyValue entry : targetEntries) {
 			targetMap.put(entry.getKey(), entry.getValue());

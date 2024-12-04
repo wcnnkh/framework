@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import io.basc.framework.util.Wrapper;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -33,21 +32,19 @@ public interface Named {
 		public W getSource() {
 			return source;
 		}
+
+		@Override
+		public Named rename(String name) {
+			return new Renamed<>(name, source);
+		}
 	}
 
 	@Data
-	@NoArgsConstructor
+	@RequiredArgsConstructor
 	public static class SimpleNamed implements Named, Serializable {
 		private static final long serialVersionUID = 1L;
+		@NonNull
 		private String name;
-
-		public SimpleNamed(Named name) {
-			this.name = name.getName();
-		}
-
-		public SimpleNamed(String name) {
-			this.name = name;
-		}
 	}
 
 	public static Named of(String name) {

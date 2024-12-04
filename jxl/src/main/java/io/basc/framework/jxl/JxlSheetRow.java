@@ -1,6 +1,6 @@
 package io.basc.framework.jxl;
 
-import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.excel.SheetColumn;
 import io.basc.framework.excel.SheetContext;
 import io.basc.framework.excel.SheetRow;

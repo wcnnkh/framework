@@ -2,6 +2,7 @@ package io.basc.framework.core.execution.param;
 
 import java.io.Serializable;
 
+import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.util.Elements;
 
 public class EmptyParameters implements Parameters, Serializable {

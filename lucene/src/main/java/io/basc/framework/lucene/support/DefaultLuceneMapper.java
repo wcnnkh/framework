@@ -22,7 +22,7 @@ import org.apache.lucene.util.BytesRef;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.execution.param.Parameter;
+import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;

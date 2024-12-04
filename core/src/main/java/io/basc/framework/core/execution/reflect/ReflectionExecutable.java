@@ -9,7 +9,7 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.execution.param.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.execution.param.ParameterUtils;
 import io.basc.framework.util.Elements;
 import lombok.NonNull;

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Items;
 
