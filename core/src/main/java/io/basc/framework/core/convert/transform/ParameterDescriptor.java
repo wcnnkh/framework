@@ -13,11 +13,6 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 		default int getIndex() {
 			return getSource().getIndex();
 		}
-
-		@Override
-		default boolean isRequired() {
-			return getSource().isRequired();
-		}
 	}
 
 	public static class RenamedParameterDescriptor<W extends ParameterDescriptor> extends RenamedPropertyDescriptor<W>
@@ -39,7 +34,6 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 	public static class SimpleParameterDescriptor extends SimplePropertyDescriptor implements ParameterDescriptor {
 		private static final long serialVersionUID = 1L;
 		private int index;
-		private boolean required;
 
 		public SimpleParameterDescriptor(int index, @NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
 			super(name, typeDescriptor);
@@ -54,8 +48,6 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 	}
 
 	int getIndex();
-
-	boolean isRequired();
 
 	default ParameterDescriptor rename(String name) {
 		return new RenamedParameterDescriptor<>(name, this);

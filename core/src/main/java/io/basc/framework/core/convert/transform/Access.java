@@ -4,6 +4,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.ValueWrapper;
 
 public interface Access extends ValueWrapper {
+	@FunctionalInterface
 	public static interface AccessWrapper<W extends Access> extends Access, ValueWrapper {
 
 		@Override
@@ -21,7 +22,7 @@ public interface Access extends ValueWrapper {
 
 		@Override
 		default boolean isWriteable() {
-			return isWriteable();
+			return getSource().isWriteable();
 		}
 
 		@Override
@@ -34,7 +35,7 @@ public interface Access extends ValueWrapper {
 			return getSource().getTypeDescriptor();
 		}
 	}
-	
+
 	/**
 	 * 插入值时需要的类型, 默认情况下和{@link #getTypeDescriptor()}相同
 	 * 

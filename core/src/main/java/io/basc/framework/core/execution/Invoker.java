@@ -1,17 +1,38 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.core.execution.param.Parameters;
-import io.basc.framework.util.Elements;
+import io.basc.framework.core.convert.transform.Parameters;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ObjectUtils;
+import lombok.NonNull;
 
 public interface Invoker extends Executed {
-	default Object execute(Object target) throws Throwable {
-		return execute(target, Elements.empty(), Elements.empty());
+	@FunctionalInterface
+	public static interface InvokerWrapper<W extends Invoker> extends Invoker, ExecutedWrapper<W> {
+		@Override
+		default Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args)
+				throws Throwable {
+			return getSource().invoke(target, parameterTypes, args);
+		}
+
+		@Override
+		default Object invoke(Object target) throws Throwable {
+			return getSource().invoke(target);
+		}
+
+		@Override
+		default Object invoke(Object target, @NonNull Parameters parameters) throws Throwable {
+			return getSource().invoke(target, parameters);
+		}
+
 	}
 
-	Object execute(Object target, Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
-			throws Throwable;
+	default Object invoke(Object target) throws Throwable {
+		return invoke(target, ClassUtils.emptyArray(), ObjectUtils.EMPTY_ARRAY);
+	}
 
-	default Object execute(Object target, Parameters parameters) throws Throwable {
-		return execute(target, parameters.getTypes(), parameters.getArgs());
+	Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable;
+
+	default Object invoke(Object target, @NonNull Parameters parameters) throws Throwable {
+		return invoke(target, parameters.getTypes(), parameters.getArgs());
 	}
 }

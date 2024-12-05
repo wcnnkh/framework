@@ -1,11 +1,35 @@
 package io.basc.framework.core.execution;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.convert.transform.Parameters;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.ClassUtils;
+import lombok.NonNull;
 
 public interface Executed extends AnnotatedTypeMetadata {
+	@FunctionalInterface
+	public static interface ExecutedWrapper<W extends Executed> extends Executed, AnnotatedTypeMetadataWrapper<W> {
+		@Override
+		default TypeDescriptor getReturnTypeDescriptor() {
+			return getSource().getReturnTypeDescriptor();
+		}
+
+		@Override
+		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
+			return getSource().canExecuted(parameterTypes);
+		}
+
+		@Override
+		default boolean canExecuted() {
+			return getSource().canExecuted();
+		}
+
+		@Override
+		default boolean canExecuted(@NonNull Parameters parameters) {
+			return getSource().canExecuted(parameters);
+		}
+	}
+
 	/**
 	 * 返回类型描述
 	 * 
@@ -14,12 +38,12 @@ public interface Executed extends AnnotatedTypeMetadata {
 	TypeDescriptor getReturnTypeDescriptor();
 
 	default boolean canExecuted() {
-		return canExecuted(Elements.empty());
+		return canExecuted(ClassUtils.emptyArray());
 	}
 
-	boolean canExecuted(Elements<? extends Class<?>> parameterTypes);
+	boolean canExecuted(@NonNull Class<?>... parameterTypes);
 
-	default boolean canExecuted(Parameters parameters) {
+	default boolean canExecuted(@NonNull Parameters parameters) {
 		return canExecuted(parameters.getTypes());
 	}
 }

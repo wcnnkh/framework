@@ -1,14 +1,14 @@
 package io.basc.framework.core.execution;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
-import io.basc.framework.core.execution.param.ParameterMatchingResults;
-import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Name;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.alias.Named;
+import lombok.NonNull;
 
 /**
  * 所有执行的基类
@@ -16,25 +16,48 @@ import io.basc.framework.util.Pipeline;
  * @author wcnnkh
  *
  */
-public interface Executable extends Executed, Name {
-	default boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
-		return getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()).equals(parameterTypes,
-				Class::isAssignableFrom);
-	}
-
-	default boolean canExecuted(Parameters parameters) {
-		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
-		return results.isSuccessful();
-	}
-
-	default <T, E extends Throwable> T execute(Parameters parameters,
-			Pipeline<? super ParameterMatchingResults, ? extends T, ? extends E> processor) throws E {
-		ParameterMatchingResults results = parameters.apply(getParameterDescriptors());
-		if (!results.isSuccessful()) {
-			throw new IllegalArgumentException("Parameter mismatch");
+public interface Executable extends Executed, Named {
+	@FunctionalInterface
+	public static interface ExecutableWrapper<W extends Executable>
+			extends Executable, ExecutedWrapper<W>, NamedWrapper<W> {
+		@Override
+		default Elements<ParameterDescriptor> getParameterDescriptors() {
+			return getSource().getParameterDescriptors();
 		}
 
-		return processor.process(results);
+		@Override
+		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
+			return getSource().canExecuted(parameterTypes);
+		}
+
+		@Override
+		default Elements<TypeDescriptor> getExceptionTypeDescriptors() {
+			return getSource().getExceptionTypeDescriptors();
+		}
+
+		@Override
+		default TypeDescriptor getDeclaringTypeDescriptor() {
+			return getSource().getDeclaringTypeDescriptor();
+		}
+
+		@Override
+		default int getModifiers() {
+			return getSource().getModifiers();
+		}
+	}
+
+	@Override
+	default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
+		Iterator<ParameterDescriptor> iterator1 = getParameterDescriptors().iterator();
+		Iterator<Class<?>> iterator2 = Arrays.asList(parameterTypes).iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			ParameterDescriptor parameterDescriptor = iterator1.next();
+			Class<?> type = iterator2.next();
+			if (!type.isAssignableFrom(parameterDescriptor.getTypeDescriptor().getType())) {
+				return false;
+			}
+		}
+		return !iterator1.hasNext() && !iterator2.hasNext();
 	}
 
 	/**

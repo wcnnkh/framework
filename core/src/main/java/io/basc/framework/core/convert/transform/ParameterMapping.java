@@ -8,18 +8,13 @@ public interface ParameterMapping<T extends Parameter> extends PropertyMapping<T
 			extends ParameterMapping<T>, PropertyMappingWrapper<T, W> {
 
 		@Override
-		default Elements<T> getAccesses(@NonNull Object key) {
-			return getSource().getAccesses(key);
-		}
-
-		@Override
-		default int size() {
-			return getSource().size();
-		}
-
-		@Override
 		default T get(int index) {
 			return getSource().get(index);
+		}
+
+		@Override
+		default Elements<T> getAccesses(@NonNull Object key) {
+			return getSource().getAccesses(key);
 		}
 
 		@Override
@@ -31,11 +26,14 @@ public interface ParameterMapping<T extends Parameter> extends PropertyMapping<T
 		default Class<?>[] getTypes() {
 			return getSource().getTypes();
 		}
+
+		@Override
+		default int size() {
+			return getSource().size();
+		}
 	}
 
 	T get(int index);
-
-	int size();
 
 	@Override
 	default Elements<T> getAccesses(@NonNull Object key) {
@@ -68,4 +66,6 @@ public interface ParameterMapping<T extends Parameter> extends PropertyMapping<T
 		}
 		return types;
 	}
+
+	int size();
 }

@@ -7,6 +7,24 @@ import lombok.NonNull;
 import lombok.ToString;
 
 public interface Property extends Access, PropertyDescriptor {
+
+	@FunctionalInterface
+	public static interface PropertyWrapper<W extends Property> extends Property, AccessWrapper<W> {
+
+		@Override
+		W getSource();
+
+		@Override
+		default TypeDescriptor getTypeDescriptor() {
+			return getSource().getTypeDescriptor();
+		}
+
+		@Override
+		default String getName() {
+			return getSource().getName();
+		}
+	}
+
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	@ToString(callSuper = true)

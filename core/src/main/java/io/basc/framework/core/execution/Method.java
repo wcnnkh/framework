@@ -1,7 +1,8 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.convert.transform.Parameters;
 import io.basc.framework.util.Elements;
+import lombok.NonNull;
 
 /**
  * 方法的定义
@@ -11,26 +12,25 @@ import io.basc.framework.util.Elements;
  */
 public interface Method extends Function, Invoker {
 	@Override
-	default Object execute(Elements<? extends Object> args) throws Throwable {
+	default Object execute(@NonNull Object... args) throws Throwable {
 		return execute(getTarget(), args);
 	}
 
-	default Object execute(Object target) throws Throwable {
+	default Object invoke(Object target) throws Throwable {
 		return execute(target, Elements.empty(), Elements.empty());
 	}
 
-	default Object execute(Object target, Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
-			throws Throwable {
+	default Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
 		if (!canExecuted(parameterTypes)) {
 			throw new IllegalArgumentException("Parameter type mismatch");
 		}
 
-		return execute(target, args);
+		return invoke(target, args);
 	}
 
-	Object execute(Object target, Elements<? extends Object> args) throws Throwable;
+	Object invoke(Object target, @NonNull Object... args) throws Throwable;
 
-	default Object execute(Object target, Parameters parameters) throws Throwable {
+	default Object invoke(Object target, @NonNull Parameters parameters) throws Throwable {
 		return execute(target, parameters.getTypes(), parameters.getArgs());
 	}
 

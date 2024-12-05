@@ -1,7 +1,6 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.core.execution.param.Parameters;
-import io.basc.framework.util.Elements;
+import lombok.NonNull;
 
 /**
  * 函数的定义
@@ -10,8 +9,21 @@ import io.basc.framework.util.Elements;
  *
  */
 public interface Function extends Executable, Executor {
-	default Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args)
-			throws Throwable {
+	@FunctionalInterface
+	public static interface FunctionWrapper<W extends Function>
+			extends Function, ExecutableWrapper<W>, ExecutorWrapper<W> {
+		@Override
+		default Object execute(@NonNull Object... args) throws Throwable {
+			return getSource().execute(args);
+		}
+
+		@Override
+		default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
+			return getSource().execute(parameterTypes, args);
+		}
+	}
+
+	default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
 		if (!canExecuted(parameterTypes)) {
 			throw new IllegalArgumentException("Parameter type mismatch");
 		}
@@ -25,10 +37,5 @@ public interface Function extends Executable, Executor {
 	 * @param args
 	 * @return
 	 */
-	Object execute(Elements<? extends Object> args) throws Throwable;
-
-	default Object execute(Parameters parameters) throws Throwable {
-		return execute(parameters, (results) -> execute(results.getParameters()));
-	}
-
+	Object execute(@NonNull Object... args) throws Throwable;
 }
