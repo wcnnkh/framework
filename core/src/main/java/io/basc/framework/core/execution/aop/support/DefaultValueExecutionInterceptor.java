@@ -10,6 +10,7 @@ import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.util.Elements;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * 对调用参数默认值的处理
@@ -23,13 +24,13 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 	private ConversionService conversionService;
 
 	@Override
-	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
-		if (args.isEmpty()) {
+	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
+		if (args.length == 0) {
 			return function.execute(args);
 		}
 
-		Elements<Object> newArgs = function.getParameterDescriptors().parallel(args).filter((e) -> e.isPresent())
-				.map((e) -> {
+		Elements<Object> newArgs = function.getParameterDescriptors().parallel(Elements.forArray(args))
+				.filter((e) -> e.isPresent()).map((e) -> {
 					if (e.getRightValue() != null) {
 						return e.getRightValue();
 					} else {

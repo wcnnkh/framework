@@ -2,11 +2,11 @@ package io.basc.framework.web.resource;
 
 import java.io.IOException;
 
-import io.basc.framework.io.DefaultResourceLoader;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.load.DefaultResourceLoader;
+import io.basc.framework.util.io.load.ResourceLoader;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;

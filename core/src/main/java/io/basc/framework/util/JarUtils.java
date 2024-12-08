@@ -10,7 +10,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public abstract class JarUtils {
 	private static final String MANIFEST = "META-INF/MANIFEST.MF";

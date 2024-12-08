@@ -1,14 +1,13 @@
 package io.basc.framework.core.type.classreading;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.objectweb.asm.ClassReader;
 
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.NestedIOException;
+import io.basc.framework.util.io.Resource;
 
 /**
  * {@link MetadataReader} implementation based on an ASM
@@ -25,7 +24,7 @@ final class SimpleMetadataReader implements MetadataReader {
 
 	private final AnnotationMetadata annotationMetadata;
 
-	SimpleMetadataReader(Resource resource,  ClassLoader classLoader) throws IOException {
+	SimpleMetadataReader(Resource resource, ClassLoader classLoader) throws IOException {
 		SimpleAnnotationMetadataReadingVisitor visitor = new SimpleAnnotationMetadataReadingVisitor(classLoader);
 		getClassReader(resource).accept(visitor, PARSING_OPTIONS);
 		this.resource = resource;
@@ -33,7 +32,7 @@ final class SimpleMetadataReader implements MetadataReader {
 	}
 
 	private static ClassReader getClassReader(Resource resource) throws IOException {
-		try (InputStream is = resource.getInputStream()) {
+		return resource.getInputStream().export().map((is) -> {
 			try {
 				return new ClassReader(is);
 			} catch (IllegalArgumentException ex) {
@@ -42,7 +41,7 @@ final class SimpleMetadataReader implements MetadataReader {
 								+ "probably due to a new Java class file version that isn't supported yet: " + resource,
 						ex);
 			}
-		}
+		}).get();
 	}
 
 	@Override

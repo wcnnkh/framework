@@ -3,8 +3,8 @@ package io.basc.framework.context.resource;
 import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.context.config.ApplicationContextSourceProcessor;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
-import io.basc.framework.io.Resource;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.io.Resource;
 import lombok.Getter;
 
 @Getter

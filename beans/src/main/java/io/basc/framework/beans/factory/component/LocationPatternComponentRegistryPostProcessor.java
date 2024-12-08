@@ -1,8 +1,8 @@
 package io.basc.framework.beans.factory.component;
 
 import io.basc.framework.core.env.EnvironmentCapable;
+import io.basc.framework.core.scan.TypeScanner;
 import io.basc.framework.core.type.AnnotationMetadata;
-import io.basc.framework.io.scan.TypeScanner;
 import io.basc.framework.util.Elements;
 import lombok.Getter;
 import lombok.NonNull;

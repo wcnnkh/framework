@@ -15,12 +15,6 @@ import io.basc.framework.context.ApplicationContextEvent;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.core.env.ConfigurableEnvironment;
 import io.basc.framework.core.env.DefaultEnvironment;
-import io.basc.framework.io.DefaultResourceLoader;
-import io.basc.framework.io.ProtocolResolver;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.io.ResourcePatternResolver;
-import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.actor.EventPushException;
@@ -28,6 +22,12 @@ import io.basc.framework.util.actor.EventRegistrationException;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.actor.support.DefaultBroadcastEventDispatcher;
+import io.basc.framework.util.io.ProtocolResolver;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.load.DefaultResourceLoader;
+import io.basc.framework.util.io.load.PathMatchingResourcePatternResolver;
+import io.basc.framework.util.io.load.ResourceLoader;
+import io.basc.framework.util.io.load.ResourcePatternResolver;
 import io.basc.framework.util.register.Registration;
 
 public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {

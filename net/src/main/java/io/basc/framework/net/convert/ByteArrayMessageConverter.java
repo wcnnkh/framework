@@ -3,11 +3,11 @@ package io.basc.framework.net.convert;
 import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.util.io.IOUtils;
 
 public class ByteArrayMessageConverter extends ObjectMessageConverter<byte[]> {
 

@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.io.FileRecords;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.codec.support.CharsetCodec;
+import io.basc.framework.util.io.FileRecords;
 
 public class FileRecordsTest {
 	@Test

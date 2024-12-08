@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import io.basc.framework.data.DataException;
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
+import io.basc.framework.util.io.Resource;
 
 /**
  * 资源存储服务

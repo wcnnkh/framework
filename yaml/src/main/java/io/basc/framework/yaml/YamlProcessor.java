@@ -27,16 +27,16 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.WritableResource;
-import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.WritableResource;
+import io.basc.framework.util.io.resolver.PropertiesResolver;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 

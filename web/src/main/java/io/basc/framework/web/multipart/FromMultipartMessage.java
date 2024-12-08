@@ -2,7 +2,7 @@ package io.basc.framework.web.multipart;
 
 import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.io.UnsafeByteArrayInputStream;
+import io.basc.framework.util.io.UnsafeByteArrayInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;

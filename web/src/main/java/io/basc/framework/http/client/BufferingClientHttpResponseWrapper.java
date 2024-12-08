@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 

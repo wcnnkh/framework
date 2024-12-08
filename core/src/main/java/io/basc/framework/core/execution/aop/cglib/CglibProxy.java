@@ -4,10 +4,10 @@ import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.Proxy;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 import net.sf.cglib.proxy.Enhancer;
 
 @Data
@@ -23,14 +23,13 @@ public class CglibProxy implements Proxy {
 	}
 
 	@Override
-	public boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
-		return ReflectionUtils.getDeclaredConstructor(returnTypeDescriptor.getType(),
-				parameterTypes.toArray(Class[]::new)) != null;
+	public boolean canExecuted(@NonNull Class<?>... parameterTypes) {
+		return ReflectionUtils.getDeclaredConstructor(returnTypeDescriptor.getType(), parameterTypes) != null;
 	}
 
 	@Override
-	public Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args) {
-		return enhancer.create(parameterTypes.toArray(Class[]::new), args.toArray());
+	public Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) {
+		return enhancer.create(parameterTypes, args);
 	}
 
 	@Override

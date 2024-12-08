@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 
-import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.BufferProcessor;
 import lombok.NonNull;
 
 /**

@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.resolver.DefaultPropertiesResolver;
-import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.observe.watch.ResourceObserver;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.resolver.DefaultPropertiesResolver;
+import io.basc.framework.util.io.resolver.PropertiesResolver;
 import io.basc.framework.util.register.Registration;
 
 /**

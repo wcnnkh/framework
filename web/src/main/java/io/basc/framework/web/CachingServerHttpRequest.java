@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.UnsafeByteArrayInputStream;
 
 /**
  * 缓存请求体，未处理内存溢出的情况

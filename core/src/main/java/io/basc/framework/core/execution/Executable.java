@@ -8,6 +8,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.alias.Named;
+import lombok.Data;
 import lombok.NonNull;
 
 /**
@@ -21,18 +22,8 @@ public interface Executable extends Executed, Named {
 	public static interface ExecutableWrapper<W extends Executable>
 			extends Executable, ExecutedWrapper<W>, NamedWrapper<W> {
 		@Override
-		default Elements<ParameterDescriptor> getParameterDescriptors() {
-			return getSource().getParameterDescriptors();
-		}
-
-		@Override
 		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
 			return getSource().canExecuted(parameterTypes);
-		}
-
-		@Override
-		default Elements<TypeDescriptor> getExceptionTypeDescriptors() {
-			return getSource().getExceptionTypeDescriptors();
 		}
 
 		@Override
@@ -41,8 +32,36 @@ public interface Executable extends Executed, Named {
 		}
 
 		@Override
+		default Elements<TypeDescriptor> getExceptionTypeDescriptors() {
+			return getSource().getExceptionTypeDescriptors();
+		}
+
+		@Override
 		default int getModifiers() {
 			return getSource().getModifiers();
+		}
+
+		@Override
+		default Elements<ParameterDescriptor> getParameterDescriptors() {
+			return getSource().getParameterDescriptors();
+		}
+
+		@Override
+		default Executable rename(String name) {
+			return getSource().rename(name);
+		}
+	}
+
+	@Data
+	public static class RenamedExecutable<W extends Executable> implements ExecutableWrapper<W> {
+		@NonNull
+		private final String name;
+		@NonNull
+		private final W source;
+
+		@Override
+		public Executable rename(String name) {
+			return new RenamedExecutable<>(name, source);
 		}
 	}
 
@@ -61,11 +80,11 @@ public interface Executable extends Executed, Named {
 	}
 
 	/**
-	 * 执行需要的参数描述
+	 * 声明的类型描述
 	 * 
 	 * @return
 	 */
-	Elements<ParameterDescriptor> getParameterDescriptors();
+	TypeDescriptor getDeclaringTypeDescriptor();
 
 	/**
 	 * 
@@ -74,13 +93,6 @@ public interface Executable extends Executed, Named {
 	 * @return
 	 */
 	Elements<TypeDescriptor> getExceptionTypeDescriptors();
-
-	/**
-	 * 声明的类型描述
-	 * 
-	 * @return
-	 */
-	TypeDescriptor getDeclaringTypeDescriptor();
 
 	/**
 	 * Returns the Java language modifiers for the member or constructor represented
@@ -92,5 +104,17 @@ public interface Executable extends Executed, Named {
 	 */
 	default int getModifiers() {
 		return Modifier.PUBLIC;
+	}
+
+	/**
+	 * 执行需要的参数描述
+	 * 
+	 * @return
+	 */
+	Elements<ParameterDescriptor> getParameterDescriptors();
+
+	@Override
+	default Executable rename(String name) {
+		return new RenamedExecutable<>(name, this);
 	}
 }

@@ -7,8 +7,8 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.Proxy;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.Elements;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -31,19 +31,19 @@ public class JdkProxy implements Proxy {
 	}
 
 	@Override
-	public boolean canExecuted(Elements<? extends Class<?>> parameterTypes) {
-		return parameterTypes.isEmpty();
+	public boolean canExecuted(@NonNull Class<?>... parameterTypes) {
+		return parameterTypes.length == 0;
 	}
 
 	@Override
-	public final Object execute(Elements<? extends Class<?>> parameterTypes, Elements<? extends Object> args) {
-		if (!args.isEmpty() || !parameterTypes.isEmpty()) {
+	public final Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) {
+		if (args.length != 0 || parameterTypes.length != 0) {
 			throw new UnsupportedException("Jdk proxy does not support calls with parameters");
 		}
 		return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces == null ? new Class<?>[0] : interfaces,
 				invocationHandler);
 	}
-	
+
 	@Override
 	public MergedAnnotations getAnnotations() {
 		return MergedAnnotations.from(returnTypeDescriptor);

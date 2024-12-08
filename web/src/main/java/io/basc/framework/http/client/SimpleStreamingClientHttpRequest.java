@@ -23,7 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 

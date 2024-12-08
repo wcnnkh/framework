@@ -1,44 +1,32 @@
 package io.basc.framework.core.convert.resolve;
 
-import java.nio.charset.Charset;
+import java.io.IOException;
 import java.util.Properties;
-import java.util.function.Supplier;
 
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.function.StaticSupplier;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.util.spi.ConfigurableServices;
 import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 
 public class ResourceResolvers extends ConfigurableServices<ResourceResolver> implements ResourceResolver {
 	private static final TypeDescriptor PROPERTIES_TYPE = TypeDescriptor.valueOf(Properties.class);
-	private final PropertiesResolvers propertiesResolvers;
-	private final Supplier<Charset> charset;
+	private final ConfigurablePropertiesResolver propertiesResolvers;
 	private final ConversionService conversionService;
 
 	public ResourceResolvers(ConversionService conversionService) {
-		this(conversionService, (Charset) null);
+		this(new ConfigurablePropertiesResolver(), conversionService);
 	}
 
-	public ResourceResolvers(ConversionService conversionService, Charset charset) {
-		this(conversionService, charset == null ? null : new StaticSupplier<>(charset));
-	}
-
-	public ResourceResolvers(ConversionService conversionService, Supplier<Charset> charset) {
-		this(new PropertiesResolvers(), conversionService, charset);
-	}
-
-	public ResourceResolvers(PropertiesResolvers propertiesResolvers, ConversionService conversionService,
-			Supplier<Charset> charset) {
+	public ResourceResolvers(ConfigurablePropertiesResolver propertiesResolvers, ConversionService conversionService) {
 		setServiceClass(ResourceResolver.class);
 		this.propertiesResolvers = propertiesResolvers;
 		this.conversionService = conversionService;
-		this.charset = charset;
 		getInjectors().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				((ConversionServiceAware) service).setConversionService(getConversionService());
@@ -46,14 +34,14 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 			return Registration.SUCCESS;
 		});
 	}
-	
+
 	@Override
 	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
 		propertiesResolvers.doConfigure(discovery);
 		return super.doConfigure(discovery);
 	}
 
-	public PropertiesResolvers getPropertiesResolvers() {
+	public ConfigurablePropertiesResolver getPropertiesResolvers() {
 		return propertiesResolvers;
 	}
 
@@ -80,7 +68,11 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 
 		if (getPropertiesResolvers().canResolveProperties(resource)) {
 			Properties properties = new Properties();
-			getPropertiesResolvers().resolveProperties(properties, resource, charset == null ? null : charset.get());
+			try {
+				getPropertiesResolvers().resolveProperties(properties, resource);
+			} catch (IOException e) {
+				throw new ConversionException(resource.getDescription(), e);
+			}
 			return getConversionService().convert(properties, PROPERTIES_TYPE, targetType);
 		}
 

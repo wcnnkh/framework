@@ -10,8 +10,6 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
 import io.basc.framework.core.convert.ValueWrapper;
-import io.basc.framework.io.JavaSerializer;
-import io.basc.framework.io.Serializer;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
@@ -20,6 +18,8 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.broadcast.BroadcastEventRegistry;
+import io.basc.framework.util.io.serializer.JavaSerializer;
+import io.basc.framework.util.io.serializer.Serializer;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.value.AbstractEditablePropertyFactory;

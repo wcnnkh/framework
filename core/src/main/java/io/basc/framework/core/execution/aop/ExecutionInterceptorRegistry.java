@@ -1,25 +1,20 @@
 package io.basc.framework.core.execution.aop;
 
 import io.basc.framework.core.execution.Function;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.observe.service.ObservableServiceLoader;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.spi.ConfigurableServices;
+import lombok.NonNull;
 
-public class ExecutionInterceptorRegistry extends ObservableServiceLoader<ExecutionInterceptor>
+public class ExecutionInterceptorRegistry extends ConfigurableServices<ExecutionInterceptor>
 		implements ExecutionInterceptor {
-	private final Function nextChain;
+	private Function nextChain;
 
 	public ExecutionInterceptorRegistry() {
-		this(null);
-	}
-
-	public ExecutionInterceptorRegistry(@Nullable Function nextChain) {
-		this.nextChain = nextChain;
+		setServiceClass(ExecutionInterceptor.class);
 	}
 
 	@Override
-	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
-		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(getServices().iterator(), nextChain);
+	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
+		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(iterator(), nextChain);
 		return chain.intercept(function, args);
 	}
 

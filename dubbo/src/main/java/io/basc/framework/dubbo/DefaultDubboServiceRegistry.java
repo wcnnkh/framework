@@ -10,7 +10,7 @@ import org.apache.dubbo.config.ServiceConfig;
 
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.xml.XmlBeanUtils;
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 
 public class DefaultDubboServiceRegistry extends DefaultDubboReferenceRegistry implements DubboServiceRegistry {
 	private List<ServiceConfig<?>> serviceConfigs = Collections.synchronizedList(new ArrayList<>());

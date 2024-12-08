@@ -8,12 +8,12 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
-import io.basc.framework.io.Resource;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
+import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import lombok.NonNull;

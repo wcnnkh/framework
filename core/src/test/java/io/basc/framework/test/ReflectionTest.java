@@ -8,9 +8,9 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
-import io.basc.framework.io.ClassPathResource;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.ClassPathResource;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.ToString;
 

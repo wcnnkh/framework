@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.ResourceUtils;
 
 public class Log4j2Utils {
 	private static Logger logger = LogManager.getLogger(Log4j2Utils.class);

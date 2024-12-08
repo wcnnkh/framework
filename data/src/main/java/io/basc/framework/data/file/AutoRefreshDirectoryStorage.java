@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import io.basc.framework.io.Serializer;
-import io.basc.framework.io.SerializerUtils;
+import io.basc.framework.util.io.serializer.Serializer;
+import io.basc.framework.util.io.serializer.SerializerUtils;
 
 public class AutoRefreshDirectoryStorage extends DiskStorage {
 	private final Function<String, ?> refresh;

@@ -12,7 +12,7 @@ public class ExecutionInterceptors implements ExecutionInterceptor {
 	private Function nextChain;
 
 	@Override
-	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
 		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(executionInterceptors.iterator(), nextChain);
 		return chain.intercept(function, args);
 	}

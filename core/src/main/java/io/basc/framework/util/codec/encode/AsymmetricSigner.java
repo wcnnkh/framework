@@ -11,11 +11,11 @@ import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.cert.Certificate;
 
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.CodecException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.IOUtils;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
 import lombok.NonNull;

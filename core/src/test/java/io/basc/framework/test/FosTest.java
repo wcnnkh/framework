@@ -9,8 +9,8 @@ import java.io.OutputStreamWriter;
 
 import org.junit.Test;
 
-import io.basc.framework.io.FileUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.FileUtils;
 
 public class FosTest {
 	@Test

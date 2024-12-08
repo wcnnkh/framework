@@ -5,7 +5,7 @@ import java.io.Reader;
 
 import io.basc.framework.core.convert.Converter;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public class ReaderToString implements Converter<Reader, String, IOException> {
 

@@ -1,14 +1,18 @@
 package io.basc.framework.core.execution.aop;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.spi.ConfigurableServices;
+import lombok.NonNull;
 
 public class ProxyFactories extends ConfigurableServices<ProxyFactory> implements ProxyFactory {
 
+	public ProxyFactories() {
+		setServiceClass(ProxyFactory.class);
+	}
+
 	@Override
 	public boolean canProxy(Class<?> sourceClass) {
-		for (ProxyFactory proxy : getServices()) {
+		for (ProxyFactory proxy : this) {
 			if (proxy.canProxy(sourceClass)) {
 				return true;
 			}
@@ -18,7 +22,7 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
 
 	@Override
 	public boolean isProxy(Class<?> proxyClass) {
-		for (ProxyFactory proxy : getServices()) {
+		for (ProxyFactory proxy : this) {
 			if (proxy.isProxy(proxyClass)) {
 				return true;
 			}
@@ -28,7 +32,7 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
 
 	@Override
 	public Class<?> getUserClass(Class<?> proxyClass) {
-		for (ProxyFactory proxy : getServices()) {
+		for (ProxyFactory proxy : this) {
 			if (proxy.isProxy(proxyClass)) {
 				return proxy.getUserClass(proxyClass);
 			}
@@ -37,9 +41,9 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
 	}
 
 	@Override
-	public Proxy getProxy(Class<?> sourceClass, Class<?>[] interfaces,
-			@Nullable ExecutionInterceptor executionInterceptor) {
-		for (ProxyFactory proxy : getServices()) {
+	public Proxy getProxy(@NonNull Class<?> sourceClass, Class<?>[] interfaces,
+			ExecutionInterceptor executionInterceptor) {
+		for (ProxyFactory proxy : this) {
 			if (proxy.canProxy(sourceClass)) {
 				return proxy.getProxy(sourceClass, interfaces, executionInterceptor);
 			}
@@ -48,8 +52,8 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
 	}
 
 	@Override
-	public boolean isProxy(String proxyClassName, ClassLoader classLoader) throws ClassNotFoundException {
-		for (ProxyFactory proxy : getServices()) {
+	public boolean isProxy(@NonNull String proxyClassName, ClassLoader classLoader) throws ClassNotFoundException {
+		for (ProxyFactory proxy : this) {
 			if (proxy.isProxy(proxyClassName, classLoader)) {
 				return true;
 			}
@@ -58,8 +62,9 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
 	}
 
 	@Override
-	public Class<?> getUserClass(String proxyClassName, ClassLoader classLoader) throws ClassNotFoundException {
-		for (ProxyFactory proxy : getServices()) {
+	public Class<?> getUserClass(@NonNull String proxyClassName, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		for (ProxyFactory proxy : this) {
 			if (proxy.isProxy(proxyClassName, classLoader)) {
 				return proxy.getUserClass(proxyClassName, classLoader);
 			}
@@ -68,8 +73,8 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
 	}
 
 	@Override
-	public Class<?> getProxyClass(Class<?> sourceClass, Class<?>[] interfaces) {
-		for (ProxyFactory proxy : getServices()) {
+	public Class<?> getProxyClass(@NonNull Class<?> sourceClass, Class<?>[] interfaces) {
+		for (ProxyFactory proxy : this) {
 			if (proxy.canProxy(sourceClass)) {
 				return proxy.getProxyClass(sourceClass, interfaces);
 			}

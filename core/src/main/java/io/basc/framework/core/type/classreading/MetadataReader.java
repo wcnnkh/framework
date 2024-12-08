@@ -2,7 +2,7 @@ package io.basc.framework.core.type.classreading;
 
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 
 public interface MetadataReader {
 

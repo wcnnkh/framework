@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
-import io.basc.framework.io.SerializerException;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.serializer.SerializerException;
 import lombok.ToString;
 
 public class CollectionFactoryTest {

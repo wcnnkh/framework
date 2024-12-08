@@ -1,16 +1,15 @@
 package io.basc.framework.core.execution.aop;
 
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.aop.cglib.CglibProxyFactory;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -22,7 +21,7 @@ public class Aop extends CglibProxyFactory {
 			synchronized (Aop.class) {
 				if (global == null) {
 					global = new Aop();
-					global.configure(SPI.global());
+					global.doNativeConfigure();
 				}
 			}
 		}
@@ -33,7 +32,7 @@ public class Aop extends CglibProxyFactory {
 	private final ExecutionInterceptorRegistry executionInterceptorRegistry = new ExecutionInterceptorRegistry();
 
 	public Aop() {
-		this.id = XUtils.getUUID();
+		this.id = UUIDSequences.getInstance().next();
 	}
 
 	public final String getId() {
@@ -48,8 +47,8 @@ public class Aop extends CglibProxyFactory {
 	}
 
 	@Override
-	public Proxy getProxy(Class<?> sourceClass, @Nullable Class<?>[] interfaces,
-			@Nullable ExecutionInterceptor executionInterceptor) {
+	public Proxy getProxy(@NonNull Class<?> sourceClass, Class<?>[] interfaces,
+			ExecutionInterceptor executionInterceptor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
 				this.id);
@@ -70,15 +69,15 @@ public class Aop extends CglibProxyFactory {
 		return super.getProxy(sourceClass, useInterfaces, useExecutionInterceptor);
 	}
 
-	public final Proxy getProxy(Class<?> sourceClass) {
+	public final Proxy getProxy(@NonNull Class<?> sourceClass) {
 		return getProxy(sourceClass, null, null);
 	}
 
-	public final Function getProxyFunction(Function function) {
+	public final Function getProxyFunction(@NonNull Function function) {
 		return getProxyFunction(function, null);
 	}
 
-	public Function getProxyFunction(Function function, @Nullable ExecutionInterceptor executionInterceptor) {
+	public Function getProxyFunction(@NonNull Function function, ExecutionInterceptor executionInterceptor) {
 		Assert.requiredArgument(function != null, "function");
 		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
 				this.id);
@@ -91,16 +90,15 @@ public class Aop extends CglibProxyFactory {
 					getExecutionInterceptorRegistry(), executionInterceptor);
 		}
 		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
-		return new InterceptableFunction(function, useExecutionInterceptor);
+		return new InterceptableFunction<>(function, useExecutionInterceptor);
 	}
 
 	public final <T> Proxy getProxy(Class<? extends T> sourceClass, T source) {
 		return getProxy(sourceClass, source, null, null);
 	}
 
-	public <T> Proxy getProxy(Class<? extends T> sourceClass, T source, @Nullable Class<?>[] interfaces,
-			@Nullable ExecutionInterceptor executionInterceptor) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
+	public <T> Proxy getProxy(@NonNull Class<? extends T> sourceClass, T source, Class<?>[] interfaces,
+			ExecutionInterceptor executionInterceptor) {
 		SwitchableTargetExecutionInterceptor switchableTargetExecutionInterceptor = new SwitchableTargetExecutionInterceptor(
 				source);
 		Elements<? extends ExecutionInterceptor> executionInterceptors;

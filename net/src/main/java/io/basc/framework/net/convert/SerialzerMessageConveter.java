@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.ValueWrapper;
-import io.basc.framework.io.Serializer;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.util.io.serializer.Serializer;
 
 public class SerialzerMessageConveter extends AbstractMessageConverter {
 	private Serializer serializer;

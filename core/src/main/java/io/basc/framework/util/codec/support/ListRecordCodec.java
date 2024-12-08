@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.io.Bits;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.Bits;
 
 public class ListRecordCodec<D> implements ToBytesCodec<List<D>> {
 	private final RecordCodec<D> codec;

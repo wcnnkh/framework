@@ -1,9 +1,9 @@
 package io.basc.framework.feign;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.FastByteArrayOutputStream;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.convert.MessageConverter;
+import io.basc.framework.util.io.FastByteArrayOutputStream;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

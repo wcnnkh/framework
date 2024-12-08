@@ -1,21 +1,19 @@
 package io.basc.framework.core.execution.aop;
 
 import io.basc.framework.core.execution.Function;
-import io.basc.framework.core.execution.FunctionWrapper;
-import io.basc.framework.util.Elements;
+import io.basc.framework.core.execution.Function.FunctionWrapper;
+import lombok.Data;
 import lombok.NonNull;
 
-public class InterceptableFunction extends FunctionWrapper<Function> {
+@Data
+public class InterceptableFunction<W extends Function> implements FunctionWrapper<W> {
+	@NonNull
+	private final W source;
 	@NonNull
 	private final ExecutionInterceptor executionInterceptor;
 
-	public InterceptableFunction(Function executor, ExecutionInterceptor executionInterceptor) {
-		super(executor);
-		this.executionInterceptor = executionInterceptor;
-	}
-
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
-		return executionInterceptor.intercept(wrappedTarget, args);
+	public Object execute(@NonNull Object... args) throws Throwable {
+		return executionInterceptor.intercept(getSource(), args);
 	}
 }

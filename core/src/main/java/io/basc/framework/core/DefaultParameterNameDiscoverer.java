@@ -29,13 +29,13 @@ package io.basc.framework.core;
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
  * @author Sam Brannen
- * @see StandardReflectionParameterNameDiscoverer
+ * @see NativeParameterNameDiscoverer
  * @see LocalVariableTableParameterNameDiscoverer
  */
 public class DefaultParameterNameDiscoverer extends PrioritizedParameterNameDiscoverer {
 
 	public DefaultParameterNameDiscoverer() {
-		addDiscoverer(new StandardReflectionParameterNameDiscoverer());
+		addDiscoverer(new NativeParameterNameDiscoverer());
 		addDiscoverer(new LocalVariableTableParameterNameDiscoverer());
 	}
 

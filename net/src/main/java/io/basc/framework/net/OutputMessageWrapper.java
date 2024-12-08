@@ -1,6 +1,6 @@
 package io.basc.framework.net;
 
-import io.basc.framework.io.OutputStreamSourceWrapper;
+import io.basc.framework.util.io.OutputStreamSourceWrapper;
 
 public class OutputMessageWrapper<O extends OutputMessage> extends OutputStreamSourceWrapper<O>
 		implements OutputMessage {

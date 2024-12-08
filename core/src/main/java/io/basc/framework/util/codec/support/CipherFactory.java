@@ -14,12 +14,12 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import io.basc.framework.io.BufferProcessor;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.codec.CodecException;
+import io.basc.framework.util.io.BufferProcessor;
+import io.basc.framework.util.io.IOUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 

@@ -4,15 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.io.JavaSerializer;
-import io.basc.framework.io.Serializer;
-import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.serializer.Serializer;
 
 public class SerializerCodec<T> implements ToBytesCodec<T> {
-	public static final SerializerCodec<Object> DEFAULT = new SerializerCodec<Object>(SerializerUtils.getSerializer());
-	public static final SerializerCodec<Object> JAVA = new SerializerCodec<Object>(JavaSerializer.INSTANCE);
 
 	private final Serializer serializer;
 

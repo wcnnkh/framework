@@ -12,11 +12,11 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.CodecException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.IOUtils;
 import lombok.NonNull;
 
 /**

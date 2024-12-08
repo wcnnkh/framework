@@ -6,11 +6,11 @@ import java.io.IOException;
 import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.io.support.TemporaryFile;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.FileUtils;
+import io.basc.framework.util.io.support.TemporaryFile;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 

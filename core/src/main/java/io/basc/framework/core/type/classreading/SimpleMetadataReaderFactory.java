@@ -3,10 +3,10 @@ package io.basc.framework.core.type.classreading;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import io.basc.framework.io.DefaultResourceLoader;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.load.DefaultResourceLoader;
+import io.basc.framework.util.io.load.ResourceLoader;
 
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 

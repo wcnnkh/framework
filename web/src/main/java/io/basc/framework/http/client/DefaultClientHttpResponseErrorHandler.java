@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponseErrorHandler {
 	public static final ClientHttpResponseErrorHandler INSTANCE = new DefaultClientHttpResponseErrorHandler();

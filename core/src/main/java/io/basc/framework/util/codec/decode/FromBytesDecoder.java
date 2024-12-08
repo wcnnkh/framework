@@ -6,10 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.Resource;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.Decoder;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.Resource;
 
 public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 	D decode(InputStream source, int bufferSize) throws IOException, DecodeException;
@@ -55,10 +55,10 @@ public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 	}
 
 	default D decode(Resource source) throws IOException, DecodeException {
-		return source.read((is) -> decode(is));
+		return source.getInputStream().export().map(this::decode).get();
 	}
 
 	default D decode(Resource source, int bufferSize) throws IOException, DecodeException {
-		return source.read((is) -> decode(is, bufferSize));
+		return source.getInputStream().export().map((is) -> decode(is, bufferSize)).get();
 	}
 }

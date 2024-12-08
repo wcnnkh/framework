@@ -9,9 +9,9 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.CrossLanguageSerializer;
-import io.basc.framework.io.Serializer;
 import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.util.io.serializer.CrossLanguageSerializer;
+import io.basc.framework.util.io.serializer.Serializer;
 
 public class KryoSerializer implements Serializer, CrossLanguageSerializer {
 	private static final ThreadLocal<Kryo> kryoLocal = new NamedThreadLocal<Kryo>(

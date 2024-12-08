@@ -1,9 +1,9 @@
 package io.basc.framework.upload.ueditor.upload;
 
-import io.basc.framework.io.FileUtils;
 import io.basc.framework.upload.ueditor.define.AppInfo;
 import io.basc.framework.upload.ueditor.define.BaseState;
 import io.basc.framework.upload.ueditor.define.State;
+import io.basc.framework.util.io.FileUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

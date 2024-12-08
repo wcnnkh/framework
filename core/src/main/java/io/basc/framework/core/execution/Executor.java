@@ -10,13 +10,13 @@ public interface Executor extends Executed {
 	public static interface ExecutorWrapper<W extends Executor> extends Executor, ExecutedWrapper<W> {
 
 		@Override
-		default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
-			return getSource().execute(parameterTypes, args);
+		default boolean canExecuted() {
+			return getSource().canExecuted();
 		}
 
 		@Override
-		default boolean canExecuted() {
-			return getSource().canExecuted();
+		default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
+			return getSource().execute(parameterTypes, args);
 		}
 
 		@Override

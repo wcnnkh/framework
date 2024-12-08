@@ -22,10 +22,10 @@ import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.core.env.EnvironmentBeanDefinition;
-import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.rabbitmq.RabbitmqExchange;
 import io.basc.framework.transform.strategy.filter.ParameterNamePrefixFilter;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.io.ResourceUtils;
 
 @ConditionalOnParameters
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {

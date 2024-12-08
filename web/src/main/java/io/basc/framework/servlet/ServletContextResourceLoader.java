@@ -1,13 +1,13 @@
 package io.basc.framework.servlet;
 
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.io.UrlResource;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.servlet.ServletContext;
+
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.UrlResource;
+import io.basc.framework.util.io.load.ResourceLoader;
 
 public class ServletContextResourceLoader implements ResourceLoader{
 	private final ServletContext servletContext;

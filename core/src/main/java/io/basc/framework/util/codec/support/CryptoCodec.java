@@ -12,11 +12,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.SecretKeySpec;
 
-import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.CodecException;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.BufferProcessor;
 import lombok.NonNull;
 
 /**

@@ -22,11 +22,11 @@ import io.basc.framework.ibatis.beans.annotation.MapperResources;
 import io.basc.framework.ibatis.beans.annotation.MapperScan;
 import io.basc.framework.ibatis.beans.annotation.TypeAliase;
 import io.basc.framework.ibatis.beans.annotation.TypeAliaseScan;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.load.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 

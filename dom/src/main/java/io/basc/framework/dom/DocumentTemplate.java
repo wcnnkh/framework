@@ -18,13 +18,13 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.dom.writer.ArrayWriter;
 import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Endpoint;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.load.ResourceLoader;
 
 public class DocumentTemplate implements Configurable, DocumentParser, DocumentWriter, DocumentTransformer {
 	protected final ConfigurableServices<DocumentTransformer> transformers = new ConfigurableServices<DocumentTransformer>(

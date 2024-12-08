@@ -1,11 +1,11 @@
 package io.basc.framework.upload;
 
-import io.basc.framework.io.FileSystemResource;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+
+import io.basc.framework.util.io.FileSystemResource;
 
 public class UploadResource extends FileSystemResource{
 	private final URI uri;

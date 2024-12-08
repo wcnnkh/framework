@@ -5,10 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.CrossLanguageSerializer;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.support.CharsetCodec;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.serializer.CrossLanguageSerializer;
 
 public class JsonSerializer implements CrossLanguageSerializer {
 	public static final CrossLanguageSerializer INSTANCE = new JsonSerializer();

@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public interface JsonSupport extends JsonConverter {
 	String toJsonString(Object obj) throws JsonException;

@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
@@ -14,6 +13,7 @@ import io.basc.framework.util.codec.EncodeException;
 import io.basc.framework.util.codec.Encoder;
 import io.basc.framework.util.codec.encode.HmacMD5;
 import io.basc.framework.util.codec.encode.HmacSHA1;
+import io.basc.framework.util.io.IOUtils;
 
 /**
  * 使用指定字符集进行编解码

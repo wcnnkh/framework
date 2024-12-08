@@ -7,8 +7,8 @@ import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.primary.component.DefaultApplicationContextComponentLoader;
 import io.basc.framework.context.primary.resource.DefaultApplicationContextPrimaryResourceLoader;
 import io.basc.framework.context.resource.DefaultApplicationContextResourceImporter;
-import io.basc.framework.io.Resource;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.io.Resource;
 import lombok.Getter;
 import lombok.Setter;
 

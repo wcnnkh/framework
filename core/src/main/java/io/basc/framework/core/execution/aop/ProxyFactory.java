@@ -1,6 +1,6 @@
 package io.basc.framework.core.execution.aop;
 
-import io.basc.framework.lang.Nullable;
+import lombok.NonNull;
 
 /**
  * 代理
@@ -15,7 +15,7 @@ public interface ProxyFactory {
 	 * @param sourceClass
 	 * @return
 	 */
-	boolean canProxy(Class<?> sourceClass);
+	boolean canProxy(@NonNull Class<?> sourceClass);
 
 	/**
 	 * 获取执行后可获取代理的对象
@@ -25,7 +25,7 @@ public interface ProxyFactory {
 	 * @param executionInterceptor
 	 * @return
 	 */
-	Proxy getProxy(Class<?> sourceClass, @Nullable Class<?>[] interfaces, ExecutionInterceptor executionInterceptor);
+	Proxy getProxy(@NonNull Class<?> sourceClass, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor);
 
 	/**
 	 * 获取代理类
@@ -34,7 +34,7 @@ public interface ProxyFactory {
 	 * @param interfaces
 	 * @return
 	 */
-	Class<?> getProxyClass(Class<?> sourceClass, Class<?>[] interfaces);
+	Class<?> getProxyClass(@NonNull Class<?> sourceClass, Class<?>[] interfaces);
 
 	/**
 	 * 获取未被代理的原始类型
@@ -42,7 +42,7 @@ public interface ProxyFactory {
 	 * @param proxyClass
 	 * @return 原始类
 	 */
-	Class<?> getUserClass(Class<?> proxyClass);
+	Class<?> getUserClass(@NonNull Class<?> proxyClass);
 
 	/**
 	 * 获取用户类
@@ -52,7 +52,7 @@ public interface ProxyFactory {
 	 * @return 返回被代理的原始类
 	 * @throws ClassNotFoundException 类不存在
 	 */
-	Class<?> getUserClass(String proxyClassName, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
+	Class<?> getUserClass(@NonNull String proxyClassName, ClassLoader classLoader) throws ClassNotFoundException;
 
 	/**
 	 * 是否是代理类
@@ -70,5 +70,5 @@ public interface ProxyFactory {
 	 * @return 是否已被代理
 	 * @throws ClassNotFoundException 类不存在
 	 */
-	boolean isProxy(String proxyClassName, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
+	boolean isProxy(@NonNull String proxyClassName, ClassLoader classLoader) throws ClassNotFoundException;
 }

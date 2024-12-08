@@ -6,10 +6,10 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.codec.CodecException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.IOUtils;
 
 public class MessageDigestEncoder implements BytesEncoder, Cloneable {
 	private final NamedThreadLocal<MessageDigest> threadLocal;

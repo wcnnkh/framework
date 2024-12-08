@@ -16,13 +16,14 @@
 
 package io.basc.framework.core;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import io.basc.framework.util.spi.NativeServiceLoader;
+import lombok.NonNull;
 
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {
 	private static final ParameterNameDiscoverer[] PARAMETER_NAME_DISCOVERERS = NativeServiceLoader
@@ -45,32 +46,22 @@ public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscover
 	}
 
 	@Override
-	
-	public String[] getParameterNames(Method method) {
-		String[] result = getParameterNames(Arrays.asList(PARAMETER_NAME_DISCOVERERS), method);
+	public String[] getParameterNames(@NonNull Executable executable) {
+		String[] result = getParameterNames(Arrays.asList(PARAMETER_NAME_DISCOVERERS), executable);
 		if (result == null) {
-			result = getParameterNames(this.parameterNameDiscoverers, method);
+			result = getParameterNames(this.parameterNameDiscoverers, executable);
 		}
 		return result;
 	}
 
-	protected String[] getParameterNames(List<ParameterNameDiscoverer> parameterNameDiscoverers, Constructor<?> ctor) {
+	protected String[] getParameterNames(List<ParameterNameDiscoverer> parameterNameDiscoverers,
+			Executable executable) {
 		for (ParameterNameDiscoverer pnd : parameterNameDiscoverers) {
-			String[] result = pnd.getParameterNames(ctor);
+			String[] result = pnd.getParameterNames(executable);
 			if (result != null) {
 				return result;
 			}
 		}
 		return null;
-	}
-
-	@Override
-	
-	public String[] getParameterNames(Constructor<?> ctor) {
-		String[] result = getParameterNames(Arrays.asList(PARAMETER_NAME_DISCOVERERS), ctor);
-		if (result == null) {
-			result = getParameterNames(this.parameterNameDiscoverers, ctor);
-		}
-		return result;
 	}
 }

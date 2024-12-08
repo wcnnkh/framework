@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import io.basc.framework.io.FileUtils;
+import io.basc.framework.util.io.FileUtils;
 
 public final class XUtils {
 

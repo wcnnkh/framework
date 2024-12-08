@@ -1,8 +1,8 @@
 package io.basc.framework.context.resource;
 
 import io.basc.framework.context.config.ConfigurableApplicationContextSourceProcessor;
-import io.basc.framework.io.Resource;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.io.Resource;
 
 public class ConfigurableApplicationContextResourceImporter extends
 		ConfigurableApplicationContextSourceProcessor<Elements<? extends Resource>, ApplicationContextResourceImporter, ApplicationContextResourceImportExtender>

@@ -3,9 +3,8 @@ package io.basc.framework.beans;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 
-import io.basc.framework.lang.Nullable;
+import lombok.NonNull;
 
 public interface BeaninfoFactory {
-	@Nullable
-	BeanInfo getBeaninfo(Class<?> beanClass) throws IntrospectionException;
+	BeanInfo getBeaninfo(@NonNull Class<?> beanClass) throws IntrospectionException;
 }

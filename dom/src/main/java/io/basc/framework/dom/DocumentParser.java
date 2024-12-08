@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.w3c.dom.Document;
 
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.io.Resource;
 
 public interface DocumentParser {
 	boolean canParse(Resource resource);

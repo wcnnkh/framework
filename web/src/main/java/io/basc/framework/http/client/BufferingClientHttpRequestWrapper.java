@@ -21,7 +21,7 @@ import java.net.URI;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 /**
  * Simple implementation of {@link ClientHttpRequest} that wraps another

@@ -2,7 +2,7 @@ package io.basc.framework.core.type.classreading;
 
 import java.io.IOException;
 
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 
 /**
  * Factory interface for {@link MetadataReader} instances. Allows for caching a

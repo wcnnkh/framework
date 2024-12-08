@@ -11,11 +11,11 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.FileUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public class Zip implements BytesCodec {
 	public static final Zip DEFAULT = new Zip();

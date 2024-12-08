@@ -9,14 +9,14 @@ import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.geo.Lbs;
-import io.basc.framework.io.CrossLanguageSerializer;
-import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.support.CharsetCodec;
+import io.basc.framework.util.io.ResourceUtils;
+import io.basc.framework.util.io.SerializerUtils;
+import io.basc.framework.util.io.serializer.CrossLanguageSerializer;
 
 public final class Redis
 		extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String, Redis>

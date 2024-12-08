@@ -8,7 +8,7 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.ReversibleConverter;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public class ReaderConverter implements ReversibleConverter<String, Reader, ConversionException> {
 

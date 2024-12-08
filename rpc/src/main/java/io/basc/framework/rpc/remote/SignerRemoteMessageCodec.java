@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.Serializer;
-import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.OutputMessage;
 import io.basc.framework.util.codec.Encoder;
 import io.basc.framework.util.codec.encode.MD5;
 import io.basc.framework.util.codec.support.CharsetCodec;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.serializer.Serializer;
+import io.basc.framework.util.io.serializer.SerializerUtils;
 
 /**
  * 验证签名的方式编解码数据

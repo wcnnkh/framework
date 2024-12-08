@@ -5,11 +5,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import freemarker.cache.TemplateLoader;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.ResourceUtils;
+import io.basc.framework.util.io.UnsafeByteArrayInputStream;
+import io.basc.framework.util.io.load.ResourceLoader;
 import io.basc.framework.util.logging.LogManager;
 
 public class DefaultTemplateLoader implements TemplateLoader {

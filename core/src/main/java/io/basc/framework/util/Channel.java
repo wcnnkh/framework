@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
@@ -73,11 +75,7 @@ public interface Channel<T, E extends Throwable> extends Source<T, E>, Target<T,
 
 		@Override
 		public void close() throws E {
-			try {
-				get();
-			} finally {
-				source.close();
-			}
+			source.close();
 		}
 
 		@Override
@@ -134,5 +132,22 @@ public interface Channel<T, E extends Throwable> extends Source<T, E>, Target<T,
 	@Override
 	default Channel<T, E> onClose(@NonNull Processor<? extends E> processor) {
 		return new NewChannel<>(this, processor);
+	}
+
+	public static <T, E extends Throwable> Channel<T, E> of(T source) {
+		Source<T, E> target = () -> source;
+		return target.newChannel();
+	}
+
+	public static <T extends AutoCloseable> Channel<T, Exception> forAutoCloseable(
+			Source<? extends T, ? extends Exception> source) {
+		Source<T, Exception> target = Source.of(source);
+		return target.onClose(AutoCloseable::close).newChannel();
+	}
+
+	public static <T extends Closeable> Channel<T, IOException> forCloseable(
+			Source<? extends T, ? extends IOException> source) {
+		Source<T, IOException> target = Source.of(source);
+		return target.onClose(Closeable::close).newChannel();
 	}
 }

@@ -25,8 +25,8 @@ import java.util.Map;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.IOUtils;
 
 public final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
 

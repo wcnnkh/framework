@@ -9,14 +9,14 @@ public interface Invoker extends Executed {
 	@FunctionalInterface
 	public static interface InvokerWrapper<W extends Invoker> extends Invoker, ExecutedWrapper<W> {
 		@Override
-		default Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args)
-				throws Throwable {
-			return getSource().invoke(target, parameterTypes, args);
+		default Object invoke(Object target) throws Throwable {
+			return getSource().invoke(target);
 		}
 
 		@Override
-		default Object invoke(Object target) throws Throwable {
-			return getSource().invoke(target);
+		default Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args)
+				throws Throwable {
+			return getSource().invoke(target, parameterTypes, args);
 		}
 
 		@Override

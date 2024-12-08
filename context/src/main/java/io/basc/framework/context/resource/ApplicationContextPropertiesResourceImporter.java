@@ -3,12 +3,12 @@ package io.basc.framework.context.resource;
 import java.nio.charset.Charset;
 
 import io.basc.framework.context.config.ConfigurableApplicationContext;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.properties.DynamicPropertyRegistry;
 import io.basc.framework.observe.properties.ObservablePropertyFactory;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.resolver.ConfigurablePropertiesResolver;
 
 public class ApplicationContextPropertiesResourceImporter extends ConfigurablePropertiesResolver
 		implements ApplicationContextResourceImporter {

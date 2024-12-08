@@ -10,7 +10,7 @@ import org.apache.dubbo.config.ReferenceConfig;
 
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.xml.XmlBeanUtils;
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 
 public class DefaultDubboReferenceRegistry extends DubboRegistry implements DubboReferenceRegistry {
 	private List<ReferenceConfig<?>> referenceConfigs = Collections.synchronizedList(new ArrayList<>());

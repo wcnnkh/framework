@@ -1,7 +1,5 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.lang.Nullable;
-
 public class FatalBeanException extends BeansException {
 	private static final long serialVersionUID = 1L;
 
@@ -20,7 +18,7 @@ public class FatalBeanException extends BeansException {
 	 * @param msg   the detail message
 	 * @param cause the root cause
 	 */
-	public FatalBeanException(String msg, @Nullable Throwable cause) {
+	public FatalBeanException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 

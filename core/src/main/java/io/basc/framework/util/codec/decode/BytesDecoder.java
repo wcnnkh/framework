@@ -7,14 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.io.BufferProcessor;
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.UnsafeByteArrayInputStream;
-import io.basc.framework.io.UnsafeByteArrayOutputStream;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.MultipleDecoder;
+import io.basc.framework.util.io.BufferProcessor;
+import io.basc.framework.util.io.FileUtils;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.UnsafeByteArrayInputStream;
+import io.basc.framework.util.io.UnsafeByteArrayOutputStream;
 
 public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<byte[]>, MultipleDecoder<byte[]> {
 

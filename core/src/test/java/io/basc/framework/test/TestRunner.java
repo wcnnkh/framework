@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import org.junit.runner.JUnitCore;
 
+import io.basc.framework.core.scan.PackagePatternMetadataReaderScanner;
+import io.basc.framework.core.scan.TypeScanner;
 import io.basc.framework.core.type.classreading.MetadataReader;
-import io.basc.framework.io.scan.PackagePatternMetadataReaderScanner;
-import io.basc.framework.io.scan.TypeScanner;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.logging.Logger;

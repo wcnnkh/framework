@@ -3,8 +3,8 @@ package io.basc.framework.context.primary.resource;
 import io.basc.framework.context.config.ApplicationContextSourceLoadExtender;
 import io.basc.framework.context.config.ApplicationContextSourceLoader;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
-import io.basc.framework.io.Resource;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.io.Resource;
 
 public interface ApplicationContextPrimaryResourceLoadExtender
 		extends ApplicationContextSourceLoadExtender<Class<?>, Resource> {

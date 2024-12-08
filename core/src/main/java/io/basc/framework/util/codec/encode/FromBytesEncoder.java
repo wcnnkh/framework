@@ -6,11 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.Resource;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.codec.EncodeException;
 import io.basc.framework.util.codec.Encoder;
+import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.Resource;
 
 public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 
@@ -56,7 +56,7 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	}
 
 	default boolean verify(Resource source, int bufferSize, E target) throws EncodeException, IOException {
-		return source.read((is) -> verify(is, bufferSize, target));
+		return source.getInputStream().export().filter((is) -> verify(is, bufferSize, target)).isPresent();
 	}
 
 	/**
@@ -112,10 +112,10 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	}
 
 	default E encode(Resource source) throws IOException, EncodeException {
-		return source.read((is) -> encode(is));
+		return source.getInputStream().export().map(this::encode).get();
 	}
 
 	default E encode(Resource source, int bufferSize) throws IOException, EncodeException {
-		return source.read((is) -> encode(is, bufferSize));
+		return source.getInputStream().export().map((is) -> encode(is, bufferSize)).get();
 	}
 }

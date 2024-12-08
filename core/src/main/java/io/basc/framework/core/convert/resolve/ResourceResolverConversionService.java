@@ -4,7 +4,7 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 
 import java.util.Collections;
 import java.util.Set;

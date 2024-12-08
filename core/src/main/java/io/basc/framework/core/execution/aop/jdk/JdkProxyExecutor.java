@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.core.execution.aop.ProxyUtils;
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
-import io.basc.framework.util.Elements;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 public class JdkProxyExecutor extends ReflectionMethod {
@@ -15,7 +15,7 @@ public class JdkProxyExecutor extends ReflectionMethod {
 	}
 
 	@Override
-	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
-		return ProxyUtils.invokeIgnoreMethod(target, getMember(), args.toArray());
+	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
+		return ProxyUtils.invokeIgnoreMethod(target, getMember(), args);
 	}
 }

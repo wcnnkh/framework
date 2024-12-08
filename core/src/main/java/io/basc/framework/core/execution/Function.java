@@ -13,13 +13,30 @@ public interface Function extends Executable, Executor {
 	public static interface FunctionWrapper<W extends Function>
 			extends Function, ExecutableWrapper<W>, ExecutorWrapper<W> {
 		@Override
+		default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
+			return getSource().execute(parameterTypes, args);
+		}
+
+		@Override
 		default Object execute(@NonNull Object... args) throws Throwable {
 			return getSource().execute(args);
 		}
 
 		@Override
-		default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
-			return getSource().execute(parameterTypes, args);
+		default Function rename(String name) {
+			return getSource().rename(name);
+		}
+	}
+
+	public static class RenamedFunction<W extends Function> extends RenamedExecutable<W> implements FunctionWrapper<W> {
+
+		public RenamedFunction(@NonNull String name, @NonNull W source) {
+			super(name, source);
+		}
+
+		@Override
+		public Function rename(String name) {
+			return new RenamedFunction<>(name, getSource());
 		}
 	}
 
@@ -38,4 +55,9 @@ public interface Function extends Executable, Executor {
 	 * @return
 	 */
 	Object execute(@NonNull Object... args) throws Throwable;
+
+	@Override
+	default Function rename(String name) {
+		return new RenamedFunction<>(name, this);
+	}
 }

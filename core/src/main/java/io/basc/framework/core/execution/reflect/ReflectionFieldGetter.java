@@ -10,8 +10,8 @@ public class ReflectionFieldGetter extends ReflectionField implements Getter {
 	private static final long serialVersionUID = 1L;
 	private String name;
 
-	public ReflectionFieldGetter(@NonNull Field member) {
-		super(member);
+	public ReflectionFieldGetter(@NonNull Field field) {
+		super(field);
 	}
 
 	@Override

@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.IOUtils;
 
 final class SimpleClientHttpResponse implements ClientHttpResponse {
 

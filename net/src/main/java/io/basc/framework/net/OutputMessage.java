@@ -5,9 +5,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import io.basc.framework.io.OutputStreamSource;
-import io.basc.framework.io.WriterSource;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.OutputStreamSource;
+import io.basc.framework.util.io.WriterSource;
 
 public interface OutputMessage extends Message, OutputStreamSource, WriterSource {
 	void setContentType(MimeType contentType);

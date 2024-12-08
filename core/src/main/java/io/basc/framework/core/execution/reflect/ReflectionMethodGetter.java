@@ -4,14 +4,15 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Getter;
-import io.basc.framework.util.Assert;
+import io.basc.framework.util.ShouldNeverGetHereException;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import lombok.NonNull;
 
 public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 	private String name;
 
-	public ReflectionMethodGetter(Method executable) {
-		super(executable);
+	public ReflectionMethodGetter(@NonNull Method method) {
+		super(method);
 	}
 
 	@Override
@@ -27,10 +28,10 @@ public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 	@Override
 	public Object get(Object target) {
 		try {
-			return execute(target);
+			return invoke(target);
 		} catch (Throwable e) {
 			ReflectionUtils.handleThrowable(e);
-			throw Assert.shouldNeverGetHere();
+			throw new ShouldNeverGetHereException();
 		}
 	}
 

@@ -3,8 +3,8 @@ package io.basc.framework.amqp.boot;
 import io.basc.framework.amqp.Message;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.value.Values;
-import io.basc.framework.io.Serializer;
-import io.basc.framework.io.SerializerUtils;
+import io.basc.framework.util.io.serializer.Serializer;
+import io.basc.framework.util.io.serializer.SerializerUtils;
 
 /**
  * 简单粗暴，默认实现

@@ -20,14 +20,14 @@ import io.basc.framework.excel.ExcelFactory;
 import io.basc.framework.excel.ExcelRecordExporter;
 import io.basc.framework.excel.ExcelVersion;
 import io.basc.framework.excel.WritableExcel;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.WritableResource;
 import io.basc.framework.mapper.io.template.RecordExporter;
 import io.basc.framework.mapper.io.template.RecordImporter;
 import io.basc.framework.poi.hssf.HssfRecordImporter;
 import io.basc.framework.poi.ss.PoiExcel;
 import io.basc.framework.poi.xssf.XssfRecordImporter;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.WritableResource;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 public class PoiExcelFactory implements ExcelFactory {

@@ -96,4 +96,8 @@ public interface Source<T, E extends Throwable> {
 	default Channel<T, E> onClose(@NonNull Processor<? extends E> processor) {
 		return new SourceChannel<>(this, processor);
 	}
+
+	public static <T, E extends Throwable> Source<T, E> of(@NonNull Source<? extends T, ? extends E> source) {
+		return source::get;
+	}
 }

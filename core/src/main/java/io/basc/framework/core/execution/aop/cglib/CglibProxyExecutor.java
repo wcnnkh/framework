@@ -3,9 +3,9 @@ package io.basc.framework.core.execution.aop.cglib;
 import java.lang.reflect.Method;
 
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
-import io.basc.framework.util.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import net.sf.cglib.proxy.MethodProxy;
 
 @Data
@@ -19,7 +19,7 @@ public class CglibProxyExecutor extends ReflectionMethod {
 	}
 
 	@Override
-	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
-		return methodProxy.invokeSuper(target, args.toArray());
+	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
+		return methodProxy.invokeSuper(target, args);
 	}
 }

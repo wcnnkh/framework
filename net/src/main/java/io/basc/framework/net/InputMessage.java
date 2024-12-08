@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import io.basc.framework.io.InputStreamSource;
-import io.basc.framework.io.ReaderSource;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.InputStreamSource;
+import io.basc.framework.util.io.ReaderSource;
 
 public interface InputMessage extends Message, InputStreamSource, ReaderSource {
 

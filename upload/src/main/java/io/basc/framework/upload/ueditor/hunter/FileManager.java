@@ -7,13 +7,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.io.SuffixFileFilter;
 import io.basc.framework.upload.ueditor.PathFormat;
 import io.basc.framework.upload.ueditor.define.AppInfo;
 import io.basc.framework.upload.ueditor.define.BaseState;
 import io.basc.framework.upload.ueditor.define.MultiState;
 import io.basc.framework.upload.ueditor.define.State;
+import io.basc.framework.util.io.FileUtils;
+import io.basc.framework.util.io.SuffixFileFilter;
 
 public class FileManager {
 

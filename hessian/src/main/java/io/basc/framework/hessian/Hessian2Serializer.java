@@ -8,7 +8,7 @@ import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
 
-import io.basc.framework.io.Serializer;
+import io.basc.framework.util.io.serializer.Serializer;
 
 public class Hessian2Serializer implements Serializer {
 	private final SerializerFactory serializerFactory;

@@ -10,10 +10,10 @@ import org.junit.Test;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.resolve.ResourceResolvers;
 import io.basc.framework.core.convert.support.DefaultConversionService;
-import io.basc.framework.io.DefaultResourceLoader;
-import io.basc.framework.io.Resource;
 import io.basc.framework.orm.stereotype.PrimaryKey;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.load.DefaultResourceLoader;
 import io.basc.framework.util.logging.LogManager;
 
 public class XmlResolverTest {

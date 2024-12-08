@@ -18,7 +18,6 @@ package io.basc.framework.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -36,6 +35,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
+import lombok.NonNull;
 
 /**
  * Implementation of {@link ParameterNameDiscoverer} that uses the
@@ -51,7 +51,7 @@ import io.basc.framework.util.logging.Logger;
  *
  * <p>
  * This discoverer variant is effectively superseded by the Java 8 based
- * {@link StandardReflectionParameterNameDiscoverer} but included as a fallback
+ * {@link NativeParameterNameDiscoverer} but included as a fallback
  * still (for code not compiled with the standard "-parameters" compiler flag).
  *
  * @author Adrian Colyer
@@ -59,7 +59,7 @@ import io.basc.framework.util.logging.Logger;
  * @author Juergen Hoeller
  * @author Chris Beams
  * @author Sam Brannen
- * @see StandardReflectionParameterNameDiscoverer
+ * @see NativeParameterNameDiscoverer
  * @see DefaultParameterNameDiscoverer
  */
 public class LocalVariableTableParameterNameDiscoverer implements ParameterNameDiscoverer {
@@ -74,20 +74,11 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	private final Map<Class<?>, Map<Executable, String[]>> parameterNamesCache = new ConcurrentHashMap<>(32);
 
 	@Override
-	
-	public String[] getParameterNames(Method method) {
-		Method originalMethod = BridgeMethodResolver.findBridgedMethod(method);
-		return doGetParameterNames(originalMethod);
-	}
-
-	@Override
-	
-	public String[] getParameterNames(Constructor<?> ctor) {
-		return doGetParameterNames(ctor);
-	}
-
-	
-	private String[] doGetParameterNames(Executable executable) {
+	public String[] getParameterNames(@NonNull Executable executable) {
+		Executable userExecutable = executable;
+		if (userExecutable instanceof Method) {
+			userExecutable = BridgeMethodResolver.findBridgedMethod((Method) userExecutable);
+		}
 		Class<?> declaringClass = executable.getDeclaringClass();
 		Map<Executable, String[]> map = this.parameterNamesCache.computeIfAbsent(declaringClass, this::inspectClass);
 		return (map != NO_DEBUG_INFO_MAP ? map.get(executable) : null);
@@ -157,7 +148,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		}
 
 		@Override
-		
+
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 			// exclude synthetic + bridged && static class initialization
 			if (!isSyntheticOrBridged(access) && !STATIC_CLASS_INIT.equals(name)) {

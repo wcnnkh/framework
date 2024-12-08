@@ -1,14 +1,14 @@
 package io.basc.framework.web.multipart;
 
-import io.basc.framework.io.AbstractResource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.io.AbstractResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Adapt {@link MultipartFile} to {@link io.basc.framework.io.Resource},
+ * Adapt {@link MultipartFile} to {@link io.basc.framework.util.io.Resource},
  * exposing the content as {@code InputStream} and also overriding
  * {@link #contentLength()} as well as {@link #getFilename()}.
  */

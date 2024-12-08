@@ -1,7 +1,7 @@
 package io.basc.framework.core.execution.aop;
 
 import io.basc.framework.core.execution.Function;
-import io.basc.framework.util.Elements;
+import lombok.NonNull;
 
 /**
  * 拦截器
@@ -9,6 +9,7 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
+@FunctionalInterface
 public interface ExecutionInterceptor {
-	Object intercept(Function function, Elements<? extends Object> args) throws Throwable;
+	Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable;
 }

@@ -2,9 +2,7 @@ package io.basc.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.function.Supplier;
 
-import io.basc.framework.util.StringUtils;
 import lombok.NonNull;
 
 public final class Annotations {
@@ -29,13 +27,5 @@ public final class Annotations {
 			}
 		}
 		return old;
-	}
-
-	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultSupplier) {
-		CharsetName charsetName = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, CharsetName.class);
-		if (charsetName == null || !StringUtils.hasText(charsetName.value())) {
-			return defaultSupplier == null ? null : defaultSupplier.get();
-		}
-		return charsetName.value();
 	}
 }

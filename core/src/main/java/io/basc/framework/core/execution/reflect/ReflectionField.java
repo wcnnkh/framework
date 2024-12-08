@@ -5,12 +5,12 @@ import java.lang.reflect.Field;
 
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.convert.transform.PropertyDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 
-public abstract class ReflectionField extends ReflectionMember<Field> implements ParameterDescriptor, Serializable {
+public abstract class ReflectionField extends ReflectionMember<Field> implements PropertyDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final Class<?> declaringClass;
@@ -77,4 +77,7 @@ public abstract class ReflectionField extends ReflectionMember<Field> implements
 		}
 		return typeDescriptor;
 	}
+
+	@Override
+	public abstract ReflectionField rename(String name);
 }

@@ -7,7 +7,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.core.convert.resolve.ResourceResolver;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 
 public class DocumentResourceResolver implements ResourceResolver, ConversionServiceAware {
 	private ConversionService conversionService;

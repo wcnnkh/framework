@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.io.Bits;
-import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.Bits;
+import io.basc.framework.util.io.IOUtils;
 
 public final class RecordCodec<D> implements ToBytesCodec<D> {
 	private final Codec<D, byte[]> codec;

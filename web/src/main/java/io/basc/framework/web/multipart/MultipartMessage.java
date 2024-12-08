@@ -1,8 +1,8 @@
 package io.basc.framework.web.multipart;
 
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
+import io.basc.framework.util.io.Resource;
 
 public interface MultipartMessage extends InputMessage {
 	String getName();

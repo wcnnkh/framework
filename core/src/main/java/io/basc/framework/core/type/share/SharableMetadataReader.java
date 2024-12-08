@@ -6,8 +6,8 @@ import java.security.ProtectionDomain;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.UrlResource;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.UrlResource;
 import lombok.Data;
 import lombok.NonNull;
 

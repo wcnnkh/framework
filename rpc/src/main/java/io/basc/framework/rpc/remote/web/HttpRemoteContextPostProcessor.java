@@ -13,8 +13,6 @@ import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.Serializer;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.remote.RemoteMessageCodec;
@@ -22,6 +20,8 @@ import io.basc.framework.rpc.remote.SignerRemoteMessageCodec;
 import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.Resource;
+import io.basc.framework.util.io.serializer.Serializer;
 
 @ConditionalOnParameters
 public class HttpRemoteContextPostProcessor implements ContextPostProcessor {

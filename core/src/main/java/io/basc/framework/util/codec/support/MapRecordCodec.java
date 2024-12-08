@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.IntFunction;
 
-import io.basc.framework.io.Bits;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
+import io.basc.framework.util.io.Bits;
 
 public class MapRecordCodec<K, V> implements ToBytesCodec<Map<K, V>> {
 	private final RecordCodec<K> keyCodec;

@@ -1,7 +1,7 @@
 package io.basc.framework.context.primary.resource;
 
 import io.basc.framework.context.config.ConfigurableApplicationContextSourceLoader;
-import io.basc.framework.io.Resource;
+import io.basc.framework.util.io.Resource;
 import lombok.Getter;
 import lombok.Setter;
 

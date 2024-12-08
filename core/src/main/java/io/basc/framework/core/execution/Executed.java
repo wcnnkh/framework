@@ -10,8 +10,8 @@ public interface Executed extends AnnotatedTypeMetadata {
 	@FunctionalInterface
 	public static interface ExecutedWrapper<W extends Executed> extends Executed, AnnotatedTypeMetadataWrapper<W> {
 		@Override
-		default TypeDescriptor getReturnTypeDescriptor() {
-			return getSource().getReturnTypeDescriptor();
+		default boolean canExecuted() {
+			return getSource().canExecuted();
 		}
 
 		@Override
@@ -20,22 +20,15 @@ public interface Executed extends AnnotatedTypeMetadata {
 		}
 
 		@Override
-		default boolean canExecuted() {
-			return getSource().canExecuted();
-		}
-
-		@Override
 		default boolean canExecuted(@NonNull Parameters parameters) {
 			return getSource().canExecuted(parameters);
 		}
-	}
 
-	/**
-	 * 返回类型描述
-	 * 
-	 * @return
-	 */
-	TypeDescriptor getReturnTypeDescriptor();
+		@Override
+		default TypeDescriptor getReturnTypeDescriptor() {
+			return getSource().getReturnTypeDescriptor();
+		}
+	}
 
 	default boolean canExecuted() {
 		return canExecuted(ClassUtils.emptyArray());
@@ -46,4 +39,11 @@ public interface Executed extends AnnotatedTypeMetadata {
 	default boolean canExecuted(@NonNull Parameters parameters) {
 		return canExecuted(parameters.getTypes());
 	}
+
+	/**
+	 * 返回类型描述
+	 * 
+	 * @return
+	 */
+	TypeDescriptor getReturnTypeDescriptor();
 }

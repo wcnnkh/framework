@@ -1,8 +1,8 @@
 package io.basc.framework.net;
 
-import io.basc.framework.io.InputStreamSourceWrapper;
-
 import java.io.IOException;
+
+import io.basc.framework.util.io.InputStreamSourceWrapper;
 
 public class InputMessageWrapper<I extends InputMessage> extends InputStreamSourceWrapper<I> implements InputMessage {
 

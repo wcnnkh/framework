@@ -24,11 +24,11 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 

@@ -6,11 +6,11 @@ import java.io.InputStream;
 
 import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.io.FileSystemResource;
-import io.basc.framework.io.Resource;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.io.FileSystemResource;
+import io.basc.framework.util.io.Resource;
 
 public class ResourceMultipartMessage extends AbstractMultipartMessage {
 	private final Resource resource;

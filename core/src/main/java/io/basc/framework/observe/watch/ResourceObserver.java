@@ -6,13 +6,13 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.io.Resource;
 import io.basc.framework.observe.PollingObserver;
 import io.basc.framework.observe.container.ObservableList;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.EventRegistrationException;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.actor.batch.BatchEventListener;
+import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.Registration;
 import lombok.NonNull;
