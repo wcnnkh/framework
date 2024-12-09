@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.util.AbstractMultiValueMap;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.StringUtils;
 
@@ -38,7 +38,7 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	 * @param headers
 	 */
 	public Headers(Headers headers) {
-		this.headers = headers.readyOnly ? headers.headers : CollectionFactory.clone(headers.headers);
+		this.headers = headers.readyOnly ? headers.headers : CollectionUtils.clone(headers.headers);
 		this.readyOnly = headers.readyOnly;
 	}
 

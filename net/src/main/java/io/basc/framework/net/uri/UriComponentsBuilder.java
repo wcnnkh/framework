@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.HierarchicalUriComponents.PathComponent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.LinkedMultiValueMap;
@@ -513,7 +512,7 @@ public class UriComponentsBuilder implements Cloneable {
 	 * @param params the params
 	 * @return this UriComponentsBuilder
 	 */
-	public UriComponentsBuilder queryParams(@Nullable MultiValueMap<String, String> params) {
+	public UriComponentsBuilder queryParams(MultiValueMap<String, String> params) {
 		if (params != null) {
 			this.queryParams.putAll(params);
 		}
@@ -568,7 +567,6 @@ public class UriComponentsBuilder implements Cloneable {
 		}
 		return this;
 	}
-
 
 	private void resetHierarchicalComponents() {
 		this.userInfo = null;

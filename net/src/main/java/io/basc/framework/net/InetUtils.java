@@ -19,10 +19,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import lombok.NonNull;
 
 public final class InetUtils {
 	private InetUtils() {
@@ -217,8 +217,7 @@ public final class InetUtils {
 		}
 	}
 
-	public static String getMessageId(Message input, @Nullable Message output) {
-		Assert.requiredArgument(input != null, "input");
+	public static String getMessageId(@NonNull Message input, Message output) {
 		String messageId = input.getHeaders().getFirst(MESSAGE_ID);
 		if (messageId != null) {
 			return messageId;
@@ -231,7 +230,7 @@ public final class InetUtils {
 			}
 		}
 
-		messageId = XUtils.getUUID();
+		messageId = UUIDSequences.getInstance().next();
 		if (output != null) {
 			output.getHeaders().set(MESSAGE_ID, messageId);
 		}

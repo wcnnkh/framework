@@ -6,6 +6,7 @@ import java.util.Optional;
 import io.basc.framework.util.Wrapper;
 
 public interface CharsetCapable {
+	@FunctionalInterface
 	public static interface CharsetCapableWrapper<W extends CharsetCapable> extends CharsetCapable, Wrapper<W> {
 		@Override
 		default Charset getCharset() {

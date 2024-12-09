@@ -2,19 +2,45 @@ package io.basc.framework.net;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import io.basc.framework.util.Channel;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.io.OutputStreamSource;
-import io.basc.framework.util.io.WriterSource;
+import io.basc.framework.util.io.OutputStreamFactory;
+import io.basc.framework.util.io.WriterFactory;
+import lombok.NonNull;
 
-public interface OutputMessage extends Message, OutputStreamSource, WriterSource {
+public interface OutputMessage extends Message, OutputStreamFactory<OutputStream>, WriterFactory<Writer> {
+	@FunctionalInterface
+	public static interface OutputMessageWrapper<W extends OutputMessage> extends OutputMessage, MessageWrapper<W>,
+			OutputStreamFactoryWrapper<OutputStream, W>, WriterFactoryWrapper<Writer, W> {
+
+		@Override
+		default Channel<Writer, IOException> getWriter() {
+			return getSource().getWriter();
+		}
+
+		@Override
+		default void setContentType(MimeType contentType) {
+			getSource().setContentType(contentType);
+		}
+
+		@Override
+		default void setContentLength(long contentLength) {
+			getSource().setContentLength(contentLength);
+		}
+
+		@Override
+		default void setCharsetName(String charsetName) {
+			getSource().setCharsetName(charsetName);
+		}
+	}
+
 	void setContentType(MimeType contentType);
 
 	void setContentLength(long contentLength);
 
-	default void setCharacterEncoding(String charsetName) {
+	default void setCharsetName(String charsetName) {
 		MimeType mimeType = getContentType();
 		if (mimeType == null) {
 			return;
@@ -24,10 +50,9 @@ public interface OutputMessage extends Message, OutputStreamSource, WriterSource
 	}
 
 	@Override
-	default Writer getWriter() throws IOException {
-		OutputStream outputStream = getOutputStream();
-		String charsetName = getCharacterEncoding();
-		return StringUtils.isEmpty(charsetName) ? new OutputStreamWriter(outputStream)
-				: new OutputStreamWriter(outputStream, charsetName);
+	default @NonNull Channel<Writer, IOException> getWriter() {
+		String charsetName = getCharsetName();
+		return StringUtils.isEmpty(charsetName) ? toWriterFactory().getWriter()
+				: toWriterFactory(charsetName).getWriter();
 	}
 }
