@@ -288,5 +288,4 @@ public class UrlResource extends AbstractFileResolvingResource {
 	public int hashCode() {
 		return getCleanedUrl().hashCode();
 	}
-
 }

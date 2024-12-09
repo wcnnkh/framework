@@ -6,10 +6,10 @@ import java.util.Properties;
 
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.util.io.WritableResource;
 import io.basc.framework.util.spi.ConfigurableServices;
 
-public class ConfigurablePropertiesResolver extends ConfigurableServices<PropertiesResolver> implements PropertiesResolver {
+public class ConfigurablePropertiesResolver extends ConfigurableServices<PropertiesResolver>
+		implements PropertiesResolver {
 
 	public ConfigurablePropertiesResolver() {
 		setServiceClass(PropertiesResolver.class);
@@ -40,7 +40,7 @@ public class ConfigurablePropertiesResolver extends ConfigurableServices<Propert
 	}
 
 	@Override
-	public void persistenceProperties(Properties properties, WritableResource resource) throws IOException {
+	public void persistenceProperties(Properties properties, Resource resource) throws IOException {
 		if (resource == null || !resource.exists()) {
 			return;
 		}

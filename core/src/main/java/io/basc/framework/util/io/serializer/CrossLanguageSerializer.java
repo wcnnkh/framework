@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.util.io.ObjectSerializer;
 import io.basc.framework.util.io.UnsafeByteArrayInputStream;
 import io.basc.framework.util.io.UnsafeByteArrayOutputStream;
 import lombok.NonNull;

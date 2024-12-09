@@ -15,17 +15,34 @@ import lombok.NonNull;
 
 @FunctionalInterface
 public interface OutputStreamFactory<T extends OutputStream> {
-	@Data
-	public static class MappedOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
-			implements WriterFactory<R> {
-		@NonNull
-		private final W source;
-		@NonNull
-		private final Pipeline<? super T, ? extends R, ? extends IOException> pipeline;
+
+	public static interface CharsetOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
+			extends EncodeOutputStreamFactory<T, Writer, W>, CharsetCapable {
+		@Override
+		default Pipeline<? super T, ? extends Writer, ? extends IOException> getEncoder() {
+			return (e) -> new OutputStreamWriter(e, getCharset());
+		}
+	}
+
+	public static class DefaultEncodeOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
+			extends StandardEncodeOutputStreamFactory<T, Writer, W> {
+
+		public DefaultEncodeOutputStreamFactory(@NonNull W source) {
+			super(source, OutputStreamWriter::new);
+		}
+
+		public DefaultEncodeOutputStreamFactory(@NonNull W source, @NonNull CharsetEncoder charsetEncoder) {
+			super(source, (e) -> new OutputStreamWriter(e, charsetEncoder));
+		}
+	}
+
+	public static interface EncodeOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
+			extends OutputStreamFactoryWrapper<T, W>, WriterFactory<R> {
+		Pipeline<? super T, ? extends R, ? extends IOException> getEncoder();
 
 		@Override
-		public Channel<R, IOException> getWriter() {
-			return source.getOutputStream().map(pipeline);
+		default @NonNull Channel<R, IOException> getWriter() {
+			return getSource().getOutputStream().map(getEncoder());
 		}
 	}
 
@@ -38,9 +55,9 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		}
 
 		@Override
-		default <R extends Writer> WriterFactory<R> map(
+		default <R extends Writer> WriterFactory<R> writer(
 				@NonNull Pipeline<? super T, ? extends R, ? extends IOException> pipeline) {
-			return getSource().map(pipeline);
+			return getSource().writer(pipeline);
 		}
 
 		@Override
@@ -64,27 +81,69 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		}
 	}
 
+	public static class StandardCharsetOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
+			extends StandardEncodeOutputStreamFactory<T, Writer, W> implements CharsetOutputStreamFactory<T, W> {
+		private final Object charset;
+
+		public StandardCharsetOutputStreamFactory(@NonNull W source, Charset charset) {
+			super(source, (e) -> new OutputStreamWriter(e, charset));
+			this.charset = charset;
+		}
+
+		public StandardCharsetOutputStreamFactory(@NonNull W source, String charsetName) {
+			super(source, (e) -> new OutputStreamWriter(e, charsetName));
+			this.charset = charsetName;
+		}
+
+		@Override
+		public Charset getCharset() {
+			if (charset instanceof Charset) {
+				return (Charset) charset;
+			}
+			return Charset.forName(String.valueOf(charset));
+		}
+
+		@Override
+		public String getCharsetName() {
+
+			if (charset instanceof String) {
+				return (String) charset;
+			}
+			return CharsetOutputStreamFactory.super.getCharsetName();
+		}
+
+	}
+
+	@Data
+	public static class StandardEncodeOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
+			implements EncodeOutputStreamFactory<T, R, W> {
+		@NonNull
+		private final W source;
+		@NonNull
+		private final Pipeline<? super T, ? extends R, ? extends IOException> encoder;
+	}
+
 	@NonNull
 	Channel<T, IOException> getOutputStream();
 
-	default <R extends Writer> WriterFactory<R> map(
+	default <R extends Writer> WriterFactory<R> writer(
 			@NonNull Pipeline<? super T, ? extends R, ? extends IOException> pipeline) {
-		return new MappedOutputStreamFactory<>(this, pipeline);
+		return new StandardEncodeOutputStreamFactory<>(this, pipeline);
 	}
 
 	default WriterFactory<Writer> toWriterFactory() {
-		return map(OutputStreamWriter::new);
+		return new DefaultEncodeOutputStreamFactory<>(this);
 	}
 
 	default WriterFactory<Writer> toWriterFactory(Charset charset) {
-		return map((os) -> new OutputStreamWriter(os, charset));
+		return new StandardCharsetOutputStreamFactory<>(this, charset);
 	}
 
 	default WriterFactory<Writer> toWriterFactory(CharsetEncoder charsetEncoder) {
-		return map((os) -> new OutputStreamWriter(os, charsetEncoder));
+		return new DefaultEncodeOutputStreamFactory<>(this, charsetEncoder);
 	}
 
 	default WriterFactory<Writer> toWriterFactory(String charsetName) {
-		return map((os) -> new OutputStreamWriter(os, charsetName));
+		return new StandardCharsetOutputStreamFactory<>(this, charsetName);
 	}
 }

@@ -10,7 +10,6 @@ import java.util.Properties;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.io.CharsetCapable;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.util.io.WritableResource;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.ReflectionUtils;
@@ -71,8 +70,7 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 	}
 
 	@Override
-	public void persistenceProperties(@NonNull Properties properties, @NonNull WritableResource resource)
-			throws IOException {
+	public void persistenceProperties(@NonNull Properties properties, @NonNull Resource resource) throws IOException {
 		if (super.canResolveProperties(resource)) {
 			super.persistenceProperties(properties, resource);
 			return;

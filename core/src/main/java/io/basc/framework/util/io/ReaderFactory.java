@@ -28,7 +28,7 @@ public interface ReaderFactory<T extends Reader> {
 		return getReader().export().map(IOUtils::read).get();
 	}
 
-	default Elements<String> readLines() {
+	default Elements<String> readAllLines() {
 		return Elements.of(() -> {
 			try {
 				Channel<T, IOException> channel = getReader();

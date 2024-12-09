@@ -1,12 +1,10 @@
-package io.basc.framework.util.io;
+package io.basc.framework.util.io.serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.util.io.serializer.CrossLanguageSerializer;
-import io.basc.framework.util.io.serializer.Serializer;
 
 public class ObjectSerializer implements Serializer {
 	private final CrossLanguageSerializer serializer;

@@ -5,44 +5,45 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 
+import io.basc.framework.util.Channel;
 import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.alias.Named;
 import io.basc.framework.util.watch.Variable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 
-public interface Resource extends InputStreamFactory<InputStream>, Variable {
-	public static class DecodeResource<W extends Resource> extends MappedInputStreamFactory<InputStream, Reader, W>
-			implements ResourceWrapper<W> {
+/**
+ * 一个资源的定义
+ * 
+ * @author shuchaowen
+ *
+ */
+public interface Resource extends InputStreamFactory<InputStream>, OutputStreamFactory<OutputStream>, Variable, Named {
 
-		public DecodeResource(@NonNull W source,
-				@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> pipeline) {
-			super(source, pipeline);
-		}
-	}
-
-	public static class CharsetResource<W extends Resource> extends DecodeResource<W> implements CharsetCapable {
+	public static class CharsetResource<W extends Resource> extends CodecResource<W>
+			implements CharsetOutputStreamFactory<OutputStream, W>, CharsetInputStreamFactory<InputStream, W> {
 		private final Object charset;
 
-		public CharsetResource(@NonNull W source, @NonNull String charsetName) {
-			super(source, (is) -> new InputStreamReader(is, charsetName));
-			this.charset = charsetName;
-		}
-
-		public CharsetResource(@NonNull W source, @NonNull Charset charset) {
-			super(source, (is) -> new InputStreamReader(is, charset));
+		public CharsetResource(@NonNull W source, Charset charset) {
+			super(source, (e) -> new OutputStreamWriter(e, charset), (e) -> new InputStreamReader(e, charset));
 			this.charset = charset;
 		}
 
-		@Override
-		public String getCharsetName() {
-			if (charset instanceof String) {
-				return (String) charset;
-			}
-			return CharsetCapable.super.getCharsetName();
+		public CharsetResource(@NonNull W source, String charsetName) {
+			super(source, (e) -> new OutputStreamWriter(e, charsetName), (e) -> new InputStreamReader(e, charsetName));
+			this.charset = charsetName;
 		}
 
 		@Override
@@ -52,11 +53,54 @@ public interface Resource extends InputStreamFactory<InputStream>, Variable {
 			}
 			return Charset.forName(String.valueOf(charset));
 		}
+
+		@Override
+		public String getCharsetName() {
+			if (charset instanceof String) {
+				return (String) charset;
+			}
+			return CharsetInputStreamFactory.super.getCharsetName();
+		}
+	}
+
+	@Data
+	@EqualsAndHashCode(callSuper = true)
+	@ToString(callSuper = true)
+	public static class CodecResource<W extends Resource>
+			extends StandardEncodeOutputStreamFactory<OutputStream, Writer, W> implements ResourceWrapper<W>,
+			DecodeInputStreamFactory<InputStream, Reader, W>, EncodeOutputStreamFactory<OutputStream, Writer, W> {
+		@NonNull
+		private final Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder;
+
+		public CodecResource(@NonNull W source) {
+			this(source, OutputStreamWriter::new, InputStreamReader::new);
+		}
+
+		public CodecResource(@NonNull W source, @NonNull CharsetEncoder charsetEncoder,
+				@NonNull CharsetDecoder charsetDecoder) {
+			this(source, (e) -> new OutputStreamWriter(e, charsetEncoder),
+					(e) -> new InputStreamReader(e, charsetDecoder));
+		}
+
+		public CodecResource(@NonNull W source,
+				@NonNull Pipeline<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
+				@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
+			super(source, encoder);
+			this.decoder = decoder;
+		}
+	}
+
+	@Data
+	public static class RenamedResource<W extends Resource> implements ResourceWrapper<W> {
+		@NonNull
+		private final String name;
+		@NonNull
+		private final W source;
 	}
 
 	@FunctionalInterface
-	public static interface ResourceWrapper<W extends Resource>
-			extends Resource, InputStreamFactoryWrapper<InputStream, W> {
+	public static interface ResourceWrapper<W extends Resource> extends Resource,
+			InputStreamFactoryWrapper<InputStream, W>, OutputStreamFactoryWrapper<OutputStream, W>, NamedWrapper<W> {
 		@Override
 		default long contentLength() throws IOException {
 			return getSource().contentLength();
@@ -83,8 +127,13 @@ public interface Resource extends InputStreamFactory<InputStream>, Variable {
 		}
 
 		@Override
-		default String getName() {
-			return getSource().getName();
+		default @NonNull Channel<InputStream, IOException> getInputStream() throws UnsupportedOperationException {
+			return getSource().getInputStream();
+		}
+
+		@Override
+		default @NonNull Channel<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
+			return getSource().getOutputStream();
 		}
 
 		@Override
@@ -108,24 +157,39 @@ public interface Resource extends InputStreamFactory<InputStream>, Variable {
 		}
 
 		@Override
+		default boolean isWritable() {
+			return getSource().isWritable();
+		}
+
+		@Override
 		default long lastModified() throws IOException {
 			return getSource().lastModified();
 		}
 
 		@Override
-		default Resource decode(
-				@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> pipeline) {
-			return getSource().decode(pipeline);
+		default Resource map(@NonNull Charset charset) {
+			return getSource().map(charset);
 		}
 
 		@Override
-		default Resource encode(@NonNull Charset charset) {
-			return getSource().encode(charset);
+		default Resource map(@NonNull CharsetEncoder charsetEncoder, @NonNull CharsetDecoder charsetDecoder) {
+			return getSource().map(charsetEncoder, charsetDecoder);
 		}
 
 		@Override
-		default Resource encode(@NonNull String charsetName) {
-			return getSource().encode(charsetName);
+		default Resource map(@NonNull Pipeline<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
+				@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
+			return getSource().map(encoder, decoder);
+		}
+
+		@Override
+		default Resource map(@NonNull String charsetName) {
+			return getSource().map(charsetName);
+		}
+
+		@Override
+		default Resource rename(String name) {
+			return getSource().rename(name);
 		}
 	}
 
@@ -133,35 +197,21 @@ public interface Resource extends InputStreamFactory<InputStream>, Variable {
 
 	Resource createRelative(String relativePath) throws IOException;
 
-	default Resource decode(@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> pipeline) {
-		return new DecodeResource<>(this, pipeline);
-	}
-
-	default Resource encode(@NonNull Charset charset) {
-		return new CharsetResource<>(this, charset);
-	}
-
-	default Resource encode(@NonNull String charsetName) {
-		return new CharsetResource<>(this, charsetName);
-	}
-
-	/**
-	 * 是否存在
-	 * 
-	 * @return
-	 */
 	boolean exists();
 
 	String getDescription();
 
 	File getFile() throws IOException, FileNotFoundException;
 
-	/**
-	 * 获取资源名称，如果是文件那应该是文件名
-	 * 
-	 * @return
-	 */
-	String getName();
+	@Override
+	@NonNull
+	Channel<InputStream, IOException> getInputStream() throws UnsupportedOperationException;
+
+	@Override
+	@NonNull
+	default Channel<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
 
 	URI getURI() throws IOException;
 
@@ -171,12 +221,33 @@ public interface Resource extends InputStreamFactory<InputStream>, Variable {
 		return false;
 	}
 
-	/**
-	 * 是否可读,比如一个目录是不可读的，或没有可读权限
-	 * 
-	 * @return
-	 */
 	default boolean isReadable() {
 		return exists();
+	}
+
+	default boolean isWritable() {
+		return false;
+	}
+
+	default Resource map(@NonNull Charset charset) {
+		return new CharsetResource<>(this, charset);
+	}
+
+	default Resource map(@NonNull CharsetEncoder charsetEncoder, @NonNull CharsetDecoder charsetDecoder) {
+		return new CodecResource<>(this, charsetEncoder, charsetDecoder);
+	}
+
+	default Resource map(@NonNull Pipeline<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
+			@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
+		return new CodecResource<>(this, encoder, decoder);
+	}
+
+	default Resource map(@NonNull String charsetName) {
+		return new CharsetResource<>(this, charsetName);
+	}
+
+	@Override
+	default Resource rename(String name) {
+		return new RenamedResource<>(name, this);
 	}
 }

@@ -30,7 +30,7 @@ import lombok.NonNull;
  *
  * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/io/FileUrlResource.java
  */
-public class FileUrlResource extends UrlResource implements WritableResource {
+public class FileUrlResource extends UrlResource {
 
 	private volatile File file;
 

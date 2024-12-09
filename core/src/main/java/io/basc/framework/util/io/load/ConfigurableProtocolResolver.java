@@ -1,6 +1,5 @@
 package io.basc.framework.util.io.load;
 
-import io.basc.framework.util.io.ProtocolResolver;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.spi.ConfigurableServices;
 

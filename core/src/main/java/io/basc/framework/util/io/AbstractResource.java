@@ -42,20 +42,6 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	/**
-	 * This implementation always returns {@code true}.
-	 */
-	public boolean isReadable() {
-		return true;
-	}
-
-	/**
-	 * This implementation always returns {@code false}.
-	 */
-	public boolean isOpen() {
-		return false;
-	}
-
-	/**
 	 * This implementation throws a FileNotFoundException, assuming that the
 	 * resource cannot be resolved to a URL.
 	 */

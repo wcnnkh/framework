@@ -1,7 +1,6 @@
-package io.basc.framework.util.io;
+package io.basc.framework.util.io.load;
 
-import io.basc.framework.util.io.load.DefaultResourceLoader;
-import io.basc.framework.util.io.load.ResourceLoader;
+import io.basc.framework.util.io.Resource;
 
 /**
  * A resolution strategy for protocol-specific resource handles.

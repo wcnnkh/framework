@@ -2,6 +2,7 @@ package io.basc.framework.util.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import io.basc.framework.util.Channel;
 import lombok.NonNull;
@@ -65,14 +66,6 @@ public class InputStreamResource extends AbstractResource {
 	}
 
 	/**
-	 * This implementation always returns {@code true}.
-	 */
-	@Override
-	public boolean isOpen() {
-		return true;
-	}
-
-	/**
 	 * This implementation throws IllegalStateException if attempting to read the
 	 * underlying stream multiple times.
 	 */
@@ -84,6 +77,16 @@ public class InputStreamResource extends AbstractResource {
 		}
 		this.read = true;
 		return Channel.of(inputStream);
+	}
+
+	@Override
+	public boolean isWritable() {
+		return false;
+	}
+
+	@Override
+	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
+		throw new UnsupportedOperationException();
 	}
 
 	/**

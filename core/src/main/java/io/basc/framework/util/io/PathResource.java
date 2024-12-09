@@ -40,7 +40,7 @@ import lombok.NonNull;
  * @see java.nio.file.Files
  * @see FileSystemResource
  */
-public class PathResource extends AbstractResource implements WritableResource {
+public class PathResource extends AbstractResource {
 
 	private final Path path;
 

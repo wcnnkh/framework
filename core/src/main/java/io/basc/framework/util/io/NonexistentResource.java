@@ -20,19 +20,12 @@ public class NonexistentResource implements Resource {
 		throw new UnsupportedException("empty resource");
 	}
 
-	public OutputStream getOutputStream() throws IOException {
+	@Override
+	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
 		throw new UnsupportedException("empty resource");
 	}
 
 	public boolean exists() {
-		return false;
-	}
-
-	public boolean isReadable() {
-		return false;
-	}
-
-	public boolean isOpen() {
 		return false;
 	}
 

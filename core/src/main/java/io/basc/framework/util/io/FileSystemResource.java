@@ -42,7 +42,7 @@ import lombok.NonNull;
  * @see java.io.File
  * @see java.nio.file.Files
  */
-public class FileSystemResource extends AbstractResource implements WritableResource {
+public class FileSystemResource extends AbstractResource {
 
 	private final String path;
 

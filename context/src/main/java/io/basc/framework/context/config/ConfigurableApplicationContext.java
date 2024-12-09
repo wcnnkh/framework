@@ -13,7 +13,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;
-import io.basc.framework.util.io.ProtocolResolver;
+import io.basc.framework.util.io.load.ProtocolResolver;
 import io.basc.framework.util.register.Registration;
 
 public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable,
