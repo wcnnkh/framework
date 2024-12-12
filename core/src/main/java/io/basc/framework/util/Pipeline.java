@@ -202,4 +202,8 @@ public interface Pipeline<S, T, E extends Throwable> {
 	default Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
 		return new PipelineReactor<>(this, endpoint);
 	}
+
+	public static interface Merger<T, E extends Throwable> extends Pipeline<Elements<T>, T, E> {
+		
+	}
 }

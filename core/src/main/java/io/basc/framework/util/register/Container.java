@@ -1,10 +1,11 @@
 package io.basc.framework.util.register;
 
-import java.util.Arrays;
-
 import io.basc.framework.util.Clearable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registrations;
+import io.basc.framework.util.codec.Codec;
+import lombok.NonNull;
 
 /**
  * 定义一个容器
@@ -14,6 +15,70 @@ import io.basc.framework.util.Registrations;
  * @param <E>
  */
 public interface Container<E, R extends PayloadRegistration<E>> extends Registry<E>, Registrations<R>, Clearable {
+	public static interface ContainerWrapper<E, R extends PayloadRegistration<E>, W extends Container<E, R>>
+			extends Container<E, R>, RegistryWrapper<E, W> {
+
+		@Override
+		default boolean isEmpty() {
+			return getSource().isEmpty();
+		}
+
+		@Override
+		default Receipt deregisters(Elements<? extends E> elements) {
+			return getSource().deregisters(elements);
+		}
+
+		@Override
+		default Receipt deregister(E element) {
+			return getSource().deregister(element);
+		}
+
+		@Override
+		default void clear() {
+			getSource().clear();
+		}
+
+		@Override
+		default boolean isCancelled() {
+			return getSource().isCancelled();
+		}
+
+		@Override
+		default boolean isCancellable() {
+			return getSource().isCancellable();
+		}
+
+		@Override
+		default boolean cancel() {
+			return getSource().cancel();
+		}
+
+	}
+
+	public static class MappedContainer<S, T, R extends PayloadRegistration<S>, W extends Container<S, R>>
+			extends MappedRegistry<S, T, W> implements Container<T, PayloadRegistration<T>> {
+
+		public MappedContainer(W regisry, Codec<T, S> codec) {
+			super(regisry, codec);
+		}
+
+		@Override
+		public Elements<PayloadRegistration<T>> getElements() {
+			return getRegistry().getElements().map((e) -> e.map(getCodec()::decode));
+		}
+
+		@Override
+		public Receipt deregisters(Elements<? extends T> elements) {
+			Elements<S> target = getCodec().encodeAll(elements);
+			return getRegistry().deregisters(target);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return super.isEmpty();
+		}
+	}
+
 	/**
 	 * 取消登记
 	 * 
@@ -21,7 +86,7 @@ public interface Container<E, R extends PayloadRegistration<E>> extends Registry
 	 * @return
 	 */
 	default Receipt deregister(E element) {
-		return deregisters(Arrays.asList(element));
+		return deregisters(Elements.singleton(element));
 	}
 
 	/**
@@ -30,7 +95,7 @@ public interface Container<E, R extends PayloadRegistration<E>> extends Registry
 	 * @param elements
 	 * @return
 	 */
-	Receipt deregisters(Iterable<? extends E> elements);
+	Receipt deregisters(Elements<? extends E> elements);
 
 	@Override
 	default boolean isEmpty() {
@@ -40,6 +105,11 @@ public interface Container<E, R extends PayloadRegistration<E>> extends Registry
 	@Override
 	default void clear() {
 		deregisters(this);
+	}
+
+	@Override
+	default <T> Registry<T> map(@NonNull Codec<T, E> codec) {
+		return new MappedContainer<>(this, codec);
 	}
 
 	@Override

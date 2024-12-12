@@ -1,8 +1,6 @@
 package io.basc.framework.util.register.container;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -92,7 +90,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	@Override
 	public final boolean addAll(Collection<? extends E> c) {
-		Registrations<ElementRegistration<E>> registrations = batchRegister(c, getPublisher());
+		Registrations<ElementRegistration<E>> registrations = batchRegister(Elements.of(c), getPublisher());
 		return !registrations.getElements().isEmpty();
 	}
 
@@ -109,14 +107,14 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 		return publisher.publish(events);
 	}
 
-	public final Registrations<ElementRegistration<E>> batchRegister(Iterable<? extends E> elements)
+	public final Registrations<ElementRegistration<E>> batchRegister(Elements<? extends E> elements)
 			throws RegistrationException {
 		return batchRegister(elements, this.publisher);
 	}
 
-	public Registrations<ElementRegistration<E>> batchRegister(Iterable<? extends E> elements,
+	public Registrations<ElementRegistration<E>> batchRegister(Elements<? extends E> elements,
 			Publisher<? super Elements<ChangeEvent<E>>> publisher) throws RegistrationException {
-		Elements<ElementRegistration<E>> es = Elements.of(elements).map(this::newElementRegistration);
+		Elements<ElementRegistration<E>> es = elements.map(this::newElementRegistration);
 		return writeRegistrations((collection) -> {
 			for (ElementRegistration<E> registration : es) {
 				if (!collection.add(registration)) {
@@ -158,20 +156,12 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 	}
 
 	@Override
-	public Receipt deregisters(Iterable<? extends E> services) {
+	public Receipt deregisters(@NonNull Elements<? extends E> services) {
 		return deregisters(services, publisher);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Receipt deregisters(Iterable<? extends E> services, Publisher<? super Elements<ChangeEvent<E>>> publisher) {
-		Collection<E> removes;
-		if (services instanceof Collection) {
-			removes = (Collection<E>) services;
-		} else {
-			removes = new HashSet<>();
-			services.forEach(removes::add);
-		}
-
+	public Receipt deregisters(Elements<? extends E> services, Publisher<? super Elements<ChangeEvent<E>>> publisher) {
+		Collection<? extends E> removes = services.toSet();
 		Elements<ElementRegistration<E>> registrations = read((collection) -> {
 			if (collection == null) {
 				return Elements.empty();
@@ -254,11 +244,11 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	public ElementRegistration<E> register(E element, Publisher<? super Elements<ChangeEvent<E>>> publisher)
 			throws RegistrationException {
-		return batchRegister(Arrays.asList(element), publisher).getElements().first();
+		return batchRegister(Elements.singleton(element), publisher).getElements().first();
 	}
 
 	@Override
-	public Registration registers(Iterable<? extends E> elements) throws RegistrationException {
+	public Registration registers(@NonNull Elements<? extends E> elements) throws RegistrationException {
 		return batchRegister(elements, publisher);
 	}
 

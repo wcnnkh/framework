@@ -16,12 +16,11 @@ import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Listenable;
 import io.basc.framework.util.Listener;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Publisher;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Reloadable;
+import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
-import io.basc.framework.util.actor.EventDispatcher;
 import io.basc.framework.util.register.LimitableRegistration;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.container.AtomicElementRegistration;
@@ -32,27 +31,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-public class ServiceContainer<E> extends TreeSetContainer<E> implements ListenableServiceLoader<E> {
-	private final EventDispatcher<Elements<ChangeEvent<E>>> eventDispatcher = new EventDispatcher<>();
-
-	public ServiceContainer() {
-		super.setPublisher(eventDispatcher);
-	}
-
-	public EventDispatcher<Elements<ChangeEvent<E>>> getEventDispatcher() {
-		return eventDispatcher;
-	}
-
-	@Override
-	public void setPublisher(Publisher<? super Elements<ChangeEvent<E>>> publisher) {
-		super.setPublisher((events) -> {
-			try {
-				return publisher.publish(events);
-			} finally {
-				eventDispatcher.publish(events);
-			}
-		});
-	}
+public class ServiceContainer<E> extends TreeSetContainer<E> implements ServiceLoader<E> {
 
 	@RequiredArgsConstructor
 	@Getter
@@ -111,7 +90,7 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 			iterable.forEach(rightList::add);
 
 			if (registrations == null) {
-				registrations = batchRegister(rightList).getElements();
+				registrations = batchRegister(Elements.of(rightList)).getElements();
 			} else {
 				List<E> leftList = new ArrayList<>();
 				registrations.filter((e) -> !e.isCancelled()).map((e) -> e.getPayload()).forEach(leftList::add);
@@ -180,7 +159,7 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 	}
 
 	@Override
-	public Include<E> registers(Iterable<? extends E> elements) throws RegistrationException {
+	public Include<E> registers(Elements<? extends E> elements) throws RegistrationException {
 		Reloadable reloadable = null;
 		if (elements instanceof Reloadable) {
 			reloadable = (Reloadable) elements;
@@ -213,12 +192,7 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements Listenab
 		}
 
 		// 左边剩下的说明被删除了
-		deregisters(leftList);
-		return batchRegister(rightList).getElements();
-	}
-
-	@Override
-	public Registration registerListener(Listener<? super Elements<ChangeEvent<E>>> listener) {
-		return eventDispatcher.registerListener(listener);
+		deregisters(Elements.of(leftList));
+		return batchRegister(Elements.of(rightList)).getElements();
 	}
 }

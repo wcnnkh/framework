@@ -31,13 +31,13 @@ public class MultiValueMapContainer<K, V, C extends Collection<ElementRegistrati
 	}
 
 	@Override
-	public Receipt deregisters(Iterable<? extends KeyValue<K, V>> elements) {
+	public Receipt deregisters(Elements<? extends KeyValue<K, V>> elements) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Registration registers(Iterable<? extends KeyValue<K, V>> elements) throws RegistrationException {
+	public Registration registers(Elements<? extends KeyValue<K, V>> elements) throws RegistrationException {
 		// TODO Auto-generated method stub
 		return null;
 	}

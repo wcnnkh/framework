@@ -191,15 +191,15 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	@RequiredArgsConstructor
 	@Getter
-	public static class ConvertibleElements<S, E> implements ElementsWrapper<E, Elements<E>> {
+	public static class ConvertedElements<S, E, W extends Elements<S>> implements ElementsWrapper<E, Elements<E>> {
 		@NonNull
-		private final Elements<S> source;
+		private final W target;
 		@NonNull
 		private final Function<? super Stream<S>, ? extends Stream<E>> converter;
 
 		@Override
 		public Elements<E> getSource() {
-			return Elements.of(() -> converter.apply(source.stream()));
+			return Elements.of(() -> converter.apply(target.stream()));
 		}
 	}
 
@@ -1117,7 +1117,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	}
 
 	default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
-		return new ConvertibleElements<>(this, converter);
+		return new ConvertedElements<>(this, converter);
 	}
 
 	/**

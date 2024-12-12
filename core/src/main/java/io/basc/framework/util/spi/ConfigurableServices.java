@@ -3,18 +3,23 @@ package io.basc.framework.util.spi;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import io.basc.framework.util.Receipt;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.spi.Include.IncludeWrapper;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public class ConfigurableServices<S> extends Services<S> implements Configurable {
+public class ConfigurableServices<S> extends ServiceRegistry<S> implements Configurable {
 	@RequiredArgsConstructor
-	private final class Configuration implements Configured<S>, IncludeWrapper<S, Include<S>> {
+	private final class Configuration
+			implements Configured<ServiceHolder<S>>, IncludeWrapper<ServiceHolder<S>, Include<ServiceHolder<S>>> {
 		private final Receipt receipt;
 		private final ServiceLoaderDiscovery serviceLoaderDiscovery;
-		private final Include<S> source;
+		private final Include<ServiceHolder<S>> source;
 
 		@Override
 		public boolean cancel() {
@@ -40,7 +45,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		}
 
 		@Override
-		public Include<S> getSource() {
+		public Include<ServiceHolder<S>> getSource() {
 			return source;
 		}
 
@@ -64,9 +69,20 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		public boolean isSuccess() {
 			return receipt.isSuccess();
 		}
+
+		@Override
+		public Configured<ServiceHolder<S>> and(Registration registration) {
+			return Configured.super.and(registration);
+		}
+
+		@Override
+		public <U> Configured<U> convert(
+				@NonNull Function<? super Stream<ServiceHolder<S>>, ? extends Stream<U>> converter) {
+			return Configured.super.convert(converter);
+		}
 	}
 
-	private volatile Map<ServiceLoaderDiscovery, Include<S>> discoveryMap;
+	private volatile Map<ServiceLoaderDiscovery, Include<ServiceHolder<S>>> discoveryMap;
 	private volatile Class<S> serviceClass;
 
 	@Override
@@ -74,7 +90,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		return doConfigure(discovery, true);
 	}
 
-	public Configured<S> doConfigure(ServiceLoaderDiscovery discovery, boolean reloadable) {
+	public Configured<ServiceHolder<S>> doConfigure(ServiceLoaderDiscovery discovery, boolean reloadable) {
 		Lock lock = getReadWriteLock().writeLock();
 		lock.lock();
 		try {
@@ -99,7 +115,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 			discoveryMap = new HashMap<>(2, 1);
 		}
 
-		Include<S> include = discoveryMap.get(discovery);
+		Include<ServiceHolder<S>> include = discoveryMap.get(discovery);
 		if (include == null) {
 			include = registers(serviceLoader);
 			discoveryMap.put(discovery, include);

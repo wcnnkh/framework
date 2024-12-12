@@ -2,6 +2,24 @@ package io.basc.framework.util;
 
 @FunctionalInterface
 public interface Registrations<R extends Registration> extends Registration, Listable<R> {
+	@FunctionalInterface
+	public static interface RegistrationsWrapper<R extends Registration, W extends Registrations<R>>
+			extends Registrations<R>, RegistrationWrapper<W>, ListableWrapper<R, W> {
+		@Override
+		default boolean cancel() {
+			return getSource().cancel();
+		}
+
+		@Override
+		default boolean isCancellable() {
+			return getSource().isCancellable();
+		}
+
+		@Override
+		default boolean isCancelled() {
+			return getSource().isCancelled();
+		}
+	}
 
 	public static class EmptyRegistrations<R extends Registration> implements Registrations<R> {
 		private static final EmptyRegistrations<?> EMPTY = new EmptyRegistrations<>();

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ServiceLoader.ServiceLoaderWrapper;
+import io.basc.framework.util.ServiceLoader.ReloadableElementsWrapper;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.load.ResourcePatternResolver;
 import io.basc.framework.util.logging.LogManager;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class LocationPatternResources implements ServiceLoaderWrapper<Resource, Elements<Resource>> {
+public class LocationPatternResources implements ReloadableElementsWrapper<Resource, Elements<Resource>> {
 	private static Logger logger = LogManager.getLogger(LocationPatternResources.class);
 	@NonNull
 	private final ResourcePatternResolver resourcePatternResolver;

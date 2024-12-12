@@ -8,7 +8,7 @@ import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoader.ServiceLoaderWrapper;
+import io.basc.framework.util.ServiceLoader.ReloadableElementsWrapper;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class MetadataReaders implements ServiceLoaderWrapper<MetadataReader, Elements<MetadataReader>> {
+public class MetadataReaders implements ReloadableElementsWrapper<MetadataReader, Elements<MetadataReader>> {
 	private static Logger logger = LogManager.getLogger(MetadataReaders.class);
 	@NonNull
 	private final ServiceLoader<? extends Resource> resources;

@@ -3,15 +3,42 @@ package io.basc.framework.util;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public interface ServiceLoader<S> extends Reloadable, Elements<S> {
+public interface ServiceLoader<S> extends Elements<S>, Reloadable {
+
+	@FunctionalInterface
+	public static interface ServiceLoaderWrapper<S, W extends ServiceLoader<S>>
+			extends ServiceLoader<S>, ElementsWrapper<S, W> {
+		@Override
+		default void reload() {
+			getSource().reload();
+		}
+
+		@Override
+		default Stream<S> stream() {
+			return getSource().stream();
+		}
+
+		@Override
+		default <U> ServiceLoader<U> convert(Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return getSource().convert(converter);
+		}
+
+		@Override
+		default ServiceLoader<S> concat(Elements<? extends S> elements) {
+			return getSource().concat(elements);
+		}
+
+		@Override
+		default ServiceLoader<S> concat(ServiceLoader<? extends S> serviceLoader) {
+			return getSource().concat(serviceLoader);
+		}
+	}
 
 	@RequiredArgsConstructor
-	public static class StaticServiceLoader<S> implements ServiceLoaderWrapper<S, Elements<S>> {
+	public static class StaticServiceLoader<S> implements ReloadableElementsWrapper<S, Elements<S>> {
 		@NonNull
 		private final Iterable<? extends S> source;
 
@@ -35,24 +62,36 @@ public interface ServiceLoader<S> extends Reloadable, Elements<S> {
 		}
 	}
 
-	@AllArgsConstructor
-	@Data
-	public static class ConvertibleServiceLoader<S, T> implements ServiceLoaderWrapper<T, Elements<T>> {
-		private final ServiceLoader<S> source;
-		private final Function<? super Elements<S>, ? extends Elements<T>> converter;
+	public static class ConvertedServiceLoader<S, T, W extends ServiceLoader<S>> extends ConvertedElements<S, T, W>
+			implements ServiceLoader<T> {
 
-		@Override
-		public Elements<T> getSource() {
-			return converter.apply(source);
+		public ConvertedServiceLoader(@NonNull W target,
+				@NonNull Function<? super Stream<S>, ? extends Stream<T>> converter) {
+			super(target, converter);
 		}
 
 		@Override
 		public void reload() {
-			source.reload();
+			getTarget().reload();
+		}
+
+		@Override
+		public <U> ServiceLoader<U> convert(Function<? super Stream<T>, ? extends Stream<U>> converter) {
+			return ServiceLoader.super.convert(converter);
+		}
+
+		@Override
+		public ServiceLoader<T> concat(Elements<? extends T> elements) {
+			return ServiceLoader.super.concat(elements);
+		}
+
+		@Override
+		public Stream<T> stream() {
+			return getSource().stream();
 		}
 	}
 
-	public static interface ServiceLoaderWrapper<S, W extends Elements<S>>
+	public static interface ReloadableElementsWrapper<S, W extends Elements<S>>
 			extends ServiceLoader<S>, ElementsWrapper<S, W> {
 
 		@Override
@@ -72,7 +111,7 @@ public interface ServiceLoader<S> extends Reloadable, Elements<S> {
 	}
 
 	public static class MergedServiceLoader<S, T extends ServiceLoader<? extends S>>
-			implements ServiceLoaderWrapper<S, Elements<S>> {
+			implements ReloadableElementsWrapper<S, Elements<S>> {
 		private final Elements<ServiceLoader<? extends S>> elements;
 
 		public MergedServiceLoader(Elements<ServiceLoader<? extends S>> elements) {
@@ -132,7 +171,7 @@ public interface ServiceLoader<S> extends Reloadable, Elements<S> {
 
 	@Override
 	default <U> ServiceLoader<U> convert(Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return new ConvertibleServiceLoader<>(this, (elements) -> elements.convert(converter));
+		return new ConvertedServiceLoader<>(this, converter);
 	}
 
 	@Override

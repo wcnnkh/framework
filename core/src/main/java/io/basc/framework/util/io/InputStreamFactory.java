@@ -151,7 +151,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	}
 
 	default byte[] readAllBytes() throws NoSuchElementException, IOException {
-		return getInputStream().export().map(IOUtils::toByteArray).get();
+		return getInputStream().map(IOUtils::toByteArray).finish().get();
 	}
 
 	default ReaderFactory<Reader> toReaderFactory() {

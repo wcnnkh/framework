@@ -194,10 +194,10 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 		return getPublisher().publish(events);
 	}
 
-	public final Registrations<EntryRegistration<K, V>> batchRegister(Iterable<? extends KeyValue<K, V>> elements)
+	public final Registrations<EntryRegistration<K, V>> batchRegister(Elements<? extends KeyValue<K, V>> elements)
 			throws RegistrationException {
 		Elements<ChangeInfo<K, V>> changes = write((map) -> {
-			return Elements.of(elements).map((keyValue) -> {
+			return elements.map((keyValue) -> {
 				EntryRegistration<K, V> registration = newRegistration(keyValue);
 				EntryRegistration<K, V> old = map.put(keyValue.getKey(), registration);
 				ChangeEvent<KeyValue<K, V>> event;
@@ -267,7 +267,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	}
 
 	@Override
-	public Receipt deregisters(Iterable<? extends KeyValue<K, V>> services) {
+	public Receipt deregisters(Elements<? extends KeyValue<K, V>> services) {
 		return update((map) -> {
 			if (map == null) {
 				return Receipt.FAILURE;
@@ -441,7 +441,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	}
 
 	@Override
-	public Registration registers(Iterable<? extends KeyValue<K, V>> elements) throws RegistrationException {
+	public Registration registers(Elements<? extends KeyValue<K, V>> elements) throws RegistrationException {
 		return batchRegister(elements);
 	}
 

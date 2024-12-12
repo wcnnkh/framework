@@ -1,5 +1,8 @@
 package io.basc.framework.util.spi;
 
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 import io.basc.framework.util.Receipt.Receipted;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
@@ -24,21 +27,28 @@ public interface Include<S> extends Registration, ServiceLoader<S> {
 		}
 
 		@Override
-		public void reload() {
-			source.reload();
-		}
-
-		@Override
 		public ServiceLoader<S> getSource() {
 			return source;
 		}
+
+		@Override
+		public <U> Configured<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return Configured.super.convert(converter);
+		}
 	}
 
+	@FunctionalInterface
 	public static interface IncludeWrapper<S, W extends Include<S>>
 			extends Include<S>, RegistrationWrapper<W>, ServiceLoaderWrapper<S, W> {
+
 		@Override
-		default void reload() {
-			getSource().reload();
+		default <U> Include<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return getSource().convert(converter);
+		}
+
+		@Override
+		default Include<S> and(Registration registration) {
+			return getSource().and(registration);
 		}
 	}
 
@@ -69,6 +79,41 @@ public interface Include<S> extends Registration, ServiceLoader<S> {
 		public boolean isCancelled() {
 			return IncludeWrapper.super.isCancelled() && registration.isCancelled();
 		}
+	}
+
+	public static class ConvertedInclude<S, T, W extends Include<S>> extends ConvertedServiceLoader<S, T, W>
+			implements Include<T> {
+
+		public ConvertedInclude(@NonNull W target,
+				@NonNull Function<? super Stream<S>, ? extends Stream<T>> converter) {
+			super(target, converter);
+		}
+
+		@Override
+		public boolean cancel() {
+			return getTarget().cancel();
+		}
+
+		@Override
+		public boolean isCancellable() {
+			return getTarget().isCancellable();
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return getTarget().isCancelled();
+		}
+
+		@Override
+		public <U> Include<U> convert(Function<? super Stream<T>, ? extends Stream<U>> converter) {
+			return Include.super.convert(converter);
+		}
+
+	}
+
+	@Override
+	default <U> Include<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return new ConvertedInclude<>(this, converter);
 	}
 
 	@Override

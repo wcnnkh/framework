@@ -58,7 +58,7 @@ public class PathWatcher<T extends FileVariable> extends Poller
 	}
 
 	@Override
-	public Registration registers(Iterable<? extends T> elements) throws RegistrationException {
+	public Registration registers(Elements<? extends T> elements) throws RegistrationException {
 		return Registration.registers(elements, (element) -> {
 			PathPoller<T> pathPoller = new PathPoller<T>(element, publisher);
 			if (!isRunning()) {

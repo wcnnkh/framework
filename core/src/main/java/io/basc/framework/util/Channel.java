@@ -8,6 +8,23 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public interface Channel<T, E extends Throwable> extends Source<T, E>, Target<T, E> {
+	@RequiredArgsConstructor
+	public static class ChannelOptional<T, E extends Throwable, W extends Channel<T, E>> implements Optional<T, E> {
+		private final W source;
+		private volatile java.util.Optional<T> optional;
+
+		@Override
+		public T orElse(T other) throws E {
+			if (optional == null) {
+				synchronized (this) {
+					if (optional == null) {
+						optional = source.finish();
+					}
+				}
+			}
+			return optional.orElse(other);
+		}
+	}
 
 	public static class ChannelPool<T, E extends Throwable, W extends Channel<T, E>> extends SourcePool<T, E, W>
 			implements Pool<T, E> {
@@ -117,6 +134,19 @@ public interface Channel<T, E extends Throwable> extends Source<T, E>, Target<T,
 	@Override
 	default <R> Channel<R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
 		return new MappedChannel<>(this, pipeline);
+	}
+
+	default Optional<T, E> export() {
+		return new ChannelOptional<>(this);
+	}
+
+	default java.util.Optional<T> finish() throws E {
+		try {
+			T value = get();
+			return java.util.Optional.ofNullable(value);
+		} finally {
+			close();
+		}
 	}
 
 	@Override
