@@ -17,7 +17,7 @@ public class MapProperties implements Properties {
 	@NonNull
 	private final TypeDescriptor typeDescriptor;
 	@NonNull
-	private final ConversionService conversionService;
+	private ConversionService conversionService;
 
 	@Override
 	public Elements<String> keys() {

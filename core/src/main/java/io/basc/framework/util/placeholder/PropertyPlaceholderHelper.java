@@ -1,34 +1,40 @@
-package io.basc.framework.util.placeholder.support;
-
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.placeholder.PlaceholderReplacer;
-import io.basc.framework.util.placeholder.PlaceholderResolver;
-import io.basc.framework.util.logging.LogManager;
+package io.basc.framework.util.placeholder;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SmartPlaceholderReplacer implements PlaceholderReplacer {
-	private static final Logger logger = LogManager.getLogger(SmartPlaceholderReplacer.class);
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
+import lombok.NonNull;
+
+public class PropertyPlaceholderHelper implements PlaceholderReplacer {
+	private static final Logger logger = LogManager.getLogger(PropertyPlaceholderHelper.class);
+	/** Prefix for system property placeholders: "${" */
+	public static final String PLACEHOLDER_PREFIX = "${";
+	/** Suffix for system property placeholders: "}" */
+	public static final String PLACEHOLDER_SUFFIX = "}";
 	/** Value separator for system property placeholders: ":" */
-	private static final String VALUE_SEPARATOR = ":";
+	public static final String VALUE_SEPARATOR = ":";
+
+	public static final PropertyPlaceholderHelper NON_STRICT_REPLACER = new PropertyPlaceholderHelper(
+			PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
+
+	public static final PropertyPlaceholderHelper STRICT_REPLACER = new PropertyPlaceholderHelper(PLACEHOLDER_PREFIX,
+			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, false);
 
 	private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<String, String>(4);
+
 	static {
 		wellKnownSimplePrefixes.put("}", "{");
 		wellKnownSimplePrefixes.put("]", "[");
 		wellKnownSimplePrefixes.put(")", "(");
 	}
 
-	public static final PlaceholderReplacer STRICT_REPLACER = new SmartPlaceholderReplacer(PLACEHOLDER_PREFIX,
-			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, false);
-
-	public static final PlaceholderReplacer NON_STRICT_REPLACER = new SmartPlaceholderReplacer(PLACEHOLDER_PREFIX,
-			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
+	private final boolean ignoreUnresolvablePlaceholders;
 
 	private final String placeholderPrefix;
 
@@ -38,8 +44,6 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 
 	private final String valueSeparator;
 
-	private final boolean ignoreUnresolvablePlaceholders;
-
 	/**
 	 * Creates a new {@code PropertyPlaceholderHelper} that uses the supplied prefix
 	 * and suffix. Unresolvable placeholders are ignored.
@@ -47,13 +51,8 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 	 * @param placeholderPrefix the prefix that denotes the start of a placeholder.
 	 * @param placeholderSuffix the suffix that denotes the end of a placeholder.
 	 */
-	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix) {
+	public PropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix) {
 		this(placeholderPrefix, placeholderSuffix, null, true);
-	}
-
-	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix,
-			boolean ignoreUnresolvablePlaceholders) {
-		this(placeholderPrefix, placeholderSuffix, VALUE_SEPARATOR, ignoreUnresolvablePlaceholders);
 	}
 
 	/**
@@ -72,11 +71,8 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 	 *                                       ({@code true}) or cause an exception
 	 *                                       ({@code false}).
 	 */
-	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix, String valueSeparator,
-			boolean ignoreUnresolvablePlaceholders) {
-
-		Assert.notNull(placeholderPrefix, "placeholderPrefix must not be null");
-		Assert.notNull(placeholderSuffix, "placeholderSuffix must not be null");
+	public PropertyPlaceholderHelper(@NonNull String placeholderPrefix, @NonNull String placeholderSuffix,
+			String valueSeparator, boolean ignoreUnresolvablePlaceholders) {
 		this.placeholderPrefix = placeholderPrefix;
 		this.placeholderSuffix = placeholderSuffix;
 		String simplePrefixForSuffix = wellKnownSimplePrefixes.get(this.placeholderSuffix);
@@ -89,16 +85,25 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 		this.ignoreUnresolvablePlaceholders = ignoreUnresolvablePlaceholders;
 	}
 
-	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
-		Assert.notNull(value, "Argument 'value' must not be null.");
-		return parseStringValue(value, placeholderResolver, new HashSet<String>(), this.ignoreUnresolvablePlaceholders);
-	}
-
-	@Override
-	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver)
-			throws IllegalArgumentException {
-		Assert.notNull(value, "Argument 'value' must not be null.");
-		return parseStringValue(value, placeholderResolver, new HashSet<String>(), false);
+	private int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
+		int index = startIndex + this.placeholderPrefix.length();
+		int withinNestedPlaceholder = 0;
+		while (index < buf.length()) {
+			if (StringUtils.substringMatch(buf, index, this.placeholderSuffix)) {
+				if (withinNestedPlaceholder > 0) {
+					withinNestedPlaceholder--;
+					index = index + this.placeholderSuffix.length();
+				} else {
+					return index;
+				}
+			} else if (StringUtils.substringMatch(buf, index, this.simplePrefix)) {
+				withinNestedPlaceholder++;
+				index = index + this.simplePrefix.length();
+			} else {
+				index++;
+			}
+		}
+		return -1;
 	}
 
 	protected String parseStringValue(String strVal, PlaceholderResolver placeholderResolver,
@@ -136,7 +141,8 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 					// Recursive invocation, parsing placeholders contained in
 					// the
 					// previously resolved placeholder value.
-					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders, ignoreUnresolvablePlaceholders);
+					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders,
+							ignoreUnresolvablePlaceholders);
 					buf.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Resolved placeholder '" + placeholder + "'");
@@ -158,24 +164,35 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 		return buf.toString();
 	}
 
-	private int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
-		int index = startIndex + this.placeholderPrefix.length();
-		int withinNestedPlaceholder = 0;
-		while (index < buf.length()) {
-			if (StringUtils.substringMatch(buf, index, this.placeholderSuffix)) {
-				if (withinNestedPlaceholder > 0) {
-					withinNestedPlaceholder--;
-					index = index + this.placeholderSuffix.length();
-				} else {
-					return index;
-				}
-			} else if (StringUtils.substringMatch(buf, index, this.simplePrefix)) {
-				withinNestedPlaceholder++;
-				index = index + this.simplePrefix.length();
-			} else {
-				index++;
-			}
-		}
-		return -1;
+	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
+		Assert.notNull(value, "Argument 'value' must not be null.");
+		return parseStringValue(value, placeholderResolver, new HashSet<String>(), this.ignoreUnresolvablePlaceholders);
+	}
+
+	@Override
+	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver)
+			throws IllegalArgumentException {
+		Assert.notNull(value, "Argument 'value' must not be null.");
+		return parseStringValue(value, placeholderResolver, new HashSet<String>(), false);
+	}
+
+	public PropertyPlaceholderHelper setIgnoreUnresolvablePlaceholders(boolean ignoreUnresolvablePlaceholders) {
+		return new PropertyPlaceholderHelper(placeholderPrefix, placeholderSuffix, valueSeparator,
+				ignoreUnresolvablePlaceholders);
+	}
+
+	public PropertyPlaceholderHelper setPlaceholderPrefix(@NonNull String placeholderPrefix) {
+		return new PropertyPlaceholderHelper(placeholderPrefix, placeholderSuffix, valueSeparator,
+				ignoreUnresolvablePlaceholders);
+	}
+
+	public PropertyPlaceholderHelper setPlaceholderSuffix(@NonNull String placeholderSuffix) {
+		return new PropertyPlaceholderHelper(placeholderPrefix, placeholderSuffix, valueSeparator,
+				ignoreUnresolvablePlaceholders);
+	}
+
+	public PropertyPlaceholderHelper setValueSeparator(String valueSeparator) {
+		return new PropertyPlaceholderHelper(placeholderPrefix, placeholderSuffix, valueSeparator,
+				ignoreUnresolvablePlaceholders);
 	}
 }

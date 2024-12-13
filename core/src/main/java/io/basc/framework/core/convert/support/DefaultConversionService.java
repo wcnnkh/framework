@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.support;
 
 import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.config.ConfigurableConversionService;
+import io.basc.framework.core.convert.config.ConversionServices;
 import io.basc.framework.core.convert.lang.DateFormatConversionService;
 import io.basc.framework.core.convert.lang.StringConversionService;
 import io.basc.framework.util.ClassUtils;
@@ -13,7 +13,7 @@ import io.basc.framework.util.reflect.ReflectionUtils;
  * @author shuchaowen
  *
  */
-public final class DefaultConversionService extends ConfigurableConversionService {
+public class DefaultConversionService extends ConversionServices {
 
 	private static volatile DefaultConversionService instance;
 
@@ -29,7 +29,7 @@ public final class DefaultConversionService extends ConfigurableConversionServic
 		return instance;
 	}
 
-	private DefaultConversionService() {
+	public DefaultConversionService() {
 		register(new ArrayToArrayConversionService(this));
 		register(new ArrayToCollectionConversionService(this));
 

@@ -9,11 +9,11 @@ import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
 import io.basc.framework.util.spi.ConfigurableServices;
 
-public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
+public class ConversionServices extends ConfigurableServices<ConversionService>
 		implements ConversionService {
 	private static final NestingChecker<ConversionService> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
 
-	public ConfigurableConversionService() {
+	public ConversionServices() {
 		setComparator(ConversionComparator.INSTANCE);
 		setServiceClass(ConversionService.class);
 		getInjectors().register((service) -> {

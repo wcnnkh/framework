@@ -1,10 +1,14 @@
 package io.basc.framework.util.placeholder;
 
 import io.basc.framework.util.spi.ConfigurableServices;
+import lombok.Getter;
+import lombok.Setter;
 
-public class ConfigurablePlaceholderReplacer extends ConfigurableServices<PlaceholderReplacer>
-		implements PlaceholderReplacer {
-	public ConfigurablePlaceholderReplacer() {
+@Getter
+@Setter
+public class PlaceholderReplacers extends ConfigurableServices<PlaceholderReplacer> implements PlaceholderReplacer {
+
+	public PlaceholderReplacers() {
 		setServiceClass(PlaceholderReplacer.class);
 	}
 

@@ -8,4 +8,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	void setActiveProfiles(Elements<String> profiles);
 
 	void setDefaultProfiles(Elements<String> profiles);
+
+	MutablePropertySources getPropertySources();
+
+	void setParentEnvironment(ConfigurableEnvironment parentEnvironment);
 }
