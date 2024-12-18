@@ -1,6 +1,6 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.observe.register.ElementRegistration;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Elements;
@@ -64,7 +64,7 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 				synchronized (this) {
 					if (registration == null) {
 						registration = registerBatchListener((events) -> {
-							Elements<PropertyChangeEvent<String, ValueWrapper>> propertyChangeEvents = events
+							Elements<PropertyChangeEvent<String, Value2>> propertyChangeEvents = events
 									.flatMap((event) -> event.getPayload().keys()
 											.map((key) -> new PropertyChangeEvent<>(event.getSource(), event.getType(),
 													key, event.getPayload().get(key))));
@@ -85,9 +85,9 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 		}
 	}
 
-	private final Listener<PropertyChangeEvent<String, ValueWrapper>> propertyObserver = new Observer<>();
+	private final Listener<PropertyChangeEvent<String, Any>> propertyObserver = new Observer<>();
 
-	public Registration registerPropertyListener(BatchEventListener<PropertyChangeEvent<String, ValueWrapper>> eventListener) {
+	public Registration registerPropertyListener(BatchEventListener<PropertyChangeEvent<String, Any>> eventListener) {
 		Registration registration = propertyObserver.registerBatchListener(eventListener);
 		refreshPropertyObserver();
 		return registration.and(() -> reload());

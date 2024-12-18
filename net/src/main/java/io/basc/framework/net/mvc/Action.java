@@ -3,7 +3,7 @@ package io.basc.framework.net.mvc;
 import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.execution.Function;
@@ -84,7 +84,7 @@ public class Action implements Service, ExecutionInterceptor, RequestPatternCapa
 		}
 
 		TypeDescriptor rtnTypeDescriptor = function.getReturnTypeDescriptor();
-		ValueWrapper responseValue = ValueWrapper.of(rtn, function.getReturnTypeDescriptor());
+		Any responseValue = Any.of(rtn, function.getReturnTypeDescriptor());
 		for (MimeType mimeType : requestPattern.getProduces()) {
 			if (messageConverter.isWriteable(rtnTypeDescriptor, mimeType)) {
 				messageConverter.writeTo(responseValue, mimeType, response);

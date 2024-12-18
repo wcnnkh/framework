@@ -8,7 +8,7 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.annotation.DateFormat;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.util.NumberUtils;
@@ -73,7 +73,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return ValueWrapper.of(source).getAsObject(targetType);
+				return Any.of(source).getAsObject(targetType);
 			}
 		}
 
@@ -127,11 +127,11 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return ValueWrapper.of(source.getTime()).getAsObject(targetType);
+		return Any.of(source.getTime()).getAsObject(targetType);
 	}
 
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		long time = ValueWrapper.of(source).getAsLong();
+		long time = Any.of(source).getAsLong();
 		return new Date(time);
 	}
 

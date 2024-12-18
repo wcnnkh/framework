@@ -29,4 +29,8 @@ public class DefaultPropertyResolver extends MapProperties implements Configurab
 	public ConfigurablePlaceholderResolver getPlaceholderReplacer() {
 		return placeholderResolver;
 	}
+
+	public void setParentPropertyResolver(ConfigurablePropertyResolver parentPropertyResolver) {
+
+	}
 }

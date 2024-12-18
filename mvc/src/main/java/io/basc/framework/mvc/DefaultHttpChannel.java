@@ -5,7 +5,7 @@ import java.io.IOException;
 import io.basc.framework.context.Context;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.core.execution.param.SimpleParameterDescriptor;
 import io.basc.framework.mvc.security.UserSessionManager;
@@ -79,11 +79,11 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		return createTime;
 	}
 
-	public final ValueWrapper get(String name) {
+	public final Any get(String name) {
 		ParameterDescriptor parameterDescriptor = new SimpleParameterDescriptor(name,
-				TypeDescriptor.valueOf(ValueWrapper.class));
+				TypeDescriptor.valueOf(Any.class));
 		try {
-			return (ValueWrapper) getMessageConverters().read(getRequest(), parameterDescriptor);
+			return (Any) getMessageConverters().read(getRequest(), parameterDescriptor);
 		} catch (IOException e) {
 			throw new WebMessagelConverterException(name, e);
 		}

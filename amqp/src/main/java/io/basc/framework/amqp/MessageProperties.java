@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.strings.StringConverter;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
@@ -80,9 +80,9 @@ public class MessageProperties implements Serializable, Cloneable {
 		return headers.get(name);
 	}
 
-	public ValueWrapper getHeaderValue(String name) {
+	public Any getHeaderValue(String name) {
 		Object value = getHeader(name);
-		return ValueWrapper.of(value);
+		return Any.of(value);
 	}
 
 	public MessageProperties removeHeader(String name) {
@@ -136,7 +136,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	}
 
 	public int getRetryCount() {
-		ValueWrapper value = getHeaderValue(RETRY_COUNT);
+		Any value = getHeaderValue(RETRY_COUNT);
 		return value == null ? 0 : value.getAsInt();
 	}
 
@@ -150,7 +150,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 * @return
 	 */
 	public int getMaxRetryCount() {
-		ValueWrapper value = getHeaderValue(MAX_RETRY_COUNT);
+		Any value = getHeaderValue(MAX_RETRY_COUNT);
 		return value == null ? 0 : value.getAsInt();
 	}
 
@@ -164,7 +164,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 * @return
 	 */
 	public double getRetryDelayMultiple() {
-		ValueWrapper multiple = getHeaderValue(RETRY_DELAY_MULTIPLE);
+		Any multiple = getHeaderValue(RETRY_DELAY_MULTIPLE);
 		return multiple == null ? 0 : multiple.getAsDouble();
 	}
 
@@ -185,7 +185,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	public long getRetryDelay() {
 		Object script = getHeader(RETRY_DELAY_SCRIPT);
 		if (script == null) {
-			ValueWrapper value = getHeaderValue(RETRY_DELAY);
+			Any value = getHeaderValue(RETRY_DELAY);
 			if (value == null) {
 				return 0;
 			}
@@ -226,7 +226,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 * @return
 	 */
 	public long getTransactionMessageConfirmDelay() {
-		ValueWrapper value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
+		Any value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
 		return (value == null || value.isEmpty()) ? TimeUnit.MINUTES.toMillis(10) : value.getAsLong();
 	}
 

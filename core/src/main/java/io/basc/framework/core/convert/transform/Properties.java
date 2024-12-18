@@ -2,7 +2,6 @@ package io.basc.framework.core.convert.transform;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ValueFactory;
-import io.basc.framework.util.ValueFactoryWrapper;
 
 public interface Properties extends PropertyMapping<Property>, ValueFactory<String, Property> {
 

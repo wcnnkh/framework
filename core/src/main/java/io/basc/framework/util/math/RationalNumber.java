@@ -1,6 +1,6 @@
 package io.basc.framework.util.math;
 
-public abstract class RationalNumber extends AbstractNumber {
+public abstract class RationalNumber extends NumberValue {
 	private static final long serialVersionUID = 1L;
 
 	public int compareTo(NumberValue o) {

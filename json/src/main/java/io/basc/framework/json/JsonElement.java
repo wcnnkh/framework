@@ -1,9 +1,9 @@
 package io.basc.framework.json;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.lang.Nullable;
 
-public interface JsonElement extends ValueWrapper, JsonAware {
+public interface JsonElement extends Any, JsonAware {
 	public static JsonElement EMPTY = new EmptyJsonElement();
 
 	@Nullable

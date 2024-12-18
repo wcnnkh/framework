@@ -131,11 +131,17 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 		}
 	}
 
+	@FunctionalInterface
 	public static interface ParameterDescriptorWrapper<W extends ParameterDescriptor>
 			extends ParameterDescriptor, PropertyDescriptorWrapper<W> {
 		@Override
 		default int getIndex() {
 			return getSource().getIndex();
+		}
+
+		@Override
+		default ParameterDescriptor rename(String name) {
+			return getSource().rename(name);
 		}
 	}
 
@@ -149,6 +155,11 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 		public PropertyParameterDescriptor(int index, @NonNull W source) {
 			this.index = index;
 			this.source = source;
+		}
+
+		@Override
+		public ParameterDescriptor rename(String name) {
+			return new PropertyParameterDescriptor<>(index, source.rename(name));
 		}
 	}
 

@@ -3,7 +3,7 @@ package io.basc.framework.net.convert;
 import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.OutputMessage;
@@ -25,7 +25,7 @@ public abstract class ObjectMessageConverter<T> extends AbstractMessageConverter
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected final void doWrite(ValueWrapper source, MimeType contentType, OutputMessage outputMessage) throws IOException {
+	protected final void doWrite(Any source, MimeType contentType, OutputMessage outputMessage) throws IOException {
 		T value = (T) source.getValue();
 		if (outputMessage.getContentLength() < 0) {
 			Long contentLength = getContentLength(value, contentType);

@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.observe.watch.ResourceObserver;
@@ -26,7 +26,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ObservableProperties extends Observer<PropertyChangeEvent<String, ValueWrapper>>
+public class ObservableProperties extends Observer<PropertyChangeEvent<String, Any>>
 		implements ObservablePropertyFactory, EditablePropertyFactory {
 	private Charset charset = Constants.UTF_8;
 	private final Properties properties;
@@ -57,20 +57,20 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, V
 		return registration;
 	}
 
-	private ValueWrapper convert(String key, Object value) {
+	private Any convert(String key, Object value) {
 		if (value == null) {
 			return null;
 		}
 
-		if (value instanceof ValueWrapper) {
-			return (ValueWrapper) value;
+		if (value instanceof Any) {
+			return (Any) value;
 		}
 
 		return propertyWrapper.wrap(key, value);
 	}
 
 	@Override
-	public ValueWrapper get(String key) {
+	public Any get(String key) {
 		Object value = properties.get(key);
 		return convert(key, value);
 	}
@@ -130,19 +130,19 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, V
 	}
 
 	@Override
-	public ValueWrapper put(String key, Object value) {
+	public Any put(String key, Object value) {
 		Object oldValue = put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public ValueWrapper put(String key, ValueWrapper value) {
+	public Any put(String key, Any value) {
 		Object oldValue = properties.put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public ValueWrapper remove(String key) {
+	public Any remove(String key) {
 		Object value = properties.remove(key);
 		return convert(key, value);
 	}

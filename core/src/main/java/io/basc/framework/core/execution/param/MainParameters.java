@@ -2,7 +2,7 @@ package io.basc.framework.core.execution.param;
 
 import java.util.stream.IntStream;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.util.Elements;
 import lombok.Data;
@@ -16,7 +16,7 @@ public class MainParameters implements Parameters {
 	@Override
 	public Elements<Parameter> getElements() {
 		return Elements
-				.of(() -> IntStream.range(0, args.length).mapToObj((index) -> new Arg(index, ValueWrapper.of(args[index]))));
+				.of(() -> IntStream.range(0, args.length).mapToObj((index) -> new Arg(index, Any.of(args[index]))));
 	}
 
 	@Override

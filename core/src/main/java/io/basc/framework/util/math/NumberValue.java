@@ -1,31 +1,36 @@
 package io.basc.framework.util.math;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.EnumSet;
+import java.util.NoSuchElementException;
+import java.util.function.Supplier;
+
 import io.basc.framework.util.Value;
 
-public interface NumberValue extends Value, Comparable<NumberValue> {
+public abstract class NumberValue extends Number implements Value, Comparable<NumberValue> {
+	public static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);
+	public static final BigDecimal DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE);
+	public static final BigDecimal FLOAT_MAX_VALUE = BigDecimal.valueOf(Float.MAX_VALUE);
+	public static final BigInteger INTEGER_MAX_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
+	public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
+	private static final long serialVersionUID = 1L;
+	public static final BigInteger SHORT_MAX_VALUE = BigInteger.valueOf(Short.MAX_VALUE);
+
+	/**
+	 * 绝对值
+	 * 
+	 * @return
+	 */
+	public abstract NumberValue abs();
+
 	/**
 	 * 加法
 	 * 
 	 * @param value
 	 * @return
 	 */
-	NumberValue add(NumberValue value);
-
-	/**
-	 * 减法
-	 * 
-	 * @param value
-	 * @return
-	 */
-	NumberValue subtract(NumberValue value);
-
-	/**
-	 * 乘法
-	 * 
-	 * @param value
-	 * @return
-	 */
-	NumberValue multiply(NumberValue value);
+	public abstract NumberValue add(NumberValue value);
 
 	/**
 	 * 除法
@@ -33,15 +38,193 @@ public interface NumberValue extends Value, Comparable<NumberValue> {
 	 * @param value
 	 * @return
 	 */
-	NumberValue divide(NumberValue value);
+	public abstract NumberValue divide(NumberValue value);
+
+	@Override
+	public double doubleValue() {
+		return getAsDouble();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof NumberValue) {
+			return compareTo((NumberValue) obj) == 0;
+		}
+		return false;
+	}
+
+	@Override
+	public float floatValue() {
+		return getAsFloat();
+	}
+
+	@Override
+	public boolean getAsBoolean() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigInteger.ONE) == 0;
+	}
+
+	@Override
+	public byte getAsByte() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return 0;
+		}
+
+		if (number.compareTo(BYTE_MAX_VALUE) > 0) {
+			throw new IllegalAccessError("The value[" + number + "] is too high");
+		}
+		return number.byteValue();
+	}
+
+	@Override
+	public char getAsChar() {
+		return (char) getAsByte();
+	}
+
+	@Override
+	public double getAsDouble() {
+		BigDecimal number = getAsBigDecimal();
+		if (number == null) {
+			return 0;
+		}
+
+		if (number.compareTo(DOUBLE_MAX_VALUE) > 0) {
+			throw new IllegalAccessError("The value[" + number + "] is too high");
+		}
+		return number.doubleValue();
+	}
+
+	@Override
+	public <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
+		BigInteger value = getAsBigInteger();
+		if (value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+			// 不可能比int还大
+			throw new IndexOutOfBoundsException(
+					"The ordinal[" + value + "] of enumeration cannot be greater than " + Integer.MAX_VALUE);
+		}
+
+		int ordinal = value.intValue();
+		EnumSet<T> enumSet = EnumSet.noneOf(enumType);
+		for (T e : enumSet) {
+			if (e.ordinal() == ordinal) {
+				return e;
+			}
+		}
+		throw new NoSuchElementException(enumType + "[" + ordinal + "]");
+	}
+
+	@Override
+	public float getAsFloat() {
+		BigDecimal number = getAsBigDecimal();
+		if (number == null) {
+			return 0;
+		}
+
+		if (number.compareTo(FLOAT_MAX_VALUE) > 0) {
+			throw new IllegalAccessError("The value[" + number + "] is too high");
+		}
+		return number.floatValue();
+	}
+
+	@Override
+	public int getAsInt() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return 0;
+		}
+
+		if (number.compareTo(INTEGER_MAX_VALUE) > 0) {
+			throw new IllegalAccessError("The value[" + number + "] is too high");
+		}
+		return number.intValue();
+	}
+
+	@Override
+	public long getAsLong() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return 0;
+		}
+
+		if (number.compareTo(LONG_MAX_VALUE) > 0) {
+			throw new IllegalAccessError("The value[" + number + "] is too high");
+		}
+		return number.longValue();
+	}
+
+	@Override
+	public Value[] getAsMultiple() {
+		return new NumberValue[] { this };
+	}
+
+	@Override
+	public Number getAsNumber() {
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
+		if (NumberValue.class == requiredType) {
+			return (T) this;
+		}
+		return Value.super.getAsObject(requiredType, defaultSupplier);
+	}
+
+	@Override
+	public short getAsShort() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return 0;
+		}
+
+		if (number.compareTo(SHORT_MAX_VALUE) > 0) {
+			throw new IllegalAccessError("The value[" + number + "] is too high");
+		}
+		return number.shortValue();
+	}
+
+	@Override
+	public int hashCode() {
+		return getAsInt();
+	}
+
+	@Override
+	public int intValue() {
+		return getAsInt();
+	}
+
+	@Override
+	public boolean isMultiple() {
+		return false;
+	}
+
+	@Override
+	public boolean isNumber() {
+		return true;
+	}
+
+	@Override
+	public long longValue() {
+		return getAsLong();
+	}
 
 	/**
-	 * 余数
+	 * 乘法
 	 * 
 	 * @param value
 	 * @return
 	 */
-	NumberValue remainder(NumberValue value);
+	public abstract NumberValue multiply(NumberValue value);
 
 	/**
 	 * 指数运算
@@ -49,17 +232,26 @@ public interface NumberValue extends Value, Comparable<NumberValue> {
 	 * @param value
 	 * @return
 	 */
-	NumberValue pow(NumberValue value);
+	public abstract NumberValue pow(NumberValue value);
 
 	/**
-	 * 绝对值
+	 * 余数
 	 * 
+	 * @param value
 	 * @return
 	 */
-	NumberValue abs();
+	public abstract NumberValue remainder(NumberValue value);
+
+	/**
+	 * 减法
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public abstract NumberValue subtract(NumberValue value);
 
 	@Override
-	default boolean isNumber() {
-		return true;
+	public String toString() {
+		return getAsString();
 	}
 }

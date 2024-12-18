@@ -16,7 +16,7 @@ public class RecursiveConversionService implements ConversionService {
 	private final ConversionService objectConversionService;
 
 	protected boolean isUnconvertibleType(TypeDescriptor typeDescriptor) {
-		return ValueWrapper.isUnconvertibleType(typeDescriptor.getType());
+		return Any.isUnconvertibleType(typeDescriptor.getType());
 	}
 
 	@SuppressWarnings({ "unchecked" })

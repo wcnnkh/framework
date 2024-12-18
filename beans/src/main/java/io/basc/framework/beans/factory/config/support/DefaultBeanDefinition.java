@@ -6,7 +6,7 @@ import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
 import io.basc.framework.core.execution.param.Parameters;
@@ -26,7 +26,7 @@ public class DefaultBeanDefinition extends ExecutorRegistry<Function> implements
 	private Scope scope = Scope.DEFAULT;
 	private BeanMapping beanMapping;
 	private String name;
-	private Map<String, ValueWrapper> properties;
+	private Map<String, Any> properties;
 	private Elements<Method> initMethods;
 	private Elements<Method> destroyMethods;
 	@NonNull

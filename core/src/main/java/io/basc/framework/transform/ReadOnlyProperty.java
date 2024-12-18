@@ -1,7 +1,7 @@
 package io.basc.framework.transform;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.core.execution.param.Arg;
 import io.basc.framework.util.Elements;
@@ -15,11 +15,11 @@ public class ReadOnlyProperty implements Property {
 	@NonNull
 	private final Parameter parameter;
 
-	public ReadOnlyProperty(int positionIndex, ValueWrapper value) {
+	public ReadOnlyProperty(int positionIndex, Any value) {
 		this(new Arg(positionIndex, value));
 	}
 
-	public ReadOnlyProperty(String name, ValueWrapper value) {
+	public ReadOnlyProperty(String name, Any value) {
 		this(new Arg(name, value));
 	}
 

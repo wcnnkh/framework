@@ -4,7 +4,7 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
 import io.basc.framework.core.execution.param.Parameters;
@@ -51,7 +51,7 @@ public interface BeanDefinition extends Executors<Function>, Name {
 
 	BeanMapping getBeanMapping();
 
-	Map<String, ValueWrapper> getProperties();
+	Map<String, Any> getProperties();
 
 	Elements<Method> getInitMethods();
 

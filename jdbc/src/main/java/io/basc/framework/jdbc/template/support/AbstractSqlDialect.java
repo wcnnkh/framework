@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.DeleteOperation;
@@ -114,7 +114,7 @@ public abstract class AbstractSqlDialect extends ResultSetMapper implements SqlD
 		return countSql;
 	}
 
-	public Object toDataBaseValue(ValueWrapper value) {
+	public Object toDataBaseValue(Any value) {
 		if (value == null || !value.isPresent()) {
 			return null;
 		}
@@ -220,7 +220,7 @@ public abstract class AbstractSqlDialect extends ResultSetMapper implements SqlD
 			sb.append(" in(");
 			while (iterator.hasNext()) {
 				sb.append("?");
-				params.add(toDataBaseValue(ValueWrapper.of(iterator.next(), typeDescriptor)));
+				params.add(toDataBaseValue(Any.of(iterator.next(), typeDescriptor)));
 				if (iterator.hasNext()) {
 					sb.append(",");
 				}

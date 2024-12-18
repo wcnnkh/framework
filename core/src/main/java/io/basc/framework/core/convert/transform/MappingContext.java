@@ -1,6 +1,6 @@
 package io.basc.framework.core.convert.transform;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Listable;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class MappingContext<K, V extends Access, M extends Mapping<K, V>> extends SimpleAttributes<String, ValueWrapper>
+public class MappingContext<K, V extends Access, M extends Mapping<K, V>> extends SimpleAttributes<String, Any>
 		implements ParentDiscover<MappingContext<K, V, M>>, Listable<KeyValue<K, V>> {
 	@NonNull
 	private final M mapping;

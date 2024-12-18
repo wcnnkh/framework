@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 
 import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
 import io.basc.framework.dom.DomUtils;
@@ -31,8 +31,8 @@ public class NodeToObjectConversionService extends AbstractConversionService imp
 	}
 
 	public Object convert(Node node, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (ValueWrapper.isBaseType(targetType.getType())) {
-			return ValueWrapper.of(node.getTextContent()).getAsObject(targetType.getResolvableType().getType());
+		if (Any.isBaseType(targetType.getType())) {
+			return Any.of(node.getTextContent()).getAsObject(targetType.getResolvableType().getType());
 		}
 
 		NodeList nodeList = node.getChildNodes();

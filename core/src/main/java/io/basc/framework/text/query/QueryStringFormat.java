@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.lang.ObjectValue;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.text.ObjectFormat;
@@ -45,10 +45,10 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public void format(Stream<Pair<String, ValueWrapper>> source, Appendable target) throws IOException {
-		Iterator<Pair<String, ValueWrapper>> iterator = source.iterator();
+	public void format(Stream<Pair<String, Any>> source, Appendable target) throws IOException {
+		Iterator<Pair<String, Any>> iterator = source.iterator();
 		while (iterator.hasNext()) {
-			Pair<String, ValueWrapper> pair = iterator.next();
+			Pair<String, Any> pair = iterator.next();
 			String key = pair.getKey();
 			String value = pair.getValue().getAsString();
 			if (codec != null) {
@@ -70,7 +70,7 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public Stream<Pair<String, ValueWrapper>> parse(Readable source) throws IOException {
+	public Stream<Pair<String, Any>> parse(Readable source) throws IOException {
 		return IOUtils.split(source, connector).map((e) -> {
 			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
 			if (kv.length == 0) {

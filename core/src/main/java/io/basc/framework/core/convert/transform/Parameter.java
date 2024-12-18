@@ -53,13 +53,13 @@ public interface Parameter extends ParameterDescriptor, Property {
 		}
 
 		@Override
-		public void setSource(Object source) throws UnsupportedOperationException {
-			property.setSource(source);
+		public void set(Object source) throws UnsupportedOperationException {
+			property.set(source);
 		}
 
 		@Override
-		public Object getSource() {
-			return property.getSource();
+		public Object get() {
+			return property.get();
 		}
 
 	}

@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.core.convert.support.DefaultConversionService;
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
@@ -106,7 +106,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	protected void doWrite(ValueWrapper source, MimeType contentType, OutputMessage outputMessage) throws IOException {
+	protected void doWrite(Any source, MimeType contentType, OutputMessage outputMessage) throws IOException {
 		String boundary;
 		MimeType mimeType = contentType;
 		if (contentType != null) {
@@ -181,9 +181,9 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 			}
 			MultipartMessage multipartMessage = new ResourceMultipartMessage(fieldName, resource);
 			writeMultipartMessage(boundary, multipartMessage, target, targetContentType);
-		} else if (ValueWrapper.isElements(sourceTypeDescriptor)) {
-			Elements<ValueWrapper> elements = ValueWrapper.asElements(source, sourceTypeDescriptor);
-			for (ValueWrapper item : elements) {
+		} else if (Any.isElements(sourceTypeDescriptor)) {
+			Elements<Any> elements = Any.asElements(source, sourceTypeDescriptor);
+			for (Any item : elements) {
 				writeItem(boundary, fieldName, item.getValue(), item.getTypeDescriptor(), target, targetContentType);
 			}
 		} else {
@@ -220,9 +220,9 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 				String fieldName = toString(key, keyTypeDescriptor);
 				writeItem(boundary, fieldName, value, valueTypeDescriptor, target, targetContentType);
 			}
-		} else if (ValueWrapper.isElements(sourceTypeDescriptor)) {
-			Elements<ValueWrapper> elements = ValueWrapper.asElements(source, sourceTypeDescriptor);
-			for (ValueWrapper item : elements) {
+		} else if (Any.isElements(sourceTypeDescriptor)) {
+			Elements<Any> elements = Any.asElements(source, sourceTypeDescriptor);
+			for (Any item : elements) {
 				write(boundary, item.getValue(), item.getTypeDescriptor(), target, targetContentType);
 			}
 		} else {

@@ -53,7 +53,7 @@ public interface ParameterMapping<T extends Parameter> extends PropertyMapping<T
 		Object[] args = new Object[size()];
 		for (int i = 0; i < args.length; i++) {
 			T parameter = get(i);
-			args[i] = parameter.getSource();
+			args[i] = parameter.get();
 		}
 		return args;
 	}

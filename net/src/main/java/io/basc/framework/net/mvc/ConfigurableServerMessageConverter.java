@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.net.InputMessage;
@@ -31,7 +31,7 @@ public class ConfigurableServerMessageConverter extends ConfigurableServices<Ser
 	}
 
 	@Override
-	public void writeTo(ValueWrapper source, MimeType contentType, OutputMessage target) throws IOException {
+	public void writeTo(Any source, MimeType contentType, OutputMessage target) throws IOException {
 		for (ServerMessageConverter converter : getServices()) {
 			if (converter.isWriteable(source.getTypeDescriptor(), contentType)) {
 				converter.writeTo(source, contentType, target);

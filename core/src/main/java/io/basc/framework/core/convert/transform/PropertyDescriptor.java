@@ -3,6 +3,7 @@ package io.basc.framework.core.convert.transform;
 import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueDescriptor;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
@@ -14,7 +15,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-public interface PropertyDescriptor extends Named {
+public interface PropertyDescriptor extends Named, ValueDescriptor {
 	@RequiredArgsConstructor
 	public static class MergedPropertyDescriptor<E extends PropertyDescriptor>
 			implements PropertyDescriptor, AnnotatedTypeMetadata {
@@ -104,11 +105,13 @@ public interface PropertyDescriptor extends Named {
 		}
 	}
 
+	@FunctionalInterface
 	public static interface PropertyDescriptorWrapper<W extends PropertyDescriptor>
-			extends PropertyDescriptor, NamedWrapper<W> {
+			extends PropertyDescriptor, NamedWrapper<W>, ValueDescriptorWrapper<W> {
+
 		@Override
-		default TypeDescriptor getTypeDescriptor() {
-			return getSource().getTypeDescriptor();
+		default PropertyDescriptor rename(String name) {
+			return getSource().rename(name);
 		}
 	}
 
@@ -142,8 +145,6 @@ public interface PropertyDescriptor extends Named {
 	public static PropertyDescriptor of(@NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
 		return new SimplePropertyDescriptor(name, typeDescriptor);
 	}
-
-	TypeDescriptor getTypeDescriptor();
 
 	@Override
 	default PropertyDescriptor rename(String name) {

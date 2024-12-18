@@ -1,14 +1,11 @@
 package io.basc.framework.core.convert.transform;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 
-public interface Access extends ValueWrapper {
+public interface Access extends Any {
 	@FunctionalInterface
-	public static interface AccessWrapper<W extends Access> extends Access, ValueWrapper {
-
-		@Override
-		W getSource();
+	public static interface AccessWrapper<W extends Access> extends Access, AnyWrapper<W> {
 
 		@Override
 		default TypeDescriptor getRequiredTypeDescriptor() {
@@ -26,13 +23,8 @@ public interface Access extends ValueWrapper {
 		}
 
 		@Override
-		default void setSource(Object source) throws UnsupportedOperationException {
-			getSource().setSource(source);
-		}
-
-		@Override
-		default TypeDescriptor getTypeDescriptor() {
-			return getSource().getTypeDescriptor();
+		default void set(Object source) throws UnsupportedOperationException {
+			getSource().set(source);
 		}
 	}
 
@@ -70,5 +62,5 @@ public interface Access extends ValueWrapper {
 	 * @param source
 	 * @throws UnsupportedOperationException 只读属性,不能操作
 	 */
-	void setSource(Object source) throws UnsupportedOperationException;
+	void set(Object source) throws UnsupportedOperationException;
 }

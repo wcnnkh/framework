@@ -46,7 +46,7 @@ public interface Parameters extends ParameterMapping<Parameter> {
 		for (int i = 0; i < parameters.length; i++) {
 			Object value = args[i];
 			Parameter parameter = Parameter.of(i, "arg" + i, TypeDescriptor.forObject(value));
-			parameter.setSource(value);
+			parameter.set(value);
 			parameters[i] = parameter;
 		}
 		return of(parameters);

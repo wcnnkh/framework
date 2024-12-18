@@ -7,7 +7,7 @@ import org.w3c.dom.Document;
 
 import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.InputMessage;
@@ -44,8 +44,8 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 			throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
 		if (ClassUtils.isPrimitiveOrWrapper(type.getType()) || String.class == type.getType()
-				|| ValueWrapper.class == type.getType()) {
-			return ValueWrapper.of(text).getAsObject(type);
+				|| Any.class == type.getType()) {
+			return Any.of(text).getAsObject(type);
 		}
 
 		Document document = XmlUtils.getTemplate().getParser().parse(text);

@@ -1,6 +1,7 @@
 package io.basc.framework.core.convert.transform.collection;
 
 import java.util.Map;
+import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
@@ -10,10 +11,11 @@ import io.basc.framework.util.Elements;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @RequiredArgsConstructor
 public class MapProperties implements Properties {
 	@NonNull
-	private final Map<?, ?> map;
+	private final Map map;
 	@NonNull
 	private final TypeDescriptor typeDescriptor;
 	@NonNull
@@ -21,7 +23,7 @@ public class MapProperties implements Properties {
 
 	@Override
 	public Elements<String> keys() {
-		return Elements.of(map.keySet())
+		return Elements.of((Set<Object>) map.keySet())
 				.filter((e) -> conversionService.canConvert(typeDescriptor.getMapKeyTypeDescriptor(), String.class))
 				.map((e) -> conversionService.convert(e, typeDescriptor.getMapKeyTypeDescriptor(), String.class));
 	}
@@ -37,5 +39,13 @@ public class MapProperties implements Properties {
 			return Elements.singleton(get((String) key));
 		}
 		return Elements.empty();
+	}
+
+	public void put(Object key, Object value) {
+		if (map == null) {
+			throw new UnsupportedOperationException("The map container does not exist");
+		}
+
+		((Map<Object, Object>) map).put(key, value);
 	}
 }

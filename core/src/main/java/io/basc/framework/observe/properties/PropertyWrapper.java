@@ -1,15 +1,15 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 
 @FunctionalInterface
 public interface PropertyWrapper {
 	static final PropertyWrapper CREATOR = new PropertyWrapper() {
 
-		public ValueWrapper wrap(String key, Object value) {
-			return ValueWrapper.of(value);
+		public Any wrap(String key, Object value) {
+			return Any.of(value);
 		}
 	};
 
-	ValueWrapper wrap(String key, Object value);
+	Any wrap(String key, Object value);
 }

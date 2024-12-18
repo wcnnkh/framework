@@ -2,6 +2,7 @@ package io.basc.framework.core.convert.transform.collection;
 
 import java.util.Map;
 
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.Access;
@@ -23,14 +24,14 @@ public class GenericMapAccess implements Access {
 	private final ConversionService conversionService;
 
 	@Override
-	public Object getSource() {
+	public Object get() throws ConversionException {
 		Object value = map.get(key);
 		return conversionService.convert(value, typeDescriptor);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setSource(Object source) throws UnsupportedOperationException {
+	public void set(Object source) throws UnsupportedOperationException {
 		Object target = conversionService.convert(source, typeDescriptor);
 		map.put(key, target);
 	}

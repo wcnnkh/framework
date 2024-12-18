@@ -1,7 +1,7 @@
 package io.basc.framework.transform;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.PropertyDescriptor;
 
 /**
@@ -10,7 +10,7 @@ import io.basc.framework.core.convert.transform.PropertyDescriptor;
  * @author wcnnkh
  *
  */
-public interface Property extends PropertyDescriptor, ValueWrapper {
+public interface Property extends PropertyDescriptor, Any {
 
 	/**
 	 * 插入值时需要的类型, 默认情况下和{@link #getTypeDescriptor()}相同
@@ -24,7 +24,7 @@ public interface Property extends PropertyDescriptor, ValueWrapper {
 
 	@Override
 	default TypeDescriptor getTypeDescriptor() {
-		return ValueWrapper.super.getTypeDescriptor();
+		return Any.super.getTypeDescriptor();
 	}
 
 	/**
@@ -32,7 +32,7 @@ public interface Property extends PropertyDescriptor, ValueWrapper {
 	 */
 	@Override
 	default boolean isPresent() {
-		return ValueWrapper.super.isPresent();
+		return Any.super.isPresent();
 	}
 
 	/**

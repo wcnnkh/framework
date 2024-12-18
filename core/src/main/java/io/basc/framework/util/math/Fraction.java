@@ -3,6 +3,7 @@ package io.basc.framework.util.math;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.function.Supplier;
 
 import io.basc.framework.util.math.gcd.GreatestCommonDivisor;
 import lombok.NonNull;
@@ -13,7 +14,7 @@ import lombok.NonNull;
  * @author wcnnkh
  *
  */
-public class Fraction extends AbstractNumber {
+public class Fraction extends NumberValue {
 	private static final long serialVersionUID = 1L;
 
 	public static final Fraction ZERO = new Fraction(BigIntegerValue.ZERO, BigIntegerValue.ONE);
@@ -52,8 +53,7 @@ public class Fraction extends AbstractNumber {
 	 * @param roundingMode
 	 */
 	public Fraction(String molecule, String denominator, int scale, RoundingMode roundingMode) {
-		this(new BigDecimalValue(molecule, scale, roundingMode),
-				new BigDecimalValue(denominator, scale, roundingMode));
+		this(new BigDecimalValue(molecule, scale, roundingMode), new BigDecimalValue(denominator, scale, roundingMode));
 	}
 
 	/**
@@ -180,8 +180,17 @@ public class Fraction extends AbstractNumber {
 		return (value instanceof Fraction) ? ("(" + value + ")") : value.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public String toString() {
+	public <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
+		if (String.class == requiredType) {
+			return (T) getAsString();
+		}
+		return super.getAsObject(requiredType, defaultSupplier);
+	}
+
+	@Override
+	public CharSequence getAsCharSequence() {
 		return toString(molecule) + "/" + toString(denominator);
 	}
 
@@ -229,11 +238,6 @@ public class Fraction extends AbstractNumber {
 	@Override
 	public BigInteger getAsBigInteger() {
 		return molecule.divide(denominator).getAsBigInteger();
-	}
-
-	@Override
-	public String getAsString() {
-		return toString(molecule) + "/" + toString(denominator);
 	}
 
 	@Override

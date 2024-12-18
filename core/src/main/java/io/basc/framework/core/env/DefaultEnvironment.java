@@ -14,10 +14,13 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 
 	private boolean ignoreCase = true;
 
-	private Environment parentEnvironment;
+	private ConfigurableEnvironment parentEnvironment;
 
-	public DefaultEnvironment() {
-		getFactories().setLastService(SystemProperties.getInstance());
+	private final MutablePropertySources propertySources = new MutablePropertySources();
+
+	@Override
+	public MutablePropertySources getPropertySources() {
+		return propertySources;
 	}
 
 	@Override
@@ -112,7 +115,8 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 		this.ignoreCase = ignoreCase;
 	}
 
-	public void setParentEnvironment(Environment parentEnvironment) {
+	@Override
+	public void setParentEnvironment(ConfigurableEnvironment parentEnvironment) {
 		this.parentEnvironment = parentEnvironment;
 		setParentPropertyResolver(parentEnvironment);
 	}

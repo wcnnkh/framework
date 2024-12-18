@@ -6,7 +6,8 @@ import java.math.BigInteger;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LongValue implements NumberValue {
+public class LongValue extends NumberValue {
+	private static final long serialVersionUID = 1L;
 	private final long value;
 
 	@Override
@@ -17,11 +18,6 @@ public class LongValue implements NumberValue {
 	@Override
 	public BigInteger getAsBigInteger() {
 		return new BigInteger(value + "");
-	}
-
-	@Override
-	public Number getAsNumber() {
-		return value;
 	}
 
 	@Override

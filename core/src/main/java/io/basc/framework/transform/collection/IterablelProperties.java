@@ -1,6 +1,6 @@
 package io.basc.framework.transform.collection;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
@@ -16,6 +16,6 @@ public class IterablelProperties implements Properties {
 	@Override
 	public Elements<Property> getElements() {
 		return Elements.of(collection).index()
-				.map((indexed) -> new ReadOnlyProperty((int) indexed.getIndex(), ValueWrapper.of(indexed.getElement())));
+				.map((indexed) -> new ReadOnlyProperty((int) indexed.getIndex(), Value2.of(indexed.getElement())));
 	}
 }

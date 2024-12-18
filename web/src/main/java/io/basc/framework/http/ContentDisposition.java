@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -26,10 +26,10 @@ public final class ContentDisposition {
 
 	private final Charset charset;
 
-	private final Map<String, ValueWrapper> attributes;
+	private final Map<String, Any> attributes;
 
 	private ContentDisposition(String type, String name, String filename, Charset charset,
-			Map<String, ValueWrapper> attributes) {
+			Map<String, Any> attributes) {
 		this.type = type;
 		this.name = name;
 		this.filename = filename;
@@ -53,14 +53,14 @@ public final class ContentDisposition {
 		return this.charset;
 	}
 
-	public Map<String, ValueWrapper> getAttributes() {
+	public Map<String, Any> getAttributes() {
 		if (attributes == null) {
 			return Collections.emptyMap();
 		}
 		return attributes;
 	}
 
-	public ValueWrapper getAttribute(String name) {
+	public Any getAttribute(String name) {
 		return getAttributes().get(name);
 	}
 
@@ -108,7 +108,7 @@ public final class ContentDisposition {
 		}
 
 		if (!CollectionUtils.isEmpty(attributes)) {
-			for (Entry<String, ValueWrapper> entry : attributes.entrySet()) {
+			for (Entry<String, Any> entry : attributes.entrySet()) {
 				sb.append("; ").append(entry.getKey()).append("=");
 				if (entry.getValue().isNumber()) {
 					sb.append(entry.getValue().getAsNumber());
@@ -148,7 +148,7 @@ public final class ContentDisposition {
 		String name = null;
 		String filename = null;
 		Charset charset = null;
-		Map<String, ValueWrapper> attributes = new LinkedHashMap<String, ValueWrapper>(8);
+		Map<String, Any> attributes = new LinkedHashMap<String, Any>(8);
 		for (int i = 1; i < parts.size(); i++) {
 			String part = parts.get(i);
 			int eqIndex = part.indexOf('=');
@@ -173,7 +173,7 @@ public final class ContentDisposition {
 				} else if (attribute.equals("filename") && (filename == null)) {
 					filename = value;
 				} else {
-					attributes.put(attribute, ValueWrapper.of(value));
+					attributes.put(attribute, Any.of(value));
 				}
 			} else {
 				throw new IllegalArgumentException("Invalid content disposition format");
@@ -321,7 +321,7 @@ public final class ContentDisposition {
 
 		Builder filename(String filename, @Nullable Charset charset);
 
-		Builder attributes(Map<String, ValueWrapper> attributes);
+		Builder attributes(Map<String, Any> attributes);
 
 		ContentDisposition build();
 	}
@@ -339,7 +339,7 @@ public final class ContentDisposition {
 		@Nullable
 		private Charset charset;
 
-		private Map<String, ValueWrapper> attributes;
+		private Map<String, Any> attributes;
 
 		public BuilderImpl(String type) {
 			Assert.hasText(type, "'type' must not be not empty");
@@ -364,7 +364,7 @@ public final class ContentDisposition {
 			return this;
 		}
 
-		public Builder attributes(Map<String, ValueWrapper> attributes) {
+		public Builder attributes(Map<String, Any> attributes) {
 			this.attributes = attributes;
 			return this;
 		}

@@ -3,7 +3,7 @@ package io.basc.framework.net.server.convert;
 import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueWrapper;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MimeType;
@@ -41,7 +41,7 @@ public class DefaultServerMessageConverter extends ConfigurableServerMessageConv
 	}
 
 	@Override
-	public void writeTo(ValueWrapper source, MimeType contentType, OutputMessage target) throws IOException {
+	public void writeTo(Any source, MimeType contentType, OutputMessage target) throws IOException {
 		if (super.isWriteable(source.getTypeDescriptor(), contentType)) {
 			super.writeTo(source, contentType, target);
 		}
