@@ -1,11 +1,11 @@
 package io.basc.framework.core.convert.transform;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 
-public interface Access extends Any {
+public interface Access extends Value {
 	@FunctionalInterface
-	public static interface AccessWrapper<W extends Access> extends Access, AnyWrapper<W> {
+	public static interface AccessWrapper<W extends Access> extends Access, ValueWrapper<W> {
 
 		@Override
 		default TypeDescriptor getRequiredTypeDescriptor() {

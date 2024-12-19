@@ -1,6 +1,6 @@
 package io.basc.framework.observe.properties;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.observe.register.ElementRegistration;
 import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Elements;
@@ -85,9 +85,9 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 		}
 	}
 
-	private final Listener<PropertyChangeEvent<String, Any>> propertyObserver = new Observer<>();
+	private final Listener<PropertyChangeEvent<String, Value>> propertyObserver = new Observer<>();
 
-	public Registration registerPropertyListener(BatchEventListener<PropertyChangeEvent<String, Any>> eventListener) {
+	public Registration registerPropertyListener(BatchEventListener<PropertyChangeEvent<String, Value>> eventListener) {
 		Registration registration = propertyObserver.registerBatchListener(eventListener);
 		refreshPropertyObserver();
 		return registration.and(() -> reload());

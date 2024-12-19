@@ -10,70 +10,34 @@ public class BigIntegerValue extends RationalNumber {
 
 	public static final BigIntegerValue ONE = new BigIntegerValue(BigInteger.ONE);
 
-	private BigInteger bigInteger;
+	private BigInteger value;
 
-	public BigIntegerValue(BigInteger bigInteger) {
-		this.bigInteger = bigInteger;
+	public BigIntegerValue(BigInteger value) {
+		this.value = value;
 	}
 
 	public int compareTo(NumberValue o) {
-		if (o instanceof BigIntegerValue) {
-			return bigInteger.compareTo(((BigIntegerValue) o).bigInteger);
-		}
-		return super.compareTo(o);
-	}
-
-	protected NumberValue addInternal(NumberValue value) {
-		return new BigIntegerValue(bigInteger.add(value.getAsBigDecimal().toBigIntegerExact()));
-	}
-
-	protected NumberValue subtractInternal(NumberValue value) {
-		return new BigIntegerValue(bigInteger.subtract(value.getAsBigDecimal().toBigIntegerExact()));
-	}
-
-	protected NumberValue multiplyInternal(NumberValue value) {
-		return new BigIntegerValue(bigInteger.multiply(value.getAsBigDecimal().toBigIntegerExact()));
-	}
-
-	protected NumberValue divideInternal(NumberValue value) {
-		return new BigIntegerValue(bigInteger.divide(value.getAsBigDecimal().toBigIntegerExact()));
-	}
-
-	protected NumberValue remainderInternal(NumberValue value) {
-		return new BigIntegerValue(bigInteger.remainder(value.getAsBigDecimal().toBigIntegerExact()));
-	}
-
-	protected NumberValue powInternal(NumberValue value) {
-		return new BigIntegerValue(bigInteger.pow(value.getAsBigDecimal().intValueExact()));
-	}
-
-	public NumberValue abs() {
-		return new BigIntegerValue(bigInteger.abs());
+		BigInteger value = o.getAsBigInteger();
+		return this.value.compareTo(value);
 	}
 
 	@Override
 	public int hashCode() {
-		return bigInteger.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return bigInteger.toString();
+		return value.hashCode();
 	}
 
 	@Override
 	public BigDecimal getAsBigDecimal() {
-		return new BigDecimal(bigInteger);
+		return new BigDecimal(value);
 	}
 
 	@Override
 	public BigInteger getAsBigInteger() {
-		return bigInteger;
+		return value;
 	}
 
 	@Override
-	public String getAsString() {
-		// TODO Auto-generated method stub
-		return null;
+	public CharSequence getAsCharSequence() {
+		return value.toString();
 	}
 }

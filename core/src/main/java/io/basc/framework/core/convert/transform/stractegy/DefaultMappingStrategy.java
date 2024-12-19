@@ -36,7 +36,7 @@ public class DefaultMappingStrategy<K, V extends Access, M extends Mapping<K, V>
 				continue;
 			}
 
-			Object source = entry.getValue().getSource();
+			Object source = entry.getValue().get();
 			if (source == null) {
 				continue;
 			}
@@ -46,7 +46,7 @@ public class DefaultMappingStrategy<K, V extends Access, M extends Mapping<K, V>
 			if (source == null) {
 				continue;
 			}
-			access.setSource(source);
+			access.set(source);
 		}
 	}
 

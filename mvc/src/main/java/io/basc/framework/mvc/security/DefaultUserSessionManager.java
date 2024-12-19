@@ -3,7 +3,7 @@ package io.basc.framework.mvc.security;
 import java.net.HttpCookie;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.env.Sys;
 import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.security.login.UserToken;
@@ -80,8 +80,8 @@ public class DefaultUserSessionManager implements UserSessionManager {
 		this.singleSession = singleSession;
 	}
 
-	protected Any getParameter(HttpChannel httpChannel, String name) {
-		Any value = httpChannel.get(name);
+	protected Value getParameter(HttpChannel httpChannel, String name) {
+		Value value = httpChannel.get(name);
 		if (value == null || value.isEmpty()) {
 			String token = httpChannel.getRequest().getHeaders().getFirst(name);
 			if (token == null) {
@@ -92,7 +92,7 @@ public class DefaultUserSessionManager implements UserSessionManager {
 			}
 
 			if (token != null) {
-				value = Any.of(token);
+				value = Value.of(token);
 			}
 		}
 		return value;
@@ -100,8 +100,8 @@ public class DefaultUserSessionManager implements UserSessionManager {
 
 	@Override
 	public <T> UserToken<T> read(HttpChannel httpChannel, Class<T> type) {
-		Any uid = getParameter(httpChannel, getUidName());
-		Any token = getParameter(httpChannel, getTokenName());
+		Value uid = getParameter(httpChannel, getUidName());
+		Value token = getParameter(httpChannel, getTokenName());
 		if (uid == null || uid.isEmpty() || token == null || token.isEmpty()) {
 			return null;
 		}

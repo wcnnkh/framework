@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LongValue extends NumberValue {
+public class LongValue extends RationalNumber {
 	private static final long serialVersionUID = 1L;
 	private final long value;
 
@@ -21,7 +21,7 @@ public class LongValue extends NumberValue {
 	}
 
 	@Override
-	public String getAsString() {
+	public CharSequence getAsCharSequence() {
 		return Long.toString(value);
 	}
 
@@ -35,45 +35,4 @@ public class LongValue extends NumberValue {
 		return Long.compare(this.value, value.longValue());
 	}
 
-	@Override
-	public NumberValue add(NumberValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NumberValue subtract(NumberValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NumberValue multiply(NumberValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NumberValue divide(NumberValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NumberValue remainder(NumberValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NumberValue pow(NumberValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NumberValue abs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

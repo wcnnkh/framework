@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.BooleanSupplier;
@@ -8,10 +9,10 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
-public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
+public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
 
 	@FunctionalInterface
-	public static interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
+	public static interface AnyWrapper<W extends Any> extends Any, Wrapper<W> {
 		@Override
 		default BigDecimal getAsBigDecimal() {
 			return getSource().getAsBigDecimal();
@@ -48,6 +49,17 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		}
 
 		@Override
+		default Elements<? extends Any> getAsElements() {
+			return getSource().getAsElements();
+		}
+
+		@Override
+		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType,
+				Supplier<? extends T> defaultSupplier) {
+			return getSource().getAsElements(componentType, defaultSupplier);
+		}
+
+		@Override
 		default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
 			return getSource().getAsEnum(enumType);
 		}
@@ -65,17 +77,6 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		@Override
 		default long getAsLong() {
 			return getSource().getAsLong();
-		}
-
-		@Override
-		default Value[] getAsMultiple() {
-			return getSource().getAsMultiple();
-		}
-
-		@Override
-		default <T, E extends Throwable> Elements<T> getAsMultiple(Class<? extends T> componentType,
-				Supplier<? extends T> defaultSupplier) {
-			return getSource().getAsMultiple(componentType, defaultSupplier);
 		}
 
 		@Override
@@ -107,6 +108,34 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		default boolean isNumber() {
 			return getSource().isNumber();
 		}
+
+		@Override
+		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType) {
+			return getSource().getAsElements(componentType);
+		}
+
+		@Override
+		default <T> T getAsArray(Class<? extends T> arrayType) {
+			return getSource().getAsArray(arrayType);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T getAsArray(Class<? extends T> arrayType) {
+		Class<?> componentType = arrayType.getComponentType();
+		Any[] values = getAsElements().toArray(new Any[0]);
+		int len = values.length;
+		T array = (T) Array.newInstance(componentType, len);
+		for (int i = 0; i < len; i++) {
+			Any value = values[i];
+			if (value == null) {
+				continue;
+			}
+
+			Object target = value.getAsObject(arrayType);
+			Array.set(array, i, target);
+		}
+		return array;
 	}
 
 	BigDecimal getAsBigDecimal();
@@ -119,22 +148,30 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	CharSequence getAsCharSequence();
 
-	<T extends Enum<T>> T getAsEnum(Class<T> enumType);
+	Elements<? extends Any> getAsElements();
 
-	float getAsFloat();
+	default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType) {
+		return getAsElements(componentType, () -> null);
+	}
 
-	Value[] getAsMultiple();
-
-	default <T, E extends Throwable> Elements<T> getAsMultiple(Class<? extends T> componentType,
+	default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType,
 			Supplier<? extends T> defaultSupplier) {
 		if (isMultiple()) {
-			return Elements.forArray(getAsMultiple()).map((e) -> e.getAsObject(componentType, defaultSupplier));
+			return getAsElements().map((e) -> e.getAsObject(componentType, defaultSupplier));
 		} else {
 			return Elements.singleton(getAsObject(componentType, defaultSupplier));
 		}
 	}
 
+	<T extends Enum<T>> T getAsEnum(Class<T> enumType);
+
+	float getAsFloat();
+
 	Number getAsNumber();
+
+	default <T> T getAsObject(Class<? extends T> requiredType) {
+		return getAsObject(requiredType, () -> null);
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
@@ -167,8 +204,10 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			v = getAsNumber();
 		} else if (requiredType.isEnum()) {
 			v = getAsEnum((Class<? extends Enum>) requiredType);
-		} else if (requiredType == Value.class) {
+		} else if (requiredType == Any.class) {
 			v = this;
+		} else if (requiredType.isArray()) {
+			v = getAsArray(requiredType);
 		} else {
 			v = defaultSupplier.get();
 		}

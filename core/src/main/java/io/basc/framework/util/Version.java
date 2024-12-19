@@ -3,16 +3,16 @@ package io.basc.framework.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 
-public class Version implements Serializable, Comparable<Version>, Comparator<Value> {
+public class Version implements Serializable, Comparable<Version>, Comparator<Any> {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 默认的版本分割符
 	 */
 	public static final String DIVIDEERS = ".";
 
-	private final Any[] fragments;
+	private final Value[] fragments;
 	private final String dividers;
 
 	public Version(String version) {
@@ -23,13 +23,13 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 		Assert.requiredArgument(version != null, "version");
 		this.dividers = dividers;
 		String[] arr = StringUtils.splitToArray(version, dividers);
-		fragments = new Any[arr.length];
+		fragments = new Value[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			this.fragments[i] = Any.of(arr[i]);
+			this.fragments[i] = Value.of(arr[i]);
 		}
 	}
 
-	public Version(Any[] fragments, String dividers) {
+	public Version(Value[] fragments, String dividers) {
 		this.fragments = fragments;
 		this.dividers = dividers;
 	}
@@ -38,7 +38,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 		return dividers;
 	}
 
-	public Any[] getFragments() {
+	public Value[] getFragments() {
 		return fragments.clone();
 	}
 
@@ -46,7 +46,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 		return fragments.length;
 	}
 
-	public Any get(int index) {
+	public Value get(int index) {
 		return fragments[index];
 	}
 
@@ -56,10 +56,10 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 	 * @param fragments
 	 * @return
 	 */
-	public int compareTo(Any[] fragments) {
+	public int compareTo(Value[] fragments) {
 		for (int i = 0; i < fragments.length && i < this.fragments.length; i++) {
-			Any fragment1 = this.fragments[i];
-			Any fragment2 = fragments[i];
+			Value fragment1 = this.fragments[i];
+			Value fragment2 = fragments[i];
 			int compare = compare(fragment1, fragment2);
 			if (compare == 0) {
 				continue;
@@ -141,7 +141,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 	}
 
 	@Override
-	public int compare(Value v1, Value v2) {
+	public int compare(Any v1, Any v2) {
 		if (v1.isNumber() && v2.isNumber()) {
 			return Double.compare(v1.getAsDouble(), v2.getAsDouble());
 		}

@@ -2,7 +2,7 @@ package io.basc.framework.jms.messageing;
 
 import javax.jms.Message;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.messageing.MessageHeaders;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +18,7 @@ public class JmsMessageHeaders extends MessageHeaders {
 	}
 	
 	@Override
-	public Any get(Object key) {
+	public Value get(Object key) {
 		// TODO Auto-generated method stub
 		return super.get(key);
 	}

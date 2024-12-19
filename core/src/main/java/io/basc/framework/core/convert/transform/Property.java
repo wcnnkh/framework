@@ -9,21 +9,8 @@ import lombok.ToString;
 
 public interface Property extends Access, PropertyDescriptor {
 
-	@FunctionalInterface
-	public static interface PropertyWrapper<W extends Property> extends Property, AccessWrapper<W> {
-
-		@Override
-		W getSource();
-
-		@Override
-		default TypeDescriptor getTypeDescriptor() {
-			return getSource().getTypeDescriptor();
-		}
-
-		@Override
-		default String getName() {
-			return getSource().getName();
-		}
+	public static interface PropertyWrapper<W extends Property>
+			extends Property, AccessWrapper<W>, PropertyDescriptorWrapper<W> {
 	}
 
 	@Data
@@ -50,10 +37,5 @@ public interface Property extends Access, PropertyDescriptor {
 
 	public static Property of(@NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
 		return new SimpleProperty(name, typeDescriptor);
-	}
-
-	@Override
-	default TypeDescriptor getTypeDescriptor() {
-		return Access.super.getTypeDescriptor();
 	}
 }

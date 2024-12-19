@@ -1,4 +1,4 @@
-package io.basc.framework.core.execution.param;
+package io.basc.framework.core.execution.stractegy;
 
 import io.basc.framework.util.Elements;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package io.basc.framework.transform.collection;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;

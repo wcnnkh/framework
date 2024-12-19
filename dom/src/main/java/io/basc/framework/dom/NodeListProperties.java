@@ -5,7 +5,7 @@ import java.util.stream.IntStream;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.core.execution.param.Arg;
 import io.basc.framework.transform.Properties;
@@ -24,7 +24,7 @@ public class NodeListProperties implements Properties {
 	public Elements<Property> getElements() {
 		return Elements.of(() -> IntStream.range(1, nodeList.getLength() + 1).mapToObj((i) -> {
 			Node node = nodeList.item(i);
-			Parameter parameter = new Arg(i, node.getNodeName(), Any.of(node));
+			Parameter parameter = new Arg(i, node.getNodeName(), Value.of(node));
 			return new ReadOnlyProperty(parameter);
 		}));
 	}

@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
-public interface ValueFactory<K, V extends Value> {
+public interface Lookup<K, V extends Any> {
 
 	@FunctionalInterface
-	public interface ValueFactoryWrapper<K, V extends Value, W extends ValueFactory<K, V>>
-			extends ValueFactory<K, V>, Wrapper<W> {
+	public interface LookupWrapper<K, V extends Any, W extends Lookup<K, V>> extends Lookup<K, V>, Wrapper<W> {
 		@Override
 		default V get(K key) {
 			return getSource().get(key);

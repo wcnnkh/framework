@@ -1,7 +1,7 @@
 package io.basc.framework.transform.strategy;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class PropertiesTransformContext extends SimpleAttributes<String, Any>
+public class PropertiesTransformContext extends SimpleAttributes<String, Value>
 		implements Properties, ParentDiscover<PropertiesTransformContext>, ParameterDescriptor, Cloneable {
 	@NonNull
 	private final Properties properties;

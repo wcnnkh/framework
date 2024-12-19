@@ -11,7 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
@@ -114,18 +114,18 @@ public final class DomUtils {
 		return map.isEmpty() ? null : map;
 	}
 
-	public static Any getNodeAttributeValue(Node node, String name) {
+	public static Value getNodeAttributeValue(Node node, String name) {
 		if (node == null) {
-			return Any.EMPTY;
+			return Value.EMPTY;
 		}
 
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
-			return Any.EMPTY;
+			return Value.EMPTY;
 		}
 
 		Node n = namedNodeMap.getNamedItem(name);
-		return n == null ? Any.EMPTY : Any.of(n.getNodeValue());
+		return n == null ? Value.EMPTY : Value.of(n.getNodeValue());
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
@@ -138,8 +138,8 @@ public final class DomUtils {
 		return n == null ? node.getTextContent() : n.getNodeValue();
 	}
 
-	public static Any getRequireNodeAttributeValue(Node node, String name) {
-		Any value = getNodeAttributeValue(node, name);
+	public static Value getRequireNodeAttributeValue(Node node, String name) {
+		Value value = getNodeAttributeValue(node, name);
 		if (!value.isPresent()) {
 			throw new NotFoundException("not found attribute [" + name + "]");
 		}
@@ -154,13 +154,13 @@ public final class DomUtils {
 		}
 	}
 
-	public static Any getParentAttributeValue(Node node, String name) {
+	public static Value getParentAttributeValue(Node node, String name) {
 		Node parent = node.getParentNode();
 		if (parent == null) {
-			return Any.EMPTY;
+			return Value.EMPTY;
 		}
 
-		Any value = getNodeAttributeValue(node, name);
+		Value value = getNodeAttributeValue(node, name);
 		if (!value.isPresent()) {
 			return getParentAttributeValue(parent, name);
 		}
@@ -202,15 +202,15 @@ public final class DomUtils {
 		return environment.replacePlaceholders(value);
 	}
 
-	public static Any getNodeAttributeValue(Environment environment, Node node, String name) {
-		Any value = getNodeAttributeValue(node, name);
+	public static Value getNodeAttributeValue(Environment environment, Node node, String name) {
+		Value value = getNodeAttributeValue(node, name);
 		if (!value.isPresent()) {
 			return value;
 		}
 
 		String str = value.getAsString();
 		str = formatNodeValue(environment, node, str);
-		return Any.of(str);
+		return Value.of(str);
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
@@ -230,8 +230,8 @@ public final class DomUtils {
 		return formatNodeValue(environment, node, value);
 	}
 
-	public static Any getRequireNodeAttributeValue(Environment environment, Node node, String name) {
-		Any value = getNodeAttributeValue(environment, node, name);
+	public static Value getRequireNodeAttributeValue(Environment environment, Node node, String name) {
+		Value value = getNodeAttributeValue(environment, node, name);
 		if (!value.isPresent()) {
 			throw new NotFoundException("not found attribute " + name);
 		}

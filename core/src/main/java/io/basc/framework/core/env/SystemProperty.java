@@ -13,13 +13,13 @@ public class SystemProperty implements Property {
 	private final ConversionService conversionService;
 
 	@Override
-	public void setSource(Object source) throws UnsupportedOperationException {
+	public void set(Object source) throws UnsupportedOperationException {
 		String value = conversionService.convert(source, String.class);
 		System.setProperty(name, value);
 	}
 
 	@Override
-	public Object getSource() {
+	public Object get() {
 		String value = System.getProperty(name);
 		if (value == null) {
 			value = System.getenv(value);

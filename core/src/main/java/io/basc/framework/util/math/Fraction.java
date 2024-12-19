@@ -14,7 +14,7 @@ import lombok.NonNull;
  * @author wcnnkh
  *
  */
-public class Fraction extends NumberValue {
+public class Fraction extends RationalNumber {
 	private static final long serialVersionUID = 1L;
 
 	public static final Fraction ZERO = new Fraction(BigIntegerValue.ZERO, BigIntegerValue.ONE);
@@ -75,11 +75,17 @@ public class Fraction extends NumberValue {
 		this.greatestCommonDivisor = greatestCommonDivisor;
 	}
 
-	// 转为同分母分数
-	private Fraction toFraction(NumberValue value) {
+	/**
+	 * 通分
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public Fraction sameDenominator(NumberValue value) {
 		return new Fraction(value.multiply(this.denominator), denominator);
 	}
 
+	@Override
 	public Fraction add(NumberValue value) {
 		if (value instanceof Fraction) {
 			Fraction summand = (Fraction) value;
@@ -87,10 +93,11 @@ public class Fraction extends NumberValue {
 			return new Fraction(molecule.multiply(summand.denominator).add(summand.molecule.multiply(denominator)),
 					denominator.multiply(summand.denominator)).reduction();
 		} else {
-			return add(toFraction(value));
+			return add(sameDenominator(value));
 		}
 	}
 
+	@Override
 	public Fraction subtract(NumberValue value) {
 		if (value instanceof Fraction) {
 			Fraction minuend = (Fraction) value;
@@ -98,10 +105,11 @@ public class Fraction extends NumberValue {
 			return new Fraction(molecule.multiply(minuend.denominator).subtract(minuend.molecule.multiply(denominator)),
 					denominator.multiply(minuend.denominator)).reduction();
 		} else {
-			return subtract(toFraction(value));
+			return subtract(sameDenominator(value));
 		}
 	}
 
+	@Override
 	public Fraction multiply(NumberValue value) {
 		if (value instanceof Fraction) {
 			Fraction multiplicand = (Fraction) value;
@@ -109,7 +117,7 @@ public class Fraction extends NumberValue {
 			return new Fraction(molecule.multiply(multiplicand.molecule),
 					denominator.multiply(multiplicand.denominator)).reduction();
 		} else {
-			return multiply(toFraction(value));
+			return multiply(sameDenominator(value));
 		}
 	}
 
@@ -122,12 +130,13 @@ public class Fraction extends NumberValue {
 		return new Fraction(denominator, molecule);
 	}
 
+	@Override
 	public Fraction divide(NumberValue value) {
 		if (value instanceof Fraction) {
 			// 除以一个数等于乘以这个数的倒数
 			return multiply(((Fraction) value).reciprocal()).reduction();
 		} else {
-			return divide(toFraction(value));
+			return divide(sameDenominator(value));
 		}
 	}
 
@@ -140,10 +149,12 @@ public class Fraction extends NumberValue {
 		return molecule.remainder(denominator);
 	}
 
+	@Override
 	public NumberValue remainder(NumberValue value) {
 		return new BigDecimalValue(getAsBigDecimal().remainder(value.getAsBigDecimal()));
 	}
 
+	@Override
 	public NumberValue pow(NumberValue value) {
 		// 分数的指数运算,将分子分母分别进行指数运算
 		return new Fraction(molecule.pow(value), denominator.pow(value));
@@ -199,7 +210,7 @@ public class Fraction extends NumberValue {
 			return molecule.multiply(((Fraction) value).denominator)
 					.compareTo(denominator.multiply(((Fraction) value).molecule));
 		} else {
-			return compareTo(toFraction(value));
+			return compareTo(sameDenominator(value));
 		}
 	}
 
@@ -214,7 +225,7 @@ public class Fraction extends NumberValue {
 		}
 
 		if (denominator instanceof Fraction) {
-			return toFraction(molecule).divide((Fraction) denominator).reciprocal();
+			return sameDenominator(molecule).divide((Fraction) denominator).reciprocal();
 		}
 
 		BigDecimal molecule = this.molecule.getAsBigDecimal();

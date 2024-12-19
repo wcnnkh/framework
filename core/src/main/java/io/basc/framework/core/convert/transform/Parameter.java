@@ -9,12 +9,8 @@ import lombok.ToString;
 public interface Parameter extends ParameterDescriptor, Property {
 
 	@FunctionalInterface
-	public static interface ParameterWrapper<W extends Parameter> extends Parameter, PropertyWrapper<W> {
-
-		@Override
-		default int getIndex() {
-			return getSource().getIndex();
-		}
+	public static interface ParameterWrapper<W extends Parameter>
+			extends Parameter, PropertyWrapper<W>, ParameterDescriptorWrapper<W> {
 	}
 
 	@Data
@@ -28,6 +24,11 @@ public interface Parameter extends ParameterDescriptor, Property {
 		public SimpleParmeter(int index, @NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
 			super(name, typeDescriptor);
 			this.index = index;
+		}
+
+		@Override
+		public ParameterDescriptor rename(String name) {
+			return Parameter.super.rename(name);
 		}
 	}
 

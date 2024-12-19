@@ -1,4 +1,4 @@
-package io.basc.framework.core.execution.param;
+package io.basc.framework.core.execution.stractegy;
 
 import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.core.convert.transform.ParameterDescriptor;
@@ -25,6 +25,6 @@ public class ParameterMatched {
 	}
 
 	public Object getValue() {
-		return parameter == null ? null : parameter.getValue();
+		return parameter == null ? null : parameter.get();
 	}
 }

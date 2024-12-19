@@ -6,9 +6,10 @@ import java.util.EnumSet;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.Value;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Any;
 
-public abstract class NumberValue extends Number implements Value, Comparable<NumberValue> {
+public abstract class NumberValue extends Number implements Any, Comparable<NumberValue> {
 	public static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);
 	public static final BigDecimal DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE);
 	public static final BigDecimal FLOAT_MAX_VALUE = BigDecimal.valueOf(Float.MAX_VALUE);
@@ -162,8 +163,8 @@ public abstract class NumberValue extends Number implements Value, Comparable<Nu
 	}
 
 	@Override
-	public Value[] getAsMultiple() {
-		return new NumberValue[] { this };
+	public Elements<? extends Any> getAsElements() {
+		return Elements.singleton(this);
 	}
 
 	@Override
@@ -177,7 +178,7 @@ public abstract class NumberValue extends Number implements Value, Comparable<Nu
 		if (NumberValue.class == requiredType) {
 			return (T) this;
 		}
-		return Value.super.getAsObject(requiredType, defaultSupplier);
+		return Any.super.getAsObject(requiredType, defaultSupplier);
 	}
 
 	@Override

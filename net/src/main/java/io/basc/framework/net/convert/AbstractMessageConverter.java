@@ -3,7 +3,7 @@ package io.basc.framework.net.convert;
 import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.Message;
@@ -22,7 +22,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	protected abstract Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException;
 
-	protected abstract void doWrite(Any source, MimeType contentType, OutputMessage outputMessage) throws IOException;
+	protected abstract void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException;
 
 	protected MimeType getContentType(TypeDescriptor type, Message message) throws IOException {
 		MimeType mimeType = mimeTypes.getMimeTypes().first();
@@ -76,7 +76,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public final void writeTo(Any source, @Nullable MimeType contentType, OutputMessage outputMessage)
+	public final void writeTo(Value source, @Nullable MimeType contentType, OutputMessage outputMessage)
 			throws IOException {
 		MimeType contentTypeToUse = contentType;
 		if (contentType == null) {

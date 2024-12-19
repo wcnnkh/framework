@@ -1,12 +1,12 @@
 package io.basc.framework.transform.factory.config;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.transform.factory.PropertyFactory;
 
 public interface EditablePropertyFactory extends PropertyFactory {
-	Any put(String key, Any value);
+	Value put(String key, Value value);
 
-	Any put(String key, Object value);
+	Value put(String key, Object value);
 
-	Any remove(String key);
+	Value remove(String key);
 }

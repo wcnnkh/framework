@@ -10,20 +10,22 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Enumerable;
+import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.Source;
-import io.basc.framework.util.Value;
+import io.basc.framework.util.Any;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-public interface Any extends ValueDescriptor, Value, Source<Object, ConversionException> {
+@FunctionalInterface
+public interface Value extends ValueDescriptor, Any, Source<Object, ConversionException> {
 
 	@FunctionalInterface
-	public static interface AnyWrapper<W extends Any> extends Any, ValueDescriptorWrapper<W>, ValueWrapper<W> {
+	public static interface ValueWrapper<W extends Value>
+			extends Value, ValueDescriptorWrapper<W>, AnyWrapper<W>, SourceWrapper<Object, ConversionException, W> {
 
 		@Override
 		default Object get() throws ConversionException {
@@ -31,13 +33,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 
 		@Override
-		default TypeDescriptor getTypeDescriptor() {
-			return getSource().getTypeDescriptor();
-		}
-
-		@Override
-		default Any[] getAsMultiple() {
-			return getSource().getAsMultiple();
+		default <T> T getAsArray(Class<? extends T> arrayType) {
+			return getSource().getAsArray(arrayType);
 		}
 
 		@Override
@@ -66,8 +63,29 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 
 		@Override
+		default CharSequence getAsCharSequence() {
+			return getSource().getAsCharSequence();
+		}
+
+		@Override
 		default double getAsDouble() {
 			return getSource().getAsDouble();
+		}
+
+		@Override
+		default Elements<? extends Value> getAsElements() {
+			return getSource().getAsElements();
+		}
+
+		@Override
+		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType) {
+			return getSource().getAsElements(componentType);
+		}
+
+		@Override
+		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType,
+				Supplier<? extends T> defaultSupplier) {
+			return getSource().getAsElements(componentType, defaultSupplier);
 		}
 
 		@Override
@@ -91,14 +109,13 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 
 		@Override
-		default <T, E extends Throwable> Elements<T> getAsMultiple(Class<? extends T> componentType,
-				Supplier<? extends T> defaultSupplier) {
-			return getSource().getAsMultiple(componentType, defaultSupplier);
+		default Number getAsNumber() {
+			return getSource().getAsNumber();
 		}
 
 		@Override
-		default Number getAsNumber() {
-			return getSource().getAsNumber();
+		default <T> T getAsObject(Class<? extends T> type) {
+			return getSource().getAsObject(type);
 		}
 
 		@Override
@@ -107,13 +124,39 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 
 		@Override
+		default Object getAsObject(ResolvableType type) {
+			return getSource().getAsObject(type);
+		}
+
+		@Override
+		default Object getAsObject(Type type) {
+			return getSource().getAsObject(type);
+		}
+
+		@Override
+		default Object getAsObject(TypeDescriptor type) {
+			return getSource().getAsObject(type);
+		}
+
+		@Override
+		default <E extends Throwable> Object getAsObject(TypeDescriptor targetType,
+				@NonNull Converter<? super Object, ? extends Object, E> converter) throws E {
+			return getSource().getAsObject(targetType, converter);
+		}
+
+		@Override
 		default short getAsShort() {
 			return getSource().getAsShort();
 		}
 
 		@Override
-		default CharSequence getAsString() {
+		default String getAsString() {
 			return getSource().getAsString();
+		}
+
+		@Override
+		default TypeDescriptor getTypeDescriptor() {
+			return getSource().getTypeDescriptor();
 		}
 
 		@Override
@@ -127,11 +170,11 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 	}
 
-	public static class EmptyValue implements Any, Serializable {
+	public static class EmptyValue implements Value, Serializable {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Object get() {
+		public Object get() throws ConversionException {
 			return null;
 		}
 	}
@@ -139,7 +182,7 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 	@AllArgsConstructor
 	@Setter
 	@Getter
-	public static class ObjectValue implements Any, Cloneable, Serializable {
+	public static class ObjectValue implements Value, Cloneable, Serializable {
 		private static final long serialVersionUID = 1L;
 		private Object value;
 		private TypeDescriptor typeDescriptor;
@@ -154,118 +197,38 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 
 		@Override
-		public Object get() {
-			return value;
-		}
-
-		@Override
 		public TypeDescriptor getTypeDescriptor() {
 			if (typeDescriptor != null) {
 				return typeDescriptor;
 			}
-			return Any.super.getTypeDescriptor();
+			return Value.super.getTypeDescriptor();
 		}
 
 		public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
 			this.typeDescriptor = typeDescriptor;
 		}
-	}
 
-	static final Any EMPTY = new EmptyValue();
-
-	static final Any[] EMPTY_ARRAY = new Any[0];
-
-	@Override
-	default boolean isMultiple() {
-		TypeDescriptor typeDescriptor = getTypeDescriptor();
-		return typeDescriptor.isArray() || typeDescriptor.isCollection();
-	}
-
-	@Override
-	default Any[] getAsMultiple() {
-		// TODO 暂时这样实现
-		return asElements(get(), getTypeDescriptor()).toArray(new Any[0]);
-	}
-
-	static Elements<Any> asElements(Object value, TypeDescriptor typeDescriptor) {
-		if (value instanceof Collection) {
-			Collection<?> collection = (Collection<?>) value;
-			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
-			return Elements.of(collection).map((v) -> Any.of(v, elementTypeDescriptor));
-		} else if (value instanceof Iterable) {
-			Iterable<?> iterable = (Iterable<?>) value;
-			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
-			return Elements.of(iterable).map((v) -> Any.of(v, elementTypeDescriptor));
-		} else if (value instanceof Enumerable) {
-			Enumerable<?> enumerable = (Enumerable<?>) value;
-			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
-			return Elements.of(enumerable).map((v) -> Any.of(v, elementTypeDescriptor));
-		} else if (value.getClass().isArray()) {
-			int len = Array.getLength(value);
-			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
-			return Elements.of(() -> IntStream.range(0, len)
-					.mapToObj((index) -> Any.of(Array.get(value, index), elementTypeDescriptor)));
-		} /*
-			 * else if (value instanceof Iterator) { Iterator<?> iterator = (Iterator<?>)
-			 * value; TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
-			 * return Elements.of(() -> iterator).map((v) -> Value.of(v,
-			 * elementTypeDescriptor)); } else if (value instanceof Enumeration) {
-			 * Enumeration<?> enumeration = (Enumeration<?>) value; TypeDescriptor
-			 * elementTypeDescriptor = typeDescriptor.getGeneric(0); return Elements.of(()
-			 * -> enumeration).map((v) -> Value.of(v, elementTypeDescriptor)); }
-			 */
-		return Elements.singleton(Any.of(value, typeDescriptor));
-	}
-
-	/**
-	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isBaseType(Type type) {
-		return isUnconvertibleType(type) || Number.class == type;
-	}
-
-	static boolean isElements(TypeDescriptor typeDescriptor) {
-		return typeDescriptor.isCollection() || typeDescriptor.isArray()
-				|| Iterable.class.isAssignableFrom(typeDescriptor.getType())
-				|| Enumerable.class.isAssignableFrom(typeDescriptor.getType());
-	}
-
-	/**
-	 * 不可以发生转换的类型
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isUnconvertibleType(Type type) {
-		if (type == null) {
-			return false;
+		@Override
+		public Object get() throws ConversionException {
+			return value;
 		}
-
-		if (type instanceof Class) {
-			Class<?> clazz = (Class<?>) type;
-			if (clazz.isEnum()) {
-				return true;
-			}
-		}
-
-		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type == BigDecimal.class
-				|| type == BigInteger.class || type == Class.class;
 	}
 
-	static Any of(Object value) {
+	static final Value EMPTY = new EmptyValue();
+
+	static final Value[] EMPTY_ARRAY = new Value[0];
+
+	static Value of(Object value) {
 		return of(value, null);
 	}
 
-	static Any of(Object value, TypeDescriptor type) {
+	static Value of(Object value, TypeDescriptor type) {
 		if (value == null && type == null) {
 			return EMPTY;
 		}
 
-		if (type == null && value instanceof Any) {
-			return (Any) value;
+		if (type == null && value instanceof Value) {
+			return (Value) value;
 		}
 
 		return new ObjectValue(value, type);
@@ -285,8 +248,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return new BigDecimal((BigInteger) value);
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsBigDecimal();
+		if (value instanceof Any) {
+			return ((Any) value).getAsBigDecimal();
 		}
 
 		if (value instanceof Number) {
@@ -309,8 +272,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return ((BigDecimal) value).toBigInteger();
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsBigInteger();
+		if (value instanceof Any) {
+			return ((Any) value).getAsBigInteger();
 		}
 
 		return (BigInteger) getAsObject(TypeDescriptor.valueOf(BigInteger.class), Converter.unsupported());
@@ -326,8 +289,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Boolean) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsBoolean();
+		if (value instanceof Any) {
+			return ((Any) value).getAsBoolean();
 		}
 
 		if (value instanceof Number) {
@@ -346,8 +309,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Byte) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsByte();
+		if (value instanceof Any) {
+			return ((Any) value).getAsByte();
 		}
 
 		if (value instanceof Number) {
@@ -367,11 +330,33 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Character) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsChar();
+		if (value instanceof Any) {
+			return ((Any) value).getAsChar();
 		}
 
 		return (char) getAsObject(TypeDescriptor.valueOf(char.class), Converter.unsupported());
+	}
+
+	@Override
+	default CharSequence getAsCharSequence() {
+		Object value = get();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof CharSequence) {
+			return (CharSequence) value;
+		}
+
+		if (value instanceof Any) {
+			return ((Any) value).getAsCharSequence();
+		}
+
+		if (value instanceof Enum) {
+			return ((Enum<?>) value).name();
+		}
+
+		return (String) getAsObject(TypeDescriptor.valueOf(CharSequence.class), Converter.unsupported());
 	}
 
 	@Override
@@ -385,8 +370,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Double) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsDouble();
+		if (value instanceof Any) {
+			return ((Any) value).getAsDouble();
 		}
 
 		if (value instanceof Number) {
@@ -394,6 +379,31 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		}
 
 		return (double) getAsObject(TypeDescriptor.valueOf(double.class), Converter.unsupported());
+	}
+
+	@Override
+	default Elements<? extends Value> getAsElements() {
+		Object value = get();
+		TypeDescriptor typeDescriptor = getTypeDescriptor();
+		if (value instanceof Collection) {
+			Collection<?> collection = (Collection<?>) value;
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			return Elements.of(collection).map((v) -> Value.of(v, elementTypeDescriptor));
+		} else if (value instanceof Iterable) {
+			Iterable<?> iterable = (Iterable<?>) value;
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			return Elements.of(iterable).map((v) -> Value.of(v, elementTypeDescriptor));
+		} else if (value instanceof Enumerable) {
+			Enumerable<?> enumerable = (Enumerable<?>) value;
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			return Elements.of(enumerable).map((v) -> Value.of(v, elementTypeDescriptor));
+		} else if (value.getClass().isArray()) {
+			int len = Array.getLength(value);
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			return Elements.of(() -> IntStream.range(0, len)
+					.mapToObj((index) -> Value.of(Array.get(value, index), elementTypeDescriptor)));
+		}
+		return Elements.singleton(Value.of(value, typeDescriptor));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -408,8 +418,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (T) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsEnum(enumType);
+		if (value instanceof Any) {
+			return ((Any) value).getAsEnum(enumType);
 		}
 
 		return (T) getAsObject(TypeDescriptor.valueOf(enumType), Converter.unsupported());
@@ -429,8 +439,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return ((Number) value).floatValue();
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsFloat();
+		if (value instanceof Value) {
+			return ((Value) value).getAsFloat();
 		}
 
 		return (float) getAsObject(TypeDescriptor.valueOf(float.class), Converter.unsupported());
@@ -447,8 +457,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Integer) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsInt();
+		if (value instanceof Any) {
+			return ((Any) value).getAsInt();
 		}
 
 		if (value instanceof Number) {
@@ -469,8 +479,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Long) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsLong();
+		if (value instanceof Any) {
+			return ((Any) value).getAsLong();
 		}
 
 		if (value instanceof Number) {
@@ -490,8 +500,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Number) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsNumber();
+		if (value instanceof Any) {
+			return ((Any) value).getAsNumber();
 		}
 
 		return (Number) getAsObject(TypeDescriptor.valueOf(Number.class), Converter.unsupported());
@@ -499,10 +509,6 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 
 	@SuppressWarnings("unchecked")
 	default <T> T getAsObject(Class<? extends T> type) {
-		if (!isPresent() && !ClassUtils.isPrimitive(type)) {
-			return null;
-		}
-
 		return (T) getAsObject(type, () -> getAsObject(TypeDescriptor.valueOf(type), Converter.unsupported()));
 	}
 
@@ -521,6 +527,15 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		return getAsObject(type.getType(), () -> getAsObject(type, Converter.unsupported()));
 	}
 
+	/**
+	 * 所有转换的基类
+	 * 
+	 * @param <E>
+	 * @param targetType
+	 * @param converter
+	 * @return
+	 * @throws E
+	 */
 	default <E extends Throwable> Object getAsObject(TypeDescriptor targetType,
 			@NonNull Converter<? super Object, ? extends Object, E> converter) throws E {
 		Object source = get();
@@ -539,9 +554,9 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 				return converter.convert(source, sourceType, targetType);
 			}
 
-			if (source instanceof Any) {
-				source = ((Any) source).get();
-				sourceType = ((Any) source).getTypeDescriptor();
+			if (source instanceof Value) {
+				source = ((Value) source).get();
+				sourceType = ((Value) source).getTypeDescriptor();
 			}
 			break;
 		}
@@ -558,8 +573,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (Short) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsShort();
+		if (value instanceof Any) {
+			return ((Any) value).getAsShort();
 		}
 
 		if (value instanceof Number) {
@@ -569,7 +584,7 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		return (short) getAsObject(TypeDescriptor.valueOf(short.class), Converter.unsupported());
 	}
 
-	default CharSequence getAsString() {
+	default String getAsString() {
 		Object value = get();
 		if (value == null) {
 			return null;
@@ -579,8 +594,8 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 			return (String) value;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).getAsString();
+		if (value instanceof Any) {
+			return ((Any) value).getAsString();
 		}
 
 		if (value instanceof Enum) {
@@ -598,6 +613,14 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 		return TypeDescriptor.forObject(value);
 	}
 
+	@Override
+	default boolean isMultiple() {
+		TypeDescriptor typeDescriptor = getTypeDescriptor();
+		return typeDescriptor.isCollection() || typeDescriptor.isArray()
+				|| Iterable.class.isAssignableFrom(typeDescriptor.getType())
+				|| Enumerable.class.isAssignableFrom(typeDescriptor.getType());
+	}
+
 	/**
 	 * 是否可以转换为number,此方法不代表数据的原始类型是number
 	 * 
@@ -605,37 +628,24 @@ public interface Any extends ValueDescriptor, Value, Source<Object, ConversionEx
 	 * @return
 	 */
 	default boolean isNumber() {
-		// TODO 使用类型判断
+		TypeDescriptor typeDescriptor = getTypeDescriptor();
+		if (NumberUtils.isNumber(typeDescriptor.getType())) {
+			return true;
+		}
+
 		Object value = get();
 		if (value instanceof Number) {
 			return true;
 		}
 
-		if (value instanceof Value) {
-			return ((Value) value).isNumber();
+		if (value instanceof Any) {
+			return ((Any) value).isNumber();
 		}
 
 		try {
 			getAsNumber();
 		} catch (Exception e) {
 			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 是否存在
-	 * 
-	 * @return
-	 */
-	default boolean isPresent() {
-		Object value = get();
-		if (value == null) {
-			return false;
-		}
-
-		if (value instanceof Any) {
-			return ((Any) value).isPresent();
 		}
 		return true;
 	}

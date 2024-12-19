@@ -8,6 +8,40 @@ import lombok.RequiredArgsConstructor;
 
 @FunctionalInterface
 public interface Optional<T, E extends Throwable> extends Source<T, E> {
+	@FunctionalInterface
+	public static interface OptionalWrapper<T, E extends Throwable, W extends Optional<T, E>>
+			extends Optional<T, E>, SourceWrapper<T, E, W> {
+		@Override
+		default T get() throws E, NoSuchElementException {
+			return getSource().get();
+		}
+
+		@Override
+		default Optional<T, E> filter(@NonNull Filter<? super T, ? extends E> filter) {
+			return getSource().filter(filter);
+		}
+
+		@Override
+		default boolean isPresent() throws E {
+			return getSource().isPresent();
+		}
+
+		@Override
+		default <R> Optional<R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
+			return getSource().map(pipeline);
+		}
+
+		@Override
+		default <X extends Throwable> T orElseGet(@NonNull Source<? extends T, ? extends X> source) throws E, X {
+			return getSource().orElseGet(source);
+		}
+
+		@Override
+		default T orElse(T other) throws E {
+			return getSource().orElse(other);
+		}
+	}
+
 	public static class EmptyOptional<T, E extends Throwable> implements Optional<T, E> {
 
 		@Override

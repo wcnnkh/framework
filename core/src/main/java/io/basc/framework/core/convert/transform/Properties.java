@@ -1,12 +1,12 @@
 package io.basc.framework.core.convert.transform;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ValueFactory;
+import io.basc.framework.util.Lookup;
 
-public interface Properties extends PropertyMapping<Property>, ValueFactory<String, Property> {
+public interface Properties extends PropertyMapping<Property>, Lookup<String, Property> {
 
 	public static interface PropertiesWrapper<W extends Properties>
-			extends Properties, PropertyMappingWrapper<Property, W>, ValueFactoryWrapper<String, Property, W> {
+			extends Properties, PropertyMappingWrapper<Property, W>, LookupWrapper<String, Property, W> {
 
 		@Override
 		default Elements<String> keys() {
@@ -35,8 +35,7 @@ public interface Properties extends PropertyMapping<Property>, ValueFactory<Stri
 	}
 
 	default boolean containsKey(String key) {
-		Property property = get(key);
-		return property != null && property.isPresent();
+		return get(key) != null;
 	}
 
 	@Override

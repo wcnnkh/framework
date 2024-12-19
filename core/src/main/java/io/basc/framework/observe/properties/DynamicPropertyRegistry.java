@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.transform.factory.config.EditablePropertyFactory;
 import io.basc.framework.util.Elements;
@@ -29,7 +29,7 @@ public class DynamicPropertyRegistry extends DynamicValueRegistry<String>
 				return Collections.emptyMap();
 			}
 
-			Map<String, Any> map = new LinkedHashMap<>(properties.size());
+			Map<String, Value> map = new LinkedHashMap<>(properties.size());
 			Enumeration<Object> enumeration = properties.keys();
 			while (enumeration.hasMoreElements()) {
 				Object key = enumeration.nextElement();
@@ -47,8 +47,8 @@ public class DynamicPropertyRegistry extends DynamicValueRegistry<String>
 	}
 
 	@Override
-	public Any get(String key) {
-		Any value = get((Object) key);
+	public Value get(String key) {
+		Value value = get((Object) key);
 		return (value == null || !value.isPresent()) ? factories.get(key) : value;
 	}
 
@@ -62,12 +62,12 @@ public class DynamicPropertyRegistry extends DynamicValueRegistry<String>
 	}
 
 	@Override
-	public Any put(String key, Object value) {
-		return put(key, value instanceof Any ? ((Any) value) : propertyWrapper.wrap(key, value));
+	public Value put(String key, Object value) {
+		return put(key, value instanceof Value ? ((Value) value) : propertyWrapper.wrap(key, value));
 	}
 
 	@Override
-	public Registration registerMap(ObservableMap<String, Any> observableMap) {
+	public Registration registerMap(ObservableMap<String, Value> observableMap) {
 		return factories.register(new ObservableMapToObservablePropertyFactory(observableMap));
 	}
 
@@ -84,7 +84,7 @@ public class DynamicPropertyRegistry extends DynamicValueRegistry<String>
 	}
 
 	@Override
-	public Registration registerValue(ObservableValue<? extends Map<String, Any>> observableValue) {
+	public Registration registerValue(ObservableValue<? extends Map<String, Value>> observableValue) {
 		ObservableProperties observableProperties = new ObservableProperties(propertyWrapper);
 		Registration registration = observableProperties.bind(observableValue);
 		registration = registration.and(registerObservableProperties(observableProperties));
@@ -92,12 +92,12 @@ public class DynamicPropertyRegistry extends DynamicValueRegistry<String>
 	}
 
 	@Override
-	public Any remove(String key) {
+	public Value remove(String key) {
 		Lock lock = getReadWriteLock().writeLock();
 		lock.lock();
 		try {
 			boolean exists = getTargetMap().containsKey(key);
-			Any vlaue = getTargetMap().remove(key);
+			Value vlaue = getTargetMap().remove(key);
 			if (exists) {
 				publishEvent(new PropertyChangeEvent<>(this, ChangeType.DELETE, key, vlaue));
 			}

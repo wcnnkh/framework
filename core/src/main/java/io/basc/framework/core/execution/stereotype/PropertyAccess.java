@@ -27,12 +27,12 @@ public class PropertyAccess<T extends PropertyAccessDescriptor> implements Prope
 	}
 
 	@Override
-	public void setSource(Object source) throws UnsupportedOperationException {
+	public void set(Object source) throws UnsupportedOperationException {
 		descriptor.getWriteMethod().set(target, source);
 	}
 
 	@Override
-	public Object getSource() {
+	public Object get() {
 		return descriptor.getReadMethod().get(target);
 	}
 

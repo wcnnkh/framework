@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.observe.value.ObservableValue;
 import io.basc.framework.observe.watch.ResourceObserver;
@@ -26,7 +26,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ObservableProperties extends Observer<PropertyChangeEvent<String, Any>>
+public class ObservableProperties extends Observer<PropertyChangeEvent<String, Value>>
 		implements ObservablePropertyFactory, EditablePropertyFactory {
 	private Charset charset = Constants.UTF_8;
 	private final Properties properties;
@@ -57,20 +57,20 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, A
 		return registration;
 	}
 
-	private Any convert(String key, Object value) {
+	private Value convert(String key, Object value) {
 		if (value == null) {
 			return null;
 		}
 
-		if (value instanceof Any) {
-			return (Any) value;
+		if (value instanceof Value) {
+			return (Value) value;
 		}
 
 		return propertyWrapper.wrap(key, value);
 	}
 
 	@Override
-	public Any get(String key) {
+	public Value get(String key) {
 		Object value = properties.get(key);
 		return convert(key, value);
 	}
@@ -130,19 +130,19 @@ public class ObservableProperties extends Observer<PropertyChangeEvent<String, A
 	}
 
 	@Override
-	public Any put(String key, Object value) {
+	public Value put(String key, Object value) {
 		Object oldValue = put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public Any put(String key, Any value) {
+	public Value put(String key, Value value) {
 		Object oldValue = properties.put(key, value);
 		return convert(key, oldValue);
 	}
 
 	@Override
-	public Any remove(String key) {
+	public Value remove(String key) {
 		Object value = properties.remove(key);
 		return convert(key, value);
 	}

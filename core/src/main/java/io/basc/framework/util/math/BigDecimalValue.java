@@ -16,7 +16,7 @@ public class BigDecimalValue extends RationalNumber {
 	private static final int DEFAULT_SCALE = 64;
 	private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
-	private final BigDecimal bigDecimal;
+	private final BigDecimal value;
 	private final int scale;
 	private final RoundingMode roundingMode;
 
@@ -32,8 +32,8 @@ public class BigDecimalValue extends RationalNumber {
 		this(bigDecimal, DEFAULT_SCALE, ROUNDING_MODE);
 	}
 
-	public BigDecimalValue(BigDecimal bigDecimal, int scale, RoundingMode roundingMode) {
-		this.bigDecimal = bigDecimal;
+	public BigDecimalValue(BigDecimal value, int scale, RoundingMode roundingMode) {
+		this.value = value;
 		this.roundingMode = roundingMode;
 		this.scale = scale;
 	}
@@ -46,19 +46,23 @@ public class BigDecimalValue extends RationalNumber {
 		return roundingMode;
 	}
 
-	protected NumberValue addInternal(NumberValue value) {
+	@Override
+	public NumberValue add(NumberValue value) {
 		return new BigDecimalValue(getAsBigDecimal().add(value.getAsBigDecimal()), scale, roundingMode);
 	}
 
-	protected NumberValue subtractInternal(NumberValue value) {
+	@Override
+	public NumberValue subtract(NumberValue value) {
 		return new BigDecimalValue(getAsBigDecimal().subtract(value.getAsBigDecimal()), scale, roundingMode);
 	}
 
-	protected NumberValue multiplyInternal(NumberValue value) {
+	@Override
+	public NumberValue multiply(NumberValue value) {
 		return new BigDecimalValue(getAsBigDecimal().multiply(value.getAsBigDecimal()), scale, roundingMode);
 	}
 
-	protected NumberValue divideInternal(NumberValue value) {
+	@Override
+	public NumberValue divide(NumberValue value) {
 		BigDecimal left = getAsBigDecimal();
 		BigDecimal right = value.getAsBigDecimal();
 		BigDecimal bigDecimal;
@@ -80,42 +84,49 @@ public class BigDecimalValue extends RationalNumber {
 				roundingMode);
 	}
 
-	protected NumberValue remainderInternal(NumberValue value) {
+	@Override
+	public NumberValue remainder(NumberValue value) {
 		return new BigDecimalValue(getAsBigDecimal().remainder(value.getAsBigDecimal()), scale, roundingMode);
 	}
 
-	protected NumberValue powInternal(NumberValue value) {
-		return new BigDecimalValue(getAsBigDecimal().pow(value.getAsBigDecimal().intValueExact()), scale,
-				roundingMode);
+	@Override
+	public NumberValue pow(NumberValue value) {
+		return new BigDecimalValue(getAsBigDecimal().pow(value.getAsBigDecimal().intValueExact()), scale, roundingMode);
 	}
 
 	@Override
 	public BigDecimal getAsBigDecimal() {
-		return bigDecimal;
+		return value;
 	}
 
 	@Override
 	public BigInteger getAsBigInteger() {
-		return bigDecimal.toBigInteger();
+		return value.toBigInteger();
 	}
 
 	@Override
 	public String toString() {
-		return bigDecimal.toString();
+		return value.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		return bigDecimal.hashCode();
+		return value.hashCode();
 	}
 
 	public NumberValue abs() {
-		return new BigDecimalValue(bigDecimal.abs());
+		return new BigDecimalValue(value.abs());
 	}
 
 	@Override
-	public String getAsString() {
-		return bigDecimal.toString();
+	public CharSequence getAsCharSequence() {
+		return value.toString();
+	}
+
+	@Override
+	public int compareTo(NumberValue o) {
+		BigDecimal value = o.getAsBigDecimal();
+		return this.value.compareTo(value);
 	}
 
 }

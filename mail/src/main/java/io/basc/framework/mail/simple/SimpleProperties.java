@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.util.StringUtils;
 
 public class SimpleProperties extends Properties {
@@ -27,7 +27,7 @@ public class SimpleProperties extends Properties {
 
 	public boolean isDebug() {
 		Object value = get(PREFIX + DEBUG);
-		return Any.of(value).getAsBoolean();
+		return Value.of(value).getAsBoolean();
 	}
 
 	public void setDebug(boolean debug) {
@@ -42,12 +42,12 @@ public class SimpleProperties extends Properties {
 		setProperty(PREFIX + TRANSPORT_PROTOCOL, transportProtocol);
 	}
 
-	public Any getMailProperty(String key) {
+	public Value getMailProperty(String key) {
 		String protocol = getTransportProtocol();
 		if (StringUtils.isNotEmpty(protocol)) {
 			Object value = get(PREFIX + protocol + "." + key);
 			if (value != null) {
-				return Any.of(value);
+				return Value.of(value);
 			}
 		}
 
@@ -55,10 +55,10 @@ public class SimpleProperties extends Properties {
 		if (value == null) {
 			value = System.getProperty(PREFIX + key);
 		}
-		return Any.of(value);
+		return Value.of(value);
 	}
 
-	public Any setMailProperty(String key, Object value) {
+	public Value setMailProperty(String key, Object value) {
 		String protocol = getTransportProtocol();
 		Object old;
 		if (StringUtils.isNotEmpty(protocol)) {
@@ -66,7 +66,7 @@ public class SimpleProperties extends Properties {
 		} else {
 			old = put(PREFIX + key, value);
 		}
-		return Any.of(old);
+		return Value.of(old);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Any;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryDataOperations;
@@ -59,7 +59,7 @@ public final class Redis
 			String v = getValueCodec().decode((byte[]) value);
 			return Long.parseLong(v);
 		}
-		return Any.of(value).getAsLong();
+		return Value.of(value).getAsLong();
 	}
 
 	@Override
