@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.param.Arg;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;

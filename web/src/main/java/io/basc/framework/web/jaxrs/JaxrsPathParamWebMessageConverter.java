@@ -6,7 +6,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.PathParam;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.StringUtils;

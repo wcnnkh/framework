@@ -6,8 +6,8 @@ import java.util.Set;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.Parameter;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.execution.Parameter;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.data.repository.Expression;

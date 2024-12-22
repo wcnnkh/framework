@@ -2,7 +2,7 @@ package io.basc.framework.transform.strategy;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.Elements;

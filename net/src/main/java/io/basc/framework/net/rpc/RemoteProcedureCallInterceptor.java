@@ -1,7 +1,7 @@
 package io.basc.framework.net.rpc;
 
-import io.basc.framework.core.convert.transform.Parameter;
 import io.basc.framework.core.execution.Function;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.param.Args;
 import io.basc.framework.net.client.ClientRequest;

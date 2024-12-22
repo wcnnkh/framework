@@ -1,4 +1,4 @@
-package io.basc.framework.core.convert.transform;
+package io.basc.framework.core.execution;
 
 import java.lang.reflect.Executable;
 import java.util.Iterator;
@@ -7,6 +7,7 @@ import io.basc.framework.core.DefaultParameterNameDiscoverer;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.PropertyDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import lombok.Data;
@@ -145,24 +146,6 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 		}
 	}
 
-	@Data
-	public static class PropertyParameterDescriptor<W extends PropertyDescriptor>
-			implements ParameterDescriptor, PropertyDescriptorWrapper<W> {
-		private int index;
-		@NonNull
-		private W source;
-
-		public PropertyParameterDescriptor(int index, @NonNull W source) {
-			this.index = index;
-			this.source = source;
-		}
-
-		@Override
-		public ParameterDescriptor rename(String name) {
-			return new PropertyParameterDescriptor<>(index, source.rename(name));
-		}
-	}
-
 	public static class RenamedParameterDescriptor<W extends ParameterDescriptor> extends RenamedPropertyDescriptor<W>
 			implements ParameterDescriptorWrapper<W> {
 
@@ -179,13 +162,18 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	@ToString(callSuper = true)
-	public static class SimpleParameterDescriptor extends SimplePropertyDescriptor implements ParameterDescriptor {
+	public static class SharedParameterDescriptor<W extends PropertyDescriptor> extends SharedPropertyDescriptor<W>
+			implements ParameterDescriptor, PropertyDescriptorWrapper<W> {
 		private static final long serialVersionUID = 1L;
-		private int index;
+		private int index = -1;
 
-		public SimpleParameterDescriptor(int index, @NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
-			super(name, typeDescriptor);
-			this.index = index;
+		public SharedParameterDescriptor(@NonNull W source) {
+			super(source);
+		}
+
+		@Override
+		public ParameterDescriptor rename(String name) {
+			return ParameterDescriptor.super.rename(name);
 		}
 	}
 
@@ -203,16 +191,29 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 	}
 
 	public static ParameterDescriptor of(int index, @NonNull PropertyDescriptor propertyDescriptor) {
-		return new PropertyParameterDescriptor<>(index, propertyDescriptor);
-	}
+		if (propertyDescriptor instanceof ParameterDescriptor) {
+			ParameterDescriptor parameterDescriptor = (ParameterDescriptor) propertyDescriptor;
+			if (parameterDescriptor.getIndex() == index) {
+				return parameterDescriptor;
+			}
 
-	public static ParameterDescriptor of(int index, @NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
-		return new SimpleParameterDescriptor(index, name, typeDescriptor);
+			return parameterDescriptor.reindex(index);
+		}
+
+		SharedParameterDescriptor<PropertyDescriptor> shared = new SharedParameterDescriptor<>(propertyDescriptor);
+		shared.setIndex(index);
+		return shared;
 	}
 
 	int getIndex();
 
 	default ParameterDescriptor rename(String name) {
 		return new RenamedParameterDescriptor<>(name, this);
+	}
+
+	default ParameterDescriptor reindex(int index) {
+		SharedParameterDescriptor<PropertyDescriptor> shared = new SharedParameterDescriptor<PropertyDescriptor>(this);
+		shared.setIndex(index);
+		return shared;
 	}
 }

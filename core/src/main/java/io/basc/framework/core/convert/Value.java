@@ -10,18 +10,44 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.util.Any;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Enumerable;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.Source;
-import io.basc.framework.util.Any;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Setter;
 
 @FunctionalInterface
 public interface Value extends ValueDescriptor, Any, Source<Object, ConversionException> {
+
+	public static class EmptyValue implements Value, Serializable {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Object get() throws ConversionException {
+			return null;
+		}
+	}
+
+	@Data
+	public static class SharedValue<W extends ValueDescriptor>
+			implements Value, ValueDescriptorWrapper<W>, Serializable {
+		private static final long serialVersionUID = 1L;
+		@NonNull
+		private final W source;
+		private Object value;
+
+		@Override
+		public Object get() throws ConversionException {
+			return value;
+		}
+
+		@Override
+		public TypeDescriptor getTypeDescriptor() {
+			return getSource().getTypeDescriptor();
+		}
+	}
 
 	@FunctionalInterface
 	public static interface ValueWrapper<W extends Value>
@@ -170,50 +196,6 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 		}
 	}
 
-	public static class EmptyValue implements Value, Serializable {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Object get() throws ConversionException {
-			return null;
-		}
-	}
-
-	@AllArgsConstructor
-	@Setter
-	@Getter
-	public static class ObjectValue implements Value, Cloneable, Serializable {
-		private static final long serialVersionUID = 1L;
-		private Object value;
-		private TypeDescriptor typeDescriptor;
-
-		public ObjectValue(Object source) {
-			this(source, null);
-		}
-
-		@Override
-		public ObjectValue clone() {
-			return new ObjectValue(value, typeDescriptor);
-		}
-
-		@Override
-		public TypeDescriptor getTypeDescriptor() {
-			if (typeDescriptor != null) {
-				return typeDescriptor;
-			}
-			return Value.super.getTypeDescriptor();
-		}
-
-		public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
-			this.typeDescriptor = typeDescriptor;
-		}
-
-		@Override
-		public Object get() throws ConversionException {
-			return value;
-		}
-	}
-
 	static final Value EMPTY = new EmptyValue();
 
 	static final Value[] EMPTY_ARRAY = new Value[0];
@@ -231,7 +213,10 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 			return (Value) value;
 		}
 
-		return new ObjectValue(value, type);
+		SharedValueDescriptor valueDescriptor = new SharedValueDescriptor(type);
+		SharedValue<SharedValueDescriptor> sharedValue = new SharedValue<>(valueDescriptor);
+		sharedValue.setValue(value);
+		return sharedValue;
 	}
 
 	default BigDecimal getAsBigDecimal() {

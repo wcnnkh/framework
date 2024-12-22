@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.data.repository.Condition;

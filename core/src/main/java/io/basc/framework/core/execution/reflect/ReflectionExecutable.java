@@ -9,8 +9,7 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
-import io.basc.framework.core.execution.param.ParameterUtils;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import lombok.NonNull;
 
@@ -69,7 +68,7 @@ public class ReflectionExecutable<T extends Executable> extends ReflectionMember
 		if (parameterDescriptors == null) {
 			synchronized (this) {
 				if (parameterDescriptors == null) {
-					parameterDescriptors = Elements.forArray(ParameterUtils.getParameterDescriptors(getMember()));
+					parameterDescriptors = ParameterDescriptor.forExecutable(getMember());
 				}
 			}
 		}

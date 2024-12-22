@@ -1,11 +1,9 @@
+
 package io.basc.framework.core.convert.transform;
 
-import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Value;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.ToString;
 
 public interface Property extends Access, PropertyDescriptor {
 
@@ -13,29 +11,28 @@ public interface Property extends Access, PropertyDescriptor {
 			extends Property, AccessWrapper<W>, PropertyDescriptorWrapper<W> {
 	}
 
-	@Data
-	@EqualsAndHashCode(callSuper = true)
-	@ToString(callSuper = true)
-	public static class SimpleProperty extends SimplePropertyDescriptor implements Property {
+	public static class SharedProperty<W extends PropertyDescriptor> extends SharedAccess<W>
+			implements Property, PropertyDescriptorWrapper<W> {
 		private static final long serialVersionUID = 1L;
-		private Object value;
 
-		public SimpleProperty(@NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
-			super(name, typeDescriptor);
-		}
-
-		@Override
-		public Object get() throws ConversionException {
-			return value;
-		}
-
-		@Override
-		public void set(Object source) throws UnsupportedOperationException {
-			this.value = source;
+		public SharedProperty(@NonNull W source) {
+			super(source);
 		}
 	}
 
-	public static Property of(@NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
-		return new SimpleProperty(name, typeDescriptor);
+	@Data
+	public static class StandardProperty<W extends Access> implements Property, AccessWrapper<W> {
+		private final String name;
+		@NonNull
+		private final W source;
+	}
+
+	public static Property of(String name, @NonNull AccessDescriptor accessDescriptor) {
+		return new SharedProperty<>(PropertyDescriptor.of(name, accessDescriptor));
+	}
+
+	public static Property of(String name, @NonNull Value value) {
+		Access access = Access.of(value);
+		return new StandardProperty<>(name, access);
 	}
 }

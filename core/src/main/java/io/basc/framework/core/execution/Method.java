@@ -1,6 +1,5 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.core.convert.transform.Parameters;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import lombok.NonNull;
@@ -90,7 +89,8 @@ public interface Method extends Function, Invoker {
 	Object invoke(Object target, @NonNull Object... args) throws Throwable;
 
 	default Object invoke(Object target, @NonNull Parameters parameters) throws Throwable {
-		return invoke(target, parameters.getTypes(), parameters.getArgs());
+		Parameters completed = parameters.isValidated() ? parameters : parameters.reconstruct(this);
+		return invoke(target, completed.getTypes(), completed.getArgs());
 	}
 
 	@Override

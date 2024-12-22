@@ -7,7 +7,7 @@ import java.util.Iterator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
-import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.excel.ExcelException;
 import io.basc.framework.excel.Sheet;
 import io.basc.framework.excel.SheetRow;

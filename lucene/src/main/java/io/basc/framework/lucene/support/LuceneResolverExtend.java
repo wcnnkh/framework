@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.apache.lucene.document.Field;
 
-import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.lucene.LuceneResolver;
 
 public interface LuceneResolverExtend {

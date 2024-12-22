@@ -3,7 +3,7 @@ package io.basc.framework.web.message.support;
 import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.HttpEntity;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.HttpRequestEntity;

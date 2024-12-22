@@ -2,7 +2,7 @@ package io.basc.framework.poi.hssf;
 
 import java.util.List;
 
-import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.excel.SheetContext;
 import io.basc.framework.excel.SheetRow;

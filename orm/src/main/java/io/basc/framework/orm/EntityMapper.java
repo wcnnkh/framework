@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.Parameter;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.data.domain.Entry;
 import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;

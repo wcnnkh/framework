@@ -1,16 +1,14 @@
 package io.basc.framework.core.convert.transform;
 
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.util.Assert;
+import lombok.NonNull;
 
-public interface Access extends Value {
+public interface Access extends Value, AccessDescriptor {
 	@FunctionalInterface
-	public static interface AccessWrapper<W extends Access> extends Access, ValueWrapper<W> {
-
-		@Override
-		default TypeDescriptor getRequiredTypeDescriptor() {
-			return getSource().getRequiredTypeDescriptor();
-		}
+	public static interface AccessWrapper<W extends Access>
+			extends Access, ValueWrapper<W>, AccessDescriptorWrapper<W> {
 
 		@Override
 		default boolean isReadable() {
@@ -28,14 +26,78 @@ public interface Access extends Value {
 		}
 	}
 
+	public static class SharedAccess<W extends AccessDescriptor> extends SharedValue<W>
+			implements Access, AccessDescriptorWrapper<W> {
+		private static final long serialVersionUID = 1L;
+
+		public SharedAccess(@NonNull W source) {
+			super(source);
+		}
+
+		@Override
+		public void set(Object value) throws UnsupportedOperationException {
+			Assert.isTrue(isRequired() && value == null, "Required parameters cannot be empty");
+			setValue(value);
+		}
+	}
+
 	/**
-	 * 插入值时需要的类型, 默认情况下和{@link #getTypeDescriptor()}相同
+	 * 通过value来创建一个Access
 	 * 
-	 * @see #setValue(Object)
+	 * @param value
 	 * @return
 	 */
-	default TypeDescriptor getRequiredTypeDescriptor() {
-		return getTypeDescriptor();
+	public static Access create(Value value) {
+		return new StandardAccess<>(value);
+	}
+
+	/**
+	 * 通过value返回一个Access，如果本身是一个Access那么返回自身
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static Access of(Value value) {
+		if (value instanceof Access) {
+			return (Access) value;
+		}
+		return create(value);
+	}
+
+	public static class StandardAccess<W extends Value> implements Access, ValueWrapper<W> {
+		private final W source;
+		private volatile SharedValue<W> holder;
+
+		public StandardAccess(@NonNull W source) {
+			this.source = source;
+		}
+
+		@Override
+		public W getSource() {
+			return source;
+		}
+
+		public SharedValue<W> getHolder() {
+			if (holder == null) {
+				synchronized (this) {
+					if (holder == null) {
+						holder = new SharedValue<>(source);
+						holder.setValue(source.get());
+					}
+				}
+			}
+			return holder;
+		}
+
+		@Override
+		public Object get() throws ConversionException {
+			return getHolder().get();
+		}
+
+		@Override
+		public void set(Object value) throws UnsupportedOperationException {
+			this.getHolder().setValue(value);
+		}
 	}
 
 	/**
@@ -59,8 +121,8 @@ public interface Access extends Value {
 	/**
 	 * 设置
 	 * 
-	 * @param source
+	 * @param value
 	 * @throws UnsupportedOperationException 只读属性,不能操作
 	 */
-	void set(Object source) throws UnsupportedOperationException;
+	void set(Object value) throws UnsupportedOperationException;
 }

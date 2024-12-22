@@ -12,7 +12,7 @@ import io.basc.framework.beans.factory.support.DefaultSingletonBeanRegistry;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.core.execution.param.MergedParameterDescriptor;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.util.Return;

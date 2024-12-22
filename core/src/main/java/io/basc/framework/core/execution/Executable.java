@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.alias.Named;
 import lombok.Data;
@@ -17,10 +16,10 @@ import lombok.NonNull;
  * @author wcnnkh
  *
  */
-public interface Executable extends Executed, Named {
+public interface Executable extends Executed, Named, ParameterTemplate {
 	@FunctionalInterface
 	public static interface ExecutableWrapper<W extends Executable>
-			extends Executable, ExecutedWrapper<W>, NamedWrapper<W> {
+			extends Executable, ExecutedWrapper<W>, NamedWrapper<W>, ParameterTemplateWrapper<W> {
 		@Override
 		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
 			return getSource().canExecuted(parameterTypes);
@@ -29,6 +28,11 @@ public interface Executable extends Executed, Named {
 		@Override
 		default TypeDescriptor getDeclaringTypeDescriptor() {
 			return getSource().getDeclaringTypeDescriptor();
+		}
+
+		@Override
+		default boolean canExecuted(@NonNull Parameters parameters) {
+			return getSource().canExecuted(parameters);
 		}
 
 		@Override
@@ -106,15 +110,20 @@ public interface Executable extends Executed, Named {
 		return Modifier.PUBLIC;
 	}
 
-	/**
-	 * 执行需要的参数描述
-	 * 
-	 * @return
-	 */
-	Elements<ParameterDescriptor> getParameterDescriptors();
-
 	@Override
 	default Executable rename(String name) {
 		return new RenamedExecutable<>(name, this);
+	}
+
+	@Override
+	default boolean canExecuted(@NonNull Parameters parameters) {
+		if (parameters.isValidated()) {
+			return Executed.super.canExecuted(parameters);
+		} else {
+			if (parameters.test(this)) {
+				return Executed.super.canExecuted(parameters.reconstruct(this));
+			}
+		}
+		return false;
 	}
 }

@@ -1,5 +1,8 @@
-package io.basc.framework.core.convert.transform;
+package io.basc.framework.core.execution;
 
+import java.util.stream.IntStream;
+
+import io.basc.framework.core.convert.transform.PropertyMapping;
 import io.basc.framework.util.Elements;
 import lombok.NonNull;
 
@@ -23,8 +26,28 @@ public interface ParameterMapping<T extends Parameter> extends PropertyMapping<T
 		}
 
 		@Override
+		default Elements<T> getElements() {
+			return getSource().getElements();
+		}
+
+		@Override
 		default Class<?>[] getTypes() {
 			return getSource().getTypes();
+		}
+
+		@Override
+		default int getValidCount() {
+			return getSource().getValidCount();
+		}
+
+		@Override
+		default Elements<T> getValidElements() {
+			return getSource().getValidElements();
+		}
+
+		@Override
+		default boolean isValidated() {
+			return getSource().isValidated();
 		}
 
 		@Override
@@ -52,19 +75,59 @@ public interface ParameterMapping<T extends Parameter> extends PropertyMapping<T
 	default Object[] getArgs() {
 		Object[] args = new Object[size()];
 		for (int i = 0; i < args.length; i++) {
-			T parameter = get(i);
+			Parameter parameter = get(i);
+			if (parameter == null || !parameter.isReadable()) {
+				continue;
+			}
 			args[i] = parameter.get();
 		}
 		return args;
 	}
 
+	@Override
+	default Elements<T> getElements() {
+		return Elements.of(() -> IntStream.range(0, size() - 1).mapToObj((i) -> get(i)));
+	}
+
 	default Class<?>[] getTypes() {
 		Class<?>[] types = new Class<?>[size()];
 		for (int i = 0; i < types.length; i++) {
-			T parameter = get(i);
-			types[i] = parameter.getTypeDescriptor().getType();
+			Parameter parameter = get(i);
+			if (parameter == null) {
+				types[i] = Object.class;
+			} else {
+				types[i] = parameter.getTypeDescriptor().getType();
+			}
 		}
 		return types;
+	}
+
+	default int getValidCount() {
+		int len = 0;
+		for (Parameter parameter : getElements()) {
+			if (parameter.getIndex() >= 0) {
+				len++;
+			}
+		}
+		return len;
+	}
+
+	default Elements<T> getValidElements() {
+		return getElements().filter((e) -> e != null && e.isReadable());
+	}
+
+	/**
+	 * 所有参数是否合法
+	 * 
+	 * @return
+	 */
+	default boolean isValidated() {
+		for (Parameter parameter : getElements()) {
+			if (parameter.getIndex() < 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	int size();

@@ -1,7 +1,6 @@
 package io.basc.framework.core.execution;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.Parameters;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.util.ClassUtils;
 import lombok.NonNull;
@@ -37,7 +36,7 @@ public interface Executed extends AnnotatedTypeMetadata {
 	boolean canExecuted(@NonNull Class<?>... parameterTypes);
 
 	default boolean canExecuted(@NonNull Parameters parameters) {
-		return canExecuted(parameters.getTypes());
+		return parameters.isValidated() && canExecuted(parameters.getTypes());
 	}
 
 	/**

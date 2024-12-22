@@ -1,6 +1,5 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.core.convert.transform.Parameters;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import lombok.NonNull;
@@ -33,6 +32,9 @@ public interface Invoker extends Executed {
 	Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable;
 
 	default Object invoke(Object target, @NonNull Parameters parameters) throws Throwable {
+		if (!parameters.isValidated()) {
+			throw new IllegalArgumentException();
+		}
 		return invoke(target, parameters.getTypes(), parameters.getArgs());
 	}
 }

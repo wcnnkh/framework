@@ -1,21 +1,21 @@
 package io.basc.framework.core.convert.transform;
 
+import java.io.Serializable;
+
 import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueDescriptor;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.Named;
 import io.basc.framework.util.select.Selector;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
-public interface PropertyDescriptor extends Named, ValueDescriptor {
+public interface PropertyDescriptor extends Named, AccessDescriptor {
 	@RequiredArgsConstructor
 	public static class MergedPropertyDescriptor<E extends PropertyDescriptor>
 			implements PropertyDescriptor, AnnotatedTypeMetadata {
@@ -107,7 +107,7 @@ public interface PropertyDescriptor extends Named, ValueDescriptor {
 
 	@FunctionalInterface
 	public static interface PropertyDescriptorWrapper<W extends PropertyDescriptor>
-			extends PropertyDescriptor, NamedWrapper<W>, ValueDescriptorWrapper<W> {
+			extends PropertyDescriptor, NamedWrapper<W>, AccessDescriptorWrapper<W> {
 
 		@Override
 		default PropertyDescriptor rename(String name) {
@@ -129,21 +129,30 @@ public interface PropertyDescriptor extends Named, ValueDescriptor {
 	}
 
 	@Data
-	@EqualsAndHashCode(callSuper = true)
-	@ToString(callSuper = true)
-	public static class SimplePropertyDescriptor extends SimpleNamed implements PropertyDescriptor {
+	public static class SharedPropertyDescriptor<W extends AccessDescriptor>
+			implements PropertyDescriptor, AccessDescriptorWrapper<W>, Serializable {
 		private static final long serialVersionUID = 1L;
+		private String name;
 		@NonNull
-		private TypeDescriptor typeDescriptor;
+		private final W source;
 
-		public SimplePropertyDescriptor(@NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
-			super(name);
-			this.typeDescriptor = typeDescriptor;
+		public SharedPropertyDescriptor(@NonNull W source) {
+			this.source = source;
 		}
 	}
 
-	public static PropertyDescriptor of(@NonNull String name, @NonNull TypeDescriptor typeDescriptor) {
-		return new SimplePropertyDescriptor(name, typeDescriptor);
+	public static PropertyDescriptor of(String name, @NonNull AccessDescriptor accessDescriptor) {
+		if (accessDescriptor instanceof PropertyDescriptor) {
+			PropertyDescriptor propertyDescriptor = (PropertyDescriptor) accessDescriptor;
+			if (StringUtils.equals(name, propertyDescriptor.getName())) {
+				return propertyDescriptor;
+			}
+			return propertyDescriptor.rename(name);
+		}
+
+		SharedPropertyDescriptor<AccessDescriptor> shared = new SharedPropertyDescriptor<>(accessDescriptor);
+		shared.setName(name);
+		return shared;
 	}
 
 	@Override

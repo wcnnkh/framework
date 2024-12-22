@@ -12,7 +12,7 @@ import io.basc.framework.beans.factory.annotation.ConditionalOnMissingBean;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.ParameterDescriptor;
+import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpRequest;
