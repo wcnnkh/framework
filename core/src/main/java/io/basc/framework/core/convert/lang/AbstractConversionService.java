@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.lang;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 
 public abstract class AbstractConversionService implements ConversionService, ConversionServiceAware {
 	private ConversionService conversionService;

@@ -2,8 +2,8 @@ package io.basc.framework.core.convert.transform.collection;
 
 import java.util.Map;
 
-import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.util.Elements;
 import lombok.NonNull;
 

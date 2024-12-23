@@ -2,9 +2,9 @@ package io.basc.framework.util.select;
 
 import java.util.Comparator;
 
-import io.basc.framework.core.OrderComparator;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.comparator.OrderComparator;
 
 public class FirstSelector<E> implements Selector<E> {
 	public static FirstSelector<?> INSTANCE = new FirstSelector<>(OrderComparator.INSTANCE);

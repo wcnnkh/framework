@@ -4,18 +4,6 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
 
 public interface ReversibleTransformer<S, T, E extends Throwable> extends Transformer<S, T, E> {
-	default boolean canReverseTransform(Class<?> sourceType, Class<?> targetType) {
-		return canReverseTransform(sourceType, TypeDescriptor.valueOf(targetType));
-	}
-
-	default boolean canReverseTransform(Class<?> sourceType, TypeDescriptor targetType) {
-		return canReverseTransform(sourceType == null ? null : TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	default boolean canReverseTransform(TypeDescriptor sourceType, Class<?> targetType) {
-		return canReverseTransform(sourceType, TypeDescriptor.valueOf(targetType));
-	}
-
 	/**
 	 * Return {@code true} if objects of {@code sourceType} can be converted to the
 	 * {@code targetType}. The TypeDescriptors provide additional context about the
@@ -41,41 +29,6 @@ public interface ReversibleTransformer<S, T, E extends Throwable> extends Transf
 	 */
 	default boolean canReverseTransform(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return true;
-	}
-
-	default void reverseTransform(T source, Class<? extends T> sourceType, S target) throws E {
-		reverseTransform(source, sourceType, target, TypeDescriptor.forObject(target));
-	}
-
-	default void reverseTransform(T source, Class<? extends T> sourceType, S target, Class<? extends S> targetType)
-			throws E {
-		reverseTransform(source, TypeDescriptor.valueOf(sourceType), target, targetType);
-	}
-
-	default void reverseTransform(T source, Class<? extends T> sourceType, S target, TypeDescriptor targetType)
-			throws E {
-		reverseTransform(source, TypeDescriptor.valueOf(sourceType), target, targetType);
-	}
-
-	default void reverseTransform(T source, S target) throws E {
-		reverseTransform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
-	}
-
-	default void reverseTransform(T source, S target, Class<? extends S> targetType) throws E {
-		reverseTransform(source, TypeDescriptor.forObject(source), target, targetType);
-	}
-
-	default void reverseTransform(T source, S target, TypeDescriptor targetType) throws E {
-		reverseTransform(source, TypeDescriptor.forObject(source), target, targetType);
-	}
-
-	default void reverseTransform(T source, TypeDescriptor sourceType, S target) throws E {
-		reverseTransform(source, sourceType, target, TypeDescriptor.forObject(target));
-	}
-
-	default void reverseTransform(T source, TypeDescriptor sourceType, S target, Class<? extends S> targetType)
-			throws E {
-		reverseTransform(source, sourceType, target, TypeDescriptor.valueOf(targetType));
 	}
 
 	void reverseTransform(T source, TypeDescriptor sourceType, S target, TypeDescriptor targetType) throws E;

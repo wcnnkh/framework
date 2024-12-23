@@ -3,7 +3,7 @@ package io.basc.framework.netflix.eureka.boot;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
+import io.basc.framework.util.comparator.Ordered;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class EurekaClientApplicationPostProcessor implements ApplicationPostProcessor {

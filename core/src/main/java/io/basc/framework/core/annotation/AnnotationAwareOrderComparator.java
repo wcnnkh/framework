@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.basc.framework.core.DecoratingProxy;
-import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
+import io.basc.framework.util.comparator.OrderComparator;
 
 public class AnnotationAwareOrderComparator extends OrderComparator {
 

@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
-import io.basc.framework.core.convert.support.DefaultConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
+import io.basc.framework.core.convert.service.support.DefaultConversionService;
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.generator.string.StringGenerator;
 import io.basc.framework.net.InputMessage;

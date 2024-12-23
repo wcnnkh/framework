@@ -1,14 +1,17 @@
-package io.basc.framework.core.convert.support;
+package io.basc.framework.core.convert.service.support;
 
 import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Set;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.ConvertiblePair;
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
+import lombok.NonNull;
 
 class ArrayToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -20,18 +23,18 @@ class ArrayToArrayConversionService extends AbstractConversionService implements
 		return Collections.singleton(new ConvertiblePair(Object[].class, Object[].class));
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (source == null) {
-			return null;
-		}
-
+	@Override
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor requiredTypeDescriptor)
+			throws ConversionException {
+		Object source = value.get();
+		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();
 		int len = Array.getLength(source);
-		TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
+		TypeDescriptor targetElementType = requiredTypeDescriptor.getElementTypeDescriptor();
 		Object targetArray = Array.newInstance(targetElementType.getType(), len);
 		for (int i = 0; i < len; i++) {
 			Object sourceElement = Array.get(source, i);
 			Object targetElement = getConversionService().convert(sourceElement,
-					sourceType.elementTypeDescriptor(sourceElement), targetElementType);
+					sourceTypeDescriptor.elementTypeDescriptor(sourceElement), targetElementType);
 			Array.set(targetArray, i, targetElement);
 		}
 		return targetArray;

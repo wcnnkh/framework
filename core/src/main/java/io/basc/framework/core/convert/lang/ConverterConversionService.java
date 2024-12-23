@@ -5,10 +5,12 @@ import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
-import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.util.Pipeline;
+import lombok.NonNull;
 
 public class ConverterConversionService implements ConditionalConversionService {
 	@SuppressWarnings("rawtypes")
@@ -26,14 +28,15 @@ public class ConverterConversionService implements ConditionalConversionService 
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@Override
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		try {
-			return converter.apply(source);
+			return converter.apply(value.get());
 		} catch (Throwable e) {
 			if (e instanceof ConversionException) {
 				throw (ConversionException) e;
 			}
-			throw new ConversionFailedException(sourceType, targetType, source, e);
+			throw new ConversionFailedException(value.getTypeDescriptor(), targetType, value.get(), e);
 		}
 	}
 

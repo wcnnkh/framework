@@ -3,9 +3,9 @@ package io.basc.framework.beans.factory.support;
 import java.util.List;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.core.OrderComparator;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.comparator.OrderComparator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

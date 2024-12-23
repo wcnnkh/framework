@@ -9,10 +9,10 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.orm.EntityMapper;

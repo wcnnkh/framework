@@ -1,16 +1,19 @@
-package io.basc.framework.core.convert.support;
+package io.basc.framework.core.convert.service.support;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.ConvertiblePair;
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import lombok.NonNull;
 
 class CollectionToCollectionConversionService extends AbstractConversionService
 		implements ConditionalConversionService {
@@ -29,12 +32,13 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 				&& ReflectionUtils.isInstance(targetType.getType());
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@Override
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
 		Collection<?> sourceCollection = (Collection<?>) source;
-
 		// Shortcut if possible...
 		boolean copyRequired = !targetType.getType().isInstance(source);
 		if (!copyRequired && sourceCollection.isEmpty()) {
@@ -49,7 +53,7 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 		// finding out about element copies...
 		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
-
+		TypeDescriptor sourceType = value.getTypeDescriptor();
 		if (elementDesc == null) {
 			target.addAll(sourceCollection);
 		} else {

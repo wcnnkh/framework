@@ -12,8 +12,8 @@ import com.netflix.discovery.shared.Applications;
 import io.basc.framework.cloud.DiscoveryClient;
 import io.basc.framework.cloud.Service;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.comparator.Ordered;
 
 /**
  * A {@link DiscoveryClient} implementation for Eureka.

@@ -3,12 +3,12 @@ package io.basc.framework.beans.factory.config;
 import java.util.Comparator;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.ParameterizedTypeReference;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.observe.service.ObservableServiceLoader;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.comparator.OrderComparator;
 import io.basc.framework.util.register.Registration;
 
 public class ConfigurableServices<T> extends ObservableServiceLoader<T> implements Configurable {

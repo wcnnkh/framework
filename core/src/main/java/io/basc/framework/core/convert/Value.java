@@ -104,17 +104,6 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 		}
 
 		@Override
-		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType) {
-			return getSource().getAsElements(componentType);
-		}
-
-		@Override
-		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType,
-				Supplier<? extends T> defaultSupplier) {
-			return getSource().getAsElements(componentType, defaultSupplier);
-		}
-
-		@Override
 		default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
 			return getSource().getAsEnum(enumType);
 		}
@@ -213,7 +202,8 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 			return (Value) value;
 		}
 
-		SharedValueDescriptor valueDescriptor = new SharedValueDescriptor(type);
+		TypeDescriptor typeDescriptor = type == null ? TypeDescriptor.forObject(value) : type;
+		SharedValueDescriptor valueDescriptor = new SharedValueDescriptor(typeDescriptor);
 		SharedValue<SharedValueDescriptor> sharedValue = new SharedValue<>(valueDescriptor);
 		sharedValue.setValue(value);
 		return sharedValue;
@@ -545,7 +535,7 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 			}
 			break;
 		}
-		throw new ConversionFailedException(getTypeDescriptor(), targetType, get(), null);
+		throw new ConversionFailedException(this, targetType, null);
 	}
 
 	default short getAsShort() {

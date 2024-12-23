@@ -4,12 +4,12 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.MethodInvoker;
+import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.logging.LogManager;
 
 /**

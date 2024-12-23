@@ -14,10 +14,10 @@ import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.MethodInvoker;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)

@@ -2,8 +2,6 @@ package io.basc.framework.util.comparator;
 
 import java.util.Comparator;
 
-import io.basc.framework.core.OrderComparator;
-
 public class ComparableComparator<T> implements Comparator<T> {
 
 	public static final ComparableComparator<Object> INSTANCE = new ComparableComparator<Object>();

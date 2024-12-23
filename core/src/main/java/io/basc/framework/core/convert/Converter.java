@@ -20,21 +20,23 @@ public interface Converter<S, T, E extends Throwable> {
 		return false;
 	}
 
+	static class UnsupportedConverter<S, T, E extends Throwable> implements Converter<S, T, E> {
+		static final UnsupportedConverter<?, ?, ?> INSTANCE = new UnsupportedConverter<>();
+
+		@Override
+		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+			return false;
+		}
+
+		@Override
+		public T convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+			throw new ConversionFailedException(sourceType, targetType, targetType, null);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <S, T, E extends Throwable> Converter<S, T, E> unsupported() {
 		return (Converter<S, T, E>) UnsupportedConverter.INSTANCE;
-	}
-
-	default boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		return canConvert(sourceType, TypeDescriptor.valueOf(targetType));
-	}
-
-	default boolean canConvert(Class<?> sourceType, TypeDescriptor targetType) {
-		return canConvert(sourceType == null ? null : TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	default boolean canConvert(TypeDescriptor sourceType, Class<?> targetType) {
-		return canConvert(sourceType, TypeDescriptor.valueOf(targetType));
 	}
 
 	/**
@@ -62,78 +64,6 @@ public interface Converter<S, T, E extends Throwable> {
 	 */
 	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return true;
-	}
-
-	/**
-	 * 默认无需实现，直接调用{@link #convert(Object, TypeDescriptor, Class)}
-	 * 
-	 * @see #convert(Object, TypeDescriptor, Class)
-	 * @param <R>
-	 * @param source
-	 * @param targetType
-	 * @return
-	 * @throws E
-	 */
-	default <R extends T> R convert(S source, Class<R> targetType) throws E {
-		return convert(source, TypeDescriptor.forObject(source), targetType);
-	}
-
-	/**
-	 * 默认无需实现，直接调用{@link #convert(Object, TypeDescriptor, Class)}
-	 * 
-	 * @see #convert(Object, TypeDescriptor, Class)
-	 * @param <R>
-	 * @param source
-	 * @param sourceType
-	 * @param targetType
-	 * @return
-	 * @throws E
-	 */
-	default <R extends T> R convert(S source, Class<? extends S> sourceType, Class<R> targetType) throws E {
-		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	/**
-	 * 默认无需实现，直接调用{@link #convert(Object, TypeDescriptor, TypeDescriptor)}
-	 * 
-	 * @see #convert(Object, TypeDescriptor, TypeDescriptor)
-	 * @param source
-	 * @param sourceType
-	 * @param targetType
-	 * @return
-	 * @throws E
-	 */
-	default T convert(S source, Class<? extends S> sourceType, TypeDescriptor targetType) throws E {
-		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	/**
-	 * 默认无需实现，直接调用{@link #convert(Object, TypeDescriptor, TypeDescriptor)}
-	 * 
-	 * @see #convert(Object, TypeDescriptor, TypeDescriptor)
-	 * @param source
-	 * @param targetType
-	 * @return
-	 * @throws E
-	 */
-	default T convert(S source, TypeDescriptor targetType) throws E {
-		return convert(source, TypeDescriptor.forObject(source), targetType);
-	}
-
-	/**
-	 * 默认无需实现，直接调用{@link #convert(Object, TypeDescriptor, TypeDescriptor)}
-	 * 
-	 * @see #convert(Object, TypeDescriptor, TypeDescriptor)
-	 * @param <R>
-	 * @param source
-	 * @param sourceType
-	 * @param targetType
-	 * @return
-	 * @throws E
-	 */
-	@SuppressWarnings("unchecked")
-	default <R extends T> R convert(S source, TypeDescriptor sourceType, Class<R> targetType) throws E {
-		return (R) convert(source, sourceType, TypeDescriptor.valueOf(targetType));
 	}
 
 	T convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E;

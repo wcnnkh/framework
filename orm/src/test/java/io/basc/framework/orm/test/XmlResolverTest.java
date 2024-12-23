@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.resolve.ResourceResolvers;
-import io.basc.framework.core.convert.support.DefaultConversionService;
+import io.basc.framework.core.convert.service.support.DefaultConversionService;
 import io.basc.framework.orm.stereotype.PrimaryKey;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.io.Resource;

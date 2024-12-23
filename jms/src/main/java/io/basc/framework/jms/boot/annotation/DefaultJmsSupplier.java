@@ -9,8 +9,8 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.jms.boot.JmsSupplier;
+import io.basc.framework.util.comparator.Ordered;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultJmsSupplier implements JmsSupplier {

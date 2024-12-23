@@ -1,4 +1,4 @@
-package io.basc.framework.core;
+package io.basc.framework.util.comparator;
 
 /**
  * {@code Ordered} is an interface that can be implemented by objects that

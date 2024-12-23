@@ -1,15 +1,18 @@
-package io.basc.framework.core.convert.support;
+package io.basc.framework.core.convert.service.support;
 
 import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Set;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.ConvertiblePair;
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.util.Assert;
+import lombok.NonNull;
 
 class ObjectToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ObjectToArrayConversionService(ConversionService conversionService) {
@@ -20,11 +23,14 @@ class ObjectToArrayConversionService extends AbstractConversionService implement
 		return Collections.singleton(new ConvertiblePair(Object.class, Object[].class));
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@Override
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
 
+		TypeDescriptor sourceType = value.getTypeDescriptor();
 		TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
 		Assert.state(targetElementType != null, "No target element type");
 		Object target = Array.newInstance(targetElementType.getType(), 1);

@@ -1,6 +1,8 @@
 package io.basc.framework.core.env;
 
-import io.basc.framework.core.convert.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.core.convert.transform.Property;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ public class SystemProperty implements Property {
 
 	@Override
 	public void set(Object source) throws UnsupportedOperationException {
-		String value = conversionService.convert(source, String.class);
+		String value = (String) conversionService.convert(Value.of(source), TypeDescriptor.valueOf(String.class));
 		System.setProperty(name, value);
 	}
 

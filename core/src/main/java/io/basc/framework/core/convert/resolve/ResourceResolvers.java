@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.io.Resource;

@@ -1,7 +1,6 @@
-package io.basc.framework.core;
+package io.basc.framework.util.comparator;
 
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.comparator.CompareUtils;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
-import io.basc.framework.core.OrderComparator;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.Listener;
@@ -15,6 +14,7 @@ import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader.ReloadableElementsWrapper;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
+import io.basc.framework.util.comparator.OrderComparator;
 import io.basc.framework.util.register.Container;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.RegistrationException;

@@ -1,9 +1,9 @@
-package io.basc.framework.core.convert.support;
+package io.basc.framework.core.convert.service.support;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServices;
 import io.basc.framework.core.convert.lang.DateFormatConversionService;
 import io.basc.framework.core.convert.lang.StringConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServices;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
@@ -43,8 +43,6 @@ public class DefaultConversionService extends ConversionServices {
 		register(new LocalDateTimeConversion());
 
 		register(new MapToMapConversionService(this));
-
-		register(new ValueConversionService());
 
 		register(StringConversionService.DEFAULT);
 

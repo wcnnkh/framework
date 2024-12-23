@@ -8,10 +8,12 @@ import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
-import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.lang.UnsupportedException;
+import lombok.NonNull;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
@@ -24,8 +26,8 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		Object source = value.get();
 		if (source instanceof Time) {
 			return sqlTimeToObject((Time) source, targetType.getType());
 		}
@@ -42,7 +44,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 			return javaDateToObject((Date) source, targetType.getType());
 		}
 
-		throw new ConversionFailedException(sourceType, targetType, source, null);
+		throw new ConversionFailedException(value, targetType, null);
 	}
 
 	private Object javaDateToObject(Date source, Class<?> targetType) {

@@ -2,7 +2,6 @@ package io.basc.framework.mvc.security;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.mvc.action.Action;
@@ -14,6 +13,7 @@ import io.basc.framework.mvc.annotation.IPSecurity;
 import io.basc.framework.security.ip.IPValidationFailedException;
 import io.basc.framework.security.ip.IPVerification;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.logging.LogManager;
 
 @ConditionalOnParameters(order = Ordered.HIGHEST_PRECEDENCE)

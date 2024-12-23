@@ -1,7 +1,7 @@
 package io.basc.framework.core.env;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.IdentityConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.IdentityConversionService;
 import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.core.convert.transform.Property;
 import io.basc.framework.util.Elements;

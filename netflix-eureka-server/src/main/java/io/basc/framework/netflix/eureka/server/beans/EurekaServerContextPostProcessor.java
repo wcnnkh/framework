@@ -5,7 +5,7 @@ import com.netflix.eureka.EurekaServerConfig;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.config.ContextPostProcessor;
-import io.basc.framework.core.Ordered;
+import io.basc.framework.util.comparator.Ordered;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class EurekaServerContextPostProcessor implements ContextPostProcessor {

@@ -10,9 +10,13 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
-
 	@FunctionalInterface
 	public static interface AnyWrapper<W extends Any> extends Any, Wrapper<W> {
+		@Override
+		default <T> T getAsArray(Class<? extends T> arrayType) {
+			return getSource().getAsArray(arrayType);
+		}
+
 		@Override
 		default BigDecimal getAsBigDecimal() {
 			return getSource().getAsBigDecimal();
@@ -51,12 +55,6 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		@Override
 		default Elements<? extends Any> getAsElements() {
 			return getSource().getAsElements();
-		}
-
-		@Override
-		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType,
-				Supplier<? extends T> defaultSupplier) {
-			return getSource().getAsElements(componentType, defaultSupplier);
 		}
 
 		@Override
@@ -108,17 +106,93 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		default boolean isNumber() {
 			return getSource().isNumber();
 		}
-
-		@Override
-		default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType) {
-			return getSource().getAsElements(componentType);
-		}
-
-		@Override
-		default <T> T getAsArray(Class<? extends T> arrayType) {
-			return getSource().getAsArray(arrayType);
-		}
 	}
+
+	public static class DefaultValue implements Any {
+
+		@Override
+		public BigDecimal getAsBigDecimal() {
+			return null;
+		}
+
+		@Override
+		public BigInteger getAsBigInteger() {
+			return null;
+		}
+
+		@Override
+		public boolean getAsBoolean() {
+			return false;
+		}
+
+		@Override
+		public byte getAsByte() {
+			return 0;
+		}
+
+		@Override
+		public char getAsChar() {
+			return 0;
+		}
+
+		@Override
+		public CharSequence getAsCharSequence() {
+			return null;
+		}
+
+		@Override
+		public double getAsDouble() {
+			return 0;
+		}
+
+		@Override
+		public Elements<? extends Any> getAsElements() {
+			return Elements.empty();
+		}
+
+		@Override
+		public <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
+			return null;
+		}
+
+		@Override
+		public float getAsFloat() {
+			return 0;
+		}
+
+		@Override
+		public int getAsInt() {
+			return 0;
+		}
+
+		@Override
+		public long getAsLong() {
+			return 0;
+		}
+
+		@Override
+		public Number getAsNumber() {
+			return null;
+		}
+
+		@Override
+		public short getAsShort() {
+			return 0;
+		}
+
+		@Override
+		public boolean isMultiple() {
+			return false;
+		}
+
+		@Override
+		public boolean isNumber() {
+			return false;
+		}
+
+	}
+
+	public static final Any DEFAULT = new DefaultValue();
 
 	@SuppressWarnings("unchecked")
 	default <T> T getAsArray(Class<? extends T> arrayType) {
@@ -150,19 +224,6 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 
 	Elements<? extends Any> getAsElements();
 
-	default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType) {
-		return getAsElements(componentType, () -> null);
-	}
-
-	default <T, E extends Throwable> Elements<T> getAsElements(Class<? extends T> componentType,
-			Supplier<? extends T> defaultSupplier) {
-		if (isMultiple()) {
-			return getAsElements().map((e) -> e.getAsObject(componentType, defaultSupplier));
-		} else {
-			return Elements.singleton(getAsObject(componentType, defaultSupplier));
-		}
-	}
-
 	<T extends Enum<T>> T getAsEnum(Class<T> enumType);
 
 	float getAsFloat();
@@ -170,7 +231,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 	Number getAsNumber();
 
 	default <T> T getAsObject(Class<? extends T> requiredType) {
-		return getAsObject(requiredType, () -> null);
+		return getAsObject(requiredType, () -> DEFAULT.getAsObject(requiredType));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

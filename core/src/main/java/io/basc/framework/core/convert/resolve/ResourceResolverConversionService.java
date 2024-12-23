@@ -1,13 +1,15 @@
 package io.basc.framework.core.convert.resolve;
 
-import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.ConvertiblePair;
-import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
-import io.basc.framework.util.io.Resource;
-
 import java.util.Collections;
 import java.util.Set;
+
+import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
+import io.basc.framework.util.io.Resource;
+import lombok.NonNull;
 
 public class ResourceResolverConversionService implements ConditionalConversionService {
 	private final ResourceResolver resourceResolver;
@@ -16,13 +18,13 @@ public class ResourceResolverConversionService implements ConditionalConversionS
 		this.resourceResolver = resourceResolver;
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		return resourceResolver.resolveResource((Resource) source, targetType);
-	}
-
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Resource.class, Object.class));
+	}
+
+	@Override
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		return resourceResolver.resolveResource((Resource) value.get(), targetType);
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.concurrent.Callable;
 
 import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.rpc.CallableFactory;
@@ -16,6 +15,7 @@ import io.basc.framework.rpc.remote.RemoteRequestMessage;
 import io.basc.framework.rpc.remote.RemoteResponseMessage;
 import io.basc.framework.rpc.support.ServiceCallableFactory;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;

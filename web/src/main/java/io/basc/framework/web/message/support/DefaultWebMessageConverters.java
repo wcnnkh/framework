@@ -1,7 +1,7 @@
 package io.basc.framework.web.message.support;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.core.env.EnvironmentAware;
 import io.basc.framework.net.convert.DefaultMessageConverters;

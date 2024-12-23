@@ -1,4 +1,4 @@
-package io.basc.framework.core;
+package io.basc.framework.util.comparator;
 
 /**
  * Extension of the {@link Ordered} interface, expressing a <em>priority</em>

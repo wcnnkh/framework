@@ -6,13 +6,14 @@ import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
-import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.annotation.DateFormat;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.TimeUtils;
+import lombok.NonNull;
 
 public class DateFormatConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERTIBLE_PAIRS = new HashSet<>(4);
@@ -37,12 +38,13 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		if (source == null || sourceType == null) {
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		Object source = value.get();
+		if (source == null) {
 			return null;
 		}
 
+		TypeDescriptor sourceType = value.getTypeDescriptor();
 		if (sourceType.getType() == String.class) {
 			if (targetType.getType() == Date.class) {
 				return stringToDate((String) source, sourceType, targetType);

@@ -3,8 +3,8 @@ package io.basc.framework.core.convert.transform.collection;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.core.convert.transform.Property;
 import io.basc.framework.util.Elements;
@@ -24,8 +24,10 @@ public class MapProperties implements Properties {
 	@Override
 	public Elements<String> keys() {
 		return Elements.of((Set<Object>) map.keySet())
-				.filter((e) -> conversionService.canConvert(typeDescriptor.getMapKeyTypeDescriptor(), String.class))
-				.map((e) -> conversionService.convert(e, typeDescriptor.getMapKeyTypeDescriptor(), String.class));
+				.filter((e) -> conversionService.canConvert(typeDescriptor.getMapKeyTypeDescriptor(),
+						TypeDescriptor.valueOf(String.class)))
+				.map((e) -> (String) conversionService.convert(e, typeDescriptor.getMapKeyTypeDescriptor(),
+						TypeDescriptor.valueOf(String.class)));
 	}
 
 	@Override

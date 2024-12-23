@@ -10,11 +10,11 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import io.basc.framework.beans.factory.BeanLifecycleEvent;
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.core.env.ConfigurableEnvironment;
 import io.basc.framework.core.env.EnvironmentPostProcessor;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.actor.EventListener;
+import io.basc.framework.util.comparator.Ordered;
 
 @ConditionalOnParameters(order = Ordered.LOWEST_PRECEDENCE)
 public class ActivemqEnvironmentPostProcessor implements EnvironmentPostProcessor, EventListener<BeanLifecycleEvent> {

@@ -1,18 +1,6 @@
 package io.basc.framework.core.convert;
 
 public interface ReversibleConverter<S, T, E extends Throwable> extends Converter<S, T, E> {
-	default boolean canReverseConvert(Class<?> sourceType, Class<?> targetType) {
-		return canReverseConvert(sourceType, TypeDescriptor.valueOf(targetType));
-	}
-
-	default boolean canReverseConvert(Class<?> sourceType, TypeDescriptor targetType) {
-		return canReverseConvert(sourceType == null ? null : TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	default boolean canReverseConvert(TypeDescriptor sourceType, Class<?> targetType) {
-		return canReverseConvert(sourceType, TypeDescriptor.valueOf(targetType));
-	}
-
 	/**
 	 * Return {@code true} if objects of {@code sourceType} can be converted to the
 	 * {@code targetType}. The TypeDescriptors provide additional context about the
@@ -38,29 +26,6 @@ public interface ReversibleConverter<S, T, E extends Throwable> extends Converte
 	 */
 	default boolean canReverseConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return true;
-	}
-
-	default <R extends S> R reverseConvert(T source, Class<R> targetType) throws E {
-		return reverseConvert(source, TypeDescriptor.forObject(source), targetType);
-	}
-
-	default <R extends S> R reverseConvert(T source, Class<? extends S> sourceType, Class<R> targetType) throws E {
-		return reverseConvert(source, TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	@SuppressWarnings("unchecked")
-	default <R extends S> R reverseConvert(T source, Class<? extends S> sourceType, TypeDescriptor targetType)
-			throws E {
-		return (R) reverseConvert(source, TypeDescriptor.valueOf(sourceType), targetType);
-	}
-
-	default S reverseConvert(T source, TypeDescriptor targetType) throws E {
-		return reverseConvert(source, TypeDescriptor.forObject(source), targetType);
-	}
-
-	@SuppressWarnings("unchecked")
-	default <R extends S> R reverseConvert(T source, TypeDescriptor sourceType, Class<R> targetType) throws E {
-		return (R) reverseConvert(source, sourceType, TypeDescriptor.valueOf(targetType));
 	}
 
 	S reverseConvert(T source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E;

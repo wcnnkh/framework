@@ -1,8 +1,9 @@
 package io.basc.framework.core.execution.aop.support;
 
-import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.core.execution.Executor;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.ParameterDescriptor;
@@ -39,21 +40,21 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 				});
 		Object returnValue = function.execute(newArgs);
 		if (returnValue == null) {
-			returnValue = getDefaultReturnValue(function);
-			if (returnValue != null) {
-				returnValue = conversionService.convert(returnValue, function.getReturnTypeDescriptor());
+			Value defaultValue = getDefaultReturnValue(function);
+			if (defaultValue != null) {
+				returnValue = conversionService.convert(defaultValue, function.getReturnTypeDescriptor());
 			}
 		}
 		return returnValue;
 	}
 
-	protected Object getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
+	protected Value getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
 		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
 	}
 
-	protected Object getDefaultReturnValue(Function function) {
+	protected Value getDefaultReturnValue(Function function) {
 		return getDefaultValue(function, function.getReturnTypeDescriptor());
 	}
 
-	protected abstract Object getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
+	protected abstract Value getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
 }

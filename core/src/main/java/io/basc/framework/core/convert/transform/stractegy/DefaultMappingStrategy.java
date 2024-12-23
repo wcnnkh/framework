@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.stractegy;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.IdentityConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.IdentityConversionService;
 import io.basc.framework.core.convert.transform.Access;
 import io.basc.framework.core.convert.transform.Mapping;
 import io.basc.framework.core.convert.transform.MappingContext;

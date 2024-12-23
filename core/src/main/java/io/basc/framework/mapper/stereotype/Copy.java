@@ -1,6 +1,6 @@
 package io.basc.framework.mapper.stereotype;
 
-import io.basc.framework.core.convert.RecursiveConversionService;
+import io.basc.framework.core.convert.service.RecursiveConversionService;
 import io.basc.framework.util.Assert;
 
 public class Copy extends DefaultObjectMapper {

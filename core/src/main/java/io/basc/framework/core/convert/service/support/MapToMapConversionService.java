@@ -1,4 +1,4 @@
-package io.basc.framework.core.convert.support;
+package io.basc.framework.core.convert.service.support;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.ConvertiblePair;
+import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.KeyValue;
+import lombok.NonNull;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -20,13 +23,15 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 		setConversionService(conversionService);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
 
-		Map<Object, Object> sourceMap = (Map) source;
+		Map<Object, Object> sourceMap = (Map<Object, Object>) source;
 
 		// Shortcut if possible...
 		boolean copyRequired = !targetType.getType().isInstance(source);
@@ -35,8 +40,8 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 		}
 		TypeDescriptor keyDesc = targetType.getMapKeyTypeDescriptor();
 		TypeDescriptor valueDesc = targetType.getMapValueTypeDescriptor();
-
-		List<KeyValue> targetEntries = new ArrayList<>(sourceMap.size());
+		List<KeyValue<?, ?>> targetEntries = new ArrayList<>(sourceMap.size());
+		TypeDescriptor sourceType = value.getTypeDescriptor();
 		for (Map.Entry<Object, Object> entry : sourceMap.entrySet()) {
 			Object sourceKey = entry.getKey();
 			Object sourceValue = entry.getValue();
@@ -53,7 +58,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 
 		Map<Object, Object> targetMap = CollectionUtils.createMap(targetType.getType(),
 				(keyDesc != null ? keyDesc.getType() : null), sourceMap.size());
-		for (KeyValue entry : targetEntries) {
+		for (KeyValue<?, ?> entry : targetEntries) {
 			targetMap.put(entry.getKey(), entry.getValue());
 		}
 		return targetMap;

@@ -3,9 +3,9 @@ package io.basc.framework.transform.strategy;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.basc.framework.core.convert.ConversionService;
-import io.basc.framework.core.convert.IdentityConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.IdentityConversionService;
 import io.basc.framework.core.execution.param.ConfigurableParameterDescriptorPredicate;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;

@@ -1,9 +1,8 @@
-package io.basc.framework.core.convert.config;
+package io.basc.framework.core.convert.service;
 
 import java.util.Comparator;
 import java.util.Set;
 
-import io.basc.framework.core.convert.ConvertiblePair;
 import io.basc.framework.util.comparator.ComparableComparator;
 
 /**

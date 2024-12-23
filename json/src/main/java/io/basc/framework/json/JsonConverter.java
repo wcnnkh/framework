@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
-import io.basc.framework.core.convert.ConversionService;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.util.io.IOUtils;
 
 public interface JsonConverter extends ConversionService {
