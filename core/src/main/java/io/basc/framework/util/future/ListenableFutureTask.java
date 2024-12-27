@@ -4,10 +4,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.actor.ListenableFuture;
 import io.basc.framework.util.actor.Stage;
+import io.basc.framework.util.exchange.Listener;
 
 public class ListenableFutureTask<T> extends FutureTask<T> implements ListenableFuture<T> {
 	private Stage stage = new Stage();

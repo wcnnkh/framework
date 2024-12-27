@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import io.basc.framework.core.convert.transform.Access;
+import io.basc.framework.core.convert.transform.Accesstor;
 import io.basc.framework.core.convert.transform.Mapping;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
@@ -16,14 +16,14 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class KeyValuesMapping<K, V extends Access> implements Mapping<K, V>, KeyValues<K, V> {
+public class KeyValuesMapping<K, V extends Accesstor> implements Mapping<K, V>, KeyValues<K, V> {
 	@NonNull
 	private final Supplier<? extends Elements<K>> keysSupplier;
 	@NonNull
 	private final Function<? super K, ? extends V> creator;
 
 	@Override
-	public Elements<V> getAccesses(K key) {
+	public Elements<V> getAccesstors(K key) {
 		V access = creator.apply(key);
 		return Elements.singleton(access);
 	}

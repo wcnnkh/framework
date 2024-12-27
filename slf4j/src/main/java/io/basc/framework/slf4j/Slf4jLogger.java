@@ -5,8 +5,8 @@ import java.util.logging.LogRecord;
 
 import org.slf4j.Logger;
 
-import io.basc.framework.util.PlaceholderMessage;
 import io.basc.framework.util.logging.CustomLevel;
+import io.basc.framework.util.text.PlaceholderMessage;
 
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error

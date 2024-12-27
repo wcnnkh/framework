@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class MappingContext<K, V extends Access, M extends Mapping<K, V>> extends SimpleAttributes<String, Value>
+public class MappingContext<K, V extends Accesstor, M extends Mapping<K, V>> extends SimpleAttributes<String, Value>
 		implements ParentDiscover<MappingContext<K, V, M>>, Listable<KeyValue<K, V>> {
 	@NonNull
 	private final M mapping;

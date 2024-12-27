@@ -1,6 +1,6 @@
 package io.basc.framework.core.convert.transform.stractegy;
 
-import io.basc.framework.core.convert.transform.Access;
+import io.basc.framework.core.convert.transform.Accesstor;
 import io.basc.framework.core.convert.transform.Mapping;
 import io.basc.framework.core.convert.transform.MappingContext;
 import io.basc.framework.util.KeyValue;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
-public class FilterableMappingStrategy<K, V extends Access, M extends Mapping<K, V>, E extends Throwable>
+public class FilterableMappingStrategy<K, V extends Accesstor, M extends Mapping<K, V>, E extends Throwable>
 		implements MappingStrategy<K, V, M, E> {
 	@NonNull
 	private final Iterable<? extends MappingFilter<K, V, M, E>> mappingFilters;

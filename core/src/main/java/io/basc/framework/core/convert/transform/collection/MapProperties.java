@@ -36,7 +36,7 @@ public class MapProperties implements Properties {
 	}
 
 	@Override
-	public Elements<Property> getAccesses(@NonNull Object key) {
+	public Elements<Property> getAccesstors(@NonNull Object key) {
 		if (key instanceof String) {
 			return Elements.singleton(get((String) key));
 		}

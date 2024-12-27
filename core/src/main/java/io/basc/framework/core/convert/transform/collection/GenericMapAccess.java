@@ -6,7 +6,7 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.service.ConversionService;
-import io.basc.framework.core.convert.transform.Access;
+import io.basc.framework.core.convert.transform.Accesstor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @SuppressWarnings("rawtypes")
-public class GenericMapAccess implements Access {
+public class GenericMapAccess implements Accesstor {
 	@NonNull
 	private final Map map;
 	@NonNull

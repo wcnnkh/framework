@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
-import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.actor.ListenableFuture;
 import io.basc.framework.util.actor.Stage;
+import io.basc.framework.util.exchange.Listener;
 
 public class CompletableToListenableFutureAdapter<T> implements ListenableFuture<T> {
 

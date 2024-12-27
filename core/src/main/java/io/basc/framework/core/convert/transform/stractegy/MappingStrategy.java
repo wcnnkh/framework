@@ -1,13 +1,13 @@
 package io.basc.framework.core.convert.transform.stractegy;
 
-import io.basc.framework.core.convert.transform.Access;
+import io.basc.framework.core.convert.transform.Accesstor;
 import io.basc.framework.core.convert.transform.Mapping;
 import io.basc.framework.core.convert.transform.MappingContext;
 import io.basc.framework.util.KeyValue;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface MappingStrategy<K, V extends Access, M extends Mapping<K, V>, E extends Throwable> {
+public interface MappingStrategy<K, V extends Accesstor, M extends Mapping<K, V>, E extends Throwable> {
 
 	default void doMapping(@NonNull M sourceMapping, @NonNull M targetMapping) throws E {
 		doMapping(null, sourceMapping, null, targetMapping);

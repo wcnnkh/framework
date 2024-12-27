@@ -1,14 +1,14 @@
 package io.basc.framework.core.convert.transform.stractegy;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.Access;
+import io.basc.framework.core.convert.transform.Accesstor;
 import io.basc.framework.core.convert.transform.Mapping;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.NonNull;
 
-public class DefaultMappingStrategyFactory<K, V extends Access, M extends Mapping<K, V>, E extends Throwable>
+public class DefaultMappingStrategyFactory<K, V extends Accesstor, M extends Mapping<K, V>, E extends Throwable>
 		implements MappingStrategyFactory<K, V, M, E> {
-	private static class InternalMappingStrategy<K, V extends Access, M extends Mapping<K, V>, E extends Throwable>
+	private static class InternalMappingStrategy<K, V extends Accesstor, M extends Mapping<K, V>, E extends Throwable>
 			extends FilterableMappingStrategy<K, V, M, E> {
 		private final String id;
 

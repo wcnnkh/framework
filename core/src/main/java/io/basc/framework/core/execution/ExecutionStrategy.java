@@ -5,7 +5,7 @@ import java.util.Optional;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.annotation.MergedAnnotationsElements;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.util.spi.ServiceRegistry;
+import io.basc.framework.util.spi.Services;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class ExecutionStrategy<T extends Executor> extends ServiceRegistry<T> implements Executor {
+public class ExecutionStrategy<T extends Executor> extends Services<T> implements Executor {
 	private Parameters parameters;
 	@NonNull
 	private final TypeDescriptor returnTypeDescriptor;

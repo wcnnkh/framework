@@ -2,7 +2,7 @@ package io.basc.framework.core.convert.transform.stractegy;
 
 import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.core.convert.service.IdentityConversionService;
-import io.basc.framework.core.convert.transform.Access;
+import io.basc.framework.core.convert.transform.Accesstor;
 import io.basc.framework.core.convert.transform.Mapping;
 import io.basc.framework.core.convert.transform.MappingContext;
 import io.basc.framework.util.Elements;
@@ -13,7 +13,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DefaultMappingStrategy<K, V extends Access, M extends Mapping<K, V>, E extends Throwable>
+public class DefaultMappingStrategy<K, V extends Accesstor, M extends Mapping<K, V>, E extends Throwable>
 		implements MappingStrategy<K, V, M, E> {
 	@NonNull
 	private ConversionService conversionService = new IdentityConversionService();
@@ -25,7 +25,7 @@ public class DefaultMappingStrategy<K, V extends Access, M extends Mapping<K, V>
 			return;
 		}
 
-		Elements<V> accesses = targetMapping.getAccesses(entry.getKey());
+		Elements<V> accesses = targetMapping.getAccesstors(entry.getKey());
 		for (V access : accesses) {
 			if (access.isWriteable()) {
 				continue;

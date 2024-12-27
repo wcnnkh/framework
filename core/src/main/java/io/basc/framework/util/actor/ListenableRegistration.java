@@ -1,9 +1,9 @@
 package io.basc.framework.util.actor;
 
-import io.basc.framework.util.Listener;
-import io.basc.framework.util.Listenable;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Listenable;
+import io.basc.framework.util.exchange.Listener;
 
 /**
  * 可监听的

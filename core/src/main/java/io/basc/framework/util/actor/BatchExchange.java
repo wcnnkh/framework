@@ -1,10 +1,10 @@
 package io.basc.framework.util.actor;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Listener;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.exchange.Listener;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

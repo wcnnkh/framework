@@ -10,8 +10,8 @@ public interface PropertyMapping<T extends Property> extends PropertyDescriptors
 			extends PropertyMapping<T>, PropertyDescriptorsWrapper<T, W>, MappingWrapper<Object, T, W> {
 
 		@Override
-		default Elements<T> getAccesses(Object key) {
-			return getSource().getAccesses(key);
+		default Elements<T> getAccesstors(Object key) {
+			return getSource().getAccesstors(key);
 		}
 
 		@Override
@@ -26,7 +26,7 @@ public interface PropertyMapping<T extends Property> extends PropertyDescriptors
 	}
 
 	@Override
-	default Elements<T> getAccesses(@NonNull Object key) {
+	default Elements<T> getAccesstors(@NonNull Object key) {
 		if (key instanceof String) {
 			return getValues((String) key);
 		}

@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.StringValueResolver;
 
 /**
  * Simple implementation of the {@link AliasRegistry} interface.

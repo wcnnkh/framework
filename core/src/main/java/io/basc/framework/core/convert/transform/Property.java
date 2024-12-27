@@ -5,7 +5,7 @@ import io.basc.framework.core.convert.Value;
 import lombok.Data;
 import lombok.NonNull;
 
-public interface Property extends Access, PropertyDescriptor {
+public interface Property extends Accesstor, PropertyDescriptor {
 
 	public static interface PropertyWrapper<W extends Property>
 			extends Property, AccessWrapper<W>, PropertyDescriptorWrapper<W> {
@@ -21,7 +21,7 @@ public interface Property extends Access, PropertyDescriptor {
 	}
 
 	@Data
-	public static class StandardProperty<W extends Access> implements Property, AccessWrapper<W> {
+	public static class StandardProperty<W extends Accesstor> implements Property, AccessWrapper<W> {
 		private final String name;
 		@NonNull
 		private final W source;
@@ -32,7 +32,7 @@ public interface Property extends Access, PropertyDescriptor {
 	}
 
 	public static Property of(String name, @NonNull Value value) {
-		Access access = Access.of(value);
+		Accesstor access = Accesstor.of(value);
 		return new StandardProperty<>(name, access);
 	}
 }

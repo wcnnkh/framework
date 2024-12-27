@@ -13,7 +13,7 @@ import io.basc.framework.util.spi.Include.IncludeWrapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public class ConfigurableServices<S> extends ServiceRegistry<S> implements Configurable {
+public class ConfigurableServices<S> extends Services<S> implements Configurable {
 	@RequiredArgsConstructor
 	private final class Configuration
 			implements Configured<ServiceHolder<S>>, IncludeWrapper<ServiceHolder<S>, Include<ServiceHolder<S>>> {

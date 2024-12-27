@@ -5,12 +5,12 @@ import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.Wrapper;
 import lombok.NonNull;
 
-public interface Mapping<K, V extends Access> {
+public interface Mapping<K, V extends Accesstor> {
 
-	public interface MappingWrapper<K, V extends Access, W extends Mapping<K, V>> extends Mapping<K, V>, Wrapper<W> {
+	public interface MappingWrapper<K, V extends Accesstor, W extends Mapping<K, V>> extends Mapping<K, V>, Wrapper<W> {
 		@Override
-		default Elements<V> getAccesses(K key) {
-			return getSource().getAccesses(key);
+		default Elements<V> getAccesstors(K key) {
+			return getSource().getAccesstors(key);
 		}
 
 		@Override
@@ -25,6 +25,12 @@ public interface Mapping<K, V extends Access> {
 	 * @return
 	 */
 	Elements<KeyValue<K, V>> getMembers();
+	
+	/**
+	 * 获取映射的索引对象
+	 * @return
+	 */
+	//Elements<K> getIndexes();
 
 	/**
 	 * 用来获取对应的映射行为.
@@ -32,5 +38,5 @@ public interface Mapping<K, V extends Access> {
 	 * @param key
 	 * @return
 	 */
-	Elements<V> getAccesses(@NonNull K key);
+	Elements<V> getAccesstors(@NonNull K key);
 }

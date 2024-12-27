@@ -6,7 +6,7 @@ import java.util.logging.LogRecord;
 import org.apache.log4j.Logger;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.PlaceholderMessage;
+import io.basc.framework.util.text.PlaceholderMessage;
 
 public class Log4jLogger implements io.basc.framework.util.logging.Logger {
 	private final Logger logger;

@@ -1,8 +1,8 @@
 package io.basc.framework.util.actor;
 
-import io.basc.framework.util.Listener;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Listener;
 
 public class Stage implements ListenableRegistration<Stage>, Receipt {
 	private enum State {

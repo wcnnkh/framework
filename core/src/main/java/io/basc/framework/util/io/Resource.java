@@ -18,7 +18,7 @@ import java.nio.charset.CharsetEncoder;
 import io.basc.framework.util.Channel;
 import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.alias.Named;
-import io.basc.framework.util.watch.Variable;
+import io.basc.framework.util.io.watch.Variable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;

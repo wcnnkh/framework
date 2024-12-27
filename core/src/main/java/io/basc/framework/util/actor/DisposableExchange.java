@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.util.Listener;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Listener;
 import io.basc.framework.util.register.container.ElementRegistration;
 import io.basc.framework.util.register.container.QueueContainer;
 
