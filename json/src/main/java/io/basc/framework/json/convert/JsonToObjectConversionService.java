@@ -3,7 +3,7 @@ package io.basc.framework.json.convert;
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.annotation.JSON;
-import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.support.AbstractConversionService;
 
 public class JsonToObjectConversionService extends AbstractConversionService {
 

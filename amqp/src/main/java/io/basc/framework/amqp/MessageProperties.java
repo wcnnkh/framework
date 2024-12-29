@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.strings.StringConverter;
+import io.basc.framework.core.convert.support.strings.StringConverter;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.math.NumberHolder;

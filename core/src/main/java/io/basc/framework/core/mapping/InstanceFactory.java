@@ -2,9 +2,7 @@ package io.basc.framework.core.mapping;
 
 import java.util.EnumSet;
 
-import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -42,28 +40,6 @@ public interface InstanceFactory {
 			throw new UnsupportedOperationException(type.toString());
 		}
 
-	}
-
-	default boolean canInstantiated(Class<?> type) {
-		if (type == null) {
-			return false;
-		}
-		return canInstantiated(ResolvableType.forClass(type));
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T> T newInstance(Class<T> type) {
-		Assert.requiredArgument(type != null, "type");
-		return (T) newInstance(ResolvableType.forClass(type));
-	}
-
-	default boolean canInstantiated(ResolvableType type) {
-		return type != null && canInstantiated(TypeDescriptor.valueOf(type));
-	}
-
-	default Object newInstance(ResolvableType type) {
-		Assert.requiredArgument(type != null, "type");
-		return newInstance(TypeDescriptor.valueOf(type));
 	}
 
 	boolean canInstantiated(@NonNull TypeDescriptor requiredType);

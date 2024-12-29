@@ -2,8 +2,8 @@ package io.basc.framework.core.env;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.service.ConversionService;
-import io.basc.framework.core.convert.service.support.DefaultConversionService;
+import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.support.DefaultConversionService;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -20,7 +20,7 @@ import org.xml.sax.SAXException;
 import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;

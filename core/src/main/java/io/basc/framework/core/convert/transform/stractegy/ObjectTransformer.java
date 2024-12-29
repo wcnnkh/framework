@@ -3,16 +3,12 @@ package io.basc.framework.core.convert.transform.stractegy;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
-import io.basc.framework.core.convert.transform.factory.TemplateFactoryRegistry;
+import io.basc.framework.core.convert.transform.config.TemplateFactoryRegistry;
 import lombok.NonNull;
 
 public class ObjectTransformer<K, V extends Accessor, T extends Template<K, V>, E extends Throwable>
 		extends DefaultTransformer<Object, Object, K, V, T, V, T, E> {
 	private final TemplateFactoryRegistry<? super Object, ? extends K, ? extends V, ? extends T> templateFactoryRegistry = new TemplateFactoryRegistry<>();
-
-	public TemplateFactoryRegistry<? super Object, ? extends K, ? extends V, ? extends T> getTemplateFactoryRegistry() {
-		return templateFactoryRegistry;
-	}
 
 	public T getObjectTemplate(@NonNull Object object, @NonNull TypeDescriptor requiredType) {
 		return templateFactoryRegistry.getTemplate(object, requiredType);
@@ -34,6 +30,10 @@ public class ObjectTransformer<K, V extends Accessor, T extends Template<K, V>, 
 			template = getObjectTemplate(target, targetType);
 		}
 		return template;
+	}
+
+	public TemplateFactoryRegistry<? super Object, ? extends K, ? extends V, ? extends T> getTemplateFactoryRegistry() {
+		return templateFactoryRegistry;
 	}
 
 	@Override

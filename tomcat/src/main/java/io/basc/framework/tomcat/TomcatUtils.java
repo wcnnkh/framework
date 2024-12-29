@@ -7,7 +7,7 @@ import javax.servlet.ServletContainerInitializer;
 
 import org.apache.catalina.Context;
 
-import io.basc.framework.core.convert.strings.StringConverter;
+import io.basc.framework.core.convert.support.strings.StringConverter;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;

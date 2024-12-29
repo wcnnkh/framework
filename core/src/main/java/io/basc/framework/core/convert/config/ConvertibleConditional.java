@@ -1,0 +1,7 @@
+package io.basc.framework.core.convert.config;
+
+import java.util.Set;
+
+public interface ConvertibleConditional {
+	Set<ConvertiblePair> getConvertibleTypes();
+}

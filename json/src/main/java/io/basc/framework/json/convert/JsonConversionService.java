@@ -1,7 +1,7 @@
 package io.basc.framework.json.convert;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.lang.AbstractConversionService;
+import io.basc.framework.core.convert.support.AbstractConversionService;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;

@@ -1,8 +1,8 @@
 package io.basc.framework.net.convert;
 
 import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.core.convert.service.ConversionService;
-import io.basc.framework.core.convert.service.ConversionServiceAware;
+import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.json.JsonSupport;
 import io.basc.framework.json.JsonSupportAware;
 

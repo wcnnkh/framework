@@ -9,23 +9,13 @@ public class StereotypeTransformer<D extends FieldDescriptor, T extends FieldDes
 		implements FieldDescriptorTemplateFactory<D, T> {
 	private final DefaultFieldDescriptorTemplateFactory<D, T> fieldDescriptorTemplateFactory = new DefaultFieldDescriptorTemplateFactory<>();
 
-	public DefaultFieldDescriptorTemplateFactory<D, T> getFieldDescriptorTemplateFactory() {
-		return fieldDescriptorTemplateFactory;
-	}
-
 	@Override
 	public T getFieldDescriptorTemplate(@NonNull TypeDescriptor requiredType) {
 		return fieldDescriptorTemplateFactory.getFieldDescriptorTemplate(requiredType);
 	}
 
-	@Override
-	protected boolean hasSourceTemplate(@NonNull Class<?> sourceType) {
-		return super.hasSourceTemplate(sourceType) || fieldDescriptorTemplateFactory.containsTemplate(sourceType);
-	}
-
-	@Override
-	protected boolean hasTargetTemplate(@NonNull Class<?> targetType) {
-		return super.hasTargetTemplate(targetType) || fieldDescriptorTemplateFactory.containsTemplate(targetType);
+	public DefaultFieldDescriptorTemplateFactory<D, T> getFieldDescriptorTemplateFactory() {
+		return fieldDescriptorTemplateFactory;
 	}
 
 	@Override
@@ -38,5 +28,15 @@ public class StereotypeTransformer<D extends FieldDescriptor, T extends FieldDes
 			}
 		}
 		return fieldTemplate;
+	}
+
+	@Override
+	protected boolean hasSourceTemplate(@NonNull Class<?> sourceType) {
+		return super.hasSourceTemplate(sourceType) || fieldDescriptorTemplateFactory.containsTemplate(sourceType);
+	}
+
+	@Override
+	protected boolean hasTargetTemplate(@NonNull Class<?> targetType) {
+		return super.hasTargetTemplate(targetType) || fieldDescriptorTemplateFactory.containsTemplate(targetType);
 	}
 }

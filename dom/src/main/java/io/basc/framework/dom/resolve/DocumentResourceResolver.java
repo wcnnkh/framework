@@ -3,9 +3,9 @@ package io.basc.framework.dom.resolve;
 import org.w3c.dom.Document;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.resolve.ResourceResolver;
-import io.basc.framework.core.convert.service.ConversionService;
-import io.basc.framework.core.convert.service.ConversionServiceAware;
+import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.support.resource.ResourceResolver;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.util.io.Resource;
 

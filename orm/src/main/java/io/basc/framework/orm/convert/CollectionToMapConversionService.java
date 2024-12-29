@@ -9,9 +9,9 @@ import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.lang.AbstractConversionService;
-import io.basc.framework.core.convert.service.ConditionalConversionService;
-import io.basc.framework.core.convert.service.ConvertiblePair;
+import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.config.ConvertiblePair;
+import io.basc.framework.core.convert.support.AbstractConversionService;
 import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.core.execution.Getter;
 import io.basc.framework.lang.AlreadyExistsException;

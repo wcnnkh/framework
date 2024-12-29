@@ -9,9 +9,9 @@ import org.w3c.dom.NodeList;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.lang.AbstractConversionService;
-import io.basc.framework.core.convert.service.ConditionalConversionService;
-import io.basc.framework.core.convert.service.ConvertiblePair;
+import io.basc.framework.core.convert.config.ConditionalConversionService;
+import io.basc.framework.core.convert.config.ConvertiblePair;
+import io.basc.framework.core.convert.support.AbstractConversionService;
 import io.basc.framework.dom.DomUtils;
 
 public class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {

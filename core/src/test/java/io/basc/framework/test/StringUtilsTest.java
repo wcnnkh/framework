@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.core.convert.strings.StringConverter;
+import io.basc.framework.core.convert.support.strings.StringConverter;
 
 public class StringUtilsTest {
 
