@@ -6,6 +6,7 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -65,7 +66,7 @@ public interface InstanceFactory {
 		return newInstance(TypeDescriptor.valueOf(type));
 	}
 
-	boolean canInstantiated(TypeDescriptor type);
+	boolean canInstantiated(@NonNull TypeDescriptor requiredType);
 
-	Object newInstance(TypeDescriptor type);
+	Object newInstance(@NonNull TypeDescriptor requiredType);
 }

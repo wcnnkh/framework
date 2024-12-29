@@ -3,6 +3,7 @@ package io.basc.framework.core.convert.transform.stractegy;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
+import io.basc.framework.core.convert.transform.factory.TemplateFactoryRegistry;
 import lombok.NonNull;
 
 public class ObjectTransformer<K, V extends Accessor, T extends Template<K, V>, E extends Throwable>

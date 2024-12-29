@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.factory.support.DefaultReversibleConverterFactory;
+import io.basc.framework.core.convert.factory.DefaultReversibleConverterRegistry;
 import io.basc.framework.core.convert.lang.ResourceToString;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,7 +17,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class StringConverter extends DefaultReversibleConverterFactory<String, ConversionException> {
+public class StringConverter extends DefaultReversibleConverterRegistry<String, ConversionException> {
 	private static volatile StringConverter instance;
 
 	public static StringConverter getInstance() {

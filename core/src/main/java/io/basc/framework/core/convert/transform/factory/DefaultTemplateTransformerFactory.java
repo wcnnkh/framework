@@ -1,4 +1,4 @@
-package io.basc.framework.core.convert.transform.stractegy;
+package io.basc.framework.core.convert.transform.factory;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
@@ -6,7 +6,9 @@ import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
 import io.basc.framework.core.convert.transform.TemplateTransformFilter;
 import io.basc.framework.core.convert.transform.TemplateTransformer;
-import io.basc.framework.core.convert.transform.TemplateTransformerFactory;
+import io.basc.framework.core.convert.transform.stractegy.DefaultTemplateTransformer;
+import io.basc.framework.core.convert.transform.stractegy.FilterableTemplateTransformer;
+import io.basc.framework.core.convert.transform.stractegy.TemplateTransformFilters;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;

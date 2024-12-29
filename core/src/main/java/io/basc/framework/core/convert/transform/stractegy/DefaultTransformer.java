@@ -6,6 +6,8 @@ import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
 import io.basc.framework.core.convert.transform.TemplateTransformer;
 import io.basc.framework.core.convert.transform.Transformer;
+import io.basc.framework.core.convert.transform.factory.DefaultTemplateTransformerFactory;
+import io.basc.framework.core.convert.transform.factory.TemplateFactoryRegistry;
 import lombok.NonNull;
 
 public class DefaultTransformer<A, B, K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
