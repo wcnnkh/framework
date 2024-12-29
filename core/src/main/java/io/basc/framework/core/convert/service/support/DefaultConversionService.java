@@ -1,6 +1,9 @@
 package io.basc.framework.core.convert.service.support;
 
-import io.basc.framework.core.convert.lang.DateFormatConversionService;
+import io.basc.framework.core.convert.date.ConfigurableDateCodecResolver;
+import io.basc.framework.core.convert.date.ConfigurableZoneOffsetResolver;
+import io.basc.framework.core.convert.date.DateFormatConversionService;
+import io.basc.framework.core.convert.date.LocalDateTimeConversion;
 import io.basc.framework.core.convert.lang.StringConversionService;
 import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.core.convert.service.ConversionServices;
@@ -39,8 +42,8 @@ public class DefaultConversionService extends ConversionServices {
 		register(new CollectionToCollectionConversionService(this));
 		register(new CollectionToObjectConversionService(this));
 
-		register(new DateFormatConversionService());
-		register(new LocalDateTimeConversion());
+		register(new DateFormatConversionService(ConfigurableDateCodecResolver.getInstance()));
+		register(new LocalDateTimeConversion(ConfigurableZoneOffsetResolver.getInstance()));
 
 		register(new MapToMapConversionService(this));
 

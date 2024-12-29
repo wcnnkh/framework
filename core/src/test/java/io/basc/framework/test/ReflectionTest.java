@@ -7,19 +7,19 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.io.ClassPathResource;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.ToString;
 
 public class ReflectionTest {
 	@Test
 	public void test() {
 		TestBean bean = new TestBean();
-		bean.a = XUtils.getUUID();
-		bean.b = new String[] { XUtils.getUUID() };
+		bean.a = UUIDSequences.getInstance().next();
+		bean.b = new String[] { UUIDSequences.getInstance().next() };
 		bean.c = "sss";
 		bean.d = bean;
 		String a = bean.toString();
@@ -32,8 +32,9 @@ public class ReflectionTest {
 		assertTrue(ReflectionUtils.getDeclaredFields(a.getClass()).hashCode(a) == ReflectionUtils
 				.getDeclaredFields(b.getClass()).hashCode(b));
 
-		Map<String, Object> map = Collections.singletonMap(XUtils.getUUID(), XUtils.getUUID());
-		Map<String, Object> cloneMap = CollectionFactory.clone(map, true);
+		Map<String, Object> map = Collections.singletonMap(UUIDSequences.getInstance().next(),
+				UUIDSequences.getInstance().next());
+		Map<String, Object> cloneMap = CollectionUtils.clone(map, true);
 		assertTrue(map.equals(cloneMap));
 
 		assertTrue(ReflectionUtils.getConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher", null,
@@ -43,7 +44,7 @@ public class ReflectionTest {
 	@Test
 	public void cloneA() {
 		CloneA cloneA = new CloneA();
-		cloneA.a = XUtils.getUUID();
+		cloneA.a = UUIDSequences.getInstance().next();
 
 		CloneA c = cloneA.clone();
 		assertTrue(StringUtils.equals(cloneA.a, c.a));

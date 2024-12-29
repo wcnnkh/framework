@@ -21,15 +21,24 @@ public class UUIDSequences extends ConfigurableServices<UUIDSequence> implements
 	}
 
 	@Override
+	public Range<Integer> getLengthRange() {
+		return Range.unionAll(map((e) -> e.getLengthRange()), Integer::compare);
+	}
+
+	@Override
 	public Range<Integer> getVersionRange() {
-		// TODO Auto-generated method stub
-		return null;
+		return Range.unionAll(map((e) -> e.getVersionRange()), Integer::compare);
 	}
 
 	@Override
 	public UUID nextUUID(Range<Integer> lengthRange, Range<Integer> versionRange) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		for (UUIDSequence uuidSequence : this) {
+			if (uuidSequence.getLengthRange().contains(lengthRange, Integer::compare)
+					&& uuidSequence.getVersionRange().contains(versionRange, Integer::compare)) {
+				return uuidSequence.nextUUID();
+			}
+		}
+		throw new UnsupportedOperationException(
+				"Unsupported length range " + lengthRange + " or version range " + versionRange);
 	}
-
 }

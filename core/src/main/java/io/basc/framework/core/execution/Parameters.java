@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.Property;
+import io.basc.framework.core.mapping.Property;
 import io.basc.framework.util.Elements;
 import lombok.Data;
 import lombok.NonNull;
@@ -18,7 +18,7 @@ import lombok.NonNull;
  * @author shuchaowen
  *
  */
-public interface Parameters extends ParameterMapping<Parameter>, Comparable<Parameters>, Predicate<ParameterTemplate> {
+public interface Parameters extends ParameterTemplate<Parameter>, Comparable<Parameters>, Predicate<ParameterDescriptorTemplate> {
 
 	@FunctionalInterface
 	public static interface ParametersWrapper<W extends Parameters>
@@ -116,7 +116,7 @@ public interface Parameters extends ParameterMapping<Parameter>, Comparable<Para
 	}
 
 	@Override
-	default boolean test(ParameterTemplate template) {
+	default boolean test(ParameterDescriptorTemplate template) {
 		List<ParameterDescriptor> parameterDescriptorList = template.getParameterDescriptors()
 				.collect(Collectors.toList());
 		List<Parameter> parameterList = getElements().toList();
@@ -168,12 +168,12 @@ public interface Parameters extends ParameterMapping<Parameter>, Comparable<Para
 	/**
 	 * 根据模板重新构造
 	 * 
-	 * @see #test(ParameterTemplate) 和此方法是成对出现的
+	 * @see #test(ParameterDescriptorTemplate) 和此方法是成对出现的
 	 * @param template 参数模板
 	 * @return
-	 * @throws IllegalStateException 匹配错误，检查{@link #test(ParameterTemplate)}方法
+	 * @throws IllegalStateException 匹配错误，检查{@link #test(ParameterDescriptorTemplate)}方法
 	 */
-	default Parameters reconstruct(ParameterTemplate template) throws IllegalStateException {
+	default Parameters reconstruct(ParameterDescriptorTemplate template) throws IllegalStateException {
 		List<ParameterDescriptor> parameterDescriptorList = template.getParameterDescriptors()
 				.collect(Collectors.toList());
 		List<Parameter> parameterList = getElements().toList();

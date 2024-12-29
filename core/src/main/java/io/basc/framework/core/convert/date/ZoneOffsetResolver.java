@@ -1,0 +1,16 @@
+package io.basc.framework.core.convert.date;
+
+import java.time.ZoneOffset;
+
+import io.basc.framework.core.convert.ValueDescriptor;
+import lombok.NonNull;
+
+/**
+ * 解析ZoneOffset
+ * 
+ * @author shuchaowen
+ *
+ */
+public interface ZoneOffsetResolver {
+	ZoneOffset resolveZoneOffset(@NonNull ValueDescriptor valueDescriptor);
+}

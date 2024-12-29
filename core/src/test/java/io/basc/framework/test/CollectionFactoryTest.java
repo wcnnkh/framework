@@ -6,29 +6,29 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.io.serializer.SerializerException;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.ToString;
 
 public class CollectionFactoryTest {
 	@Test
 	public void list() throws ClassNotFoundException, SerializerException {
 		TestList bean = new TestList();
-		bean.add(XUtils.getUUID());
-		bean.setV(XUtils.getUUID());
+		bean.add(UUIDSequences.getInstance().next());
+		bean.setV(UUIDSequences.getInstance().next());
 
-		TestList clone = CollectionFactory.clone(bean);
+		TestList clone = CollectionUtils.clone(bean);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 
 	@Test
 	public void map() {
 		TestMap bean = new TestMap();
-		bean.put(XUtils.getUUID(), XUtils.getUUID());
-		bean.setV(XUtils.getUUID());
+		bean.put(UUIDSequences.getInstance().next(), UUIDSequences.getInstance().next());
+		bean.setV(UUIDSequences.getInstance().next());
 
-		TestMap clone = CollectionFactory.clone(bean);
+		TestMap clone = CollectionUtils.clone(bean);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 

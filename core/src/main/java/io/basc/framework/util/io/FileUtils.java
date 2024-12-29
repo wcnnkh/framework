@@ -16,6 +16,7 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -2035,7 +2036,7 @@ public final class FileUtils {
 			throw new IOException("Source '" + srcDir + "' is not a directory");
 		}
 		if (destDir.exists()) {
-			throw new AlreadyExistsException("Destination '" + destDir + "' already exists");
+			throw new FileAlreadyExistsException(destDir.toString());
 		}
 		boolean rename = srcDir.renameTo(destDir);
 		if (!rename) {

@@ -4,7 +4,7 @@ import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.util.function.Function;
 
-import io.basc.framework.core.execution.stereotype.PropertyAccessTemplate;
+import io.basc.framework.core.mapping.stereotype.FieldDescriptorTemplate;
 import io.basc.framework.util.Elements;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
-public class BeaninfoTemplate<T extends BeanPropertyDescriptor> implements PropertyAccessTemplate<T> {
+public class BeaninfoTemplate<T extends BeanPropertyDescriptor> implements FieldDescriptorTemplate<T> {
 	private final Class<?> beanClass;
 	private final BeanInfo beanInfo;
 	private final Function<? super PropertyDescriptor, ? extends T> function;

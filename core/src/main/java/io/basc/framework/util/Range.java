@@ -169,6 +169,31 @@ public final class Range<T> implements Serializable {
 		return lowerBound.rightContains(value, comparator) && upperBound.leftContains(value, comparator);
 	}
 
+	/**
+	 * 将多个范围合并成一个范围
+	 * 
+	 * @param <R>
+	 * @param elements
+	 * @param comparator
+	 * @return
+	 */
+	public static <R> Range<R> unionAll(@NonNull Elements<? extends Range<R>> elements,
+			@NonNull Comparator<R> comparator) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * 将两个范围组合
+	 * 
+	 * @param range
+	 * @param comparator
+	 * @return
+	 */
+	public Range<T> union(@NonNull Range<T> range, @NonNull Comparator<T> comparator) {
+		return unionAll(Elements.forArray(this, range), comparator);
+	}
+
 	public boolean contains(@NonNull Range<T> range, @NonNull Comparator<T> comparator) {
 		if (lowerBound.isBounded()) {
 			if (range.getLowerBound().isBounded()) {

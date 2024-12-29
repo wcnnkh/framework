@@ -17,12 +17,12 @@ import io.basc.framework.core.execution.reflect.ReflectionFieldGetter;
 import io.basc.framework.core.execution.reflect.ReflectionFieldSetter;
 import io.basc.framework.core.execution.reflect.ReflectionMethodGetter;
 import io.basc.framework.core.execution.reflect.ReflectionMethodSetter;
-import io.basc.framework.core.execution.stereotype.PropertyAccessDescriptor;
+import io.basc.framework.core.mapping.stereotype.FieldDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 
-public class BeanPropertyDescriptor implements PropertyAccessDescriptor {
+public class BeanPropertyDescriptor implements FieldDescriptor {
 	private final Class<?> beanClass;
 	private volatile Field field;
 

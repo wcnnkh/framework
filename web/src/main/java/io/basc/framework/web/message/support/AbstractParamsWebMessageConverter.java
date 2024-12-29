@@ -5,8 +5,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.text.query.QueryStringFormat;
 import io.basc.framework.core.execution.ParameterDescriptor;
+import io.basc.framework.core.mapping.text.query.QueryStringFormat;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;

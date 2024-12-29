@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
-import io.basc.framework.core.convert.transform.stractegy.InstanceFactory.CollectionFactory;
+import io.basc.framework.core.mapping.InstanceFactory.CollectionFactory;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**

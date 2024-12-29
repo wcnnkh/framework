@@ -16,10 +16,10 @@ import lombok.NonNull;
  * @author wcnnkh
  *
  */
-public interface Executable extends Executed, Named, ParameterTemplate {
+public interface Executable extends Executed, Named, ParameterDescriptorTemplate {
 	@FunctionalInterface
 	public static interface ExecutableWrapper<W extends Executable>
-			extends Executable, ExecutedWrapper<W>, NamedWrapper<W>, ParameterTemplateWrapper<W> {
+			extends Executable, ExecutedWrapper<W>, NamedWrapper<W>, ParameterDescriptorTemplateWrapper<W> {
 		@Override
 		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
 			return getSource().canExecuted(parameterTypes);
