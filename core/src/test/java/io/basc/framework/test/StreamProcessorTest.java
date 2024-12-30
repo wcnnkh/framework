@@ -7,7 +7,7 @@ import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class StreamProcessorTest {
 	@Test
@@ -16,19 +16,19 @@ public class StreamProcessorTest {
 		List<String> list = new LinkedList<>();
 		list.add(a);
 		for (int i = 0; i < 10; i++) {
-			list.add(XUtils.getUUID());
+			list.add(UUIDSequences.getUUID());
 		}
 
 		Stream<String> stream = StreamSupport.stream(list.spliterator(), false).map((value) -> {
 			System.out.println("s1");
-			return "s1" + XUtils.getUUID();
+			return "s1" + UUIDSequences.getUUID();
 		}).onClose(() -> {
 			System.out.println("关闭s1");
 		});
 
 		stream = stream.map((value) -> {
 			System.out.println("s2");
-			return "s2-" + XUtils.getUUID();
+			return "s2-" + UUIDSequences.getUUID();
 		}).onClose(() -> {
 			System.out.println("关闭s2");
 		});

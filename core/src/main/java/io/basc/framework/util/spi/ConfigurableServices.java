@@ -23,7 +23,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 
 		@Override
 		public boolean cancel() {
-			Lock lock = getReadWriteLock().writeLock();
+			Lock lock = getContainer().writeLock();
 			lock.lock();
 			try {
 				if (discoveryMap == null) {
@@ -51,7 +51,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 
 		@Override
 		public boolean isCancelled() {
-			Lock lock = getReadWriteLock().readLock();
+			Lock lock = getContainer().readLock();
 			lock.lock();
 			try {
 				return discoveryMap == null ? false : discoveryMap.containsKey(serviceLoaderDiscovery);
@@ -91,7 +91,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	}
 
 	public Configured<ServiceHolder<S>> doConfigure(ServiceLoaderDiscovery discovery, boolean reloadable) {
-		Lock lock = getReadWriteLock().writeLock();
+		Lock lock = getContainer().writeLock();
 		lock.lock();
 		try {
 			if (serviceClass == null) {
@@ -126,7 +126,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	}
 
 	public Class<S> getServiceClass() {
-		Lock lock = getReadWriteLock().readLock();
+		Lock lock = getContainer().readLock();
 		lock.lock();
 		try {
 			return serviceClass;
@@ -136,7 +136,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	}
 
 	public void setServiceClass(Class<S> serviceClass) {
-		Lock lock = getReadWriteLock().writeLock();
+		Lock lock = getContainer().writeLock();
 		lock.lock();
 		try {
 			if (this.serviceClass == serviceClass) {

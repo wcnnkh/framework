@@ -9,6 +9,6 @@ public class DefaultMapperRegistry<S, E extends Throwable> extends ServiceMap<Ma
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Mapper<S, T, E> getMapper(@NonNull Class<? extends T> requiredType) {
-		return (Mapper<S, T, E>) getFirst(requiredType);
+		return (Mapper<S, T, E>) match(requiredType).first();
 	}
 }

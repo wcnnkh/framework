@@ -5,12 +5,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class CloneableTest {
 	@Test
 	public void test() throws CloneNotSupportedException {
-		A a = new A(XUtils.getUUID());
+		A a = new A(UUIDSequences.getInstance().next());
 		A b = a.clone();
 		assertTrue(StringUtils.equals(a.a, b.a));
 	}

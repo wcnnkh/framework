@@ -1,4 +1,4 @@
-package io.basc.framework.test;
+package io.basc.framework.beans;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.StopWatch;
 import lombok.ToString;

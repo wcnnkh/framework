@@ -1,4 +1,4 @@
-package io.basc.framework.test;
+package io.basc.framework.json;
 
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.json.JsonArray;

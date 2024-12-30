@@ -162,11 +162,11 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	public Receipt deregisters(Elements<? extends E> services, Publisher<? super Elements<ChangeEvent<E>>> publisher) {
 		Collection<? extends E> removes = services.toSet();
-		Elements<ElementRegistration<E>> registrations = read((collection) -> {
+		Elements<ElementRegistration<E>> registrations = readAsElements((collection) -> {
 			if (collection == null) {
 				return Elements.empty();
 			}
-			return Elements.of(collection).filter((e) -> removes.contains(e.getPayload())).toList();
+			return Elements.of(collection).filter((e) -> removes.contains(e.getPayload()));
 		});
 		return batchDeregister(registrations, publisher);
 	}
@@ -214,7 +214,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	public final Registrations<ElementRegistration<E>> getRegistrations(
 			Function<? super C, ? extends Elements<ElementRegistration<E>>> reader) {
-		Elements<ElementRegistration<E>> registrations = read((collection) -> reader.apply(collection));
+		Elements<ElementRegistration<E>> registrations = readAsElements((collection) -> reader.apply(collection));
 		if (registrations == null || registrations.isEmpty()) {
 			return EmptyRegistrations.empty();
 		}
@@ -264,12 +264,12 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	@Override
 	public final boolean remove(Object o) {
-		Elements<ElementRegistration<E>> registrations = read((collection) -> {
+		Elements<ElementRegistration<E>> registrations = readAsElements((collection) -> {
 			if (collection == null) {
 				return Elements.empty();
 			}
 
-			return Elements.of(collection).filter((e) -> ObjectUtils.equals(e.getPayload(), o)).toList();
+			return Elements.of(collection).filter((e) -> ObjectUtils.equals(e.getPayload(), o));
 		});
 
 		return batchDeregister(registrations, getPublisher()).isSuccess();
@@ -277,12 +277,12 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	@Override
 	public final boolean removeAll(Collection<?> c) {
-		Elements<ElementRegistration<E>> registrations = read((collection) -> {
+		Elements<ElementRegistration<E>> registrations = readAsElements((collection) -> {
 			if (collection == null) {
 				return Elements.empty();
 			}
 
-			return Elements.of(collection).filter((e) -> c.contains(e.getPayload())).toList();
+			return Elements.of(collection).filter((e) -> c.contains(e.getPayload()));
 		});
 		return batchDeregister(registrations, getPublisher()).isSuccess();
 	}

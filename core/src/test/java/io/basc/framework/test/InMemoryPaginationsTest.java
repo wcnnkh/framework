@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.Paginations;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class InMemoryPaginationsTest {
 	@Test
@@ -16,7 +16,7 @@ public class InMemoryPaginationsTest {
 		int count = 100;
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < count; i++) {
-			list.add(XUtils.getUUID());
+			list.add(UUIDSequences.getUUID());
 		}
 
 		for (int i = 1; i < count; i++) {

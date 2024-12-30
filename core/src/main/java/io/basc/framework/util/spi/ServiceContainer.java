@@ -46,7 +46,7 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements ServiceL
 		@Override
 		public boolean cancel(BooleanSupplier cancel) {
 			return super.cancel(() -> {
-				Lock lock = getReadWriteLock().writeLock();
+				Lock lock = writeLock();
 				lock.lock();
 				try {
 					if (registrations != null) {
@@ -70,7 +70,7 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements ServiceL
 		}
 
 		public void reload(boolean force) {
-			Lock lock = getReadWriteLock().writeLock();
+			Lock lock = writeLock();
 			lock.lock();
 			try {
 				if (initialized.compareAndSet(false, true) || force) {
@@ -126,7 +126,7 @@ public class ServiceContainer<E> extends TreeSetContainer<E> implements ServiceL
 
 		@Override
 		public void accept(Lifecycle source) {
-			Lock lock = getReadWriteLock().writeLock();
+			Lock lock = writeLock();
 			lock.lock();
 			try {
 				if (source.isRunning()) {

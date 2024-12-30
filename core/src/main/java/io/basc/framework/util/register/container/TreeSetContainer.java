@@ -35,7 +35,7 @@ public class TreeSetContainer<E> extends CollectionContainer<E, TreeSet<ElementR
 			return;
 		}
 
-		Lock lock = getReadWriteLock().writeLock();
+		Lock lock = writeLock();
 		lock.lock();
 		try {
 			update((set) -> {

@@ -13,6 +13,7 @@ public class UUIDSequences extends ConfigurableServices<UUIDSequence> implements
 			synchronized (UUIDSequences.class) {
 				if (instance == null) {
 					instance = new UUIDSequences();
+					instance.register(RandomUUIDSequence.getInstance());
 					instance.doNativeConfigure();
 				}
 			}
@@ -40,5 +41,9 @@ public class UUIDSequences extends ConfigurableServices<UUIDSequence> implements
 		}
 		throw new UnsupportedOperationException(
 				"Unsupported length range " + lengthRange + " or version range " + versionRange);
+	}
+
+	public static String getUUID() {
+		return getInstance().next();
 	}
 }

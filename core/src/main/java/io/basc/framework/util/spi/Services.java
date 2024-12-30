@@ -2,7 +2,6 @@ package io.basc.framework.util.spi;
 
 import java.util.Comparator;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Lifecycle;
@@ -30,7 +29,7 @@ public class Services<S>
 
 		@Override
 		public void accept(Lifecycle source) {
-			Lock lock = container.getReadWriteLock().writeLock();
+			Lock lock = container.writeLock();
 			lock.lock();
 			try {
 				if (source.isRunning()) {
@@ -102,7 +101,7 @@ public class Services<S>
 	}
 
 	public Publisher<? super Elements<ChangeEvent<S>>> getPublisher() {
-		Lock lock = container.getReadWriteLock().readLock();
+		Lock lock = container.readLock();
 		lock.lock();
 		try {
 			return publisher;
@@ -111,13 +110,13 @@ public class Services<S>
 		}
 	}
 
-	public ReadWriteLock getReadWriteLock() {
-		return container.getReadWriteLock();
+	public ServiceContainer<ServiceHolder<S>> getContainer() {
+		return container;
 	}
 
 	@Override
 	public Elements<S> getSource() {
-		Lock lock = container.getReadWriteLock().readLock();
+		Lock lock = container.readLock();
 		lock.lock();
 		try {
 			Elements<S> firstSingletonElements = first == null ? Elements.empty() : Elements.singleton(first);
@@ -188,7 +187,7 @@ public class Services<S>
 	}
 
 	public void setFirst(S first) {
-		Lock lock = container.getReadWriteLock().writeLock();
+		Lock lock = container.writeLock();
 		lock.lock();
 		try {
 			ChangeEvent<S> event = new ChangeEvent<>(this.first, first);
@@ -200,7 +199,7 @@ public class Services<S>
 	}
 
 	public void setLast(S last) {
-		Lock lock = container.getReadWriteLock().writeLock();
+		Lock lock = container.writeLock();
 		lock.lock();
 		try {
 			ChangeEvent<S> event = new ChangeEvent<>(this.last, last);
@@ -212,7 +211,7 @@ public class Services<S>
 	}
 
 	public void setPublisher(Publisher<? super Elements<ChangeEvent<S>>> publisher) {
-		Lock lock = container.getReadWriteLock().writeLock();
+		Lock lock = container.writeLock();
 		lock.lock();
 		try {
 			this.publisher = publisher == null ? Publisher.empty() : publisher;

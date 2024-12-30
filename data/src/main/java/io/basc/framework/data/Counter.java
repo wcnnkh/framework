@@ -10,6 +10,29 @@ import io.basc.framework.data.kv.KeyOperations;
  */
 
 public interface Counter extends KeyOperations<String> {
+	public static interface CounterWrapper<W extends Counter> extends Counter, KeyOperationsWrapper<String, W> {
+
+		@Override
+		default long incr(String key, long delta, long initialValue) {
+			return getSource().incr(key, delta, initialValue);
+		}
+
+		@Override
+		default long incr(String key, long delta) {
+			return getSource().incr(key, delta);
+		}
+
+		@Override
+		default long decr(String key, long delta, long initialValue) {
+			return getSource().decr(key, delta, initialValue);
+		}
+
+		@Override
+		default long decr(String key, long delta) {
+			return getSource().decr(key, delta);
+		}
+	}
+
 	default long incr(String key, long delta) {
 		return incr(key, delta, 0);
 	}

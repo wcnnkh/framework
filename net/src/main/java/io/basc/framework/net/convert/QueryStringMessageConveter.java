@@ -3,9 +3,9 @@ package io.basc.framework.net.convert;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
-import io.basc.framework.core.mapping.text.query.QueryStringFormat;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
+import io.basc.framework.net.text.query.QueryStringFormat;
 import lombok.Setter;
 
 @Setter

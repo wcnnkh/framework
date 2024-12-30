@@ -16,6 +16,7 @@
 
 package io.basc.framework.util;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,7 +42,11 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 	 * @param key   the key
 	 * @param value the value to be added
 	 */
-	void add(K key, V value);
+	default void add(K key, V value) {
+		adds(key, Arrays.asList(value));
+	}
+
+	void adds(K key, List<V> values);
 
 	/**
 	 * Set the given single value under the given key.
@@ -56,18 +61,15 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 	 * 
 	 * @param values the values.
 	 */
-	void setAll(Map<K, V> values);
+	default void setAll(Map<? extends K, ? extends V> map) {
+		for (Entry<? extends K, ? extends V> entry : map.entrySet()) {
+			set(entry.getKey(), entry.getValue());
+		}
+	}
 
-	default void addAll(Map<K, List<V>> map) {
-		for (Entry<K, List<V>> entry : map.entrySet()) {
-			List<V> values = entry.getValue();
-			if (values == null) {
-				continue;
-			}
-
-			for (V value : values) {
-				add(entry.getKey(), value);
-			}
+	default void addAll(Map<? extends K, ? extends List<V>> map) {
+		for (Entry<? extends K, ? extends List<V>> entry : map.entrySet()) {
+			adds(entry.getKey(), entry.getValue());
 		}
 	}
 

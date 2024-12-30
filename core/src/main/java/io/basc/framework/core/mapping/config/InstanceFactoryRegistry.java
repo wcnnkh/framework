@@ -9,13 +9,13 @@ public class InstanceFactoryRegistry extends ServiceMap<InstanceFactory> impleme
 
 	@Override
 	public boolean canInstantiated(@NonNull TypeDescriptor requiredType) {
-		InstanceFactory instanceFactory = getFirst(requiredType.getType());
+		InstanceFactory instanceFactory = match(requiredType.getType()).first();
 		return instanceFactory == null ? false : instanceFactory.canInstantiated(requiredType);
 	}
 
 	@Override
 	public Object newInstance(@NonNull TypeDescriptor requiredType) {
-		InstanceFactory instanceFactory = getFirst(requiredType.getType());
+		InstanceFactory instanceFactory = match(requiredType.getType()).first();
 		if (instanceFactory == null || !instanceFactory.canInstantiated(requiredType)) {
 			throw new UnsupportedOperationException(requiredType.toString());
 		}

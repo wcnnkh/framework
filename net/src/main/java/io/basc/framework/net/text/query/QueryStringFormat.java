@@ -1,4 +1,4 @@
-package io.basc.framework.core.mapping.text.query;
+package io.basc.framework.net.text.query;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.lang.ObjectValue;
-import io.basc.framework.core.mapping.text.ObjectFormat;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.net.text.ObjectFormat;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.codec.Codec;

@@ -11,7 +11,7 @@ public class DefaultTransformerRegistry<S, E extends Throwable>
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Transformer<S, T, E> getTransformer(@NonNull Class<? extends T> requiredType) {
-		return (Transformer<S, T, E>) getFirst(requiredType);
+		return (Transformer<S, T, E>) match(requiredType).first();
 	}
 
 	@Override

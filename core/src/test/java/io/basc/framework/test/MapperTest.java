@@ -7,9 +7,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.json.JsonUtils;
-import io.basc.framework.mapper.stereotype.DefaultObjectMapper;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.core.mapping.stereotype.StereotypeMapper;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -18,15 +17,15 @@ public class MapperTest {
 	@Test
 	public void util() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("k", XUtils.getUUID());
-		map.put("b.bk", XUtils.getUUID());
+		map.put("k", UUIDSequences.getUUID());
+		map.put("b.bk", UUIDSequences.getUUID());
 		map.put("bk", "bk");
-		map.put("s.a", XUtils.getUUID());
-		map.put("s.b", XUtils.getUUID());
-		DefaultObjectMapper mapper = new DefaultObjectMapper();
+		map.put("s.a", UUIDSequences.getUUID());
+		map.put("s.b", UUIDSequences.getUUID());
+		StereotypeMapper mapper = new StereotypeMapper();
 		A a = mapper.convert(map, A.class);
-		System.out.println(JsonUtils.getSupport().toJsonString(map));
-		System.out.println(JsonUtils.getSupport().toJsonString(a));
+		System.out.println(map);
+		System.out.println(a);
 		assertTrue(map.get("k").equals(a.getK()));
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));
 		System.out.println(a);

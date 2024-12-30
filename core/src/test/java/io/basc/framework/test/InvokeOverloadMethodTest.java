@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class InvokeOverloadMethodTest {
 
@@ -17,7 +17,7 @@ public class InvokeOverloadMethodTest {
 		}
 
 		for (int i = 0; i < 100; i++) {
-			int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, XUtils.getUUID());
+			int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, UUIDSequences.getUUID());
 			assertTrue(value == 10);
 		}
 	}

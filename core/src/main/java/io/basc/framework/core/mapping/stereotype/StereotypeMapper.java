@@ -46,4 +46,9 @@ public class StereotypeMapper
 		}
 		return Mapper.super.convert(source, sourceType, targetType);
 	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T convert(Object source, Class<? extends T> targetType) {
+		return (T) convert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(targetType));
+	}
 }

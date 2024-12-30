@@ -6,8 +6,8 @@ import java.util.EnumSet;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.Any;
+import io.basc.framework.util.Elements;
 
 public abstract class NumberValue extends Number implements Any, Comparable<NumberValue> {
 	public static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);

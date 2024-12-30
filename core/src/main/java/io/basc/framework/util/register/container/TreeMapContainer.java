@@ -35,7 +35,7 @@ public class TreeMapContainer<K, V> extends MapContainer<K, V, TreeMap<K, EntryR
 			return;
 		}
 
-		Lock lock = getReadWriteLock().writeLock();
+		Lock lock = writeLock();
 		lock.lock();
 		try {
 			update((map) -> {

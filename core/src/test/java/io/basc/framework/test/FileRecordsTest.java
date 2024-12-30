@@ -2,26 +2,28 @@ package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.codec.support.CharsetCodec;
 import io.basc.framework.util.io.FileRecords;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class FileRecordsTest {
 	@Test
 	public void test() throws IOException {
-		FileRecords<String> records = new FileRecords<String>(CharsetCodec.UTF_8);
+		File file = File.createTempFile(UUIDSequences.getUUID(), UUIDSequences.getUUID());
+		FileRecords<String> records = new FileRecords<String>(file, CharsetCodec.UTF_8);
 		try {
 			List<String> list = new ArrayList<String>();
 			for (int i = 0; i < 10; i++) {
 				StringBuilder sb = new StringBuilder();
 				for (int a = 0; a < 10; a++) {
-					sb.append(XUtils.getUUID());
+					sb.append(UUIDSequences.getUUID());
 				}
 				list.add(sb.toString());
 				records.append(list.get(i));

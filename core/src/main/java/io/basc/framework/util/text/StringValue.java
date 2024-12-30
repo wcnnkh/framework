@@ -1,8 +1,8 @@
 package io.basc.framework.util.text;
 
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Any;
+import io.basc.framework.util.Elements;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

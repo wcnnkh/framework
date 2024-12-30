@@ -4,12 +4,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.comparator.TypeComparator;
+import io.basc.framework.util.concurrent.AtomicEntry;
+import io.basc.framework.util.register.container.EntryRegistration;
 import io.basc.framework.util.register.container.TreeMapContainer;
 import lombok.NonNull;
 
@@ -28,121 +33,209 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 	}
 
 	public Registration register(Class<?> requiredType, S service) {
-		Services<S> services = container.get(requiredType);
-		if (services == null) {
-			services = servicesCreator.apply(requiredType);
-			container.put(requiredType, services);
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			Services<S> services = container.get(requiredType);
+			if (services == null) {
+				services = servicesCreator.apply(requiredType);
+				container.put(requiredType, services);
+			}
+			return services.register(service);
+		} finally {
+			lock.unlock();
 		}
-		return services.register(service);
 	}
 
 	public Registration register(Class<?> requiredType, S service, int order) {
-		Services<S> services = container.get(requiredType);
-		if (services == null) {
-			services = servicesCreator.apply(requiredType);
-			container.put(requiredType, services);
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			Services<S> services = container.get(requiredType);
+			if (services == null) {
+				services = servicesCreator.apply(requiredType);
+				container.put(requiredType, services);
+			}
+			return services.register(order, service);
+		} finally {
+			lock.unlock();
 		}
-		return services.register(order, service);
 	}
 
 	public Elements<S> match(Class<?> requiredType) {
-		// TODO
-		return Elements.empty();
+		return container.readAsElements((map) -> {
+			EntryRegistration<Class<?>, Services<S>> registration = map.get(requiredType);
+			Elements<S> values = registration == null ? Elements.empty() : registration.getValue();
+			SortedMap<Class<?>, EntryRegistration<Class<?>, Services<S>>> tailMap = map.tailMap(requiredType);
+			Elements<S> tailValues = Elements.of(() -> tailMap.values().stream().flatMap((e) -> e.getValue().stream()));
+			return values.concat(tailValues);
+		});
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return container.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return container.isEmpty();
 	}
 
 	@Override
 	public boolean containsKey(Object key) {
-		// TODO Auto-generated method stub
-		return false;
+		Services<S> services = container.get(key);
+		if (services == null) {
+			return false;
+		}
+
+		return !services.isEmpty();
 	}
 
 	@Override
 	public boolean containsValue(Object value) {
-		// TODO Auto-generated method stub
+		if (container.containsValue(value)) {
+			return true;
+		}
+
+		for (Entry<Class<?>, Services<S>> entry : container.entrySet()) {
+			if (entry.getValue().contains(value)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public List<S> get(Object key) {
-		// TODO Auto-generated method stub
-		return null;
+		return container.readAsList((map) -> {
+			EntryRegistration<Class<?>, Services<S>> registration = map.get(key);
+			if (registration == null) {
+				return null;
+			}
+			return registration.getValue();
+		});
 	}
 
 	@Override
 	public List<S> put(Class<?> key, List<S> value) {
-		// TODO Auto-generated method stub
-		return null;
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			Services<S> services = container.get(key);
+			if (services == null) {
+				services = servicesCreator.apply(key);
+				services.registers(Elements.of(value));
+				container.put(key, services);
+				return null;
+			} else {
+				List<S> oldList = services.toList();
+				services.clear();
+				services.registers(Elements.of(value));
+				return oldList;
+			}
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public List<S> remove(Object key) {
-		// TODO Auto-generated method stub
-		return null;
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			Services<S> services = container.remove(key);
+			if (services == null) {
+				return null;
+			}
+
+			List<S> oldList = services.toList();
+			services.clear();
+			return oldList;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public void putAll(Map<? extends Class<?>, ? extends List<S>> m) {
-		// TODO Auto-generated method stub
-
+		for (Entry<? extends Class<?>, ? extends List<S>> entry : m.entrySet()) {
+			put(entry.getKey(), entry.getValue());
+		}
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			for (Entry<Class<?>, Services<S>> entry : container.entrySet()) {
+				entry.getValue().clear();
+			}
+			container.clear();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public Set<Class<?>> keySet() {
-		// TODO Auto-generated method stub
-		return null;
+		return container.keySet();
 	}
 
 	@Override
 	public Collection<List<S>> values() {
-		// TODO Auto-generated method stub
-		return null;
+		return container.values().stream().map((e) -> e.toList()).collect(Collectors.toList());
 	}
 
 	@Override
 	public Set<Entry<Class<?>, List<S>>> entrySet() {
-		// TODO Auto-generated method stub
-		return null;
+		return container.entrySet().stream().map((e) -> {
+			Entry<Class<?>, List<S>> entry = new AtomicEntry<>(e.getKey());
+			entry.setValue(e.getValue().toList());
+			return entry;
+		}).collect(Collectors.toSet());
 	}
 
 	@Override
 	public S getFirst(Class<?> key) {
-		// TODO Auto-generated method stub
-		return null;
+		Services<S> services = container.get(key);
+		if (services == null) {
+			return null;
+		}
+		return services.first();
 	}
 
 	@Override
-	public void add(Class<?> key, S value) {
-		// TODO Auto-generated method stub
-
+	public void adds(Class<?> key, List<S> values) {
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			Services<S> services = container.get(key);
+			if (services == null) {
+				services = servicesCreator.apply(key);
+				container.put(key, services);
+			}
+			services.registers(Elements.of(values));
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public void set(Class<?> key, S value) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setAll(Map<Class<?>, S> values) {
-		// TODO Auto-generated method stub
-
+		Lock lock = container.writeLock();
+		lock.lock();
+		try {
+			Services<S> services = container.get(key);
+			if (services == null) {
+				services = servicesCreator.apply(key);
+				container.put(key, services);
+			}
+			services.clear();
+			services.register(value);
+		} finally {
+			lock.unlock();
+		}
 	}
 }

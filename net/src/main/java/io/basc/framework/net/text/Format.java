@@ -1,4 +1,4 @@
-package io.basc.framework.core.mapping.text;
+package io.basc.framework.net.text;
 
 import java.io.IOException;
 import java.io.StringReader;

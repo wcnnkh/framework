@@ -23,7 +23,6 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Receipt;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Registrations;
-import io.basc.framework.util.Streams;
 import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.register.KeyValueRegistry;
@@ -356,7 +355,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 
 	public final Registrations<EntryRegistration<K, V>> getRegistrations(
 			Function<? super M, ? extends Elements<EntryRegistration<K, V>>> reader) {
-		Elements<EntryRegistration<K, V>> registrations = read(
+		Elements<EntryRegistration<K, V>> registrations = readAsElements(
 				(collection) -> collection == null ? Elements.empty() : reader.apply(collection));
 		return convertToBatchRegistration(registrations);
 	}
@@ -468,12 +467,12 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	public final int size() {
 		return readInt((map) -> map == null ? 0 : map.size());
 	}
-
+	
 	@Override
 	public Stream<KeyValue<K, V>> stream() {
-		// copy一下来保证线程安全
-		return read((map) -> map == null ? Streams.empty()
-				: map.values().stream().map((e) -> (KeyValue<K, V>) e).collect(Collectors.toList()).stream());
+		return readAsElements(
+				(map) -> map == null ? Elements.empty() : Elements.of(map.values()).map((e) -> (KeyValue<K, V>) e))
+				.stream();
 	}
 
 	@Override

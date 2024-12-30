@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import io.basc.framework.util.ResponsiveIterator;
 import io.basc.framework.util.Streams;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class ResponsiveIteratorTest {
 	private static List<Object> pushList = new ArrayList<Object>();
@@ -33,7 +33,7 @@ public class ResponsiveIteratorTest {
 		@Override
 		public void run() {
 			while (++count < 100) {
-				String uuid = XUtils.getUUID();
+				String uuid = UUIDSequences.getUUID();
 				try {
 					iterator.put(uuid);
 					pushList.add(uuid);

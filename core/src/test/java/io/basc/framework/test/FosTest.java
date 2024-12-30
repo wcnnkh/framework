@@ -9,8 +9,8 @@ import java.io.OutputStreamWriter;
 
 import org.junit.Test;
 
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.io.FileUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class FosTest {
 	@Test
@@ -23,7 +23,7 @@ public class FosTest {
 				try {
 					OutputStreamWriter write = new OutputStreamWriter(fos);
 					try {
-						String content = XUtils.getUUID() + "\n";
+						String content = UUIDSequences.getUUID() + "\n";
 						write.append(content);
 						sb.append(content);
 						write.flush();

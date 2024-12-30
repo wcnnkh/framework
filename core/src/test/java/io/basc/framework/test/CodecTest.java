@@ -11,7 +11,6 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
 
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.Encoder;
 import io.basc.framework.util.codec.encode.MD5;
@@ -23,9 +22,10 @@ import io.basc.framework.util.codec.support.DES;
 import io.basc.framework.util.codec.support.HexCodec;
 import io.basc.framework.util.codec.support.RSA;
 import io.basc.framework.util.codec.support.URLCodec;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class CodecTest {
-	public static String content = XUtils.getUUID() + "这是一段加解密测试内容!";
+	public static String content = UUIDSequences.getUUID() + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 
 	@Test

@@ -12,7 +12,7 @@ public class TemplateFactoryRegistry<S, K, V extends Value, T extends Template<K
 
 	@Override
 	public T getTemplate(@NonNull S source, @NonNull TypeDescriptor requiredType) {
-		TemplateFactory<? super S, K, V, T> templateFactory = getFirst(requiredType.getType());
+		TemplateFactory<? super S, K, V, T> templateFactory = match(requiredType.getType()).first();
 		if (templateFactory == null) {
 			return null;
 		}
@@ -20,6 +20,6 @@ public class TemplateFactoryRegistry<S, K, V extends Value, T extends Template<K
 	}
 
 	public boolean containsTemplate(@NonNull Class<?> requiredType) {
-		return getFirst(requiredType) != null;
+		return !match(requiredType).isEmpty();
 	}
 }

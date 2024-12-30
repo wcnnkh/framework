@@ -27,7 +27,7 @@ public class DisposableExchange<T> extends AbstractExchange<T> {
 
 	@Override
 	public void syncPublish(T resource) {
-		Lock lock = registry.getReadWriteLock().writeLock();
+		Lock lock = registry.writeLock();
 		lock.lock();
 		try {
 			Listener<? super T> listener;

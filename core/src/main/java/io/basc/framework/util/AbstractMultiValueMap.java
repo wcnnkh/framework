@@ -16,14 +16,14 @@ public abstract class AbstractMultiValueMap<K, V> implements MultiValueMap<K, V>
 		return new ArrayList<V>(8);
 	}
 
-	// MultiValueMap implementation
-	public void add(K key, V value) {
+	@Override
+	public void adds(K key, List<V> value) {
 		List<V> values = getTargetMap().get(key);
 		if (values == null) {
 			values = createList();
 			getTargetMap().put(key, values);
 		}
-		values.add(value);
+		values.addAll(value);
 	}
 
 	public V getFirst(K key) {
@@ -35,12 +35,6 @@ public abstract class AbstractMultiValueMap<K, V> implements MultiValueMap<K, V>
 		List<V> values = createList();
 		values.add(value);
 		getTargetMap().put(key, values);
-	}
-
-	public void setAll(Map<K, V> values) {
-		for (java.util.Map.Entry<K, V> entry : values.entrySet()) {
-			set(entry.getKey(), entry.getValue());
-		}
 	}
 
 	// Map implementation

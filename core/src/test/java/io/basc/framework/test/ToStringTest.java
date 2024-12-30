@@ -2,7 +2,7 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 
 public class ToStringTest {
@@ -10,7 +10,7 @@ public class ToStringTest {
 	public void test() {
 		ToStringBean bean = new ToStringBean();
 		bean.setA(new int[] { 1, 2 });
-		bean.setB(XUtils.getUUID());
+		bean.setB(UUIDSequences.getUUID());
 		bean.setC(new int[][] { { 1, 2 }, { 1, 2 } });
 		System.out.println(bean);
 	}

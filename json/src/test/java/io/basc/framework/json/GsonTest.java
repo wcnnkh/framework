@@ -1,17 +1,17 @@
-package io.basc.framework.test;
+package io.basc.framework.json;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import io.basc.framework.gson.GsonSupport;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.ToString;
 
 public class GsonTest {
 	@Test
 	public void test() {
-		A a = new A(XUtils.getUUID());
+		A a = new A(UUIDSequences.getUUID());
 		String json = GsonSupport.INSTANCE.toJsonString(a);
 		System.out.println(json);
 		a = GsonSupport.INSTANCE.parseObject(json, A.class);
