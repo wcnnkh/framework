@@ -10,10 +10,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import io.basc.framework.core.Constants;
 import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;

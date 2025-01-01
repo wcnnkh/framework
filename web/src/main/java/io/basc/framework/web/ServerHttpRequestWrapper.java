@@ -9,10 +9,10 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.Principal;
 
+import io.basc.framework.core.Constants;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.net.InputMessageWrapper;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.MultiValueMap;

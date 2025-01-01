@@ -16,9 +16,9 @@
 
 package io.basc.framework.websocket.server.support;
 
+import io.basc.framework.core.Constants;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;

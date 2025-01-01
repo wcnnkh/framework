@@ -1482,24 +1482,24 @@ public final class StringUtils {
 	 * @param charSequence
 	 * @return
 	 */
-	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence) {
+	public static Elements<CharSequenceTemplate> split(CharSequence charSequence) {
 		return split(charSequence, DEFAULT_SEPARATOR);
 	}
 
-	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens,
+	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, boolean trimTokens,
 			boolean ignoreEmptyTokens, CharSequence... filters) {
 		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
 	}
 
-	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence, CharSequence... filters) {
+	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, CharSequence... filters) {
 		if (charSequence == null) {
 			return Elements.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
 
-	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence,
+	public static Elements<CharSequenceTemplate> split(CharSequence charSequence,
 			Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
 			return Elements.empty();
@@ -1507,7 +1507,7 @@ public final class StringUtils {
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
 
-	public static Elements<CharSequenceSplitSegment> split(CharSequence charSequence, int beginIndex, int endIndex,
+	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, int beginIndex, int endIndex,
 			Collection<? extends CharSequence> filters) {
 		if (StringUtils.isEmpty(charSequence)) {
 			return Elements.empty();
@@ -1522,7 +1522,7 @@ public final class StringUtils {
 		}
 
 		if (!find) {
-			return Elements.singleton(new CharSequenceSplitSegment(charSequence));
+			return Elements.singleton(new CharSequenceTemplate(charSequence));
 		}
 		return Elements.of(() -> new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
 	}
@@ -2024,8 +2024,7 @@ public final class StringUtils {
 			return false;
 		}
 
-		return split(packageName, ".")
-				.allMatch((e) -> e.getSource().length() > 0 && Character.isAlphabetic(e.charAt(0)));
+		return split(packageName, ".").allMatch((e) -> e.length() > 0 && Character.isAlphabetic(e.charAt(0)));
 	}
 
 	private StringUtils() {

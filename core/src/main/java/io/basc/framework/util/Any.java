@@ -9,6 +9,8 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import io.basc.framework.util.math.NumberValue;
+
 public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
 	@FunctionalInterface
 	public static interface AnyWrapper<W extends Any> extends Any, Wrapper<W> {
@@ -43,11 +45,6 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 
 		@Override
-		default CharSequence getAsCharSequence() {
-			return getSource().getAsCharSequence();
-		}
-
-		@Override
 		default double getAsDouble() {
 			return getSource().getAsDouble();
 		}
@@ -78,7 +75,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 
 		@Override
-		default Number getAsNumber() {
+		default NumberValue getAsNumber() {
 			return getSource().getAsNumber();
 		}
 
@@ -95,6 +92,11 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		@Override
 		default String getAsString() {
 			return getSource().getAsString();
+		}
+
+		@Override
+		default Version getAsVersion() {
+			return getSource().getAsVersion();
 		}
 
 		@Override
@@ -136,11 +138,6 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 
 		@Override
-		public CharSequence getAsCharSequence() {
-			return null;
-		}
-
-		@Override
 		public double getAsDouble() {
 			return 0;
 		}
@@ -171,13 +168,23 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 
 		@Override
-		public Number getAsNumber() {
+		public NumberValue getAsNumber() {
 			return null;
 		}
 
 		@Override
 		public short getAsShort() {
 			return 0;
+		}
+
+		@Override
+		public String getAsString() {
+			return null;
+		}
+
+		@Override
+		public Version getAsVersion() {
+			return null;
 		}
 
 		@Override
@@ -212,23 +219,59 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		return array;
 	}
 
-	BigDecimal getAsBigDecimal();
+	default BigDecimal getAsBigDecimal() {
+		throw new UnsupportedOperationException("Not a BigDecimal");
+	}
 
-	BigInteger getAsBigInteger();
+	default BigInteger getAsBigInteger() {
+		throw new UnsupportedOperationException("Not a BigInteger");
+	}
 
-	byte getAsByte();
+	@Override
+	default boolean getAsBoolean() {
+		throw new UnsupportedOperationException("Not a boolean");
+	}
 
-	char getAsChar();
+	default byte getAsByte() {
+		throw new UnsupportedOperationException("Not a byte");
+	}
 
-	CharSequence getAsCharSequence();
+	default char getAsChar() {
+		String value = getAsString();
+		if (value.length() == 1) {
+			return value.charAt(0);
+		}
+		throw new UnsupportedOperationException("Not a char");
+	}
 
-	Elements<? extends Any> getAsElements();
+	@Override
+	default double getAsDouble() {
+		throw new UnsupportedOperationException("Not a double");
+	}
 
-	<T extends Enum<T>> T getAsEnum(Class<T> enumType);
+	default Elements<? extends Any> getAsElements() {
+		throw new UnsupportedOperationException("Not a Multiple");
+	}
 
-	float getAsFloat();
+	default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
+		throw new UnsupportedOperationException("Not a enum");
+	}
 
-	Number getAsNumber();
+	default float getAsFloat() {
+		throw new UnsupportedOperationException("Not a float");
+	}
+
+	@Override
+	default int getAsInt() {
+		throw new UnsupportedOperationException("Not a int");
+	}
+
+	@Override
+	default long getAsLong() {
+		throw new UnsupportedOperationException("Not a long");
+	}
+
+	NumberValue getAsNumber();
 
 	default <T> T getAsObject(Class<? extends T> requiredType) {
 		return getAsObject(requiredType, () -> DEFAULT.getAsObject(requiredType));
@@ -237,9 +280,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
 		Object v = null;
-		if (CharSequence.class == requiredType) {
-			v = getAsCharSequence();
-		} else if (String.class == requiredType) {
+		if (String.class == requiredType) {
 			v = getAsString();
 		} else if (ClassUtils.isInt(requiredType)) {
 			v = getAsInt();
@@ -261,7 +302,9 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 			v = getAsBigDecimal();
 		} else if (BigInteger.class == requiredType) {
 			v = getAsBigInteger();
-		} else if (Number.class == requiredType) {
+		} else if (Version.class == requiredType) {
+			v = getAsVersion();
+		} else if (NumberValue.class.isAssignableFrom(requiredType)) {
 			v = getAsNumber();
 		} else if (requiredType.isEnum()) {
 			v = getAsEnum((Class<? extends Enum>) requiredType);
@@ -275,16 +318,20 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		return (T) v;
 	}
 
-	short getAsShort();
+	default short getAsShort() {
+		throw new UnsupportedOperationException("Not a short");
+	}
 
-	default String getAsString() {
-		CharSequence charSequence = getAsCharSequence();
-		return charSequence == null ? null : charSequence.toString();
+	String getAsString();
+
+	default Version getAsVersion() {
+		return isNumber() ? getAsNumber() : new CharSequenceTemplate(getAsString(), null);
 	}
 
 	/**
 	 * 是否有多个，例如是一个数组或集合
 	 * 
+	 * @see #getAsElements()
 	 * @return
 	 */
 	boolean isMultiple();

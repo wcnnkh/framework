@@ -1,6 +1,6 @@
 package io.basc.framework.rpc.remote;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.OutputMessage;

@@ -3,6 +3,7 @@ package io.basc.framework.util.math;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import io.basc.framework.util.Any;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -21,18 +22,19 @@ public class LongValue extends RationalNumber {
 	}
 
 	@Override
-	public CharSequence getAsCharSequence() {
+	public String getAsString() {
 		return Long.toString(value);
 	}
 
 	@Override
-	public int compareTo(NumberValue o) {
-		BigInteger value = o.getAsBigInteger();
-		if (value.compareTo(LONG_MAX_VALUE) >= 0) {
-			return -1;
+	public int compareTo(Any o) {
+		if (o.isNumber()) {
+			BigInteger value = o.getAsBigInteger();
+			if (value.compareTo(LONG_MAX_VALUE) >= 0) {
+				return -1;
+			}
 		}
-
-		return Long.compare(this.value, value.longValue());
+		return super.compareTo(o);
 	}
 
 }

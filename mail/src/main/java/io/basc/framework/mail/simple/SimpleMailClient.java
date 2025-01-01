@@ -10,7 +10,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.mail.MailClient;
 import io.basc.framework.mail.MailException;
 import io.basc.framework.mail.MessageCallback;

@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;

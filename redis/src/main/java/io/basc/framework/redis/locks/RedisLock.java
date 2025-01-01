@@ -3,7 +3,7 @@ package io.basc.framework.redis.locks;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.redis.ExpireOption;
 import io.basc.framework.redis.Redis;

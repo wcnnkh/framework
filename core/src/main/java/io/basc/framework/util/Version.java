@@ -1,151 +1,123 @@
 package io.basc.framework.util;
 
-import java.io.Serializable;
-import java.util.Comparator;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.util.math.NumberValue;
+import lombok.Data;
+import lombok.NonNull;
 
-public class Version implements Serializable, Comparable<Version>, Comparator<Any> {
-	private static final long serialVersionUID = 1L;
-	/**
-	 * 默认的版本分割符
-	 */
-	public static final String DIVIDEERS = ".";
+/**
+ * 这是一个抽象的版本，意味的是可以进行比较的
+ * 
+ * @author shuchaowen
+ *
+ */
+public interface Version extends Any, Comparable<Any> {
+	@Data
+	public static class JoinVersion implements Version {
+		@NonNull
+		private final Elements<Version> elements;
+		private final CharSequence delimiter;
 
-	private final Value[] fragments;
-	private final String dividers;
+		@Override
+		public int compareTo(Any other) {
+			if (other.isMultiple()) {
+				Elements<? extends Any> otherElements = other.getAsElements().toList();
+				int compare = compareTo(otherElements);
+				if (compare != 0) {
+					return compare;
+				}
 
-	public Version(String version) {
-		this(version, DIVIDEERS);
-	}
+				long count = elements.count();
+				long otherCount = otherElements.count();
+				if (count == otherCount) {
+					return 0;// 相等
+				} else if (count > otherCount) {
+					return 1;
+				} else {
+					return -1;
+				}
+			} else {
+				if (elements.isEmpty()) {
+					return -1;
+				}
 
-	public Version(String version, String dividers) {
-		Assert.requiredArgument(version != null, "version");
-		this.dividers = dividers;
-		String[] arr = StringUtils.splitToArray(version, dividers);
-		fragments = new Value[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			this.fragments[i] = Value.of(arr[i]);
-		}
-	}
-
-	public Version(Value[] fragments, String dividers) {
-		this.fragments = fragments;
-		this.dividers = dividers;
-	}
-
-	public String getDividers() {
-		return dividers;
-	}
-
-	public Value[] getFragments() {
-		return fragments.clone();
-	}
-
-	public int length() {
-		return fragments.length;
-	}
-
-	public Value get(int index) {
-		return fragments[index];
-	}
-
-	/**
-	 * 只比较部分,大于0就说明left&gt;right
-	 * 
-	 * @param fragments
-	 * @return
-	 */
-	public int compareTo(Value[] fragments) {
-		for (int i = 0; i < fragments.length && i < this.fragments.length; i++) {
-			Value fragment1 = this.fragments[i];
-			Value fragment2 = fragments[i];
-			int compare = compare(fragment1, fragment2);
-			if (compare == 0) {
-				continue;
+				int value = elements.first().compareTo(other);
+				return value == 0 ? (elements.count() > 1 ? 1 : 0) : value;
 			}
-
-			return compare;
-		}
-		return 0;
-	}
-
-	/**
-	 * 大于0就说明left&gt;right
-	 */
-	public int compareTo(Version o) {
-		int compare = compareTo(o.fragments);
-		if (compare != 0) {
-			return compare;
 		}
 
-		if (fragments.length == o.fragments.length) {
-			return 0;// 相等
-		} else if (fragments.length > o.fragments.length) {
-			return 1;
-		} else {
-			return -1;
-		}
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < fragments.length; i++) {
-			if (i != 0) {
-				sb.append(dividers);
+		private int compareTo(Elements<? extends Any> otherElements) {
+			Iterator<? extends Version> iterator = elements.iterator();
+			Iterator<? extends Any> otherIterator = otherElements.iterator();
+			while (iterator.hasNext() && otherIterator.hasNext()) {
+				Version version = iterator.next();
+				Any other = otherIterator.next();
+				int v = version.compareTo(other);
+				if (v == 0) {
+					continue;
+				}
+				return v;
 			}
-
-			sb.append(fragments[i].getAsString());
+			return 0;
 		}
-		return sb.toString();
-	}
 
-	@Override
-	public int hashCode() {
-		int hash = 0;
-		for (int i = 0; i < fragments.length; i++) {
-			hash += fragments[i].hashCode();
+		@Override
+		public String getAsString() {
+			return delimiter == null ? elements.map((e) -> e.getAsString()).collect(Collectors.joining())
+					: elements.map((e) -> e.getAsString()).collect(Collectors.joining(delimiter));
 		}
-		return hash;
-	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
+		@Override
+		public NumberValue getAsNumber() {
+			throw new UnsupportedOperationException("Not a Number");
+		}
+
+		@Override
+		public boolean isMultiple() {
+			return true;
+		}
+
+		@Override
+		public boolean isNumber() {
 			return false;
 		}
 
-		if (obj == this) {
-			return true;
+		@Override
+		public Version getAsVersion() {
+			return new CharSequenceTemplate(getAsString(), delimiter);
 		}
 
-		if (obj instanceof Version) {
-			if (((Version) obj).length() != length()) {
-				return false;
-			}
+		@Override
+		public Version join(@NonNull Version version) {
+			Elements<? extends Version> joinElements = Elements.singleton(version);
+			return new JoinVersion(this.elements.concat(joinElements), delimiter);
+		}
+	}
 
-			for (int i = 0; i < fragments.length; i++) {
-				if (!fragments[i].equals(((Version) obj).fragments[i])) {
-					return false;
-				}
-			}
-			return true;
+	public static interface VersionWrapper<W extends Version> extends Version, AnyWrapper<W> {
+
+		@Override
+		default int compareTo(@NonNull Any other) {
+			return getSource().compareTo(other);
 		}
 
-		return false;
+		@Override
+		default Version join(@NonNull Version version) {
+			return getSource().join(version);
+		}
 	}
 
-	public static Version valueOf(String version) {
-		return new Version(version);
-	}
-
+	/**
+	 * 默认使用字符串的方式比较，如果有更合理的方式请重写
+	 */
 	@Override
-	public int compare(Any v1, Any v2) {
-		if (v1.isNumber() && v2.isNumber()) {
-			return Double.compare(v1.getAsDouble(), v2.getAsDouble());
-		}
+	default int compareTo(@NonNull Any other) {
+		return getAsString().compareTo(other.getAsString());
+	}
 
-		return v1.getAsString().compareTo(v2.getAsString());
+	default Version join(@NonNull Version version) {
+		return new JoinVersion(Elements.forArray(this, version), null);
 	}
 }

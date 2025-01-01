@@ -3,13 +3,13 @@ package io.basc.framework.redis;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.core.Constants;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.geo.Lbs;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;

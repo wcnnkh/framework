@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
+import io.basc.framework.util.math.NumberValue;
+
 public interface Lookup<K, V extends Any> {
 
 	@FunctionalInterface
@@ -34,8 +36,8 @@ public interface Lookup<K, V extends Any> {
 		}
 
 		@Override
-		default CharSequence getAsCharSequence(K key) {
-			return getSource().getAsCharSequence(key);
+		default Version getAsVersion(K key) {
+			return getSource().getAsVersion(key);
 		}
 
 		default double getAsDouble(K key) {
@@ -58,7 +60,7 @@ public interface Lookup<K, V extends Any> {
 			return getSource().getAsLong(key);
 		}
 
-		default Number getAsNumber(K key) {
+		default NumberValue getAsNumber(K key) {
 			return getSource().getAsNumber(key);
 		}
 
@@ -102,9 +104,9 @@ public interface Lookup<K, V extends Any> {
 		return value == null ? 0 : value.getAsChar();
 	}
 
-	default CharSequence getAsCharSequence(K key) {
+	default Version getAsVersion(K key) {
 		V value = get(key);
-		return value == null ? null : value.getAsCharSequence();
+		return value == null ? null : value.getAsVersion();
 	}
 
 	default double getAsDouble(K key) {
@@ -132,7 +134,7 @@ public interface Lookup<K, V extends Any> {
 		return value == null ? 0L : value.getAsLong();
 	}
 
-	default Number getAsNumber(K key) {
+	default NumberValue getAsNumber(K key) {
 		V value = get(key);
 		return value == null ? null : value.getAsNumber();
 	}

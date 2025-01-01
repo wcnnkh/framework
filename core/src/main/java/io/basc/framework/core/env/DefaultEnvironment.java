@@ -41,7 +41,7 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 		if (StringUtils.isEmpty(values)) {
 			return Elements.empty();
 		}
-		return StringUtils.split(values).map((e) -> e.getSource().toString());
+		return StringUtils.split(values).map((e) -> e.getAsString());
 	}
 
 	public String getConnector() {
@@ -62,7 +62,7 @@ public class DefaultEnvironment extends DefaultPropertyResolver implements Confi
 		if (StringUtils.isEmpty(values)) {
 			return Elements.empty();
 		}
-		return StringUtils.split(values).map((e) -> e.getSource().toString()).distinct();
+		return StringUtils.split(values).map((e) -> e.getAsString()).distinct();
 	}
 
 	public Environment getParentEnvironment() {

@@ -6,7 +6,6 @@ import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.Proxy;
-import io.basc.framework.lang.UnsupportedException;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +37,7 @@ public class JdkProxy implements Proxy {
 	@Override
 	public final Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) {
 		if (args.length != 0 || parameterTypes.length != 0) {
-			throw new UnsupportedException("Jdk proxy does not support calls with parameters");
+			throw new UnsupportedOperationException("Jdk proxy does not support calls with parameters");
 		}
 		return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces == null ? new Class<?>[0] : interfaces,
 				invocationHandler);

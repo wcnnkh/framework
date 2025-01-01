@@ -5,7 +5,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
 import io.basc.framework.util.codec.MultipleCodec;

@@ -8,8 +8,9 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Any;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Version;
 
-public abstract class NumberValue extends Number implements Any, Comparable<NumberValue> {
+public abstract class NumberValue extends Number implements Version {
 	public static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);
 	public static final BigDecimal DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE);
 	public static final BigDecimal FLOAT_MAX_VALUE = BigDecimal.valueOf(Float.MAX_VALUE);
@@ -168,7 +169,7 @@ public abstract class NumberValue extends Number implements Any, Comparable<Numb
 	}
 
 	@Override
-	public Number getAsNumber() {
+	public NumberValue getAsNumber() {
 		return this;
 	}
 
@@ -178,7 +179,7 @@ public abstract class NumberValue extends Number implements Any, Comparable<Numb
 		if (NumberValue.class == requiredType) {
 			return (T) this;
 		}
-		return Any.super.getAsObject(requiredType, defaultSupplier);
+		return Version.super.getAsObject(requiredType, defaultSupplier);
 	}
 
 	@Override

@@ -11,10 +11,14 @@ import java.util.stream.IntStream;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.Any;
+import io.basc.framework.util.CharSequenceTemplate;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Enumerable;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.Source;
+import io.basc.framework.util.Version;
+import io.basc.framework.util.math.BigDecimalValue;
+import io.basc.framework.util.math.NumberValue;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -89,8 +93,8 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 		}
 
 		@Override
-		default CharSequence getAsCharSequence() {
-			return getSource().getAsCharSequence();
+		default Version getAsVersion() {
+			return getSource().getAsVersion();
 		}
 
 		@Override
@@ -124,7 +128,7 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 		}
 
 		@Override
-		default Number getAsNumber() {
+		default NumberValue getAsNumber() {
 			return getSource().getAsNumber();
 		}
 
@@ -313,25 +317,21 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 	}
 
 	@Override
-	default CharSequence getAsCharSequence() {
+	default Version getAsVersion() {
 		Object value = get();
 		if (value == null) {
 			return null;
 		}
 
 		if (value instanceof CharSequence) {
-			return (CharSequence) value;
+			return new CharSequenceTemplate((CharSequence) value);
 		}
 
 		if (value instanceof Any) {
-			return ((Any) value).getAsCharSequence();
+			return ((Any) value).getAsVersion();
 		}
 
-		if (value instanceof Enum) {
-			return ((Enum<?>) value).name();
-		}
-
-		return (String) getAsObject(TypeDescriptor.valueOf(CharSequence.class), Converter.unsupported());
+		return (Version) getAsObject(TypeDescriptor.valueOf(Version.class), Converter.unsupported());
 	}
 
 	@Override
@@ -465,21 +465,25 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 		return (long) getAsObject(TypeDescriptor.valueOf(long.class), Converter.unsupported());
 	}
 
-	default Number getAsNumber() {
+	default NumberValue getAsNumber() {
 		Object value = get();
 		if (value == null) {
 			return null;
 		}
 
+		if (value instanceof String) {
+			return new BigDecimalValue(getAsString());
+		}
+
 		if (value instanceof Number) {
-			return (Number) value;
+			return new BigDecimalValue(getAsString());
 		}
 
 		if (value instanceof Any) {
 			return ((Any) value).getAsNumber();
 		}
 
-		return (Number) getAsObject(TypeDescriptor.valueOf(Number.class), Converter.unsupported());
+		return (NumberValue) getAsObject(TypeDescriptor.valueOf(NumberValue.class), Converter.unsupported());
 	}
 
 	@SuppressWarnings("unchecked")

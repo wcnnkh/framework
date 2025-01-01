@@ -1,6 +1,6 @@
 package io.basc.framework.locks;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.concurrent.locks.AbstractLock;
 import io.basc.framework.util.io.FileUtils;

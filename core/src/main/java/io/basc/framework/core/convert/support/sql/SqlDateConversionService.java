@@ -13,7 +13,6 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.core.convert.support.AbstractConversionService;
-import io.basc.framework.lang.UnsupportedException;
 import lombok.NonNull;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
@@ -56,7 +55,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == Time.class) {
 			return new Time(source.getTime());
 		}
-		throw new UnsupportedException(targetType.getName());
+		throw new UnsupportedOperationException(targetType.getName());
 	}
 
 	private Object sqlDateToObject(java.sql.Date source, Class<?> targetType) {
@@ -67,7 +66,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == Time.class) {
 			return new Time(source.getTime());
 		}
-		throw new UnsupportedException(targetType.getName());
+		throw new UnsupportedOperationException(targetType.getName());
 	}
 
 	private Object sqlTimeToObject(Time source, Class<?> targetType) {
@@ -78,7 +77,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == Time.class) {
 			return new Time(source.getTime());
 		}
-		throw new UnsupportedException(targetType.getName());
+		throw new UnsupportedOperationException(targetType.getName());
 	}
 
 	private Object sqlTimestampToObject(Timestamp source, Class<?> targetType) {
@@ -89,7 +88,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == java.sql.Date.class) {
 			return new java.sql.Date(source.getTime());
 		}
-		throw new UnsupportedException(targetType.getName());
+		throw new UnsupportedOperationException(targetType.getName());
 	}
 
 	@Override

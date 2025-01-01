@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import org.junit.Test;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.ResourceUtils;
 import io.basc.framework.yaml.YamlProcessor;

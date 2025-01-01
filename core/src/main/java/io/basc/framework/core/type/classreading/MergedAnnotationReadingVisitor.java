@@ -11,9 +11,9 @@ import java.util.function.Consumer;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
 
+import io.basc.framework.core.Constants;
 import io.basc.framework.core.annotation.AnnotationFilter;
 import io.basc.framework.core.annotation.MergedAnnotation;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.util.ClassUtils;
 
 /**

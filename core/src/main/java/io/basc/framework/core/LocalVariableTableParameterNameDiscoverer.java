@@ -31,7 +31,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-import io.basc.framework.lang.Constants;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;

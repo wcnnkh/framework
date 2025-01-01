@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.spi.ConfigurableServices;
 
@@ -36,7 +35,7 @@ public class ConfigurablePropertiesResolver extends ConfigurableServices<Propert
 				return;
 			}
 		}
-		throw new UnsupportedException(resource.getDescription());
+		throw new UnsupportedOperationException(resource.getDescription());
 	}
 
 	@Override
@@ -51,6 +50,6 @@ public class ConfigurablePropertiesResolver extends ConfigurableServices<Propert
 				return;
 			}
 		}
-		throw new UnsupportedException(resource.getDescription());
+		throw new UnsupportedOperationException(resource.getDescription());
 	}
 }

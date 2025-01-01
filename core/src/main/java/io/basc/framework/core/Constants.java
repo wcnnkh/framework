@@ -1,4 +1,4 @@
-package io.basc.framework.lang;
+package io.basc.framework.core;
 
 import java.nio.charset.Charset;
 

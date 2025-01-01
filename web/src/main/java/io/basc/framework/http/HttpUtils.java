@@ -7,9 +7,9 @@ import java.util.Collection;
 
 import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.core.Constants;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;

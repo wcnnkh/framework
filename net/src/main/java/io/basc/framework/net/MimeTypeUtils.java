@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.net.MimeType.SpecificityComparator;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;

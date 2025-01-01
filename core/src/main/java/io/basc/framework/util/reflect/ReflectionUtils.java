@@ -17,7 +17,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
@@ -63,7 +62,7 @@ public abstract class ReflectionUtils {
 			OBJECT_CONSTRUCTOR = Object.class.getConstructor();
 		} catch (NoSuchMethodException e) {
 			// Object对象怎么可能没有默认的构造方法
-			throw new UnsupportedException(ReflectionUtils.class.getName(), e);
+			throw new UnsupportedOperationException(ReflectionUtils.class.getName(), e);
 		}
 	}
 
@@ -915,10 +914,10 @@ public abstract class ReflectionUtils {
 	 * @return
 	 * @throws UnsupportedException 不存在无参构造方法
 	 */
-	public static <T> T newInstance(Class<T> clazz) throws UnsupportedException {
+	public static <T> T newInstance(Class<T> clazz) throws UnsupportedOperationException {
 		Constructor<T> constructor = getDeclaredConstructor(clazz);
 		if (constructor == null) {
-			throw new UnsupportedException(clazz.getName());
+			throw new UnsupportedOperationException(clazz.getName());
 		}
 
 		try {
@@ -945,10 +944,10 @@ public abstract class ReflectionUtils {
 	 * @param <T>
 	 * @param entityClass
 	 * @return
-	 * @throws UnsupportedException
+	 * @throws UnsupportedOperationException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws UnsupportedException {
+	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws UnsupportedOperationException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Elements<Constructor<?>> elements = ReflectionUtils.getDeclaredConstructors(entityClass).convert((s) -> s
 				.sorted(MEMBER_SCOPE_COMPARATOR).sorted(Comparator.comparingInt(Constructor::getParameterCount)));
@@ -957,7 +956,7 @@ public abstract class ReflectionUtils {
 			Constructor<?> constructor = iterator.next();
 			return (T) newInstance(constructor, new Object[constructor.getParameterCount()]);
 		}
-		throw new UnsupportedException(entityClass.getName());
+		throw new UnsupportedOperationException(entityClass.getName());
 	}
 
 	/**
@@ -967,10 +966,10 @@ public abstract class ReflectionUtils {
 	 * @param entityClass
 	 * @param params
 	 * @return
-	 * @throws UnsupportedException
+	 * @throws UnsupportedOperationException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws UnsupportedException {
+	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws UnsupportedOperationException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Assert.requiredArgument(params != null, "params");
 		Elements<ExecutableMatchingResults<Constructor<?>>> elements = matchParams(
@@ -984,7 +983,7 @@ public abstract class ReflectionUtils {
 				// 忽略
 			}
 		}
-		throw new UnsupportedException(entityClass.getName());
+		throw new UnsupportedOperationException(entityClass.getName());
 	}
 
 	/**

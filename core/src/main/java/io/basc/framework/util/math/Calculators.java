@@ -1,7 +1,5 @@
 package io.basc.framework.util.math;
 
-import io.basc.framework.lang.UnsupportedException;
-
 /**
  * 常用的运算方式，按运算优先级排序
  * 
@@ -67,7 +65,7 @@ public enum Calculators implements Calculator {
 		case POW:
 			return left.pow(right);
 		default:
-			throw new UnsupportedException(this.toString());
+			throw new UnsupportedOperationException(this.toString());
 		}
 	}
 }

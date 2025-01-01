@@ -33,9 +33,14 @@ import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.annotation.AnnotationTypeMapping.MirrorSets.MirrorSet;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
+import io.basc.framework.core.type.AnnotationMetadata;
+import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.JavaVersion;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import lombok.NonNull;
 
 /**
  * General utility methods for working with annotations, handling
@@ -191,7 +196,7 @@ public abstract class AnnotationUtils {
 	 * @return the first matching annotation, or {@code null} if not found
 	 */
 	@SuppressWarnings("unchecked")
-	
+
 	public static <A extends Annotation> A getAnnotation(Annotation annotation, Class<A> annotationType) {
 		// Shortcut: directly present on the element, with no merging needed?
 		if (annotationType.isInstance(annotation)) {
@@ -223,7 +228,7 @@ public abstract class AnnotationUtils {
 	 *                         a meta-annotation
 	 * @return the first matching annotation, or {@code null} if not found
 	 */
-	
+
 	public static <A extends Annotation> A getAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 		// Shortcut: directly present on the element, with no merging needed?
 		if (AnnotationFilter.PLAIN.matches(annotationType)
@@ -259,7 +264,7 @@ public abstract class AnnotationUtils {
 	 * @see io.basc.framework.core.BridgeMethodResolver#findBridgedMethod(Method)
 	 * @see #getAnnotation(AnnotatedElement, Class)
 	 */
-	
+
 	public static <A extends Annotation> A getAnnotation(Method method, Class<A> annotationType) {
 		Method resolvedMethod = BridgeMethodResolver.findBridgedMethod(method);
 		return getAnnotation((AnnotatedElement) resolvedMethod, annotationType);
@@ -284,9 +289,8 @@ public abstract class AnnotationUtils {
 	 *                         a meta-annotation
 	 * @return the first matching annotation, or {@code null} if not found
 	 */
-	
-	public static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement,
-			 Class<A> annotationType) {
+
+	public static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 
 		if (annotationType == null) {
 			return null;
@@ -323,8 +327,8 @@ public abstract class AnnotationUtils {
 	 * @return the first matching annotation, or {@code null} if not found
 	 * @see #getAnnotation(Method, Class)
 	 */
-	
-	public static <A extends Annotation> A findAnnotation(Method method,  Class<A> annotationType) {
+
+	public static <A extends Annotation> A findAnnotation(Method method, Class<A> annotationType) {
 		if (annotationType == null) {
 			return null;
 		}
@@ -364,8 +368,8 @@ public abstract class AnnotationUtils {
 	 * @param annotationType the type of annotation to look for
 	 * @return the first matching annotation, or {@code null} if not found
 	 */
-	
-	public static <A extends Annotation> A findAnnotation(Class<?> clazz,  Class<A> annotationType) {
+
+	public static <A extends Annotation> A findAnnotation(Class<?> clazz, Class<A> annotationType) {
 		if (annotationType == null) {
 			return null;
 		}
@@ -423,7 +427,7 @@ public abstract class AnnotationUtils {
 	 * @return {@code true} if the annotation is in the {@code java.lang.annotation}
 	 *         package
 	 */
-	public static boolean isInJavaLangAnnotationPackage( Annotation annotation) {
+	public static boolean isInJavaLangAnnotationPackage(Annotation annotation) {
 		return (annotation != null && JAVA_LANG_ANNOTATION_FILTER.matches(annotation));
 	}
 
@@ -435,7 +439,7 @@ public abstract class AnnotationUtils {
 	 * @return {@code true} if the annotation is in the {@code java.lang.annotation}
 	 *         package
 	 */
-	public static boolean isInJavaLangAnnotationPackage( String annotationType) {
+	public static boolean isInJavaLangAnnotationPackage(String annotationType) {
 		return (annotationType != null && JAVA_LANG_ANNOTATION_FILTER.matches(annotationType));
 	}
 
@@ -550,7 +554,7 @@ public abstract class AnnotationUtils {
 	 *         {@code null})
 	 * @see #getAnnotationAttributes(AnnotatedElement, Annotation, boolean, boolean)
 	 */
-	public static AnnotationAttributes getAnnotationAttributes( AnnotatedElement annotatedElement,
+	public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement annotatedElement,
 			Annotation annotation) {
 
 		return getAnnotationAttributes(annotatedElement, annotation, false, false);
@@ -577,8 +581,8 @@ public abstract class AnnotationUtils {
 	 *         keys and corresponding attribute values as values (never
 	 *         {@code null})
 	 */
-	public static AnnotationAttributes getAnnotationAttributes( AnnotatedElement annotatedElement,
-			Annotation annotation, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
+	public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement annotatedElement, Annotation annotation,
+			boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 
 		Adapt[] adaptations = Adapt.values(classValuesAsString, nestedAnnotationsAsMap);
 		return MergedAnnotation.from(annotatedElement, annotation).withNonMergedAttributes()
@@ -651,8 +655,8 @@ public abstract class AnnotationUtils {
 	 *                            or to preserve them as Class references
 	 * @see #getDefaultValue(Class, String)
 	 */
-	public static void postProcessAnnotationAttributes( Object annotatedElement,
-			 AnnotationAttributes attributes, boolean classValuesAsString) {
+	public static void postProcessAnnotationAttributes(Object annotatedElement, AnnotationAttributes attributes,
+			boolean classValuesAsString) {
 
 		if (attributes == null) {
 			return;
@@ -694,9 +698,7 @@ public abstract class AnnotationUtils {
 		return (result instanceof DefaultValueHolder ? ((DefaultValueHolder) result).defaultValue : result);
 	}
 
-	
-	private static Object adaptValue( Object annotatedElement,  Object value,
-			boolean classValuesAsString) {
+	private static Object adaptValue(Object annotatedElement, Object value, boolean classValuesAsString) {
 
 		if (classValuesAsString) {
 			if (value instanceof Class) {
@@ -738,7 +740,7 @@ public abstract class AnnotationUtils {
 	 *         exception will be rethrown
 	 * @see #getValue(Annotation, String)
 	 */
-	
+
 	public static Object getValue(Annotation annotation) {
 		return getValue(annotation, VALUE);
 	}
@@ -755,8 +757,8 @@ public abstract class AnnotationUtils {
 	 *         exception will be rethrown
 	 * @see #getValue(Annotation)
 	 */
-	
-	public static Object getValue( Annotation annotation,  String attributeName) {
+
+	public static Object getValue(Annotation annotation, String attributeName) {
 		if (annotation == null || !StringUtils.hasText(attributeName)) {
 			return null;
 		}
@@ -830,7 +832,7 @@ public abstract class AnnotationUtils {
 	 * @see #rethrowAnnotationConfigurationException
 	 * @see IntrospectionFailureLogger
 	 */
-	static void handleIntrospectionFailure( AnnotatedElement element, Throwable ex) {
+	static void handleIntrospectionFailure(AnnotatedElement element, Throwable ex) {
 		rethrowAnnotationConfigurationException(ex);
 		IntrospectionFailureLogger logger = IntrospectionFailureLogger.INFO;
 		boolean meta = false;
@@ -854,7 +856,7 @@ public abstract class AnnotationUtils {
 	 * @return the default value, or {@code null} if not found
 	 * @see #getDefaultValue(Annotation, String)
 	 */
-	
+
 	public static Object getDefaultValue(Annotation annotation) {
 		return getDefaultValue(annotation, VALUE);
 	}
@@ -870,8 +872,8 @@ public abstract class AnnotationUtils {
 	 *         found
 	 * @see #getDefaultValue(Class, String)
 	 */
-	
-	public static Object getDefaultValue( Annotation annotation,  String attributeName) {
+
+	public static Object getDefaultValue(Annotation annotation, String attributeName) {
 		return (annotation != null ? getDefaultValue(annotation.annotationType(), attributeName) : null);
 	}
 
@@ -884,7 +886,7 @@ public abstract class AnnotationUtils {
 	 * @return the default value, or {@code null} if not found
 	 * @see #getDefaultValue(Class, String)
 	 */
-	
+
 	public static Object getDefaultValue(Class<? extends Annotation> annotationType) {
 		return getDefaultValue(annotationType, VALUE);
 	}
@@ -900,9 +902,8 @@ public abstract class AnnotationUtils {
 	 *         found
 	 * @see #getDefaultValue(Annotation, String)
 	 */
-	
-	public static Object getDefaultValue( Class<? extends Annotation> annotationType,
-			 String attributeName) {
+
+	public static Object getDefaultValue(Class<? extends Annotation> annotationType, String attributeName) {
 
 		if (annotationType == null || !StringUtils.hasText(attributeName)) {
 			return null;
@@ -927,8 +928,7 @@ public abstract class AnnotationUtils {
 	 * @see #synthesizeAnnotation(Map, Class, AnnotatedElement)
 	 * @see #synthesizeAnnotation(Class)
 	 */
-	public static <A extends Annotation> A synthesizeAnnotation(A annotation,
-			 AnnotatedElement annotatedElement) {
+	public static <A extends Annotation> A synthesizeAnnotation(A annotation, AnnotatedElement annotatedElement) {
 
 		if (isSynthesizedAnnotation(annotation) || AnnotationFilter.PLAIN.matches(annotation)) {
 			return annotation;
@@ -989,7 +989,7 @@ public abstract class AnnotationUtils {
 	 * @see #getAnnotationAttributes(AnnotatedElement, Annotation, boolean, boolean)
 	 */
 	public static <A extends Annotation> A synthesizeAnnotation(Map<String, Object> attributes, Class<A> annotationType,
-			 AnnotatedElement annotatedElement) {
+			AnnotatedElement annotatedElement) {
 
 		try {
 			return MergedAnnotation.of(annotatedElement, annotationType, attributes).synthesize();
@@ -1035,7 +1035,7 @@ public abstract class AnnotationUtils {
 	 * @param annotation the annotation to check
 	 * @return {@code true} if the supplied annotation is a synthesized annotation
 	 */
-	public static boolean isSynthesizedAnnotation( Annotation annotation) {
+	public static boolean isSynthesizedAnnotation(Annotation annotation) {
 		return (annotation instanceof SynthesizedAnnotation);
 	}
 
@@ -1046,6 +1046,18 @@ public abstract class AnnotationUtils {
 	public static void clearCache() {
 		AnnotationTypeMappings.clearCache();
 		AnnotationsScanner.clearCache();
+	}
+
+	public static boolean isSupported(@NonNull JavaVersion javaVersion,
+			@NonNull AnnotationMetadata annotationMetadata) {
+		Map<String, Object> map = annotationMetadata.getAnnotationAttributes(RequiredJavaVersion.class.getName());
+		if (!CollectionUtils.isEmpty(map)) {
+			int version = (Integer) map.get("value");
+			if (!javaVersion.isSupported(version)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

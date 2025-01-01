@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import io.basc.framework.lang.Ignore;
 import io.basc.framework.util.page.Browseable;
 import io.basc.framework.util.page.StandardBrowseable;
 import io.basc.framework.util.page.StandardCursor;
@@ -787,7 +786,6 @@ public final class ClassUtils {
 	/**
 	 * 此类是否可用
 	 * 
-	 * @see Ignore
 	 * @see JavaVersion#isSupported(Class)
 	 * @param clazz
 	 * @return

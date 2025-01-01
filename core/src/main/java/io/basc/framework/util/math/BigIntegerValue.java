@@ -3,6 +3,8 @@ package io.basc.framework.util.math;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import io.basc.framework.util.Any;
+
 public class BigIntegerValue extends RationalNumber {
 	private static final long serialVersionUID = 1L;
 
@@ -16,9 +18,12 @@ public class BigIntegerValue extends RationalNumber {
 		this.value = value;
 	}
 
-	public int compareTo(NumberValue o) {
-		BigInteger value = o.getAsBigInteger();
-		return this.value.compareTo(value);
+	public int compareTo(Any o) {
+		if (o.isNumber()) {
+			BigInteger value = o.getAsBigInteger();
+			return this.value.compareTo(value);
+		}
+		return super.compareTo(o);
 	}
 
 	@Override
@@ -37,7 +42,7 @@ public class BigIntegerValue extends RationalNumber {
 	}
 
 	@Override
-	public CharSequence getAsCharSequence() {
+	public String getAsString() {
 		return value.toString();
 	}
 }

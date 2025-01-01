@@ -13,7 +13,7 @@ import io.basc.framework.util.function.StaticSupplier;
  * @author wcnnkh
  *
  */
-public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegment> {
+public class CharSequenceSplitIterator implements Iterator<CharSequenceTemplate> {
 	private final CharSequence charSequence;
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;
@@ -55,7 +55,7 @@ public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegm
 	}
 
 	@Override
-	public CharSequenceSplitSegment next() {
+	public CharSequenceTemplate next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
@@ -64,12 +64,12 @@ public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegm
 			// 最后一次了
 			CharSequence value = index == 0 ? charSequence : charSequence.subSequence(index, endIndex);
 			index = endIndex;
-			return new CharSequenceSplitSegment(value);
+			return new CharSequenceTemplate(value);
 		}
 
 		CharSequence value = charSequence.subSequence(index, current.get().getKey());
 		index = current.get().getKey() + current.get().getValue().length();
-		CharSequenceSplitSegment pair = new CharSequenceSplitSegment(value, current.get().getValue());
+		CharSequenceTemplate pair = new CharSequenceTemplate(value, current.get().getValue());
 		current = null;
 		return pair;
 	}

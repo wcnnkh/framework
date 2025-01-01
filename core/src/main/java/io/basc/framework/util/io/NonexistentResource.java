@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Channel;
 import lombok.NonNull;
 
@@ -17,12 +16,12 @@ public class NonexistentResource implements Resource {
 
 	@Override
 	public @NonNull Channel<InputStream, IOException> getInputStream() {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	@Override
 	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	public boolean exists() {
@@ -30,15 +29,15 @@ public class NonexistentResource implements Resource {
 	}
 
 	public URL getURL() throws IOException {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	public URI getURI() throws IOException {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	public File getFile() throws IOException, FileNotFoundException {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	public long contentLength() throws IOException {
@@ -50,11 +49,11 @@ public class NonexistentResource implements Resource {
 	}
 
 	public Resource createRelative(String relativePath) throws IOException {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	public String getName() {
-		throw new UnsupportedException("empty resource");
+		throw new UnsupportedOperationException("empty resource");
 	}
 
 	public String getDescription() {

@@ -8,9 +8,9 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
+import io.basc.framework.core.Constants;
 import io.basc.framework.core.annotation.MergedAnnotation;
 import io.basc.framework.core.annotation.MergedAnnotations;
-import io.basc.framework.lang.Constants;
 
 /**
  * ASM method visitor that creates {@link SimpleMethodMetadata}.

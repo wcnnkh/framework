@@ -9,7 +9,7 @@ import javax.servlet.ServletResponse;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.lang.Constants;
+import io.basc.framework.core.Constants;
 import io.basc.framework.web.ServerRequest;
 import io.basc.framework.web.ServerResponse;
 import io.basc.framework.web.WebServer;

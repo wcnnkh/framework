@@ -29,7 +29,6 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
 
-import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import lombok.NonNull;
@@ -2112,7 +2111,7 @@ public final class FileUtils {
 			throw new IOException("Source '" + srcFile + "' is a directory");
 		}
 		if (destFile.exists()) {
-			throw new AlreadyExistsException("Destination '" + destFile + "' already exists");
+			throw new FileAlreadyExistsException(destFile.toString());
 		}
 		if (destFile.isDirectory()) {
 			throw new IOException("Destination '" + destFile + "' is a directory");

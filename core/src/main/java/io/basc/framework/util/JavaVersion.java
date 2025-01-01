@@ -1,72 +1,59 @@
 package io.basc.framework.util;
 
-import java.util.Map;
+import java.io.Serializable;
 
-import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.util.Version.JoinVersion;
+import io.basc.framework.util.math.IntValue;
 
-public class JavaVersion extends Version {
+public class JavaVersion extends JoinVersion implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	public static final JavaVersion INSTANCE;
 
 	static {
-		Version version = new Version(System.getProperty("java.version"));
-		if (version.length() > 1) {
-			Value fragment = version.get(0);
+		CharSequenceTemplate versionTemplate = new CharSequenceTemplate(System.getProperty("java.version"), ".");
+		Version[] array = versionTemplate.getAsElements().toArray(Version[]::new);
+		if (array.length > 1) {
+			Version fragment = array[0];
 			if (fragment.isNumber() && fragment.getAsInt() > 1) {// java9以上
-				Value[] fragments = new Value[version.length() + 1];
-				fragments[0] = Value.of(1);
-				System.arraycopy(version.getFragments(), 0, fragments, 1, version.length());
-				version = new Version(fragments, version.getDividers());
+				Version[] fragments = new Version[array.length + 1];
+				fragments[0] = new IntValue(1);
+				System.arraycopy(array, 0, fragments, 1, array.length);
+				array = fragments;
 			}
 		}
-		INSTANCE = new JavaVersion(version.getFragments(), version.getDividers());
+		INSTANCE = new JavaVersion(Elements.forArray(array), versionTemplate.getDelimiter(), array[1]);
 	}
 
-	JavaVersion(Value[] fragments, String dividers) {
-		super(fragments, dividers);
+	private final Version master;
+
+	JavaVersion(Elements<Version> elements, CharSequence delimiter, Version master) {
+		super(elements, delimiter);
+		this.master = master;
 	}
 
-	/**
-	 * 获取主版本号
-	 * 
-	 * @return
-	 */
-	public int getMasterVersion() {
-		return getFragments()[1].getAsNumber().intValue();
+	public Version getMaster() {
+		return master;
 	}
 
 	public boolean isJava5() {
-		return getMasterVersion() == 5;
+		return getMaster().getAsInt() == 5;
 	}
 
 	public boolean isJava6() {
-		return getMasterVersion() == 6;
+		return getMaster().getAsInt() == 6;
 	}
 
 	public boolean isJava7() {
-		return getMasterVersion() == 7;
+		return getMaster().getAsInt() == 7;
 	}
 
 	public boolean isJava8() {
-		return getMasterVersion() == 8;
+		return getMaster().getAsInt() == 8;
 	}
 
 	public boolean isSupported(int version) {
-		return version >= getMasterVersion();
-	}
-
-	public static boolean isSupported(AnnotationMetadata annotationMetadata) {
-		Map<String, Object> map = annotationMetadata.getAnnotationAttributes(RequiredJavaVersion.class.getName());
-		if (!CollectionUtils.isEmpty(map)) {
-			int version = (Integer) map.get("value");
-			if (!INSTANCE.isSupported(version)) {
-				return false;
-			}
-		}
-		return true;
+		return version >= getMaster().getAsInt();
 	}
 
 	public static boolean isSupported(Class<?> clazz) {

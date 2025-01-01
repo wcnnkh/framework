@@ -7,7 +7,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
@@ -221,7 +220,7 @@ public class ReflectionApi implements Supplier<Object> {
 		return true;
 	}
 
-	public static <T> T newInstance(Class<T> type) throws UnsupportedException {
+	public static <T> T newInstance(Class<T> type) throws UnsupportedOperationException {
 		return newInstance(type, ObjectUtils.EMPTY_ARRAY);
 	}
 
@@ -235,13 +234,13 @@ public class ReflectionApi implements Supplier<Object> {
 	 * @param type
 	 * @param params 可选的参数
 	 * @return
-	 * @throws UnsupportedException
+	 * @throws UnsupportedOperationException
 	 */
-	public static <T> T newInstance(Class<T> type, Object... params) throws UnsupportedException {
+	public static <T> T newInstance(Class<T> type, Object... params) throws UnsupportedOperationException {
 		if (params != null && params.length > 0) {
 			try {
 				return ReflectionUtils.newInstanceWithParams(type, params);
-			} catch (UnsupportedException e) {
+			} catch (UnsupportedOperationException e) {
 				// 忽略
 			}
 		}
