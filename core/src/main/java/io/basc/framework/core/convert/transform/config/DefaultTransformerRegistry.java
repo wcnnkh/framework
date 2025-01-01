@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.config;
 
 import io.basc.framework.core.convert.transform.Transformer;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.spi.ServiceMap;
 import lombok.NonNull;
 

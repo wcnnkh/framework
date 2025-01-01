@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.basc.framework.util.future;
+package io.basc.framework.util.exchange.future;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -23,10 +23,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.actor.ListenableFuture;
-import io.basc.framework.util.actor.Stage;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Registration;
 
 public class CompletableToListenableFutureAdapter<T> implements ListenableFuture<T> {
 
@@ -59,7 +57,7 @@ public class CompletableToListenableFutureAdapter<T> implements ListenableFuture
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super ListenableFuture<? extends T>> listener) {
+	public Registration registerListener(Listener<ListenableFuture<? extends T>> listener) {
 		return stage.registerListener((e) -> listener.accept(this));
 	}
 

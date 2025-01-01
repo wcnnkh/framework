@@ -1,4 +1,4 @@
-package io.basc.framework.util.text;
+package io.basc.framework.util.placeholder;
 
 import java.io.IOException;
 import java.io.Serializable;

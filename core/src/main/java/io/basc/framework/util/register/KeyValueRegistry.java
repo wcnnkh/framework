@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.KeyValues;
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Registration;
 
 public interface KeyValueRegistry<K, V> extends Registry<KeyValue<K, V>>, KeyValues<K, V> {
 

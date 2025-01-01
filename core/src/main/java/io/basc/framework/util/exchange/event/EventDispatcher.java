@@ -1,8 +1,10 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.event;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.AbstractChannel;
+import io.basc.framework.util.exchange.ListenableChannel;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.Registry;
 import io.basc.framework.util.register.container.ArrayListContainer;
 import io.basc.framework.util.select.Dispatcher;
@@ -14,8 +16,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class EventDispatcher<T> extends AbstractExchange<T> {
-	private final FakeBatchExchange<T, Exchange<T>> batch = new FakeBatchExchange<>(this);
+public class EventDispatcher<T> extends AbstractChannel<T> implements ListenableChannel<T> {
+	private final FakeBatchListenableChannel<T, ListenableChannel<T>> batch = () -> this;
 	@NonNull
 	private final Dispatcher<Listener<? super T>> dispatcher;
 
@@ -27,12 +29,12 @@ public class EventDispatcher<T> extends AbstractExchange<T> {
 	}
 
 	@Override
-	public BatchExchange<T> batch() {
+	public BatchListenableChannel<T> batch() {
 		return batch;
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super T> listener) {
+	public Registration registerListener(Listener<T> listener) {
 		return registry.register(listener);
 	}
 

@@ -1,4 +1,4 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.future;
 
 public interface Promise<V> extends Confirm, ListenableFuture<V> {
 	/**

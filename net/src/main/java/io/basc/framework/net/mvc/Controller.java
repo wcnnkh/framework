@@ -13,7 +13,7 @@ import io.basc.framework.net.server.convert.DefaultServerMessageConverter;
 import io.basc.framework.net.server.dispatch.Dispatcher;
 import io.basc.framework.observe.register.ElementRegistration;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registrations;
+import io.basc.framework.util.exchange.Registrations;
 
 public class Controller extends RequestPatternRegistry<Action> implements Dispatcher {
 	private final DefaultRequestPatternFactory requestPatternFactory = new DefaultRequestPatternFactory();

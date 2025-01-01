@@ -3,8 +3,8 @@ package io.basc.framework.util.register;
 import java.util.function.BooleanSupplier;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 
 public class StandardRegistrationWrapper<W extends Registration>

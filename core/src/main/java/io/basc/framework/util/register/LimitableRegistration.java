@@ -3,9 +3,9 @@ package io.basc.framework.util.register;
 import java.util.concurrent.locks.Lock;
 import java.util.function.BooleanSupplier;
 
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.concurrent.limit.Limiter;
 import io.basc.framework.util.concurrent.limit.NoOpLimiter;
+import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 
 public abstract class LimitableRegistration implements Registration {

@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.config;
 
 import io.basc.framework.core.convert.transform.Transformer;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 
 public interface TransformerRegistry<S, E extends Throwable> extends TransformerFactory<S, E> {

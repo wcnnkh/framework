@@ -5,8 +5,8 @@ import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.Registrations;
+import io.basc.framework.util.exchange.Registration;
+import io.basc.framework.util.exchange.Registrations;
 import lombok.NonNull;
 import lombok.ToString;
 

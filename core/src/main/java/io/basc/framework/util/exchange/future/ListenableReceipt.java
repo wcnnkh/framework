@@ -1,8 +1,8 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.future;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.Receipt;
+import io.basc.framework.util.exchange.Receipt;
 
 public interface ListenableReceipt<T extends Receipt> extends ListenableRegistration<T>, Receipt {
 

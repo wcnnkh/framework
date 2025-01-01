@@ -6,13 +6,13 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.actor.EventListener;
 import io.basc.framework.util.actor.EventPushException;
 import io.basc.framework.util.actor.EventRegistrationException;
-import io.basc.framework.util.actor.EventsDispatcher;
 import io.basc.framework.util.actor.broadcast.BroadcastDelayableEventDispatcher;
 import io.basc.framework.util.actor.unicast.UnicastDelayableEventDispatcher;
+import io.basc.framework.util.exchange.event.BatchEventDispatcher;
 import io.basc.framework.util.register.Registration;
 
 public class AmqpEventDispatcher<T>
-		implements UnicastDelayableEventDispatcher<T>, BroadcastDelayableEventDispatcher<T>, EventsDispatcher<T> {
+		implements UnicastDelayableEventDispatcher<T>, BroadcastDelayableEventDispatcher<T>, BatchEventDispatcher<T> {
 	private final Exchange<T> exchange;
 	private final QueueDeclare queueDeclare;
 	private final String routingKey;

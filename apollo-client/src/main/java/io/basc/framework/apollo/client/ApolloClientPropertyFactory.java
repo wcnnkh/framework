@@ -10,9 +10,9 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.env.PropertyFactory;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.SetElements;
-import io.basc.framework.util.actor.ChangeEvent;
-import io.basc.framework.util.actor.ChangeType;
 import io.basc.framework.util.actor.broadcast.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.util.exchange.event.ChangeEvent;
+import io.basc.framework.util.exchange.event.ChangeType;
 
 public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatcher<ChangeEvent<Collection<String>>>
 		implements PropertyFactory, ConfigChangeListener {

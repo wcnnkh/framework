@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.actor.ChangeEvent;
-import io.basc.framework.util.actor.ChangeType;
+import io.basc.framework.util.exchange.event.ChangeEvent;
+import io.basc.framework.util.exchange.event.ChangeType;
 
 public class TreeMapContainer<K, V> extends MapContainer<K, V, TreeMap<K, EntryRegistration<K, V>>> {
 	private Comparator<? super K> comparator;

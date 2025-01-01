@@ -25,6 +25,19 @@ public class DerogationMethod implements GreatestCommonDivisor {
 		return a;
 	}
 
+	@Override
+	public long gcd(long m, long n) {
+		long a = Math.abs(m);
+		long b = Math.abs(n);
+		while (a != b) {
+			if (a > b)
+				a -= b;
+			else
+				b -= a;
+		}
+		return a;
+	}
+
 	public BigInteger gcd(BigInteger m, BigInteger n) {
 		BigInteger a = m.abs();
 		BigInteger b = n.abs();
@@ -49,7 +62,7 @@ public class DerogationMethod implements GreatestCommonDivisor {
 		return a;
 	}
 
-	public NumberValue gcd(NumberValue m, NumberValue n) {
+	public NumberValue eval(NumberValue m, NumberValue n) {
 		NumberValue a = m.abs();
 		NumberValue b = n.abs();
 		while (!a.equals(b)) {

@@ -1,20 +1,19 @@
-package io.basc.framework.util.future;
+package io.basc.framework.util.exchange.future;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.actor.ListenableFuture;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ScheduledListenableFutureAdapter<V> implements ScheduledListenableFuture<V> {
 	@NonNull
-	private final ListenableFuture<? extends V> listenableFuture;
+	private final ListenableFuture<V> listenableFuture;
 	@NonNull
 	private final Delayed delayed;
 
@@ -54,7 +53,7 @@ public class ScheduledListenableFutureAdapter<V> implements ScheduledListenableF
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super ListenableFuture<? extends V>> listener) {
+	public Registration registerListener(Listener<ListenableFuture<? extends V>> listener) {
 		return listenableFuture.registerListener(listener);
 	}
 

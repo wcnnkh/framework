@@ -3,9 +3,9 @@ package io.basc.framework.netflix.eureka;
 import io.basc.framework.boot.ApplicationEvent;
 import io.basc.framework.cloud.event.HeartbeatEvent;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.util.actor.EventsDispatcher;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import io.basc.framework.util.exchange.event.BatchEventDispatcher;
 import io.basc.framework.util.logging.LogManager;
 
 import java.lang.reflect.Field;
@@ -32,7 +32,7 @@ public class CloudEurekaClient extends DiscoveryClient {
 
 	private final AtomicLong cacheRefreshedCount = new AtomicLong(0);
 
-	private EventsDispatcher<ApplicationEvent> publisher;
+	private BatchEventDispatcher<ApplicationEvent> publisher;
 
 	private Field eurekaTransportField;
 
@@ -41,12 +41,12 @@ public class CloudEurekaClient extends DiscoveryClient {
 	private AtomicReference<EurekaHttpClient> eurekaHttpClient = new AtomicReference<>();
 
 	public CloudEurekaClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config,
-			EventsDispatcher<ApplicationEvent> publisher) {
+			BatchEventDispatcher<ApplicationEvent> publisher) {
 		this(applicationInfoManager, config, null, publisher);
 	}
 
 	public CloudEurekaClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config,
-			AbstractDiscoveryClientOptionalArgs<?> args, EventsDispatcher<ApplicationEvent> publisher) {
+			AbstractDiscoveryClientOptionalArgs<?> args, BatchEventDispatcher<ApplicationEvent> publisher) {
 		super(applicationInfoManager, config, args);
 		this.applicationInfoManager = applicationInfoManager;
 		this.publisher = publisher;

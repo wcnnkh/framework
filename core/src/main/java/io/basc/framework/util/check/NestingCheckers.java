@@ -2,7 +2,7 @@ package io.basc.framework.util.check;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 
 public class NestingCheckers<E> implements NestingChecker<E> {
 	private final Elements<NestingChecker<E>> elements;

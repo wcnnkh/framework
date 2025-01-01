@@ -1,13 +1,11 @@
-package io.basc.framework.util.future;
+package io.basc.framework.util.exchange.future;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.actor.ListenableFuture;
-import io.basc.framework.util.actor.Stage;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Registration;
 
 public class ListenableFutureTask<T> extends FutureTask<T> implements ListenableFuture<T> {
 	private Stage stage = new Stage();
@@ -35,7 +33,7 @@ public class ListenableFutureTask<T> extends FutureTask<T> implements Listenable
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super ListenableFuture<? extends T>> listener) {
+	public Registration registerListener(Listener<ListenableFuture<? extends T>> listener) {
 		return stage.registerListener((e) -> listener.accept(ListenableFutureTask.this));
 	}
 

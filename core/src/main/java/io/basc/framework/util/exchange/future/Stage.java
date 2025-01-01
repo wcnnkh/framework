@@ -1,8 +1,9 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.future;
 
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Registration;
+import io.basc.framework.util.exchange.event.DisposableDispatcher;
 
 public class Stage implements ListenableRegistration<Stage>, Receipt {
 	private enum State {
@@ -11,7 +12,7 @@ public class Stage implements ListenableRegistration<Stage>, Receipt {
 
 	private Throwable cause;
 
-	private final DisposableExchange<Stage> exchange = new DisposableExchange<>();
+	private final DisposableDispatcher<Stage> exchange = new DisposableDispatcher<>();
 
 	private Object result = null;
 
@@ -76,7 +77,7 @@ public class Stage implements ListenableRegistration<Stage>, Receipt {
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super Stage> listener) {
+	public Registration registerListener(Listener<Stage> listener) {
 		synchronized (this) {
 			if (isDone()) {
 				// 已经结果

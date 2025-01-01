@@ -3,8 +3,8 @@ package io.basc.framework.util.spi;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 
 public interface Configured<S> extends Include<S>, Receipt {

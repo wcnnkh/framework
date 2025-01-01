@@ -1,4 +1,4 @@
-package io.basc.framework.util;
+package io.basc.framework.util.exchange;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -7,8 +7,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.actor.ChangeEvent;
-import io.basc.framework.util.actor.ChangeType;
+import io.basc.framework.util.exchange.event.ChangeEvent;
+import io.basc.framework.util.exchange.event.ChangeType;
 import io.basc.framework.util.register.PayloadRegistration;
 
 public class TreeSetContainer<E> extends CollectionContainer<E, TreeSet<ElementRegistration<E>>> {

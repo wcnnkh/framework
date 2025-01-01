@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 
 /**
  * 嵌套检查器

@@ -25,6 +25,18 @@ public class DivisionAlgorithm implements GreatestCommonDivisor {
 		}
 	}
 
+	@Override
+	public long gcd(long m, long n) {
+		long a = Math.abs(m);
+		long b = Math.abs(n);
+		while (true) {
+			if ((a = a % b) == 0)
+				return b;
+			if ((b = b % a) == 0)
+				return a;
+		}
+	}
+
 	public BigInteger gcd(BigInteger m, BigInteger n) {
 		BigInteger a = m.abs();
 		BigInteger b = n.abs();
@@ -47,7 +59,7 @@ public class DivisionAlgorithm implements GreatestCommonDivisor {
 		}
 	}
 
-	public NumberValue gcd(NumberValue m, NumberValue n) {
+	public NumberValue eval(NumberValue m, NumberValue n) {
 		NumberValue a = m.abs();
 		NumberValue b = n.abs();
 		while (true) {

@@ -2,7 +2,7 @@ package io.basc.framework.util.transmittable;
 
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.DisposableRegistration;
 
 public class InheriterRegistry<A, B> extends InheriterDecorator<InheriterCapture<A, B>, InheriterBackup<A, B>> {

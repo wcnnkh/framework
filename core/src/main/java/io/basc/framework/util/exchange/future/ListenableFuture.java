@@ -1,4 +1,4 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.future;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

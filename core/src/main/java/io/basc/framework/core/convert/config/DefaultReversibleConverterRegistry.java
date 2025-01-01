@@ -2,7 +2,7 @@ package io.basc.framework.core.convert.config;
 
 import io.basc.framework.core.convert.Converter;
 import io.basc.framework.core.convert.ReversibleConverter;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.spi.ServiceMap;
 
 public class DefaultReversibleConverterRegistry<S, E extends Throwable> extends

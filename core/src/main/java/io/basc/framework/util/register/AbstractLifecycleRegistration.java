@@ -3,11 +3,11 @@ package io.basc.framework.util.register;
 import java.util.function.BooleanSupplier;
 
 import io.basc.framework.util.Lifecycle;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.actor.LifecycleDispatcher;
 import io.basc.framework.util.concurrent.limit.DisposableLimiter;
 import io.basc.framework.util.exchange.Listenable;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Registration;
+import io.basc.framework.util.exchange.event.LifecycleDispatcher;
 
 public abstract class AbstractLifecycleRegistration extends LimitableRegistration
 		implements LifecycleRegistration, Listenable<Lifecycle> {
@@ -18,7 +18,7 @@ public abstract class AbstractLifecycleRegistration extends LimitableRegistratio
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super Lifecycle> listener) {
+	public Registration registerListener(Listener<Lifecycle> listener) {
 		return dispatcher.registerListener(listener);
 	}
 

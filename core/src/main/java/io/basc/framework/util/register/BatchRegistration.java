@@ -4,7 +4,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 
 /**

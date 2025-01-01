@@ -2,8 +2,6 @@ package io.basc.framework.util.exchange;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.actor.Pollable;
-
 public interface PollableChannel<T> extends Pollable<T>, Channel<T> {
 	@Override
 	default T poll() {

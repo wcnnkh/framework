@@ -1,8 +1,8 @@
 package io.basc.framework.util.register;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.exchange.Registration;
 import lombok.Data;
 import lombok.NonNull;
 

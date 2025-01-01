@@ -1,6 +1,6 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.future;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 
 /**
  * 用来对未来的行为确认操作

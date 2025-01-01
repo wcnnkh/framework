@@ -1,6 +1,6 @@
 package io.basc.framework.util.spi;
 
-import io.basc.framework.util.Receipt;
+import io.basc.framework.util.exchange.Receipt;
 import lombok.NonNull;
 
 /**

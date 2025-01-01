@@ -1,11 +1,13 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.event;
 
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.AbstractChannel;
+import io.basc.framework.util.exchange.ListenableChannel;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.container.ElementRegistration;
 import io.basc.framework.util.register.container.QueueContainer;
 
@@ -16,12 +18,12 @@ import io.basc.framework.util.register.container.QueueContainer;
  *
  * @param <T>
  */
-public class DisposableExchange<T> extends AbstractExchange<T> {
-	private final QueueContainer<Listener<? super T>, Queue<ElementRegistration<Listener<? super T>>>> registry = new QueueContainer<>(
+public class DisposableDispatcher<T> extends AbstractChannel<T> implements ListenableChannel<T> {
+	private final QueueContainer<Listener<T>, Queue<ElementRegistration<Listener<T>>>> registry = new QueueContainer<>(
 			LinkedList::new);
 
 	@Override
-	public Registration registerListener(Listener<? super T> listener) {
+	public Registration registerListener(Listener<T> listener) {
 		return registry.register(listener);
 	}
 

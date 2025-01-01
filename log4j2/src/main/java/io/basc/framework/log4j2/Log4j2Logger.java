@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.text.PlaceholderMessage;
+import io.basc.framework.util.placeholder.PlaceholderMessage;
 
 public class Log4j2Logger implements io.basc.framework.util.logging.Logger {
 	private final Logger logger;

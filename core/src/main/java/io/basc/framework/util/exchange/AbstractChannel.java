@@ -1,11 +1,11 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.future.ListenableFutureTask;
+import io.basc.framework.util.exchange.future.ListenableFutureTask;
 
-public abstract class AbstractExchange<T> implements Exchange<T> {
+public abstract class AbstractChannel<T> implements Channel<T> {
 	private Executor publishExecutor;
 
 	public Executor getPublishExecutor() {
@@ -17,7 +17,7 @@ public abstract class AbstractExchange<T> implements Exchange<T> {
 	}
 
 	@Override
-	public Receipt publish(T resource) {
+	public Receipt publish(T resource, long timeout, TimeUnit timeUnit) {
 		if (publishExecutor == null) {
 			syncPublish(resource);
 			return Receipt.SUCCESS;

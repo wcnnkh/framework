@@ -7,8 +7,8 @@ import java.util.function.Supplier;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Reloadable;
 import io.basc.framework.util.Source;
-import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.exchange.Publisher;
+import io.basc.framework.util.exchange.event.ChangeEvent;
 import lombok.NonNull;
 
 public class CacheableSupplier<T>

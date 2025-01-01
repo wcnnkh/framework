@@ -1,8 +1,8 @@
 package io.basc.framework.context;
 
-import io.basc.framework.util.actor.Event;
+import io.basc.framework.util.exchange.event.BaseEvent;
 
-public class ApplicationContextEvent extends Event {
+public class ApplicationContextEvent extends BaseEvent {
 	private static final long serialVersionUID = 1L;
 
 	public ApplicationContextEvent(ApplicationContext source) {

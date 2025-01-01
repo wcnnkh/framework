@@ -1,4 +1,4 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.event;
 
 public enum ChangeType {
 	CREATE, DELETE, UPDATE;

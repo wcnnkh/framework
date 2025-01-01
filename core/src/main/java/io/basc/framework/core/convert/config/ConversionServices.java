@@ -4,9 +4,9 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConverterNotFoundException;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.NonNull;
 

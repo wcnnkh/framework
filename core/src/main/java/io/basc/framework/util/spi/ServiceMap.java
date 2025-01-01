@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.util.concurrent.AtomicEntry;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.container.EntryRegistration;
 import io.basc.framework.util.register.container.TreeMapContainer;
 import lombok.NonNull;

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.container.ElementRegistration;
 import io.basc.framework.util.register.container.ListContainer;
 import io.basc.framework.util.sequences.uuid.RandomUUIDSequence;

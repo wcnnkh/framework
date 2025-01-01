@@ -1,9 +1,9 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.future;
 
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.exchange.Listenable;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Registration;
 
 /**
  * 可监听的
@@ -18,7 +18,7 @@ public interface ListenableRegistration<T extends Receipt> extends Listenable<T>
 			extends ListenableRegistration<T>, RegistrationWrapper<W> {
 
 		@Override
-		default Registration registerListener(Listener<? super T> listener) {
+		default Registration registerListener(Listener<T> listener) {
 			return getSource().registerListener(listener);
 		}
 

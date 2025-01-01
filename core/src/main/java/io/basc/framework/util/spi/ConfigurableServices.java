@@ -6,9 +6,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Receipt;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.spi.Include.IncludeWrapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

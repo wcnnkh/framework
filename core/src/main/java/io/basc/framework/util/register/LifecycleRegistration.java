@@ -1,7 +1,7 @@
 package io.basc.framework.util.register;
 
 import io.basc.framework.util.Lifecycle;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 
 /**
  * 容器中的注册都存在生命周期

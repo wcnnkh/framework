@@ -3,7 +3,7 @@ package io.basc.framework.util.check;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.spi.ConfigurableServices;
 
 public class NestingCheckerRegistry<E> extends ConfigurableServices<NestingChecker<E>> implements NestingChecker<E> {

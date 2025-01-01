@@ -1,4 +1,4 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.event;
 
 import java.util.EventObject;
 
@@ -16,7 +16,7 @@ import lombok.NonNull;
  */
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
-public class Event extends EventObject {
+public class BaseEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
 	@NonNull
 	private final String id;
@@ -28,7 +28,7 @@ public class Event extends EventObject {
 	 * 
 	 * @param event
 	 */
-	public Event(@NonNull Event event) {
+	public BaseEvent(@NonNull BaseEvent event) {
 		this(event.source, event);
 	}
 
@@ -37,7 +37,7 @@ public class Event extends EventObject {
 	 * 
 	 * @param source
 	 */
-	public Event(@NonNull Object source) {
+	public BaseEvent(@NonNull Object source) {
 		this(source, UUIDSequences.getInstance().next(), System.currentTimeMillis());
 	}
 
@@ -47,7 +47,7 @@ public class Event extends EventObject {
 	 * @param source
 	 * @param context
 	 */
-	public Event(@NonNull Object source, @NonNull Event context) {
+	public BaseEvent(@NonNull Object source, @NonNull BaseEvent context) {
 		this(source, context.id, context.timestamp);
 	}
 
@@ -58,7 +58,7 @@ public class Event extends EventObject {
 	 * @param id
 	 * @param timestamp
 	 */
-	public Event(@NonNull Object source, @NonNull String id, long timestamp) {
+	public BaseEvent(@NonNull Object source, @NonNull String id, long timestamp) {
 		super(source);
 		this.id = id;
 		this.timestamp = timestamp;

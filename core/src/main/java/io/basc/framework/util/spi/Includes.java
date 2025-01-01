@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Registrations;
 import io.basc.framework.util.Reloadable;
+import io.basc.framework.util.exchange.Registrations;
 
 @FunctionalInterface
 public interface Includes<S, I extends Include<S>> extends Registrations<I>, Include<S> {

@@ -1,4 +1,7 @@
-package io.basc.framework.util;
+package io.basc.framework.util.exchange;
+
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Throwables;
 
 @FunctionalInterface
 public interface Receipts<R extends Receipt> extends Registrations<R>, Receipt {

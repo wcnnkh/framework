@@ -1,4 +1,4 @@
-package io.basc.framework.util.actor;
+package io.basc.framework.util.exchange.event;
 
 import java.util.function.Function;
 
@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class ChangeEvent<T> extends Event {
+public class ChangeEvent<T> extends BaseEvent {
 	private static final long serialVersionUID = 1L;
 
 	private static void check(Object before, Object after) {
@@ -61,7 +61,7 @@ public class ChangeEvent<T> extends Event {
 		this.updatedSource = changeEvent.updatedSource;
 	}
 
-	private ChangeEvent(Event event, T source, T updateSource, ChangeType changeType) {
+	private ChangeEvent(BaseEvent event, T source, T updateSource, ChangeType changeType) {
 		super(updateSource, event);
 		this.changeType = changeType;
 		this.updatedSource = updateSource;

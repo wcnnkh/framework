@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.basc.framework.util.future;
+package io.basc.framework.util.exchange.future;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -22,10 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.actor.Promise;
 import io.basc.framework.util.exchange.Listener;
-import io.basc.framework.util.actor.ListenableFuture;
+import io.basc.framework.util.exchange.Registration;
 
 /**
  * A {@link ListenableFuture} whose value can be set via {@link #set(Object)} or
@@ -172,7 +170,7 @@ public class SettableListenableFuture<T> implements Promise<T> {
 	}
 
 	@Override
-	public Registration registerListener(Listener<? super ListenableFuture<? extends T>> listener) {
+	public Registration registerListener(Listener<ListenableFuture<? extends T>> listener) {
 		return settableTask.registerListener(listener);
 	}
 

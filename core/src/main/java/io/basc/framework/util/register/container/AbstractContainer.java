@@ -4,9 +4,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.actor.ChangeEvent;
 import io.basc.framework.util.concurrent.CopyOnReaderContainer;
 import io.basc.framework.util.exchange.Publisher;
+import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.register.Container;
 import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;

@@ -6,7 +6,7 @@ import java.util.ListIterator;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.DisposableRegistration;
 
 public class ThreadLocalNestingChecker<E> extends ThreadLocal<LinkedList<E>> implements NestingChecker<E> {

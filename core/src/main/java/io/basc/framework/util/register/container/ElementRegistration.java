@@ -1,7 +1,7 @@
 package io.basc.framework.util.register.container;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.LifecycleRegistration;
 import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
