@@ -1,5 +1,7 @@
 package io.basc.framework.core.convert;
 
+import lombok.NonNull;
+
 @FunctionalInterface
 public interface Converter<S, T, E extends Throwable> {
 	/**
@@ -9,8 +11,8 @@ public interface Converter<S, T, E extends Throwable> {
 	 * @param targetType
 	 * @return
 	 */
-	default boolean canDirectlyConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType != null && targetType != null && targetType.isAssignableTo(targetType)) {
+	default boolean canDirectlyConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+		if (sourceType.isAssignableTo(targetType)) {
 			return true;
 		}
 

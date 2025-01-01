@@ -13,7 +13,7 @@ public class DefaultReversibleTransformerRegistry<S, E extends Throwable> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> ReversibleTransformer<S, T, E> getReversibleTransformer(@NonNull Class<? extends T> requiredType) {
-		return (ReversibleTransformer<S, T, E>) match(requiredType).first();
+		return (ReversibleTransformer<S, T, E>) search(requiredType).first();
 	}
 
 	@Override

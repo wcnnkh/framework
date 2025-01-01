@@ -10,7 +10,7 @@ public class DefaultConverterRegistry<S, E extends Throwable> extends ServiceMap
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Converter<S, T, E> getConverter(Class<? extends T> requiredType) {
-		return (Converter<S, T, E>) match(requiredType).first();
+		return (Converter<S, T, E>) search(requiredType).first();
 	}
 
 	@Override

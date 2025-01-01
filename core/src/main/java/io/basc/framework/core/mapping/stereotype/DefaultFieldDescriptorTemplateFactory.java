@@ -9,10 +9,10 @@ public class DefaultFieldDescriptorTemplateFactory<D extends FieldDescriptor, T 
 
 	@Override
 	public T getFieldDescriptorTemplate(@NonNull TypeDescriptor requiredType) {
-		return match(requiredType.getType()).first();
+		return search(requiredType.getType()).first();
 	}
 
 	public boolean containsTemplate(Class<?> requiredType) {
-		return !match(requiredType).isEmpty();
+		return !search(requiredType).isEmpty();
 	}
 }

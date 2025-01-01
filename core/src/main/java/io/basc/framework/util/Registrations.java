@@ -51,6 +51,10 @@ public interface Registrations<R extends Registration> extends Registration, Lis
 
 	@Override
 	default boolean cancel() {
+		if (isEmpty()) {
+			return false;
+		}
+
 		for (R registration : getElements()) {
 			if (registration.isCancellable()) {
 				if (!registration.cancel()) {
@@ -63,11 +67,11 @@ public interface Registrations<R extends Registration> extends Registration, Lis
 
 	@Override
 	default boolean isCancellable() {
-		return getElements().anyMatch((e) -> e.isCancellable());
+		return isEmpty() ? false : getElements().anyMatch((e) -> e.isCancellable());
 	}
 
 	@Override
 	default boolean isCancelled() {
-		return getElements().allMatch((e) -> e.isCancelled());
+		return isEmpty() ? false : getElements().allMatch((e) -> e.isCancelled());
 	}
 }

@@ -73,7 +73,7 @@ public abstract class LimitableRegistration implements Registration {
 
 	@Override
 	public final boolean isCancelled() {
-		return isCancelled(() -> true);
+		return isCancelled(() -> false);
 	}
 
 	/**

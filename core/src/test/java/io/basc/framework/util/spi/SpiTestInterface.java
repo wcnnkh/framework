@@ -1,4 +1,4 @@
-package io.basc.framework.test;
+package io.basc.framework.util.spi;
 
 public interface SpiTestInterface {
 	String test();

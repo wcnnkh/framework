@@ -114,13 +114,14 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	public Registrations<ElementRegistration<E>> batchRegister(Elements<? extends E> elements,
 			Publisher<? super Elements<ChangeEvent<E>>> publisher) throws RegistrationException {
-		Elements<ElementRegistration<E>> es = elements.map(this::newElementRegistration);
 		return writeRegistrations((collection) -> {
+			Elements<ElementRegistration<E>> es = elements.map(this::newElementRegistration);
 			for (ElementRegistration<E> registration : es) {
 				if (!collection.add(registration)) {
 					registration.cancel();
 				}
 			}
+			// 这里需要调用一下toList来隐性执行一下add行为
 			return es.toList();
 		}, publisher);
 	}

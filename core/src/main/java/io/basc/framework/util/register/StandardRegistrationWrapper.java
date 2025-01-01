@@ -65,12 +65,6 @@ public class StandardRegistrationWrapper<W extends Registration>
 
 	@Override
 	public boolean cancel(BooleanSupplier cancel) {
-		return super.cancel(() -> {
-			try {
-				return source.cancel();
-			} finally {
-				cancel.getAsBoolean();
-			}
-		});
+		return super.cancel(() -> cancel.getAsBoolean() && source.cancel());
 	}
 }

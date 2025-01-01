@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,13 +61,25 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 		}
 	}
 
-	public Elements<S> match(Class<?> requiredType) {
+	/**
+	 * 搜索对应的服务列表
+	 * 
+	 * @param requiredType
+	 * @return
+	 */
+	public Elements<S> search(Class<?> requiredType) {
 		return container.readAsElements((map) -> {
+			if (map == null) {
+				return Elements.empty();
+			}
+
 			EntryRegistration<Class<?>, Services<S>> registration = map.get(requiredType);
-			Elements<S> values = registration == null ? Elements.empty() : registration.getValue();
-			SortedMap<Class<?>, EntryRegistration<Class<?>, Services<S>>> tailMap = map.tailMap(requiredType);
-			Elements<S> tailValues = Elements.of(() -> tailMap.values().stream().flatMap((e) -> e.getValue().stream()));
-			return values.concat(tailValues);
+			if (registration != null) {
+				return registration.getValue();
+			}
+
+			return Elements.of(() -> map.entrySet().stream().filter((e) -> requiredType.isAssignableFrom(e.getKey()))
+					.flatMap((e) -> e.getValue().getPayload().getValue().stream()));
 		});
 	}
 
@@ -237,5 +248,10 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	@Override
+	public String toString() {
+		return container.toString();
 	}
 }

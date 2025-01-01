@@ -16,7 +16,7 @@ public class DefaultReversibleConverterRegistry<S, E extends Throwable> extends
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> ReversibleConverter<S, T, E> getReversibleConverter(Class<? extends T> requiredType) {
-		return (ReversibleConverter<S, T, E>) match(requiredType).first();
+		return (ReversibleConverter<S, T, E>) search(requiredType).first();
 	}
 
 	@Override

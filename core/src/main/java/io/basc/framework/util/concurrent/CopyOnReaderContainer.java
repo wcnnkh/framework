@@ -172,6 +172,13 @@ public class CopyOnReaderContainer<C> implements ReadWriteLock {
 		}
 	}
 
+	/**
+	 * 容器可能为空
+	 * 
+	 * @param <E>
+	 * @param reader
+	 * @return
+	 */
 	public <E> Elements<E> readAsElements(Function<? super C, ? extends Elements<E>> reader) {
 		Lock lock = readLock();
 		lock.lock();
@@ -182,6 +189,10 @@ public class CopyOnReaderContainer<C> implements ReadWriteLock {
 			}
 
 			if (isThreadSafe()) {
+				if (elements.isEmpty()) {
+					return Elements.empty();
+				}
+
 				if (elements instanceof Collection) {
 					List<E> list = elements.collect(Collectors.toList());
 					return Elements.of(list);
