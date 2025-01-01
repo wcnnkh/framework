@@ -20,6 +20,10 @@ public interface ReversibleTransformerFactory<S, E extends Throwable>
 		return getReversibleTransformer(sourceType.getType()) != null;
 	}
 
+	default void reverseTransform(@NonNull Object source, @NonNull S target) throws E {
+		reverseTransform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
+	}
+
 	@Override
 	default void reverseTransform(Object source, TypeDescriptor sourceType, S target, TypeDescriptor targetType)
 			throws E {

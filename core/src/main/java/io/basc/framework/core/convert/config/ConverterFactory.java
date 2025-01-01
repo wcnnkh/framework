@@ -3,9 +3,15 @@ package io.basc.framework.core.convert.config;
 import io.basc.framework.core.convert.Converter;
 import io.basc.framework.core.convert.ConverterNotFoundException;
 import io.basc.framework.core.convert.TypeDescriptor;
+import lombok.NonNull;
 
 @FunctionalInterface
 public interface ConverterFactory<S, E extends Throwable> extends Converter<S, Object, E> {
+	@SuppressWarnings("unchecked")
+	default <T> T convert(@NonNull S source, @NonNull Class<? extends T> requiredType) throws E {
+		return (T) convert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(requiredType));
+	}
+
 	@Override
 	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
 		if (canDirectlyConvert(sourceType, targetType)) {

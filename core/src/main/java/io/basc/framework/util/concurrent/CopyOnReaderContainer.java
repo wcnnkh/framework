@@ -19,13 +19,13 @@ import io.basc.framework.util.concurrent.locks.NoOpLock;
 import lombok.NonNull;
 
 /**
- * 一个支持并发处理的容器
+ * 使用复制读来实现线程安全
  * 
  * @author shuchaowen
  *
  * @param <C>
  */
-public class ConcurrentContainer<C> implements ReadWriteLock {
+public class CopyOnReaderContainer<C> implements ReadWriteLock {
 	private volatile C container;
 	@NonNull
 	private final Supplier<? extends C> containerSupplier;
@@ -34,14 +34,14 @@ public class ConcurrentContainer<C> implements ReadWriteLock {
 	 */
 	private volatile ReadWriteLock readWriteLock;
 
-	public ConcurrentContainer(@NonNull Supplier<? extends C> containerSupplier) {
+	public CopyOnReaderContainer(@NonNull Supplier<? extends C> containerSupplier) {
 		this.containerSupplier = containerSupplier;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ConcurrentContainer) {
-			ConcurrentContainer<?> other = (ConcurrentContainer<?>) obj;
+		if (obj != null && obj instanceof CopyOnReaderContainer) {
+			CopyOnReaderContainer<?> other = (CopyOnReaderContainer<?>) obj;
 			return readAsBoolean((o1) -> other.readAsBoolean((o2) -> ObjectUtils.equals(o1, o2)));
 		}
 

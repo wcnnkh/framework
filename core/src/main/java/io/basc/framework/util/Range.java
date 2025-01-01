@@ -22,9 +22,7 @@ public final class Range<T> implements Serializable {
 	 */
 	private final Bound<T> upperBound;
 
-	public Range(Bound<T> lowerBound, Bound<T> upperBound) {
-		Assert.requiredArgument(lowerBound != null, "lowerBound");
-		Assert.requiredArgument(upperBound != null, "upperBound");
+	public Range(@NonNull Bound<T> lowerBound, @NonNull Bound<T> upperBound) {
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
 	}
@@ -179,8 +177,10 @@ public final class Range<T> implements Serializable {
 	 */
 	public static <R> Range<R> unionAll(@NonNull Elements<? extends Range<R>> elements,
 			@NonNull Comparator<R> comparator) {
-		// TODO
-		return null;
+		Assert.isTrue(!elements.isEmpty(), "element cannot be empty");
+		Bound<R> lower = elements.map((e) -> e.getLowerBound()).sorted((b1, b2) -> b1.compare(b2, comparator)).first();
+		Bound<R> upper = elements.map((e) -> e.getUpperBound()).sorted((b1, b2) -> b1.compare(b2, comparator)).last();
+		return new Range<>(lower, upper);
 	}
 
 	/**

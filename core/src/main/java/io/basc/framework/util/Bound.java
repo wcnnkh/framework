@@ -206,4 +206,23 @@ public final class Bound<T> extends SharedOptional<T, RuntimeException> {
 		}
 		return false;
 	}
+
+	public int compare(Bound<T> other, Comparator<? super T> comparator) {
+		int value = comparator.compare(orElse(null), other.orElse(null));
+		if (inclusive) {
+			if (other.inclusive) {
+				return value;
+			} else {
+				// left包含的情况所以即便相等也返回1
+				return value == 0 ? 1 : value;
+			}
+		} else {
+			if (other.inclusive) {
+				// right包含的情况所以即便相等也返回-1
+				return value == 0 ? -1 : value;
+			} else {
+				return value;
+			}
+		}
+	}
 }

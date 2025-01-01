@@ -13,6 +13,10 @@ public interface TransformerFactory<S, E extends Throwable> extends Transformer<
 		return getTransformer(targetType.getType()) != null;
 	}
 
+	default void transform(@NonNull S source, @NonNull Object target) throws E {
+		transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
+	}
+
 	@Override
 	default void transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull Object target,
 			@NonNull TypeDescriptor targetType) throws E {

@@ -4,6 +4,7 @@ import io.basc.framework.core.convert.Converter;
 import io.basc.framework.core.convert.ConverterNotFoundException;
 import io.basc.framework.core.convert.ReversibleConverter;
 import io.basc.framework.core.convert.TypeDescriptor;
+import lombok.NonNull;
 
 @FunctionalInterface
 public interface ReversibleConverterFactory<S, E extends Throwable>
@@ -28,6 +29,11 @@ public interface ReversibleConverterFactory<S, E extends Throwable>
 			throw new ConverterNotFoundException(sourceType, targetType);
 		}
 		return converter.reverseConvert(source, sourceType, targetType);
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T reverseConvert(@NonNull Object source, @NonNull Class<? extends T> requiredType) throws E {
+		return (T) reverseConvert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(requiredType));
 	}
 
 	@Override
