@@ -3,6 +3,7 @@ package io.basc.framework.util.function;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Functions;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Source;
 
@@ -12,7 +13,7 @@ public class CacheableSource<T, E extends Throwable> implements Source<T, E> {
 	private volatile Supplier<T> caching;
 
 	public CacheableSource(T source) {
-		this.caching = new StaticSupplier<T>(source);
+		this.caching = Functions.of(source);
 	}
 
 	public CacheableSource(Source<? extends T, ? extends E> source, Object lock) {
@@ -27,7 +28,7 @@ public class CacheableSource<T, E extends Throwable> implements Source<T, E> {
 			synchronized (this.lock == null ? this : this.lock) {
 				if (this.caching == null) {
 					T value = this.source.get();
-					this.caching = new StaticSupplier<>(value);
+					this.caching = Functions.of(value);
 				}
 			}
 		}
@@ -38,7 +39,7 @@ public class CacheableSource<T, E extends Throwable> implements Source<T, E> {
 		if (this.caching != null && this.source != null) {
 			synchronized (this.lock == null ? this : this.lock) {
 				if (this.caching != null) {
-					this.caching = new StaticSupplier<T>(this.source.get());
+					this.caching = Functions.of(this.source.get());
 				}
 			}
 		}

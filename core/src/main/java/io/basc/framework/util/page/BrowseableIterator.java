@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.function.StaticSupplier;
+import io.basc.framework.util.Functions;
 
 public final class BrowseableIterator<E extends Browseable<?, ?>> implements Iterator<E> {
 	private E pageables;
@@ -13,7 +13,7 @@ public final class BrowseableIterator<E extends Browseable<?, ?>> implements Ite
 
 	public BrowseableIterator(E pageables, Function<? super E, ? extends E> next) {
 		this.pageables = pageables;
-		this.current = new StaticSupplier<E>(pageables);
+		this.current = Functions.of(pageables);
 		this.next = next;
 	}
 

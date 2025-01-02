@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.function.StaticSupplier;
-
 /**
  * 迭代分割字符串
  * 
@@ -42,7 +40,7 @@ public class CharSequenceSplitIterator implements Iterator<CharSequenceTemplate>
 
 				int index = StringUtils.indexOf(charSequence, filter, this.index, endIndex);
 				if (index != -1) {
-					current = new StaticSupplier<>(KeyValue.of(index, filter));
+					current = Functions.of(KeyValue.of(index, filter));
 					break;
 				}
 			}

@@ -10,10 +10,10 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CloseableIterator;
+import io.basc.framework.util.Functions;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.support.RecordCodec;
-import io.basc.framework.util.function.StaticSupplier;
 
 /**
  * 线程不安全
@@ -69,7 +69,7 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 	public boolean hasNext() {
 		if (supplier == null) {
 			try {
-				supplier = new StaticSupplier<E>(codec.decode(getInputStream()));
+				supplier = Functions.of(codec.decode(getInputStream()));
 			} catch (EOFException e) {
 				close();
 				return false;
