@@ -9,7 +9,7 @@ import java.util.List;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Wrapper;
 import lombok.RequiredArgsConstructor;
 
@@ -86,13 +86,13 @@ public interface Registration {
 	boolean isCancelled();
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
-			Iterable<? extends S> iterable, Pipeline<? super S, ? extends E, ? extends X> register) throws X {
+			Iterable<? extends S> iterable, Function<? super S, ? extends E, ? extends X> register) throws X {
 		Assert.requiredArgument(iterable != null, "iterable");
 		return registers(iterable.iterator(), register);
 	}
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
-			Iterator<? extends S> iterator, Pipeline<? super S, ? extends E, ? extends X> register) throws X {
+			Iterator<? extends S> iterator, Function<? super S, ? extends E, ? extends X> register) throws X {
 		Assert.requiredArgument(iterator != null, "iterator");
 		Assert.requiredArgument(register != null, "registry");
 		List<E> registrations = null;

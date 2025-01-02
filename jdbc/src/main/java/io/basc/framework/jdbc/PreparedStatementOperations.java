@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.function.StreamOperations;
@@ -17,7 +17,7 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 	}
 	
 	public <S> PreparedStatementOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
-			Pipeline<? super S, ? extends T, ? extends SQLException> processor,
+			Function<? super S, ? extends T, ? extends SQLException> processor,
 			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
@@ -29,18 +29,18 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 		super(source, closeProcessor, closeHandler);
 	}
 
-	public PreparedStatementOperations(Pipeline<? super C, ? extends T, ? extends SQLException> sourceProcesor) {
+	public PreparedStatementOperations(Function<? super C, ? extends T, ? extends SQLException> sourceProcesor) {
 		super(sourceProcesor);
 	}
 
-	public PreparedStatementOperations(Pipeline<? super C, ? extends T, ? extends SQLException> sourceProcesor,
+	public PreparedStatementOperations(Function<? super C, ? extends T, ? extends SQLException> sourceProcesor,
 			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
 	@Override
-	public <R, X extends Throwable> R process(Pipeline<? super T, ? extends R, ? extends X> processor) {
+	public <R, X extends Throwable> R process(Function<? super T, ? extends R, ? extends X> processor) {
 		try {
 			return super.process(processor);
 		} catch (Throwable e) {

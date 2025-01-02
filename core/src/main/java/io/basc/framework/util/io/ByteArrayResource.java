@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import lombok.NonNull;
 
 /**
@@ -77,8 +77,8 @@ public class ByteArrayResource extends AbstractResource {
 	 * @see java.io.ByteArrayInputStream
 	 */
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() {
-		return Channel.of(new ByteArrayInputStream(this.byteArray));
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
+		return Pipeline.of(new ByteArrayInputStream(this.byteArray));
 	}
 
 	/**

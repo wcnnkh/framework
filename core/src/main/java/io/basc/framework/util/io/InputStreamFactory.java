@@ -10,8 +10,8 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.util.Channel;
 import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Wrapper;
 import lombok.Data;
 import lombok.NonNull;
@@ -22,7 +22,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	public static interface CharsetInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
 			extends DecodeInputStreamFactory<T, Reader, W>, CharsetCapable {
 		@Override
-		default Pipeline<? super T, ? extends Reader, ? extends IOException> getDecoder() {
+		default Function<? super T, ? extends Reader, ? extends IOException> getDecoder() {
 			return (e) -> new InputStreamReader(e, getCharset());
 		}
 	}
@@ -30,10 +30,10 @@ public interface InputStreamFactory<T extends InputStream> {
 	public static interface DecodeInputStreamFactory<T extends InputStream, R extends Reader, W extends InputStreamFactory<T>>
 			extends ReaderFactory<R>, InputStreamFactoryWrapper<T, W> {
 
-		Pipeline<? super T, ? extends R, ? extends IOException> getDecoder();
+		Function<? super T, ? extends R, ? extends IOException> getDecoder();
 
 		@Override
-		default @NonNull Channel<R, IOException> getReader() {
+		default @NonNull Pipeline<R, IOException> getReader() {
 			return getSource().getInputStream().map(getDecoder());
 		}
 	}
@@ -54,13 +54,13 @@ public interface InputStreamFactory<T extends InputStream> {
 	public static interface InputStreamFactoryWrapper<T extends InputStream, W extends InputStreamFactory<T>>
 			extends InputStreamFactory<T>, Wrapper<W> {
 		@Override
-		default Channel<T, IOException> getInputStream() {
+		default Pipeline<T, IOException> getInputStream() {
 			return getSource().getInputStream();
 		}
 
 		@Override
 		default <R extends Reader> ReaderFactory<R> reader(
-				@NonNull Pipeline<? super T, ? extends R, ? extends IOException> pipeline) {
+				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 			return getSource().reader(pipeline);
 		}
 
@@ -139,14 +139,14 @@ public interface InputStreamFactory<T extends InputStream> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Pipeline<? super T, ? extends R, ? extends IOException> decoder;
+		private final Function<? super T, ? extends R, ? extends IOException> decoder;
 	}
 
 	@NonNull
-	Channel<T, IOException> getInputStream();
+	Pipeline<T, IOException> getInputStream();
 
 	default <R extends Reader> ReaderFactory<R> reader(
-			@NonNull Pipeline<? super T, ? extends R, ? extends IOException> pipeline) {
+			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 		return new StandardDecodeInputStreamFactory<>(this, pipeline);
 	}
 

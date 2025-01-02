@@ -26,7 +26,7 @@ import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.logging.Logger;
@@ -100,7 +100,7 @@ public class XmlParser implements DocumentParser, ConversionService {
 
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource,
-			Pipeline<? super Document, ? extends T, ? extends E> processor) throws IOException, DomException, E {
+			Function<? super Document, ? extends T, ? extends E> processor) throws IOException, DomException, E {
 		return resource.read((is) -> {
 			Document document = parse(is);
 			if (document == null) {

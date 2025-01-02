@@ -13,14 +13,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Wrapper;
 import lombok.NonNull;
@@ -39,11 +38,11 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		this.nestedExecutor = nestedExecutor;
 	}
 
-	private final class InheritableProcessor<S, T, E extends Throwable> implements Pipeline<S, T, E> {
+	private final class InheritableProcessor<S, T, E extends Throwable> implements Function<S, T, E> {
 		private A capture = capture();
-		private final Pipeline<? super S, ? extends T, ? extends E> processor;
+		private final Function<? super S, ? extends T, ? extends E> processor;
 
-		InheritableProcessor(Pipeline<? super S, ? extends T, ? extends E> processor) {
+		InheritableProcessor(Function<? super S, ? extends T, ? extends E> processor) {
 			this.processor = processor;
 		}
 
@@ -82,9 +81,9 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		return decorateSource(callable::call)::get;
 	}
 
-	public final <S, E extends Throwable> Endpoint<S, E> decorateConsumeProcessor(
+	public final <S, E extends Throwable> Endpoint<S, E> decorateEndpoint(
 			@NonNull Endpoint<? super S, ? extends E> consumeProcessor) {
-		Pipeline<S, ?, E> processor = decorateProcessor((s) -> {
+		Function<S, ?, E> processor = decorateFunction((s) -> {
 			consumeProcessor.accept(s);
 			return null;
 		});
@@ -92,18 +91,19 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 	}
 
 	public final <T> Consumer<T> decorateConsumer(@NonNull Consumer<? super T> consumer) {
-		Endpoint<T, RuntimeException> consumeProcessor = decorateConsumeProcessor(consumer::accept);
+		Endpoint<T, RuntimeException> consumeProcessor = decorateEndpoint(consumer::accept);
 		return (s) -> consumeProcessor.accept(s);
 	}
 
-	public final <T, R> Function<T, R> decorateFunction(Function<? super T, ? extends R> function) {
+	public final <T, R> java.util.function.Function<T, R> decorateNativeFunction(
+			java.util.function.Function<? super T, ? extends R> function) {
 		Assert.requiredArgument(function != null, "function");
-		Pipeline<T, R, RuntimeException> processor = decorateProcessor(function::apply);
+		Function<T, R, RuntimeException> processor = decorateFunction(function::apply);
 		return (s) -> processor.apply(s);
 	}
 
-	public <S, T, E extends Throwable> Pipeline<S, T, E> decorateProcessor(
-			Pipeline<? super S, ? extends T, ? extends E> processor) {
+	public <S, T, E extends Throwable> Function<S, T, E> decorateFunction(
+			Function<? super S, ? extends T, ? extends E> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		return new InheritableProcessor<>(processor);
 	}

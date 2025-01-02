@@ -1,209 +1,183 @@
 package io.basc.framework.util;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.function.Supplier;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-/**
- * 一个流水线的定义
- * 
- * @author shuchaowen
- *
- * @param <S> 数据来源
- * @param <T> 返回的结果
- * @param <E> 异常
- * @see Function
- */
-@FunctionalInterface
-public interface Pipeline<S, T, E extends Throwable> {
-
-	public static class IdentityPipeline<T, E extends Throwable> implements Pipeline<T, T, E> {
-
-		@Override
-		public T apply(T source) throws E {
-			return source;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V> Pipeline<T, V, E> map(@NonNull Pipeline<? super T, ? extends V, ? extends E> mapper) {
-			return (Pipeline<T, V, E>) mapper;
-		}
-	}
-
+public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T, E> {
 	@RequiredArgsConstructor
-	@Getter
-	public static class MappedPipeline<A, B, E extends Throwable, W extends Pipeline<? super A, ? extends B, ? extends E>, V>
-			implements Pipeline<A, V, E>, Wrapper<W> {
-		@NonNull
+	public static class PipelineOptional<T, E extends Throwable, W extends Pipeline<T, E>> implements Optional<T, E> {
 		private final W source;
-		@NonNull
-		private final Pipeline<? super B, ? extends V, ? extends E> mapper;
-		private final Endpoint<? super B, ? extends E> closeHandler;
+		private volatile java.util.Optional<T> optional;
 
 		@Override
-		public V apply(A source) throws E {
-			B target = this.source.apply(source);
-			try {
-				return mapper.apply(target);
-			} finally {
-				if (closeHandler != null) {
-					closeHandler.accept(target);
-				}
-			}
-		}
-
-		@Override
-		public <R> Pipeline<A, R, E> map(@NonNull Pipeline<? super V, ? extends R, ? extends E> mapper) {
-			return new MappedPipeline<>(this.source, (s) -> {
-				V target = MappedPipeline.this.mapper.apply(s);
-				return mapper.apply(target);
-			}, this.closeHandler);
-		}
-	}
-
-	@RequiredArgsConstructor
-	@Getter
-	public static class NativePipeline<S, T, E extends Throwable> implements Pipeline<S, T, E> {
-		@NonNull
-		private final Function<? super S, ? extends T> function;
-
-		@Override
-		public T apply(S source) throws E {
-			return function.apply(source);
-		}
-	}
-
-	@RequiredArgsConstructor
-	public static class PipelineChannel<S, T, E extends Throwable, W extends Source<? extends S, ? extends E>, P extends Pipeline<? super S, ? extends T, ? extends E>>
-			implements Channel<T, E> {
-		@NonNull
-		protected final W source;
-		@NonNull
-		protected final P pipeline;
-		protected final Processor<? extends E> processor;
-		private volatile Supplier<? extends S> supplier;
-		private final AtomicBoolean closed = new AtomicBoolean(false);
-
-		@Override
-		public void close() throws E {
-			synchronized (this) {
-				if (closed.compareAndSet(false, true)) {
-					if (processor != null) {
-						processor.run();
+		public T orElse(T other) throws E {
+			if (optional == null) {
+				synchronized (this) {
+					if (optional == null) {
+						optional = source.finish();
 					}
 				}
+			}
+			return optional.orElse(other);
+		}
+	}
+
+	public static class PipelinePool<T, E extends Throwable, W extends Pipeline<T, E>> extends SourcePool<T, E, W>
+			implements Pool<T, E> {
+
+		public PipelinePool(@NonNull W source, @NonNull Endpoint<? super T, ? extends E> endpoint) {
+			super(source, endpoint);
+		}
+
+		@Override
+		public void close(T target) throws E {
+			try {
+				super.close(target);
+			} finally {
+				source.close();
 			}
 		}
 
 		@Override
 		public T get() throws E {
-			if (supplier == null) {
+			return super.get();
+		}
+
+		@Override
+		public <R> Pool<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+			return new MappedChannelPool<>(pipeline);
+		}
+
+		@RequiredArgsConstructor
+		private class MappedChannelPool<R> implements Pool<R, E> {
+			private final Function<? super T, ? extends R, ? extends E> pipeline;
+			private volatile Supplier<? extends T> targetSupplier;
+
+			@Override
+			public R get() throws E {
+				if (targetSupplier == null) {
+					synchronized (this) {
+						if (targetSupplier == null) {
+							T target = PipelinePool.this.get();
+							targetSupplier = () -> target;
+						}
+					}
+				}
+
+				T target = targetSupplier.get();
+				return pipeline.apply(target);
+			}
+
+			@Override
+			public void close(R target) throws E {
 				synchronized (this) {
-					if (supplier == null) {
-						S target = source.get();
-						supplier = () -> target;
+					if (targetSupplier != null) {
+						PipelinePool.this.close(targetSupplier.get());
 					}
 				}
 			}
+		}
+	}
 
-			S target = supplier.get();
-			return pipeline.apply(target);
+	public static class MappedPipeline<S, T, E extends Throwable, W extends Pipeline<S, E>>
+			extends MappedSource<S, T, E, W> implements Pipeline<T, E> {
+
+		public MappedPipeline(@NonNull W source, @NonNull Function<? super S, ? extends T, ? extends E> mapper) {
+			super(source, mapper);
+		}
+
+		@Override
+		public void close() throws E {
+			source.close();
 		}
 
 		@Override
 		public boolean isClosed() {
-			return closed.get();
+			return source.isClosed();
+		}
+
+		@Override
+		public <R> Pipeline<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+			return new MappedPipeline<>(this, pipeline);
+		}
+
+		@Override
+		public Pool<T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+			return Pipeline.super.onClose(endpoint);
 		}
 	}
 
-	@RequiredArgsConstructor
-	@Getter
-	public static class PipelineReactor<S, T, E extends Throwable, W extends Pipeline<S, T, E>>
-			implements Reactor<S, T, E> {
-		@NonNull
-		private final W source;
-		@NonNull
-		private final Endpoint<? super T, ? extends E> endpoint;
+	public static class NewPipeline<T, E extends Throwable, W extends Pipeline<T, E>> extends SourcePipeline<T, E, W> {
+
+		public NewPipeline(@NonNull W source, Processor<? extends E> processor) {
+			super(source, processor);
+		}
 
 		@Override
-		public T apply(S source) throws E {
-			T target = this.source.apply(source);
+		public void close() throws E {
 			try {
-				return target;
+				super.close();
 			} finally {
-				close(target);
+				source.close();
 			}
 		}
-
-		@Override
-		public void close(T target) throws E {
-			endpoint.accept(target);
-		}
-
-		@Override
-		public Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
-			return new PipelineReactor<>(this.source, (target) -> {
-				try {
-					endpoint.accept(target);
-				} finally {
-					Pipeline.PipelineReactor.this.close(target);
-				}
-			});
-		}
 	}
 
-	@FunctionalInterface
-	public interface PipelineWrapper<S, T, E extends Throwable, W extends Pipeline<S, T, E>>
-			extends Pipeline<S, T, E>, Wrapper<W> {
-		@Override
-		default T apply(S source) throws E {
-			return getSource().apply(source);
-		}
+	void close() throws E;
 
-		@Override
-		default <R> Pipeline<S, R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> mapper) {
-			return getSource().map(mapper);
+	boolean isClosed();
+
+	@Override
+	default <R> Pipeline<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+		return new MappedPipeline<>(this, pipeline);
+	}
+
+	default Optional<T, E> export() {
+		return new PipelineOptional<>(this);
+	}
+
+	default java.util.Optional<T> finish() throws E {
+		try {
+			T value = get();
+			return java.util.Optional.ofNullable(value);
+		} finally {
+			close();
 		}
 	}
 
-	static final IdentityPipeline<?, ?> IDENTITY_PIPELINE = new IdentityPipeline<>();
-
-	/**
-	 * Returns a function that always returns its input argument.
-	 * 
-	 * @param <U>
-	 * @param <X>
-	 * @return a function that always returns its input argument
-	 */
-	@SuppressWarnings("unchecked")
-	static <U, X extends Throwable> Pipeline<U, U, X> identity() {
-		return (Pipeline<U, U, X>) IDENTITY_PIPELINE;
+	@Override
+	default Pipeline<T, E> newPipeline() {
+		return new NewPipeline<>(this, null);
 	}
 
-	public static <A, B, X extends Throwable> Pipeline<A, B, X> of(Function<? super A, ? extends B> function) {
-		return new NativePipeline<>(function);
+	@Override
+	default Pool<T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+		return new PipelinePool<>(this, endpoint);
 	}
 
-	T apply(S source) throws E;
-
-	default <R> Pipeline<S, R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
-		return new MappedPipeline<>(this, pipeline, null);
+	@Override
+	default Pipeline<T, E> onClose(@NonNull Processor<? extends E> processor) {
+		return new NewPipeline<>(this, processor);
 	}
 
-	default Channel<T, E> newChannel(@NonNull Source<? extends S, ? extends E> source) {
-		return new PipelineChannel<>(source, this, null);
+	public static <T, E extends Throwable> Pipeline<T, E> of(T value) {
+		Source<T, E> source = Source.of(value);
+		return source.newPipeline();
 	}
 
-	default Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
-		return new PipelineReactor<>(this, endpoint);
+	public static <T extends AutoCloseable> Pipeline<T, Exception> forAutoCloseable(
+			Source<? extends T, ? extends Exception> source) {
+		Source<T, Exception> target = Source.of(source);
+		return target.onClose(AutoCloseable::close).newPipeline();
 	}
 
-	public static interface Merger<T, E extends Throwable> extends Pipeline<Elements<T>, T, E> {
-		
+	public static <T extends Closeable> Pipeline<T, IOException> forCloseable(
+			Source<? extends T, ? extends IOException> source) {
+		Source<T, IOException> target = Source.of(source);
+		return target.onClose(Closeable::close).newPipeline();
 	}
 }

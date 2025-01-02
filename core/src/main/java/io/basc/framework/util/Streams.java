@@ -92,6 +92,5 @@ public class Streams {
 	}
 
 	private Streams() {
-		throw new UnsupportedOperationException();
 	}
 }

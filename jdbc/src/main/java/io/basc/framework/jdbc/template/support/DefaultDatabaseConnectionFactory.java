@@ -16,7 +16,7 @@ import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
 
@@ -48,7 +48,7 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 
 	protected <E extends Throwable> DefaultDatabaseConnectionFactory<F> getDatabaseConnectionFactory(
 			String databaseName, @Nullable Source<? extends F, ? extends E> defaultSource,
-			Pipeline<? super F, ? extends DefaultDatabaseConnectionFactory<F>, ? extends E> creator) throws E {
+			Function<? super F, ? extends DefaultDatabaseConnectionFactory<F>, ? extends E> creator) throws E {
 		if (StringUtils.equals(getDatabaseName(), databaseName)) {
 			return this;
 		}

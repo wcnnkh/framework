@@ -8,19 +8,19 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import lombok.NonNull;
 
 public class NonexistentResource implements Resource {
 	public static final NonexistentResource INSTANCE = new NonexistentResource();
 
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
 		throw new UnsupportedOperationException("empty resource");
 	}
 
 	@Override
-	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
+	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
 		throw new UnsupportedOperationException("empty resource");
 	}
 

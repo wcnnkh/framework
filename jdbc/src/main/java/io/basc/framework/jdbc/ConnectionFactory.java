@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 
 @FunctionalInterface
 public interface ConnectionFactory {
@@ -18,7 +18,7 @@ public interface ConnectionFactory {
 	}
 
 	default <T> T process(Sql sql,
-			Pipeline<? super PreparedStatement, ? extends T, ? extends SQLException> processor) {
+			Function<? super PreparedStatement, ? extends T, ? extends SQLException> processor) {
 		return operations().prepare(sql).process(processor);
 	}
 
@@ -27,7 +27,7 @@ public interface ConnectionFactory {
 	}
 
 	default <T> Query<T> query(Sql sql,
-			Pipeline<? super java.sql.ResultSet, ? extends T, ? extends Throwable> rowMapper) {
+			Function<? super java.sql.ResultSet, ? extends T, ? extends Throwable> rowMapper) {
 		Elements<T> elements = operations().prepare(sql).query().rows(rowMapper);
 		// 数据库操作是耗时的，启用缓存
 		return new Query<>(elements.cacheable());

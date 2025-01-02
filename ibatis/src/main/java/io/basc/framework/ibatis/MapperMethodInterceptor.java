@@ -12,15 +12,15 @@ import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 
 public class MapperMethodInterceptor implements ExecutionInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
-	private final Pipeline<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
+	private final Function<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
 	private final Class<?> mapperClass;
 
 	public MapperMethodInterceptor(Class<?> mapperClass,
-			Pipeline<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
+			Function<? super ReflectionMethod, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
 		this.mapperClass = mapperClass;
 		this.openSessionProcessor = openSessionProcessor;
 	}

@@ -14,7 +14,7 @@ import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Range;
 
 @SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 			Map<V, Double> memberScores) {
 		SK k = getKeyCodec().encode(key);
 		Map<SV, Double> ts = CollectionFactory.convert(memberScores, getValueCodec().toEncodeProcessor(),
-				Pipeline.identity());
+				Function.identity());
 		return getSourceRedisSortedSetsCommands().zadd(k, setOption, scoreOption, changed, ts);
 	}
 

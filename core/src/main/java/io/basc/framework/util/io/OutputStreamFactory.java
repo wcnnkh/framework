@@ -7,8 +7,8 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
-import io.basc.framework.util.Channel;
 import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Wrapper;
 import lombok.Data;
 import lombok.NonNull;
@@ -19,7 +19,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	public static interface CharsetOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
 			extends EncodeOutputStreamFactory<T, Writer, W>, CharsetCapable {
 		@Override
-		default Pipeline<? super T, ? extends Writer, ? extends IOException> getEncoder() {
+		default Function<? super T, ? extends Writer, ? extends IOException> getEncoder() {
 			return (e) -> new OutputStreamWriter(e, getCharset());
 		}
 	}
@@ -38,10 +38,10 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 	public static interface EncodeOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
 			extends OutputStreamFactoryWrapper<T, W>, WriterFactory<R> {
-		Pipeline<? super T, ? extends R, ? extends IOException> getEncoder();
+		Function<? super T, ? extends R, ? extends IOException> getEncoder();
 
 		@Override
-		default @NonNull Channel<R, IOException> getWriter() {
+		default @NonNull Pipeline<R, IOException> getWriter() {
 			return getSource().getOutputStream().map(getEncoder());
 		}
 	}
@@ -50,13 +50,13 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	public static interface OutputStreamFactoryWrapper<T extends OutputStream, W extends OutputStreamFactory<T>>
 			extends OutputStreamFactory<T>, Wrapper<W> {
 		@Override
-		default Channel<T, IOException> getOutputStream() {
+		default Pipeline<T, IOException> getOutputStream() {
 			return getSource().getOutputStream();
 		}
 
 		@Override
 		default <R extends Writer> WriterFactory<R> writer(
-				@NonNull Pipeline<? super T, ? extends R, ? extends IOException> pipeline) {
+				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 			return getSource().writer(pipeline);
 		}
 
@@ -120,14 +120,14 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Pipeline<? super T, ? extends R, ? extends IOException> encoder;
+		private final Function<? super T, ? extends R, ? extends IOException> encoder;
 	}
 
 	@NonNull
-	Channel<T, IOException> getOutputStream();
+	Pipeline<T, IOException> getOutputStream();
 
 	default <R extends Writer> WriterFactory<R> writer(
-			@NonNull Pipeline<? super T, ? extends R, ? extends IOException> pipeline) {
+			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 		return new StandardEncodeOutputStreamFactory<>(this, pipeline);
 	}
 

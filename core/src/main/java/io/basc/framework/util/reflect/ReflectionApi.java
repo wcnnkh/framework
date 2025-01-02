@@ -11,7 +11,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -22,10 +22,10 @@ import io.basc.framework.util.StringUtils;
  */
 public class ReflectionApi implements Supplier<Object> {
 	private final Class<?> declaringClass;
-	private final Pipeline<? super Class<?>, ? extends Object, ? extends Throwable> processor;
+	private final Function<? super Class<?>, ? extends Object, ? extends Throwable> processor;
 
 	public ReflectionApi( Class<?> declaringClass,
-			 Pipeline<Class<?>, Object, ? extends Throwable> processor) {
+			 Function<Class<?>, Object, ? extends Throwable> processor) {
 		this.declaringClass = declaringClass;
 		this.processor = processor;
 	}
@@ -97,7 +97,7 @@ public class ReflectionApi implements Supplier<Object> {
 		return invoke(method, args);
 	}
 
-	private static final Pipeline<Class<?>, Object, Throwable> UNSAFE_PROCESSOR = (C) -> {
+	private static final Function<Class<?>, Object, Throwable> UNSAFE_PROCESSOR = (C) -> {
 		Field f = C.getDeclaredField("theUnsafe");
 		ReflectionUtils.makeAccessible(f);
 		return f.get(null);
@@ -125,7 +125,7 @@ public class ReflectionApi implements Supplier<Object> {
 		return type.cast(UNSAFE.invoke(ALLOCATE_INSTANCE_METHOD, type));
 	}
 
-	private static final Pipeline<Class<?>, Object, Throwable> REFLECTION_FACTORY_PROCESSOR = (c) -> {
+	private static final Function<Class<?>, Object, Throwable> REFLECTION_FACTORY_PROCESSOR = (c) -> {
 		Method method = c.getMethod("getReflectionFactory");
 		return method.invoke(null);
 	};

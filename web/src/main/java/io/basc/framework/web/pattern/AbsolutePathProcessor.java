@@ -2,13 +2,13 @@ package io.basc.framework.web.pattern;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.placeholder.support.SmartPlaceholderReplacer;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
 import io.basc.framework.web.WebUtils;
 
-public class AbsolutePathProcessor implements Pipeline<ServerHttpRequest, String, WebException> {
+public class AbsolutePathProcessor implements Function<ServerHttpRequest, String, WebException> {
 	private final String location;
 
 	public AbsolutePathProcessor(String location) {

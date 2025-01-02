@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.logging.Logger;
@@ -27,12 +27,12 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public ConnectionOperations(
-			Pipeline<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor) {
+			Function<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor) {
 		super(sourceProcesor);
 	}
 
 	public ConnectionOperations(
-			Pipeline<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor,
+			Function<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor,
 			@Nullable Endpoint<? super Connection, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
@@ -49,7 +49,7 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public <T extends PreparedStatement> PreparedStatementOperations<T, ?> prepare(
-			Pipeline<? super Connection, ? extends T, ? extends SQLException> processor) {
+			Function<? super Connection, ? extends T, ? extends SQLException> processor) {
 		return new PreparedStatementOperations<>(this, processor, (e) -> e.close(), null);
 	}
 
@@ -79,7 +79,7 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public <T extends Statement, R extends StatementOperations<T, R>> StatementOperations<T, R> statement(
-			Pipeline<? super Connection, ? extends T, ? extends SQLException> processor) {
+			Function<? super Connection, ? extends T, ? extends SQLException> processor) {
 		return new StatementOperations<>(this, processor, (e) -> e.close(), null);
 	}
 }

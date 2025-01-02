@@ -1,7 +1,7 @@
 package io.basc.framework.util.codec;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import lombok.NonNull;
 
 @FunctionalInterface
@@ -20,7 +20,7 @@ public interface Decoder<E, D> {
 		return new NestedDecoder<>(this, decoder);
 	}
 
-	default Pipeline<E, D, DecodeException> toDecodeProcessor() {
+	default Function<E, D, DecodeException> toDecodeProcessor() {
 		return (o) -> decode(o);
 	}
 

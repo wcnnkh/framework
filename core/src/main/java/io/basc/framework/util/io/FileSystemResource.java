@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
 import lombok.NonNull;
@@ -175,14 +175,14 @@ public class FileSystemResource extends AbstractResource {
 	 * @see java.io.FileInputStream
 	 */
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
 		return Source.of(() -> {
 			try {
 				return Files.newInputStream(this.filePath);
 			} catch (NoSuchFileException ex) {
 				throw new FileNotFoundException(ex.getMessage());
 			}
-		}).onClose((e) -> e.close()).newChannel();
+		}).onClose((e) -> e.close()).newPipeline();
 	}
 
 	public boolean delete() throws IOException {
@@ -208,8 +208,8 @@ public class FileSystemResource extends AbstractResource {
 	 * @see java.io.FileOutputStream
 	 */
 	@Override
-	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
-		return Source.of(() -> Files.newOutputStream(this.filePath)).onClose((e) -> e.close()).newChannel();
+	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
+		return Source.of(() -> Files.newOutputStream(this.filePath)).onClose((e) -> e.close()).newPipeline();
 	}
 
 	/**

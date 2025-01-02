@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Source;
 import lombok.NonNull;
 
@@ -126,7 +126,7 @@ public class PathResource extends AbstractResource {
 	 * @see java.nio.file.spi.FileSystemProvider#newInputStream(Path, OpenOption...)
 	 */
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
 		return Source.of(() -> {
 			if (!exists()) {
 				throw new FileNotFoundException(getPath() + " (no such file or directory)");
@@ -136,7 +136,7 @@ public class PathResource extends AbstractResource {
 			}
 
 			return Files.newInputStream(this.path);
-		}).onClose((e) -> e.close()).newChannel();
+		}).onClose((e) -> e.close()).newPipeline();
 	}
 
 	/**
@@ -158,13 +158,13 @@ public class PathResource extends AbstractResource {
 	 *      OpenOption...)
 	 */
 	@Override
-	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
+	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
 		return Source.of(() -> {
 			if (Files.isDirectory(this.path)) {
 				throw new FileNotFoundException(getPath() + " (is a directory)");
 			}
 			return Files.newOutputStream(this.path);
-		}).onClose((e) -> e.close()).newChannel();
+		}).onClose((e) -> e.close()).newPipeline();
 	}
 
 	/**

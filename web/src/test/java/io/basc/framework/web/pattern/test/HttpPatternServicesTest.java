@@ -2,7 +2,7 @@ package io.basc.framework.web.pattern.test;
 
 import org.junit.Test;
 
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
@@ -16,7 +16,7 @@ public class HttpPatternServicesTest {
 		CorsRegistry corsRegistry = new CorsRegistry();
 		corsRegistry.add("/**", Cors.DEFAULT);
 		corsRegistry.add("/abc/**", Cors.DEFAULT);
-		corsRegistry.add(new Pipeline<ServerHttpRequest, Cors, WebException>() {
+		corsRegistry.add(new Function<ServerHttpRequest, Cors, WebException>() {
 
 			@Override
 			public Cors process(ServerHttpRequest source) throws WebException {
@@ -35,7 +35,7 @@ public class HttpPatternServicesTest {
 	}
 
 	private static class TestProcessor
-			implements Pipeline<ServerHttpRequest, Cors, WebException>, ServerHttpRequestAccept, Ordered {
+			implements Function<ServerHttpRequest, Cors, WebException>, ServerHttpRequestAccept, Ordered {
 		private final String name;
 		private final int order;
 

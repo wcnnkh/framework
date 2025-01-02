@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import lombok.NonNull;
 
 /**
@@ -70,13 +70,13 @@ public class InputStreamResource extends AbstractResource {
 	 * underlying stream multiple times.
 	 */
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() throws IllegalStateException {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() throws IllegalStateException {
 		if (this.read) {
 			throw new IllegalStateException("InputStream has already been read - "
 					+ "do not use InputStreamResource if a stream needs to be read multiple times");
 		}
 		this.read = true;
-		return Channel.of(inputStream);
+		return Pipeline.of(inputStream);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class InputStreamResource extends AbstractResource {
 	}
 
 	@Override
-	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
+	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
 		throw new UnsupportedOperationException();
 	}
 

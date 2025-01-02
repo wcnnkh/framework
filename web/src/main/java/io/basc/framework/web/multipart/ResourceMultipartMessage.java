@@ -8,7 +8,7 @@ import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.io.FileSystemResource;
 import io.basc.framework.util.io.Resource;
 
@@ -38,7 +38,7 @@ public class ResourceMultipartMessage extends AbstractMultipartMessage {
 	}
 
 	@Override
-	public <T, E extends Throwable> T read(Pipeline<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
+	public <T, E extends Throwable> T read(Function<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
 		return resource.read(processor);
 	}
 

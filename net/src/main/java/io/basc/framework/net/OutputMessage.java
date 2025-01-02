@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.io.OutputStreamFactory;
 import io.basc.framework.util.io.WriterFactory;
@@ -16,7 +16,7 @@ public interface OutputMessage extends Message, OutputStreamFactory<OutputStream
 			OutputStreamFactoryWrapper<OutputStream, W>, WriterFactoryWrapper<Writer, W> {
 
 		@Override
-		default Channel<Writer, IOException> getWriter() {
+		default Pipeline<Writer, IOException> getWriter() {
 			return getSource().getWriter();
 		}
 
@@ -50,7 +50,7 @@ public interface OutputMessage extends Message, OutputStreamFactory<OutputStream
 	}
 
 	@Override
-	default @NonNull Channel<Writer, IOException> getWriter() {
+	default @NonNull Pipeline<Writer, IOException> getWriter() {
 		String charsetName = getCharsetName();
 		return StringUtils.isEmpty(charsetName) ? toWriterFactory().getWriter()
 				: toWriterFactory(charsetName).getWriter();

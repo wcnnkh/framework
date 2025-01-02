@@ -3,7 +3,7 @@ package io.basc.framework.jdbc;
 import java.sql.SQLException;
 
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.function.StandardStreamOperations;
@@ -30,18 +30,18 @@ public class Operations<T, C extends Operations<T, C>> extends StandardStreamOpe
 		super(source, closeProcessor, closeHandler);
 	}
 
-	public Operations(Pipeline<? super C, ? extends T, ? extends SQLException> sourceProcesor) {
+	public Operations(Function<? super C, ? extends T, ? extends SQLException> sourceProcesor) {
 		super(sourceProcesor);
 	}
 
-	public Operations(Pipeline<? super C, ? extends T, ? extends SQLException> sourceProcesor,
+	public Operations(Function<? super C, ? extends T, ? extends SQLException> sourceProcesor,
 			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
 	public <S> Operations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
-			Pipeline<? super S, ? extends T, ? extends SQLException> processor,
+			Function<? super S, ? extends T, ? extends SQLException> processor,
 			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);

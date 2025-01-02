@@ -9,7 +9,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CloseableIterator;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Endpoint;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Streams;
@@ -29,25 +29,25 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 	}
 
 	public ResultSetOperations(
-			Pipeline<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor) {
+			Function<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor) {
 		super(sourceProcesor);
 	}
 
 	public ResultSetOperations(
-			Pipeline<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor,
+			Function<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor,
 			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
 	public <S> ResultSetOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
-			Pipeline<? super S, ? extends ResultSet, ? extends SQLException> processor,
+			Function<? super S, ? extends ResultSet, ? extends SQLException> processor,
 			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
 			@Nullable Processor<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
-	public <E> Elements<E> rows(Pipeline<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
+	public <E> Elements<E> rows(Function<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
 		return Elements.of(() -> {
 			ResultSetIterator resultSetIterator = new ResultSetIterator();
 			return Streams.stream(resultSetIterator).map((e) -> {

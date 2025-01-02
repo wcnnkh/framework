@@ -10,7 +10,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.io.load.DefaultResourceLoader;
 import lombok.NonNull;
@@ -85,8 +85,8 @@ public class FileUrlResource extends UrlResource {
 	}
 
 	@Override
-	public @NonNull Channel<OutputStream, IOException> getOutputStream() {
-		return Source.of(() -> Files.newOutputStream(getFile().toPath())).onClose((e) -> e.close()).newChannel();
+	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
+		return Source.of(() -> Files.newOutputStream(getFile().toPath())).onClose((e) -> e.close()).newPipeline();
 	}
 
 	public WritableByteChannel writableChannel() throws IOException {

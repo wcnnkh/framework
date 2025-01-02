@@ -23,9 +23,10 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CharSequenceTemplate;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.SystemUtils;
 import io.basc.framework.util.io.FileSystemResource;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.ResourceUtils;
@@ -352,8 +353,8 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	}
 
 	protected void addAllRsrcResources(String path, Collection<Resource> resources) throws IOException {
-		for (String classPath : XUtils.getClassPathArray()) {
-			FileSystemResource fileSystemResource = new FileSystemResource(classPath);
+		for (CharSequenceTemplate template : SystemUtils.getClassPath().getAsElements()) {
+			FileSystemResource fileSystemResource = new FileSystemResource(template.getAsString());
 			if (!fileSystemResource.exists()) {
 				continue;
 			}
@@ -446,9 +447,9 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 */
 	protected void addClassPathManifestEntries(Set<Resource> result) {
 		try {
-			for (String path : XUtils.getClassPathArray()) {
+			for (CharSequenceTemplate template : SystemUtils.getClassPath().getAsElements()) {
 				try {
-					String filePath = new File(path).getAbsolutePath();
+					String filePath = new File(template.getAsString()).getAbsolutePath();
 					int prefixIndex = filePath.indexOf(':');
 					if (prefixIndex == 1) {
 						// Possibly "c:" drive prefix on Windows, to be upper-cased for proper duplicate
@@ -467,7 +468,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 					}
 				} catch (MalformedURLException ex) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Cannot search for matching files underneath [" + path
+						logger.debug("Cannot search for matching files underneath [" + template
 								+ "] because it cannot be converted to a valid 'jar:' URL: " + ex.getMessage());
 					}
 				}

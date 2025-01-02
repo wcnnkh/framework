@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Wrapper;
 import lombok.NonNull;
@@ -16,13 +16,13 @@ public interface ReaderFactory<T extends Reader> {
 	public static interface ReaderFactoryWrapper<T extends Reader, W extends ReaderFactory<T>>
 			extends ReaderFactory<T>, Wrapper<W> {
 		@Override
-		default Channel<T, IOException> getReader() {
+		default Pipeline<T, IOException> getReader() {
 			return getSource().getReader();
 		}
 	}
 
 	@NonNull
-	Channel<T, IOException> getReader();
+	Pipeline<T, IOException> getReader();
 
 	default String readAllCharacters() throws NoSuchElementException, IOException {
 		return getReader().export().map(IOUtils::read).get();
@@ -31,7 +31,7 @@ public interface ReaderFactory<T extends Reader> {
 	default Elements<String> readAllLines() {
 		return Elements.of(() -> {
 			try {
-				Channel<T, IOException> channel = getReader();
+				Pipeline<T, IOException> channel = getReader();
 				return IOUtils.readLines(channel.get()).onClose(() -> {
 					try {
 						channel.close();

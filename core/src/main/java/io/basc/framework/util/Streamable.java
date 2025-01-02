@@ -77,8 +77,8 @@ public interface Streamable<E> {
 		}
 
 		@Override
-		default <T, X extends Throwable> T export(Pipeline<? super Stream<E>, ? extends T, ? extends X> processor)
-				throws X {
+		default <T, X extends Throwable> T export(
+				io.basc.framework.util.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
 			return getSource().export(processor);
 		}
 
@@ -249,7 +249,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Pipeline)}
+	 * 调用{@link #export(Function)}
 	 * 
 	 * @param <R>
 	 * @param <A>
@@ -310,8 +310,8 @@ public interface Streamable<E> {
 		}
 	}
 
-	default <T, X extends Throwable> T export(Pipeline<? super Stream<E>, ? extends T, ? extends X> processor)
-			throws X {
+	default <T, X extends Throwable> T export(
+			io.basc.framework.util.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			return processor.apply(stream);
@@ -321,7 +321,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Pipeline)}
+	 * 调用{@link #export(Function)}
 	 * 
 	 * @return
 	 */
@@ -330,7 +330,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Pipeline)}
+	 * 调用{@link #export(Function)}
 	 * 
 	 * @return
 	 */
@@ -339,7 +339,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 调用{@link #export(Pipeline)}
+	 * 调用{@link #export(Function)}
 	 * 
 	 * @return
 	 */
@@ -496,7 +496,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * @see #export(Pipeline)
+	 * @see #export(Function)
 	 * @param <A>
 	 * @param generator
 	 * @return

@@ -2,7 +2,7 @@ package io.basc.framework.util.codec;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.check.Validator;
 import lombok.NonNull;
 
@@ -27,7 +27,7 @@ public interface Encoder<D, E> extends Validator<D, E> {
 		return new NestedEncoder<>(this, encoder);
 	}
 
-	default Pipeline<D, E, EncodeException> toEncodeProcessor() {
+	default Function<D, E, EncodeException> toEncodeProcessor() {
 		return (o) -> encode(o);
 	}
 

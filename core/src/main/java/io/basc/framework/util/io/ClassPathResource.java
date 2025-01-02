@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
@@ -180,8 +180,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @see java.lang.Class#getResourceAsStream(String)
 	 */
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() {
-		return Channel.forCloseable(() -> {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
+		return Pipeline.forCloseable(() -> {
 			InputStream is = ResourceUtils.getResourceAsStream(clazz, this.path);
 			if (is == null) {
 				is = ResourceUtils.getResourceAsStream(getClassLoader(), this.path);

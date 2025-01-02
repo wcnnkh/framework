@@ -9,16 +9,16 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import lombok.NonNull;
 
 public class ConverterConversionService implements ConditionalConversionService {
 	@SuppressWarnings("rawtypes")
-	private final Pipeline converter;
+	private final Function converter;
 	private final Set<ConvertiblePair> convertibleTypes;
 
 	public <S, T> ConverterConversionService(Class<S> sourceType, Class<T> targetType,
-			Pipeline<? super S, ? extends T, ? extends Throwable> converter) {
+			Function<? super S, ? extends T, ? extends Throwable> converter) {
 		this.convertibleTypes = Collections.singleton(new ConvertiblePair(sourceType, targetType));
 		this.converter = converter;
 	}

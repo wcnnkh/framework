@@ -4,9 +4,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public interface Pool<T, E extends Throwable> extends Source<T, E> {
-	public static class PoolChannel<T, E extends Throwable, W extends Pool<T, E>> extends SourceChannel<T, E, W> {
+	public static class PoolPipeline<T, E extends Throwable, W extends Pool<T, E>> extends SourcePipeline<T, E, W> {
 
-		public PoolChannel(@NonNull W source, Processor<? extends E> processor) {
+		public PoolPipeline(@NonNull W source, Processor<? extends E> processor) {
 			super(source, processor);
 		}
 
@@ -29,7 +29,7 @@ public interface Pool<T, E extends Throwable> extends Source<T, E> {
 		@NonNull
 		protected final W source;
 		@NonNull
-		protected final Pipeline<? super S, ? extends T, ? extends E> pipeline;
+		protected final Function<? super S, ? extends T, ? extends E> pipeline;
 		protected final Endpoint<? super T, ? extends E> endpoint;
 
 		@Override
@@ -51,18 +51,18 @@ public interface Pool<T, E extends Throwable> extends Source<T, E> {
 	}
 
 	@Override
-	default <R> Pool<R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
+	default <R> Pool<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
 		return new MappedPool<>(this, pipeline, null);
 	}
 
 	void close(T target) throws E;
 
 	@Override
-	default Channel<T, E> onClose(@NonNull Processor<? extends E> processor) {
-		return new PoolChannel<>(this, processor);
+	default Pipeline<T, E> onClose(@NonNull Processor<? extends E> processor) {
+		return new PoolPipeline<>(this, processor);
 	}
 
-	default Channel<T, E> newChannel() {
-		return new PoolChannel<>(this, null);
+	default Pipeline<T, E> newPipeline() {
+		return new PoolPipeline<>(this, null);
 	}
 }

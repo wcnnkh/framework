@@ -16,7 +16,7 @@ public interface Filter<T, E extends Throwable> {
 		}
 
 		@Override
-		default <S> Filter<S, E> map(@NonNull Pipeline<? super S, ? extends T, ? extends E> mapper) {
+		default <S> Filter<S, E> map(@NonNull Function<? super S, ? extends T, ? extends E> mapper) {
 			return getSource().map(mapper);
 		}
 	}
@@ -26,7 +26,7 @@ public interface Filter<T, E extends Throwable> {
 	public static class MappedFilter<S, T, E extends Throwable, W extends Filter<S, E>>
 			implements Filter<T, E>, io.basc.framework.util.Wrapper<W> {
 		private final W source;
-		private final Pipeline<? super T, ? extends S, ? extends E> mapper;
+		private final Function<? super T, ? extends S, ? extends E> mapper;
 
 		@Override
 		public boolean test(T source) throws E {
@@ -35,7 +35,7 @@ public interface Filter<T, E extends Throwable> {
 		}
 	}
 
-	default <S> Filter<S, E> map(@NonNull Pipeline<? super S, ? extends T, ? extends E> mapper) {
+	default <S> Filter<S, E> map(@NonNull Function<? super S, ? extends T, ? extends E> mapper) {
 		return new MappedFilter<>(this, mapper);
 	}
 

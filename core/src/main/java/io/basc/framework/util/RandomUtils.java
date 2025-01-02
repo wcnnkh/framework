@@ -483,7 +483,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Number totalWeight, @NonNull Number weight,
-			@NonNull Iterator<? extends T> iterator, @NonNull Pipeline<T, Number, E> weightProcessor,
+			@NonNull Iterator<? extends T> iterator, @NonNull Function<T, Number, E> weightProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
@@ -541,7 +541,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> Number getWeight(Iterator<? extends T> iterator,
-			Pipeline<T, Number, E> weightProcessor) throws E {
+			Function<T, Number, E> weightProcessor) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
 		Number totalWegith = 0;
@@ -584,7 +584,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Number totalWeight,
-			@NonNull Iterator<? extends T> iterator, @NonNull Pipeline<T, Number, E> weightProcessor,
+			@NonNull Iterator<? extends T> iterator, @NonNull Function<T, Number, E> weightProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		return random(totalWeight, random(1, Addition.INSTANCE.eval(totalWeight, 1)), iterator, weightProcessor,
 				removePredicate);
@@ -603,7 +603,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
-			@NonNull Pipeline<T, Number, E> weightProcessor, @NonNull Pipeline<Number, Number, E> randomProcessor,
+			@NonNull Function<T, Number, E> weightProcessor, @NonNull Function<Number, Number, E> randomProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		if (iterable == null) {
 			return null;
@@ -629,7 +629,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Iterable<? extends T> iterable,
-			@NonNull Pipeline<T, Number, E> weightProcessor, Predicate<? super T> removePredicate) throws E {
+			@NonNull Function<T, Number, E> weightProcessor, Predicate<? super T> removePredicate) throws E {
 		return random(iterable, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}
 }

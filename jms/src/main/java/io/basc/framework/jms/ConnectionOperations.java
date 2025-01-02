@@ -6,22 +6,22 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.register.Registration;
 
 public class ConnectionOperations<T extends Connection, S extends Session, D extends Destination>
 		extends AbstractJmsOperations<T, ConnectionOperations<T, S, D>> {
 	private volatile T connection;
-	private final Pipeline<? super T, ? extends S, ? extends JMSException> connectionProcessor;
+	private final Function<? super T, ? extends S, ? extends JMSException> connectionProcessor;
 
 	private volatile SessionOperations<S, D> sessionOperations;
 
-	private final Pipeline<? super S, ? extends D, ? extends JMSException> sessionProcessor;
+	private final Function<? super S, ? extends D, ? extends JMSException> sessionProcessor;
 
 	public ConnectionOperations(Source<? extends T, ? extends JMSException> source,
-			Pipeline<? super T, ? extends S, ? extends JMSException> connectionProcessor,
-			Pipeline<? super S, ? extends D, ? extends JMSException> sessionProcessor) {
+			Function<? super T, ? extends S, ? extends JMSException> connectionProcessor,
+			Function<? super S, ? extends D, ? extends JMSException> sessionProcessor) {
 		super(source);
 		this.connectionProcessor = connectionProcessor;
 		this.sessionProcessor = sessionProcessor;
@@ -61,8 +61,8 @@ public class ConnectionOperations<T extends Connection, S extends Session, D ext
 	}
 
 	public SessionOperations<S, D> createSessionOperations(T connection,
-			Pipeline<? super T, ? extends S, ? extends JMSException> connectionProcessor,
-			Pipeline<? super S, ? extends D, ? extends JMSException> sessionProcessor) {
+			Function<? super T, ? extends S, ? extends JMSException> connectionProcessor,
+			Function<? super S, ? extends D, ? extends JMSException> sessionProcessor) {
 		SessionOperations<S, D> sessionOperations = new SessionOperations<S, D>(
 				() -> connectionProcessor.process(connection), sessionProcessor);
 		sessionOperations.copyConfig(this);
@@ -82,7 +82,7 @@ public class ConnectionOperations<T extends Connection, S extends Session, D ext
 		return connection;
 	}
 
-	public Pipeline<? super T, ? extends S, ? extends JMSException> getConnectionProcessor() {
+	public Function<? super T, ? extends S, ? extends JMSException> getConnectionProcessor() {
 		return connectionProcessor;
 	}
 
@@ -97,7 +97,7 @@ public class ConnectionOperations<T extends Connection, S extends Session, D ext
 		return sessionOperations;
 	}
 
-	public Pipeline<? super S, ? extends D, ? extends JMSException> getSessionProcessor() {
+	public Function<? super S, ? extends D, ? extends JMSException> getSessionProcessor() {
 		return sessionProcessor;
 	}
 

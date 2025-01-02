@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Channel;
+import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
 import lombok.NonNull;
@@ -169,8 +169,8 @@ public class UrlResource extends AbstractFileResolvingResource {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public @NonNull Channel<InputStream, IOException> getInputStream() {
-		return (@NonNull Channel<InputStream, IOException>) Source.of(() -> url.openConnection()).onClose((con) -> {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
+		return (@NonNull Pipeline<InputStream, IOException>) Source.of(() -> url.openConnection()).onClose((con) -> {
 			// Close the HTTP connection (if applicable).
 			if (con instanceof HttpURLConnection) {
 				((HttpURLConnection) con).disconnect();

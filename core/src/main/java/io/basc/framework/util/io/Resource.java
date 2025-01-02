@@ -15,8 +15,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
-import io.basc.framework.util.Channel;
 import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.Function;
 import io.basc.framework.util.alias.Named;
 import io.basc.framework.util.io.watch.Variable;
 import lombok.Data;
@@ -70,7 +70,7 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 			extends StandardEncodeOutputStreamFactory<OutputStream, Writer, W> implements ResourceWrapper<W>,
 			DecodeInputStreamFactory<InputStream, Reader, W>, EncodeOutputStreamFactory<OutputStream, Writer, W> {
 		@NonNull
-		private final Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder;
+		private final Function<? super InputStream, ? extends Reader, ? extends IOException> decoder;
 
 		public CodecResource(@NonNull W source) {
 			this(source, OutputStreamWriter::new, InputStreamReader::new);
@@ -83,8 +83,8 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 		}
 
 		public CodecResource(@NonNull W source,
-				@NonNull Pipeline<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
-				@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
+				@NonNull Function<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
+				@NonNull Function<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
 			super(source, encoder);
 			this.decoder = decoder;
 		}
@@ -127,12 +127,12 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 		}
 
 		@Override
-		default @NonNull Channel<InputStream, IOException> getInputStream() throws UnsupportedOperationException {
+		default @NonNull Pipeline<InputStream, IOException> getInputStream() throws UnsupportedOperationException {
 			return getSource().getInputStream();
 		}
 
 		@Override
-		default @NonNull Channel<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
+		default @NonNull Pipeline<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
 			return getSource().getOutputStream();
 		}
 
@@ -177,8 +177,8 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 		}
 
 		@Override
-		default Resource map(@NonNull Pipeline<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
-				@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
+		default Resource map(@NonNull Function<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
+				@NonNull Function<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
 			return getSource().map(encoder, decoder);
 		}
 
@@ -205,11 +205,11 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 
 	@Override
 	@NonNull
-	Channel<InputStream, IOException> getInputStream() throws UnsupportedOperationException;
+	Pipeline<InputStream, IOException> getInputStream() throws UnsupportedOperationException;
 
 	@Override
 	@NonNull
-	default Channel<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
+	default Pipeline<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -237,8 +237,8 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 		return new CodecResource<>(this, charsetEncoder, charsetDecoder);
 	}
 
-	default Resource map(@NonNull Pipeline<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
-			@NonNull Pipeline<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
+	default Resource map(@NonNull Function<? super OutputStream, ? extends Writer, ? extends IOException> encoder,
+			@NonNull Function<? super InputStream, ? extends Reader, ? extends IOException> decoder) {
 		return new CodecResource<>(this, encoder, decoder);
 	}
 

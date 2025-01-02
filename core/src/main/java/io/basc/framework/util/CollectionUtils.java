@@ -46,7 +46,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -419,8 +418,8 @@ public abstract class CollectionUtils {
 	}
 
 	public static <K, V, SK, SV, E extends Throwable> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
-			Pipeline<? super SK, ? extends K, ? extends E> keyConverter,
-			Pipeline<? super SV, ? extends V, ? extends E> valueConverter) throws E {
+			Function<? super SK, ? extends K, ? extends E> keyConverter,
+			Function<? super SV, ? extends V, ? extends E> valueConverter) throws E {
 		if (CollectionUtils.isEmpty(sourceMap)) {
 			return Collections.emptyMap();
 		}
@@ -1226,7 +1225,7 @@ public abstract class CollectionUtils {
 	}
 
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			Function<? super S, ? extends Iterator<? extends T>> converter) {
+			java.util.function.Function<? super S, ? extends Iterator<? extends T>> converter) {
 		Assert.requiredArgument(converter != null, "converter");
 		if (iterator == null) {
 			return Collections.emptyIterator();
@@ -1396,7 +1395,7 @@ public abstract class CollectionUtils {
 			return Collections.emptyEnumeration();
 		}
 
-		return new IteratorToEnumeration<>(iterator, Function.identity());
+		return new IteratorToEnumeration<>(iterator, java.util.function.Function.identity());
 	}
 
 	/**
@@ -1410,7 +1409,7 @@ public abstract class CollectionUtils {
 			return Collections.emptyIterator();
 		}
 
-		return new EnumerationToIterator<>(enumeration, Function.identity());
+		return new EnumerationToIterator<>(enumeration, java.util.function.Function.identity());
 	}
 
 	/**

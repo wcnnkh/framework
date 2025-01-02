@@ -48,7 +48,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		@NonNull
 		protected final Optional<S, E> source;
 		@NonNull
-		protected final Pipeline<? super S, ? extends T, ? extends E> pipeline;
+		protected final Function<? super S, ? extends T, ? extends E> pipeline;
 
 		@Override
 		public T orElse(T other) throws E {
@@ -79,7 +79,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		}
 
 		@Override
-		default <R> Optional<R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
+		default <R> Optional<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
 			return getSource().map(pipeline);
 		}
 
@@ -141,7 +141,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 	}
 
 	default <U, X extends Throwable> Optional<U, X> flatMap(
-			@NonNull Pipeline<? super T, ? extends Optional<U, X>, ? extends E> mapper) throws E {
+			@NonNull Function<? super T, ? extends Optional<U, X>, ? extends E> mapper) throws E {
 		T value = orElse(null);
 		if (value == null) {
 			return empty();
@@ -171,7 +171,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 	}
 
 	@Override
-	default <R> Optional<R, E> map(@NonNull Pipeline<? super T, ? extends R, ? extends E> pipeline) {
+	default <R> Optional<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
 		return new MappedOptional<>(this, pipeline);
 	}
 

@@ -28,7 +28,7 @@ public interface Endpoint<S, E extends Throwable> {
 		}
 
 		@Override
-		default <T> Endpoint<T, E> map(@NonNull Pipeline<? super T, ? extends S, ? extends E> mapper) {
+		default <T> Endpoint<T, E> map(@NonNull Function<? super T, ? extends S, ? extends E> mapper) {
 			return getSource().map(mapper);
 		}
 	}
@@ -40,7 +40,7 @@ public interface Endpoint<S, E extends Throwable> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Pipeline<? super S, ? extends T, ? extends E> mapper;
+		private final Function<? super S, ? extends T, ? extends E> mapper;
 
 		@Override
 		public void accept(S source) throws E {
@@ -65,7 +65,7 @@ public interface Endpoint<S, E extends Throwable> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> Endpoint<T, B> map(@NonNull Pipeline<? super T, ? extends A, ? extends B> mapper) {
+		public <T> Endpoint<T, B> map(@NonNull Function<? super T, ? extends A, ? extends B> mapper) {
 			return (Endpoint<T, B>) REJECT_ENDPOINT;
 		}
 	}
@@ -105,7 +105,7 @@ public interface Endpoint<S, E extends Throwable> {
 		}
 	}
 
-	default <T> Endpoint<T, E> map(@NonNull Pipeline<? super T, ? extends S, ? extends E> mapper) {
+	default <T> Endpoint<T, E> map(@NonNull Function<? super T, ? extends S, ? extends E> mapper) {
 		return new MappedEndpoint<>(this, mapper);
 	}
 
