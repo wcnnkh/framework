@@ -1,10 +1,10 @@
 package io.basc.framework.util.register.container;
 
 import java.util.concurrent.locks.Lock;
-import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.concurrent.CopyOnReaderContainer;
+import io.basc.framework.util.Source;
+import io.basc.framework.util.concurrent.LockableContainer;
 import io.basc.framework.util.exchange.Publisher;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.register.Container;
@@ -18,12 +18,12 @@ import lombok.NonNull;
  *
  * @param <C>
  */
-public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>> extends CopyOnReaderContainer<C>
-		implements Container<E, P> {
+public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>>
+		extends LockableContainer<C, RuntimeException> implements Container<E, P> {
 	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
-	public AbstractContainer(@NonNull Supplier<? extends C> containerSupplier) {
-		super(containerSupplier);
+	public AbstractContainer(@NonNull Source<? extends C, ? extends RuntimeException> containerSource) {
+		super(containerSource);
 	}
 
 	public Publisher<? super Elements<ChangeEvent<E>>> getPublisher() {

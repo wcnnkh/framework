@@ -9,12 +9,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.concurrent.locks.NoOpLock;
 import lombok.NonNull;
 
@@ -25,23 +25,23 @@ import lombok.NonNull;
  *
  * @param <C>
  */
-public class CopyOnReaderContainer<C> implements ReadWriteLock {
+public class LockableContainer<C, X extends Throwable> implements ReadWriteLock {
 	private volatile C container;
 	@NonNull
-	private final Supplier<? extends C> containerSupplier;
+	private final Source<? extends C, ? extends X> containerSource;
 	/**
 	 * 读写锁的实现
 	 */
 	private volatile ReadWriteLock readWriteLock;
 
-	public CopyOnReaderContainer(@NonNull Supplier<? extends C> containerSupplier) {
-		this.containerSupplier = containerSupplier;
+	public LockableContainer(@NonNull Source<? extends C, ? extends X> containerSource) {
+		this.containerSource = containerSource;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof CopyOnReaderContainer) {
-			CopyOnReaderContainer<?> other = (CopyOnReaderContainer<?>) obj;
+		if (obj != null && obj instanceof LockableContainer) {
+			LockableContainer<?, ?> other = (LockableContainer<?, ?>) obj;
 			return readAsBoolean((o1) -> other.readAsBoolean((o2) -> ObjectUtils.equals(o1, o2)));
 		}
 
@@ -90,8 +90,8 @@ public class CopyOnReaderContainer<C> implements ReadWriteLock {
 	 * 
 	 * @return
 	 */
-	protected C newContainer() {
-		return containerSupplier.get();
+	protected C newContainer() throws X {
+		return containerSource.get();
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class CopyOnReaderContainer<C> implements ReadWriteLock {
 	 * @param writer 回调参数不会为空
 	 * @return
 	 */
-	public <R> R write(Function<? super C, R> writer) {
+	public <R> R write(Function<? super C, R> writer) throws X {
 		Lock lock = writeLock();
 		lock.lock();
 		try {

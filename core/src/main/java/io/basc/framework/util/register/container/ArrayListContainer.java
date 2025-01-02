@@ -2,8 +2,8 @@ package io.basc.framework.util.register.container;
 
 import java.util.ArrayList;
 import java.util.RandomAccess;
-import java.util.function.Supplier;
 
+import io.basc.framework.util.Source;
 import lombok.NonNull;
 
 public class ArrayListContainer<E> extends ListContainer<E, ArrayList<ElementRegistration<E>>> implements RandomAccess {
@@ -15,7 +15,8 @@ public class ArrayListContainer<E> extends ListContainer<E, ArrayList<ElementReg
 		this(() -> new ArrayList<>(initialCapacity));
 	}
 
-	public ArrayListContainer(@NonNull Supplier<? extends ArrayList<ElementRegistration<E>>> containerSupplier) {
-		super(containerSupplier);
+	public ArrayListContainer(
+			@NonNull Source<? extends ArrayList<ElementRegistration<E>>, ? extends RuntimeException> containerSource) {
+		super(containerSource);
 	}
 }

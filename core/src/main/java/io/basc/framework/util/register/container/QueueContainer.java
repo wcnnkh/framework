@@ -2,16 +2,16 @@ package io.basc.framework.util.register.container;
 
 import java.util.NoSuchElementException;
 import java.util.Queue;
-import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Source;
 import lombok.NonNull;
 
 public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends CollectionContainer<E, Q>
 		implements Queue<E> {
 
-	public QueueContainer(@NonNull Supplier<? extends Q> containerSupplier) {
-		super(containerSupplier);
+	public QueueContainer(@NonNull Source<? extends Q, ? extends RuntimeException> containerSource) {
+		super(containerSource);
 	}
 
 	@Override

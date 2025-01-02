@@ -13,13 +13,13 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Registrations;
@@ -170,8 +170,8 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 		}
 	}
 
-	public MapContainer(Supplier<? extends M> containerSupplier) {
-		super(containerSupplier);
+	public MapContainer(@NonNull Source<? extends M, ? extends RuntimeException> containerSource) {
+		super(containerSource);
 	}
 
 	public final boolean addAll(Collection<? extends Entry<? extends K, ? extends V>> c) {
@@ -467,7 +467,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	public final int size() {
 		return readInt((map) -> map == null ? 0 : map.size());
 	}
-	
+
 	@Override
 	public Stream<KeyValue<K, V>> stream() {
 		return readAsElements(

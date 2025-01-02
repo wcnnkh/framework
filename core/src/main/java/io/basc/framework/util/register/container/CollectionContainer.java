@@ -6,11 +6,11 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.exchange.Publisher;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registration;
@@ -78,8 +78,8 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
-	public CollectionContainer(@NonNull Supplier<? extends C> containerSupplier) {
-		super(containerSupplier);
+	public CollectionContainer(@NonNull Source<? extends C, ? extends RuntimeException> containerSource) {
+		super(containerSource);
 	}
 
 	@Override

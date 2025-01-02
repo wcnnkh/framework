@@ -3,16 +3,16 @@ package io.basc.framework.util.register.container;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.function.Supplier;
 
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Source;
 import lombok.NonNull;
 
 public class ListContainer<E, C extends List<ElementRegistration<E>>> extends CollectionContainer<E, C>
 		implements List<E> {
 
-	public ListContainer(@NonNull Supplier<? extends C> containerSupplier) {
-		super(containerSupplier);
+	public ListContainer(@NonNull Source<? extends C, ? extends RuntimeException> containerSource) {
+		super(containerSource);
 	}
 
 	@Override
