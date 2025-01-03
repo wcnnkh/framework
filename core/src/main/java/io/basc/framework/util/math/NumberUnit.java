@@ -1,8 +1,9 @@
-package io.basc.framework.util;
+package io.basc.framework.util.math;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import io.basc.framework.util.Assert;
 import lombok.Data;
 
 @Data

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.basc.framework.util;
+package io.basc.framework.util.math;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,6 +23,11 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.function.IntPredicate;
+
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Function;
+import io.basc.framework.util.StringUtils;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for

@@ -1,6 +1,9 @@
 package io.basc.framework.util.placeholder;
 
 import java.util.Properties;
+import java.util.Map.Entry;
+
+import lombok.NonNull;
 
 public interface PlaceholderFormat {
 	/**
@@ -28,4 +31,19 @@ public interface PlaceholderFormat {
 	 *                                  placeholders are unresolvable
 	 */
 	String replaceRequiredPlaceholders(String source) throws IllegalArgumentException;
+
+	default void formatProperties(@NonNull Properties sourceProperties, @NonNull Properties targetProperties) {
+		for (Entry<Object, Object> entry : sourceProperties.entrySet()) {
+			Object value = entry.getValue();
+			if (value == null) {
+				continue;
+			}
+
+			if (value instanceof String) {
+				targetProperties.put(entry.getKey(), replacePlaceholders((String) value));
+			} else {
+				targetProperties.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
 }

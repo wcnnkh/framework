@@ -94,6 +94,19 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		return containerSource.get();
 	}
 
+	public void reset() {
+		Lock lock = writeLock();
+		try {
+			lock.lock();
+			if (container == null) {
+				return;
+			}
+			container = null;
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	/**
 	 * 读取
 	 * 

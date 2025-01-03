@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.placeholder.PlaceholderMessage;
+import io.basc.framework.util.placeholder.FormatableMessage;
 
 public class Log4j2Logger implements io.basc.framework.util.logging.Logger {
 	private final Logger logger;
@@ -35,7 +35,7 @@ public class Log4j2Logger implements io.basc.framework.util.logging.Logger {
 	@Override
 	public void log(LogRecord record) {
 		org.apache.logging.log4j.Level lv = LevelCodec.INSTANCE.encode(record.getLevel());
-		logger.log(lv, new PlaceholderMessage(record.getMessage(), placeholder, record.getParameters()),
+		logger.log(lv, new FormatableMessage(record.getMessage(), placeholder, record.getParameters()),
 				record.getThrown());
 	}
 }

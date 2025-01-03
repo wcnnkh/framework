@@ -44,6 +44,7 @@ public class TreeMapContainer<K, V> extends MapContainer<K, V, TreeMap<K, EntryR
 					return false;
 				}
 
+				reset();
 				TreeMap<K, EntryRegistration<K, V>> container = newContainer();
 				container.putAll(map);
 				map.clear();

@@ -44,6 +44,7 @@ public class TreeSetContainer<E> extends CollectionContainer<E, TreeSet<ElementR
 					return false;
 				}
 
+				reset();
 				TreeSet<ElementRegistration<E>> container = newContainer();
 				container.addAll(set);
 				set.clear();

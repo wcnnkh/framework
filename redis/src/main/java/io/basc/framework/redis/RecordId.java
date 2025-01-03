@@ -17,9 +17,9 @@ package io.basc.framework.redis;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.math.NumberUtils;
 
 public class RecordId {
 

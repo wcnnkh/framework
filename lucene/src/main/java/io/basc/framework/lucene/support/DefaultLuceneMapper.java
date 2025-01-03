@@ -35,7 +35,7 @@ import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
 import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.NumberUtils;
+import io.basc.framework.util.math.NumberUtils;
 
 public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMapper {
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(

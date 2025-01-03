@@ -6,7 +6,7 @@ import java.util.logging.LogRecord;
 import org.slf4j.Logger;
 
 import io.basc.framework.util.logging.CustomLevel;
-import io.basc.framework.util.placeholder.PlaceholderMessage;
+import io.basc.framework.util.placeholder.FormatableMessage;
 
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error
@@ -48,7 +48,7 @@ public class Slf4jLogger implements io.basc.framework.util.logging.Logger {
 
 	@Override
 	public void log(LogRecord record) {
-		PlaceholderMessage message = new PlaceholderMessage(record.getMessage(), placeholder, record.getParameters());
+		FormatableMessage message = new FormatableMessage(record.getMessage(), placeholder, record.getParameters());
 		Throwable e = record.getThrown();
 		if (record.getLevel().getName().equalsIgnoreCase(Level.INFO.getName())) {
 			if (e == null) {

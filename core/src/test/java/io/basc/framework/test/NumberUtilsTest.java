@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.util.MoneyFormat;
-import io.basc.framework.util.NumberReplacer;
-import io.basc.framework.util.NumberUtils;
+import io.basc.framework.util.math.MoneyFormat;
+import io.basc.framework.util.math.NumberReplacer;
+import io.basc.framework.util.math.NumberUtils;
 
 public class NumberUtilsTest {
 	@Test

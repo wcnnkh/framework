@@ -1,8 +1,10 @@
-package io.basc.framework.util;
+package io.basc.framework.util.math;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;

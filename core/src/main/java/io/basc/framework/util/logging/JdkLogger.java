@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import io.basc.framework.util.FormatUtils;
+import io.basc.framework.util.placeholder.FormatableMessage;
 
 /**
  * 包装的jdk日志记录器
@@ -41,7 +41,7 @@ public class JdkLogger implements io.basc.framework.util.logging.Logger {
 
 	@Override
 	public void log(LogRecord record) {
-		String message = FormatUtils.formatPlaceholder(record.getMessage(), null, record.getParameters());
+		String message = FormatableMessage.formatPlaceholder(record.getMessage(), null, record.getParameters());
 		record.setMessage(message);
 		record.setParameters(null);
 		logger.log(record);
