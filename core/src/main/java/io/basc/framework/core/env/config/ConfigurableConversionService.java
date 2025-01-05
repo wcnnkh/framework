@@ -1,4 +1,4 @@
-package io.basc.framework.core.env;
+package io.basc.framework.core.env.config;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;

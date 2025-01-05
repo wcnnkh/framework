@@ -9,9 +9,8 @@ import io.basc.framework.core.mapping.Mapper;
 import io.basc.framework.core.mapping.config.ConfigurableInstanceFactory;
 import lombok.NonNull;
 
-public class StereotypeMapper
-		extends StereotypeTransformer<FieldDescriptor, FieldDescriptorTemplate<FieldDescriptor>, ConversionException>
-		implements Mapper<Object, Object, ConversionException> {
+public class StereotypeMapper<F extends FieldDescriptor, M extends MappingDescriptor<F>> extends
+		StereotypeTransformer<F, M, ConversionException> implements Mapper<Object, Object, ConversionException> {
 	private final ConfigurableInstanceFactory instanceFactory = new ConfigurableInstanceFactory();
 	private final Converters<Object, Object, ConversionException, Converter<? super Object, ? extends Object, ? extends ConversionException>> converters = new Converters<>();
 

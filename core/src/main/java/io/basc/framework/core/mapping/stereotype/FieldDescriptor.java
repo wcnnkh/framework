@@ -1,5 +1,6 @@
 package io.basc.framework.core.mapping.stereotype;
 
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Getter;
 import io.basc.framework.core.execution.Setter;
 import io.basc.framework.core.mapping.PropertyDescriptor;
@@ -25,6 +26,16 @@ public interface FieldDescriptor extends PropertyDescriptor {
 		}
 
 		@Override
+		default TypeDescriptor getTypeDescriptor() {
+			return getSource().getTypeDescriptor();
+		}
+
+		@Override
+		default TypeDescriptor getRequiredTypeDescriptor() {
+			return getSource().getRequiredTypeDescriptor();
+		}
+
+		@Override
 		default boolean isWritable() {
 			return getSource().isWritable();
 		}
@@ -46,6 +57,22 @@ public interface FieldDescriptor extends PropertyDescriptor {
 		public FieldDescriptor rename(String name) {
 			return new RenamedFieldDescriptor<>(name, getSource());
 		}
+	}
+
+	@Override
+	default TypeDescriptor getTypeDescriptor() {
+		if (isReadable()) {
+			return getReadMethod().getTypeDescriptor();
+		}
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	default TypeDescriptor getRequiredTypeDescriptor() {
+		if (isWritable()) {
+			return getWriteMethod().getTypeDescriptor();
+		}
+		throw new UnsupportedOperationException();
 	}
 
 	Getter getReadMethod();

@@ -26,6 +26,10 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 		this((key) -> new Services<>());
 	}
 
+	public TreeMapContainer<Class<?>, Services<S>> getContainer() {
+		return container;
+	}
+
 	public ServiceMap(@NonNull Function<? super Class<?>, ? extends Services<S>> servicesCreator) {
 		this.container.setComparator(TypeComparator.DEFAULT);
 		this.servicesCreator = servicesCreator;

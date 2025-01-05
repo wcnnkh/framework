@@ -5,10 +5,10 @@ import io.basc.framework.util.alias.Named;
 import lombok.Data;
 import lombok.NonNull;
 
-public interface FieldDescriptorTemplate<T extends FieldDescriptor> extends PropertyDescriptors<T>, Named {
+public interface MappingDescriptor<T extends FieldDescriptor> extends PropertyDescriptors<T>, Named {
 	@FunctionalInterface
-	public static interface FieldDescriptorTemplateWrapper<T extends FieldDescriptor, W extends FieldDescriptorTemplate<T>>
-			extends FieldDescriptorTemplate<T>, PropertyDescriptorsWrapper<T, W> {
+	public static interface FieldDescriptorTemplateWrapper<T extends FieldDescriptor, W extends MappingDescriptor<T>>
+			extends MappingDescriptor<T>, PropertyDescriptorsWrapper<T, W> {
 
 		@Override
 		default String getName() {
@@ -16,13 +16,13 @@ public interface FieldDescriptorTemplate<T extends FieldDescriptor> extends Prop
 		}
 
 		@Override
-		default FieldDescriptorTemplate<T> rename(String name) {
+		default MappingDescriptor<T> rename(String name) {
 			return getSource().rename(name);
 		}
 	}
 
 	@Data
-	public static class RenamedFieldDescriptorTemplate<T extends FieldDescriptor, W extends FieldDescriptorTemplate<T>>
+	public static class RenamedFieldDescriptorTemplate<T extends FieldDescriptor, W extends MappingDescriptor<T>>
 			implements FieldDescriptorTemplateWrapper<T, W> {
 		@NonNull
 		private final String name;
@@ -40,7 +40,7 @@ public interface FieldDescriptorTemplate<T extends FieldDescriptor> extends Prop
 		}
 
 		@Override
-		public FieldDescriptorTemplate<T> rename(String name) {
+		public MappingDescriptor<T> rename(String name) {
 			return new RenamedFieldDescriptorTemplate<>(name, source);
 		}
 	}
@@ -52,7 +52,7 @@ public interface FieldDescriptorTemplate<T extends FieldDescriptor> extends Prop
 	String getName();
 
 	@Override
-	default FieldDescriptorTemplate<T> rename(String name) {
+	default MappingDescriptor<T> rename(String name) {
 		return new RenamedFieldDescriptorTemplate<>(name, this);
 	}
 }

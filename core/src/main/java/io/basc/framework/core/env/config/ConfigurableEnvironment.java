@@ -1,5 +1,6 @@
-package io.basc.framework.core.env;
+package io.basc.framework.core.env.config;
 
+import io.basc.framework.core.env.Environment;
 import io.basc.framework.util.Elements;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyResolver {

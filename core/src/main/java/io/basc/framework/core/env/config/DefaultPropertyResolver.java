@@ -1,4 +1,4 @@
-package io.basc.framework.core.env;
+package io.basc.framework.core.env.config;
 
 import java.util.concurrent.ConcurrentHashMap;
 

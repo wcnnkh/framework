@@ -4,27 +4,27 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.stractegy.ObjectTransformer;
 import lombok.NonNull;
 
-public class StereotypeTransformer<D extends FieldDescriptor, T extends FieldDescriptorTemplate<D>, E extends Throwable>
-		extends ObjectTransformer<Object, Field<D>, FieldTemplate<D, T>, E>
-		implements FieldDescriptorTemplateFactory<D, T> {
-	private final DefaultFieldDescriptorTemplateFactory<D, T> fieldDescriptorTemplateFactory = new DefaultFieldDescriptorTemplateFactory<>();
+public class StereotypeTransformer<D extends FieldDescriptor, T extends MappingDescriptor<D>, E extends Throwable>
+		extends ObjectTransformer<Object, Field<D>, MappingTemplate<D, T>, E>
+		implements MappingDescriptorFactory<D, T> {
+	private final MappingDescriptorRegistry<D, T> mappingDescriptorRegistry = new MappingDescriptorRegistry<>();
 
 	@Override
-	public T getFieldDescriptorTemplate(@NonNull TypeDescriptor requiredType) {
-		return fieldDescriptorTemplateFactory.getFieldDescriptorTemplate(requiredType);
+	public T getMappingDescriptor(@NonNull TypeDescriptor requiredType) {
+		return mappingDescriptorRegistry.getMappingDescriptor(requiredType);
 	}
 
-	public DefaultFieldDescriptorTemplateFactory<D, T> getFieldDescriptorTemplateFactory() {
-		return fieldDescriptorTemplateFactory;
+	public MappingDescriptorRegistry<D, T> getMappingDescriptorRegistry() {
+		return mappingDescriptorRegistry;
 	}
 
 	@Override
-	public FieldTemplate<D, T> getObjectTemplate(@NonNull Object object, @NonNull TypeDescriptor requiredType) {
-		FieldTemplate<D, T> fieldTemplate = super.getObjectTemplate(object, requiredType);
+	public MappingTemplate<D, T> getObjectTemplate(@NonNull Object object, @NonNull TypeDescriptor requiredType) {
+		MappingTemplate<D, T> fieldTemplate = super.getObjectTemplate(object, requiredType);
 		if (fieldTemplate == null) {
-			T template = getFieldDescriptorTemplate(requiredType);
+			T template = getMappingDescriptor(requiredType);
 			if (template != null) {
-				fieldTemplate = new FieldTemplate<>(template, object);
+				fieldTemplate = new MappingTemplate<>(template, object);
 			}
 		}
 		return fieldTemplate;
@@ -32,11 +32,11 @@ public class StereotypeTransformer<D extends FieldDescriptor, T extends FieldDes
 
 	@Override
 	protected boolean hasSourceTemplate(@NonNull Class<?> sourceType) {
-		return super.hasSourceTemplate(sourceType) || fieldDescriptorTemplateFactory.containsTemplate(sourceType);
+		return super.hasSourceTemplate(sourceType) || mappingDescriptorRegistry.containsTemplate(sourceType);
 	}
 
 	@Override
 	protected boolean hasTargetTemplate(@NonNull Class<?> targetType) {
-		return super.hasTargetTemplate(targetType) || fieldDescriptorTemplateFactory.containsTemplate(targetType);
+		return super.hasTargetTemplate(targetType) || mappingDescriptorRegistry.containsTemplate(targetType);
 	}
 }

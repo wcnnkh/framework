@@ -1,4 +1,4 @@
-package io.basc.framework.test;
+package io.basc.framework.beans;
 
 import static org.junit.Assert.assertTrue;
 

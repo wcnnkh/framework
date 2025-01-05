@@ -5,6 +5,6 @@ import java.beans.IntrospectionException;
 
 import lombok.NonNull;
 
-public interface BeaninfoFactory {
-	BeanInfo getBeaninfo(@NonNull Class<?> beanClass) throws IntrospectionException;
+public interface BeanInfoFactory {
+	BeanInfo getBeanInfo(@NonNull Class<?> beanClass) throws IntrospectionException;
 }

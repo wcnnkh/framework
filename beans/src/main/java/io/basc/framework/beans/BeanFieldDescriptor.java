@@ -6,34 +6,53 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.basc.framework.core.ResolvableType;
+import io.basc.framework.core.annotation.MergedAnnotatedElement;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Getter;
-import io.basc.framework.core.execution.MergedGetter;
-import io.basc.framework.core.execution.MergedSetter;
+import io.basc.framework.core.execution.Getter.MergedGetter;
 import io.basc.framework.core.execution.Setter;
+import io.basc.framework.core.execution.Setter.MergedSetter;
 import io.basc.framework.core.execution.reflect.ReflectionFieldGetter;
 import io.basc.framework.core.execution.reflect.ReflectionFieldSetter;
 import io.basc.framework.core.execution.reflect.ReflectionMethodGetter;
 import io.basc.framework.core.execution.reflect.ReflectionMethodSetter;
-import io.basc.framework.mapper.stereotype.FieldDescriptor;
-import io.basc.framework.util.Assert;
+import io.basc.framework.core.mapping.stereotype.FieldDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
+import lombok.NonNull;
 
-public final class BeanFieldDescriptor implements FieldDescriptor {
+public class BeanFieldDescriptor implements FieldDescriptor {
 	private final Class<?> beanClass;
 	private volatile Field field;
 
-	private volatile MergedGetter getter;
+	private volatile MergedGetter<?> getter;
 
 	private final PropertyDescriptor propertyDescriptor;
 
-	private volatile MergedSetter setter;
+	private volatile MergedSetter<?> setter;
 
-	public BeanFieldDescriptor(Class<?> beanClass, PropertyDescriptor propertyDescriptor) {
-		Assert.requiredArgument(beanClass != null, "beanClass");
-		Assert.requiredArgument(propertyDescriptor != null, "propertyDescriptor");
+	public BeanFieldDescriptor(@NonNull Class<?> beanClass, @NonNull PropertyDescriptor propertyDescriptor) {
 		this.beanClass = beanClass;
 		this.propertyDescriptor = propertyDescriptor;
+	}
+
+	private volatile TypeDescriptor typeDescriptor;
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		if (typeDescriptor == null) {
+			synchronized (this) {
+				if (typeDescriptor == null) {
+					MergedAnnotatedElement mergedAnnotatedElement = new MergedAnnotatedElement(
+							getReadMethod().getTypeDescriptor(), getWriteMethod().getTypeDescriptor());
+					ResolvableType resolvableType = ResolvableType.forClass(propertyDescriptor.getPropertyType());
+					this.typeDescriptor = new TypeDescriptor(resolvableType, propertyDescriptor.getPropertyType(),
+							mergedAnnotatedElement);
+				}
+			}
+		}
+		return typeDescriptor;
 	}
 
 	public Field getField() {
@@ -53,7 +72,7 @@ public final class BeanFieldDescriptor implements FieldDescriptor {
 	}
 
 	@Override
-	public MergedGetter getter() {
+	public MergedGetter<?> getReadMethod() {
 		if (getter == null) {
 			synchronized (this) {
 				if (getter == null) {
@@ -72,7 +91,7 @@ public final class BeanFieldDescriptor implements FieldDescriptor {
 
 					Elements<Getter> elements = list.isEmpty() ? Elements.empty()
 							: Elements.forArray(list.toArray(new Getter[0]));
-					getter = new MergedGetter(elements);
+					getter = new MergedGetter<>(elements);
 				}
 			}
 		}
@@ -84,21 +103,22 @@ public final class BeanFieldDescriptor implements FieldDescriptor {
 			this.field = null;
 			this.setter = null;
 			this.getter = null;
+			this.typeDescriptor = null;
 		}
 	}
 
 	@Override
-	public boolean isSupportGetter() {
-		return !getter().getElements().isEmpty();
+	public boolean isReadable() {
+		return !getReadMethod().getElements().isEmpty();
 	}
 
 	@Override
-	public boolean isSupportSetter() {
-		return !setter().getElements().isEmpty();
+	public boolean isWritable() {
+		return !getWriteMethod().getElements().isEmpty();
 	}
 
 	@Override
-	public MergedSetter setter() {
+	public MergedSetter<?> getWriteMethod() {
 		if (setter == null) {
 			synchronized (this) {
 				if (setter == null) {
@@ -114,7 +134,7 @@ public final class BeanFieldDescriptor implements FieldDescriptor {
 					}
 					Elements<Setter> elements = list.isEmpty() ? Elements.empty()
 							: Elements.forArray(list.toArray(new Setter[0]));
-					this.setter = new MergedSetter(elements);
+					this.setter = new MergedSetter<>(elements);
 				}
 			}
 		}
