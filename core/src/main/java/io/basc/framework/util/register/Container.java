@@ -1,8 +1,8 @@
 package io.basc.framework.util.register;
 
-import io.basc.framework.util.Clearable;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.collection.Clearable;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registrations;
 import lombok.NonNull;

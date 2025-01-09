@@ -16,7 +16,7 @@ import io.basc.framework.mapper.io.template.AbstractRecordExporter;
 import io.basc.framework.mapper.io.template.Record;
 import io.basc.framework.mapper.io.template.RecordExporter;
 import io.basc.framework.mapper.io.template.RecordImporter;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.io.InputStreamProcessor;
 import io.basc.framework.util.io.OutputStreamProcessor;
 import io.basc.framework.util.io.WritableResource;

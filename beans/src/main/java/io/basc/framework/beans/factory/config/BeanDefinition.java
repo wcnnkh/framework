@@ -6,8 +6,8 @@ import io.basc.framework.core.execution.ExecutionStrategy;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
 import io.basc.framework.core.mapping.Properties;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Name;
+import io.basc.framework.util.alias.Named;
+import io.basc.framework.util.collection.Elements;
 
 /**
  * bean的定义
@@ -15,7 +15,7 @@ import io.basc.framework.util.Name;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends Name {
+public interface BeanDefinition extends Named {
 	BeanMappingDescriptor getBeanMappingDescriptor();
 
 	ExecutionStrategy<Function> getExecutionStrategy();

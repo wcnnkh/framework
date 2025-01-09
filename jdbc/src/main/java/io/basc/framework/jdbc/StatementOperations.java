@@ -5,10 +5,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Runnable;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Runnable;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StreamOperations;
 
 public class StatementOperations<T extends Statement, C extends StatementOperations<T, C>> extends Operations<T, C> {

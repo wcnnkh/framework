@@ -3,8 +3,8 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.collection.Elements;
 
 public interface PageableWrapper<K, T, W extends Pageable<K, T>>
 		extends BrowseableWrapper<K, T, W>, PageWrapper<K, T, W>, Pageable<K, T> {

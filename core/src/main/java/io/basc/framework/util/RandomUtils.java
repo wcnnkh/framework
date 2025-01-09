@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import io.basc.framework.util.function.Function;
 import io.basc.framework.util.math.Addition;
 import io.basc.framework.util.math.NumberComparator;
 import lombok.NonNull;

@@ -9,7 +9,7 @@ import io.basc.framework.execution.Function;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.reflect.ReflectionConstructor;
 import io.basc.framework.execution.reflect.ReflectionMethod;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.validation.FastValidator;
 import lombok.NonNull;
 

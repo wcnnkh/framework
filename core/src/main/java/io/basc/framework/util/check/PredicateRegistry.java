@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Functions;
+import io.basc.framework.util.function.Functions;
 
 public class PredicateRegistry<T> implements Predicate<T> {
 	private Predicate<T> predicate;

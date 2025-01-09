@@ -14,9 +14,9 @@ import io.basc.framework.core.Constants;
 import io.basc.framework.mail.MailClient;
 import io.basc.framework.mail.MailException;
 import io.basc.framework.mail.MessageCallback;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.ArrayUtils;
 
 public class SimpleMailClient implements MailClient {
 	private SimpleProperties properties;

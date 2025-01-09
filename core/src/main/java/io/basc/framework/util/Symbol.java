@@ -15,7 +15,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Elements.StandardListElements;
+import io.basc.framework.util.alias.Name;
+import io.basc.framework.util.alias.Named;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.Elements.StandardListElements;
 import io.basc.framework.util.comparator.TypeComparator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,7 +33,7 @@ import lombok.ToString;
  */
 @ToString
 @EqualsAndHashCode
-public class Symbol implements Serializable, Name {
+public class Symbol implements Serializable, Named {
 	private static final ReentrantReadWriteLock READ_WRITE_LOCK = new ReentrantReadWriteLock();
 	private static final long serialVersionUID = 1L;
 	private static final TreeMap<Class<?>, Map<String, List<Symbol>>> SYMBOL_MAP = new TreeMap<>(

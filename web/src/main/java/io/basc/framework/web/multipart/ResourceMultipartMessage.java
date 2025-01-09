@@ -8,7 +8,7 @@ import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 import io.basc.framework.util.io.FileSystemResource;
 import io.basc.framework.util.io.Resource;
 

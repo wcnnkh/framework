@@ -6,10 +6,10 @@ import java.io.InputStream;
 import java.net.URL;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
 /**

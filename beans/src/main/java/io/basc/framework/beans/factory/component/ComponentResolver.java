@@ -4,7 +4,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 /**
  * 组件解析

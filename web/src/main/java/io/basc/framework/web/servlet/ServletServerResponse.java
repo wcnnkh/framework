@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.ServletResponse;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.web.ServerResponse;
 
 public abstract class ServletServerResponse<W extends ServletResponse> extends Wrapper<W> implements ServerResponse {

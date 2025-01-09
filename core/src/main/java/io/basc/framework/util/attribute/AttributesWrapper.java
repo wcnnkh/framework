@@ -1,7 +1,7 @@
 package io.basc.framework.util.attribute;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Wrapper;
 
 public interface AttributesWrapper<K, V, W extends Attributes<K, V>> extends Attributes<K, V>, Wrapper<W> {
 

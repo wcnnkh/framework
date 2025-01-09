@@ -3,8 +3,8 @@ package io.basc.framework.upload.kind;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.upload.UploaderException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 import io.basc.framework.util.io.FileUtils;
 
 import java.io.IOException;

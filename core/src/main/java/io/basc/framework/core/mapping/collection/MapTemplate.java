@@ -4,7 +4,7 @@ import java.util.Map;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public class MapTemplate<K> extends KeyValuesTemplate<K, GenericMapAccess> {

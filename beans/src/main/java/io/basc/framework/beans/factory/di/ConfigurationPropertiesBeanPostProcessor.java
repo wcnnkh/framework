@@ -5,7 +5,7 @@ import io.basc.framework.beans.factory.config.BeanPostProcessor;
 import io.basc.framework.core.env.PropertyResolver;
 import io.basc.framework.core.execution.resolver.PropertyFactory;
 import io.basc.framework.observe.properties.ObservablePropertyFactory;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.exchange.Registration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

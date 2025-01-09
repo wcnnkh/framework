@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
 public class NonexistentResource implements Resource {

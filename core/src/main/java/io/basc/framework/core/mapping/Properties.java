@@ -1,7 +1,7 @@
 package io.basc.framework.core.mapping;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Lookup;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.Lookup;
 
 public interface Properties extends PropertyTemplate<Property>, Lookup<String, Property> {
 

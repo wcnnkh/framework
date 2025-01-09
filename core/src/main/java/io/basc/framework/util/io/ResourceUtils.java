@@ -15,10 +15,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.ArrayUtils;
 
 /**
  * 资源工具

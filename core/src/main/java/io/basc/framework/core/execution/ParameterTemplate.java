@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import io.basc.framework.core.mapping.PropertyTemplate;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public interface ParameterTemplate<T extends Parameter> extends PropertyTemplate<T>, ParameterDescriptorTemplate {

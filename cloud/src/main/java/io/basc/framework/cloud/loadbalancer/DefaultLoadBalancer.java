@@ -5,8 +5,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import io.basc.framework.observe.service.ObservableServiceLoader;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.LRULinkedHashMap;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.LRULinkedHashMap;
 import io.basc.framework.util.logging.Levels;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;

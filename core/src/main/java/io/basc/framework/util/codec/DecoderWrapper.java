@@ -1,6 +1,6 @@
 package io.basc.framework.util.codec;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 
 public interface DecoderWrapper<E, D, W extends Decoder<E, D>> extends Decoder<E, D>, Wrapper<W> {
 	@Override

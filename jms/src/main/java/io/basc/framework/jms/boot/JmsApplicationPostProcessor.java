@@ -16,7 +16,7 @@ import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.MethodInvoker;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.logging.LogManager;
 

@@ -3,7 +3,7 @@ package io.basc.framework.data.domain;
 import java.io.Serializable;
 
 import io.basc.framework.core.convert.value.Values;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 /**
  * 定义表格数据

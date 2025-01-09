@@ -1,6 +1,6 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public class AllCursor<S extends Browseable<K, T>, K, T> implements Cursor<K, T> {
 	protected final S source;

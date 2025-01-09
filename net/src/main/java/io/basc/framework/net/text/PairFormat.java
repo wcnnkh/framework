@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collection.LinkedMultiValueMap;
+import io.basc.framework.util.collection.MultiValueMap;
 
 /**
  * 键值对格式化

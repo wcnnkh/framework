@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.Directory;
 
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Pool;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Pool;
 
 public abstract class LucenePool<T> implements Pool<T> {
 	private final Directory directory;

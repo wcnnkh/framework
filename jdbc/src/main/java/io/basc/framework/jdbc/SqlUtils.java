@@ -34,11 +34,11 @@ import java.util.stream.Stream;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.LinkedMultiValueMap;
+import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collection.Streams;
 
 public final class SqlUtils {
 	private static final String PATTERN = "(|_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)";

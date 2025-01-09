@@ -2,10 +2,10 @@ package io.basc.framework.core.execution.aop;
 
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.aop.cglib.CglibProxyFactory;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

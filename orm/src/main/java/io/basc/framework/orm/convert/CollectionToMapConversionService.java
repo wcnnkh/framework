@@ -18,7 +18,7 @@ import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.support.OrmUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public class CollectionToMapConversionService extends AbstractConversionService
 		implements ConditionalConversionService {

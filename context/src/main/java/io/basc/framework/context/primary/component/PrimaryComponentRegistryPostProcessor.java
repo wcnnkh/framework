@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.share.SharableAnnotationMetadata;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public class PrimaryComponentRegistryPostProcessor extends LocationPatternComponentRegistryPostProcessor {
 	private final Class<?> primaryClass;

@@ -15,10 +15,10 @@ import io.basc.framework.jdbc.template.DatabaseDialect;
 import io.basc.framework.jdbc.template.DatabaseURL;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Source;
 
 public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> implements DatabaseConnectionFactory {
 	private final F rawConnectionFactory;

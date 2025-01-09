@@ -3,7 +3,7 @@ package io.basc.framework.util.io;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 
 public interface CharsetCapable {
 	@FunctionalInterface

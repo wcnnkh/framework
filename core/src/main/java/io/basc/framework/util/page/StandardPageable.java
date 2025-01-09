@@ -3,8 +3,8 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.codec.Codec;
+import io.basc.framework.util.collection.Elements;
 
 public class StandardPageable<K, T> implements PageWrapper<K, T, Page<K, T>>, Pageable<K, T> {
 	private final Page<K, T> source;

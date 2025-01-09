@@ -35,10 +35,10 @@ import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.JavaVersion;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 

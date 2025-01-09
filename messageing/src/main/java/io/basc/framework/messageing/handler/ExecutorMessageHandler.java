@@ -5,7 +5,7 @@ import io.basc.framework.messageing.Message;
 import io.basc.framework.messageing.MessageHandler;
 import io.basc.framework.messageing.MessageHandlingException;
 import io.basc.framework.messageing.MessagingException;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.Data;
 
 @Data

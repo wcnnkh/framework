@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.convert.ValueDescriptor;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Source;
 
 /**
  * BeanFactory生成的bean

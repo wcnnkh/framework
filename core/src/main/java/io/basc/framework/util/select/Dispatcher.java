@@ -1,6 +1,6 @@
 package io.basc.framework.util.select;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 /**
  * 分发器

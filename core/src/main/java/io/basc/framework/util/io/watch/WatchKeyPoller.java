@@ -4,8 +4,8 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.List;
 
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.exchange.Publisher;
 import lombok.Getter;
 import lombok.NonNull;

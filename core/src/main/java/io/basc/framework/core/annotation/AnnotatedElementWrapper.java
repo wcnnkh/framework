@@ -1,9 +1,9 @@
 package io.basc.framework.core.annotation;
 
-import io.basc.framework.util.Wrapper;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+
+import io.basc.framework.util.function.Wrapper;
 
 public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends AnnotatedElement, Wrapper<W> {
 

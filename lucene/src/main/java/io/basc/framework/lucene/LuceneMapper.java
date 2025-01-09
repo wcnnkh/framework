@@ -8,7 +8,7 @@ import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.Operation;
 import io.basc.framework.orm.EntityMapper;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public interface LuceneMapper extends EntityMapper, LuceneResolver {
 	Document createDocument(Operation operation, Elements<? extends Expression> columns);

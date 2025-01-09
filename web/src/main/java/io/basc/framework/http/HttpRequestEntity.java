@@ -7,8 +7,8 @@ import java.util.Arrays;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collection.MultiValueMap;
 
 public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	private static final long serialVersionUID = 1L;

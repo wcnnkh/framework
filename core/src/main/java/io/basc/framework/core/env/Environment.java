@@ -1,6 +1,6 @@
 package io.basc.framework.core.env;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public interface Environment extends PropertyResolver {
 	Elements<String> getActiveProfiles();

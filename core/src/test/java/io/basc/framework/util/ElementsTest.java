@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import io.basc.framework.util.collection.Elements;
+
 public class ElementsTest {
 	@Test
 	public void concat() {

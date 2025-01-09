@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 import io.basc.framework.util.io.ClassPathResource;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;

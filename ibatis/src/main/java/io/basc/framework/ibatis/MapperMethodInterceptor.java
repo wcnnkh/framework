@@ -11,8 +11,7 @@ import org.apache.ibatis.session.SqlSession;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.collection.Elements;
 
 public class MapperMethodInterceptor implements ExecutionInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();

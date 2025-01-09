@@ -2,7 +2,7 @@ package io.basc.framework.context.config;
 
 import java.util.Iterator;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 

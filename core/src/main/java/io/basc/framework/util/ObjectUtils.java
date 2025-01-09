@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import io.basc.framework.core.mapping.InstanceFactory.CollectionFactory;
+import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**

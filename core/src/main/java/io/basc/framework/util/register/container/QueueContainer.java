@@ -3,8 +3,8 @@ package io.basc.framework.util.register.container;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Source;
 import lombok.NonNull;
 
 public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends CollectionContainer<E, Q>

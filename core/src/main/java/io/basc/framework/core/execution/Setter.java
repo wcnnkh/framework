@@ -2,7 +2,7 @@ package io.basc.framework.core.execution;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.mapping.PropertyDescriptor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public interface Setter extends Executable, PropertyDescriptor {

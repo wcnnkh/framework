@@ -30,7 +30,7 @@ import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public final class FileUtils {

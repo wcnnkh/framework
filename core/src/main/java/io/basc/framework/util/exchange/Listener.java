@@ -3,8 +3,8 @@ package io.basc.framework.util.exchange;
 import java.util.EventListener;
 import java.util.function.Consumer;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Wrapper;
 
 public interface Listener<T> extends Consumer<T>, EventListener {
 	@Override

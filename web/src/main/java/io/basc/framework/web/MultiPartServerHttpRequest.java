@@ -4,9 +4,9 @@ import java.util.Collection;
 
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.multipart.MultipartMessage;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collection.LinkedMultiValueMap;
+import io.basc.framework.util.collection.MultiValueMap;
 
 /**
  * 一个MultiPart请求

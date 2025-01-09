@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collection.LinkedCaseInsensitiveMap;
 
 public class MimeType implements Comparable<MimeType>, Serializable {
 

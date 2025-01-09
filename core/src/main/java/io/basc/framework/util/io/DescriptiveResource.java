@@ -3,7 +3,7 @@ package io.basc.framework.util.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
 /**

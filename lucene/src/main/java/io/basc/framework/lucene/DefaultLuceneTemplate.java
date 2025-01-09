@@ -17,12 +17,12 @@ import org.apache.lucene.store.MMapDirectory;
 
 import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Function;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.collection.ArrayUtils;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.TaskQueue;
+import io.basc.framework.util.function.Function;
 
 public class DefaultLuceneTemplate implements LuceneTemplate {
 	public static final String DIRECTORY_PREFIX = "lucene-documents";

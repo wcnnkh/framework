@@ -5,7 +5,7 @@ import java.util.logging.LogRecord;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 
 public class DynamicLogger implements Logger, Wrapper<Logger> {
 	private static final boolean NEED_TO_INFER_CALLER = Boolean

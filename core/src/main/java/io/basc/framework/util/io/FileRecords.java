@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Source;
-import io.basc.framework.util.Streams;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.support.RecordCodec;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.Streams;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Source;
 
 /**
  * 线程不安全的

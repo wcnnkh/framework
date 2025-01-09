@@ -9,8 +9,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.register.Registration;
 import io.basc.framework.util.register.RegistrationException;
 

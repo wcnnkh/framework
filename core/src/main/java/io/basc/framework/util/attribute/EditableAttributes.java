@@ -1,6 +1,6 @@
 package io.basc.framework.util.attribute;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public interface EditableAttributes<K, V> extends Attributes<K, V> {
 	void setAttribute(K name, V value);

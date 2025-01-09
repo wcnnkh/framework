@@ -2,8 +2,8 @@ package io.basc.framework.web.pattern.test;
 
 import org.junit.Test;
 
-import io.basc.framework.util.Function;
 import io.basc.framework.util.comparator.Ordered;
+import io.basc.framework.util.function.Function;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
 import io.basc.framework.web.cors.Cors;

@@ -15,6 +15,7 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.Decoder;
 import io.basc.framework.util.codec.support.DateCodec;
+import io.basc.framework.util.collection.ArrayUtils;
 
 public class TimeUtils extends DateCodec {
 	public static final TimeUtils YEAR = new TimeUtils(Calendar.DAY_OF_YEAR, "yyyy");

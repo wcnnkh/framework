@@ -3,8 +3,8 @@ package io.basc.framework.util.io;
 import java.io.IOException;
 import java.io.Writer;
 
-import io.basc.framework.util.Pipeline;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.util.function.Wrapper;
 import lombok.NonNull;
 
 @FunctionalInterface

@@ -2,8 +2,8 @@ package io.basc.framework.jdbc;
 
 import java.util.Arrays;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public abstract class AbstractSql implements Sql {
 

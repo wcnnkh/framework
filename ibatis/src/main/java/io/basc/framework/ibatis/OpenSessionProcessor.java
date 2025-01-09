@@ -4,8 +4,8 @@ import org.apache.ibatis.session.SqlSession;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.transaction.Transaction;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Source;
 
 public interface OpenSessionProcessor
 		extends Function<Transaction, SqlSession, IbatisException>, Source<SqlSession, IbatisException> {

@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Source;
 import lombok.NonNull;
 
 public class ListContainer<E, C extends List<ElementRegistration<E>>> extends CollectionContainer<E, C>

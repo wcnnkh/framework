@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public interface KeyValueOperations<K, V> extends KeyOperations<K> {
 	V get(K key);

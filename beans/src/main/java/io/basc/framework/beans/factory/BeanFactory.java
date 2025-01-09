@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.collection.ServiceLoader;
 import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 import lombok.NonNull;
 

@@ -1,6 +1,6 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

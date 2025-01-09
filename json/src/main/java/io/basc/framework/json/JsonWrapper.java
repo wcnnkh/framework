@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 
 public class JsonWrapper<K, F extends Json<K>> extends Wrapper<F> implements Json<K> {
 

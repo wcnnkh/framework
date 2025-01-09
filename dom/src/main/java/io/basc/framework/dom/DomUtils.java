@@ -15,8 +15,8 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Function;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Function;
 
 public final class DomUtils {
 	private static final DocumentTemplate TEMPLATE = SPI.global()

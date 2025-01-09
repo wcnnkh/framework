@@ -15,7 +15,7 @@ import io.basc.framework.core.execution.reflect.ReflectionMethodExecutionInterce
 import io.basc.framework.feign.FeignDecoder;
 import io.basc.framework.feign.FeignEncoder;
 import io.basc.framework.net.convert.DefaultMessageConverters;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 @Component
 @ConditionalOnMissingBean(FeginMethodExecutionInterceptor.class)

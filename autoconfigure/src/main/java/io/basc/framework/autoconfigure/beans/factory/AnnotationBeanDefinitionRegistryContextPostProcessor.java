@@ -14,8 +14,8 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.ExecutionInterceptors;
 import io.basc.framework.core.execution.reflect.ReflectionConstructor;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.Elements;
 
 class AnnotationBeanDefinitionRegistryContextPostProcessor extends BeanDefinitionRegistryContextPostProcessor {
 

@@ -25,8 +25,8 @@ import io.basc.framework.core.annotation.MergedAnnotationCollectors;
 import io.basc.framework.core.annotation.MergedAnnotationPredicates;
 import io.basc.framework.core.annotation.MergedAnnotationSelectors;
 import io.basc.framework.core.annotation.MergedAnnotations;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.function.Wrapper;
 
 /**
  * Defines access to the annotations of a specific type

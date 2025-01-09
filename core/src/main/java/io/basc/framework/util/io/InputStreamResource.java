@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
 /**

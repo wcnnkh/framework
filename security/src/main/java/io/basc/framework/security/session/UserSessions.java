@@ -2,7 +2,7 @@ package io.basc.framework.security.session;
 
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Streams;
+import io.basc.framework.util.collection.Streams;
 
 public interface UserSessions<T> extends Iterable<Session> {
 	T getUid();

@@ -2,7 +2,7 @@ package io.basc.framework.core.convert;
 
 import java.io.Serializable;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 import lombok.Data;
 import lombok.NonNull;
 

@@ -10,9 +10,9 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.util.Pipeline;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.util.function.Wrapper;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

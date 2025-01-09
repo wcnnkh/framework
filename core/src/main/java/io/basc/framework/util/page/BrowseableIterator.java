@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.Functions;
+import io.basc.framework.util.function.Functions;
 
 public final class BrowseableIterator<E extends Browseable<?, ?>> implements Iterator<E> {
 	private E pageables;

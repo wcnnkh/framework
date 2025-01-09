@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.Streams;
 import lombok.NonNull;
 
 public final class IOUtils {

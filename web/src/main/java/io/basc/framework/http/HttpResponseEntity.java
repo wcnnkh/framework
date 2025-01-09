@@ -24,8 +24,8 @@ import java.util.Set;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collection.MultiValueMap;
 
 public class HttpResponseEntity<T> extends HttpEntity<T> {
 	private static final long serialVersionUID = 1L;

@@ -1,6 +1,6 @@
 package io.basc.framework.core.scan;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public interface Scanner<T> {

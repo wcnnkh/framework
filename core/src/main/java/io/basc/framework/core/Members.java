@@ -7,8 +7,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Elements.MergedElements;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.Elements.MergedElements;
 
 /**
  * 成员

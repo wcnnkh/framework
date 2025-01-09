@@ -20,9 +20,9 @@ import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.load.ResourceLoader;
 

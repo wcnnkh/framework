@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

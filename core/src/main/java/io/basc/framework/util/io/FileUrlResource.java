@@ -10,8 +10,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import io.basc.framework.util.Pipeline;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.io.load.DefaultResourceLoader;
 import lombok.NonNull;
 

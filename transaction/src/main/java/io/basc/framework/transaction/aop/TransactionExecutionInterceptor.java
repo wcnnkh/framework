@@ -8,7 +8,7 @@ import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.logging.LogManager;
 
 /**

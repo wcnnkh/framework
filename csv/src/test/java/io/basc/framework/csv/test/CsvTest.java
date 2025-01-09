@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import io.basc.framework.csv.CSV;
 import io.basc.framework.mapper.io.template.Record;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.io.FileSystemResource;
 
 public class CsvTest {

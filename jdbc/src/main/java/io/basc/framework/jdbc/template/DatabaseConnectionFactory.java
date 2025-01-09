@@ -2,7 +2,7 @@ package io.basc.framework.jdbc.template;
 
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 /**
  * 数据库连接工厂

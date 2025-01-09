@@ -1,6 +1,6 @@
 package io.basc.framework.util.exchange;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public interface ListenableChannel<T> extends Listenable<T>, Channel<T> {
 

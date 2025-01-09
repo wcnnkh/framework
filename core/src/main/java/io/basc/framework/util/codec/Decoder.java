@@ -1,7 +1,7 @@
 package io.basc.framework.util.codec;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Function;
 import lombok.NonNull;
 
 @FunctionalInterface

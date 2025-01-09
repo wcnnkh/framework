@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.net.pattern.RequestPattern;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public interface RequestPatternFactory extends Predicate<Function> {
 

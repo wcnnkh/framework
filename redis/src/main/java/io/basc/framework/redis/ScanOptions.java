@@ -1,7 +1,7 @@
 package io.basc.framework.redis;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 
 public class ScanOptions<P> {
 

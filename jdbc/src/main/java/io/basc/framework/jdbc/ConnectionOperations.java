@@ -6,11 +6,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Runnable;
-import io.basc.framework.util.Source;
 import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Runnable;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.logging.LogManager;
 
 public class ConnectionOperations extends Operations<Connection, ConnectionOperations> {

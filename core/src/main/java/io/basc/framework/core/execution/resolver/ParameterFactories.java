@@ -5,7 +5,7 @@ import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.mapping.PropertyDescriptor;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Receipts;
 import io.basc.framework.util.spi.ConfigurableServices;

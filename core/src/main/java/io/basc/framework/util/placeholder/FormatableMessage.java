@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.ArrayUtils;
 import io.basc.framework.util.io.Printable;
 import lombok.NonNull;
 

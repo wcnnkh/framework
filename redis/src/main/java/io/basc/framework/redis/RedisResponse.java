@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.redis.convert.ConvertibleRedisResponse;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 
 public interface RedisResponse<T> extends Future<T> {
 	@Override

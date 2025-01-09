@@ -1,7 +1,7 @@
 package io.basc.framework.context.config;
 
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public class ConfigurableApplicationContextSourceLoadExtender<S, T, E extends ApplicationContextSourceLoadExtender<S, T>>
 		extends ConfigurableServices<E> implements ApplicationContextSourceLoadExtender<S, T> {

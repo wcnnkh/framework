@@ -2,10 +2,10 @@ package io.basc.framework.jdbc;
 
 import java.sql.SQLException;
 
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Runnable;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Runnable;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StandardStreamOperations;
 import io.basc.framework.util.function.StreamOperations;
 import io.basc.framework.util.logging.Logger;

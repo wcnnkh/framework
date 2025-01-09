@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-import io.basc.framework.util.Pipeline;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.io.InputStreamFactory;
 import io.basc.framework.util.io.ReaderFactory;
 import lombok.NonNull;

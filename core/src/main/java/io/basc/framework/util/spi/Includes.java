@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.Reloadable;
+import io.basc.framework.util.collection.Reloadable;
 import io.basc.framework.util.exchange.Registrations;
 
 @FunctionalInterface

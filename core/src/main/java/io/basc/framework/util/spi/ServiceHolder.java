@@ -1,7 +1,7 @@
 package io.basc.framework.util.spi;
 
-import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.comparator.Ordered;
+import io.basc.framework.util.function.Wrapper;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.ParentDiscover;
 
 public final class Status implements Serializable, ParentDiscover<Status> {
 	private static final long serialVersionUID = 1L;

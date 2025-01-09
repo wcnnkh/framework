@@ -1,7 +1,7 @@
 package io.basc.framework.util.spi;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.ServiceLoader;
 import io.basc.framework.util.exchange.Listenable;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 

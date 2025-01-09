@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.net.MimeTypes;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public interface HttpPatternResolver {
 	boolean canResolve(Class<?> clazz);

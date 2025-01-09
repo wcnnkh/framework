@@ -14,6 +14,9 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.function.IntPredicate;
 
+import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import lombok.NonNull;
 

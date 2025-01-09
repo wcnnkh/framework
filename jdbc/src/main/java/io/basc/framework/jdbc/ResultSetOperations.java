@@ -6,13 +6,13 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CloseableIterator;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Runnable;
-import io.basc.framework.util.Source;
-import io.basc.framework.util.Streams;
+import io.basc.framework.util.collection.CloseableIterator;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.Streams;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Runnable;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StaticSupplier;
 import io.basc.framework.util.function.StreamOperations;
 

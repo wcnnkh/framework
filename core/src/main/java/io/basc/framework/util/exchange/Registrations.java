@@ -1,7 +1,7 @@
 package io.basc.framework.util.exchange;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Listable;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.Listable;
 
 @FunctionalInterface
 public interface Registrations<R extends Registration> extends Registration, Listable<R> {

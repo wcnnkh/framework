@@ -5,7 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisSystemException;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 
 public class ConvertibleRedisResponse<SV, V> implements RedisResponse<V> {
 	private final RedisResponse<SV> source;

@@ -5,7 +5,7 @@ import org.apache.commons.csv.CSVRecord;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.mapper.io.template.Record;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 

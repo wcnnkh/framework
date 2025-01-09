@@ -1,6 +1,6 @@
 package io.basc.framework.util.select;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

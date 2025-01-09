@@ -17,9 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Pipeline;
-import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.util.function.Source;
 import lombok.NonNull;
 
 /**

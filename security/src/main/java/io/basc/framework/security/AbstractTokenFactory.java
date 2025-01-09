@@ -3,7 +3,7 @@ package io.basc.framework.security;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 import io.basc.framework.util.retry.RetryOperations;
 import io.basc.framework.util.retry.support.RetryTemplate;
 

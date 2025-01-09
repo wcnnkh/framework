@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
 
 @FunctionalInterface
 public interface ConnectionFactory {

@@ -8,8 +8,8 @@ import io.basc.framework.mapper.support.DefaultMappingStrategy;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.transform.strategy.filter.ParameterNamePrefixFilter;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.Elements;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -9,7 +9,7 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 import lombok.Data;
 import lombok.NonNull;
 

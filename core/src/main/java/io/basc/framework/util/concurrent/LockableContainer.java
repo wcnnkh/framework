@@ -12,10 +12,10 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.concurrent.locks.NoOpLock;
+import io.basc.framework.util.function.Source;
 import lombok.NonNull;
 
 /**

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public interface EntityKeyGenerator {
 

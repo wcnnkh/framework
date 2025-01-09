@@ -9,7 +9,7 @@ import io.basc.framework.core.execution.aop.Aop;
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionUtils;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 
 public final class MybatisUtils {
 	private MybatisUtils() {

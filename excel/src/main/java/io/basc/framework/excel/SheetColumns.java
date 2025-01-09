@@ -1,8 +1,8 @@
 package io.basc.framework.excel;
 
 import io.basc.framework.core.execution.Parameter;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.SimpleItem;
+import io.basc.framework.util.collection.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

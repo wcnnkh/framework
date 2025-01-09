@@ -2,6 +2,10 @@ package io.basc.framework.util;
 
 import org.junit.Test;
 
+import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.util.function.Pool;
+import io.basc.framework.util.function.Source;
+
 public class SourceTest {
 	@Test
 	public void test() throws Throwable {

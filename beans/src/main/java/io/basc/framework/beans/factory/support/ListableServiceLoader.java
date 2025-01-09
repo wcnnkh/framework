@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.basc.framework.beans.factory.ListableBeanFactory;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.collection.ServiceLoader;
 import io.basc.framework.util.comparator.OrderComparator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

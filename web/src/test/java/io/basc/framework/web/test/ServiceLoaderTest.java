@@ -5,7 +5,7 @@ import org.junit.Test;
 import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.observe.service.ObservableServiceLoader;
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.collection.ServiceLoader;
 
 public class ServiceLoaderTest {
 	@Test

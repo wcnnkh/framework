@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Pipeline;
+import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
 /**

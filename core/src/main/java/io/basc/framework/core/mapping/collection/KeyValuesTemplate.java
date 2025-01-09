@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 
 import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.KeyValues;
-import io.basc.framework.util.Elements.ElementsWrapper;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collection.KeyValues;
+import io.basc.framework.util.collection.Elements.ElementsWrapper;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

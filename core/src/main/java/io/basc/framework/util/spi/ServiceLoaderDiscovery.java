@@ -1,6 +1,6 @@
 package io.basc.framework.util.spi;
 
-import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.collection.ServiceLoader;
 import lombok.NonNull;
 
 @FunctionalInterface

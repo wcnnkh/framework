@@ -6,8 +6,8 @@ import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Session;
 
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Source;
 
 public class QueueConnectionOperations extends ConnectionOperations<Connection, Session, Queue> {
 

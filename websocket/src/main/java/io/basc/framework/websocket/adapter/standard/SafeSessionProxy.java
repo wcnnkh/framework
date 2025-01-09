@@ -1,7 +1,7 @@
 package io.basc.framework.websocket.adapter.standard;
 
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.collection.ArrayUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

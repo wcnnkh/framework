@@ -2,7 +2,7 @@ package io.basc.framework.core.scan;
 
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public interface TypeScanner extends Scanner<MetadataReader> {

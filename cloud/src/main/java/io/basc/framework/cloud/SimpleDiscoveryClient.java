@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public class SimpleDiscoveryClient<T extends Service> implements DiscoveryClient, ServiceRegistry<T> {
 	private final ConcurrentHashMap<String, Map<String, T>> instanceMap = new ConcurrentHashMap<String, Map<String, T>>();

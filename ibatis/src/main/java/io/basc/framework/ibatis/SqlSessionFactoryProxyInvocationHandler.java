@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.collection.ArrayUtils;
 
 public class SqlSessionFactoryProxyInvocationHandler implements InvocationHandler {
 	private final SqlSessionFactory sqlSessionFactory;

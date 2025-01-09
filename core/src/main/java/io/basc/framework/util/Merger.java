@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import io.basc.framework.util.collection.Elements;
+
 /**
  * 合并者
  * 

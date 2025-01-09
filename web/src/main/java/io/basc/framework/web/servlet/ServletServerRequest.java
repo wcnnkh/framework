@@ -8,7 +8,7 @@ import java.util.Enumeration;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.web.ServerAsyncControl;
 import io.basc.framework.web.ServerRequest;
 import io.basc.framework.web.ServerResponse;

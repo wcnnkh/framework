@@ -2,7 +2,7 @@ package io.basc.framework.data.repository;
 
 import java.io.Serializable;
 
-import io.basc.framework.util.Name;
+import io.basc.framework.util.alias.Name;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

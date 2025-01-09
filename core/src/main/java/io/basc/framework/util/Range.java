@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 
+import io.basc.framework.util.collection.Elements;
 import lombok.NonNull;
 
 public final class Range<T> implements Serializable {

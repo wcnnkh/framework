@@ -10,9 +10,9 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public final class ZooKeeperUtils {
 	public static final String PATH_PREFIX = "/";

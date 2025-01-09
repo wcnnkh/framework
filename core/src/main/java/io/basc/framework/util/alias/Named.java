@@ -2,7 +2,7 @@ package io.basc.framework.util.alias;
 
 import java.io.Serializable;
 
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.function.Wrapper;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

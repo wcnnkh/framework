@@ -33,8 +33,8 @@ import io.basc.framework.lucene.DocumentProperties;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
 import io.basc.framework.orm.support.DefaultEntityMapper;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.math.NumberUtils;
 
 public class DefaultLuceneMapper extends DefaultEntityMapper implements LuceneMapper {

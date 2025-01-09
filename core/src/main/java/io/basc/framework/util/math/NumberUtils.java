@@ -26,8 +26,8 @@ import java.util.function.IntPredicate;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Function;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Function;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for

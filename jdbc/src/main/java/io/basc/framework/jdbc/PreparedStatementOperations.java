@@ -4,10 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Runnable;
-import io.basc.framework.util.Source;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Runnable;
+import io.basc.framework.util.function.Source;
 import io.basc.framework.util.function.StreamOperations;
 
 public class PreparedStatementOperations<T extends PreparedStatement, C extends PreparedStatementOperations<T, C>>

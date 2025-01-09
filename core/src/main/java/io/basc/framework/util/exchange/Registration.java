@@ -7,10 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Consumer;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Wrapper;
 import lombok.RequiredArgsConstructor;
 
 public interface Registration {

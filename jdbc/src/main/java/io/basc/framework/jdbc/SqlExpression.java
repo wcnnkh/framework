@@ -2,7 +2,7 @@ package io.basc.framework.jdbc;
 
 import java.io.Serializable;
 
-import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.collection.ArrayUtils;
 
 public class SqlExpression implements Sql, Serializable {
 	private static final long serialVersionUID = 1L;

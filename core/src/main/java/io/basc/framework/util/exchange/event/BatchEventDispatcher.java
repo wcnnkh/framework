@@ -1,6 +1,6 @@
 package io.basc.framework.util.exchange.event;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.exchange.ListenableChannel;
 import io.basc.framework.util.exchange.ListenableChannel.BatchListenableChannel;
 import io.basc.framework.util.exchange.Listener;

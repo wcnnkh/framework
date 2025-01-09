@@ -1,7 +1,7 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.util.Elements;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.function.Wrapper;
 
 /**
  * 参数模板

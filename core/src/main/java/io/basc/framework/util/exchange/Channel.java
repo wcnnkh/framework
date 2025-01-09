@@ -2,7 +2,7 @@ package io.basc.framework.util.exchange;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 
 public interface Channel<T> extends Publisher<T> {
 	public static interface BatchChannel<T> extends Channel<Elements<T>>, BatchPublisher<T> {

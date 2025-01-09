@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.CollectionUtils;
 
 public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comparable<MimeTypes>, Cloneable {
 	public static final MimeTypes EMPTY = new MimeTypes(Collections.emptySortedSet());

@@ -17,11 +17,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Consumer;
-import io.basc.framework.util.Function;
-import io.basc.framework.util.Source;
-import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.function.Function;
+import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Wrapper;
 import lombok.NonNull;
 
 public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {

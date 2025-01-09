@@ -1,7 +1,7 @@
 package io.basc.framework.core.mapping.stereotype;
 
 import io.basc.framework.core.mapping.PropertyTemplate;
-import io.basc.framework.util.Elements;
+import io.basc.framework.util.collection.Elements;
 import lombok.Data;
 import lombok.NonNull;
 

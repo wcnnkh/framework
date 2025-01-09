@@ -9,7 +9,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
-import io.basc.framework.util.Function;
+import io.basc.framework.util.function.Function;
 import lombok.NonNull;
 
 public class ConverterConversionService implements ConditionalConversionService {
