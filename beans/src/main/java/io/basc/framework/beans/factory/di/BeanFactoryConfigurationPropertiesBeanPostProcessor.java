@@ -1,8 +1,8 @@
-package io.basc.framework.beans.factory.ioc;
+package io.basc.framework.beans.factory.di;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
-import io.basc.framework.transform.factory.PropertyFactory;
+import io.basc.framework.core.execution.resolver.PropertyFactory;
 
 public abstract class BeanFactoryConfigurationPropertiesBeanPostProcessor
 		extends ConfigurationPropertiesBeanPostProcessor {

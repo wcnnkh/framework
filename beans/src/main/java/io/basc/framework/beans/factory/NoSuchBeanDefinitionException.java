@@ -2,15 +2,12 @@ package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.lang.Nullable;
 
 public class NoSuchBeanDefinitionException extends BeansException {
 	private static final long serialVersionUID = 1L;
 
-	@Nullable
 	private final String beanName;
 
-	@Nullable
 	private final ResolvableType resolvableType;
 
 	/**
@@ -84,7 +81,6 @@ public class NoSuchBeanDefinitionException extends BeansException {
 	 * Return the name of the missing bean, if it was a lookup <em>by name</em> that
 	 * failed.
 	 */
-	@Nullable
 	public String getBeanName() {
 		return this.beanName;
 	}
@@ -93,7 +89,6 @@ public class NoSuchBeanDefinitionException extends BeansException {
 	 * Return the required type of the missing bean, if it was a lookup <em>by
 	 * type</em> that failed.
 	 */
-	@Nullable
 	public Class<?> getBeanType() {
 		return (this.resolvableType != null ? this.resolvableType.resolve() : null);
 	}
@@ -103,7 +98,6 @@ public class NoSuchBeanDefinitionException extends BeansException {
 	 * lookup <em>by type</em> that failed.
 	 * 
 	 */
-	@Nullable
 	public ResolvableType getResolvableType() {
 		return this.resolvableType;
 	}

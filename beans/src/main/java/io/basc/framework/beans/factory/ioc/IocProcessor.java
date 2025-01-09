@@ -8,10 +8,10 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.FatalBeanException;
 import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.execution.Setter;
-import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
-import io.basc.framework.mapper.stereotype.FieldDescriptor;
+import io.basc.framework.core.mapping.stereotype.FieldDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class IocProcessor extends ConfigurableIocResolver implements BeanPostPro
 	private BeanMapper beanMapper = BeanUtils.getMapper();
 
 	public IocProcessor(AutowireCapableBeanFactory autowireCapableBeanFactory) {
-		setLastService(defaults());
+		setLast(defaults());
 		this.autowireCapableBeanFactory = autowireCapableBeanFactory;
 	}
 
@@ -82,11 +82,11 @@ public class IocProcessor extends ConfigurableIocResolver implements BeanPostPro
 
 	protected void invoke(Method method, String beanName) {
 		ReflectionMethod reflectionMethod = new ReflectionMethod(method);
-		if (!autowireCapableBeanFactory.canExtractExecutionParameters(reflectionMethod)) {
+		if (!autowireCapableBeanFactory.hasParameters(reflectionMethod)) {
 			throw new FatalBeanException("Unable to obtain the required parameters for this actuator " + method);
 		}
 
-		Parameters parameters = autowireCapableBeanFactory.extractExecutionParameters(reflectionMethod);
+		Parameters parameters = autowireCapableBeanFactory.getParameters(reflectionMethod);
 		try {
 			reflectionMethod.execute(parameters);
 		} catch (Throwable e) {

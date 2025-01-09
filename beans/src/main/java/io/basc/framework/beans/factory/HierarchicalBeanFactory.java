@@ -1,10 +1,9 @@
 package io.basc.framework.beans.factory;
 
-import io.basc.framework.lang.Nullable;
+import lombok.NonNull;
 
 public interface HierarchicalBeanFactory extends BeanFactory {
-	@Nullable
 	BeanFactory getParentBeanFactory();
 
-	boolean containsLocalBean(String name);
+	boolean containsLocalBean(@NonNull String name);
 }

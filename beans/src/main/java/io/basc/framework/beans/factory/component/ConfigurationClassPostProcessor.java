@@ -19,7 +19,8 @@ public final class ConfigurationClassPostProcessor extends ComponentRegistryPost
 				return;
 			}
 
-			for (Method method : beanDefinition.getReturnTypeDescriptor().getType().getDeclaredMethods()) {
+			for (Method method : beanDefinition.getExecutionStrategy().getReturnTypeDescriptor().getType()
+					.getDeclaredMethods()) {
 				SharableMethodMetadata methodMetadata = new SharableMethodMetadata(method);
 				if (!componentResolver.isComponent(methodMetadata)) {
 					continue;

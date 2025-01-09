@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
 
 @FunctionalInterface
@@ -22,7 +22,7 @@ public interface ConnectionFactory {
 		return operations().prepare(sql).process(processor);
 	}
 
-	default void consume(Sql sql, Endpoint<? super PreparedStatement, ? extends SQLException> processor) {
+	default void consume(Sql sql, Consumer<? super PreparedStatement, ? extends SQLException> processor) {
 		operations().prepare(sql).consume(processor);
 	}
 

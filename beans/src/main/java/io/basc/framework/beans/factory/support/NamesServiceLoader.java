@@ -1,5 +1,6 @@
 package io.basc.framework.beans.factory.support;
 
+import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.beans.factory.BeanFactory;
@@ -33,7 +34,7 @@ public class NamesServiceLoader<S> implements ServiceLoader<S> {
 	}
 
 	@Override
-	public Elements<S> getServices() {
+	public Iterator<S> iterator() {
 		if (services == null) {
 			synchronized (this) {
 				if (services == null) {
@@ -41,6 +42,6 @@ public class NamesServiceLoader<S> implements ServiceLoader<S> {
 				}
 			}
 		}
-		return Elements.of(services);
+		return services.iterator();
 	}
 }

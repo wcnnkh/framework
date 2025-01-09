@@ -5,12 +5,10 @@ import java.lang.reflect.Constructor;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.BeanFactoryAware;
 import io.basc.framework.core.execution.aop.Aop;
-import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.Proxy;
-import io.basc.framework.core.execution.aop.ProxyFactory;
 import io.basc.framework.core.execution.reflect.ReflectionConstructor;
-import io.basc.framework.util.Elements;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -24,18 +22,17 @@ public class ComponentConsructor extends ReflectionConstructor implements BeanFa
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws Throwable {
+	public Object execute(@NonNull Object... args) throws Throwable {
 		if (enableAop) {
 			Aop aop = new Aop();
 			if (beanFactory != null) {
-				aop.getServiceLoaderRegistry().register(beanFactory.getBeanProvider(ProxyFactory.class));
-				aop.getExecutionInterceptorRegistry().getServiceLoaderRegistry()
-						.register(beanFactory.getBeanProvider(ExecutionInterceptor.class));
+				aop.doConfigure(beanFactory);
+				aop.getExecutionInterceptorRegistry().doConfigure(beanFactory);
 			}
 			Proxy proxy = aop.getProxy(getReturnTypeDescriptor().getType());
-			return proxy.execute(getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()), args);
+			proxy.execute(getParameterDescriptors().map((e) -> e.getTypeDescriptor().getType()).toArray(Class[]::new),
+					args);
 		}
 		return super.execute(args);
 	}
-
 }

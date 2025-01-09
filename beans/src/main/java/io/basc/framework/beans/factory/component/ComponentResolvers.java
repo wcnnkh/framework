@@ -4,12 +4,12 @@ import java.util.NoSuchElementException;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ComponentResolvers extends ConfigurableServices<ComponentResolver> implements ComponentResolver {
 	public ComponentResolvers() {
@@ -18,7 +18,7 @@ public class ComponentResolvers extends ConfigurableServices<ComponentResolver> 
 
 	@Override
 	public boolean isComponent(AnnotatedTypeMetadata annotatedTypeMetadata) {
-		for (ComponentResolver resolver : getServices()) {
+		for (ComponentResolver resolver : this) {
 			if (resolver.isComponent(annotatedTypeMetadata)) {
 				return true;
 			}
@@ -29,7 +29,7 @@ public class ComponentResolvers extends ConfigurableServices<ComponentResolver> 
 	@Override
 	public Elements<String> getAliasNames(BeanDefinition beanDefinition) {
 		Elements<String> aliasNames = Elements.empty();
-		for (ComponentResolver resolver : getServices()) {
+		for (ComponentResolver resolver : this) {
 			aliasNames = aliasNames.concat(resolver.getAliasNames(beanDefinition));
 		}
 		return aliasNames;
@@ -37,7 +37,7 @@ public class ComponentResolvers extends ConfigurableServices<ComponentResolver> 
 
 	@Override
 	public BeanDefinition createComponent(AnnotationMetadata componentAnnotationMetadata, ClassLoader classLoader) {
-		for (ComponentResolver resolver : getServices()) {
+		for (ComponentResolver resolver : this) {
 			if (resolver.isComponent(componentAnnotationMetadata)) {
 				return resolver.createComponent(componentAnnotationMetadata, classLoader);
 			}
@@ -47,7 +47,7 @@ public class ComponentResolvers extends ConfigurableServices<ComponentResolver> 
 
 	@Override
 	public boolean isConfiguration(BeanDefinition component) {
-		for (ComponentResolver resolver : getServices()) {
+		for (ComponentResolver resolver : this) {
 			if (resolver.isConfiguration(component)) {
 				return true;
 			}
@@ -57,7 +57,7 @@ public class ComponentResolvers extends ConfigurableServices<ComponentResolver> 
 
 	@Override
 	public BeanDefinition createComponent(BeanDefinition component, MethodMetadata methodMetadata) {
-		for (ComponentResolver resolver : getServices()) {
+		for (ComponentResolver resolver : this) {
 			if (resolver.isComponent(methodMetadata)) {
 				return resolver.createComponent(component, methodMetadata);
 			}
@@ -68,7 +68,7 @@ public class ComponentResolvers extends ConfigurableServices<ComponentResolver> 
 	@Override
 	public boolean matchs(EnvironmentCapable context, BeanDefinitionRegistry registry,
 			AnnotatedTypeMetadata annotatedTypeMetadata) {
-		for (ComponentResolver resolver : getServices()) {
+		for (ComponentResolver resolver : this) {
 			if (!resolver.matchs(context, registry, annotatedTypeMetadata)) {
 				return false;
 			}

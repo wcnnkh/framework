@@ -10,7 +10,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Executor;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.execution.Parameters;
 
 public class DefinitionFactoryBean implements FactoryBean<Object> {
 	private AutowireCapableBeanFactory autowireCapableBeanFactory;
@@ -26,13 +26,13 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 		Function constructor = getConstructor(true);
 		try {
 			if (autowireCapableBeanFactory != null) {
-				if (autowireCapableBeanFactory.canExtractExecutionParameters(constructor)) {
-					Parameters parameters = autowireCapableBeanFactory.extractExecutionParameters(constructor);
+				if (autowireCapableBeanFactory.hasParameters(constructor)) {
+					Parameters parameters = autowireCapableBeanFactory.getParameters(constructor);
 					return create(constructor, parameters);
 				}
 			}
 
-			return create(constructor, beanDefinition.getParameters());
+			return create(constructor, beanDefinition.getExecutionStrategy().getDefaultParameters());
 		} catch (Throwable e) {
 			throw new BeansException(beanDefinition.getName(), e);
 		}
@@ -52,7 +52,7 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 	}
 
 	@Override
-	public Object getObject() throws BeansException {
+	public Object get() throws BeansException {
 		if (isSingleton()) {
 			if (singleton == null) {
 				synchronized (this) {
@@ -79,9 +79,10 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 		if (function == null) {
 			synchronized (this) {
 				if (function == null) {
-					if (autowireCapableBeanFactory != null && beanDefinition.getParameters().isEmpty()) {
-						for (Function constructor : beanDefinition.getServices()) {
-							if (autowireCapableBeanFactory.canExtractExecutionParameters(constructor)) {
+					if (autowireCapableBeanFactory != null
+							&& beanDefinition.getExecutionStrategy().getDefaultParameters().isEmpty()) {
+						for (Function constructor : beanDefinition.getExecutionStrategy()) {
+							if (autowireCapableBeanFactory.hasParameters(constructor)) {
 								this.function = constructor;
 								break;
 							}
@@ -89,8 +90,8 @@ public class DefinitionFactoryBean implements FactoryBean<Object> {
 					}
 
 					if (function == null) {
-						for (Function constructor : beanDefinition.getServices()) {
-							if (constructor.canExecuted(beanDefinition.getParameters())) {
+						for (Function constructor : beanDefinition.getExecutionStrategy()) {
+							if (constructor.canExecuted(beanDefinition.getExecutionStrategy().getDefaultParameters())) {
 								this.function = constructor;
 								break;
 							}

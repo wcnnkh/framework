@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.Runnable;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.function.StreamOperations;
 
@@ -18,8 +18,8 @@ public class StatementOperations<T extends Statement, C extends StatementOperati
 	}
 
 	public StatementOperations(Source<? extends T, ? extends SQLException> source,
-			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);
 	}
 
@@ -28,15 +28,15 @@ public class StatementOperations<T extends Statement, C extends StatementOperati
 	}
 
 	public StatementOperations(Function<? super C, ? extends T, ? extends SQLException> sourceProcesor,
-			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 	
 	public <S> StatementOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
 			Function<? super S, ? extends T, ? extends SQLException> processor,
-			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 

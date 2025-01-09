@@ -33,7 +33,7 @@ public class SingletonFactoryBean<T> implements FactoryBean<T> {
 	}
 
 	@Override
-	public T getObject() {
+	public T get() {
 		return bean;
 	}
 }

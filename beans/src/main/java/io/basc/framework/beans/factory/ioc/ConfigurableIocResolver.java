@@ -2,8 +2,7 @@ package io.basc.framework.beans.factory.ioc;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableIocResolver extends ConfigurableServices<IocResolver> implements IocResolver {
 	private static volatile ConfigurableIocResolver defaults;
@@ -13,7 +12,7 @@ public class ConfigurableIocResolver extends ConfigurableServices<IocResolver> i
 			synchronized (ConfigurableIocResolver.class) {
 				if (defaults == null) {
 					defaults = new ConfigurableIocResolver();
-					defaults.configure(SPI.global());
+					defaults.doNativeConfigure();
 				}
 			}
 		}
@@ -26,12 +25,12 @@ public class ConfigurableIocResolver extends ConfigurableServices<IocResolver> i
 
 	@Override
 	public boolean isInitMethod(Method method) {
-		return getServices().anyMatch((e) -> e.isInitMethod(method));
+		return anyMatch((e) -> e.isInitMethod(method));
 	}
 
 	@Override
 	public boolean isDestroyMethod(Method method) {
-		return getServices().anyMatch((e) -> e.isDestroyMethod(method));
+		return anyMatch((e) -> e.isDestroyMethod(method));
 	}
 
 }

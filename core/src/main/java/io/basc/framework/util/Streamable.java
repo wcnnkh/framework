@@ -210,7 +210,8 @@ public interface Streamable<E> {
 		}
 
 		@Override
-		default <X extends Throwable> void transfer(Endpoint<? super Stream<E>, ? extends X> processor) throws X {
+		default <X extends Throwable> void transfer(
+				io.basc.framework.util.Consumer<? super Stream<E>, ? extends X> processor) throws X {
 			getSource().transfer(processor);
 		}
 
@@ -572,7 +573,8 @@ public interface Streamable<E> {
 		return collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 	}
 
-	default <X extends Throwable> void transfer(Endpoint<? super Stream<E>, ? extends X> processor) throws X {
+	default <X extends Throwable> void transfer(
+			io.basc.framework.util.Consumer<? super Stream<E>, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			processor.accept(stream);

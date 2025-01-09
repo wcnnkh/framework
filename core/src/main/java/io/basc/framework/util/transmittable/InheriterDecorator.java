@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Wrapper;
@@ -81,8 +81,8 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 		return decorateSource(callable::call)::get;
 	}
 
-	public final <S, E extends Throwable> Endpoint<S, E> decorateEndpoint(
-			@NonNull Endpoint<? super S, ? extends E> consumeProcessor) {
+	public final <S, E extends Throwable> Consumer<S, E> decorateEndpoint(
+			@NonNull Consumer<? super S, ? extends E> consumeProcessor) {
 		Function<S, ?, E> processor = decorateFunction((s) -> {
 			consumeProcessor.accept(s);
 			return null;
@@ -91,7 +91,7 @@ public abstract class InheriterDecorator<A, B> implements Inheriter<A, B> {
 	}
 
 	public final <T> Consumer<T> decorateConsumer(@NonNull Consumer<? super T> consumer) {
-		Endpoint<T, RuntimeException> consumeProcessor = decorateEndpoint(consumer::accept);
+		Consumer<T, RuntimeException> consumeProcessor = decorateEndpoint(consumer::accept);
 		return (s) -> consumeProcessor.accept(s);
 	}
 

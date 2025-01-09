@@ -8,7 +8,7 @@ import java.util.List;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
 import io.basc.framework.util.Wrapper;
 import lombok.RequiredArgsConstructor;
@@ -109,7 +109,7 @@ public interface Registration {
 				if (registrations != null) {
 					try {
 						Collections.reverse(registrations);
-						Endpoint.acceptAll(registrations.iterator(), (reg) -> reg.cancel());
+						Consumer.acceptAll(registrations.iterator(), (reg) -> reg.cancel());
 					} catch (Throwable e2) {
 						e.addSuppressed(e2);
 					}

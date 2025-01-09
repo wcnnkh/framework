@@ -1,15 +1,12 @@
 package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.FatalBeanException;
-import io.basc.framework.lang.Nullable;
 
 public class BeanDefinitionStoreException extends FatalBeanException {
 	private static final long serialVersionUID = 1L;
 
-	@Nullable
 	private final String resourceDescription;
 
-	@Nullable
 	private final String beanName;
 
 	/**
@@ -29,7 +26,7 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	 * @param msg   the detail message (used as exception message as-is)
 	 * @param cause the root cause (may be {@code null})
 	 */
-	public BeanDefinitionStoreException(String msg, @Nullable Throwable cause) {
+	public BeanDefinitionStoreException(String msg, Throwable cause) {
 		super(msg, cause);
 		this.resourceDescription = null;
 		this.beanName = null;
@@ -43,7 +40,7 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	 * @param msg                 the detail message (used as exception message
 	 *                            as-is)
 	 */
-	public BeanDefinitionStoreException(@Nullable String resourceDescription, String msg) {
+	public BeanDefinitionStoreException(String resourceDescription, String msg) {
 		super(msg);
 		this.resourceDescription = resourceDescription;
 		this.beanName = null;
@@ -58,7 +55,7 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	 *                            as-is)
 	 * @param cause               the root cause (may be {@code null})
 	 */
-	public BeanDefinitionStoreException(@Nullable String resourceDescription, String msg, @Nullable Throwable cause) {
+	public BeanDefinitionStoreException(String resourceDescription, String msg, Throwable cause) {
 		super(msg, cause);
 		this.resourceDescription = resourceDescription;
 		this.beanName = null;
@@ -74,7 +71,7 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	 *                            message that indicates the resource and the name
 	 *                            of the bean)
 	 */
-	public BeanDefinitionStoreException(@Nullable String resourceDescription, String beanName, String msg) {
+	public BeanDefinitionStoreException(String resourceDescription, String beanName, String msg) {
 		this(resourceDescription, beanName, msg, null);
 	}
 
@@ -89,8 +86,7 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	 *                            of the bean)
 	 * @param cause               the root cause (may be {@code null})
 	 */
-	public BeanDefinitionStoreException(@Nullable String resourceDescription, String beanName, String msg,
-			@Nullable Throwable cause) {
+	public BeanDefinitionStoreException(String resourceDescription, String beanName, String msg, Throwable cause) {
 
 		super("Invalid bean definition with name '" + beanName + "' defined in " + resourceDescription + ": " + msg,
 				cause);
@@ -102,7 +98,6 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	 * Return the description of the resource that the bean definition came from, if
 	 * available.
 	 */
-	@Nullable
 	public String getResourceDescription() {
 		return this.resourceDescription;
 	}
@@ -110,7 +105,6 @@ public class BeanDefinitionStoreException extends FatalBeanException {
 	/**
 	 * Return the name of the bean, if available.
 	 */
-	@Nullable
 	public String getBeanName() {
 		return this.beanName;
 	}

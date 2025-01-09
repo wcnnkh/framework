@@ -12,7 +12,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 	public static class EmptyOptional<T, E extends Throwable> implements Optional<T, E> {
 
 		@Override
-		public Optional<T, E> filter(@NonNull Filter<? super T, ? extends E> filter) {
+		public Optional<T, E> filter(@NonNull Predicate<? super T, ? extends E> filter) {
 			return this;
 		}
 
@@ -27,7 +27,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		@NonNull
 		protected final Optional<T, E> source;
 		@NonNull
-		protected final Filter<? super T, ? extends E> filter;
+		protected final Predicate<? super T, ? extends E> filter;
 
 		@Override
 		public T orElse(T other) throws E {
@@ -64,7 +64,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 	public static interface OptionalWrapper<T, E extends Throwable, W extends Optional<T, E>>
 			extends Optional<T, E>, SourceWrapper<T, E, W> {
 		@Override
-		default Optional<T, E> filter(@NonNull Filter<? super T, ? extends E> filter) {
+		default Optional<T, E> filter(@NonNull Predicate<? super T, ? extends E> filter) {
 			return getSource().filter(filter);
 		}
 
@@ -136,7 +136,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		return new SourceOptional<>(source);
 	}
 
-	default Optional<T, E> filter(@NonNull Filter<? super T, ? extends E> filter) {
+	default Optional<T, E> filter(@NonNull Predicate<? super T, ? extends E> filter) {
 		return new FilteredOptional<>(this, filter);
 	}
 
@@ -159,7 +159,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		return value;
 	}
 
-	default <X extends Throwable> void ifPresent(Endpoint<? super T, ? extends X> endpoint) throws E, X {
+	default <X extends Throwable> void ifPresent(Consumer<? super T, ? extends X> endpoint) throws E, X {
 		T value = orElse(null);
 		if (value != null) {
 			endpoint.accept(value);

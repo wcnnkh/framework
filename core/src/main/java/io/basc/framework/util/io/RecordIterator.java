@@ -69,7 +69,7 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 	public boolean hasNext() {
 		if (supplier == null) {
 			try {
-				supplier = Functions.of(codec.decode(getInputStream()));
+				supplier = Functions.forValue(codec.decode(getInputStream()));
 			} catch (EOFException e) {
 				close();
 				return false;

@@ -20,7 +20,7 @@ import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.io.Resource;
@@ -121,7 +121,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		throw new UnsupportedException(resource.getDescription());
 	}
 
-	public <E extends Throwable> void read(Resource resource, Endpoint<Document, E> processor)
+	public <E extends Throwable> void read(Resource resource, Consumer<Document, E> processor)
 			throws DomException {
 		parse(resource, (document) -> {
 			processor.process(document);

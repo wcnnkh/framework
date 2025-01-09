@@ -1,7 +1,8 @@
 package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.ValueDescriptor;
+import io.basc.framework.util.Source;
 
 /**
  * BeanFactory生成的bean
@@ -10,7 +11,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
  *
  * @param <T>
  */
-public interface FactoryBean<T> {
+public interface FactoryBean<T> extends Source<T, BeansException>, ValueDescriptor {
 
 	/**
 	 * 是否是单例
@@ -18,8 +19,4 @@ public interface FactoryBean<T> {
 	 * @return
 	 */
 	boolean isSingleton();
-
-	T getObject() throws BeansException;
-
-	TypeDescriptor getTypeDescriptor();
 }

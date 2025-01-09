@@ -8,9 +8,9 @@ import java.util.function.Supplier;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CloseableIterator;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.Runnable;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.function.StaticSupplier;
@@ -23,8 +23,8 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 	}
 
 	public ResultSetOperations(Source<? extends ResultSet, ? extends SQLException> source,
-			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);
 	}
 
@@ -35,15 +35,15 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 
 	public ResultSetOperations(
 			Function<? super ResultSetOperations, ? extends ResultSet, ? extends SQLException> sourceProcesor,
-			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
 	public <S> ResultSetOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
 			Function<? super S, ? extends ResultSet, ? extends SQLException> processor,
-			@Nullable Endpoint<? super ResultSet, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 

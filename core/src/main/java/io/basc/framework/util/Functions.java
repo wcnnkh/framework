@@ -30,7 +30,25 @@ public final class Functions {
 		}
 	}
 
-	public static <T> Supplier<T> of(T value) {
+	public static <T> Supplier<T> forValue(T value) {
 		return new FinalSupplier<T>(value);
+	}
+
+	public static <T, E extends RuntimeException> Supplier<T> forSource(Source<? extends T, ? extends E> source) {
+		return null;
+	}
+
+	public static <T, E extends RuntimeException> Predicate<T> forPredicate(
+			io.basc.framework.util.Predicate<? super T, ? extends E> predicate) {
+		return null;
+	}
+
+	public static <S, T, E extends RuntimeException> java.util.function.Function<S, T> forFunction(
+			Function<? super S, ? extends T, ? extends E> function) {
+		return null;
+	}
+
+	public static <E extends RuntimeException> java.lang.Runnable forRunnable(Runnable<? extends E> runnable) {
+		return null;
 	}
 }

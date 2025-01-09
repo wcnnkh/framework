@@ -17,39 +17,43 @@ import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.beans.factory.config.InitializingBean;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
-import io.basc.framework.beans.factory.ioc.AutowireParameterExtractors;
-import io.basc.framework.beans.factory.ioc.DefaultAutowireParameterExtractors;
+import io.basc.framework.beans.factory.di.DependencyInjection;
+import io.basc.framework.beans.factory.di.DependencyInjectionBeanPostProcessor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.execution.Executable;
-import io.basc.framework.core.execution.Parameter;
-import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.core.execution.param.ParameterExtractors;
-import io.basc.framework.core.execution.param.Parameters;
-import io.basc.framework.observe.service.ServiceInjectors;
-import io.basc.framework.util.logging.Logger;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.execution.ParameterDescriptorTemplate;
+import io.basc.framework.core.execution.Parameters;
+import io.basc.framework.core.mapping.PropertyDescriptor;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.logging.LogManager;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.logging.Logger;
+import io.basc.framework.util.spi.ServiceInjectors;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 	private static Logger logger = LogManager.getLogger(AbstractBeanFactory.class);
-	private final AutowireParameterExtractors autowireParameterExtractors = new DefaultAutowireParameterExtractors();
 	private final BeanPostProcessors beanPostProcessors = new BeanPostProcessors();
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();
 	private final Set<String> initializedSingletonSet = new HashSet<>();
 	private BeanFactory parentBeanFactory;
 	private final ServiceInjectors<Object> serviceInjectors = new ServiceInjectors<>();
+	private final DependencyInjection dependencyInjection = new DependencyInjection();
 
 	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
-		beanPostProcessors.getServiceInjectors().register(serviceInjectors);
-
+		beanPostProcessors.getInjectors().register((bean) -> serviceInjectors.inject(bean));
 		serviceInjectors.register((bean) -> {
 			if (bean instanceof BeanFactoryAware) {
 				((BeanFactoryAware) bean).setBeanFactory(this);
 			}
-			return Registration.EMPTY;
+			return Registration.SUCCESS;
 		});
+		beanPostProcessors
+				.setFirst(new DependencyInjectionBeanPostProcessor(this, dependencyInjection, dependencyInjection));
+	}
+
+	public DependencyInjection getDependencyInjection() {
+		return dependencyInjection;
 	}
 
 	protected void _destroyBean(String beanName, Object bean) throws BeansException {
@@ -67,18 +71,23 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	@Override
-	public boolean canExtractExecutionParameters(Executable executable) {
-		return autowireParameterExtractors.canExtractExecutionParameters(this, executable);
+	public boolean hasProperty(PropertyDescriptor propertyDescriptor) {
+		return dependencyInjection.canResolveProperty(this, propertyDescriptor);
 	}
 
 	@Override
-	public boolean canExtractParameter(ParameterDescriptor parameterDescriptor) {
-		return autowireParameterExtractors.canExtractParameter(this, parameterDescriptor);
+	public Value getProperty(PropertyDescriptor propertyDescriptor) {
+		return dependencyInjection.resolveProperty(this, propertyDescriptor);
 	}
 
 	@Override
-	public boolean canExtractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
-		return autowireParameterExtractors.canExtractParameters(this, parameterDescriptors);
+	public boolean hasParameters(ParameterDescriptorTemplate parameterTemplate) {
+		return dependencyInjection.canResolveParameters(this, parameterTemplate);
+	}
+
+	@Override
+	public Parameters getParameters(ParameterDescriptorTemplate parameterTemplate) {
+		return dependencyInjection.resolveParameters(this, parameterTemplate);
 	}
 
 	@Override
@@ -150,21 +159,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	@Override
-	public Parameters extractExecutionParameters(Executable executable) {
-		return autowireParameterExtractors.extractExecutionParameters(this, executable);
-	}
-
-	@Override
-	public Object extractParameter(ParameterDescriptor parameterDescriptor) {
-		return autowireParameterExtractors.extractParameter(this, parameterDescriptor);
-	}
-
-	@Override
-	public Elements<Parameter> extractParameters(Elements<? extends ParameterDescriptor> parameterDescriptors) {
-		return autowireParameterExtractors.extractParameters(this, parameterDescriptors);
-	}
-
-	@Override
 	public Object getBean(String beanName) throws BeansException {
 		if (isSingleton(beanName)) {
 			return getSingleton(beanName);
@@ -175,7 +169,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			throw new NoSuchBeanDefinitionException(beanName);
 		}
 
-		Object bean = factoryBean.getObject();
+		Object bean = factoryBean.get();
 		initializationBean(beanName, bean);
 		return bean;
 	}
@@ -204,10 +198,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	public Elements<String> getFactoryBeanNames() {
 		return Elements.of(factoryBeanMap.keySet());
-	}
-
-	public ParameterExtractors<BeanFactory> getParameterExtractors() {
-		return autowireParameterExtractors;
 	}
 
 	public BeanFactory getParentBeanFactory() {
@@ -243,7 +233,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 					factoryBean = getFactoryBean(name);
 					if (factoryBean != null && factoryBean.isSingleton()) {
-						singleton = factoryBean.getObject();
+						singleton = factoryBean.get();
 						registerSingleton(name, singleton);
 						newSingleton = true;
 					}
@@ -352,7 +342,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
 		if (factoryBean == null) {
 			return false;
-			//throw new NoSuchBeanDefinitionException(beanName);
+			// throw new NoSuchBeanDefinitionException(beanName);
 		}
 
 		return factoryBean.isSingleton();

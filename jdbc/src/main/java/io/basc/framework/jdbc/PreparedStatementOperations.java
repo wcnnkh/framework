@@ -4,9 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.Runnable;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.function.StreamOperations;
 
@@ -18,14 +18,14 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 	
 	public <S> PreparedStatementOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
 			Function<? super S, ? extends T, ? extends SQLException> processor,
-			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
 	public PreparedStatementOperations(Source<? extends T, ? extends SQLException> source,
-			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);
 	}
 
@@ -34,8 +34,8 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 	}
 
 	public PreparedStatementOperations(Function<? super C, ? extends T, ? extends SQLException> sourceProcesor,
-			@Nullable Endpoint<? super T, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
@@ -49,7 +49,7 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 	}
 
 	@Override
-	public <X extends Throwable> void consume(Endpoint<? super T, ? extends X> processor) {
+	public <X extends Throwable> void consume(Consumer<? super T, ? extends X> processor) {
 		try {
 			super.consume(processor);
 		} catch (Throwable e) {

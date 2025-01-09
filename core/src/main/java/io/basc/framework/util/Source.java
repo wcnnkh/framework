@@ -71,7 +71,7 @@ public interface Source<T, E extends Throwable> {
 	public static class SourcePipeline<T, E extends Throwable, W extends Source<? extends T, ? extends E>>
 			extends FunctionPipeline<T, T, E, W, Function<? super T, ? extends T, ? extends E>> {
 
-		public SourcePipeline(@NonNull W source, Processor<? extends E> processor) {
+		public SourcePipeline(@NonNull W source, Runnable<? extends E> processor) {
 			super(source, Function.identity(), processor);
 		}
 	}
@@ -81,7 +81,7 @@ public interface Source<T, E extends Throwable> {
 		@NonNull
 		protected final W source;
 		@NonNull
-		protected final Endpoint<? super T, ? extends E> endpoint;
+		protected final Consumer<? super T, ? extends E> endpoint;
 
 		@Override
 		public void close(T target) throws E {
@@ -126,11 +126,11 @@ public interface Source<T, E extends Throwable> {
 		return new SourcePipeline<>(this, null);
 	}
 
-	default Pool<T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+	default Pool<T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
 		return new SourcePool<>(this, endpoint);
 	}
 
-	default Pipeline<T, E> onClose(@NonNull Processor<? extends E> processor) {
+	default Pipeline<T, E> onClose(@NonNull Runnable<? extends E> processor) {
 		return new SourcePipeline<>(this, processor);
 	}
 }

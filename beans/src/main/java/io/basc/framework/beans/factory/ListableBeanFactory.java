@@ -8,17 +8,18 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.ServiceLoader;
+import lombok.NonNull;
 
 public interface ListableBeanFactory extends BeanFactory {
 	Elements<String> getBeanNames();
 
-	default Elements<String> getBeanNamesForType(ResolvableType requiredType) {
+	default Elements<String> getBeanNamesForType(@NonNull ResolvableType requiredType) {
 		return getBeanNames().filter((name) -> isTypeMatch(name, requiredType));
 	}
 
-	default Elements<String> getBeanNamesForType(Class<?> requiredType) {
+	default Elements<String> getBeanNamesForType(@NonNull Class<?> requiredType) {
 		return getBeanNames().filter((name) -> isTypeMatch(name, requiredType));
 	}
 
@@ -26,7 +27,7 @@ public interface ListableBeanFactory extends BeanFactory {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default <T> T getBean(Class<T> requiredType) throws BeansException {
+	default <T> T getBean(@NonNull Class<T> requiredType) throws BeansException {
 		Elements<String> beanNames = getBeanNamesForType(requiredType).toList();
 		if (beanNames.isEmpty()) {
 			throw new NoSuchBeanDefinitionException(requiredType);
@@ -40,19 +41,13 @@ public interface ListableBeanFactory extends BeanFactory {
 	}
 
 	@Override
-	default <T> BeanProvider<T> getBeanProvider(Class<T> requiredType) {
+	default <S> ServiceLoader<S> getServiceLoader(@NonNull ResolvableType requiredType) {
 		Elements<String> names = getBeanNamesForType(requiredType);
 		return new NameBeanProvider<>(names, this);
 	}
 
 	@Override
-	default BeanProvider<Object> getBeanProvider(ResolvableType requiredType) {
-		Elements<String> names = getBeanNamesForType(requiredType);
-		return new NameBeanProvider<>(names, this);
-	}
-
-	@Override
-	default Object getBean(ResolvableType requiredType) throws BeansException {
+	default Object getBean(@NonNull ResolvableType requiredType) throws BeansException {
 		Elements<String> beanNames = getBeanNamesForType(requiredType).toList();
 		if (beanNames.isEmpty()) {
 			throw new NoSuchBeanDefinitionException(requiredType);
@@ -65,7 +60,7 @@ public interface ListableBeanFactory extends BeanFactory {
 		return getBean(beanNames.first());
 	}
 
-	default Map<String, Object> getBeansOfType(ResolvableType requiredType) throws BeansException {
+	default Map<String, Object> getBeansOfType(@NonNull ResolvableType requiredType) throws BeansException {
 		List<String> beanNames = getBeanNamesForType(requiredType).toList();
 		if (beanNames.isEmpty()) {
 			return Collections.emptyMap();
@@ -80,7 +75,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	default <T> Map<String, T> getBeansOfType(Class<T> requiredType) throws BeansException {
+	default <T> Map<String, T> getBeansOfType(@NonNull Class<T> requiredType) throws BeansException {
 		List<String> beanNames = getBeanNamesForType(requiredType).toList();
 		if (beanNames.isEmpty()) {
 			return Collections.emptyMap();
@@ -94,11 +89,11 @@ public interface ListableBeanFactory extends BeanFactory {
 		return map;
 	}
 
-	default Elements<String> getBeanNamesForAnnotation(Class<? extends Annotation> annotationType) {
+	default Elements<String> getBeanNamesForAnnotation(@NonNull Class<? extends Annotation> annotationType) {
 		return getBeanNames().filter((name) -> findAnnotationOnBean(name, annotationType) != null);
 	}
 
-	default Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType)
+	default Map<String, Object> getBeansWithAnnotation(@NonNull Class<? extends Annotation> annotationType)
 			throws BeansException {
 		List<String> names = getBeanNamesForAnnotation(annotationType).toList();
 		if (names.isEmpty()) {
@@ -113,8 +108,7 @@ public interface ListableBeanFactory extends BeanFactory {
 		return map;
 	}
 
-	@Nullable
-	default <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
+	default <A extends Annotation> A findAnnotationOnBean(@NonNull String beanName, @NonNull Class<A> annotationType)
 			throws NoSuchBeanDefinitionException {
 		FactoryBean<?> factoryBean = getFactoryBean(beanName);
 		A annotation = factoryBean.getTypeDescriptor().getAnnotation(annotationType);

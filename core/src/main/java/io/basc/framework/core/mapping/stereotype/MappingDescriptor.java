@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 public interface MappingDescriptor<T extends FieldDescriptor> extends PropertyDescriptors<T>, Named {
 	@FunctionalInterface
-	public static interface FieldDescriptorTemplateWrapper<T extends FieldDescriptor, W extends MappingDescriptor<T>>
+	public static interface MappingDescriptorWrapper<T extends FieldDescriptor, W extends MappingDescriptor<T>>
 			extends MappingDescriptor<T>, PropertyDescriptorsWrapper<T, W> {
 
 		@Override
@@ -23,7 +23,7 @@ public interface MappingDescriptor<T extends FieldDescriptor> extends PropertyDe
 
 	@Data
 	public static class RenamedFieldDescriptorTemplate<T extends FieldDescriptor, W extends MappingDescriptor<T>>
-			implements FieldDescriptorTemplateWrapper<T, W> {
+			implements MappingDescriptorWrapper<T, W> {
 		@NonNull
 		private final String name;
 		@NonNull

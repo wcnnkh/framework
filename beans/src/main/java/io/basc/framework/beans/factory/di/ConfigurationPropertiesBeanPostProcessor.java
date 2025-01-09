@@ -1,11 +1,12 @@
-package io.basc.framework.beans.factory.ioc;
+package io.basc.framework.beans.factory.di;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
+import io.basc.framework.core.env.PropertyResolver;
+import io.basc.framework.core.execution.resolver.PropertyFactory;
 import io.basc.framework.observe.properties.ObservablePropertyFactory;
-import io.basc.framework.transform.factory.PropertyFactory;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.exchange.Registration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public abstract class ConfigurationPropertiesBeanPostProcessor implements BeanPostProcessor {
-	private final PropertyFactory propertyFactory;
+	private final PropertyResolver propertyResolver;
 	private final BeanRegistrationManager beanRegistrationManager;
 
 	@Override

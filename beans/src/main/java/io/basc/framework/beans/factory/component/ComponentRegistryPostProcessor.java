@@ -9,7 +9,6 @@ import io.basc.framework.core.env.Environment;
 import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.core.env.config.DefaultEnvironment;
 import io.basc.framework.core.type.AnnotationMetadata;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +23,8 @@ public abstract class ComponentRegistryPostProcessor
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		ComponentResolvers resolvers = new ComponentResolvers();
-		resolvers.setLastService(getResolvers());
-		resolvers.registerServiceLoader(beanFactory.getBeanProvider(ComponentResolver.class));
+		resolvers.setLast(getResolvers());
+		resolvers.doConfigure(beanFactory);
 		postProcessBeanDefinitionRegistry(resolvers, beanFactory);
 	}
 
@@ -51,7 +50,6 @@ public abstract class ComponentRegistryPostProcessor
 	public abstract void postProcessBeanDefinitionRegistry(ComponentResolver componentResolver,
 			EnvironmentCapable context, BeanDefinitionRegistry registry) throws BeansException;
 
-	@Nullable
 	public BeanDefinition registerComponent(ComponentResolver componentResolver, EnvironmentCapable context,
 			BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, ClassLoader classLoader) {
 		if (!componentResolver.isComponent(annotationMetadata)) {
@@ -66,7 +64,7 @@ public abstract class ComponentRegistryPostProcessor
 
 	public boolean registerComponent(ComponentResolver componentResolver, EnvironmentCapable context,
 			BeanDefinitionRegistry registry, BeanDefinition beanDefinition) {
-		if (!componentResolver.matchs(context, registry, beanDefinition)) {
+		if (!componentResolver.matchs(context, registry, beanDefinition.getExecutionStrategy())) {
 			return false;
 		}
 

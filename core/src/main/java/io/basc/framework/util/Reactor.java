@@ -10,7 +10,7 @@ public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
 		protected final Reactor<S, T, E> source;
 		@NonNull
 		protected final Function<? super T, ? extends V, ? extends E> pipeline;
-		protected final Endpoint<? super V, ? extends E> endpoint;
+		protected final Consumer<? super V, ? extends E> endpoint;
 
 		@Override
 		public V apply(S source) throws E {
@@ -34,7 +34,7 @@ public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
 			extends FunctionPipeline<S, T, E, Source<? extends S, ? extends E>, P> {
 
 		public ReactorPipeline(@NonNull Source<? extends S, ? extends E> source, @NonNull P pipeline,
-				Processor<? extends E> processor) {
+				Runnable<? extends E> processor) {
 			super(source, pipeline, processor);
 		}
 

@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import lombok.Getter;
@@ -11,32 +10,31 @@ import lombok.RequiredArgsConstructor;
 /**
  * 一个终点的定义
  * 
- * @see Consumer
  * @author wcnnkh
  *
  * @param <S> 回调的数据类型
  * @param <E> 异常类型
  */
 @FunctionalInterface
-public interface Endpoint<S, E extends Throwable> {
+public interface Consumer<S, E extends Throwable> {
 	@FunctionalInterface
-	public interface EndpointWrapper<S, E extends Throwable, W extends Endpoint<S, E>>
-			extends Endpoint<S, E>, Wrapper<W> {
+	public interface ConsumerWrapper<S, E extends Throwable, W extends Consumer<S, E>>
+			extends Consumer<S, E>, Wrapper<W> {
 		@Override
 		default void accept(S source) throws E {
 			getSource().accept(source);
 		}
 
 		@Override
-		default <T> Endpoint<T, E> map(@NonNull Function<? super T, ? extends S, ? extends E> mapper) {
+		default <T> Consumer<T, E> map(@NonNull Function<? super T, ? extends S, ? extends E> mapper) {
 			return getSource().map(mapper);
 		}
 	}
 
 	@RequiredArgsConstructor
 	@Getter
-	public static class MappedEndpoint<S, T, E extends Throwable, W extends Endpoint<T, E>>
-			implements Endpoint<S, E>, Wrapper<W> {
+	public static class MappedConsumer<S, T, E extends Throwable, W extends Consumer<T, E>>
+			implements Consumer<S, E>, Wrapper<W> {
 		@NonNull
 		private final W source;
 		@NonNull
@@ -57,7 +55,7 @@ public interface Endpoint<S, E extends Throwable> {
 	 * @param <T>
 	 * @param <E>
 	 */
-	public static class RejectEndpoint<A, B extends Throwable> implements Endpoint<A, B> {
+	public static class RejectConsumer<A, B extends Throwable> implements Consumer<A, B> {
 
 		@Override
 		public void accept(A source) throws B {
@@ -65,22 +63,22 @@ public interface Endpoint<S, E extends Throwable> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> Endpoint<T, B> map(@NonNull Function<? super T, ? extends A, ? extends B> mapper) {
-			return (Endpoint<T, B>) REJECT_ENDPOINT;
+		public <T> Consumer<T, B> map(@NonNull Function<? super T, ? extends A, ? extends B> mapper) {
+			return (Consumer<T, B>) REJECT_CONSUMER;
 		}
 	}
 
-	public static final RejectEndpoint<?, ?> REJECT_ENDPOINT = new RejectEndpoint<>();
+	public static final RejectConsumer<?, ?> REJECT_CONSUMER = new RejectConsumer<>();
 
 	@SuppressWarnings("unchecked")
-	public static <T, E extends Throwable> Endpoint<T, E> reject() {
-		return (Endpoint<T, E>) REJECT_ENDPOINT;
+	public static <T, E extends Throwable> Consumer<T, E> reject() {
+		return (Consumer<T, E>) REJECT_CONSUMER;
 	}
 
 	void accept(S source) throws E;
 
 	public static <S, E extends Throwable> void acceptAll(@NonNull Streamable<? extends S> streamable,
-			@NonNull Endpoint<? super S, ? extends E> endpoint) throws E {
+			@NonNull Consumer<? super S, ? extends E> endpoint) throws E {
 		Stream<? extends S> stream = streamable.stream();
 		try {
 			endpoint.acceptAll(stream.iterator());
@@ -90,7 +88,7 @@ public interface Endpoint<S, E extends Throwable> {
 	}
 
 	public static <S, E extends Throwable> void acceptAll(@NonNull Iterator<? extends S> iterator,
-			@NonNull Endpoint<? super S, ? extends E> endpoint) throws E {
+			@NonNull Consumer<? super S, ? extends E> endpoint) throws E {
 		endpoint.acceptAll(iterator);
 	}
 
@@ -105,11 +103,11 @@ public interface Endpoint<S, E extends Throwable> {
 		}
 	}
 
-	default <T> Endpoint<T, E> map(@NonNull Function<? super T, ? extends S, ? extends E> mapper) {
-		return new MappedEndpoint<>(this, mapper);
+	default <T> Consumer<T, E> map(@NonNull Function<? super T, ? extends S, ? extends E> mapper) {
+		return new MappedConsumer<>(this, mapper);
 	}
 
-	default Endpoint<S, E> onClose(Endpoint<? super S, ? extends E> endpoint) {
+	default Consumer<S, E> onClose(Consumer<? super S, ? extends E> endpoint) {
 		return null;
 	}
 }

@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Function;
-import io.basc.framework.util.Processor;
+import io.basc.framework.util.Runnable;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
@@ -33,8 +33,8 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 
 	public ConnectionOperations(
 			Function<? super ConnectionOperations, ? extends Connection, ? extends SQLException> sourceProcesor,
-			@Nullable Endpoint<? super Connection, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super Connection, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
@@ -43,8 +43,8 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 	}
 
 	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source,
-			@Nullable Endpoint<? super Connection, ? extends SQLException> closeProcessor,
-			@Nullable Processor<? extends SQLException> closeHandler) {
+			@Nullable Consumer<? super Connection, ? extends SQLException> closeProcessor,
+			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);
 	}
 

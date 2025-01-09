@@ -7,6 +7,14 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 一个流水线的定义
+ * 
+ * @author shuchaowen
+ *
+ * @param <T>
+ * @param <E>
+ */
 public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T, E> {
 	@RequiredArgsConstructor
 	public static class PipelineOptional<T, E extends Throwable, W extends Pipeline<T, E>> implements Optional<T, E> {
@@ -29,7 +37,7 @@ public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T
 	public static class PipelinePool<T, E extends Throwable, W extends Pipeline<T, E>> extends SourcePool<T, E, W>
 			implements Pool<T, E> {
 
-		public PipelinePool(@NonNull W source, @NonNull Endpoint<? super T, ? extends E> endpoint) {
+		public PipelinePool(@NonNull W source, @NonNull Consumer<? super T, ? extends E> endpoint) {
 			super(source, endpoint);
 		}
 
@@ -106,14 +114,14 @@ public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T
 		}
 
 		@Override
-		public Pool<T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+		public Pool<T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
 			return Pipeline.super.onClose(endpoint);
 		}
 	}
 
 	public static class NewPipeline<T, E extends Throwable, W extends Pipeline<T, E>> extends SourcePipeline<T, E, W> {
 
-		public NewPipeline(@NonNull W source, Processor<? extends E> processor) {
+		public NewPipeline(@NonNull W source, Runnable<? extends E> processor) {
 			super(source, processor);
 		}
 
@@ -155,12 +163,12 @@ public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T
 	}
 
 	@Override
-	default Pool<T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+	default Pool<T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
 		return new PipelinePool<>(this, endpoint);
 	}
 
 	@Override
-	default Pipeline<T, E> onClose(@NonNull Processor<? extends E> processor) {
+	default Pipeline<T, E> onClose(@NonNull Runnable<? extends E> processor) {
 		return new NewPipeline<>(this, processor);
 	}
 

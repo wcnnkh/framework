@@ -1,4 +1,4 @@
-package io.basc.framework.beans.factory.ioc;
+package io.basc.framework.beans.factory.di;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.util.alias.AliasFactory;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.exchange.Registration;
 import lombok.Data;
 
 @Data
@@ -75,7 +75,7 @@ public class BeanRegistrationManager {
 			}
 
 			if (registration != null) {
-				registration.unregister();
+				registration.cancel();
 			}
 		} finally {
 			writeLock.unlock();

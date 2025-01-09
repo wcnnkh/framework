@@ -4,17 +4,16 @@ import io.basc.framework.beans.factory.HierarchicalBeanFactory;
 import io.basc.framework.beans.factory.ListableBeanFactory;
 import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.core.env.EnvironmentCapable;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ParentDiscover;
+import io.basc.framework.util.exchange.Listenable;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.load.ResourcePatternResolver;
-import io.basc.framework.util.observe_old.Observable;
 
 public interface ApplicationContext
 		extends EnvironmentCapable, ClassLoaderProvider, ParentDiscover<ApplicationContext>, ResourcePatternResolver,
-		ListableBeanFactory, HierarchicalBeanFactory, Observable<ApplicationContextEvent>, AutowireCapableBeanFactory {
+		ListableBeanFactory, HierarchicalBeanFactory, Listenable<ApplicationContextEvent>, AutowireCapableBeanFactory {
 
 	/**
 	 * Return the unique id of this application context.
@@ -46,7 +45,6 @@ public interface ApplicationContext
 	 * 
 	 * @return the parent context, or {@code null} if there is no parent
 	 */
-	@Nullable
 	ApplicationContext getParent();
 
 	AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException;

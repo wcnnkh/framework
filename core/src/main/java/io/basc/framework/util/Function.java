@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 一个流水线的定义
+ * 一个功能的定义
  * 
  * @author shuchaowen
  *
@@ -42,7 +42,7 @@ public interface Function<S, T, E extends Throwable> {
 		private final W source;
 		@NonNull
 		private final Function<? super B, ? extends V, ? extends E> mapper;
-		private final Endpoint<? super B, ? extends E> closeHandler;
+		private final Consumer<? super B, ? extends E> closeHandler;
 
 		@Override
 		public V apply(A source) throws E {
@@ -75,6 +75,29 @@ public interface Function<S, T, E extends Throwable> {
 		public T apply(S source) throws E {
 			return function.apply(source);
 		}
+
+		@Override
+		public int hashCode() {
+			return function.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+
+			if (obj instanceof NativeFunction) {
+				NativeFunction<?, ?, ?> other = (NativeFunction<?, ?, ?>) obj;
+				return ObjectUtils.equals(this.function, other.function);
+			}
+			return ObjectUtils.equals(this.function, obj);
+		}
+
+		@Override
+		public String toString() {
+			return function.toString();
+		}
 	}
 
 	@RequiredArgsConstructor
@@ -84,7 +107,7 @@ public interface Function<S, T, E extends Throwable> {
 		protected final W source;
 		@NonNull
 		protected final P pipeline;
-		protected final Processor<? extends E> processor;
+		protected final Runnable<? extends E> processor;
 		private volatile Supplier<? extends S> supplier;
 		private final AtomicBoolean closed = new AtomicBoolean(false);
 
@@ -127,7 +150,7 @@ public interface Function<S, T, E extends Throwable> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Endpoint<? super T, ? extends E> endpoint;
+		private final Consumer<? super T, ? extends E> endpoint;
 
 		@Override
 		public T apply(S source) throws E {
@@ -145,7 +168,7 @@ public interface Function<S, T, E extends Throwable> {
 		}
 
 		@Override
-		public Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+		public Reactor<S, T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
 			return new PipelineReactor<>(this.source, (target) -> {
 				try {
 					endpoint.accept(target);
@@ -184,8 +207,8 @@ public interface Function<S, T, E extends Throwable> {
 		return (Function<U, U, X>) IDENTITY_FUNCTION;
 	}
 
-	public static <A, B, X extends Throwable> Function<A, B, X> of(
-			java.util.function.Function<? super A, ? extends B> function) {
+	public static <A, B, X extends Throwable> Function<A, B, X> forNative(
+			@NonNull java.util.function.Function<? super A, ? extends B> function) {
 		return new NativeFunction<>(function);
 	}
 
@@ -199,7 +222,7 @@ public interface Function<S, T, E extends Throwable> {
 		return new FunctionPipeline<>(source, this, null);
 	}
 
-	default Reactor<S, T, E> onClose(@NonNull Endpoint<? super T, ? extends E> endpoint) {
+	default Reactor<S, T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
 		return new PipelineReactor<>(this, endpoint);
 	}
 

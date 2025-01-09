@@ -14,7 +14,7 @@ import javax.websocket.Session;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 
@@ -206,7 +206,7 @@ public class StandardSessionManager<T> {
 		return sessions;
 	}
 
-	public void remove(T group, Endpoint<Session, IOException> processor) {
+	public void remove(T group, Consumer<Session, IOException> processor) {
 		remove(group).stream().filter((s) -> s.isOpen()).forEach((session) -> process(group, session, processor));
 	}
 
@@ -226,7 +226,7 @@ public class StandardSessionManager<T> {
 		return size;
 	}
 
-	public void process(T group, Session session, Endpoint<Session, IOException> processor) {
+	public void process(T group, Session session, Consumer<Session, IOException> processor) {
 		if (processor == null) {
 			return;
 		}
@@ -258,7 +258,7 @@ public class StandardSessionManager<T> {
 		}
 	}
 
-	public void forEach(T group, Endpoint<Session, IOException> processor) {
+	public void forEach(T group, Consumer<Session, IOException> processor) {
 		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
 	}
 
@@ -266,7 +266,7 @@ public class StandardSessionManager<T> {
 		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
 	}
 
-	public void forEach(Endpoint<Session, IOException> processor) {
+	public void forEach(Consumer<Session, IOException> processor) {
 		getGroups().forEach((group) -> forEach(group, processor));
 	}
 
@@ -274,7 +274,7 @@ public class StandardSessionManager<T> {
 		getGroups().forEach((group) -> forEach(group, processor));
 	}
 
-	public void clear(Endpoint<Session, IOException> processor) {
+	public void clear(Consumer<Session, IOException> processor) {
 		getGroups().forEach((group) -> remove(group, processor));
 	}
 

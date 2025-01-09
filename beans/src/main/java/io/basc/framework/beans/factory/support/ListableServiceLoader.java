@@ -1,10 +1,10 @@
 package io.basc.framework.beans.factory.support;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import io.basc.framework.beans.factory.ListableBeanFactory;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.comparator.OrderComparator;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class ListableServiceLoader<S> implements ServiceLoader<S> {
 	}
 
 	@Override
-	public Elements<S> getServices() {
+	public Iterator<S> iterator() {
 		if (services == null) {
 			synchronized (this) {
 				if (services == null) {
@@ -42,7 +42,7 @@ public class ListableServiceLoader<S> implements ServiceLoader<S> {
 				}
 			}
 		}
-		return Elements.of(services);
+		return services.iterator();
 	}
 
 }

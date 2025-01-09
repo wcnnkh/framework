@@ -1,15 +1,11 @@
 package io.basc.framework.beans.factory.config;
 
-import java.util.Map;
-
-import io.basc.framework.beans.BeanMapping;
+import io.basc.framework.beans.BeanMappingDescriptor;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.execution.ExecutionStrategy;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
-import io.basc.framework.core.execution.param.Parameters;
-import io.basc.framework.core.execution.stractegy.Executors;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.core.mapping.Properties;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Name;
 
@@ -19,8 +15,14 @@ import io.basc.framework.util.Name;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends Executors<Function>, Name {
-	String getResourceDescription();
+public interface BeanDefinition extends Name {
+	BeanMappingDescriptor getBeanMappingDescriptor();
+
+	ExecutionStrategy<Function> getExecutionStrategy();
+
+	Elements<Method> getDestroyMethods();
+
+	Elements<Method> getInitMethods();
 
 	/**
 	 * Return the originating BeanDefinition, or {@code null} if none.
@@ -30,8 +32,11 @@ public interface BeanDefinition extends Executors<Function>, Name {
 	 * Note that this method returns the immediate originator. Iterate through the
 	 * originator chain to find the original BeanDefinition as defined by the user.
 	 */
-	@Nullable
 	BeanDefinition getOriginatingBeanDefinition();
+
+	Properties getProperties();
+
+	String getResourceDescription();
 
 	/**
 	 * 作用域
@@ -39,8 +44,6 @@ public interface BeanDefinition extends Executors<Function>, Name {
 	 * @return
 	 */
 	Scope getScope();
-	
-	Parameters getParameters();
 
 	/**
 	 * 是否是一个单例
@@ -48,12 +51,4 @@ public interface BeanDefinition extends Executors<Function>, Name {
 	 * @return
 	 */
 	boolean isSingleton();
-
-	BeanMapping getBeanMapping();
-
-	Map<String, Value> getProperties();
-
-	Elements<Method> getInitMethods();
-
-	Elements<Method> getDestroyMethods();
 }

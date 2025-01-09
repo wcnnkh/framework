@@ -111,7 +111,7 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 	}
 
 	@Override
-	default Executable rename(String name) {
+	default Executable rename(@NonNull String name) {
 		return new RenamedExecutable<>(name, this);
 	}
 

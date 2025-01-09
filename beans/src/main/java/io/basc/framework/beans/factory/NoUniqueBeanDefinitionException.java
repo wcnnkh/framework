@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
 
 public class NoUniqueBeanDefinitionException extends NoSuchBeanDefinitionException {
@@ -12,7 +11,6 @@ public class NoUniqueBeanDefinitionException extends NoSuchBeanDefinitionExcepti
 
 	private final int numberOfBeansFound;
 
-	@Nullable
 	private final Collection<String> beanNamesFound;
 
 	/**
@@ -90,10 +88,8 @@ public class NoUniqueBeanDefinitionException extends NoSuchBeanDefinitionExcepti
 	 * Return the names of all beans found when only one matching bean was expected.
 	 * Note that this may be {@code null} if not specified at construction time.
 	 * 
-	 * @since 4.3
 	 * @see #getBeanType()
 	 */
-	@Nullable
 	public Collection<String> getBeanNamesFound() {
 		return this.beanNamesFound;
 	}

@@ -2,7 +2,7 @@ package io.basc.framework.autoconfigure.beans.factory;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.support.PropertyAutowiredBeanPostProcessor;
-import io.basc.framework.beans.factory.ioc.BeanRegistrationManager;
+import io.basc.framework.beans.factory.di.BeanRegistrationManager;
 import io.basc.framework.core.env.PropertyFactory;
 import io.basc.framework.mapper.Setter;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;

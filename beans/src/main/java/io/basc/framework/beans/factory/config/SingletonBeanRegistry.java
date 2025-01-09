@@ -1,7 +1,6 @@
 package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
 public interface SingletonBeanRegistry {
@@ -9,7 +8,6 @@ public interface SingletonBeanRegistry {
 
 	void removeSingleton(String name) throws BeansException;
 
-	@Nullable
 	Object getSingleton(String name) throws BeansException;
 
 	boolean containsSingleton(String name);

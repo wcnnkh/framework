@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.io.Serializable;
+import java.lang.Runnable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("serial")

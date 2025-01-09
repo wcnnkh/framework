@@ -5,12 +5,10 @@ import java.lang.reflect.Method;
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.BeanFactoryAware;
 import io.basc.framework.core.execution.aop.Aop;
-import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.Proxy;
-import io.basc.framework.core.execution.aop.ProxyFactory;
 import io.basc.framework.core.execution.reflect.ReflectionMethod;
-import io.basc.framework.util.Elements;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -24,14 +22,13 @@ public class ConfigurationMethodExecutor extends ReflectionMethod implements Bea
 	}
 
 	@Override
-	public Object execute(Object target, Elements<? extends Object> args) throws Throwable {
-		Object value = super.execute(target, args);
+	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
+		Object value = super.invoke(target, args);
 		if (enableAop) {
 			Aop aop = new Aop();
 			if (beanFactory != null) {
-				aop.getServiceLoaderRegistry().register(beanFactory.getBeanProvider(ProxyFactory.class));
-				aop.getExecutionInterceptorRegistry().getServiceLoaderRegistry()
-						.register(beanFactory.getBeanProvider(ExecutionInterceptor.class));
+				aop.doConfigure(beanFactory);
+				aop.getExecutionInterceptorRegistry().doConfigure(beanFactory);
 			}
 			Proxy proxy = aop.getProxy(getReturnTypeDescriptor().getType(), value);
 			value = proxy.execute();

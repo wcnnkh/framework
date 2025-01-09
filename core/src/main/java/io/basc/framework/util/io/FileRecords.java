@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.codec.Codec;
@@ -88,7 +88,7 @@ public final class FileRecords<T> implements Elements<T> {
 	 * @param consumer
 	 * @throws E
 	 */
-	public <E extends Throwable> void consume(Endpoint<? super T, ? extends E> consumer) throws E {
+	public <E extends Throwable> void consume(Consumer<? super T, ? extends E> consumer) throws E {
 		Assert.requiredArgument(consumer != null, "consumer");
 		if (file != null) {
 			synchronized (this) {

@@ -21,7 +21,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Endpoint;
+import io.basc.framework.util.Consumer;
 import io.basc.framework.util.ImpossibleException;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
@@ -671,7 +671,7 @@ public abstract class ReflectionUtils {
 	 * @return
 	 * @throws E
 	 */
-	public static <E extends Throwable> boolean isAvailable(Class<?> clazz, Endpoint<Throwable, E> accept) throws E {
+	public static <E extends Throwable> boolean isAvailable(Class<?> clazz, Consumer<Throwable, E> accept) throws E {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 public interface Pool<T, E extends Throwable> extends Source<T, E> {
 	public static class PoolPipeline<T, E extends Throwable, W extends Pool<T, E>> extends SourcePipeline<T, E, W> {
 
-		public PoolPipeline(@NonNull W source, Processor<? extends E> processor) {
+		public PoolPipeline(@NonNull W source, Runnable<? extends E> processor) {
 			super(source, processor);
 		}
 
@@ -30,7 +30,7 @@ public interface Pool<T, E extends Throwable> extends Source<T, E> {
 		protected final W source;
 		@NonNull
 		protected final Function<? super S, ? extends T, ? extends E> pipeline;
-		protected final Endpoint<? super T, ? extends E> endpoint;
+		protected final Consumer<? super T, ? extends E> endpoint;
 
 		@Override
 		public T get() throws E {
@@ -58,7 +58,7 @@ public interface Pool<T, E extends Throwable> extends Source<T, E> {
 	void close(T target) throws E;
 
 	@Override
-	default Pipeline<T, E> onClose(@NonNull Processor<? extends E> processor) {
+	default Pipeline<T, E> onClose(@NonNull Runnable<? extends E> processor) {
 		return new PoolPipeline<>(this, processor);
 	}
 

@@ -15,19 +15,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ExecutionStrategy<T extends Executor> extends Services<T> implements Executor {
-	private Parameters parameters;
+	private Parameters defaultParameters;
 	@NonNull
 	private final TypeDescriptor returnTypeDescriptor;
 
 	@Override
 	public boolean canExecuted() {
-		Parameters parameters = getParameters();
+		Parameters parameters = getDefaultParameters();
 		return parameters == null ? Executor.super.canExecuted(parameters) : canExecuted(parameters);
 	}
 
 	@Override
 	public Object execute() throws Throwable {
-		Parameters parameters = getParameters();
+		Parameters parameters = getDefaultParameters();
 		return parameters == null ? Executor.super.execute(parameters) : execute(parameters);
 	}
 
