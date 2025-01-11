@@ -3,9 +3,9 @@ package io.basc.framework.util.io.load;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import io.basc.framework.lang.ClassLoaderProvider;
+import io.basc.framework.lang.DefaultClassLoaderAccessor;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.DefaultClassLoaderAccessor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.io.ClassPathResource;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.basc.framework.util;
+package io.basc.framework.util.concurrent;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

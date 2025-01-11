@@ -16,12 +16,12 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.basc.framework.lang.ImpossibleException;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.ImpossibleException;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Source;

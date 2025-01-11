@@ -15,7 +15,7 @@ import io.basc.framework.context.ApplicationContextEvent;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.core.env.config.ConfigurableEnvironment;
 import io.basc.framework.core.env.config.DefaultEnvironment;
-import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.lang.ClassLoaderProvider;
 import io.basc.framework.util.actor.EventPushException;
 import io.basc.framework.util.actor.EventRegistrationException;
 import io.basc.framework.util.actor.batch.BatchEventDispatcher;

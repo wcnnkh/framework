@@ -1,4 +1,6 @@
-package io.basc.framework.util;
+package io.basc.framework.lang;
+
+import io.basc.framework.util.ClassUtils;
 
 public interface ClassLoaderAccessor extends ClassLoaderProvider {
 

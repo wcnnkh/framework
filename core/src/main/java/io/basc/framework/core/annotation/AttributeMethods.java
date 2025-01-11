@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 /**

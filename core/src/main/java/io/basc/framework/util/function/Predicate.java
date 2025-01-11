@@ -1,6 +1,5 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.util.ObjectUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -36,38 +35,16 @@ public interface Predicate<T, E extends Throwable> {
 		}
 	}
 
-	@Getter
-	@RequiredArgsConstructor
-	public static class NativePredicate<S, E extends Throwable> implements Predicate<S, E> {
-		@NonNull
-		private final java.util.function.Predicate<? super S> predicate;
+	public static class NativePredicate<S, E extends Throwable> extends Wrapped<java.util.function.Predicate<? super S>>
+			implements Predicate<S, E> {
 
-		@Override
-		public int hashCode() {
-			return predicate.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-
-			if (obj instanceof NativePredicate) {
-				NativePredicate<?, ?> other = (NativePredicate<?, ?>) obj;
-				return ObjectUtils.equals(this.predicate, other.predicate);
-			}
-			return ObjectUtils.equals(this.predicate, obj);
-		}
-
-		@Override
-		public String toString() {
-			return predicate.toString();
+		public NativePredicate(java.util.function.Predicate<? super S> source) {
+			super(source);
 		}
 
 		@Override
 		public boolean test(S source) throws E {
-			return predicate.test(source);
+			return this.source.test(source);
 		}
 	}
 

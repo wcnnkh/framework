@@ -1,9 +1,6 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.util.ObjectUtils;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 /**
  * @see java.lang.Runnable
@@ -22,38 +19,15 @@ public interface Runnable<E extends Throwable> {
 		}
 	}
 
-	@Getter
-	@RequiredArgsConstructor
-	public static class NativeRunnable<E extends Throwable> implements Runnable<E> {
-		@NonNull
-		private final java.lang.Runnable runnable;
+	public static class NativeRunnable<E extends Throwable> extends Wrapped<java.lang.Runnable> implements Runnable<E> {
+
+		public NativeRunnable(java.lang.Runnable source) {
+			super(source);
+		}
 
 		@Override
 		public void run() throws E {
-			runnable.run();
-		}
-
-		@Override
-		public int hashCode() {
-			return runnable.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-
-			if (obj instanceof NativeRunnable) {
-				NativeRunnable<?> nativeRunnable = (NativeRunnable<?>) obj;
-				return ObjectUtils.equals(this.runnable, nativeRunnable.runnable);
-			}
-			return ObjectUtils.equals(this.runnable, obj);
-		}
-
-		@Override
-		public String toString() {
-			return runnable.toString();
+			source.run();
 		}
 	}
 

@@ -71,6 +71,24 @@ public interface Consumer<S, E extends Throwable> {
 
 	public static final RejectConsumer<?, ?> REJECT_CONSUMER = new RejectConsumer<>();
 
+	public static class NativeConsumer<S, E extends Throwable> extends Wrapped<java.util.function.Consumer<? super S>>
+			implements Consumer<S, E> {
+
+		public NativeConsumer(java.util.function.Consumer<? super S> source) {
+			super(source);
+		}
+
+		@Override
+		public void accept(S source) throws E {
+			this.source.accept(source);
+		}
+	}
+
+	public static <S, E extends Throwable> Consumer<S, E> forNative(
+			@NonNull java.util.function.Consumer<? super S> consumer) {
+		return new NativeConsumer<>(consumer);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T, E extends Throwable> Consumer<T, E> reject() {
 		return (Consumer<T, E>) REJECT_CONSUMER;

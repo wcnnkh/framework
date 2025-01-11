@@ -145,7 +145,7 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 				return null;
 			} else {
 				List<S> oldList = services.toList();
-				services.clear();
+				services.reset();
 				services.registers(Elements.of(value));
 				return oldList;
 			}
@@ -165,7 +165,7 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 			}
 
 			List<S> oldList = services.toList();
-			services.clear();
+			services.reset();
 			return oldList;
 		} finally {
 			lock.unlock();
@@ -185,7 +185,7 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 		lock.lock();
 		try {
 			for (Entry<Class<?>, Services<S>> entry : container.entrySet()) {
-				entry.getValue().clear();
+				entry.getValue().reset();
 			}
 			container.clear();
 		} finally {
@@ -247,7 +247,7 @@ public class ServiceMap<S> implements MultiValueMap<Class<?>, S> {
 				services = servicesCreator.apply(key);
 				container.put(key, services);
 			}
-			services.clear();
+			services.reset();
 			services.register(value);
 		} finally {
 			lock.unlock();

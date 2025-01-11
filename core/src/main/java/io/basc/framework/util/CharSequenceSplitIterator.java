@@ -42,7 +42,7 @@ public class CharSequenceSplitIterator implements Iterator<CharSequenceTemplate>
 
 				int index = StringUtils.indexOf(charSequence, filter, this.index, endIndex);
 				if (index != -1) {
-					current = Functions.forValue(KeyValue.of(index, filter));
+					current = Functions.toSupplier(KeyValue.of(index, filter));
 					break;
 				}
 			}

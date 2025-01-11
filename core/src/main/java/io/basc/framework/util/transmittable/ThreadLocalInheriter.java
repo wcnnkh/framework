@@ -2,7 +2,7 @@ package io.basc.framework.util.transmittable;
 
 import io.basc.framework.util.Assert;
 
-public final class ThreadLocalInheriter<T> extends InheriterDecorator<T, T> {
+public final class ThreadLocalInheriter<T> implements Inheriter<T, T> {
 	private final ThreadLocal<T> threadLocal;
 	// 是否可以向threadLocal中插入空值，默认为不可以
 	private boolean nullable;

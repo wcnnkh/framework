@@ -27,8 +27,8 @@ import java.util.Map;
 import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.reflect.ReflectionUtils;
 

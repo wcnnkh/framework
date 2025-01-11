@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.alias.Name;
 import io.basc.framework.util.alias.Named;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.collection.Elements.StandardListElements;

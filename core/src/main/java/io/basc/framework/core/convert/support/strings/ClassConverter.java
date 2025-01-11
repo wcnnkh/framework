@@ -4,8 +4,8 @@ import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.ReversibleConverter;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.lang.DefaultClassLoaderAccessor;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.DefaultClassLoaderAccessor;
 import io.basc.framework.util.StringUtils;
 
 @SuppressWarnings("rawtypes")

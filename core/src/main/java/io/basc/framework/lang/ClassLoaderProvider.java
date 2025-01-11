@@ -1,4 +1,4 @@
-package io.basc.framework.util;
+package io.basc.framework.lang;
 
 @FunctionalInterface
 public interface ClassLoaderProvider {

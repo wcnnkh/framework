@@ -13,7 +13,7 @@ public final class BrowseableIterator<E extends Browseable<?, ?>> implements Ite
 
 	public BrowseableIterator(E pageables, Function<? super E, ? extends E> next) {
 		this.pageables = pageables;
-		this.current = Functions.forValue(pageables);
+		this.current = Functions.toSupplier(pageables);
 		this.next = next;
 	}
 

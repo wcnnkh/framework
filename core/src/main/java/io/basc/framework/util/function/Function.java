@@ -3,7 +3,6 @@ package io.basc.framework.util.function;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collection.Elements;
 import lombok.Getter;
 import lombok.NonNull;
@@ -67,38 +66,16 @@ public interface Function<S, T, E extends Throwable> {
 		}
 	}
 
-	@RequiredArgsConstructor
-	@Getter
-	public static class NativeFunction<S, T, E extends Throwable> implements Function<S, T, E> {
-		@NonNull
-		private final java.util.function.Function<? super S, ? extends T> function;
+	public static class NativeFunction<S, T, E extends Throwable>
+			extends Wrapped<java.util.function.Function<? super S, ? extends T>> implements Function<S, T, E> {
+
+		public NativeFunction(java.util.function.Function<? super S, ? extends T> source) {
+			super(source);
+		}
 
 		@Override
 		public T apply(S source) throws E {
-			return function.apply(source);
-		}
-
-		@Override
-		public int hashCode() {
-			return function.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-
-			if (obj instanceof NativeFunction) {
-				NativeFunction<?, ?, ?> other = (NativeFunction<?, ?, ?>) obj;
-				return ObjectUtils.equals(this.function, other.function);
-			}
-			return ObjectUtils.equals(this.function, obj);
-		}
-
-		@Override
-		public String toString() {
-			return function.toString();
+			return this.source.apply(source);
 		}
 	}
 

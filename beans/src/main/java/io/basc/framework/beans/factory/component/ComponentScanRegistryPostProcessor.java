@@ -6,7 +6,7 @@ import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.core.scan.PackagePatternMetadataReaderScanner;
 import io.basc.framework.core.scan.TypeScanner;
 import io.basc.framework.core.type.AnnotationMetadata;
-import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.lang.ClassLoaderProvider;
 import io.basc.framework.util.collection.Elements;
 import lombok.Getter;
 import lombok.Setter;

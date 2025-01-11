@@ -1,7 +1,6 @@
 package io.basc.framework.util.register;
 
 import io.basc.framework.util.codec.Codec;
-import io.basc.framework.util.collection.Clearable;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registrations;
@@ -14,7 +13,7 @@ import lombok.NonNull;
  *
  * @param <E>
  */
-public interface Container<E, R extends PayloadRegistration<E>> extends Registry<E>, Registrations<R>, Clearable {
+public interface Container<E, R extends PayloadRegistration<E>> extends Registry<E>, Registrations<R> {
 	public static interface ContainerWrapper<E, R extends PayloadRegistration<E>, W extends Container<E, R>>
 			extends Container<E, R>, RegistryWrapper<E, W> {
 
@@ -34,8 +33,8 @@ public interface Container<E, R extends PayloadRegistration<E>> extends Registry
 		}
 
 		@Override
-		default void clear() {
-			getSource().clear();
+		default void reset() {
+			getSource().reset();
 		}
 
 		@Override
@@ -102,8 +101,7 @@ public interface Container<E, R extends PayloadRegistration<E>> extends Registry
 		return Registry.super.isEmpty();
 	}
 
-	@Override
-	default void clear() {
+	default void reset() {
 		deregisters(this);
 	}
 
@@ -128,7 +126,7 @@ public interface Container<E, R extends PayloadRegistration<E>> extends Registry
 			return false;
 		}
 
-		clear();
+		reset();
 		return true;
 	}
 }

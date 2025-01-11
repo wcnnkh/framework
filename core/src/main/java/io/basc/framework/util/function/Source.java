@@ -1,8 +1,9 @@
 package io.basc.framework.util.function;
 
 import java.io.Serializable;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
-import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.function.Function.FunctionPipeline;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,33 +18,16 @@ import lombok.RequiredArgsConstructor;
  */
 @FunctionalInterface
 public interface Source<T, E extends Throwable> {
-	@RequiredArgsConstructor
-	public static class FinalSource<T, E extends Throwable> implements Source<T, E>, Serializable {
+	public static class FinalSource<T, E extends Throwable> extends Wrapped<T> implements Source<T, E>, Serializable {
 		private static final long serialVersionUID = 1L;
-		private final T value;
 
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof FinalSource) {
-				FinalSource<?, ?> source = (FinalSource<?, ?>) obj;
-				return ObjectUtils.equals(value, source.value);
-			}
-			return ObjectUtils.equals(value, obj);
+		public FinalSource(@NonNull T source) {
+			super(source);
 		}
 
 		@Override
 		public T get() throws E {
-			return value;
-		}
-
-		@Override
-		public int hashCode() {
-			return value == null ? 0 : value.hashCode();
-		}
-
-		@Override
-		public String toString() {
-			return value == null ? null : value.toString();
+			return source;
 		}
 	}
 
@@ -111,6 +95,39 @@ public interface Source<T, E extends Throwable> {
 
 	public static <T, E extends Throwable> Source<T, E> of(@NonNull Source<? extends T, ? extends E> source) {
 		return source::get;
+	}
+
+	public static class SupplierSource<T, E extends Throwable> extends Wrapped<Supplier<? extends T>>
+			implements Source<T, E> {
+
+		public SupplierSource(Supplier<? extends T> source) {
+			super(source);
+		}
+
+		@Override
+		public T get() throws E {
+			return source.get();
+		}
+	}
+
+	public static class CallableSource<T> extends Wrapped<Callable<? extends T>> implements Source<T, Exception> {
+
+		public CallableSource(Callable<? extends T> source) {
+			super(source);
+		}
+
+		@Override
+		public T get() throws Exception {
+			return source.call();
+		}
+	}
+
+	public static <T, E extends Throwable> Source<T, E> forSupplier(@NonNull Supplier<? extends T> supplier) {
+		return new SupplierSource<>(supplier);
+	}
+
+	public static <T> Source<T, Exception> forCallable(@NonNull Callable<? extends T> callable) {
+		return new CallableSource<>(callable);
 	}
 
 	public static <T, E extends Throwable> Source<T, E> of(T value) {

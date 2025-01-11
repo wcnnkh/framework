@@ -10,8 +10,8 @@ public final class AnyInheriterRegistry extends InheriterRegistry<Object, Object
 		return register(threadLocal, false);
 	}
 
-	public final Registration unregister(ThreadLocal threadLocal) {
-		return unregister(threadLocal, false);
+	public final void unregister(ThreadLocal threadLocal) {
+		unregister(threadLocal, false);
 	}
 
 	public final Registration register(ThreadLocal threadLocal, boolean nullable) {
@@ -19,19 +19,9 @@ public final class AnyInheriterRegistry extends InheriterRegistry<Object, Object
 		return register(inheriter);
 	}
 
-	public final Registration unregister(ThreadLocal threadLocal, boolean nullable) {
+	public final void unregister(ThreadLocal threadLocal, boolean nullable) {
 		ThreadLocalInheriter inheriter = new ThreadLocalInheriter<>(threadLocal, nullable);
-		return unregister(inheriter);
-	}
-
-	@Override
-	public Registration register(Inheriter inheriter) {
-		return super.register(inheriter);
-	}
-
-	@Override
-	public Registration unregister(Inheriter inheriter) {
-		return super.unregister(inheriter);
+		deregister(inheriter);
 	}
 
 	public static AnyInheriterRegistry global() {

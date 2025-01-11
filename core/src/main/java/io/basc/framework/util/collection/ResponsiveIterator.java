@@ -129,7 +129,7 @@ public class ResponsiveIterator<E> implements CloseableIterator<E> {
 							}
 							return false;
 						}
-						this.valueSupplier = Functions.forValue(message.value);
+						this.valueSupplier = Functions.toSupplier(message.value);
 						return true;
 					} catch (InterruptedException e) {
 						// 线程中断返回false
@@ -179,7 +179,7 @@ public class ResponsiveIterator<E> implements CloseableIterator<E> {
 							}
 							return false;
 						}
-						this.valueSupplier = Functions.forValue(message.value);
+						this.valueSupplier = Functions.toSupplier(message.value);
 						return true;
 					} catch (InterruptedException e) {
 						// 线程中断返回false

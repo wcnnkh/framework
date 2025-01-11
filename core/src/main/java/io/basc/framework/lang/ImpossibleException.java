@@ -1,4 +1,4 @@
-package io.basc.framework.util;
+package io.basc.framework.lang;
 
 /**
  * 不可能执行到这里
