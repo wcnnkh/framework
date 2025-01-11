@@ -3,7 +3,7 @@ package io.basc.framework.jms;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.function.StandardStreamOperations;
 import io.basc.framework.util.register.Registration;
 
@@ -14,7 +14,7 @@ public abstract class AbstractJmsOperations<T, C extends AbstractJmsOperations<T
 
 	private Boolean noLocal;
 
-	public AbstractJmsOperations(Source<? extends T, ? extends JMSException> source) {
+	public AbstractJmsOperations(Supplier<? extends T, ? extends JMSException> source) {
 		super(source);
 	}
 

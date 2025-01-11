@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @FunctionalInterface
-public interface Optional<T, E extends Throwable> extends Source<T, E> {
+public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 	public static class EmptyOptional<T, E extends Throwable> implements Optional<T, E> {
 
 		@Override
@@ -89,7 +89,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		}
 
 		@Override
-		default <X extends Throwable> T orElseGet(@NonNull Source<? extends T, ? extends X> source) throws E, X {
+		default <X extends Throwable> T orElseGet(@NonNull Supplier<? extends T, ? extends X> source) throws E, X {
 			return getSource().orElseGet(source);
 		}
 	}
@@ -106,7 +106,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 	}
 
 	@RequiredArgsConstructor
-	public static class SourceOptional<T, E extends Throwable, W extends Source<? extends T, ? extends E>>
+	public static class SourceOptional<T, E extends Throwable, W extends Supplier<? extends T, ? extends E>>
 			implements Optional<T, E> {
 		@NonNull
 		protected final W source;
@@ -132,7 +132,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 		return new SharedOptional<>(value);
 	}
 
-	public static <U, E extends Throwable> Optional<U, E> ofSource(@NonNull Source<? extends U, ? extends E> source) {
+	public static <U, E extends Throwable> Optional<U, E> ofSource(@NonNull Supplier<? extends U, ? extends E> source) {
 		return new SourceOptional<>(source);
 	}
 
@@ -177,7 +177,7 @@ public interface Optional<T, E extends Throwable> extends Source<T, E> {
 
 	T orElse(T other) throws E;
 
-	default <X extends Throwable> T orElseGet(@NonNull Source<? extends T, ? extends X> source) throws E, X {
+	default <X extends Throwable> T orElseGet(@NonNull Supplier<? extends T, ? extends X> source) throws E, X {
 		T target = orElse(null);
 		return target == null ? source.get() : target;
 	}

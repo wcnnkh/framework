@@ -194,7 +194,6 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
 			return FileChannel.open(getFile().toPath(), StandardOpenOption.READ);
 		} catch (FileNotFoundException | NoSuchFileException ex) {
 			// Fall back to InputStream adaptation in superclass
-			// TODO return super.readableChannel();
 			throw ex;
 		}
 	}

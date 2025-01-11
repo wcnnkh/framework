@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.function.Pool;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 
 public class SourceTest {
 	@Test
 	public void test() throws Throwable {
-		Source<Object, Throwable> source = () -> {
+		Supplier<Object, Throwable> source = () -> {
 			long t = System.currentTimeMillis();
 			System.out.println("get:" + t);
 			return t;

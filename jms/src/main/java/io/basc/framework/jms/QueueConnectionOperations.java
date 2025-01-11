@@ -7,7 +7,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 
 import io.basc.framework.util.function.Function;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 
 public class QueueConnectionOperations extends ConnectionOperations<Connection, Session, Queue> {
 
@@ -26,7 +26,7 @@ public class QueueConnectionOperations extends ConnectionOperations<Connection, 
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Connection> QueueConnectionOperations(Source<? extends T, ? extends JMSException> source,
+	public <T extends Connection> QueueConnectionOperations(Supplier<? extends T, ? extends JMSException> source,
 			Function<? super T, ? extends Session, ? extends JMSException> connectionProcessor, String queueName) {
 		super(source, (t) -> connectionProcessor.process((T) t), (s) -> s.createQueue(queueName));
 	}

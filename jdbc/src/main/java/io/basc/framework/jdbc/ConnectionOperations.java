@@ -10,7 +10,7 @@ import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Runnable;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.logging.LogManager;
 
 public class ConnectionOperations extends Operations<Connection, ConnectionOperations> {
@@ -20,7 +20,7 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 		return new ConnectionOperations(() -> connection);
 	}
 
-	public static ConnectionOperations of(Source<? extends Connection, SQLException> source) {
+	public static ConnectionOperations of(Supplier<? extends Connection, SQLException> source) {
 		return new ConnectionOperations((e) -> {
 			return source.get();
 		}, (e) -> e.close(), null);
@@ -38,11 +38,11 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
-	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source) {
+	public ConnectionOperations(Supplier<? extends Connection, ? extends SQLException> source) {
 		super(source);
 	}
 
-	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source,
+	public ConnectionOperations(Supplier<? extends Connection, ? extends SQLException> source,
 			@Nullable Consumer<? super Connection, ? extends SQLException> closeProcessor,
 			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);

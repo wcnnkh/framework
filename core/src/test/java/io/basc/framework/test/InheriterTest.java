@@ -15,7 +15,7 @@ import io.basc.framework.util.transmittable.AnyInheriterRegistry;
 public class InheriterTest {
 	private ThreadLocal<Object> threadLocal = new ThreadLocal<>();
 	private ExecutorService executorService = Executors.newCachedThreadPool();
-	private Executor executor = AnyInheriterRegistry.global().wrap(executorService);
+	private Executor executor = AnyInheriterRegistry.global().wrapExecutor(executorService);
 
 	@Test
 	public void test() {

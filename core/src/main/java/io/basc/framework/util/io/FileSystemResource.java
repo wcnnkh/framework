@@ -19,7 +19,7 @@ import java.nio.file.StandardOpenOption;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 /**
@@ -176,7 +176,7 @@ public class FileSystemResource extends AbstractResource {
 	 */
 	@Override
 	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Source.of(() -> {
+		return Supplier.of(() -> {
 			try {
 				return Files.newInputStream(this.filePath);
 			} catch (NoSuchFileException ex) {
@@ -209,7 +209,7 @@ public class FileSystemResource extends AbstractResource {
 	 */
 	@Override
 	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
-		return Source.of(() -> Files.newOutputStream(this.filePath)).onClose((e) -> e.close()).newPipeline();
+		return Supplier.of(() -> Files.newOutputStream(this.filePath)).onClose((e) -> e.close()).newPipeline();
 	}
 
 	/**

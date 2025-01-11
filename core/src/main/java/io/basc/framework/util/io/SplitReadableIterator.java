@@ -14,9 +14,6 @@ class SplitReadableIterator implements Iterator<CharSequence> {
 	private final Readable readable;
 	private final CharBuffer buffer;
 	private final CharSequence separator;
-	/**
-	 * TODO 思考是否可以不使用cache，复用buffer来节约内存
-	 */
 	private final StringBuilder cache = new StringBuilder();
 	private CharSequence next;
 

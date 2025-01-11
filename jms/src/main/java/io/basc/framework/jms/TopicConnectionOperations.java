@@ -7,7 +7,7 @@ import javax.jms.Session;
 import javax.jms.Topic;
 
 import io.basc.framework.util.function.Function;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 
 public class TopicConnectionOperations extends ConnectionOperations<Connection, Session, Topic> {
 
@@ -26,7 +26,7 @@ public class TopicConnectionOperations extends ConnectionOperations<Connection, 
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Connection> TopicConnectionOperations(Source<? extends T, ? extends JMSException> source,
+	public <T extends Connection> TopicConnectionOperations(Supplier<? extends T, ? extends JMSException> source,
 			Function<? super T, ? extends Session, ? extends JMSException> connectionProcessor, String topicName) {
 		super(source, (t) -> connectionProcessor.process((T) t), (s) -> s.createTopic(topicName));
 	}

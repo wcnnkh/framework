@@ -12,7 +12,7 @@ import java.net.URL;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 /**
@@ -170,7 +170,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 	@SuppressWarnings("unchecked")
 	@Override
 	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return (io.basc.framework.util.function.Pipeline<InputStream, IOException>) Source.of(() -> url.openConnection()).onClose((con) -> {
+		return (io.basc.framework.util.function.Pipeline<InputStream, IOException>) Supplier.of(() -> url.openConnection()).onClose((con) -> {
 			// Close the HTTP connection (if applicable).
 			if (con instanceof HttpURLConnection) {
 				((HttpURLConnection) con).disconnect();

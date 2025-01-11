@@ -6,7 +6,7 @@ import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.concurrent.LockableContainer;
 import io.basc.framework.util.exchange.Publisher;
 import io.basc.framework.util.exchange.event.ChangeEvent;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.register.Container;
 import io.basc.framework.util.register.PayloadRegistration;
 import lombok.NonNull;
@@ -22,7 +22,7 @@ public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>>
 		extends LockableContainer<C, RuntimeException> implements Container<E, P> {
 	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
-	public AbstractContainer(@NonNull Source<? extends C, ? extends RuntimeException> containerSource) {
+	public AbstractContainer(@NonNull Supplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

@@ -31,9 +31,9 @@ public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
 	}
 
 	public static class ReactorPipeline<S, T, E extends Throwable, P extends Reactor<? super S, T, ? extends E>>
-			extends FunctionPipeline<S, T, E, Source<? extends S, ? extends E>, P> {
+			extends FunctionPipeline<S, T, E, Supplier<? extends S, ? extends E>, P> {
 
-		public ReactorPipeline(@NonNull Source<? extends S, ? extends E> source, @NonNull P pipeline,
+		public ReactorPipeline(@NonNull Supplier<? extends S, ? extends E> source, @NonNull P pipeline,
 				Runnable<? extends E> processor) {
 			super(source, pipeline, processor);
 		}
@@ -55,11 +55,11 @@ public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
 	void close(T target) throws E;
 
 	@Override
-	default <R> Reactor<S, R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+	default <R> Reactor<S, R, E> andThen(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
 		return new MappedReactor<>(this, pipeline, null);
 	}
 
-	default Pipeline<T, E> newPipeline(Source<? extends S, ? extends E> source) {
+	default Pipeline<T, E> newPipeline(Supplier<? extends S, ? extends E> source) {
 		return new ReactorPipeline<>(source, this, null);
 	}
 }

@@ -2,7 +2,6 @@ package io.basc.framework.util.function;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.Supplier;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.RequiredArgsConstructor;
  * @param <T>
  * @param <E>
  */
-public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T, E> {
+public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target<T, E> {
 	@RequiredArgsConstructor
 	public static class PipelineOptional<T, E extends Throwable, W extends Pipeline<T, E>> implements Optional<T, E> {
 		private final W source;
@@ -63,7 +62,7 @@ public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T
 		@RequiredArgsConstructor
 		private class MappedChannelPool<R> implements Pool<R, E> {
 			private final Function<? super T, ? extends R, ? extends E> pipeline;
-			private volatile Supplier<? extends T> targetSupplier;
+			private volatile java.util.function.Supplier<? extends T> targetSupplier;
 
 			@Override
 			public R get() throws E {
@@ -119,7 +118,7 @@ public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T
 		}
 	}
 
-	public static class NewPipeline<T, E extends Throwable, W extends Pipeline<T, E>> extends SourcePipeline<T, E, W> {
+	public static class NewPipeline<T, E extends Throwable, W extends Pipeline<T, E>> extends SupplierPipeline<T, E, W> {
 
 		public NewPipeline(@NonNull W source, Runnable<? extends E> processor) {
 			super(source, processor);
@@ -173,19 +172,19 @@ public interface Pipeline<T, E extends Throwable> extends Source<T, E>, Target<T
 	}
 
 	public static <T, E extends Throwable> Pipeline<T, E> of(T value) {
-		Source<T, E> source = Source.of(value);
+		Supplier<T, E> source = Supplier.forValue(value);
 		return source.newPipeline();
 	}
 
 	public static <T extends AutoCloseable> Pipeline<T, Exception> forAutoCloseable(
-			Source<? extends T, ? extends Exception> source) {
-		Source<T, Exception> target = Source.of(source);
+			Supplier<? extends T, ? extends Exception> source) {
+		Supplier<T, Exception> target = Supplier.of(source);
 		return target.onClose(AutoCloseable::close).newPipeline();
 	}
 
 	public static <T extends Closeable> Pipeline<T, IOException> forCloseable(
-			Source<? extends T, ? extends IOException> source) {
-		Source<T, IOException> target = Source.of(source);
+			Supplier<? extends T, ? extends IOException> source) {
+		Supplier<T, IOException> target = Supplier.of(source);
 		return target.onClose(Closeable::close).newPipeline();
 	}
 }

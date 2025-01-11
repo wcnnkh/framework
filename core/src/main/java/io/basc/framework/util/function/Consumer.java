@@ -48,6 +48,37 @@ public interface Consumer<S, E extends Throwable> {
 		}
 	}
 
+	@RequiredArgsConstructor
+	public static class AndThenConsumer<S, E extends Throwable> implements Consumer<S, E> {
+		@NonNull
+		private final Consumer<? super S, ? extends E> left;
+		@NonNull
+		private final Consumer<? super S, ? extends E> right;
+
+		@Override
+		public void accept(S source) throws E {
+			left.accept(source);
+			right.accept(source);
+		}
+	}
+
+	@RequiredArgsConstructor
+	public static class OnCloseConsumer<S, E extends Throwable> implements Consumer<S, E> {
+		@NonNull
+		private final Consumer<? super S, ? extends E> left;
+		@NonNull
+		private final Consumer<? super S, ? extends E> right;
+
+		@Override
+		public void accept(S source) throws E {
+			try {
+				left.accept(source);
+			} finally {
+				right.accept(source);
+			}
+		}
+	}
+
 	/**
 	 * 拒绝，不做任何操作
 	 * 
@@ -127,6 +158,16 @@ public interface Consumer<S, E extends Throwable> {
 	}
 
 	default Consumer<S, E> onClose(Consumer<? super S, ? extends E> endpoint) {
-		return null;
+		if (endpoint == null) {
+			return this;
+		}
+		return new OnCloseConsumer<>(this, endpoint);
+	}
+
+	default Consumer<S, E> andThen(Consumer<? super S, ? extends E> after) {
+		if (after == null) {
+			return this;
+		}
+		return new AndThenConsumer<>(this, after);
 	}
 }

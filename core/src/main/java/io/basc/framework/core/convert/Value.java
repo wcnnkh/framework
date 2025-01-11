@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import io.basc.framework.core.ResolvableType;
@@ -15,7 +14,7 @@ import io.basc.framework.util.CharSequenceTemplate;
 import io.basc.framework.util.Version;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.collection.Enumerable;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.math.BigDecimalValue;
 import io.basc.framework.util.math.NumberUtils;
 import io.basc.framework.util.math.NumberValue;
@@ -23,7 +22,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface Value extends ValueDescriptor, Any, Source<Object, ConversionException> {
+public interface Value extends ValueDescriptor, Any, Supplier<Object, ConversionException> {
 
 	public static class EmptyValue implements Value, Serializable {
 		private static final long serialVersionUID = 1L;
@@ -138,7 +137,8 @@ public interface Value extends ValueDescriptor, Any, Source<Object, ConversionEx
 		}
 
 		@Override
-		default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
+		default <T> T getAsObject(Class<? extends T> requiredType,
+				java.util.function.Supplier<? extends T> defaultSupplier) {
 			return getSource().getAsObject(requiredType, defaultSupplier);
 		}
 

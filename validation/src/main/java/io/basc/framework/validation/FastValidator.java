@@ -10,7 +10,7 @@ import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
 import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 
 /**
  * 快速验证
@@ -35,7 +35,7 @@ public class FastValidator implements Validator {
 	}
 
 	public static <E extends Throwable> void validate(
-			Source<? extends Set<? extends ConstraintViolation<?>>, ? extends E> source)
+			Supplier<? extends Set<? extends ConstraintViolation<?>>, ? extends E> source)
 			throws ConstraintViolationException, E {
 		Set<? extends ConstraintViolation<?>> violations = source.get();
 		if (CollectionUtils.isEmpty(violations)) {
@@ -45,7 +45,7 @@ public class FastValidator implements Validator {
 	}
 
 	public static <E extends Throwable> boolean isVerified(
-			Source<? extends Set<? extends ConstraintViolation<?>>, ? extends E> source)
+			Supplier<? extends Set<? extends ConstraintViolation<?>>, ? extends E> source)
 			throws ConstraintViolationException, E {
 		Set<? extends ConstraintViolation<?>> violations = source.get();
 		return CollectionUtils.isEmpty(violations);

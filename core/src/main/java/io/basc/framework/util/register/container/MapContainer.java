@@ -24,7 +24,7 @@ import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Registrations;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.exchange.event.ChangeType;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.register.KeyValueRegistry;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.container.EntryRegistration.StandardEntryRegistrationWrapper;
@@ -170,7 +170,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 		}
 	}
 
-	public MapContainer(@NonNull Source<? extends M, ? extends RuntimeException> containerSource) {
+	public MapContainer(@NonNull Supplier<? extends M, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

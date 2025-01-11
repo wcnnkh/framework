@@ -18,7 +18,9 @@ import lombok.NonNull;
  * @author shuchaowen
  *
  */
-public interface Parameters extends ParameterTemplate<Parameter>, Comparable<Parameters>, Predicate<ParameterDescriptorTemplate> {
+public interface Parameters
+		extends ParameterTemplate<Parameter>, Comparable<Parameters>, Predicate<ParameterDescriptorTemplate> {
+	public static final Parameters EMPTY_PARAMETERS = completed();
 
 	@FunctionalInterface
 	public static interface ParametersWrapper<W extends Parameters>
@@ -101,18 +103,12 @@ public interface Parameters extends ParameterTemplate<Parameter>, Comparable<Par
 
 	}
 
-	public static Parameters empty() {
-		// TODO
-		return null;
-	}
-
 	/**
 	 * 比较参数使用的优先级
 	 */
 	@Override
 	default int compareTo(Parameters o) {
-		// TODO Auto-generated method stub
-		return 0;
+		return Integer.compare(getValidCount(), getValidCount());
 	}
 
 	@Override

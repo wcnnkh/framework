@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Runnable;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.function.StandardStreamOperations;
 import io.basc.framework.util.function.StreamOperations;
 import io.basc.framework.util.logging.Logger;
@@ -20,11 +20,11 @@ public class Operations<T, C extends Operations<T, C>> extends StandardStreamOpe
 //		LoggerFactory.getLevelManager().getSourceMap().put(logger.getName(), Levels.TRACE.getValue());
 //	}
 
-	public Operations(Source<? extends T, ? extends SQLException> source) {
+	public Operations(Supplier<? extends T, ? extends SQLException> source) {
 		super(source);
 	}
 
-	public Operations(Source<? extends T, ? extends SQLException> source,
+	public Operations(Supplier<? extends T, ? extends SQLException> source,
 			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
 			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);

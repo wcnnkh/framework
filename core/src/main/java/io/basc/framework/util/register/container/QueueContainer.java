@@ -4,13 +4,13 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends CollectionContainer<E, Q>
 		implements Queue<E> {
 
-	public QueueContainer(@NonNull Source<? extends Q, ? extends RuntimeException> containerSource) {
+	public QueueContainer(@NonNull Supplier<? extends Q, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

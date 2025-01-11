@@ -16,7 +16,7 @@ import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Registrations;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.exchange.event.ChangeType;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.register.PayloadRegistration;
 import io.basc.framework.util.register.RegistrationException;
 import io.basc.framework.util.register.container.ElementRegistration.StandardElementRegistrationWrappe;
@@ -78,7 +78,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
-	public CollectionContainer(@NonNull Source<? extends C, ? extends RuntimeException> containerSource) {
+	public CollectionContainer(@NonNull Supplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

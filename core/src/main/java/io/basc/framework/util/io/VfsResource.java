@@ -9,7 +9,7 @@ import java.net.URL;
 import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 /**
@@ -37,7 +37,7 @@ public class VfsResource extends AbstractResource {
 
 	@Override
 	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Source.of(() -> VfsUtils.getInputStream(this.resource)).onClose((e) -> e.close()).newPipeline();
+		return Supplier.of(() -> VfsUtils.getInputStream(this.resource)).onClose((e) -> e.close()).newPipeline();
 	}
 
 	@Override

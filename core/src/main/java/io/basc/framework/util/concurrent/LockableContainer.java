@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.concurrent.locks.NoOpLock;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 /**
@@ -28,13 +28,13 @@ import lombok.NonNull;
 public class LockableContainer<C, X extends Throwable> implements ReadWriteLock {
 	private volatile C container;
 	@NonNull
-	private final Source<? extends C, ? extends X> containerSource;
+	private final Supplier<? extends C, ? extends X> containerSource;
 	/**
 	 * 读写锁的实现
 	 */
 	private volatile ReadWriteLock readWriteLock;
 
-	public LockableContainer(@NonNull Source<? extends C, ? extends X> containerSource) {
+	public LockableContainer(@NonNull Supplier<? extends C, ? extends X> containerSource) {
 		this.containerSource = containerSource;
 	}
 

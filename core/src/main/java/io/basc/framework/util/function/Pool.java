@@ -3,8 +3,8 @@ package io.basc.framework.util.function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public interface Pool<T, E extends Throwable> extends Source<T, E> {
-	public static class PoolPipeline<T, E extends Throwable, W extends Pool<T, E>> extends SourcePipeline<T, E, W> {
+public interface Pool<T, E extends Throwable> extends Supplier<T, E> {
+	public static class PoolPipeline<T, E extends Throwable, W extends Pool<T, E>> extends SupplierPipeline<T, E, W> {
 
 		public PoolPipeline(@NonNull W source, Runnable<? extends E> processor) {
 			super(source, processor);

@@ -7,12 +7,12 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Runnable;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.function.StreamOperations;
 
 public class PreparedStatementOperations<T extends PreparedStatement, C extends PreparedStatementOperations<T, C>>
 		extends StatementOperations<T, C> {
-	public PreparedStatementOperations(Source<? extends T, ? extends SQLException> source) {
+	public PreparedStatementOperations(Supplier<? extends T, ? extends SQLException> source) {
 		super(source);
 	}
 	
@@ -23,7 +23,7 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
-	public PreparedStatementOperations(Source<? extends T, ? extends SQLException> source,
+	public PreparedStatementOperations(Supplier<? extends T, ? extends SQLException> source,
 			@Nullable Consumer<? super T, ? extends SQLException> closeProcessor,
 			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);

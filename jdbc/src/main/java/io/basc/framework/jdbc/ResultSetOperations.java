@@ -12,17 +12,17 @@ import io.basc.framework.util.collection.Streams;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Runnable;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.function.StaticSupplier;
 import io.basc.framework.util.function.StreamOperations;
 
 public class ResultSetOperations extends Operations<ResultSet, ResultSetOperations> {
 
-	public ResultSetOperations(Source<? extends ResultSet, ? extends SQLException> source) {
+	public ResultSetOperations(Supplier<? extends ResultSet, ? extends SQLException> source) {
 		super(source);
 	}
 
-	public ResultSetOperations(Source<? extends ResultSet, ? extends SQLException> source,
+	public ResultSetOperations(Supplier<? extends ResultSet, ? extends SQLException> source,
 			@Nullable Consumer<? super ResultSet, ? extends SQLException> closeProcessor,
 			@Nullable Runnable<? extends SQLException> closeHandler) {
 		super(source, closeProcessor, closeHandler);

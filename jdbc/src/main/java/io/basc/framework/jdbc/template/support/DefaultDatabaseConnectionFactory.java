@@ -18,7 +18,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.function.Function;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 
 public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> implements DatabaseConnectionFactory {
 	private final F rawConnectionFactory;
@@ -47,7 +47,7 @@ public class DefaultDatabaseConnectionFactory<F extends ConnectionFactory> imple
 	}
 
 	protected <E extends Throwable> DefaultDatabaseConnectionFactory<F> getDatabaseConnectionFactory(
-			String databaseName, @Nullable Source<? extends F, ? extends E> defaultSource,
+			String databaseName, @Nullable Supplier<? extends F, ? extends E> defaultSource,
 			Function<? super F, ? extends DefaultDatabaseConnectionFactory<F>, ? extends E> creator) throws E {
 		if (StringUtils.equals(getDatabaseName(), databaseName)) {
 			return this;

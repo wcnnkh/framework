@@ -13,7 +13,6 @@ import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.support.RecordCodec;
 import io.basc.framework.util.collection.CloseableIterator;
 import io.basc.framework.util.function.Functions;
-import io.basc.framework.util.function.Source;
 
 /**
  * 线程不安全
@@ -23,7 +22,7 @@ import io.basc.framework.util.function.Source;
  * @param <E>
  */
 public final class RecordIterator<E> implements CloseableIterator<E> {
-	private final Source<? extends InputStream, ? extends IOException> source;
+	private final io.basc.framework.util.function.Supplier<? extends InputStream, ? extends IOException> source;
 	private final RecordCodec<E> codec;
 	private volatile InputStream inputStream;
 	private volatile Supplier<E> supplier;
@@ -32,7 +31,7 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 		this(() -> new FileInputStream(file), codec);
 	}
 
-	public RecordIterator(Source<? extends InputStream, ? extends IOException> source, RecordCodec<E> codec) {
+	public RecordIterator(io.basc.framework.util.function.Supplier<? extends InputStream, ? extends IOException> source, RecordCodec<E> codec) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(codec != null, "codec");
 		this.source = source;
@@ -69,7 +68,7 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 	public boolean hasNext() {
 		if (supplier == null) {
 			try {
-				supplier = Functions.toSupplier(codec.decode(getInputStream()));
+				supplier = Functions.forValue(codec.decode(getInputStream()));
 			} catch (EOFException e) {
 				close();
 				return false;

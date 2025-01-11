@@ -12,7 +12,7 @@ import io.basc.framework.util.codec.support.RecordCodec;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.collection.Streams;
 import io.basc.framework.util.function.Consumer;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 
 /**
  * 线程不安全的
@@ -22,7 +22,7 @@ import io.basc.framework.util.function.Source;
  * @param <T>
  */
 public final class FileRecords<T> implements Elements<T> {
-	private final Source<? extends File, ? extends IOException> fileSource;
+	private final Supplier<? extends File, ? extends IOException> fileSource;
 	private volatile File file;
 	private final RecordCodec<T> codec;
 
@@ -30,7 +30,7 @@ public final class FileRecords<T> implements Elements<T> {
 		this(() -> file, codec);
 	}
 
-	public FileRecords(Source<? extends File, ? extends IOException> fileSource, Codec<T, byte[]> codec) {
+	public FileRecords(Supplier<? extends File, ? extends IOException> fileSource, Codec<T, byte[]> codec) {
 		Assert.requiredArgument(fileSource != null, "fileSource");
 		Assert.requiredArgument(codec != null, "codec");
 		this.fileSource = fileSource;

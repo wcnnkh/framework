@@ -18,7 +18,7 @@ import java.nio.file.StandardOpenOption;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 /**
@@ -127,7 +127,7 @@ public class PathResource extends AbstractResource {
 	 */
 	@Override
 	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Source.of(() -> {
+		return Supplier.of(() -> {
 			if (!exists()) {
 				throw new FileNotFoundException(getPath() + " (no such file or directory)");
 			}
@@ -159,7 +159,7 @@ public class PathResource extends AbstractResource {
 	 */
 	@Override
 	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
-		return Source.of(() -> {
+		return Supplier.of(() -> {
 			if (Files.isDirectory(this.path)) {
 				throw new FileNotFoundException(getPath() + " (is a directory)");
 			}

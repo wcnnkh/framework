@@ -7,7 +7,7 @@ import javax.jms.MessageListener;
 import javax.jms.Session;
 
 import io.basc.framework.util.function.Function;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.register.Registration;
 
 public class ConnectionOperations<T extends Connection, S extends Session, D extends Destination>
@@ -19,7 +19,7 @@ public class ConnectionOperations<T extends Connection, S extends Session, D ext
 
 	private final Function<? super S, ? extends D, ? extends JMSException> sessionProcessor;
 
-	public ConnectionOperations(Source<? extends T, ? extends JMSException> source,
+	public ConnectionOperations(Supplier<? extends T, ? extends JMSException> source,
 			Function<? super T, ? extends S, ? extends JMSException> connectionProcessor,
 			Function<? super S, ? extends D, ? extends JMSException> sessionProcessor) {
 		super(source);

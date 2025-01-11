@@ -1,7 +1,6 @@
 package io.basc.framework.util.function;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
 import io.basc.framework.util.collection.Elements;
 import lombok.Getter;
@@ -30,7 +29,7 @@ public interface Function<S, T, E extends Throwable> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V> Function<T, V, E> map(@NonNull Function<? super T, ? extends V, ? extends E> mapper) {
+		public <V> Function<T, V, E> andThen(@NonNull Function<? super T, ? extends V, ? extends E> mapper) {
 			return (Function<T, V, E>) mapper;
 		}
 	}
@@ -58,7 +57,7 @@ public interface Function<S, T, E extends Throwable> {
 		}
 
 		@Override
-		public <R> Function<A, R, E> map(@NonNull Function<? super V, ? extends R, ? extends E> mapper) {
+		public <R> Function<A, R, E> andThen(@NonNull Function<? super V, ? extends R, ? extends E> mapper) {
 			return new MappedFunction<>(this.source, (s) -> {
 				V target = MappedFunction.this.mapper.apply(s);
 				return mapper.apply(target);
@@ -80,14 +79,14 @@ public interface Function<S, T, E extends Throwable> {
 	}
 
 	@RequiredArgsConstructor
-	public static class FunctionPipeline<S, T, E extends Throwable, W extends Source<? extends S, ? extends E>, P extends Function<? super S, ? extends T, ? extends E>>
+	public static class FunctionPipeline<S, T, E extends Throwable, W extends Supplier<? extends S, ? extends E>, P extends Function<? super S, ? extends T, ? extends E>>
 			implements Pipeline<T, E> {
 		@NonNull
 		protected final W source;
 		@NonNull
 		protected final P pipeline;
 		protected final Runnable<? extends E> processor;
-		private volatile Supplier<? extends S> supplier;
+		private volatile java.util.function.Supplier<? extends S> supplier;
 		private final AtomicBoolean closed = new AtomicBoolean(false);
 
 		@Override
@@ -167,8 +166,8 @@ public interface Function<S, T, E extends Throwable> {
 		}
 
 		@Override
-		default <R> Function<S, R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> mapper) {
-			return getSource().map(mapper);
+		default <R> Function<S, R, E> andThen(@NonNull Function<? super T, ? extends R, ? extends E> mapper) {
+			return getSource().andThen(mapper);
 		}
 	}
 
@@ -193,11 +192,15 @@ public interface Function<S, T, E extends Throwable> {
 
 	T apply(S source) throws E;
 
-	default <R> Function<S, R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
-		return new MappedFunction<>(this, pipeline, null);
+	default <R> Function<R, T, E> compose(@NonNull Function<? super R, ? extends S, ? extends E> before) {
+		return new MappedFunction<>(before, this, null);
 	}
 
-	default Pipeline<T, E> newPipeline(@NonNull Source<? extends S, ? extends E> source) {
+	default <R> Function<S, R, E> andThen(@NonNull Function<? super T, ? extends R, ? extends E> after) {
+		return new MappedFunction<>(this, after, null);
+	}
+
+	default Pipeline<T, E> newPipeline(@NonNull Supplier<? extends S, ? extends E> source) {
 		return new FunctionPipeline<>(source, this, null);
 	}
 

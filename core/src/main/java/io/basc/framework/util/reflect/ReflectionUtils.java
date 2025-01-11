@@ -24,7 +24,7 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
 import io.basc.framework.util.collection.Elements;
 import io.basc.framework.util.function.Consumer;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
 
@@ -653,7 +653,7 @@ public abstract class ReflectionUtils {
 	}
 
 	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
-			Source<? extends Logger, ? extends E> loggerSource) throws E {
+			Supplier<? extends Logger, ? extends E> loggerSource) throws E {
 		return isAvailable(clazz, loggerSource == null ? null : (e) -> {
 			Logger logger = loggerSource.get();
 			if (logger == null) {

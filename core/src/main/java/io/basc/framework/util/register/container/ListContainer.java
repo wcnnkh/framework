@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.ListIterator;
 
 import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.function.Source;
+import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 public class ListContainer<E, C extends List<ElementRegistration<E>>> extends CollectionContainer<E, C>
 		implements List<E> {
 
-	public ListContainer(@NonNull Source<? extends C, ? extends RuntimeException> containerSource) {
+	public ListContainer(@NonNull Supplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 
