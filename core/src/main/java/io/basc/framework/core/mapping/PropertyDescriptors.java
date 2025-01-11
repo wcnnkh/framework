@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.collection.KeyValues;
-import io.basc.framework.util.collection.Listable;
+import io.basc.framework.util.collections.KeyValues;
+import io.basc.framework.util.collections.Listable;
 
 @FunctionalInterface
 public interface PropertyDescriptors<T extends PropertyDescriptor> extends KeyValues<String, T>, Listable<T> {

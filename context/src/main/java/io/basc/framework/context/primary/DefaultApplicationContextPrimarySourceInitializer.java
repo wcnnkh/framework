@@ -1,13 +1,12 @@
 package io.basc.framework.context.primary;
 
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.context.config.ApplicationContextSourceProcessor;
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.context.primary.component.DefaultApplicationContextComponentLoader;
 import io.basc.framework.context.primary.resource.DefaultApplicationContextPrimaryResourceLoader;
 import io.basc.framework.context.resource.DefaultApplicationContextResourceImporter;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.io.Resource;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,9 +20,8 @@ public class DefaultApplicationContextPrimarySourceInitializer
 	private final DefaultApplicationContextComponentLoader componentLoader = new DefaultApplicationContextComponentLoader();
 
 	public DefaultApplicationContextPrimarySourceInitializer() {
-		registerServiceLoader(SPI.global().getServiceLoader(ApplicationContextPrimarySourceProcessor.class));
-		getExtender().registerServiceLoader(
-				SPI.global().getServiceLoader(ApplicationContextPrimarySourceProcessExtender.class));
+		doNativeConfigure();
+		getExtender().doNativeConfigure();
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 package io.basc.framework.context.config;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.element.Merger;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Receipts;
+import io.basc.framework.util.function.Function.Merger;
 import io.basc.framework.util.select.Selector;
+import io.basc.framework.util.spi.ConfigurableServices;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +19,8 @@ public class ConfigurableApplicationContextSourceLoader<S, T, E extends Applicat
 	private Selector<Elements<T>> selector = Merger.global();
 
 	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		super.configure(serviceLoaderFactory);
-		extender.configure(serviceLoaderFactory);
+	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
+		return Receipts.forArray(extender.doConfigure(discovery), super.doConfigure(discovery))
 	}
 
 	@Override

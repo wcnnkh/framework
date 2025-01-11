@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.UnsafeArrayList;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.UnsafeArrayList;
 
 public class MergedAnnotatedElement implements AnnotatedElement{
 

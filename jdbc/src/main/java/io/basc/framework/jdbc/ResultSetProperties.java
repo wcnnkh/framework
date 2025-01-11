@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

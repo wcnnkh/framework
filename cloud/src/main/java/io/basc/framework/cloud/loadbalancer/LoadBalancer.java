@@ -6,8 +6,8 @@ import java.util.function.Predicate;
 import io.basc.framework.http.client.HttpClientException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.ServiceLoader;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.ServiceLoader;
 import io.basc.framework.util.retry.ExhaustedRetryException;
 import io.basc.framework.util.retry.RetryOperations;
 

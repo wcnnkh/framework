@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.codec.Codec;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class StandardBrowseable<K, T> implements CursorWrapper<K, T, Cursor<K, T>>, Browseable<K, T> {
 	private final Cursor<K, T> source;

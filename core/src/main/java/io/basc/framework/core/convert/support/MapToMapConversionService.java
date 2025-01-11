@@ -13,7 +13,7 @@ import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import lombok.NonNull;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {

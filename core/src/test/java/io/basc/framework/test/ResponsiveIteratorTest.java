@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import io.basc.framework.util.collection.ResponsiveIterator;
-import io.basc.framework.util.collection.Streams;
+import io.basc.framework.util.collections.ResponsiveIterator;
+import io.basc.framework.util.collections.Streams;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class ResponsiveIteratorTest {

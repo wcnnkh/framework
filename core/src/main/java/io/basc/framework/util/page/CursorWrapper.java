@@ -3,7 +3,7 @@ package io.basc.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Wrapper;
 
 public interface CursorWrapper<K, T, W extends Cursor<K, T>> extends Cursor<K, T>, Wrapper<W> {

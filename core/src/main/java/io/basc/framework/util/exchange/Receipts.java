@@ -1,13 +1,18 @@
 package io.basc.framework.util.exchange;
 
 import io.basc.framework.util.Throwables;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 @FunctionalInterface
 public interface Receipts<R extends Receipt> extends Registrations<R>, Receipt {
 
 	public static <E extends Receipt> Receipts<E> of(Elements<E> elements) {
 		return () -> elements;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <E extends Receipt> Receipts<E> forArray(E... receipts) {
+		return of(Elements.forArray(receipts));
 	}
 
 	@Override

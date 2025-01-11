@@ -18,7 +18,7 @@ import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.net.uri.DefaultUriTemplateHandler;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.retry.RetryOperations;
 
 public abstract class AbstractHttpClient implements HttpClient, Configurable {

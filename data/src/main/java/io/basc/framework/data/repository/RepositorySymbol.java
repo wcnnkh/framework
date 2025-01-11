@@ -1,7 +1,7 @@
 package io.basc.framework.data.repository;
 
 import io.basc.framework.util.Symbol;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 /**
  * 存储相关的符号

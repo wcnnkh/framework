@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.basc.framework.data.domain.CAS;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public interface KeyValueCasOperations<K, V> extends KeyValueOperations<K, V>, KeyCasOperations<K> {
 	CAS<V> gets(K key);

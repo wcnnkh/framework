@@ -7,7 +7,7 @@ import java.util.Map;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.domain.CAS;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public interface ObjectCasOperations<K> extends ObjectOperations<K>, KeyValueCasOperations<K, Object> {
 

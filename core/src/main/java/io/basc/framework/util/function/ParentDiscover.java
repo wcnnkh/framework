@@ -1,6 +1,6 @@
 package io.basc.framework.util.function;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public interface ParentDiscover<T extends ParentDiscover<T>> {
 	T getParent();

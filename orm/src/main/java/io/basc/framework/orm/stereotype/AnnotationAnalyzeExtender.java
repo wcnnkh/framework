@@ -27,7 +27,7 @@ import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Symbol;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 

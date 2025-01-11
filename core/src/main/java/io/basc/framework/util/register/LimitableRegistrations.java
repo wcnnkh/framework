@@ -4,7 +4,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Registrations;
 import lombok.NonNull;

@@ -32,7 +32,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.util.io.IOUtils;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.WritableResource;

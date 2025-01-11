@@ -9,7 +9,7 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.util.math.NumberValue;
 

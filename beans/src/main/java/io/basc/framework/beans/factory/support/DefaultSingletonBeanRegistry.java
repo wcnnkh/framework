@@ -10,7 +10,7 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.SingletonBeanRegistry;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.SimpleAliasRegistry;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();

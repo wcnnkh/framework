@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.io.FilenameUtils;
 
 /**

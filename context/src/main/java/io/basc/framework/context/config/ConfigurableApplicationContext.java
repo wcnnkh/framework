@@ -10,14 +10,13 @@ import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextEvent;
 import io.basc.framework.core.env.config.ConfigurableEnvironment;
 import io.basc.framework.lang.ClassLoaderAccessor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Lifecycle;
-import io.basc.framework.util.actor.batch.BatchEventDispatcher;
+import io.basc.framework.util.exchange.Dispatcher;
+import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.io.load.ProtocolResolver;
-import io.basc.framework.util.register.Registration;
 
 public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable,
-		ConfigurableBeanFactory, BatchEventDispatcher<ApplicationContextEvent> {
+		ConfigurableBeanFactory, Dispatcher<ApplicationContextEvent> {
 	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor);
 
 	void addProtocolResolver(ProtocolResolver protocolResolver);
@@ -65,7 +64,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Clas
 	 * 
 	 * @param parent the parent context
 	 */
-	void setParent(@Nullable ApplicationContext parent);
+	void setParent(ApplicationContext parent);
 
 	ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
 }

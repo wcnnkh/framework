@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 
 /**
  * 资源工具

@@ -2,7 +2,7 @@ package io.basc.framework.websocket;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

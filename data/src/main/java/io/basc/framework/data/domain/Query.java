@@ -1,6 +1,6 @@
 package io.basc.framework.data.domain;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.page.Pagination;
 import io.basc.framework.util.page.Paginations;
 

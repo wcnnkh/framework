@@ -1,6 +1,6 @@
 package io.basc.framework.context.config;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableApplicationContextInitializer extends ConfigurableServices<ApplicationContextInitializer>
 		implements ApplicationContextInitializer {
@@ -11,7 +11,7 @@ public class ConfigurableApplicationContextInitializer extends ConfigurableServi
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		for (ApplicationContextInitializer initializer : getServices()) {
+		for (ApplicationContextInitializer initializer : this) {
 			initializer.initialize(applicationContext);
 		}
 	}

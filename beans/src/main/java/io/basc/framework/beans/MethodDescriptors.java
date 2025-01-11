@@ -4,9 +4,9 @@ import java.beans.BeanInfo;
 import java.beans.MethodDescriptor;
 
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.KeyValues;
-import io.basc.framework.util.collection.Elements.ElementsWrapper;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.KeyValues;
+import io.basc.framework.util.collections.Elements.ElementsWrapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

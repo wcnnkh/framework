@@ -9,7 +9,7 @@ import io.basc.framework.core.execution.ExecutionStrategy;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
 import io.basc.framework.core.mapping.Properties;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 
 @Data

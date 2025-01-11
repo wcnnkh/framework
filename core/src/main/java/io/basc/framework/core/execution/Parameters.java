@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.mapping.Property;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.NonNull;
 

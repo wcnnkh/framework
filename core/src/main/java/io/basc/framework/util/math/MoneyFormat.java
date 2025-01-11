@@ -7,7 +7,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.DecodeException;
 import io.basc.framework.util.codec.EncodeException;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 
 public final class MoneyFormat implements Codec<BigDecimal, String> {
 	/**

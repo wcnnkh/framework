@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Publisher;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.match.StringMatcher;

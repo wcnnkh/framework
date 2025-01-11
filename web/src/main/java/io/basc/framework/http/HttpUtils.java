@@ -17,7 +17,7 @@ import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public final class HttpUtils {
 	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(

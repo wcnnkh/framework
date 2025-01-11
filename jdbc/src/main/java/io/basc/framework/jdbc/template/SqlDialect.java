@@ -9,7 +9,7 @@ import io.basc.framework.jdbc.ConnectionOperations;
 import io.basc.framework.jdbc.Sql;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.EntityMapping;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public interface SqlDialect extends EntityMapper, SqlTypeFactory {
 	Elements<Sql> toCreateTableSql(EntityMapping<?> tableMapping, String tableName) throws SqlDialectException;

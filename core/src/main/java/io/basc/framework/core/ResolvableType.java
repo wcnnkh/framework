@@ -23,7 +23,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collections.ConcurrentReferenceHashMap;
 
 /**
  * Encapsulates a Java {@link java.lang.reflect.Type}, providing access to

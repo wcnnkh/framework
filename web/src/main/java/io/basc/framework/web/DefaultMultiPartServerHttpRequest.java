@@ -8,7 +8,7 @@ import io.basc.framework.http.MediaType;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.net.multipart.MultipartMessageResolver;
 import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.logging.LogManager;
 
 /**

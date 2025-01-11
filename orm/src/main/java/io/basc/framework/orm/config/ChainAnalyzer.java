@@ -18,7 +18,7 @@ import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class ChainAnalyzer implements Analyzer {
 

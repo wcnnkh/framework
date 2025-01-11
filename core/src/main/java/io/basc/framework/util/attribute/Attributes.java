@@ -1,6 +1,6 @@
 package io.basc.framework.util.attribute;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public interface Attributes<K, V> {
 	V getAttribute(K name);

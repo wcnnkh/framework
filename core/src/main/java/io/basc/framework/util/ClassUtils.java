@@ -19,9 +19,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.basc.framework.lang.ClassLoaderProvider;
-import io.basc.framework.util.collection.ArrayUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.ArrayUtils;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.page.Browseable;
 import io.basc.framework.util.page.StandardBrowseable;
 import io.basc.framework.util.page.StandardCursor;

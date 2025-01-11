@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 

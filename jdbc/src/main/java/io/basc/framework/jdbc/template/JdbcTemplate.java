@@ -13,7 +13,7 @@ import io.basc.framework.jdbc.support.DefaultJdbcOperations;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityOperations;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class JdbcTemplate extends DefaultJdbcOperations implements EntityOperations {
 

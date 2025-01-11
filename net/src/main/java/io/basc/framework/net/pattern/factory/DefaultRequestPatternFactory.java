@@ -3,7 +3,7 @@ package io.basc.framework.net.pattern.factory;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.net.pattern.RequestPattern;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

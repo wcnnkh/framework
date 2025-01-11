@@ -9,8 +9,8 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.jdbc.ConnectionFactory;
 import io.basc.framework.jdbc.Sql;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.ElementsWrapper;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.ElementsWrapper;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.page.Paginations;
 

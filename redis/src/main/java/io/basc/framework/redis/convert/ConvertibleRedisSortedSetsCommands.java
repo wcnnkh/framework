@@ -14,7 +14,7 @@ import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.function.Function;
 
 @SuppressWarnings("unchecked")

@@ -3,7 +3,7 @@ package io.basc.framework.util;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.math.NumberValue;
 import lombok.Data;
 import lombok.NonNull;

@@ -9,7 +9,7 @@ import java.util.Map;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.web.message.model.Text;
 import lombok.Data;
 

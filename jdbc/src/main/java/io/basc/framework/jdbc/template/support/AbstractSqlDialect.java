@@ -34,8 +34,8 @@ import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 
 /**
  * 标准的sql方言

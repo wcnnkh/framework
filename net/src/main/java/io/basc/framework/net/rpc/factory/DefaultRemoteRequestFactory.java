@@ -8,7 +8,7 @@ import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.client.factory.DefaultClientRequestFactory;
 import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.net.pattern.factory.DefaultRequestPatternFactory;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

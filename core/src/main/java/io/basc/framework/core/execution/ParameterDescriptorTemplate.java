@@ -1,6 +1,6 @@
 package io.basc.framework.core.execution;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Wrapper;
 
 /**

@@ -4,8 +4,8 @@ import javax.servlet.ServletContext;
 
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.transform.factory.PropertyFactory;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 
 public class ServletContextPropertyFactory implements PropertyFactory {
 	private final ServletContext servletContext;

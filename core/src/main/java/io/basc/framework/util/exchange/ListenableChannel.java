@@ -1,11 +1,11 @@
 package io.basc.framework.util.exchange;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
-public interface ListenableChannel<T> extends Listenable<T>, Channel<T> {
+public interface ListenableChannel<T> extends Channel<T>, Dispatcher<T> {
 
 	public static interface BatchListenableChannel<T>
-			extends ListenableChannel<Elements<T>>, BatchChannel<T>, BatchListenable<T> {
+			extends ListenableChannel<Elements<T>>, BatchChannel<T>, BatchDispatcher<T> {
 
 		@Override
 		default ListenableChannel<T> single() {
@@ -15,12 +15,12 @@ public interface ListenableChannel<T> extends Listenable<T>, Channel<T> {
 
 	@FunctionalInterface
 	public static interface FakeBatchListenableChannel<T, W extends ListenableChannel<T>>
-			extends BatchListenableChannel<T>, FakeBatchListenable<T, W>, FakeBatchChannel<T, W> {
+			extends BatchListenableChannel<T>, FakeBatchChannel<T, W>, FakeBatchDispatcher<T, W> {
 	}
 
 	@FunctionalInterface
 	public static interface FakeSingleListenableChannel<T, W extends ListenableChannel<Elements<T>>>
-			extends ListenableChannel<T>, FakeSingleListenable<T, W>, FakeSingleChannel<T, W> {
+			extends ListenableChannel<T>, FakeSingleChannel<T, W>, FakeSingleDispatcher<T, W> {
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import io.basc.framework.core.execution.Executor;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

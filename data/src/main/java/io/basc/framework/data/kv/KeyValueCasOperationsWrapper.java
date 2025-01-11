@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import io.basc.framework.data.domain.CAS;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.Encoder;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public interface KeyValueCasOperationsWrapper<K, V>
 		extends KeyValueCasOperations<K, V>, KeyValueOperationsWrapper<K, V>, KeyCasOperationsWrapper<K> {

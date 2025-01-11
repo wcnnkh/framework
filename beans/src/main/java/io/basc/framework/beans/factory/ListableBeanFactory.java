@@ -8,8 +8,8 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.ServiceLoader;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.ServiceLoader;
 import lombok.NonNull;
 
 public interface ListableBeanFactory extends BeanFactory {

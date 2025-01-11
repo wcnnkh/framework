@@ -2,7 +2,7 @@ package io.basc.framework.redis.convert;
 
 import io.basc.framework.util.Bound;
 import io.basc.framework.util.codec.Encoder;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 
 public class RedisConverters {
 	private static final String INCLUSIVE_LEFT = "[";

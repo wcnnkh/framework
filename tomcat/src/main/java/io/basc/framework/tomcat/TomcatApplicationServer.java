@@ -35,7 +35,7 @@ import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.servlet.ServletContextPropertyFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import io.basc.framework.util.logging.LogManager;

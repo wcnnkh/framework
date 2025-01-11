@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
  * @param <S>
  */
 @RequiredArgsConstructor
-public class NativeServiceLoader<S> implements io.basc.framework.util.collection.ServiceLoader<S> {
+public class NativeServiceLoader<S> implements io.basc.framework.util.collections.ServiceLoader<S> {
 	/**
 	 * Creates a new service loader for the given service type, using the current
 	 * thread's {@linkplain java.lang.Thread#getContextClassLoader context class
@@ -47,7 +47,7 @@ public class NativeServiceLoader<S> implements io.basc.framework.util.collection
 	 *
 	 * @return A new service loader
 	 */
-	public static <S> io.basc.framework.util.collection.ServiceLoader<S> load(Class<S> service) {
+	public static <S> io.basc.framework.util.collections.ServiceLoader<S> load(Class<S> service) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(service);
 		return new NativeServiceLoader<>(serviceLoader);
 	}
@@ -66,7 +66,7 @@ public class NativeServiceLoader<S> implements io.basc.framework.util.collection
 	 *
 	 * @return A new service loader
 	 */
-	public static <S> io.basc.framework.util.collection.ServiceLoader<S> load(Class<S> service, ClassLoader loader) {
+	public static <S> io.basc.framework.util.collections.ServiceLoader<S> load(Class<S> service, ClassLoader loader) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(service, loader);
 		return new NativeServiceLoader<>(serviceLoader);
 	}
@@ -104,7 +104,7 @@ public class NativeServiceLoader<S> implements io.basc.framework.util.collection
 	 *
 	 * @return A new service loader
 	 */
-	public static <S> io.basc.framework.util.collection.ServiceLoader<S> loadInstalled(Class<S> service) {
+	public static <S> io.basc.framework.util.collections.ServiceLoader<S> loadInstalled(Class<S> service) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.loadInstalled(service);
 		return new NativeServiceLoader<>(serviceLoader);
 	}

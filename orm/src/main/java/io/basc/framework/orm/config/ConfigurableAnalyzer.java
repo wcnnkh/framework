@@ -22,7 +22,7 @@ import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.MergedElements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class ConfigurableAnalyzer extends ConfigurableServices<AnalyzeExtender> implements Analyzer {
 	/**

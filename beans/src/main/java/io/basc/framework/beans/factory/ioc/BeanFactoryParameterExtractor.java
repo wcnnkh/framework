@@ -13,7 +13,7 @@ import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.core.execution.param.SimpleParameter;
-import io.basc.framework.util.collection.ServiceLoader;
+import io.basc.framework.util.collections.ServiceLoader;
 
 public class BeanFactoryParameterExtractor implements AutowireParameterExtractor {
 

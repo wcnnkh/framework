@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.support.RecordCodec;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.Streams;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Streams;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Supplier;
 

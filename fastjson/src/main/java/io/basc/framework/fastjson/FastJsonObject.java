@@ -13,7 +13,7 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.SetElements;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;

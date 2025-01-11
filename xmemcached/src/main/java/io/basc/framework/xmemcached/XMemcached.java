@@ -19,7 +19,7 @@ import io.basc.framework.memcached.Memcached;
 import io.basc.framework.memcached.config.MemcachedNodeProperties;
 import io.basc.framework.memcached.config.MemcachedProperties;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;

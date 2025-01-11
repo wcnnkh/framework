@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Any;
 import io.basc.framework.util.Version;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public abstract class NumberValue extends Number implements Version {
 	public static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);

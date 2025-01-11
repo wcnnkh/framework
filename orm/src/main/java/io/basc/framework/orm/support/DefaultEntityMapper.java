@@ -31,7 +31,7 @@ import io.basc.framework.orm.config.ConfigurableAnalyzer;
 import io.basc.framework.orm.config.DefaultAnalyzer;
 import io.basc.framework.transform.strategy.PropertiesTransformStrategy;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

@@ -3,8 +3,8 @@ package io.basc.framework.core.scan;
 import java.io.IOException;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.ServiceLoader.ReloadableElementsWrapper;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.ServiceLoader.ReloadableElementsWrapper;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.load.ResourcePatternResolver;
 import io.basc.framework.util.logging.LogManager;

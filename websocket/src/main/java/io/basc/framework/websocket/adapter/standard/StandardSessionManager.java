@@ -13,7 +13,7 @@ import javax.websocket.Session;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;

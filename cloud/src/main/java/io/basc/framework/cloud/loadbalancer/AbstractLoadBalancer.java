@@ -11,7 +11,7 @@ import io.basc.framework.core.env.Environment;
 import io.basc.framework.core.env.EnvironmentAware;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.select.Selector;

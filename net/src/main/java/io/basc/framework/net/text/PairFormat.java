@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.LinkedMultiValueMap;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.LinkedMultiValueMap;
+import io.basc.framework.util.collections.MultiValueMap;
 
 /**
  * 键值对格式化

@@ -18,7 +18,7 @@ import io.basc.framework.core.execution.reflect.ReflectionFieldSetter;
 import io.basc.framework.core.execution.reflect.ReflectionMethodGetter;
 import io.basc.framework.core.execution.reflect.ReflectionMethodSetter;
 import io.basc.framework.core.mapping.stereotype.FieldDescriptor;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 

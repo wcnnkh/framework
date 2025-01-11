@@ -8,8 +8,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.MultiValueMap;
 import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.util.concurrent.AtomicEntry;
 import io.basc.framework.util.exchange.Registration;

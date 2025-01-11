@@ -27,8 +27,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
-import io.basc.framework.util.collection.LinkedMultiValueMap;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.LinkedMultiValueMap;
+import io.basc.framework.util.collections.MultiValueMap;
 
 /**
  * {@link Collector} implementations that provide various reduction operations for

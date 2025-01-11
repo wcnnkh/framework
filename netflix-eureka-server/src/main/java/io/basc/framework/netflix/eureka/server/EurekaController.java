@@ -29,7 +29,7 @@ import com.netflix.eureka.util.StatusInfo;
 import com.netflix.eureka.util.StatusInfo.Builder;
 
 import io.basc.framework.beans.factory.annotation.Value;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 @Path("${eureka.dashboard.path:/}")
 public class EurekaController {

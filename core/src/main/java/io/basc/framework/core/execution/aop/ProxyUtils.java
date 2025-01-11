@@ -2,7 +2,7 @@ package io.basc.framework.core.execution.aop;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.util.reflect.ReflectionUtils;
 
 public class ProxyUtils {

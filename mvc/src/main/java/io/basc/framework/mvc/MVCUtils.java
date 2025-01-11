@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.MultiValueMap;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.model.ModelAndView;
 

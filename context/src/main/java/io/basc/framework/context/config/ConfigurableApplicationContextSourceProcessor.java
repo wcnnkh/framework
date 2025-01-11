@@ -1,6 +1,6 @@
 package io.basc.framework.context.config;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +19,7 @@ public class ConfigurableApplicationContextSourceProcessor<E, T extends Applicat
 	@Override
 	public void process(ConfigurableApplicationContext context, E source,
 			ApplicationContextSourceProcessor<? super E> chain) {
-		for (ApplicationContextSourceProcessor<E> processor : getServices()) {
+		for (ApplicationContextSourceProcessor<E> processor : this) {
 			processor.process(context, source);
 		}
 

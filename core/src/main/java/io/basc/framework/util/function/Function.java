@@ -2,7 +2,7 @@ package io.basc.framework.util.function;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

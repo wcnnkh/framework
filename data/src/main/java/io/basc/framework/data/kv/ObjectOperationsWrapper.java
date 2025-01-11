@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.Encoder;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public interface ObjectOperationsWrapper<K> extends ObjectOperations<K>, KeyValueOperationsWrapper<K, Object> {
 

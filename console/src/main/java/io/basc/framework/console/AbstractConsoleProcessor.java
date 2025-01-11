@@ -1,12 +1,10 @@
 package io.basc.framework.console;
 
-import io.basc.framework.lang.Nullable;
-
 public abstract class AbstractConsoleProcessor<T> implements ConsoleProcessor<T> {
 	private String pattern;
 	private String name;
 
-	public AbstractConsoleProcessor(@Nullable String name) {
+	public AbstractConsoleProcessor(String name) {
 		this.name = name;
 	}
 

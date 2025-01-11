@@ -10,7 +10,7 @@ import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.Named;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.select.Selector;
 import lombok.Data;
 import lombok.NonNull;

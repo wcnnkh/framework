@@ -5,7 +5,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.messageing.BinaryMessage;
 import io.basc.framework.messageing.TextMessage;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.PingMessage;
 import io.basc.framework.websocket.PongMessage;

@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.ServerHttpRequest;

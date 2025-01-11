@@ -6,7 +6,7 @@ import io.basc.framework.core.execution.param.ParameterUtils;
 import io.basc.framework.security.limit.annotation.CountLimitParameter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 import io.basc.framework.util.Indexed;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.reflect.MethodInvoker;
 

@@ -1,7 +1,7 @@
 package io.basc.framework.util;
 
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.Listable;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Listable;
 
 public class Throwables extends Throwable implements Listable<Throwable> {
 	private static final long serialVersionUID = 1L;

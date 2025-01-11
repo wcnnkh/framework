@@ -8,7 +8,7 @@ import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
-import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
+import io.basc.framework.beans.factory.support.DefaultBeanFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextAware;
 import io.basc.framework.context.ApplicationContextEvent;
@@ -18,19 +18,23 @@ import io.basc.framework.core.env.config.DefaultEnvironment;
 import io.basc.framework.lang.ClassLoaderProvider;
 import io.basc.framework.util.actor.EventPushException;
 import io.basc.framework.util.actor.EventRegistrationException;
-import io.basc.framework.util.actor.batch.BatchEventDispatcher;
 import io.basc.framework.util.actor.batch.BatchEventListener;
 import io.basc.framework.util.actor.support.DefaultBroadcastEventDispatcher;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.exchange.Registration;
+import io.basc.framework.util.exchange.event.BatchEventDispatcher;
+import io.basc.framework.util.exchange.event.EventDispatcher;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.load.DefaultResourceLoader;
 import io.basc.framework.util.io.load.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.io.load.ProtocolResolver;
 import io.basc.framework.util.io.load.ResourceLoader;
 import io.basc.framework.util.io.load.ResourcePatternResolver;
-import io.basc.framework.util.register.Registration;
+import io.basc.framework.util.register.DisposableRegistration;
 
-public class GenericApplicationContext extends DefaultServiceLoaderFactory implements ConfigurableApplicationContext {
+public class GenericApplicationContext extends DefaultBeanFactory implements ConfigurableApplicationContext {
 	private ConfigurableEnvironment environment = new DefaultEnvironment();
 	private ApplicationContext parent;
 	private ClassLoaderProvider classLoaderProvider;
@@ -44,9 +48,9 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 			if (bean instanceof ApplicationContextAware) {
 				((ApplicationContextAware) bean).setApplicationContext(this);
 			}
-			return Registration.EMPTY;
+			return Registration.SUCCESS;
 		});
-		beanFactoryPostProcessors.getServiceInjectors().register(getServiceInjectors());
+		beanFactoryPostProcessors.getInjectors().register(getServiceInjectors());
 	}
 
 	public ConfigurableEnvironment getEnvironment() {
@@ -94,7 +98,7 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 	@Override
 	public Resource getResource(String location) {
 		if (resourceLoader != null) {
-			for (ProtocolResolver protocolResolver : defaultResourceLoader.getProtocolResolver().getServices()) {
+			for (ProtocolResolver protocolResolver : defaultResourceLoader.getProtocolResolver()) {
 				Resource resource = protocolResolver.resolve(location, this);
 				if (resource != null) {
 					return resource;
@@ -147,7 +151,7 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 		if (shutdownHookRegistration != null) {
 			synchronized (this) {
 				if (shutdownHookRegistration != null) {
-					shutdownHookRegistration.unregister();
+					shutdownHookRegistration.cancel();
 					shutdownHookRegistration = null;
 				}
 			}
@@ -202,8 +206,8 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 					Thread thread = new Thread(() -> close());
 					thread.setContextClassLoader(getClassLoader());
 					Runtime.getRuntime().addShutdownHook(thread);
-					shutdownHookRegistration = () -> Runtime.getRuntime().removeShutdownHook(thread);
-					shutdownHookRegistration = shutdownHookRegistration.disposable();
+					shutdownHookRegistration = new DisposableRegistration(
+							() -> Runtime.getRuntime().removeShutdownHook(thread));
 				}
 			}
 		}
@@ -215,17 +219,16 @@ public class GenericApplicationContext extends DefaultServiceLoaderFactory imple
 		defaultResourceLoader.getProtocolResolver().register(protocolResolver);
 	}
 
-	private final BatchEventDispatcher<ApplicationContextEvent> eventDispatcher = new DefaultBroadcastEventDispatcher<>();
+	private final EventDispatcher<ApplicationContextEvent> eventDispatcher = new EventDispatcher<>();
 
 	@Override
-	public Registration registerBatchListener(BatchEventListener<ApplicationContextEvent> batchEventListener)
-			throws EventRegistrationException {
-		return eventDispatcher.registerBatchListener(batchEventListener);
+	public Registration registerListener(Listener<ApplicationContextEvent> listener) {
+		return eventDispatcher.registerListener(listener);
 	}
 
 	@Override
-	public void publishBatchEvent(Elements<ApplicationContextEvent> events) throws EventPushException {
-		eventDispatcher.publishBatchEvent(events);
+	public Receipt publish(ApplicationContextEvent resource) {
+		return eventDispatcher.publish(resource);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package io.basc.framework.util.spi;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.collection.ServiceLoader;
+import io.basc.framework.util.collections.ServiceLoader;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Receipt.Receipted;
 import lombok.Getter;

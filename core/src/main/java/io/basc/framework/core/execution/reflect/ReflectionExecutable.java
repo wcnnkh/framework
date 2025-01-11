@@ -10,7 +10,7 @@ import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 
 public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T> {

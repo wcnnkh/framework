@@ -11,10 +11,10 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.KeyValues;
-import io.basc.framework.util.collection.Listable;
-import io.basc.framework.util.collection.Reloadable;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.KeyValues;
+import io.basc.framework.util.collections.Listable;
+import io.basc.framework.util.collections.Reloadable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

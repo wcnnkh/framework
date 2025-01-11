@@ -3,7 +3,7 @@ package io.basc.framework.util.io.watch;
 import java.nio.file.WatchKey;
 import java.util.Iterator;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.register.container.ArrayListContainer;
 import io.basc.framework.util.register.container.ElementRegistration;
 

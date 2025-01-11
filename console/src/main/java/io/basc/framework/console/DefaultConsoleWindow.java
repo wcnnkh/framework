@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 public class DefaultConsoleWindow<T> implements ConsoleWindow<T> {
@@ -16,7 +15,7 @@ public class DefaultConsoleWindow<T> implements ConsoleWindow<T> {
 		this(null);
 	}
 
-	public DefaultConsoleWindow(@Nullable Comparator<String> comparator) {
+	public DefaultConsoleWindow(Comparator<String> comparator) {
 		this.processorMap = new TreeMap<>(comparator);
 		addProcess(new UpperConsoleProcessor<>());
 	}

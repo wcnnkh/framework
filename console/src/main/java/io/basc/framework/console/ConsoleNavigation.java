@@ -2,7 +2,6 @@ package io.basc.framework.console;
 
 import java.util.Collection;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 public class ConsoleNavigation<T> extends AbstractConsoleProcessor<T> implements ConsoleWindow<T> {
@@ -17,7 +16,7 @@ public class ConsoleNavigation<T> extends AbstractConsoleProcessor<T> implements
 		this(null, window);
 	}
 
-	public ConsoleNavigation(@Nullable ConsoleNavigation<T> parent, ConsoleWindow<T> window) {
+	public ConsoleNavigation(ConsoleNavigation<T> parent, ConsoleWindow<T> window) {
 		super(null);
 		Assert.requiredArgument(window != null, "window");
 		this.parent = parent;

@@ -3,7 +3,7 @@ package io.basc.framework.core.mapping;
 import java.util.EnumSet;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

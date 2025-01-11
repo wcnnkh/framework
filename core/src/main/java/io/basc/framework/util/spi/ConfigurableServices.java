@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.collection.ServiceLoader;
+import io.basc.framework.util.collections.ServiceLoader;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.spi.Include.IncludeWrapper;

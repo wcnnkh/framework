@@ -3,7 +3,7 @@ package io.basc.framework.util.function;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.collection.Streamable;
+import io.basc.framework.util.collections.Streamable;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

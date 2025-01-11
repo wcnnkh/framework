@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory;
 
 import io.basc.framework.util.Symbol;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 /**
  * bean的作用域

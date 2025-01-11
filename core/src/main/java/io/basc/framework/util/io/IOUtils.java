@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.Streams;
+import io.basc.framework.util.collections.Streams;
 import lombok.NonNull;
 
 public final class IOUtils {

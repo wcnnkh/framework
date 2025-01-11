@@ -1,6 +1,6 @@
 package io.basc.framework.util.register;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
 

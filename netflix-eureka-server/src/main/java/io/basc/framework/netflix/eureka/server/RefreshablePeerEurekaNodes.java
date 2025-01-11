@@ -14,7 +14,7 @@ import com.netflix.eureka.transport.JerseyReplicationClient;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.actor.EventListener;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 
 public class RefreshablePeerEurekaNodes extends PeerEurekaNodes

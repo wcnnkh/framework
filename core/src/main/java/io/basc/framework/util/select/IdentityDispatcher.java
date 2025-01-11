@@ -2,7 +2,7 @@ package io.basc.framework.util.select;
 
 import java.util.function.Function;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class IdentityDispatcher<E> implements Dispatcher<E> {
 	private static volatile IdentityDispatcher<?> instance;

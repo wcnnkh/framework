@@ -4,7 +4,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.net.pattern.RequestPattern;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class ConfigurableRequestPatternFactory extends ConfigurableServices<RequestPatternFactory>
 		implements RequestPatternFactory {

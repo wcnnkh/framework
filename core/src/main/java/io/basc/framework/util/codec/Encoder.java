@@ -2,7 +2,7 @@ package io.basc.framework.util.codec;
 
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.check.Validator;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Function;
 import lombok.NonNull;
 

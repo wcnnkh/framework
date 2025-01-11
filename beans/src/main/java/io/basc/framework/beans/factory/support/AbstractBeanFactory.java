@@ -24,7 +24,7 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.mapping.PropertyDescriptor;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Wrapper;

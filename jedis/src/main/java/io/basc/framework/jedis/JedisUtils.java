@@ -29,7 +29,7 @@ import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Slowlog;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.comparator.Sort;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.args.BitOP;

@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 
 public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 	private final Map<String, Set<String>> aliasMap;

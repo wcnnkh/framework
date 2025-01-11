@@ -3,9 +3,9 @@ package io.basc.framework.net.uri;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.LinkedMultiValueMap;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.LinkedMultiValueMap;
+import io.basc.framework.util.collections.MultiValueMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;

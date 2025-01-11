@@ -5,7 +5,7 @@ import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.comparator.CompoundComparator;
 
 import java.io.Serializable;

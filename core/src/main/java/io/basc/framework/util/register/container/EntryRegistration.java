@@ -2,7 +2,7 @@ package io.basc.framework.util.register.container;
 
 import java.util.Map.Entry;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.KeyValueRegistration;
 import lombok.NonNull;

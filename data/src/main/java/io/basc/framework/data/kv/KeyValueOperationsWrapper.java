@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.Encoder;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public interface KeyValueOperationsWrapper<K, V> extends KeyValueOperations<K, V>, KeyOperationsWrapper<K> {
 

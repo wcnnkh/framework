@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

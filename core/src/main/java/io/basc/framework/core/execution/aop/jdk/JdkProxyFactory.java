@@ -6,7 +6,7 @@ import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.core.execution.aop.Proxy;
 import io.basc.framework.core.execution.aop.ProxyFactories;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 
 public class JdkProxyFactory extends ProxyFactories {
 

@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.alias.Named;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.NonNull;
 

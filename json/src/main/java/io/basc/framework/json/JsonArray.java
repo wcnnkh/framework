@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
 import io.basc.framework.transform.ReadOnlyProperty;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.Streams;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Streams;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.reflect.ReflectionUtils;
 

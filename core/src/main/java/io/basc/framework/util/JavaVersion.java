@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.util.Version.JoinVersion;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.math.IntValue;
 
 public class JavaVersion extends JoinVersion implements Serializable {

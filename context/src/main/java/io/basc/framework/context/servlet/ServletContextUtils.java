@@ -3,13 +3,11 @@ package io.basc.framework.context.servlet;
 import javax.servlet.ServletContext;
 
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.Logger;
 
 public abstract class ServletContextUtils {
-	public static void startLogger(Logger logger, ServletContext servletContext, @Nullable Throwable e,
-			boolean initialized) {
+	public static void startLogger(Logger logger, ServletContext servletContext, Throwable e, boolean initialized) {
 		String message = (initialized ? "Started" : "Start") + " servlet context[{}] realPath / in {}";
 		if (e == null) {
 			logger.info(message, servletContext.getContextPath(), getWebRoot(servletContext));
@@ -18,8 +16,7 @@ public abstract class ServletContextUtils {
 		}
 	}
 
-	public static void destroyLogger(Logger logger, ServletContext servletContext, @Nullable Throwable e,
-			boolean destroyed) {
+	public static void destroyLogger(Logger logger, ServletContext servletContext, Throwable e, boolean destroyed) {
 		String message = (destroyed ? "Destroyed" : "Destroy") + "Destroy servlet context[{}] realPath / in {}";
 		if (e == null) {
 			logger.info(message, servletContext.getContextPath(), getWebRoot(servletContext));

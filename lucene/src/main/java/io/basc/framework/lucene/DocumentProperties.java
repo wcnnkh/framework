@@ -4,7 +4,7 @@ import org.apache.lucene.document.Document;
 
 import io.basc.framework.transform.Properties;
 import io.basc.framework.transform.Property;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

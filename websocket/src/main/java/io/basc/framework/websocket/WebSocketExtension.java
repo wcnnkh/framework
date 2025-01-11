@@ -3,8 +3,8 @@ package io.basc.framework.websocket;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.LinkedCaseInsensitiveMap;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.LinkedCaseInsensitiveMap;
 
 import java.util.ArrayList;
 import java.util.Collections;

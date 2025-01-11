@@ -5,7 +5,7 @@ import io.basc.framework.beans.factory.ListableBeanFactory;
 import io.basc.framework.beans.factory.config.AutowireCapableBeanFactory;
 import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.lang.ClassLoaderProvider;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Listenable;
 import io.basc.framework.util.function.ParentDiscover;
 import io.basc.framework.util.io.Resource;

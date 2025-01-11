@@ -15,7 +15,7 @@ import javax.ws.rs.Produces;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 import io.basc.framework.web.pattern.HttpPattern;
 

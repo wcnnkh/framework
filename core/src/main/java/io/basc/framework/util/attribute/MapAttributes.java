@@ -6,7 +6,7 @@ import java.util.Map;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class MapAttributes<K, V> implements EditableAttributes<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;

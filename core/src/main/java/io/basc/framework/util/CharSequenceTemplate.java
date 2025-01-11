@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Function;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.math.BigDecimalValue;
 import io.basc.framework.util.math.NumberValue;
 import lombok.Data;

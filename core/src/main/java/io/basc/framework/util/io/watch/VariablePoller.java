@@ -2,7 +2,7 @@ package io.basc.framework.util.io.watch;
 
 import java.io.IOException;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Publisher;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.exchange.event.ChangeType;

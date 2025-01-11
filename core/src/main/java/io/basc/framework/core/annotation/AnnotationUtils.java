@@ -37,8 +37,8 @@ import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.util.JavaVersion;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.ConcurrentReferenceHashMap;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 

@@ -7,7 +7,7 @@ import io.basc.framework.mapper.stereotype.FieldDescriptorWrapper;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.MergedElements;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

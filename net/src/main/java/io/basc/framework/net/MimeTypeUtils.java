@@ -16,7 +16,7 @@ import io.basc.framework.core.Constants;
 import io.basc.framework.net.MimeType.SpecificityComparator;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public final class MimeTypeUtils {
 	private static final byte[] BOUNDARY_CHARS = new byte[] { '-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9',

@@ -3,8 +3,8 @@ package io.basc.framework.util.select;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 
 /**
  * 轮询

@@ -1,7 +1,7 @@
 package io.basc.framework.core.mapping;
 
 import io.basc.framework.core.convert.transform.Template;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 
 public interface PropertyTemplate<T extends Property> extends PropertyDescriptors<T>, Template<Object, T> {

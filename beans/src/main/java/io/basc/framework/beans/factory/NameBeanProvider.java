@@ -4,10 +4,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.NoUniqueElementException;
-import io.basc.framework.util.collection.ServiceLoader;
-import io.basc.framework.util.collection.Elements.ElementsWrapper;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.NoUniqueElementException;
+import io.basc.framework.util.collections.ServiceLoader;
+import io.basc.framework.util.collections.Elements.ElementsWrapper;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

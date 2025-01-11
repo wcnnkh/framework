@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.Elements.ListElementsWrapper;
-import io.basc.framework.util.collection.Elements.StandardListElements;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Elements.ListElementsWrapper;
+import io.basc.framework.util.collections.Elements.StandardListElements;
 import lombok.NonNull;
 
 public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {

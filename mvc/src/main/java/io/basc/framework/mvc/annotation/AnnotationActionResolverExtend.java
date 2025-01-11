@@ -23,7 +23,7 @@ import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.codec.Encoder;
 import io.basc.framework.util.codec.support.CharsetCodec;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.register.Registration;

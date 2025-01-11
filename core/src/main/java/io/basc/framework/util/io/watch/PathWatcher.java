@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.util.Lifecycle;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.Elements.ElementsWrapper;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Elements.ElementsWrapper;
 import io.basc.framework.util.exchange.Publisher;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.event.ChangeEvent;

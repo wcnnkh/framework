@@ -7,7 +7,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Request;
 import io.basc.framework.transform.map.MapProperties;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.match.PathMatcher;
 
 public interface PathPattern extends RequestPattern {

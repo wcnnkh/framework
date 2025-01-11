@@ -9,7 +9,7 @@ import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.mapping.PropertyDescriptor;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

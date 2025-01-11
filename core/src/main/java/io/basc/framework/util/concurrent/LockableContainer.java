@@ -13,7 +13,7 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.concurrent.locks.NoOpLock;
 import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;

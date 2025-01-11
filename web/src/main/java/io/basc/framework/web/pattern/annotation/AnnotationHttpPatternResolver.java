@@ -12,7 +12,7 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 import io.basc.framework.web.pattern.HttpPattern;
 

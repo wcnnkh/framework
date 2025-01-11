@@ -12,8 +12,8 @@ import io.basc.framework.net.uri.HierarchicalUriComponents.PathComponent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.LinkedMultiValueMap;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.LinkedMultiValueMap;
+import io.basc.framework.util.collections.MultiValueMap;
 
 public class UriComponentsBuilder implements Cloneable {
 

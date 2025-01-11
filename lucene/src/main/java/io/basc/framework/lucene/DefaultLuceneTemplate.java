@@ -19,7 +19,7 @@ import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.TaskQueue;
 import io.basc.framework.util.function.Function;

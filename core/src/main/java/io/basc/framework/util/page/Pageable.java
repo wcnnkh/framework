@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.codec.Codec;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
 

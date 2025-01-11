@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.function.Wrapper;
 import lombok.NonNull;

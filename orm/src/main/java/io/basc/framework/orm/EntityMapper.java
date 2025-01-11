@@ -17,7 +17,7 @@ import io.basc.framework.mapper.stereotype.ObjectMapper;
 import io.basc.framework.mapper.stereotype.OffLineField;
 import io.basc.framework.orm.config.Analyzer;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public interface EntityMapper extends ObjectMapper, EntityKeyGenerator, Analyzer {
 

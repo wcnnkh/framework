@@ -3,7 +3,7 @@ package io.basc.framework.orm;
 import io.basc.framework.data.repository.IndexInfo;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 /**
  * 一个属性的定义

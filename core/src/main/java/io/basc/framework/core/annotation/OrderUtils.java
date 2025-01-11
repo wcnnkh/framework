@@ -20,7 +20,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collections.ConcurrentReferenceHashMap;
 
 public abstract class OrderUtils {
 

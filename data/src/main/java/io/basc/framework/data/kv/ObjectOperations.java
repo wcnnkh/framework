@@ -8,7 +8,7 @@ import java.util.Map;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.support.DefaultConversionService;
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 
 public interface ObjectOperations<K> extends KeyValueOperations<K, Object> {
 

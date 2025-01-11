@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public interface SingletonBeanRegistry {
 	void registerSingleton(String name, Object singletonObject) throws BeansException;

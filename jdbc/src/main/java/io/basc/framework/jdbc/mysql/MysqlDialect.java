@@ -28,7 +28,7 @@ import io.basc.framework.orm.ColumnDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

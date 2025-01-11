@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.util.Lifecycle;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.ServiceLoader.ReloadableElementsWrapper;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.ServiceLoader.ReloadableElementsWrapper;
 import io.basc.framework.util.comparator.OrderComparator;
 import io.basc.framework.util.exchange.Listener;
 import io.basc.framework.util.exchange.Publisher;

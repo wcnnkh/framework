@@ -11,7 +11,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ConcurrentReferenceHashMap;
+import io.basc.framework.util.collections.ConcurrentReferenceHashMap;
 import io.basc.framework.util.function.Function;
 
 /**

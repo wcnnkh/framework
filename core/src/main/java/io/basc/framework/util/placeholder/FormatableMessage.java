@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.util.io.Printable;
 import lombok.NonNull;
 

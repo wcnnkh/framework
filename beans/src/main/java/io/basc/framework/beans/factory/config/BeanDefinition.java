@@ -7,7 +7,7 @@ import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
 import io.basc.framework.core.mapping.Properties;
 import io.basc.framework.util.alias.Named;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 /**
  * bean的定义

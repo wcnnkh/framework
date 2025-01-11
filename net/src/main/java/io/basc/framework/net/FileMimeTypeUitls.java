@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Locale;
 
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.LinkedMultiValueMap;
-import io.basc.framework.util.collection.MultiValueMap;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.LinkedMultiValueMap;
+import io.basc.framework.util.collections.MultiValueMap;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.ResourceUtils;
 import io.basc.framework.util.logging.LogManager;

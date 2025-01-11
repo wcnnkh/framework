@@ -13,9 +13,9 @@ import java.util.function.BooleanSupplier;
 
 import io.basc.framework.util.Lifecycle;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.collection.Elements;
-import io.basc.framework.util.collection.Reloadable;
-import io.basc.framework.util.collection.ServiceLoader;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Reloadable;
+import io.basc.framework.util.collections.ServiceLoader;
 import io.basc.framework.util.exchange.Listenable;
 import io.basc.framework.util.exchange.Listener;
 import io.basc.framework.util.exchange.Registration;

@@ -3,7 +3,7 @@ package io.basc.framework.orm;
 import java.util.Map;
 
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class PrimaryKeyQuery<K, V> extends EntityQuery<V> {
 	private static final long serialVersionUID = 1L;

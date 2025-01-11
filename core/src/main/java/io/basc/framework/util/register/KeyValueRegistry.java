@@ -3,7 +3,7 @@ package io.basc.framework.util.register;
 import java.util.Arrays;
 
 import io.basc.framework.util.KeyValue;
-import io.basc.framework.util.collection.KeyValues;
+import io.basc.framework.util.collections.KeyValues;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registration;
 

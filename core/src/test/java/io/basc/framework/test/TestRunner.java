@@ -10,7 +10,7 @@ import io.basc.framework.core.scan.PackagePatternMetadataReaderScanner;
 import io.basc.framework.core.scan.TypeScanner;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
 

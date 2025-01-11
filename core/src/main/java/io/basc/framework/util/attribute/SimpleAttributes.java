@@ -3,7 +3,7 @@ package io.basc.framework.util.attribute;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 
 @Data

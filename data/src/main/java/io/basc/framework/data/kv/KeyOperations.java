@@ -1,7 +1,7 @@
 package io.basc.framework.data.kv;
 
-import io.basc.framework.util.collection.CollectionUtils;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Wrapper;
 
 public interface KeyOperations<K> {

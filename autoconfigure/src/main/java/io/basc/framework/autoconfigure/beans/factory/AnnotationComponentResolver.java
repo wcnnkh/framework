@@ -11,7 +11,7 @@ import io.basc.framework.core.env.EnvironmentCapable;
 import io.basc.framework.core.type.AnnotatedTypeMetadata;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.MethodMetadata;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
 
 public class AnnotationComponentResolver implements ComponentResolver, IocResolver {
 

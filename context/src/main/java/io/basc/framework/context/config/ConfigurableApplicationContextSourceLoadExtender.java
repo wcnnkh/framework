@@ -1,7 +1,7 @@
 package io.basc.framework.context.config;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.util.collection.Elements;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableApplicationContextSourceLoadExtender<S, T, E extends ApplicationContextSourceLoadExtender<S, T>>
 		extends ConfigurableServices<E> implements ApplicationContextSourceLoadExtender<S, T> {
@@ -10,7 +10,7 @@ public class ConfigurableApplicationContextSourceLoadExtender<S, T, E extends Ap
 	public Elements<T> load(ConfigurableApplicationContext context, S source,
 			ApplicationContextSourceLoader<? super S, T> chain) {
 		ApplicationContextSourceLoaderChain<S, T> applicationContextSourceLoaderChain = new ApplicationContextSourceLoaderChain<>(
-				getServices().iterator(), chain);
+				iterator(), chain);
 		return applicationContextSourceLoaderChain.load(context, source);
 	}
 

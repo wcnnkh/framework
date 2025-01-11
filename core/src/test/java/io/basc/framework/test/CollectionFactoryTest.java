@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.util.collection.CollectionUtils;
+import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.io.serializer.SerializerException;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.ToString;

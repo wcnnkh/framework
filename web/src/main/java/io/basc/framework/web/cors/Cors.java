@@ -5,7 +5,7 @@ import java.util.Arrays;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collection.ArrayUtils;
+import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import lombok.Data;
 
