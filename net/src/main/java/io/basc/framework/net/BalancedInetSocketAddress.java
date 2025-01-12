@@ -3,7 +3,7 @@ package io.basc.framework.net;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import io.basc.framework.util.select.Weighted;
+import io.basc.framework.util.function.Weighted;
 
 public class BalancedInetSocketAddress extends InetSocketAddress implements Weighted{
 	private static final long serialVersionUID = 1L;

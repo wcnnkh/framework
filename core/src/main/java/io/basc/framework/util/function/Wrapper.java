@@ -9,6 +9,7 @@ import lombok.NonNull;
  *
  * @param <T>
  */
+@FunctionalInterface
 public interface Wrapper<T> {
 
 	/**

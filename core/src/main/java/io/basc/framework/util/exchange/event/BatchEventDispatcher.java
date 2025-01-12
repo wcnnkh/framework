@@ -4,21 +4,21 @@ import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.ListenableChannel;
 import io.basc.framework.util.exchange.ListenableChannel.BatchListenableChannel;
 import io.basc.framework.util.exchange.Listener;
+import io.basc.framework.util.function.Filter;
 import io.basc.framework.util.register.Registry;
 import io.basc.framework.util.register.container.ArrayListContainer;
-import io.basc.framework.util.select.Dispatcher;
 import lombok.NonNull;
 
 public class BatchEventDispatcher<T> extends EventDispatcher<Elements<T>> implements BatchListenableChannel<T> {
 	private final FakeSingleListenableChannel<T, ListenableChannel<Elements<T>>> single = () -> this;
 
 	public BatchEventDispatcher() {
-		this(Dispatcher.identity(), new ArrayListContainer<>());
+		this(new ArrayListContainer<>(), Filter.identity());
 	}
 
-	public BatchEventDispatcher(@NonNull Dispatcher<Listener<? super Elements<T>>> dispatcher,
-			@NonNull Registry<Listener<? super Elements<T>>> registry) {
-		super(dispatcher, registry);
+	public BatchEventDispatcher(@NonNull Registry<Listener<? super Elements<T>>> registry,
+			@NonNull Filter<Listener<? super Elements<T>>> filter) {
+		super(registry, filter);
 	}
 
 	@Override

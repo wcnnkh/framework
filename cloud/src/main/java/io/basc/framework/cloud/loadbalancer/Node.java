@@ -1,6 +1,6 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import io.basc.framework.util.select.Weighted;
+import io.basc.framework.util.function.Weighted;
 
 /**
  * 负载均衡节点

@@ -5,9 +5,9 @@ import io.basc.framework.util.exchange.AbstractChannel;
 import io.basc.framework.util.exchange.ListenableChannel;
 import io.basc.framework.util.exchange.Listener;
 import io.basc.framework.util.exchange.Registration;
+import io.basc.framework.util.function.Filter;
 import io.basc.framework.util.register.Registry;
 import io.basc.framework.util.register.container.ArrayListContainer;
-import io.basc.framework.util.select.Dispatcher;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,12 @@ import lombok.Setter;
 public class EventDispatcher<T> extends AbstractChannel<T> implements ListenableChannel<T> {
 	private final FakeBatchListenableChannel<T, ListenableChannel<T>> batch = () -> this;
 	@NonNull
-	private final Dispatcher<Listener<? super T>> dispatcher;
-
-	@NonNull
 	private final Registry<Listener<? super T>> registry;
+	@NonNull
+	private final Filter<Listener<? super T>> filter;
 
 	public EventDispatcher() {
-		this(Dispatcher.identity(), new ArrayListContainer<>());
+		this(new ArrayListContainer<>(), Filter.identity());
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public class EventDispatcher<T> extends AbstractChannel<T> implements Listenable
 	}
 
 	public void syncPublish(T resource) {
-		Elements<Listener<? super T>> elements = dispatcher.dispatch(registry);
+		Elements<Listener<? super T>> elements = filter.apply(registry);
 		elements.forEach((e) -> e.accept(resource));
 	}
 }

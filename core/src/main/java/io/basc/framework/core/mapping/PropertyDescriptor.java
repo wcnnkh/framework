@@ -11,7 +11,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.Named;
 import io.basc.framework.util.collections.Elements;
-import io.basc.framework.util.select.Selector;
+import io.basc.framework.util.function.Selector;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public interface PropertyDescriptor extends Named, AccessDescriptor {
 			if (master == null) {
 				synchronized (this) {
 					if (master == null) {
-						this.master = selector.select(this.elements);
+						this.master = selector.apply(this.elements);
 					}
 				}
 			}

@@ -25,9 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.FlatMerger;
-import io.basc.framework.util.Merger;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.function.Merger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -708,7 +707,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 		@SafeVarargs
 		public MergedElements(Elements<? extends E>... members) {
-			this(FlatMerger.global(), members);
+			this(Merger.flat(), members);
 		}
 
 		@SafeVarargs
@@ -735,7 +734,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		@Override
 		public Elements<E> getSource() {
 			Elements<Elements<? extends E>> members = Elements.forArray(this.members);
-			return merger.merge(members.map((elements) -> elements.map(Function.identity())));
+			return merger.apply(members.map((elements) -> elements.map(Function.identity())));
 		}
 	}
 

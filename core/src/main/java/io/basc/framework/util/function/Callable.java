@@ -10,6 +10,7 @@ import lombok.NonNull;
  * @param <V>
  * @param <E>
  */
+@FunctionalInterface
 public interface Callable<V, E extends Throwable> {
 	public static class NativeCallable<T> extends Wrapped<java.util.concurrent.Callable<? extends T>>
 			implements Callable<T, Exception> {
