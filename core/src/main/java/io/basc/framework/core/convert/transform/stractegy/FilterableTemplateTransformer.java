@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class FilterableTemplateTransformer<K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
+public class FilterableTemplateTransformer<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		implements TemplateTransformer<K, SV, S, TV, T, E> {
 	@NonNull
 	private final Iterable<? extends TemplateTransformFilter<K, SV, S, TV, T, E>> filters;

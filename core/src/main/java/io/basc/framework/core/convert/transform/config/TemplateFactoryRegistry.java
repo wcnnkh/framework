@@ -7,7 +7,7 @@ import io.basc.framework.core.convert.transform.TemplateFactory;
 import io.basc.framework.util.spi.ServiceMap;
 import lombok.NonNull;
 
-public class TemplateFactoryRegistry<S, K, V extends Value, T extends Template<K, V>>
+public class TemplateFactoryRegistry<S, K, V extends Value, T extends Template<K, ? extends V>>
 		extends ServiceMap<TemplateFactory<? super S, K, V, T>> implements TemplateFactory<S, K, V, T> {
 
 	@Override

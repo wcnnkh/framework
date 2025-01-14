@@ -11,7 +11,7 @@ import io.basc.framework.core.convert.transform.TransformContext;
 import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 
-public class DefaultTemplateTransformer<K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
+public class DefaultTemplateTransformer<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		implements TemplateTransformer<K, SV, S, TV, T, E> {
 	@NonNull
 	private ConversionService conversionService = new IdentityConversionService();
@@ -20,7 +20,7 @@ public class DefaultTemplateTransformer<K, SV extends Value, S extends Template<
 	public void transform(TransformContext<K, SV, S> sourceContext, @NonNull S source,
 			@NonNull TypeDescriptor sourceType, K index, SV accessor, TransformContext<K, TV, T> targetContext,
 			@NonNull T target, @NonNull TypeDescriptor targetType) throws E {
-		Elements<TV> accessors = target.getAccessors(index);
+		Elements<? extends TV> accessors = target.getAccessors(index);
 		for (TV targetAccessor : accessors) {
 			if (targetAccessor.isWriteable()) {
 				continue;

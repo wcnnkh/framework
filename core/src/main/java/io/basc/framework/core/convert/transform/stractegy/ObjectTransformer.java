@@ -6,7 +6,7 @@ import io.basc.framework.core.convert.transform.Template;
 import io.basc.framework.core.convert.transform.config.TemplateFactoryRegistry;
 import lombok.NonNull;
 
-public class ObjectTransformer<K, V extends Accessor, T extends Template<K, V>, E extends Throwable>
+public class ObjectTransformer<K, V extends Accessor, T extends Template<K, ? extends V>, E extends Throwable>
 		extends DefaultTransformer<Object, Object, K, V, T, V, T, E> {
 	private final TemplateFactoryRegistry<? super Object, ? extends K, ? extends V, ? extends T> templateFactoryRegistry = new TemplateFactoryRegistry<>();
 

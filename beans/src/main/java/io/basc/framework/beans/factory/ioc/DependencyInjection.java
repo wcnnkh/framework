@@ -1,12 +1,19 @@
-package io.basc.framework.beans.factory.di;
+package io.basc.framework.beans.factory.ioc;
+
+import java.util.Collection;
+import java.util.Map;
 
 import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.ListableBeanFactory;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Executable;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.mapping.Property;
 import io.basc.framework.core.mapping.PropertyDescriptor;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.ServiceLoader;
 import lombok.Data;
 
 @Data
@@ -52,5 +59,40 @@ public class DependencyInjection implements BeanLifecycleResolver, BeanParameter
 	@Override
 	public boolean isStoppedExecute(BeanFactory beanFactory, Executable executable) {
 		return configurableBeanLifecycleResolver.isStoppedExecute(beanFactory, executable);
+	}
+
+	public Object getBean(BeanFactory beanFactory, PropertyDescriptor propertyDescriptor) {
+		TypeDescriptor typeDescriptor = propertyDescriptor.getRequiredTypeDescriptor();
+		ServiceLoader<Object> serviceLoader = beanFactory.getServiceLoader(typeDescriptor.getResolvableType());
+		Object bean = null;
+		if (serviceLoader.isUnique()) {
+			bean = serviceLoader.getUnique();
+		} else if (beanFactory.isTypeMatch(propertyDescriptor.getName(), typeDescriptor.getType())) {
+			bean = beanFactory.getBean(propertyDescriptor.getName(), typeDescriptor.getType());
+		} else if (typeDescriptor.getType() == ServiceLoader.class) {
+			bean = serviceLoader;
+		} else if (typeDescriptor.isCollection()) {
+			Collection<Object> objects = serviceLoader.toList();
+			if (typeDescriptor.getType().isArray()) {
+				bean = objects.toArray();
+			} else {
+				Collection<Object> collection = CollectionUtils.createCollection(typeDescriptor.getType(),
+						typeDescriptor.getElementTypeDescriptor().getType(), objects.size());
+				collection.addAll(objects);
+				bean = collection;
+			}
+		} else if (typeDescriptor.isMap()) {
+			if (beanFactory instanceof ListableBeanFactory) {
+				ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+				if (typeDescriptor.getMapKeyTypeDescriptor().getType() == String.class) {
+					Map<String, Object> beans = listableBeanFactory.getBeansOfType(typeDescriptor.getResolvableType());
+					Map<String, Object> map = CollectionUtils.createMap(typeDescriptor.getType(), String.class,
+							beans.size());
+					map.putAll(beans);
+					bean = map;
+				}
+			}
+		}
+		return bean;
 	}
 }

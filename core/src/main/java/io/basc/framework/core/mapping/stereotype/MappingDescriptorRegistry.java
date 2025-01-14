@@ -6,8 +6,8 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.spi.ServiceMap;
 import lombok.NonNull;
 
-public class MappingDescriptorRegistry<D extends FieldDescriptor, T extends MappingDescriptor<D>> extends ServiceMap<T>
-		implements MappingDescriptorFactory<D, T> {
+public class MappingDescriptorRegistry<D extends FieldDescriptor, T extends MappingDescriptor<? extends D>>
+		extends ServiceMap<T> implements MappingDescriptorFactory<D, T> {
 	private MappingDescriptorFactory<D, ? extends T> mappingDescriptorFactory;
 
 	public boolean containsTemplate(Class<?> requiredType) {

@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class TransformContext<K, V extends Value, T extends Template<K, V>> {
+public class TransformContext<K, V extends Value, T extends Template<K, ? extends V>> {
 	private final T template;
 	private final K index;
 	private final V accessor;

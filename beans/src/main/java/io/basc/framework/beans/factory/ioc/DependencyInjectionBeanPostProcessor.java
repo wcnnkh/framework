@@ -1,4 +1,4 @@
-package io.basc.framework.beans.factory.di;
+package io.basc.framework.beans.factory.ioc;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.BeanFactory;

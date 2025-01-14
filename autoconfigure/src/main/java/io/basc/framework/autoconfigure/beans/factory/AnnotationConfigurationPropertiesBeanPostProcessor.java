@@ -1,7 +1,7 @@
 package io.basc.framework.autoconfigure.beans.factory;
 
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
-import io.basc.framework.beans.factory.di.BeanFactoryConfigurationPropertiesBeanPostProcessor;
+import io.basc.framework.beans.factory.ioc.BeanFactoryConfigurationPropertiesBeanPostProcessor;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.env.PropertyFactory;
 import io.basc.framework.mapper.support.DefaultMappingStrategy;

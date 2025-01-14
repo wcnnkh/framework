@@ -11,21 +11,21 @@ import io.basc.framework.core.convert.transform.config.TemplateFactoryRegistry;
 import io.basc.framework.core.convert.transform.config.Transformers;
 import lombok.NonNull;
 
-public class DefaultTransformer<A, B, K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
-		extends DefaultTemplateTransformerFactory<K, SV, S, TV, T, E> implements Transformer<A, B, E> {
-	private final TemplateFactoryRegistry<? super A, ? extends K, ? extends SV, ? extends S> sourceTemplateFactoryRegistry = new TemplateFactoryRegistry<>();
-	private final TemplateFactoryRegistry<? super B, ? extends K, ? extends TV, ? extends T> targetTemplateFactoryRegistry = new TemplateFactoryRegistry<>();
-	private final Transformers<A, B, E, Transformer<? super A, ? super B, ? extends E>> transformers = new Transformers<>();
+public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
+		extends DefaultTemplateTransformerFactory<K, SV, S, TV, T, E> implements Transformer<X, Y, E> {
+	private final TemplateFactoryRegistry<? super X, ? extends K, ? extends SV, ? extends S> sourceTemplateFactoryRegistry = new TemplateFactoryRegistry<>();
+	private final TemplateFactoryRegistry<? super Y, ? extends K, ? extends TV, ? extends T> targetTemplateFactoryRegistry = new TemplateFactoryRegistry<>();
+	private final Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> transformers = new Transformers<>();
 
-	public Transformers<A, B, E, Transformer<? super A, ? super B, ? extends E>> getTransformers() {
+	public Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> getTransformers() {
 		return transformers;
 	}
 
-	public S getSourceTemplate(@NonNull A source, @NonNull TypeDescriptor sourceType) {
+	public S getSourceTemplate(@NonNull X source, @NonNull TypeDescriptor sourceType) {
 		return sourceTemplateFactoryRegistry.getTemplate(source, sourceType);
 	}
 
-	public T getTargetTemplate(@NonNull B target, @NonNull TypeDescriptor targetType) {
+	public T getTargetTemplate(@NonNull Y target, @NonNull TypeDescriptor targetType) {
 		return targetTemplateFactoryRegistry.getTemplate(target, targetType);
 	}
 
@@ -45,16 +45,16 @@ public class DefaultTransformer<A, B, K, SV extends Value, S extends Template<K,
 		return hasSourceTemplate(sourceType.getType()) && hasTargetTemplate(targetType.getType());
 	}
 
-	public TemplateFactoryRegistry<? super A, ? extends K, ? extends SV, ? extends S> getSourceTemplateFactoryRegistry() {
+	public TemplateFactoryRegistry<? super X, ? extends K, ? extends SV, ? extends S> getSourceTemplateFactoryRegistry() {
 		return sourceTemplateFactoryRegistry;
 	}
 
-	public TemplateFactoryRegistry<? super B, ? extends K, ? extends TV, ? extends T> getTargetTemplateFactoryRegistry() {
+	public TemplateFactoryRegistry<? super Y, ? extends K, ? extends TV, ? extends T> getTargetTemplateFactoryRegistry() {
 		return targetTemplateFactoryRegistry;
 	}
 
 	@Override
-	public void transform(@NonNull A source, @NonNull TypeDescriptor sourceType, @NonNull B target,
+	public void transform(@NonNull X source, @NonNull TypeDescriptor sourceType, @NonNull Y target,
 			@NonNull TypeDescriptor targetType) throws E {
 		if (transformers.canTransform(sourceType, targetType)) {
 			transformers.transform(source, sourceType, target, targetType);
@@ -65,7 +65,7 @@ public class DefaultTransformer<A, B, K, SV extends Value, S extends Template<K,
 		transform(source, sourceType, target, targetType, templateTransformer);
 	}
 
-	public void transform(@NonNull A source, @NonNull TypeDescriptor sourceType, @NonNull B target,
+	public void transform(@NonNull X source, @NonNull TypeDescriptor sourceType, @NonNull Y target,
 			@NonNull TypeDescriptor targetType,
 			TemplateTransformer<? super K, ? super SV, ? super S, ? super TV, ? super T, ? extends E> templateTransformer)
 			throws E {

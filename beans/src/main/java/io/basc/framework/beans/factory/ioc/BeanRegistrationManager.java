@@ -1,4 +1,4 @@
-package io.basc.framework.beans.factory.di;
+package io.basc.framework.beans.factory.ioc;
 
 import java.util.HashMap;
 import java.util.Map;

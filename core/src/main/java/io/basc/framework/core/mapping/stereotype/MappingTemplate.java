@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class MappingTemplate<T extends FieldDescriptor, W extends MappingDescriptor<T>>
+public class MappingTemplate<T extends FieldDescriptor, W extends MappingDescriptor<? extends T>>
 		implements PropertyTemplate<Field<T>>, MappingDescriptor<Field<T>> {
 	@NonNull
 	private final W source;

@@ -13,10 +13,10 @@ import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
-public class DefaultTemplateTransformerFactory<K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
+public class DefaultTemplateTransformerFactory<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		implements TemplateTransformerFactory<K, SV, S, TV, T, E> {
 	@EqualsAndHashCode(of = "id", callSuper = false)
-	private static class InternalTemplateTransformer<K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
+	private static class InternalTemplateTransformer<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 			extends FilterableTemplateTransformer<K, SV, S, TV, T, E> {
 		private final String id;
 

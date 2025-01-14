@@ -10,7 +10,7 @@ import io.basc.framework.core.convert.transform.TransformContext;
 import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.NonNull;
 
-public class TemplateTransformFilters<K, SV extends Value, S extends Template<K, SV>, TV extends Accessor, T extends Template<K, TV>, E extends Throwable>
+public class TemplateTransformFilters<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends ConfigurableServices<TemplateTransformFilter<K, SV, S, TV, T, E>>
 		implements TemplateTransformFilter<K, SV, S, TV, T, E> {
 
