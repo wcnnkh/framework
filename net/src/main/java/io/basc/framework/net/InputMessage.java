@@ -6,11 +6,11 @@ import java.io.Reader;
 
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.io.InputStreamFactory;
-import io.basc.framework.util.io.ReaderFactory;
+import io.basc.framework.util.io.InputStreamSource;
+import io.basc.framework.util.io.ReaderSource;
 import lombok.NonNull;
 
-public interface InputMessage extends Message, InputStreamFactory<InputStream>, ReaderFactory<Reader> {
+public interface InputMessage extends Message, InputStreamSource<InputStream>, ReaderSource<Reader> {
 	@FunctionalInterface
 	public static interface InputMessageWrapper<W extends InputMessage> extends InputMessage, MessageWrapper<W>,
 			InputStreamFactoryWrapper<InputStream, W>, ReaderFactoryWrapper<Reader, W> {

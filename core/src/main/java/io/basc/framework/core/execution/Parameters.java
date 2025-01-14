@@ -33,9 +33,9 @@ public interface Parameters
 	}
 
 	@Data
-	public static class SimpleParameters implements Parameters {
+	public static class ListParameters implements Parameters {
 		@NonNull
-		private List<Parameter> parameterList;
+		private List<? extends Parameter> parameterList;
 
 		@Override
 		public Parameter get(int index) {
@@ -63,6 +63,10 @@ public interface Parameters
 			parameters[i] = Parameter.of(i, null, Value.of(args[i]));
 		}
 		return completed(parameters);
+	}
+
+	public static Parameters forList(@NonNull List<? extends Parameter> list) {
+		return new ListParameters(list);
 	}
 
 	public static Parameters forProperties(@NonNull Property... properties) {

@@ -8,10 +8,10 @@ import io.basc.framework.util.function.Wrapper;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface WriterFactory<T extends Writer> {
+public interface WriterSource<T extends Writer> {
 	@FunctionalInterface
-	public static interface WriterFactoryWrapper<T extends Writer, W extends WriterFactory<T>>
-			extends WriterFactory<T>, Wrapper<W> {
+	public static interface WriterSourceWrapper<T extends Writer, W extends WriterSource<T>>
+			extends WriterSource<T>, Wrapper<W> {
 		@Override
 		default Pipeline<T, IOException> getWriter() {
 			return getSource().getWriter();

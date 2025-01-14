@@ -6,11 +6,11 @@ import java.io.Writer;
 
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.io.OutputStreamFactory;
-import io.basc.framework.util.io.WriterFactory;
+import io.basc.framework.util.io.OutputStreamSource;
+import io.basc.framework.util.io.WriterSource;
 import lombok.NonNull;
 
-public interface OutputMessage extends Message, OutputStreamFactory<OutputStream>, WriterFactory<Writer> {
+public interface OutputMessage extends Message, OutputStreamSource<OutputStream>, WriterSource<Writer> {
 	@FunctionalInterface
 	public static interface OutputMessageWrapper<W extends OutputMessage> extends OutputMessage, MessageWrapper<W>,
 			OutputStreamFactoryWrapper<OutputStream, W>, WriterFactoryWrapper<Writer, W> {

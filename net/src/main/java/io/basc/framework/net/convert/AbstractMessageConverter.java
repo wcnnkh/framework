@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.MimeType;
@@ -38,7 +37,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isReadable(TypeDescriptor typeDescriptor, @Nullable MimeType contentType) {
+	public boolean isReadable(TypeDescriptor typeDescriptor, MimeType contentType) {
 		if (contentType == null) {
 			return true;
 		}
@@ -52,7 +51,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isWriteable(TypeDescriptor typeDescriptor, @Nullable MimeType contentType) {
+	public boolean isWriteable(TypeDescriptor typeDescriptor, MimeType contentType) {
 		if (contentType == null || MimeTypeUtils.ALL.equalsTypeAndSubtype(contentType)) {
 			return true;
 		}
@@ -76,8 +75,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public final void writeTo(Value source, @Nullable MimeType contentType, OutputMessage outputMessage)
-			throws IOException {
+	public final void writeTo(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException {
 		MimeType contentTypeToUse = contentType;
 		if (contentType == null) {
 			contentTypeToUse = outputMessage.getContentType();

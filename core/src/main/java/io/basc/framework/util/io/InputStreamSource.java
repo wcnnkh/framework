@@ -18,17 +18,17 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @FunctionalInterface
-public interface InputStreamFactory<T extends InputStream> {
-	public static interface CharsetInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
-			extends DecodeInputStreamFactory<T, Reader, W>, CharsetCapable {
+public interface InputStreamSource<T extends InputStream> {
+	public static interface CharsetInputStreamSource<T extends InputStream, W extends InputStreamSource<T>>
+			extends DecodeInputStreamSource<T, Reader, W>, CharsetCapable {
 		@Override
 		default Function<? super T, ? extends Reader, ? extends IOException> getDecoder() {
 			return (e) -> new InputStreamReader(e, getCharset());
 		}
 	}
 
-	public static interface DecodeInputStreamFactory<T extends InputStream, R extends Reader, W extends InputStreamFactory<T>>
-			extends ReaderFactory<R>, InputStreamFactoryWrapper<T, W> {
+	public static interface DecodeInputStreamSource<T extends InputStream, R extends Reader, W extends InputStreamSource<T>>
+			extends ReaderSource<R>, InputStreamSourceWrapper<T, W> {
 
 		Function<? super T, ? extends R, ? extends IOException> getDecoder();
 
@@ -38,28 +38,28 @@ public interface InputStreamFactory<T extends InputStream> {
 		}
 	}
 
-	public static class DefaultDecodeInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
-			extends StandardDecodeInputStreamFactory<T, Reader, W> {
+	public static class DefaultDecodeInputStreamSource<T extends InputStream, W extends InputStreamSource<T>>
+			extends StandardDecodeInputStreamSource<T, Reader, W> {
 
-		public DefaultDecodeInputStreamFactory(@NonNull W source) {
+		public DefaultDecodeInputStreamSource(@NonNull W source) {
 			super(source, InputStreamReader::new);
 		}
 
-		public DefaultDecodeInputStreamFactory(@NonNull W source, @NonNull CharsetDecoder charsetDecoder) {
+		public DefaultDecodeInputStreamSource(@NonNull W source, @NonNull CharsetDecoder charsetDecoder) {
 			super(source, (e) -> new InputStreamReader(e, charsetDecoder));
 		}
 	}
 
 	@FunctionalInterface
-	public static interface InputStreamFactoryWrapper<T extends InputStream, W extends InputStreamFactory<T>>
-			extends InputStreamFactory<T>, Wrapper<W> {
+	public static interface InputStreamSourceWrapper<T extends InputStream, W extends InputStreamSource<T>>
+			extends InputStreamSource<T>, Wrapper<W> {
 		@Override
 		default Pipeline<T, IOException> getInputStream() {
 			return getSource().getInputStream();
 		}
 
 		@Override
-		default <R extends Reader> ReaderFactory<R> reader(
+		default <R extends Reader> ReaderSource<R> reader(
 				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 			return getSource().reader(pipeline);
 		}
@@ -70,23 +70,23 @@ public interface InputStreamFactory<T extends InputStream> {
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory() {
-			return getSource().toReaderFactory();
+		default ReaderSource<Reader> toReaderSource() {
+			return getSource().toReaderSource();
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory(Charset charset) {
-			return getSource().toReaderFactory(charset);
+		default ReaderSource<Reader> toReaderSource(Charset charset) {
+			return getSource().toReaderSource(charset);
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory(CharsetDecoder charsetDecoder) {
-			return getSource().toReaderFactory(charsetDecoder);
+		default ReaderSource<Reader> toReaderSource(CharsetDecoder charsetDecoder) {
+			return getSource().toReaderSource(charsetDecoder);
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory(String charsetName) {
-			return getSource().toReaderFactory(charsetName);
+		default ReaderSource<Reader> toReaderSource(String charsetName) {
+			return getSource().toReaderSource(charsetName);
 		}
 
 		@Override
@@ -100,16 +100,16 @@ public interface InputStreamFactory<T extends InputStream> {
 		}
 	}
 
-	public static class StandardCharsetInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
-			extends StandardDecodeInputStreamFactory<T, Reader, W> implements CharsetInputStreamFactory<T, W> {
+	public static class StandardCharsetInputStreamSource<T extends InputStream, W extends InputStreamSource<T>>
+			extends StandardDecodeInputStreamSource<T, Reader, W> implements CharsetInputStreamSource<T, W> {
 		private final Object charset;
 
-		public StandardCharsetInputStreamFactory(@NonNull W source, Charset charset) {
+		public StandardCharsetInputStreamSource(@NonNull W source, Charset charset) {
 			super(source, (e) -> new InputStreamReader(e, charset));
 			this.charset = charset;
 		}
 
-		public StandardCharsetInputStreamFactory(@NonNull W source, String charsetName) {
+		public StandardCharsetInputStreamSource(@NonNull W source, String charsetName) {
 			super(source, (e) -> new InputStreamReader(e, charsetName));
 			this.charset = charsetName;
 		}
@@ -127,15 +127,15 @@ public interface InputStreamFactory<T extends InputStream> {
 			if (charset instanceof String) {
 				return (String) charset;
 			}
-			return CharsetInputStreamFactory.super.getCharsetName();
+			return CharsetInputStreamSource.super.getCharsetName();
 		}
 
 	}
 
 	@RequiredArgsConstructor
 	@Data
-	public static class StandardDecodeInputStreamFactory<T extends InputStream, R extends Reader, W extends InputStreamFactory<T>>
-			implements DecodeInputStreamFactory<T, R, W> {
+	public static class StandardDecodeInputStreamSource<T extends InputStream, R extends Reader, W extends InputStreamSource<T>>
+			implements DecodeInputStreamSource<T, R, W> {
 		@NonNull
 		private final W source;
 		@NonNull
@@ -145,29 +145,29 @@ public interface InputStreamFactory<T extends InputStream> {
 	@NonNull
 	Pipeline<T, IOException> getInputStream();
 
-	default <R extends Reader> ReaderFactory<R> reader(
+	default <R extends Reader> ReaderSource<R> reader(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
-		return new StandardDecodeInputStreamFactory<>(this, pipeline);
+		return new StandardDecodeInputStreamSource<>(this, pipeline);
 	}
 
 	default byte[] readAllBytes() throws NoSuchElementException, IOException {
 		return getInputStream().map(IOUtils::toByteArray).finish().get();
 	}
 
-	default ReaderFactory<Reader> toReaderFactory() {
-		return new DefaultDecodeInputStreamFactory<>(this);
+	default ReaderSource<Reader> toReaderSource() {
+		return new DefaultDecodeInputStreamSource<>(this);
 	}
 
-	default ReaderFactory<Reader> toReaderFactory(Charset charset) {
-		return new StandardCharsetInputStreamFactory<>(this, charset);
+	default ReaderSource<Reader> toReaderSource(Charset charset) {
+		return new StandardCharsetInputStreamSource<>(this, charset);
 	}
 
-	default ReaderFactory<Reader> toReaderFactory(CharsetDecoder charsetDecoder) {
-		return new DefaultDecodeInputStreamFactory<>(this, charsetDecoder);
+	default ReaderSource<Reader> toReaderSource(CharsetDecoder charsetDecoder) {
+		return new DefaultDecodeInputStreamSource<>(this, charsetDecoder);
 	}
 
-	default ReaderFactory<Reader> toReaderFactory(String charsetName) {
-		return new StandardCharsetInputStreamFactory<>(this, charsetName);
+	default ReaderSource<Reader> toReaderSource(String charsetName) {
+		return new StandardCharsetInputStreamSource<>(this, charsetName);
 	}
 
 	default void transferTo(File dest) throws IOException, IllegalStateException {

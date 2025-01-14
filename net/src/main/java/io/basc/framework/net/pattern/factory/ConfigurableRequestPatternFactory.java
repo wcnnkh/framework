@@ -1,10 +1,10 @@
 package io.basc.framework.net.pattern.factory;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.execution.Function;
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableRequestPatternFactory extends ConfigurableServices<RequestPatternFactory>
 		implements RequestPatternFactory {
@@ -14,13 +14,13 @@ public class ConfigurableRequestPatternFactory extends ConfigurableServices<Requ
 
 	@Override
 	public boolean test(Function function) {
-		return getServices().anyMatch((e) -> e.test(function));
+		return anyMatch((e) -> e.test(function));
 	}
 
 	@Override
 	public Elements<RequestPattern> getRequestPatterns(Function function, Parameters parameters) {
 		Elements<RequestPattern> elements = Elements.empty();
-		for (RequestPatternFactory factory : getServices()) {
+		for (RequestPatternFactory factory : this) {
 			if (factory.test(function)) {
 				elements = elements.concat(factory.getRequestPatterns(function, parameters));
 			}

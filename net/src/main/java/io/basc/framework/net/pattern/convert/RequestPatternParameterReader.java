@@ -3,7 +3,7 @@ package io.basc.framework.net.pattern.convert;
 import java.io.IOException;
 
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.execution.Parameters;
 
 public interface RequestPatternParameterReader {
 	boolean isReadable(ParameterDescriptor parameterDescriptor);

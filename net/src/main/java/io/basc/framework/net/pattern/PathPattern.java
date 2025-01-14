@@ -1,17 +1,19 @@
 package io.basc.framework.net.pattern;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import io.basc.framework.core.execution.param.Parameters;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.execution.Parameter;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.Request;
-import io.basc.framework.transform.map.MapProperties;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.match.PathMatcher;
 
 public interface PathPattern extends RequestPattern {
-	@Nullable
 	String getPath();
 
 	PathMatcher getPathMatcher();
@@ -28,17 +30,22 @@ public interface PathPattern extends RequestPattern {
 	default Parameters apply(Request request) {
 		String path = getPath();
 		if (StringUtils.isEmpty(path)) {
-			return Parameters.empty();
+			return Parameters.EMPTY_PARAMETERS;
 		}
 
 		String requestPath = request.getURI().getPath();
 		Map<String, String> templateVariables = getPathMatcher().extractUriTemplateVariables(path, requestPath);
 		if (CollectionUtils.isEmpty(templateVariables)) {
-			return Parameters.empty();
+			return Parameters.EMPTY_PARAMETERS;
 		}
 
-		MapProperties mapProperties = new MapProperties(templateVariables);
-		return mapProperties.toParameters();
+		int i = 0;
+		List<Parameter> parameters = new ArrayList<>();
+		for (Entry<String, String> entry : templateVariables.entrySet()) {
+			Parameter parameter = Parameter.of(i++, entry.getKey(), Value.of(entry.getValue()));
+			parameters.add(parameter);
+		}
+		return Parameters.forList(parameters);
 	}
 
 	@Override

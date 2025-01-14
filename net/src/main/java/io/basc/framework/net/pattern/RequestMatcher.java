@@ -1,6 +1,6 @@
 package io.basc.framework.net.pattern;
 
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class RequestMatcher implements RequestPattern {
 	@Override
 	public Parameters apply(Request request) {
 		if (exclude.test(request)) {
-			return Parameters.empty();
+			return Parameters.EMPTY_PARAMETERS;
 		}
 
 		return include.apply(request);
@@ -43,8 +43,8 @@ public class RequestMatcher implements RequestPattern {
 	@Override
 	public MimeTypes getConsumes() {
 		MimeTypes mimeTypes = new MimeTypes();
-		for (RequestPattern pattern : include.getServices()) {
-			if (exclude.getServices().contains(pattern)) {
+		for (RequestPattern pattern : include) {
+			if (exclude.contains(pattern)) {
 				continue;
 			}
 			mimeTypes.addAll(pattern.getConsumes());
@@ -55,8 +55,8 @@ public class RequestMatcher implements RequestPattern {
 	@Override
 	public MimeTypes getProduces() {
 		MimeTypes mimeTypes = new MimeTypes();
-		for (RequestPattern pattern : include.getServices()) {
-			if (exclude.getServices().contains(pattern)) {
+		for (RequestPattern pattern : include) {
+			if (exclude.contains(pattern)) {
 				continue;
 			}
 			mimeTypes.addAll(pattern.getProduces());

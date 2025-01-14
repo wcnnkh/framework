@@ -30,10 +30,10 @@ import lombok.ToString;
  * @author shuchaowen
  *
  */
-public interface Resource extends InputStreamFactory<InputStream>, OutputStreamFactory<OutputStream>, Variable, Named {
+public interface Resource extends InputStreamSource<InputStream>, OutputStreamSource<OutputStream>, Variable, Named {
 
 	public static class CharsetResource<W extends Resource> extends CodecResource<W>
-			implements CharsetOutputStreamFactory<OutputStream, W>, CharsetInputStreamFactory<InputStream, W> {
+			implements CharsetOutputStreamSource<OutputStream, W>, CharsetInputStreamSource<InputStream, W> {
 		private final Object charset;
 
 		public CharsetResource(@NonNull W source, Charset charset) {
@@ -59,7 +59,7 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 			if (charset instanceof String) {
 				return (String) charset;
 			}
-			return CharsetInputStreamFactory.super.getCharsetName();
+			return CharsetInputStreamSource.super.getCharsetName();
 		}
 	}
 
@@ -67,8 +67,8 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 	@EqualsAndHashCode(callSuper = true)
 	@ToString(callSuper = true)
 	public static class CodecResource<W extends Resource>
-			extends StandardEncodeOutputStreamFactory<OutputStream, Writer, W> implements ResourceWrapper<W>,
-			DecodeInputStreamFactory<InputStream, Reader, W>, EncodeOutputStreamFactory<OutputStream, Writer, W> {
+			extends StandardEncodeOutputStreamSource<OutputStream, Writer, W> implements ResourceWrapper<W>,
+			DecodeInputStreamSource<InputStream, Reader, W>, EncodeOutputStreamSource<OutputStream, Writer, W> {
 		@NonNull
 		private final Function<? super InputStream, ? extends Reader, ? extends IOException> decoder;
 
@@ -100,7 +100,7 @@ public interface Resource extends InputStreamFactory<InputStream>, OutputStreamF
 
 	@FunctionalInterface
 	public static interface ResourceWrapper<W extends Resource> extends Resource,
-			InputStreamFactoryWrapper<InputStream, W>, OutputStreamFactoryWrapper<OutputStream, W>, NamedWrapper<W> {
+			InputStreamSourceWrapper<InputStream, W>, OutputStreamSourceWrapper<OutputStream, W>, NamedWrapper<W> {
 		@Override
 		default long contentLength() throws IOException {
 			return getSource().contentLength();

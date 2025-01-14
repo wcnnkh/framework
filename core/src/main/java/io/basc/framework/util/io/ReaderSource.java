@@ -11,10 +11,10 @@ import io.basc.framework.util.function.Wrapper;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface ReaderFactory<T extends Reader> {
+public interface ReaderSource<T extends Reader> {
 	@FunctionalInterface
-	public static interface ReaderFactoryWrapper<T extends Reader, W extends ReaderFactory<T>>
-			extends ReaderFactory<T>, Wrapper<W> {
+	public static interface ReaderSourceWrapper<T extends Reader, W extends ReaderSource<T>>
+			extends ReaderSource<T>, Wrapper<W> {
 		@Override
 		default Pipeline<T, IOException> getReader() {
 			return getSource().getReader();

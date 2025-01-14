@@ -1,7 +1,5 @@
 package io.basc.framework.net.pattern.factory;
 
-import io.basc.framework.beans.factory.spi.SPI;
-
 public class GlobalRequestPatternFactory extends ConfigurableRequestPatternFactory {
 	private static volatile GlobalRequestPatternFactory instance;
 
@@ -10,7 +8,7 @@ public class GlobalRequestPatternFactory extends ConfigurableRequestPatternFacto
 			synchronized (GlobalRequestPatternFactory.class) {
 				if (instance == null) {
 					instance = new GlobalRequestPatternFactory();
-					instance.configure(SPI.global());
+					instance.doNativeConfigure();
 				}
 			}
 		}

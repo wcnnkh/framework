@@ -26,7 +26,7 @@ public abstract class ObjectMessageConverter<T> extends AbstractMessageConverter
 	@SuppressWarnings("unchecked")
 	@Override
 	protected final void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException {
-		T value = (T) source.getValue();
+		T value = (T) source.get();
 		if (outputMessage.getContentLength() < 0) {
 			Long contentLength = getContentLength(value, contentType);
 			if (contentLength != null && contentLength >= 0) {
