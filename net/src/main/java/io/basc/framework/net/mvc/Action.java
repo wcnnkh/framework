@@ -7,15 +7,15 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptor;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
-import io.basc.framework.core.execution.param.Parameters;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.net.pattern.RequestPatternCapable;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
-import io.basc.framework.net.server.Service;
+import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.convert.ServerMessageConverter;
 import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
@@ -26,7 +26,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class Action implements Service, ExecutionInterceptor, RequestPatternCapable {
+public class Action implements Server, ExecutionInterceptor, RequestPatternCapable {
 	@NonNull
 	private final Function function;
 	@NonNull
@@ -37,7 +37,7 @@ public class Action implements Service, ExecutionInterceptor, RequestPatternCapa
 	private ExecutionInterceptor executionInterceptor;
 
 	@Override
-	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
 		if (executionInterceptor == null) {
 			return function.execute(args);
 		} else {
@@ -48,8 +48,12 @@ public class Action implements Service, ExecutionInterceptor, RequestPatternCapa
 	protected Object getArg(ServerRequest request, Parameters requestPatternParameters,
 			ParameterDescriptor parameterDescriptor) throws IOException {
 		// 优先匹配额外参数
-		Elements<Parameter> elements = requestPatternParameters.getElements(parameterDescriptor);
+		Elements<Parameter> elements = requestPatternParameters.getAccessors(parameterDescriptor);
 		for (Parameter parameter : elements) {
+			if (!parameter.isReadable()) {
+				continue;
+			}
+
 			if (parameter.test(parameterDescriptor)) {
 				return parameter.getAsObject(parameterDescriptor.getTypeDescriptor());
 			}

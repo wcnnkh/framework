@@ -1,7 +1,5 @@
 package io.basc.framework.net.client.factory;
 
-import io.basc.framework.beans.factory.spi.SPI;
-
 public class GlobalClientRequestFactory extends ConfigurableClientRequestFactory {
 	private static volatile GlobalClientRequestFactory instance;
 
@@ -10,7 +8,7 @@ public class GlobalClientRequestFactory extends ConfigurableClientRequestFactory
 			synchronized (GlobalClientRequestFactory.class) {
 				if (instance == null) {
 					instance = new GlobalClientRequestFactory();
-					instance.configure(SPI.global());
+					instance.doNativeConfigure();
 				}
 			}
 		}

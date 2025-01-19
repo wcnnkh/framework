@@ -138,8 +138,8 @@ public class Services<S>
 		return getSource().isEmpty();
 	}
 
-	protected Receipt onServiceInjectorEvents(Elements<ChangeEvent<ServiceInjector<S>>> events) {
-		for (ChangeEvent<ServiceInjector<S>> event : events) {
+	protected Receipt onServiceInjectorEvents(Elements<ChangeEvent<ServiceInjector<? super S>>> events) {
+		for (ChangeEvent<ServiceInjector<? super S>> event : events) {
 			forEach((service) -> {
 				if (event.getChangeType() != ChangeType.CREATE) {
 					return;

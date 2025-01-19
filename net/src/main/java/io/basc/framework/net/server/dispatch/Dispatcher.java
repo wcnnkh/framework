@@ -1,8 +1,7 @@
 package io.basc.framework.net.server.dispatch;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.server.ServerRequest;
-import io.basc.framework.net.server.Service;
+import io.basc.framework.net.server.Server;
 
 /**
  * 调度器
@@ -11,6 +10,5 @@ import io.basc.framework.net.server.Service;
  *
  */
 public interface Dispatcher {
-	@Nullable
-	Service dispatch(ServerRequest request);
+	Server dispatch(ServerRequest request);
 }

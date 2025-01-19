@@ -1,5 +1,7 @@
 package io.basc.framework.util.exchange;
 
+import java.util.List;
+
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.Listable;
 
@@ -45,11 +47,19 @@ public interface Registrations<R extends Registration> extends Registration, Lis
 		return (Registrations<E>) EMPTY_REGISTRATIONS;
 	}
 
-	public static <E extends Registration> Registrations<E> of(Elements<E> elements) {
+	public static <E extends Registration> Registrations<E> forElements(Elements<E> elements) {
 		if (elements == null) {
 			return empty();
 		}
 		return () -> elements;
+	}
+
+	public static <E extends Registration> Registrations<E> forList(List<? extends E> list) {
+		if (list == null) {
+			return empty();
+		}
+
+		return forElements(Elements.of(list));
 	}
 
 	@Override

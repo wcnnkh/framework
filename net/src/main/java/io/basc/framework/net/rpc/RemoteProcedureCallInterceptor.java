@@ -2,13 +2,12 @@ package io.basc.framework.net.rpc;
 
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
-import io.basc.framework.core.execution.param.Args;
 import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.client.ClientResponse;
 import io.basc.framework.net.client.convert.ClientMessageConverter;
 import io.basc.framework.net.rpc.factory.RemoteRequestFactory;
-import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -26,8 +25,8 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 	private final ClientMessageConverter messageConverter;
 
 	@Override
-	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
-		Args parameters = new Args(function.getParameterDescriptors(), args);
+	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
+		Parameters parameters = Parameters.forTemplate(function, args);
 		ClientRequest request = requestFactory.createRequest(function, parameters);
 		for (Parameter parameter : parameters.getElements()) {
 			if (!messageConverter.isWriteable(parameter, request)) {

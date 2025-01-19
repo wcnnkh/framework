@@ -295,7 +295,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	@Override
 	public final int size() {
-		return readInt((collection) -> collection == null ? 0 : collection.size());
+		return readAsInt((collection) -> collection == null ? 0 : collection.size());
 	}
 
 	@Override

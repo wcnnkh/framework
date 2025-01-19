@@ -1,6 +1,7 @@
 package io.basc.framework.core.execution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -75,6 +76,23 @@ public interface Parameters
 			parameters[i] = Parameter.of(i, properties[i]);
 		}
 		return completed(parameters);
+	}
+
+	public static Parameters forTemplate(@NonNull ParameterDescriptorTemplate template, @NonNull Object... args) {
+		List<Parameter> list = new ArrayList<>();
+		Iterator<ParameterDescriptor> iterator = template.getParameterDescriptors().iterator();
+		Iterator<Object> argIterator = Arrays.asList(args).iterator();
+		while (iterator.hasNext() && argIterator.hasNext()) {
+			Parameter parameter = Parameter.of(iterator.next());
+			parameter.set(argIterator.next());
+			list.add(parameter);
+		}
+
+		while (iterator.hasNext()) {
+			Parameter parameter = Parameter.of(iterator.next());
+			list.add(parameter);
+		}
+		return Parameters.completed(list.toArray(new Parameter[0]));
 	}
 
 	/**

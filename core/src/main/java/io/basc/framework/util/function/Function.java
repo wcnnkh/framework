@@ -2,7 +2,6 @@ package io.basc.framework.util.function;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -206,9 +205,5 @@ public interface Function<S, T, E extends Throwable> {
 
 	default Reactor<S, T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
 		return new PipelineReactor<>(this, endpoint);
-	}
-
-	public static interface Merger<T, E extends Throwable> extends Function<Elements<T>, T, E> {
-
 	}
 }

@@ -1,6 +1,5 @@
 package io.basc.framework.net.convert;
 
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.json.JsonSupport;
@@ -15,7 +14,7 @@ public class GlobalMessageConverter extends ConfigurableMessageConverter
 			synchronized (GlobalMessageConverter.class) {
 				if (instance == null) {
 					instance = new GlobalMessageConverter();
-					instance.configure(SPI.global());
+					instance.doNativeConfigure();
 				}
 			}
 		}

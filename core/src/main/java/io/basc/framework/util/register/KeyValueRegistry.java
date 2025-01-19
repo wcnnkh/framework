@@ -12,7 +12,7 @@ public interface KeyValueRegistry<K, V> extends Registry<KeyValue<K, V>>, KeyVal
 	default Registration register(K key, V value) throws RegistrationException {
 		return register(KeyValue.of(key, value));
 	}
-
+	
 	default Receipt deregisterKey(K key) {
 		return deregisterKeys(Arrays.asList(key));
 	}

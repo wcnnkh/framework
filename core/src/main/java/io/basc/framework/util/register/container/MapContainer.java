@@ -465,7 +465,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 
 	@Override
 	public final int size() {
-		return readInt((map) -> map == null ? 0 : map.size());
+		return readAsInt((map) -> map == null ? 0 : map.size());
 	}
 
 	@Override

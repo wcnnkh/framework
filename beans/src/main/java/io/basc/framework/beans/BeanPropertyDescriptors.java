@@ -19,7 +19,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PropertyDescriptors
+public class BeanPropertyDescriptors
 		implements KeyValues<String, PropertyDescriptor>, Reloadable, Listable<PropertyDescriptor> {
 	@NonNull
 	private final BeanInfo beanInfo;

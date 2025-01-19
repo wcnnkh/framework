@@ -1,7 +1,6 @@
-package io.basc.framework.core.execution.resolver;
+package io.basc.framework.core.mapping;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.mapping.PropertyDescriptor;
 
 public interface PropertyFactory {
 	boolean hasProperty(PropertyDescriptor propertyDescriptor);

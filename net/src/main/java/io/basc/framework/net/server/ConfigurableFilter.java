@@ -2,7 +2,7 @@ package io.basc.framework.net.server;
 
 import java.io.IOException;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableFilter extends ConfigurableServices<Filter> implements Filter {
 
@@ -11,9 +11,9 @@ public class ConfigurableFilter extends ConfigurableServices<Filter> implements 
 	}
 
 	@Override
-	public void doFilter(ServerRequest request, ServerResponse response, Service chain)
+	public void doFilter(ServerRequest request, ServerResponse response, Server chain)
 			throws IOException, ServerException {
-		FilterChain filterChain = new FilterChain(getServices().iterator(), chain);
+		FilterChain filterChain = new FilterChain(iterator(), chain);
 		filterChain.service(request, response);
 	}
 }

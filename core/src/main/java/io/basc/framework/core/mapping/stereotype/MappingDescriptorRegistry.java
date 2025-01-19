@@ -22,12 +22,12 @@ public class MappingDescriptorRegistry<D extends FieldDescriptor, T extends Mapp
 	public T getMappingDescriptor(@NonNull TypeDescriptor requiredType) {
 		T mappingDescriptor = findMappingDescriptor(requiredType);
 		if (mappingDescriptor == null) {
-			Lock lock = getContainer().readLock();
+			Lock lock = readLock();
 			try {
 				lock.lock();
 				mappingDescriptor = findMappingDescriptor(requiredType);
 				if (mappingDescriptor == null) {
-					Lock writeLock = getContainer().writeLock();
+					Lock writeLock = writeLock();
 					try {
 						writeLock.lock();
 						mappingDescriptor = loadMappingDescriptor(requiredType);
@@ -54,7 +54,7 @@ public class MappingDescriptorRegistry<D extends FieldDescriptor, T extends Mapp
 	}
 
 	public void setMappingDescriptorFactory(MappingDescriptorFactory<D, T> mappingDescriptorFactory) {
-		Lock lock = getContainer().writeLock();
+		Lock lock = writeLock();
 		try {
 			lock.lock();
 			this.mappingDescriptorFactory = mappingDescriptorFactory;

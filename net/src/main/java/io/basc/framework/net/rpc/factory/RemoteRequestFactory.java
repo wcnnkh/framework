@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import io.basc.framework.core.execution.Function;
-import io.basc.framework.core.execution.param.Parameters;
+import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.client.ClientRequest;
 
 /**

@@ -14,14 +14,14 @@ import lombok.NonNull;
 public class CachedBeanInfo implements BeanInfo {
 	@NonNull
 	private final BeanInfo source;
-	private final PropertyDescriptors propertyDescriptors;
+	private final BeanPropertyDescriptors propertyDescriptors;
 
 	public CachedBeanInfo(@NonNull BeanInfo source) {
 		this.source = source;
-		this.propertyDescriptors = new PropertyDescriptors(source);
+		this.propertyDescriptors = new BeanPropertyDescriptors(source);
 	}
 
-	public PropertyDescriptors getSharedPropertyDescriptors() {
+	public BeanPropertyDescriptors getSharedPropertyDescriptors() {
 		return propertyDescriptors;
 	}
 

@@ -130,8 +130,8 @@ public class BeanUtils {
 
 	public static <S, T> void doMapping(S source, @NonNull Class<? extends S> sourceClass, T target,
 			@NonNull Class<? extends T> targetClass, @NonNull Mapping mapping) {
-		PropertyDescriptors sourcePropertyDescriptors = getPropertyDescriptors(sourceClass);
-		PropertyDescriptors targetPropertyDescriptors = getPropertyDescriptors(targetClass);
+		BeanPropertyDescriptors sourcePropertyDescriptors = getPropertyDescriptors(sourceClass);
+		BeanPropertyDescriptors targetPropertyDescriptors = getPropertyDescriptors(targetClass);
 		for (String name : targetPropertyDescriptors.keys()) {
 			List<PropertyDescriptor> sourceList = sourcePropertyDescriptors.getValues(name)
 					.collect(Collectors.toList());
@@ -161,13 +161,13 @@ public class BeanUtils {
 		return BEAN_INFO_REGISTRY;
 	}
 
-	public static PropertyDescriptors getPropertyDescriptors(Class<?> beanClass) {
+	public static BeanPropertyDescriptors getPropertyDescriptors(Class<?> beanClass) {
 		CachedBeanInfo beanInfo = getBeanInfo(beanClass);
 		return beanInfo.getSharedPropertyDescriptors();
 	}
 
 	public static Elements<PropertyDescriptor> getPropertyDescriptors(Class<?> beanClass, String name) {
-		PropertyDescriptors propertyDescriptors = getPropertyDescriptors(beanClass);
+		BeanPropertyDescriptors propertyDescriptors = getPropertyDescriptors(beanClass);
 		return propertyDescriptors.getValues(name);
 	}
 

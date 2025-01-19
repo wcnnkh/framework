@@ -13,7 +13,7 @@ import lombok.NonNull;
 public interface OutputMessage extends Message, OutputStreamSource<OutputStream>, WriterSource<Writer> {
 	@FunctionalInterface
 	public static interface OutputMessageWrapper<W extends OutputMessage> extends OutputMessage, MessageWrapper<W>,
-			OutputStreamFactoryWrapper<OutputStream, W>, WriterFactoryWrapper<Writer, W> {
+			OutputStreamSourceWrapper<OutputStream, W>, WriterSourceWrapper<Writer, W> {
 
 		@Override
 		default Pipeline<Writer, IOException> getWriter() {
@@ -52,7 +52,7 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 	@Override
 	default @NonNull Pipeline<Writer, IOException> getWriter() {
 		String charsetName = getCharsetName();
-		return StringUtils.isEmpty(charsetName) ? toWriterFactory().getWriter()
-				: toWriterFactory(charsetName).getWriter();
+		return StringUtils.isEmpty(charsetName) ? toWriterSource().getWriter()
+				: toWriterSource(charsetName).getWriter();
 	}
 }

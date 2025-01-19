@@ -62,7 +62,7 @@ public interface Registration {
 		}
 
 		Elements<Registration> elements = Elements.forArray(this, registration);
-		return Registrations.of(elements);
+		return Registrations.forElements(elements);
 	}
 
 	/**

@@ -1,9 +1,13 @@
 package io.basc.framework.util.register;
 
+import java.util.function.BiPredicate;
+import java.util.function.BooleanSupplier;
+
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public interface KeyValueRegistration<K, V> extends PayloadRegistration<KeyValue<K, V>>, KeyValue<K, V> {
 
@@ -47,6 +51,40 @@ public interface KeyValueRegistration<K, V> extends PayloadRegistration<KeyValue
 		default V getValue() {
 			return getSource().getValue();
 		}
+	}
+
+	@RequiredArgsConstructor
+	public static class DisposableKeyValueRegistration<K, V> extends AbstractLifecycleRegistration
+			implements KeyValueRegistration<K, V> {
+		private final K key;
+		private final V value;
+		@NonNull
+		private final BiPredicate<? super K, ? super V> runnable;
+
+		@Override
+		public K getKey() {
+			return key;
+		}
+
+		@Override
+		public V getValue() {
+			return value;
+		}
+
+		@Override
+		public boolean cancel(BooleanSupplier cancel) {
+			return super.cancel(() -> {
+				if (cancel.getAsBoolean()) {
+					return runnable.test(key, value);
+				}
+				return false;
+			});
+		}
+	}
+
+	public static <K, V> KeyValueRegistration<K, V> of(K key, V value,
+			@NonNull BiPredicate<? super K, ? super V> runnable) {
+		return new DisposableKeyValueRegistration<>(key, value, runnable);
 	}
 
 	@Override

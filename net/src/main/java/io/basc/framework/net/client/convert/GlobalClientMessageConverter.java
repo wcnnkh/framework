@@ -1,7 +1,5 @@
 package io.basc.framework.net.client.convert;
 
-import io.basc.framework.beans.factory.spi.SPI;
-
 public class GlobalClientMessageConverter extends ConfigurableClientMessageConverter {
 	private static volatile GlobalClientMessageConverter instance;
 
@@ -10,7 +8,7 @@ public class GlobalClientMessageConverter extends ConfigurableClientMessageConve
 			synchronized (GlobalClientMessageConverter.class) {
 				if (instance == null) {
 					instance = new GlobalClientMessageConverter();
-					instance.configure(SPI.global());
+					instance.doNativeConfigure();
 				}
 			}
 		}

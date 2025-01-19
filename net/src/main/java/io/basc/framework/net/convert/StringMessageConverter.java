@@ -9,7 +9,6 @@ import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.util.io.IOUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -42,7 +41,7 @@ public abstract class StringMessageConverter<T> extends ObjectMessageConverter<T
 	protected T read(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException {
 		Charset charset = getCharset(inputMessage, contentType);
-		String body = IOUtils.toString(inputMessage.getInputStream(), charset.name());
+		String body = inputMessage.toReaderSource(charset).readAllCharacters();
 		return parseObject(body, typeDescriptor);
 	}
 
@@ -64,6 +63,6 @@ public abstract class StringMessageConverter<T> extends ObjectMessageConverter<T
 		if (outputMessage.getContentLength() < 0) {
 			outputMessage.setContentLength(array.length);
 		}
-		IOUtils.write(array, outputMessage.getOutputStream());
+		outputMessage.getOutputStream().export().ifPresent((e) -> e.write(array));
 	}
 }

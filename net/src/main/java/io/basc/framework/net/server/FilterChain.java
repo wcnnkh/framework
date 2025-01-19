@@ -13,10 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class FilterChain implements Service {
+public class FilterChain implements Server {
 	@NonNull
 	private final Iterator<? extends Filter> iterator;
-	private Service next;
+	private Server next;
 
 	@Override
 	public void service(ServerRequest request, ServerResponse response) throws IOException, ServerException {

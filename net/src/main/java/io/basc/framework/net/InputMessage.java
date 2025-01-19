@@ -13,7 +13,7 @@ import lombok.NonNull;
 public interface InputMessage extends Message, InputStreamSource<InputStream>, ReaderSource<Reader> {
 	@FunctionalInterface
 	public static interface InputMessageWrapper<W extends InputMessage> extends InputMessage, MessageWrapper<W>,
-			InputStreamFactoryWrapper<InputStream, W>, ReaderFactoryWrapper<Reader, W> {
+			InputStreamSourceWrapper<InputStream, W>, ReaderSourceWrapper<Reader, W> {
 		@Override
 		default @NonNull Pipeline<Reader, IOException> getReader() {
 			return getSource().getReader();
@@ -23,7 +23,7 @@ public interface InputMessage extends Message, InputStreamSource<InputStream>, R
 	@Override
 	default @NonNull Pipeline<Reader, IOException> getReader() {
 		String charsetName = getCharsetName();
-		return StringUtils.isEmpty(charsetName) ? toReaderFactory().getReader()
-				: toReaderFactory(charsetName).getReader();
+		return StringUtils.isEmpty(charsetName) ? toReaderSource().getReader()
+				: toReaderSource(charsetName).getReader();
 	}
 }

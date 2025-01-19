@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory.ioc;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
-import io.basc.framework.core.execution.resolver.PropertyFactory;
+import io.basc.framework.core.mapping.PropertyFactory;
 
 public abstract class BeanFactoryConfigurationPropertiesBeanPostProcessor
 		extends ConfigurationPropertiesBeanPostProcessor {

@@ -2,63 +2,24 @@ package io.basc.framework.beans.factory.ioc;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
-import io.basc.framework.core.env.PropertyResolver;
-import io.basc.framework.core.execution.resolver.PropertyFactory;
-import io.basc.framework.observe.properties.ObservablePropertyFactory;
-import io.basc.framework.util.collections.Elements;
-import io.basc.framework.util.exchange.Registration;
+import io.basc.framework.core.mapping.PropertyFactory;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
-public abstract class ConfigurationPropertiesBeanPostProcessor implements BeanPostProcessor {
-	private final PropertyResolver propertyResolver;
-	private final BeanRegistrationManager beanRegistrationManager;
+public class ConfigurationPropertiesBeanPostProcessor implements BeanPostProcessor {
+	@NonNull
+	private final PropertyFactory propertyFactory;
 
 	@Override
 	public void postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		configurationProperties(bean, beanName);
-	}
-
-	public void configurationProperties(Object bean, String beanName) {
-		configurationProperties(bean, beanName, getConfigurationPropertiesPrefixs(bean, beanName));
-	}
-
-	protected abstract boolean isSingleton(String beanName);
-
-	public void configurationProperties(Object bean, String beanName, Elements<String> prefixs) {
-		if (isSingleton(beanName)) {
-			if (beanRegistrationManager.isRegisted(beanName)) {
-				return;
-			}
-
-			Registration registration = Registration.EMPTY;
-			if (propertyFactory instanceof ObservablePropertyFactory) {
-				ObservablePropertyFactory observablePropertyFactory = (ObservablePropertyFactory) propertyFactory;
-				registration = observablePropertyFactory.registerKeysListener((keys) -> {
-					if (keys.anyMatch(prefixs, String::startsWith)) {
-						transform(propertyFactory, bean, prefixs);
-					}
-				});
-			}
-
-			beanRegistrationManager.register(beanName, registration);
+		if(bean == null) {
+			return ;
 		}
-		transform(propertyFactory, bean, prefixs);
+		
 	}
-
-	protected abstract void transform(Object source, Object target, Elements<String> prefixs);
-
-	@Override
-	public void postProcessAfterDestroy(Object bean, String beanName) throws BeansException {
-		BeanPostProcessor.super.postProcessAfterDestroy(bean, beanName);
-		if (isSingleton(beanName)) {
-			beanRegistrationManager.unregister(beanName);
-		}
-	}
-
-	protected abstract Elements<String> getConfigurationPropertiesPrefixs(Object bean, String beanName);
 }

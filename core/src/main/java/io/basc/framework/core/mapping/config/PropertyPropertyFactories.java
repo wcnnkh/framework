@@ -1,7 +1,8 @@
-package io.basc.framework.core.execution.resolver;
+package io.basc.framework.core.mapping.config;
 
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.mapping.PropertyDescriptor;
+import io.basc.framework.core.mapping.PropertyFactory;
 import io.basc.framework.util.spi.ConfigurableServices;
 
 public class PropertyPropertyFactories extends ConfigurableServices<PropertyFactory> implements PropertyFactory {

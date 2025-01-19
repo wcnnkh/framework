@@ -73,7 +73,7 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 
 	@Override
 	public int hashCode() {
-		return readInt((conainer) -> ObjectUtils.hashCode(conainer));
+		return readAsInt((conainer) -> ObjectUtils.hashCode(conainer));
 	}
 
 	/**
@@ -140,19 +140,76 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
-	public <E> List<E> readAsList(Function<? super C, ? extends Elements<E>> reader) {
+	public <E> List<E> readAsList(Function<? super C, ? extends List<E>> reader) {
 		Lock lock = readLock();
 		lock.lock();
 		try {
-			Elements<E> elements = reader.apply(container);
-			if (elements == null) {
-				return null;
-			}
-
-			return isThreadSafe() ? elements.collect(Collectors.toList()) : elements.toList();
+			List<E> elements = reader.apply(container);
+			return shared(elements);
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	protected <T> List<T> shared(List<T> list) {
+		if (list == null) {
+			return null;
+		}
+
+		if (list.isEmpty()) {
+			return list;
+		}
+
+		if (list.getClass().getName().startsWith("java.util.")) {
+			return list;
+		}
+
+		return isThreadSafe() ? list.stream().collect(Collectors.toList()) : list;
+	}
+
+	protected <K, V> Map<K, V> shared(Map<K, V> map) {
+		if (map == null) {
+			return null;
+		}
+
+		if (map.isEmpty()) {
+			return map;
+		}
+
+		if (map.getClass().getName().startsWith("java.util.")) {
+			return map;
+		}
+		return isThreadSafe() ? new LinkedHashMap<>(map) : map;
+	}
+
+	protected <T> Set<T> shared(Set<T> set) {
+		if (set == null) {
+			return null;
+		}
+
+		if (set.isEmpty()) {
+			return set;
+		}
+		
+		if (set.getClass().getName().startsWith("java.util.")) {
+			return set;
+		}
+
+		return isThreadSafe() ? set.stream().collect(Collectors.toSet()) : set;
+	}
+
+	public <E> List<E> writeAsList(Function<? super C, ? extends List<E>> writer) throws X {
+		return write((c) -> {
+			List<E> elements = writer.apply(c);
+			return shared(elements);
+		});
+	}
+
+	public <E> List<E> updateAsList(Function<? super C, ? extends List<E>> executor) {
+		return update((c) -> {
+			List<E> elements = executor.apply(c);
+			return shared(elements);
+		});
 	}
 
 	public <K, V> Map<K, V> readAsMap(Function<? super C, ? extends Map<K, V>> reader) {
@@ -160,29 +217,40 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		lock.lock();
 		try {
 			Map<K, V> map = reader.apply(container);
-			if (map == null || map.isEmpty()) {
-				return map;
-			}
-
-			return isThreadSafe() ? new LinkedHashMap<>(map) : map;
+			return shared(map);
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public <E> Set<E> readAsSet(Function<? super C, ? extends Elements<E>> reader) {
+	public <E> Set<E> readAsSet(Function<? super C, ? extends Set<E>> reader) {
 		Lock lock = readLock();
 		lock.lock();
 		try {
-			Elements<E> elements = reader.apply(container);
-			if (elements == null) {
-				return null;
-			}
-
-			return isThreadSafe() ? elements.collect(Collectors.toSet()) : elements.toSet();
+			Set<E> elements = reader.apply(container);
+			return shared(elements);
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	protected <T> Elements<T> shared(Elements<T> elements) {
+		if (elements == null) {
+			return null;
+		}
+
+		if (isThreadSafe()) {
+			if (elements.isEmpty()) {
+				return Elements.empty();
+			}
+
+			if (elements instanceof Collection) {
+				List<T> list = elements.collect(Collectors.toList());
+				return Elements.of(list);
+			}
+			return elements.toList();
+		}
+		return elements;
 	}
 
 	/**
@@ -197,22 +265,7 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		lock.lock();
 		try {
 			Elements<E> elements = reader.apply(container);
-			if (elements == null) {
-				return null;
-			}
-
-			if (isThreadSafe()) {
-				if (elements.isEmpty()) {
-					return Elements.empty();
-				}
-
-				if (elements instanceof Collection) {
-					List<E> list = elements.collect(Collectors.toList());
-					return Elements.of(list);
-				}
-				return elements.toList();
-			}
-			return elements;
+			return shared(elements);
 		} finally {
 			lock.unlock();
 		}
@@ -224,7 +277,7 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	 * @param reader 回调参数可能为空
 	 * @return
 	 */
-	public int readInt(ToIntFunction<? super C> reader) {
+	public int readAsInt(ToIntFunction<? super C> reader) {
 		Lock lock = readLock();
 		lock.lock();
 		try {

@@ -41,7 +41,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
-		beanPostProcessors.getInjectors().register((bean) -> serviceInjectors.inject(bean));
+		beanPostProcessors.getInjectors().register(serviceInjectors);
 		serviceInjectors.register((bean) -> {
 			if (bean instanceof BeanFactoryAware) {
 				((BeanFactoryAware) bean).setBeanFactory(this);

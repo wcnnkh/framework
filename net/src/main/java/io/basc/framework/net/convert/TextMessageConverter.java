@@ -25,23 +25,23 @@ public class TextMessageConverter extends StringMessageConverter<Object> impleme
 
 	@Override
 	public boolean isReadable(TypeDescriptor typeDescriptor, MimeType contentType) {
-		return getConversionService().canConvert(String.class, typeDescriptor)
+		return getConversionService().canConvert(TypeDescriptor.valueOf(String.class), typeDescriptor)
 				&& super.isReadable(typeDescriptor, contentType);
 	}
 
 	@Override
 	public boolean isWriteable(TypeDescriptor typeDescriptor, MimeType contentType) {
-		return getConversionService().canConvert(typeDescriptor, String.class)
+		return getConversionService().canConvert(typeDescriptor, TypeDescriptor.valueOf(String.class))
 				&& super.isWriteable(typeDescriptor, contentType);
 	}
 
 	@Override
 	protected Object parseObject(String body, TypeDescriptor targetTypeDescriptor) {
-		return getConversionService().convert(body, targetTypeDescriptor);
+		return getConversionService().convert(body, TypeDescriptor.forObject(body), targetTypeDescriptor);
 	}
 
 	@Override
 	protected String toString(TypeDescriptor typeDescriptor, Object body, MimeType contentType) {
-		return getConversionService().convert(body, typeDescriptor, String.class);
+		return (String) getConversionService().convert(body, typeDescriptor, TypeDescriptor.valueOf(String.class));
 	}
 }

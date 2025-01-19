@@ -61,12 +61,12 @@ public class ListContainer<E, C extends List<ElementRegistration<E>>> extends Co
 
 	@Override
 	public int indexOf(Object o) {
-		return readInt((list) -> list == null ? -1 : list.indexOf(o));
+		return readAsInt((list) -> list == null ? -1 : list.indexOf(o));
 	}
 
 	@Override
 	public final int lastIndexOf(Object o) {
-		return readInt((list) -> list == null ? -1 : list.lastIndexOf(o));
+		return readAsInt((list) -> list == null ? -1 : list.lastIndexOf(o));
 	}
 
 	@Override
