@@ -36,12 +36,16 @@ public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC e
 		this.valuesCreator = valuesCreator;
 	}
 
+	protected VC newValues(K key) {
+		return valuesCreator.apply(key);
+	}
+
 	@Override
 	public final void adds(K key, List<V> values) {
 		write((map) -> {
 			VC services = map.get(key);
 			if (services == null) {
-				services = valuesCreator.apply(key);
+				services = newValues(key);
 				map.put(key, services);
 			}
 			services.registers(Elements.of(values));
@@ -70,10 +74,6 @@ public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC e
 	@Override
 	public final boolean containsValue(Object value) {
 		return readAsBoolean((map) -> map == null ? false : map.containsValue(value));
-	}
-
-	protected VC createValues(K key) {
-		return valuesCreator.apply(key);
 	}
 
 	public final Receipt deregister(K key, V value) throws RegistrationException {
@@ -204,7 +204,7 @@ public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC e
 		return writeAsList((map) -> {
 			VC services = map.get(key);
 			if (services == null) {
-				services = valuesCreator.apply(key);
+				services = newValues(key);
 				services.registers(Elements.of(value));
 				map.put(key, services);
 				return null;
@@ -229,7 +229,7 @@ public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC e
 		return write((map) -> {
 			VC services = map.get(key);
 			if (services == null) {
-				services = valuesCreator.apply(key);
+				services = newValues(key);
 				map.put(key, services);
 			}
 			return services.register(value);
@@ -284,7 +284,7 @@ public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC e
 		write((map) -> {
 			VC services = map.get(key);
 			if (services == null) {
-				services = valuesCreator.apply(key);
+				services = newValues(key);
 				map.put(key, services);
 			}
 			services.reset();
