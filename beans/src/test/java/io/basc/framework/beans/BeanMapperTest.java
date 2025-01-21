@@ -7,13 +7,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.core.convert.transform.stereotype.StereotypeMapper;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-public class MapperTest {
+public class BeanMapperTest {
 	@Test
 	public void util() {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -22,7 +21,7 @@ public class MapperTest {
 		map.put("bk", "bk");
 		map.put("s.a", UUIDSequences.getUUID());
 		map.put("s.b", UUIDSequences.getUUID());
-		StereotypeMapper mapper = new StereotypeMapper();
+		BeanMapper mapper = new BeanMapper();
 		A a = mapper.convert(map, A.class);
 		System.out.println(map);
 		System.out.println(a);

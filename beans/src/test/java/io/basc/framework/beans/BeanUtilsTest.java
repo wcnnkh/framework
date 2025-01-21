@@ -1,14 +1,18 @@
 package io.basc.framework.beans;
 
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.StopWatch;
 import lombok.ToString;
 
-public class CopyTest {
+public class BeanUtilsTest {
 	@Test
 	public void copyTest() {
 		assertTrue(ResolvableType.forClass(List.class)
@@ -36,7 +40,7 @@ public class CopyTest {
 		deepList.add("b");
 		source.setList(deepList);
 		stopWatch.start();
-		BeanUtils.copy(source, target, true);
+		BeanUtils.copyProperties(source, target);
 		stopWatch.stop();
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());

@@ -122,8 +122,8 @@ public class BeanUtils {
 							iterator.remove();
 						}
 					} catch (Throwable e) {
-						throw new FatalBeanException(
-								"Could not copy property '" + targetPropertyDescriptor + "' from source to target", e);
+						throw new FatalBeanException("Could not copy property '" + targetPropertyDescriptor.getName()
+								+ "' from source to target", e);
 					}
 				}
 			}

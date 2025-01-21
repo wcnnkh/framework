@@ -10,11 +10,7 @@ import lombok.NonNull;
 @Data
 public abstract class ReflectionMember<T extends Member> implements Executable {
 	@NonNull
-	private volatile T member;
-
-	public T getMember() {
-		return member;
-	}
+	private final T member;
 
 	@Override
 	public String getName() {

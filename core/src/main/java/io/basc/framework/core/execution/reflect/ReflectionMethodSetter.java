@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Setter;
 import io.basc.framework.lang.ImpossibleException;
-import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 
@@ -29,7 +28,7 @@ public class ReflectionMethodSetter extends ReflectionMethod implements Setter {
 	@Override
 	public void set(Object target, Object value) {
 		try {
-			execute(target, Elements.singleton(value));
+			invoke(target, value);
 		} catch (Throwable e) {
 			ReflectionUtils.handleThrowable(e);
 			throw new ImpossibleException();
