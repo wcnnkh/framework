@@ -3,8 +3,8 @@ package io.basc.framework.util.check;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.function.Functions;
+import lombok.NonNull;
 
 public class PredicateRegistry<T> implements Predicate<T> {
 	private Predicate<T> predicate;
@@ -13,8 +13,7 @@ public class PredicateRegistry<T> implements Predicate<T> {
 		this(Functions.alwaysTruePredicate());
 	}
 
-	public PredicateRegistry(Predicate<T> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	public PredicateRegistry(@NonNull Predicate<T> predicate) {
 		this.predicate = predicate;
 	}
 
@@ -54,8 +53,7 @@ public class PredicateRegistry<T> implements Predicate<T> {
 	 * @param mapper
 	 * @return
 	 */
-	public <R> PredicateRegistry<R> map(Function<? super Predicate<T>, ? extends Predicate<R>> mapper) {
-		Assert.requiredArgument(mapper != null, "mapper");
+	public <R> PredicateRegistry<R> map(@NonNull Function<? super Predicate<T>, ? extends Predicate<R>> mapper) {
 		return new PredicateRegistry<>(mapper.apply(this.predicate));
 	}
 }
