@@ -6,7 +6,6 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
-import io.basc.framework.core.convert.transform.TemplateTransformFilter;
 import io.basc.framework.core.convert.transform.TemplateTransformer;
 import io.basc.framework.core.convert.transform.TransformContext;
 import lombok.AllArgsConstructor;

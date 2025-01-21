@@ -1,7 +1,11 @@
-package io.basc.framework.core.convert.transform;
+package io.basc.framework.core.convert.transform.stractegy;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.transform.Accessor;
+import io.basc.framework.core.convert.transform.Template;
+import io.basc.framework.core.convert.transform.TemplateTransformer;
+import io.basc.framework.core.convert.transform.TransformContext;
 import lombok.NonNull;
 
 public interface TemplateTransformFilter<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable> {

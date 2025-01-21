@@ -16,11 +16,16 @@ public class DefaultTemplateTransformer<K, SV extends Value, S extends Template<
 	@NonNull
 	private ConversionService conversionService = new IdentityConversionService();
 
+	protected Elements<? extends TV> getTargetAccessors(K index, SV accessor, TransformContext<K, TV, T> targetContext,
+			@NonNull T target, @NonNull TypeDescriptor targetType) {
+		return target.getAccessors(index);
+	}
+
 	@Override
 	public void transform(TransformContext<K, SV, S> sourceContext, @NonNull S source,
 			@NonNull TypeDescriptor sourceType, K index, SV accessor, TransformContext<K, TV, T> targetContext,
 			@NonNull T target, @NonNull TypeDescriptor targetType) throws E {
-		Elements<? extends TV> accessors = target.getAccessors(index);
+		Elements<? extends TV> accessors = getTargetAccessors(index, accessor, targetContext, target, targetType);
 		for (TV targetAccessor : accessors) {
 			if (targetAccessor.isWriteable()) {
 				continue;

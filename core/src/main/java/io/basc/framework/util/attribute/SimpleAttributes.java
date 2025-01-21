@@ -41,7 +41,7 @@ public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
 		attributeMap.remove(name);
 	}
 
-	public void clear() {
+	public void clearAttributes() {
 		if (attributeMap != null) {
 			attributeMap.clear();
 		}

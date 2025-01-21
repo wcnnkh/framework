@@ -6,7 +6,6 @@ import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
 import io.basc.framework.core.convert.transform.TemplateTransformer;
 import io.basc.framework.core.convert.transform.Transformer;
-import io.basc.framework.core.convert.transform.config.DefaultTemplateTransformerFactory;
 import io.basc.framework.core.convert.transform.config.TemplateFactoryRegistry;
 import io.basc.framework.core.convert.transform.config.Transformers;
 import lombok.Getter;

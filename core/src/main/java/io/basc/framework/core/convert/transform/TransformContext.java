@@ -1,11 +1,17 @@
 package io.basc.framework.core.convert.transform;
 
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.util.attribute.SimpleAttributes;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Data
-public class TransformContext<K, V extends Value, T extends Template<K, ? extends V>> {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class TransformContext<K, V extends Value, T extends Template<K, ? extends V>>
+		extends SimpleAttributes<String, Object> {
 	private final T template;
 	private final K index;
 	private final V accessor;
