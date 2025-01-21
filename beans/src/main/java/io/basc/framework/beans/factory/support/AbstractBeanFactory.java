@@ -17,13 +17,13 @@ import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.beans.factory.config.InitializingBean;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
+import io.basc.framework.beans.factory.ioc.AutowireBeanPostProcessor;
 import io.basc.framework.beans.factory.ioc.DependencyInjection;
-import io.basc.framework.beans.factory.ioc.DependencyInjectionBeanPostProcessor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.transform.PropertyDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;
-import io.basc.framework.core.mapping.PropertyDescriptor;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.logging.LogManager;
@@ -48,8 +48,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			}
 			return Registration.SUCCESS;
 		});
-		beanPostProcessors
-				.setFirst(new DependencyInjectionBeanPostProcessor(this, dependencyInjection, dependencyInjection));
+		beanPostProcessors.setFirst(new AutowireBeanPostProcessor(this));
 	}
 
 	public DependencyInjection getDependencyInjection() {

@@ -10,7 +10,7 @@ import com.netflix.hystrix.HystrixThreadPoolProperties;
 import io.basc.framework.beans.factory.annotation.Component;
 import io.basc.framework.beans.factory.annotation.ConditionalOnMissingBean;
 import io.basc.framework.core.annotation.Order;
-import io.basc.framework.core.mapping.InstanceFactory;
+import io.basc.framework.core.convert.transform.mapping.InstanceFactory;
 import io.basc.framework.netflix.hystrix.annotation.Hystrix;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.reflect.MethodInvoker;

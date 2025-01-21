@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.transform.Properties;
+import io.basc.framework.core.convert.transform.Property;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptor;
@@ -45,16 +47,16 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		}
 	}
 
-	protected Object getArg(ServerRequest request, Parameters requestPatternParameters,
+	protected Object getArg(ServerRequest request, Properties requestPatternProperties,
 			ParameterDescriptor parameterDescriptor) throws IOException {
 		// 优先匹配额外参数
-		Elements<Parameter> elements = requestPatternParameters.getAccessors(parameterDescriptor);
-		for (Parameter parameter : elements) {
-			if (!parameter.isReadable()) {
+		Elements<Property> elements = requestPatternProperties.getAccessors(parameterDescriptor);
+		for (Property property : elements) {
+			if (!property.isReadable()) {
 				continue;
 			}
-
-			if (parameter.test(parameterDescriptor)) {
+			
+			if (property.test(parameterDescriptor)) {
 				return parameter.getAsObject(parameterDescriptor.getTypeDescriptor());
 			}
 		}
@@ -63,12 +65,12 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 
 	private Object[] getArgs(ServerRequest request) throws IOException {
 		// 额外参数
-		Parameters requestPatternParameters = requestPattern.apply(request);
+		Properties requestPatternProperties = requestPattern.apply(request);
 		ParameterDescriptor[] paraemterDescriptors = function.getParameterDescriptors()
 				.toArray(new ParameterDescriptor[0]);
 		Object[] args = new Object[paraemterDescriptors.length];
 		for (int i = 0; i < paraemterDescriptors.length; i++) {
-			args[i] = getArg(request, requestPatternParameters, paraemterDescriptors[i]);
+			args[i] = getArg(request, requestPatternProperties, paraemterDescriptors[i]);
 		}
 		return args;
 	}

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.core.mapping.stereotype.StereotypeMapper;
+import io.basc.framework.core.convert.transform.stereotype.StereotypeMapper;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

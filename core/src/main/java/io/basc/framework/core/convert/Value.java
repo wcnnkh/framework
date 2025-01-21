@@ -541,6 +541,33 @@ public interface Value extends ValueDescriptor, Any, Supplier<Object, Conversion
 		}
 		throw new ConversionFailedException(this, targetType, null);
 	}
+	
+	default <E extends Throwable> boolean canConvert(TypeDescriptor requiredTypeDescriptor,
+			Converter<? super Object, ? extends Object, ? extends E> converter) {
+		Object source = get();
+		if (source == null) {
+			return true;
+		}
+
+		Class<?> rawClass = requiredTypeDescriptor.getType();
+		if (rawClass == Object.class || rawClass == null) {
+			return true;
+		}
+
+		TypeDescriptor sourceType = getTypeDescriptor();
+		while (true) {
+			if (converter.canConvert(sourceType, requiredTypeDescriptor)) {
+				return true;
+			}
+
+			if (source instanceof Value) {
+				source = ((Value) source).get();
+				sourceType = ((Value) source).getTypeDescriptor();
+			}
+			break;
+		}
+		return false;
+	}
 
 	default short getAsShort() {
 		Object value = get();

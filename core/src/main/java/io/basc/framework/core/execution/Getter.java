@@ -1,7 +1,7 @@
 package io.basc.framework.core.execution;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.mapping.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.PropertyDescriptor;
 import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 

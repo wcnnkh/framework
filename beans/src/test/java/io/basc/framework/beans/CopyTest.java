@@ -1,11 +1,8 @@
 package io.basc.framework.beans;
 
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.StopWatch;
@@ -26,7 +23,7 @@ public class CopyTest {
 		System.out.println(source);
 		StopWatch stopWatch = new StopWatch("copy test");
 		stopWatch.start("first copy");
-		BeanUtils.copy(source, target);
+		BeanUtils.copyProperties(source, target);
 		stopWatch.stop();
 		System.out.println(stopWatch.toString());
 

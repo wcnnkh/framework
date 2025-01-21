@@ -4,45 +4,39 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.transform.Accessor;
 import io.basc.framework.core.convert.transform.Template;
 import io.basc.framework.core.convert.transform.config.TemplateFactoryRegistry;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public class ObjectTransformer<K, V extends Accessor, T extends Template<K, ? extends V>, E extends Throwable>
 		extends DefaultTransformer<Object, Object, K, V, T, V, T, E> {
-	private final TemplateFactoryRegistry<? super Object, ? extends K, ? extends V, ? extends T> templateFactoryRegistry = new TemplateFactoryRegistry<>();
-
-	public T getObjectTemplate(@NonNull Object object, @NonNull TypeDescriptor requiredType) {
-		return templateFactoryRegistry.getTemplate(object, requiredType);
-	}
+	private final TemplateFactoryRegistry<Object, K, V, T> objectTemplateProvider = new TemplateFactoryRegistry<>();
 
 	@Override
-	public final T getSourceTemplate(@NonNull Object source, @NonNull TypeDescriptor sourceType) {
-		T template = super.getSourceTemplate(source, sourceType);
+	protected T getSourceTemplate(@NonNull Object source, @NonNull TypeDescriptor sourceType) {
+		T template = objectTemplateProvider.getTemplate(source, sourceType);
 		if (template == null) {
-			template = getObjectTemplate(source, sourceType);
+			template = super.getSourceTemplate(source, sourceType);
 		}
 		return template;
 	}
 
 	@Override
-	public final T getTargetTemplate(@NonNull Object target, @NonNull TypeDescriptor targetType) {
-		T template = super.getTargetTemplate(target, targetType);
+	protected T getTargetTemplate(@NonNull Object target, @NonNull TypeDescriptor targetType) {
+		T template = objectTemplateProvider.getTemplate(target, targetType);
 		if (template == null) {
-			template = getObjectTemplate(target, targetType);
+			template = super.getTargetTemplate(target, targetType);
 		}
 		return template;
 	}
 
-	public TemplateFactoryRegistry<? super Object, ? extends K, ? extends V, ? extends T> getTemplateFactoryRegistry() {
-		return templateFactoryRegistry;
+	@Override
+	protected boolean hasSourceTemplate(@NonNull TypeDescriptor requiredType) {
+		return objectTemplateProvider.hasTemplate(requiredType) || super.hasSourceTemplate(requiredType);
 	}
 
 	@Override
-	protected boolean hasSourceTemplate(@NonNull Class<?> sourceType) {
-		return super.hasSourceTemplate(sourceType) || templateFactoryRegistry.containsTemplate(sourceType);
-	}
-
-	@Override
-	protected boolean hasTargetTemplate(@NonNull Class<?> targetType) {
-		return super.hasTargetTemplate(targetType) || templateFactoryRegistry.containsTemplate(targetType);
+	protected boolean hasTargetTemplate(@NonNull TypeDescriptor requiredType) {
+		return objectTemplateProvider.hasTemplate(requiredType) || super.hasTargetTemplate(requiredType);
 	}
 }

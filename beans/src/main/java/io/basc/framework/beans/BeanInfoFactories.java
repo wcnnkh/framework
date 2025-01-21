@@ -7,7 +7,7 @@ import java.beans.Introspector;
 import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.NonNull;
 
-public class BeanInfoFactories extends ConfigurableServices<BeanInfoFactory> implements BeanInfoFactory {
+public class BeanInfoFactories extends ConfigurableServices<BeanInfoFactory> implements BeanInfoProvider {
 	public BeanInfoFactories() {
 		setServiceClass(BeanInfoFactory.class);
 	}

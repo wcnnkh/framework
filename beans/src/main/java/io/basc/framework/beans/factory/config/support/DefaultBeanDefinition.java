@@ -1,14 +1,14 @@
 package io.basc.framework.beans.factory.config.support;
 
-import io.basc.framework.beans.BeanMappingDescriptor;
+import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.core.env.config.DefaultPropertyResolver;
 import io.basc.framework.core.execution.ExecutionStrategy;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;
-import io.basc.framework.core.mapping.Properties;
 import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 
@@ -20,7 +20,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
 	private BeanDefinition originatingBeanDefinition;
 	private Scope scope = Scope.DEFAULT;
 	private final ExecutionStrategy<Function> executionStrategy;
-	private BeanMappingDescriptor beanMappingDescriptor;
+	private BeanMapping beanMappingDescriptor;
 	private String name;
 	private final Properties properties = new DefaultPropertyResolver();
 	private Elements<Method> initMethods;

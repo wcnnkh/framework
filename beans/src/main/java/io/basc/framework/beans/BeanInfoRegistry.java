@@ -4,16 +4,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.mapping.stereotype.MappingDescriptorFactory;
 import io.basc.framework.util.spi.ServiceMap;
 import lombok.NonNull;
 
-public class BeanInfoRegistry extends ServiceMap<CachedBeanInfo>
-		implements BeanInfoFactory, MappingDescriptorFactory<BeanFieldDescriptor, BeanMappingDescriptor> {
+public class BeanInfoRegistry extends ServiceMap<BeanInfo> implements BeanInfoProvider {
 	private BeanInfoFactory beanInfoFactory;
 
-	protected CachedBeanInfo findBeanInfo(Class<?> beanClass) {
+	protected BeanInfo findBeanInfo(Class<?> beanClass) {
 		return getFirst(beanClass);
 	}
 
@@ -22,7 +19,7 @@ public class BeanInfoRegistry extends ServiceMap<CachedBeanInfo>
 	}
 
 	public void setBeanInfoFactory(BeanInfoFactory beanInfoFactory) {
-		Lock writeLock = getContainer().writeLock();
+		Lock writeLock = writeLock();
 		try {
 			writeLock.lock();
 			this.beanInfoFactory = beanInfoFactory;
@@ -32,21 +29,19 @@ public class BeanInfoRegistry extends ServiceMap<CachedBeanInfo>
 	}
 
 	@Override
-	public CachedBeanInfo getBeanInfo(@NonNull Class<?> beanClass) {
-		CachedBeanInfo beanInfo = findBeanInfo(beanClass);
+	public BeanInfo getBeanInfo(@NonNull Class<?> beanClass) {
+		BeanInfo beanInfo = findBeanInfo(beanClass);
 		if (beanInfo == null) {
-			Lock lock = getContainer().readLock();
+			Lock lock = readLock();
 			try {
 				lock.lock();
 				beanInfo = findBeanInfo(beanClass);
 				if (beanInfo == null) {
-					Lock writeLock = getContainer().writeLock();
+					Lock writeLock = writeLock();
 					try {
 						writeLock.lock();
 						BeanInfo info = loadBeanInfo(beanClass);
 						if (info != null) {
-							beanInfo = (info instanceof CachedBeanInfo) ? ((CachedBeanInfo) info)
-									: new CachedBeanInfo(info);
 							set(beanClass, beanInfo);
 						}
 					} finally {
@@ -72,13 +67,4 @@ public class BeanInfoRegistry extends ServiceMap<CachedBeanInfo>
 		}
 	}
 
-	@Override
-	public BeanMappingDescriptor getMappingDescriptor(@NonNull TypeDescriptor requiredType) {
-		BeanInfo beanInfo = getBeanInfo(requiredType.getType());
-		if (beanInfo == null) {
-			return null;
-		}
-
-		return new BeanMappingDescriptor(requiredType.getType(), beanInfo);
-	}
 }

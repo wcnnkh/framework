@@ -1,8 +1,8 @@
 package io.basc.framework.beans.factory.ioc;
 
 import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.core.mapping.Property;
-import io.basc.framework.core.mapping.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.Property;
+import io.basc.framework.core.convert.transform.PropertyDescriptor;
 
 /**
  * 依赖注入属性解析

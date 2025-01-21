@@ -11,5 +11,10 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
 	</dependencies>
 </project>

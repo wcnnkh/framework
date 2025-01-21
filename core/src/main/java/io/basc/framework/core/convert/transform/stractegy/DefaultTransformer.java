@@ -9,32 +9,30 @@ import io.basc.framework.core.convert.transform.Transformer;
 import io.basc.framework.core.convert.transform.config.DefaultTemplateTransformerFactory;
 import io.basc.framework.core.convert.transform.config.TemplateFactoryRegistry;
 import io.basc.framework.core.convert.transform.config.Transformers;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends DefaultTemplateTransformerFactory<K, SV, S, TV, T, E> implements Transformer<X, Y, E> {
-	private final TemplateFactoryRegistry<? super X, ? extends K, ? extends SV, ? extends S> sourceTemplateFactoryRegistry = new TemplateFactoryRegistry<>();
-	private final TemplateFactoryRegistry<? super Y, ? extends K, ? extends TV, ? extends T> targetTemplateFactoryRegistry = new TemplateFactoryRegistry<>();
+	private final TemplateFactoryRegistry<X, K, SV, S> sourceTemplateProvider = new TemplateFactoryRegistry<>();
+	private final TemplateFactoryRegistry<Y, K, TV, T> targetTemplateProvider = new TemplateFactoryRegistry<>();
 	private final Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> transformers = new Transformers<>();
 
-	public Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> getTransformers() {
-		return transformers;
+	protected S getSourceTemplate(@NonNull X source, @NonNull TypeDescriptor sourceType) {
+		return sourceTemplateProvider.getTemplate(source, sourceType);
 	}
 
-	public S getSourceTemplate(@NonNull X source, @NonNull TypeDescriptor sourceType) {
-		return sourceTemplateFactoryRegistry.getTemplate(source, sourceType);
+	protected T getTargetTemplate(@NonNull Y target, @NonNull TypeDescriptor targetType) {
+		return targetTemplateProvider.getTemplate(target, targetType);
 	}
 
-	public T getTargetTemplate(@NonNull Y target, @NonNull TypeDescriptor targetType) {
-		return targetTemplateFactoryRegistry.getTemplate(target, targetType);
+	protected boolean hasSourceTemplate(@NonNull TypeDescriptor requiredType) {
+		return sourceTemplateProvider.hasTemplate(requiredType);
 	}
 
-	protected boolean hasSourceTemplate(@NonNull Class<?> sourceType) {
-		return sourceTemplateFactoryRegistry.containsTemplate(sourceType);
-	}
-
-	protected boolean hasTargetTemplate(@NonNull Class<?> targetType) {
-		return targetTemplateFactoryRegistry.containsTemplate(targetType);
+	protected boolean hasTargetTemplate(@NonNull TypeDescriptor requiredType) {
+		return targetTemplateProvider.hasTemplate(requiredType);
 	}
 
 	@Override
@@ -42,15 +40,7 @@ public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K,
 		if (transformers.canTransform(sourceType, targetType)) {
 			return true;
 		}
-		return hasSourceTemplate(sourceType.getType()) && hasTargetTemplate(targetType.getType());
-	}
-
-	public TemplateFactoryRegistry<? super X, ? extends K, ? extends SV, ? extends S> getSourceTemplateFactoryRegistry() {
-		return sourceTemplateFactoryRegistry;
-	}
-
-	public TemplateFactoryRegistry<? super Y, ? extends K, ? extends TV, ? extends T> getTargetTemplateFactoryRegistry() {
-		return targetTemplateFactoryRegistry;
+		return hasSourceTemplate(sourceType) && hasTargetTemplate(targetType);
 	}
 
 	@Override

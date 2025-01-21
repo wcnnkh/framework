@@ -1,8 +1,11 @@
 package io.basc.framework.net.pattern;
 
+import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.core.execution.Parameters;
+import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.spi.Services;
 
 /**
@@ -19,7 +22,7 @@ public class RequestPatterns extends Services<RequestPattern> implements Request
 	}
 
 	@Override
-	public Parameters apply(Request request) {
+	public Properties apply(Request request) {
 		for (RequestPattern pattern : this) {
 			if (pattern.test(request)) {
 				return pattern.apply(request);
@@ -30,19 +33,13 @@ public class RequestPatterns extends Services<RequestPattern> implements Request
 
 	@Override
 	public MimeTypes getConsumes() {
-		MimeTypes mimeTypes = new MimeTypes();
-		for (RequestPattern pattern : this) {
-			mimeTypes.addAll(pattern.getConsumes());
-		}
-		return mimeTypes;
+		Elements<MimeType> elements = flatMap((e) -> e.getConsumes());
+		return MimeTypes.forElements(elements);
 	}
 
 	@Override
 	public MimeTypes getProduces() {
-		MimeTypes mimeTypes = new MimeTypes();
-		for (RequestPattern pattern : this) {
-			mimeTypes.addAll(pattern.getProduces());
-		}
-		return mimeTypes;
+		Elements<MimeType> elements = flatMap((e) -> e.getProduces());
+		return MimeTypes.forElements(elements);
 	}
 }

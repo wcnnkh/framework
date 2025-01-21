@@ -3,7 +3,7 @@ package io.basc.framework.core.execution;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import io.basc.framework.core.mapping.PropertyTemplate;
+import io.basc.framework.core.convert.transform.PropertyTemplate;
 import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 

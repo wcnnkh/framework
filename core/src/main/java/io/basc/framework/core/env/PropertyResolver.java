@@ -1,6 +1,6 @@
 package io.basc.framework.core.env;
 
-import io.basc.framework.core.mapping.Properties;
+import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 

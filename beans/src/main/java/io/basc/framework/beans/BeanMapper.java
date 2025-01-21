@@ -1,10 +1,10 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.core.mapping.stereotype.StereotypeMapper;
+import io.basc.framework.core.convert.transform.mapping.DefaultMapper;
 
-public class BeanMapper extends StereotypeMapper<BeanFieldDescriptor, BeanMappingDescriptor> {
+public class BeanMapper extends DefaultMapper {
 
 	public BeanMapper() {
-		getMappingDescriptorRegistry().setMappingDescriptorFactory(BeanUtils.getBeanInfoRegistry());
+		getObjectTemplateProvider().setTemplateProvider(BeanUtils.getBeanMappingRegistry());
 	}
 }

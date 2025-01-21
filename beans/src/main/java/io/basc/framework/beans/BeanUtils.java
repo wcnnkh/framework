@@ -1,24 +1,18 @@
 package io.basc.framework.beans;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.collections.Elements;
-import io.basc.framework.util.reflect.ReflectionUtils;
+import io.basc.framework.core.convert.TypeDescriptor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public class BeanUtils {
 	public static interface Filter {
-		boolean doFilter(Object source, PropertyDescriptor sourcePropertyDescriptor, Object target,
-				PropertyDescriptor targetPropertyDescriptor, Mapping mapping) throws Throwable;
+		boolean doFilter(Object source, BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				BeanPropertyDescriptor targetPropertyDescriptor, Mapping mapping) throws Throwable;
 	}
 
 	@RequiredArgsConstructor
@@ -28,8 +22,8 @@ public class BeanUtils {
 		private final Mapping mapping;
 
 		@Override
-		public boolean doMapping(Object source, PropertyDescriptor sourcePropertyDescriptor, Object target,
-				PropertyDescriptor targetPropertyDescriptor) throws Throwable {
+		public boolean doMapping(Object source, BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				BeanPropertyDescriptor targetPropertyDescriptor) throws Throwable {
 			MappingChain chain = new MappingChain(filters.iterator(), mapping);
 			return chain.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor);
 		}
@@ -37,8 +31,8 @@ public class BeanUtils {
 	}
 
 	public static interface Mapping {
-		boolean doMapping(Object source, @NonNull PropertyDescriptor sourcePropertyDescriptor, Object target,
-				@NonNull PropertyDescriptor targetPropertyDescriptor) throws Throwable;
+		boolean doMapping(Object source, @NonNull BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				@NonNull BeanPropertyDescriptor targetPropertyDescriptor) throws Throwable;
 	}
 
 	@RequiredArgsConstructor
@@ -48,8 +42,8 @@ public class BeanUtils {
 		private final Mapping nextChain;
 
 		@Override
-		public boolean doMapping(Object source, PropertyDescriptor sourcePropertyDescriptor, Object target,
-				PropertyDescriptor targetPropertyDescriptor) throws Throwable {
+		public boolean doMapping(Object source, BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				BeanPropertyDescriptor targetPropertyDescriptor) throws Throwable {
 			if (iterator.hasNext()) {
 				return iterator.next().doFilter(source, sourcePropertyDescriptor, target, targetPropertyDescriptor,
 						this);
@@ -60,45 +54,29 @@ public class BeanUtils {
 		}
 	}
 
-	private static final BeanInfoFactories BEAN_INFO_FACTORIES = new BeanInfoFactories();
+	private static final BeanMappingRegistry BEAN_MAPPING_REGISTRY = new BeanMappingRegistry();
 
-	private static final BeanInfoRegistry BEAN_INFO_REGISTRY = new BeanInfoRegistry();
+	public static BeanMappingRegistry getBeanMappingRegistry() {
+		return BEAN_MAPPING_REGISTRY;
+	}
 
 	/**
 	 * 默认的映射
 	 */
-	public static final Mapping COPY = (source, sourcePropertyDescriptor, target, targetProperyDescriptor) -> {
-		Method writeMethod = targetProperyDescriptor.getWriteMethod();
-		if (writeMethod == null) {
+	public static final Mapping COPY_PROPERTIES = (source, sourcePropertyDescriptor, target,
+			targetProperyDescriptor) -> {
+		if (!(sourcePropertyDescriptor.hasReadMethod() && sourcePropertyDescriptor.isReadable()
+				&& targetProperyDescriptor.hasWriteMethod() && targetProperyDescriptor.isWritable())) {
 			return false;
 		}
 
-		Method readMethod = sourcePropertyDescriptor.getReadMethod();
-		if (readMethod == null) {
+		if (!sourcePropertyDescriptor.getTypeDescriptor()
+				.isAssignableTo(targetProperyDescriptor.getRequiredTypeDescriptor())) {
 			return false;
 		}
-
-		ResolvableType sourceResolvableType = ResolvableType.forMethodReturnType(readMethod);
-		ResolvableType targetResolvableType = ResolvableType.forMethodParameter(writeMethod, 0);
-
-		// Ignore generic types in assignable check if either ResolvableType has
-		// unresolvable generics.
-		boolean isAssignable = (sourceResolvableType.hasUnresolvableGenerics()
-				|| targetResolvableType.hasUnresolvableGenerics()
-						? ClassUtils.isAssignable(writeMethod.getParameterTypes()[0], readMethod.getReturnType())
-						: targetResolvableType.isAssignableFrom(sourceResolvableType));
-		if (isAssignable) {
-			if (!Modifier.isPublic(readMethod.getDeclaringClass().getModifiers())) {
-				readMethod.setAccessible(true);
-			}
-			Object value = readMethod.invoke(source);
-			if (!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers())) {
-				writeMethod.setAccessible(true);
-			}
-			writeMethod.invoke(target, value);
-			return true;
-		}
-		return false;
+		Object value = sourcePropertyDescriptor.readFrom(source);
+		targetProperyDescriptor.writeTo(target, value);
+		return true;
 	};
 
 	/**
@@ -106,12 +84,11 @@ public class BeanUtils {
 	 */
 	public static final Filter IGNORE_NULL_FILTER = (source, sourcePropertyDescriptor, target, targetProperyDescriptor,
 			mapping) -> {
-		Method readMethod = sourcePropertyDescriptor.getReadMethod();
-		if (readMethod == null) {
+		if (!sourcePropertyDescriptor.isReadable()) {
 			return false;
 		}
 
-		Object value = ReflectionUtils.invoke(readMethod, source);
+		Object value = sourcePropertyDescriptor.readFrom(source);
 		if (value == null) {
 			return false;
 		}
@@ -119,26 +96,26 @@ public class BeanUtils {
 	};
 
 	static {
-		BEAN_INFO_FACTORIES.doNativeConfigure();
-		BEAN_INFO_REGISTRY.setBeanInfoFactory(BEAN_INFO_FACTORIES);
+		BeanInfoFactories beanInfoFactories = new BeanInfoFactories();
+		beanInfoFactories.doNativeConfigure();
+		BEAN_MAPPING_REGISTRY.setStereotypeMappingFactory(beanInfoFactories);
 	}
 
 	public static void copyProperties(@NonNull Object source, @NonNull Object target, @NonNull Filter... filters) {
-		FilterableMapping mapping = new FilterableMapping(Arrays.asList(filters), COPY);
+		FilterableMapping mapping = new FilterableMapping(Arrays.asList(filters), COPY_PROPERTIES);
 		doMapping(source, source.getClass(), target, target.getClass(), mapping);
 	}
 
 	public static <S, T> void doMapping(S source, @NonNull Class<? extends S> sourceClass, T target,
 			@NonNull Class<? extends T> targetClass, @NonNull Mapping mapping) {
-		BeanPropertyDescriptors sourcePropertyDescriptors = getPropertyDescriptors(sourceClass);
-		BeanPropertyDescriptors targetPropertyDescriptors = getPropertyDescriptors(targetClass);
-		for (String name : targetPropertyDescriptors.keys()) {
-			List<PropertyDescriptor> sourceList = sourcePropertyDescriptors.getValues(name)
-					.collect(Collectors.toList());
-			for (PropertyDescriptor targetPropertyDescriptor : targetPropertyDescriptors.getValues(name)) {
-				Iterator<PropertyDescriptor> iterator = sourceList.iterator();
+		BeanMapping sourceMapping = getMapping(sourceClass);
+		BeanMapping targetMapping = getMapping(targetClass);
+		for (String name : sourceMapping.keys()) {
+			List<BeanPropertyDescriptor> sourceList = sourceMapping.getValues(name).collect(Collectors.toList());
+			for (BeanPropertyDescriptor targetPropertyDescriptor : targetMapping.getValues(name)) {
+				Iterator<BeanPropertyDescriptor> iterator = sourceList.iterator();
 				while (iterator.hasNext()) {
-					PropertyDescriptor sourcePropertyDescriptor = iterator.next();
+					BeanPropertyDescriptor sourcePropertyDescriptor = iterator.next();
 					try {
 						if (mapping.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor)) {
 							// 映射成功
@@ -153,22 +130,8 @@ public class BeanUtils {
 		}
 	}
 
-	public static CachedBeanInfo getBeanInfo(Class<?> beanClass) {
-		return BEAN_INFO_REGISTRY.getBeanInfo(beanClass);
-	}
-
-	public static BeanInfoRegistry getBeanInfoRegistry() {
-		return BEAN_INFO_REGISTRY;
-	}
-
-	public static BeanPropertyDescriptors getPropertyDescriptors(Class<?> beanClass) {
-		CachedBeanInfo beanInfo = getBeanInfo(beanClass);
-		return beanInfo.getSharedPropertyDescriptors();
-	}
-
-	public static Elements<PropertyDescriptor> getPropertyDescriptors(Class<?> beanClass, String name) {
-		BeanPropertyDescriptors propertyDescriptors = getPropertyDescriptors(beanClass);
-		return propertyDescriptors.getValues(name);
+	public static BeanMapping getMapping(Class<?> beanClass) {
+		return BEAN_MAPPING_REGISTRY.getStereotypeMapping(TypeDescriptor.valueOf(beanClass));
 	}
 
 	public static boolean isCacheSafe(@NonNull Class<?> clazz, ClassLoader classLoader) {

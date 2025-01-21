@@ -402,9 +402,8 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	}
 
 	@Override
-	public Iterator<KeyValue<K, V>> iterator() {
-		return read((map) -> map == null ? Collections.emptyIterator()
-				: map.values().stream().map((e) -> (KeyValue<K, V>) e).collect(Collectors.toList()).iterator());
+	public final Iterator<KeyValue<K, V>> iterator() {
+		return entries().iterator();
 	}
 
 	@Override
@@ -469,10 +468,18 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 	}
 
 	@Override
-	public Stream<KeyValue<K, V>> stream() {
-		return readAsElements(
-				(map) -> map == null ? Elements.empty() : Elements.of(map.values()).map((e) -> (KeyValue<K, V>) e))
-				.stream();
+	public final Stream<KeyValue<K, V>> stream() {
+		return entries().stream();
+	}
+
+	public Elements<KeyValue<K, V>> entries() {
+		return readAsElements((map) -> {
+			if (map == null) {
+				return Elements.empty();
+			}
+
+			return Elements.of(() -> map.entrySet().stream().map((e) -> e.getValue()));
+		});
 	}
 
 	@Override

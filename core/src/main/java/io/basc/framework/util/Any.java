@@ -279,6 +279,18 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		return getAsObject(requiredType, () -> DEFAULT.getAsObject(requiredType));
 	}
 
+	/*
+	 * default boolean canConvert(Class<?> requiredType) { return String.class ==
+	 * requiredType || ClassUtils.isInt(requiredType) ||
+	 * ClassUtils.isLong(requiredType) || ClassUtils.isFloat(requiredType) ||
+	 * ClassUtils.isDouble(requiredType) || ClassUtils.isShort(requiredType) ||
+	 * ClassUtils.isBoolean(requiredType) || ClassUtils.isByte(requiredType) ||
+	 * ClassUtils.isChar(requiredType) || BigDecimal.class == requiredType ||
+	 * BigInteger.class == requiredType || Version.class == requiredType ||
+	 * NumberValue.class.isAssignableFrom(requiredType) || requiredType.isEnum() ||
+	 * requiredType == Any.class || requiredType.isArray(); }
+	 */
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
 		Object v = null;

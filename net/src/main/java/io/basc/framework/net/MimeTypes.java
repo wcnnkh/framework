@@ -1,109 +1,69 @@
 package io.basc.framework.net;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
+import lombok.NonNull;
 
-public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comparable<MimeTypes>, Cloneable {
-	public static final MimeTypes EMPTY = new MimeTypes(Collections.emptySortedSet());
-	private final SortedSet<MimeType> mimeTypes;
-	private boolean readyOnly;
+public interface MimeTypes extends Elements<MimeType>, Comparable<MimeTypes> {
 
-	public MimeTypes() {
-		this.mimeTypes = new TreeSet<MimeType>(this);
-	}
+	public static class StandardMimeTypes extends StandardListElements<MimeType, List<MimeType>> implements MimeTypes {
+		private static final long serialVersionUID = 1L;
 
-	public MimeTypes(SortedSet<MimeType> mimeTypes) {
-		this(mimeTypes, false);
-	}
+		public StandardMimeTypes(@NonNull List<MimeType> source) {
+			super(source);
+		}
 
-	public MimeTypes(String... mimeTypes) {
-		this.mimeTypes = new TreeSet<>(this);
-		if (mimeTypes != null) {
-			for (String mimeType : mimeTypes) {
-				if (StringUtils.isEmpty(mimeType)) {
-					continue;
-				}
-
-				this.mimeTypes.add(MimeTypeUtils.parseMimeType(mimeType));
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
 			}
-		}
-	}
 
-	protected MimeTypes(SortedSet<MimeType> mimeTypes, boolean readyOnly) {
-		this.mimeTypes = readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : new TreeSet<>(mimeTypes);
-		this.readyOnly = readyOnly;
-	}
-
-	public Iterator<MimeType> iterator() {
-		return Collections.unmodifiableCollection(mimeTypes).iterator();
-	}
-
-	public final SortedSet<MimeType> getMimeTypes() {
-		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : mimeTypes;
-	}
-
-	public final List<String> getRawMimeTypes() {
-		if (isEmpty()) {
-			return Collections.emptyList();
+			if (obj instanceof MimeTypes) {
+				return CollectionUtils.unorderedEquals(toList(), ((MimeTypes) obj).toList());
+			}
+			return false;
 		}
 
-		List<String> list = new ArrayList<>(mimeTypes.size());
-		for (MimeType mimeType : mimeTypes) {
-			list.add(mimeType.toString());
-		}
-		return list;
-	}
-
-	public boolean isEmpty() {
-		return mimeTypes.isEmpty();
-	}
-
-	public final MimeTypes add(MimeType... mimeTypes) {
-		for (MimeType mimeType : mimeTypes) {
-			this.mimeTypes.add(mimeType);
-		}
-		return this;
-	}
-
-	public final MimeTypes addAll(Iterable<? extends MimeType> mimeTypes) {
-		for (MimeType mimeType : mimeTypes) {
-			this.mimeTypes.add(mimeType);
-		}
-		return this;
-	}
-
-	public final boolean isReadyOnly() {
-		return readyOnly;
-	}
-
-	public final MimeTypes readyOnly() {
-		if (readyOnly) {
-			return this;
+		@Override
+		public String toString() {
+			return MimeTypeUtils.toString(this);
 		}
 
-		return new MimeTypes(mimeTypes, true);
 	}
 
-	public int compare(MimeType o1, MimeType o2) {
-		return MimeTypeUtils.SPECIFICITY_COMPARATOR.compare(o1, o2);
+	/**
+	 * 排序处理后进行构造
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	public static MimeTypes forElements(@NonNull Elements<? extends MimeType> elements) {
+		List<MimeType> list = elements.sorted(MimeTypeUtils.SPECIFICITY_COMPARATOR).collect(Collectors.toList());
+		return forSortedList(list);
+	}
+
+	/**
+	 * 以元始顺序进行构造
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public static MimeTypes forSortedList(@NonNull List<MimeType> list) {
+		return new StandardMimeTypes(list);
 	}
 
 	@Override
-	public int compareTo(MimeTypes o) {
+	default int compareTo(MimeTypes o) {
 		if (this.equals(o)) {
 			return 0;
 		}
 
-		for (MimeType mimeType1 : mimeTypes) {
-			for (MimeType mimeType2 : o.mimeTypes) {
+		for (MimeType mimeType1 : this) {
+			for (MimeType mimeType2 : o) {
 				if (mimeType1.compareTo(mimeType2) > 0) {
 					return 1;
 				}
@@ -112,38 +72,25 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 		return -1;
 	}
 
-	public boolean isCompatibleWith(MimeType mimeType) {
-		for (MimeType mime : mimeTypes) {
+	@Override
+	boolean equals(Object obj);
+
+	default Elements<String> getRawElements() {
+		if (isEmpty()) {
+			return Elements.empty();
+		}
+
+		return map((e) -> e.toString());
+	}
+
+	@Override
+	int hashCode();
+
+	default boolean isCompatibleWith(MimeType mimeType) {
+		for (MimeType mime : this) {
 			if (mime.isCompatibleWith(mimeType)) {
 				return true;
 			}
-		}
-		return false;
-	}
-
-	@Override
-	public MimeTypes clone() {
-		return new MimeTypes(mimeTypes, readyOnly);
-	}
-
-	@Override
-	public int hashCode() {
-		return mimeTypes.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return MimeTypeUtils.toString(mimeTypes);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof MimeTypes) {
-			return CollectionUtils.unorderedEquals(mimeTypes, ((MimeTypes) obj).mimeTypes);
 		}
 		return false;
 	}

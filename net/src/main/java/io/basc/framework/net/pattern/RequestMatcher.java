@@ -1,5 +1,6 @@
 package io.basc.framework.net.pattern;
 
+import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
@@ -32,7 +33,7 @@ public class RequestMatcher implements RequestPattern {
 	}
 
 	@Override
-	public Parameters apply(Request request) {
+	public Properties apply(Request request) {
 		if (exclude.test(request)) {
 			return Parameters.EMPTY_PARAMETERS;
 		}

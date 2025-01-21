@@ -6,19 +6,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.Request;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.match.AntPathMatcher;
 import io.basc.framework.util.match.PathMatcher;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-public interface PathPattern extends RequestPattern {
-	String getPath();
+@Data
+@EqualsAndHashCode(of = "path", callSuper = true)
+@ToString(of = "path", callSuper = true)
+public class PathPattern extends WildcardRequestPattern {
+	private String path;
+	private PathMatcher pathMatcher = AntPathMatcher.DEFAULT;
 
-	PathMatcher getPathMatcher();
-
-	default boolean isPattern() {
+	public boolean isPattern() {
 		String path = getPath();
 		if (path == null) {
 			return true;
@@ -27,7 +34,7 @@ public interface PathPattern extends RequestPattern {
 	}
 
 	@Override
-	default Parameters apply(Request request) {
+	public Properties apply(Request request) {
 		String path = getPath();
 		if (StringUtils.isEmpty(path)) {
 			return Parameters.EMPTY_PARAMETERS;
@@ -49,8 +56,8 @@ public interface PathPattern extends RequestPattern {
 	}
 
 	@Override
-	default boolean test(Request request) {
-		if (RequestPattern.super.test(request)) {
+	public boolean test(Request request) {
+		if (super.test(request)) {
 			String path = getPath();
 			if (path != null) {
 				String requestPath = request.getURI().getPath();

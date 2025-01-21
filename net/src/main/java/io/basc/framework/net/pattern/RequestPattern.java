@@ -3,17 +3,17 @@ package io.basc.framework.net.pattern;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.execution.Parameters;
+import io.basc.framework.core.convert.transform.Properties;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
 
-public interface RequestPattern extends Predicate<Request>, Function<Request, Parameters> {
+public interface RequestPattern extends Predicate<Request>, Function<Request, Properties> {
 	/**
 	 * 获取匹配参数
 	 */
 	@Override
-	Parameters apply(Request request);
-	
+	Properties apply(Request request);
+
 	@Override
 	boolean equals(Object obj);
 
