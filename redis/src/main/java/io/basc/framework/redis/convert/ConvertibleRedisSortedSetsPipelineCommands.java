@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.convert.transform.stereotype.stractegy.CollectionFactory;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisSortedSetsPipelineCommands;

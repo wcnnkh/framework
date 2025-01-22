@@ -1,9 +1,9 @@
 package io.basc.framework.core.execution.resolver;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.PropertyDescriptor;
-import io.basc.framework.core.convert.transform.PropertyFactory;
-import io.basc.framework.core.convert.transform.PropertyPropertyFactories;
+import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.stereotype.PropertyFactory;
+import io.basc.framework.core.convert.transform.stereotype.PropertyPropertyFactories;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;

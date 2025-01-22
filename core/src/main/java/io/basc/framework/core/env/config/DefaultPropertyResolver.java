@@ -3,7 +3,7 @@ package io.basc.framework.core.env.config;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.collection.MapProperties;
+import io.basc.framework.core.convert.transform.stereotype.collection.MapProperties;
 import lombok.NonNull;
 
 public class DefaultPropertyResolver extends MapProperties implements ConfigurablePropertyResolver {

@@ -1,6 +1,6 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.core.convert.transform.stereotype.StereotypeMappingRegistry;
+import io.basc.framework.core.convert.transform.mapping.MappingDescriptorRegistry;
 
-public class BeanMappingRegistry extends StereotypeMappingRegistry<BeanPropertyDescriptor, BeanMapping> {
+public class BeanMappingRegistry extends MappingDescriptorRegistry<BeanPropertyDescriptor, BeanMapping> {
 }

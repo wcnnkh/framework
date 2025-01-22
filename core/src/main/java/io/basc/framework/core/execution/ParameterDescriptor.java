@@ -7,7 +7,7 @@ import io.basc.framework.core.DefaultParameterNameDiscoverer;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.collections.Elements;
 import lombok.Data;

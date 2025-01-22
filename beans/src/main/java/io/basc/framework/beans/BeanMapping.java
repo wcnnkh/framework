@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import io.basc.framework.core.convert.transform.stereotype.StereotypeMapping;
+import io.basc.framework.core.convert.transform.mapping.MappingDescriptor;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.Reloadable;
@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class BeanMapping implements BeanInfo, StereotypeMapping<BeanPropertyDescriptor>, Reloadable {
+public class BeanMapping implements BeanInfo, MappingDescriptor<BeanPropertyDescriptor>, Reloadable {
 	private final Class<?> beanClass;
 	private final BeanInfo beanInfo;
 	@Getter(AccessLevel.NONE)

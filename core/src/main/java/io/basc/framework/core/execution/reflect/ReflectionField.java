@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;

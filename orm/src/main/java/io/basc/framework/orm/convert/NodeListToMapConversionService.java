@@ -13,7 +13,7 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.core.convert.support.AbstractConversionService;
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.convert.transform.stereotype.stractegy.CollectionFactory;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.support.OrmUtils;

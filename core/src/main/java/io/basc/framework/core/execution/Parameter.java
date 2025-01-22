@@ -3,8 +3,8 @@ package io.basc.framework.core.execution;
 import java.util.function.Predicate;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.Property;
-import io.basc.framework.core.convert.transform.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.stereotype.Property;
+import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.util.StringUtils;
 import lombok.Data;
 import lombok.NonNull;

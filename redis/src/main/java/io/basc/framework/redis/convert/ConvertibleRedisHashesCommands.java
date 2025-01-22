@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.convert.transform.stereotype.stractegy.CollectionFactory;
 import io.basc.framework.redis.RedisHashesCommands;
 
 @SuppressWarnings("unchecked")

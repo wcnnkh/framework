@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.Properties;
-import io.basc.framework.core.convert.transform.Property;
+import io.basc.framework.core.convert.transform.stereotype.Properties;
+import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptor;

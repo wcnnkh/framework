@@ -2,7 +2,7 @@ package io.basc.framework.beans.factory.config;
 
 import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.core.convert.transform.Properties;
+import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.execution.ExecutionStrategy;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Method;

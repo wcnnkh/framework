@@ -21,7 +21,7 @@ import io.basc.framework.beans.factory.ioc.AutowireBeanPostProcessor;
 import io.basc.framework.beans.factory.ioc.DependencyInjection;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.PropertyDescriptor;
+import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.util.collections.Elements;

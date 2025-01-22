@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.Property;
+import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.util.collections.Elements;
 import lombok.Data;
 import lombok.NonNull;

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.Properties;
+import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.Request;

@@ -1,6 +1,6 @@
 package io.basc.framework.core.env;
 
-import io.basc.framework.core.convert.transform.Properties;
+import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.util.alias.Named;
 import lombok.Getter;
 import lombok.NonNull;

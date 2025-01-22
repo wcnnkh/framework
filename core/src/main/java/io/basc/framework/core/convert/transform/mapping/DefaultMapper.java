@@ -8,9 +8,9 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
-import io.basc.framework.core.convert.transform.Accessor;
-import io.basc.framework.core.convert.transform.Template;
-import io.basc.framework.core.convert.transform.collection.MapProperties;
+import io.basc.framework.core.convert.transform.stereotype.Accessor;
+import io.basc.framework.core.convert.transform.stereotype.Template;
+import io.basc.framework.core.convert.transform.stereotype.collection.MapProperties;
 import lombok.NonNull;
 
 public class DefaultMapper

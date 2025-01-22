@@ -9,7 +9,7 @@ import java.util.List;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MergedAnnotatedElement;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.stereotype.StereotypeDescriptor;
+import io.basc.framework.core.convert.transform.mapping.FieldDescriptor;
 import io.basc.framework.core.execution.Getter;
 import io.basc.framework.core.execution.Getter.MergedGetter;
 import io.basc.framework.core.execution.Setter;
@@ -22,7 +22,7 @@ import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.NonNull;
 
-public class BeanPropertyDescriptor implements StereotypeDescriptor {
+public class BeanPropertyDescriptor implements FieldDescriptor {
 	@lombok.Getter
 	private final Class<?> beanClass;
 	private volatile Field field;

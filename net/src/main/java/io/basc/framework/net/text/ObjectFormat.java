@@ -18,7 +18,7 @@ import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.core.convert.lang.ObjectValue;
 import io.basc.framework.core.convert.support.DefaultConversionService;
-import io.basc.framework.core.convert.transform.stractegy.CollectionFactory;
+import io.basc.framework.core.convert.transform.stereotype.stractegy.CollectionFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.stereotype.FieldDescriptor;
 import io.basc.framework.mapper.stereotype.Mapping;

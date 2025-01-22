@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import io.basc.framework.context.config.ConfigurableApplicationContext;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.collection.MapProperties;
+import io.basc.framework.core.convert.transform.stereotype.collection.MapProperties;
 import io.basc.framework.core.env.PropertySource;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.io.Resource;

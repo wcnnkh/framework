@@ -4,9 +4,9 @@ import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.Converter;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.Converters;
-import io.basc.framework.core.convert.transform.Accessor;
-import io.basc.framework.core.convert.transform.Template;
-import io.basc.framework.core.convert.transform.stractegy.ObjectTransformer;
+import io.basc.framework.core.convert.transform.stereotype.Accessor;
+import io.basc.framework.core.convert.transform.stereotype.Template;
+import io.basc.framework.core.convert.transform.stereotype.stractegy.ObjectTransformer;
 import lombok.NonNull;
 
 public class ObjectMapper<K, V extends Accessor, T extends Template<K, ? extends V>, E extends Throwable>

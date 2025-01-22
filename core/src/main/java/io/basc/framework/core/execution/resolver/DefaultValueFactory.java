@@ -1,7 +1,7 @@
 package io.basc.framework.core.execution.resolver;
 
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.AccessDescriptor;
+import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
 import lombok.NonNull;
 
 public interface DefaultValueFactory {

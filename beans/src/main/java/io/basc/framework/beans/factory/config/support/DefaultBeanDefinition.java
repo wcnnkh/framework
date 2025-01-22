@@ -4,7 +4,7 @@ import io.basc.framework.beans.BeanMapping;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.Properties;
+import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.env.config.DefaultPropertyResolver;
 import io.basc.framework.core.execution.ExecutionStrategy;
 import io.basc.framework.core.execution.Function;

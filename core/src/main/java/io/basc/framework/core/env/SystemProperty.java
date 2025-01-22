@@ -3,7 +3,7 @@ package io.basc.framework.core.env;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.transform.Property;
+import io.basc.framework.core.convert.transform.stereotype.Property;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

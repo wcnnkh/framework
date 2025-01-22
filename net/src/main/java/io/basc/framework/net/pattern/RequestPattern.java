@@ -3,7 +3,7 @@ package io.basc.framework.net.pattern;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.convert.transform.Properties;
+import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
 
