@@ -8,6 +8,7 @@ import io.basc.framework.core.convert.transform.stereotype.Accessor;
 import io.basc.framework.core.convert.transform.stereotype.Template;
 import io.basc.framework.core.convert.transform.stereotype.TemplateTransformer;
 import io.basc.framework.core.convert.transform.stereotype.TransformContext;
+import io.basc.framework.core.convert.transform.stereotype.config.TemplateTransformerRegistry;
 import io.basc.framework.util.check.PredicateRegistry;
 import io.basc.framework.util.collections.Elements;
 import lombok.Data;
@@ -15,10 +16,20 @@ import lombok.NonNull;
 
 @Data
 public class DefaultTemplateTransformer<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
-		implements TemplateTransformer<K, SV, S, TV, T, E> {
+		extends TemplateTransformerRegistry<K, SV, S, TV, T, E> implements TemplateTransformer<K, SV, S, TV, T, E> {
 	@NonNull
 	private ConversionService conversionService = new IdentityConversionService();
 	private final PredicateRegistry<K> indexPredicateRegistry = new PredicateRegistry<>();
+
+	@Override
+	public void transform(TransformContext<K, SV, S> sourceContext, @NonNull S source,
+			@NonNull TypeDescriptor sourceType, TransformContext<K, TV, T> targetContext, @NonNull T target,
+			@NonNull TypeDescriptor targetType) throws E {
+		for(K index : target.getAccessorIndexes()) {
+			Elements<? extends SV> elements = source.getAccessors(index);
+			Elements<? extends TV> accessors =target.getAccessors(index);
+		}
+	}
 
 	protected void doWrite(S template, SV source, Accessor target) {
 		if (!conversionService.canConvert(source.getTypeDescriptor(), target.getRequiredTypeDescriptor())) {

@@ -13,10 +13,10 @@ import lombok.NonNull;
 
 @Getter
 public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
-		extends DefaultTemplateTransformerFactory<K, SV, S, TV, T, E> implements Transformer<X, Y, E> {
+		extends Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> {
 	private final TemplateFactoryRegistry<X, K, SV, S> sourceTemplateProvider = new TemplateFactoryRegistry<>();
 	private final TemplateFactoryRegistry<Y, K, TV, T> targetTemplateProvider = new TemplateFactoryRegistry<>();
-	private final Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> transformers = new Transformers<>();
+	private final DefaultTemplateTransformer<K, SV, S, TV, T, E> defaultTemplateTransformer = new DefaultTemplateTransformer<>();
 
 	protected S getSourceTemplate(@NonNull X source, @NonNull TypeDescriptor sourceType) {
 		return sourceTemplateProvider.getTemplate(source, sourceType);
@@ -36,7 +36,7 @@ public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K,
 
 	@Override
 	public boolean canTransform(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
-		if (transformers.canTransform(sourceType, targetType)) {
+		if (super.canTransform(sourceType, targetType)) {
 			return true;
 		}
 		return hasSourceTemplate(sourceType) && hasTargetTemplate(targetType);
@@ -45,13 +45,11 @@ public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K,
 	@Override
 	public void transform(@NonNull X source, @NonNull TypeDescriptor sourceType, @NonNull Y target,
 			@NonNull TypeDescriptor targetType) throws E {
-		if (transformers.canTransform(sourceType, targetType)) {
-			transformers.transform(source, sourceType, target, targetType);
+		if (super.canTransform(sourceType, targetType)) {
+			super.transform(source, sourceType, target, targetType);
 			return;
 		}
-
-		TemplateTransformer<K, SV, S, TV, T, E> templateTransformer = getTemplateTransformer(targetType);
-		transform(source, sourceType, target, targetType, templateTransformer);
+		transform(source, sourceType, target, targetType, this.defaultTemplateTransformer);
 	}
 
 	public void transform(@NonNull X source, @NonNull TypeDescriptor sourceType, @NonNull Y target,

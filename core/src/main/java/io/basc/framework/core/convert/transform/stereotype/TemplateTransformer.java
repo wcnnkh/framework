@@ -10,9 +10,11 @@ public interface TemplateTransformer<K, SV extends Value, S extends Template<K, 
 		extends Transformer<S, T, E> {
 	@Override
 	default void transform(S source, TypeDescriptor sourceType, T target, TypeDescriptor targetType) throws E {
-		transform(null, source, sourceType, null, target, targetType);
+		for (K index : target.getAccessorIndexes()) {
+			transform(source, sourceType, target, targetType, index);
+		}
 	}
 
-	void transform(TransformContext<K, SV, S> sourceContext, @NonNull S source, @NonNull TypeDescriptor sourceType,
-			TransformContext<K, TV, T> targetContext, @NonNull T target, @NonNull TypeDescriptor targetType) throws E;
+	void transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
+			@NonNull TypeDescriptor targetType, K index) throws E;
 }
