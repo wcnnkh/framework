@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.mapping;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.stereotype.config.TemplateProvider;
+import io.basc.framework.core.convert.transform.stereotype.TemplateProvider;
 import lombok.NonNull;
 
 public interface MappingTemplateProvider<SD extends FieldDescriptor, SM extends MappingDescriptor<? extends SD>>

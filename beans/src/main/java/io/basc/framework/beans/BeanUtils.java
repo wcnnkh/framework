@@ -98,7 +98,7 @@ public class BeanUtils {
 	static {
 		BeanInfoFactories beanInfoFactories = new BeanInfoFactories();
 		beanInfoFactories.doNativeConfigure();
-		BEAN_MAPPING_REGISTRY.setStereotypeMappingFactory(beanInfoFactories);
+		BEAN_MAPPING_REGISTRY.setMappingDescriptorFactory(beanInfoFactories);
 	}
 
 	public static void copyProperties(@NonNull Object source, @NonNull Object target, @NonNull Filter... filters) {
@@ -131,7 +131,7 @@ public class BeanUtils {
 	}
 
 	public static BeanMapping getMapping(Class<?> beanClass) {
-		return BEAN_MAPPING_REGISTRY.getStereotypeMapping(TypeDescriptor.valueOf(beanClass));
+		return BEAN_MAPPING_REGISTRY.getMappingDescriptor(TypeDescriptor.valueOf(beanClass));
 	}
 
 	public static boolean isCacheSafe(@NonNull Class<?> clazz, ClassLoader classLoader) {

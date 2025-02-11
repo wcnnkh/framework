@@ -7,4 +7,5 @@ public class BeanMapper extends DefaultMapper {
 	public BeanMapper() {
 		getObjectTemplateProvider().setTemplateProvider(BeanUtils.getBeanMappingRegistry());
 	}
+	
 }

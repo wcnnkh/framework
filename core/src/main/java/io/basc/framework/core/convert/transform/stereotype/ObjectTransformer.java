@@ -1,9 +1,6 @@
-package io.basc.framework.core.convert.transform.stereotype.stractegy;
+package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.transform.stereotype.Accessor;
-import io.basc.framework.core.convert.transform.stereotype.Template;
-import io.basc.framework.core.convert.transform.stereotype.config.TemplateFactoryRegistry;
 import lombok.Getter;
 import lombok.NonNull;
 

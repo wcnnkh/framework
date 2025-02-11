@@ -1,22 +1,30 @@
-package io.basc.framework.core.convert.transform.stereotype.stractegy;
+package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.transform.Transformer;
 import io.basc.framework.core.convert.transform.config.Transformers;
-import io.basc.framework.core.convert.transform.stereotype.Accessor;
-import io.basc.framework.core.convert.transform.stereotype.Template;
-import io.basc.framework.core.convert.transform.stereotype.TemplateTransformer;
-import io.basc.framework.core.convert.transform.stereotype.config.TemplateFactoryRegistry;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends Transformers<X, Y, E, Transformer<? super X, ? super Y, ? extends E>> {
 	private final TemplateFactoryRegistry<X, K, SV, S> sourceTemplateProvider = new TemplateFactoryRegistry<>();
+
 	private final TemplateFactoryRegistry<Y, K, TV, T> targetTemplateProvider = new TemplateFactoryRegistry<>();
-	private final DefaultTemplateTransformer<K, SV, S, TV, T, E> defaultTemplateTransformer = new DefaultTemplateTransformer<>();
+
+	private final TemplateTransformer<K, SV, S, TV, T, E> templateTransformer = new TemplateTransformer<>();
+
+	@Override
+	public boolean canTransform(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+		if (super.canTransform(sourceType, targetType)) {
+			return true;
+		}
+		return hasSourceTemplate(sourceType) && hasTargetTemplate(targetType);
+	}
 
 	protected S getSourceTemplate(@NonNull X source, @NonNull TypeDescriptor sourceType) {
 		return sourceTemplateProvider.getTemplate(source, sourceType);
@@ -34,28 +42,13 @@ public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K,
 		return targetTemplateProvider.hasTemplate(requiredType);
 	}
 
-	@Override
-	public boolean canTransform(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
-		if (super.canTransform(sourceType, targetType)) {
-			return true;
-		}
-		return hasSourceTemplate(sourceType) && hasTargetTemplate(targetType);
-	}
-
-	@Override
 	public void transform(@NonNull X source, @NonNull TypeDescriptor sourceType, @NonNull Y target,
 			@NonNull TypeDescriptor targetType) throws E {
 		if (super.canTransform(sourceType, targetType)) {
 			super.transform(source, sourceType, target, targetType);
 			return;
 		}
-		transform(source, sourceType, target, targetType, this.defaultTemplateTransformer);
-	}
 
-	public void transform(@NonNull X source, @NonNull TypeDescriptor sourceType, @NonNull Y target,
-			@NonNull TypeDescriptor targetType,
-			TemplateTransformer<? super K, ? super SV, ? super S, ? super TV, ? super T, ? extends E> templateTransformer)
-			throws E {
 		S sourceTemplate = getSourceTemplate(source, sourceType);
 		T targetTemplate = getTargetTemplate(target, targetType);
 		templateTransformer.transform(sourceTemplate, sourceType, targetTemplate, targetType);

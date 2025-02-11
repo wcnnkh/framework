@@ -1,9 +1,7 @@
-package io.basc.framework.core.convert.transform.stereotype.config;
+package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.transform.stereotype.Template;
-import io.basc.framework.core.convert.transform.stereotype.TemplateFactory;
 import io.basc.framework.util.spi.ServiceMap;
 import lombok.Getter;
 import lombok.NonNull;
