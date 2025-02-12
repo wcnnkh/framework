@@ -22,7 +22,7 @@ public abstract class StringMessageConverter<T> extends ObjectMessageConverter<T
 	protected Charset getCharset(Message message, MimeType contentType) {
 		Charset charset = message.getCharset();
 		if (charset == null) {
-			for (MimeType mimeType : getMimeTypes()) {
+			for (MimeType mimeType : getMimeTypeRegistry()) {
 				if (mimeType.getCharset() == null) {
 					continue;
 				}

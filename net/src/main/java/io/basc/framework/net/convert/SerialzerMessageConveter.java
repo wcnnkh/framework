@@ -1,6 +1,7 @@
 package io.basc.framework.net.convert;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
@@ -11,26 +12,31 @@ import io.basc.framework.net.OutputMessage;
 import io.basc.framework.util.io.serializer.Serializer;
 
 public class SerialzerMessageConveter extends AbstractMessageConverter {
-	private Serializer serializer;
+	private final Serializer serializer;
 
 	public SerialzerMessageConveter(Serializer serializer) {
-		getMimeTypes().add(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL);
+		getMimeTypeRegistry().addAll(Arrays.asList(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL));
 		this.serializer = serializer;
 	}
 
 	@Override
 	protected Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException {
-		try {
-			return serializer.deserialize(inputMessage.getInputStream());
-		} catch (ClassNotFoundException e) {
-			throw new MessageConvertException(e);
-		}
+		return inputMessage.getInputStream().export().map(source -> {
+			try {
+				return serializer.deserialize(source);
+			} catch (ClassNotFoundException e) {
+				throw new MessageConvertException(e);
+			}
+		}).get();
 	}
 
 	@Override
 	protected void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException {
-		serializer.serialize(source.getValue(), outputMessage.getOutputStream());
+		outputMessage.getOutputStream().export().ifPresent((output) -> {
+			byte[] data = serializer.serialize(source.get());
+			output.write(data);
+		});
 	}
 
 }

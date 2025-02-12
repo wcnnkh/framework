@@ -1,6 +1,7 @@
 package io.basc.framework.net.convert;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.net.InputMessage;
@@ -11,7 +12,7 @@ import io.basc.framework.net.OutputMessage;
 public class ByteArrayMessageConverter extends ObjectMessageConverter<byte[]> {
 
 	public ByteArrayMessageConverter() {
-		getMimeTypes().add(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL);
+		getMimeTypeRegistry().addAll(Arrays.asList(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL));
 	}
 
 	@Override

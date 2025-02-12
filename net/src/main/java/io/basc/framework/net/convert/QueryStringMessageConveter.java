@@ -13,7 +13,7 @@ public class QueryStringMessageConveter extends StringMessageConverter<Object> i
 	private ConversionService conversionService;
 
 	public QueryStringMessageConveter() {
-		getMimeTypes().add(MimeTypeUtils.APPLICATION_FORM_URLENCODED);
+		getMimeTypeRegistry().add(MimeTypeUtils.APPLICATION_FORM_URLENCODED);
 	}
 
 	@Override

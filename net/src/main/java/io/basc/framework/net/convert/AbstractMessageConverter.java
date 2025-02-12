@@ -7,6 +7,7 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.MimeType;
+import io.basc.framework.net.MimeTypeRegistry;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.OutputMessage;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class AbstractMessageConverter implements MessageConverter {
-	private final MimeTypes mimeTypes = new MimeTypes();
+	private final MimeTypeRegistry mimeTypeRegistry = new MimeTypeRegistry();
 
 	protected abstract Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException;
@@ -24,7 +25,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	protected abstract void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException;
 
 	protected MimeType getContentType(TypeDescriptor type, Message message) throws IOException {
-		MimeType mimeType = mimeTypes.getMimeTypes().first();
+		MimeType mimeType = mimeTypeRegistry.first();
 		if (mimeType.isWildcardType() || mimeType.isWildcardSubtype()) {
 			return null;
 		}
@@ -33,7 +34,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 
 	@Override
 	public MimeTypes getSupportedMediaTypes() {
-		return mimeTypes.readyOnly();
+		return mimeTypeRegistry;
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 			return true;
 		}
 
-		for (MimeType mimeType : mimeTypes) {
+		for (MimeType mimeType : mimeTypeRegistry) {
 			if (mimeType.includes(contentType)) {
 				return true;
 			}
@@ -56,7 +57,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 			return true;
 		}
 
-		for (MimeType mimeType : mimeTypes) {
+		for (MimeType mimeType : mimeTypeRegistry) {
 			if (mimeType.isCompatibleWith(contentType)) {
 				return true;
 			}
@@ -68,7 +69,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	public final Object readFrom(TypeDescriptor typeDescriptor, InputMessage inputMessage) throws IOException {
 		MimeType contentTypeToUse = inputMessage.getContentType();
 		if (contentTypeToUse == null) {
-			contentTypeToUse = mimeTypes.getMimeTypes().first();
+			contentTypeToUse = mimeTypeRegistry.first();
 		}
 
 		return doRead(typeDescriptor, contentTypeToUse, inputMessage);

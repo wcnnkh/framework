@@ -1,5 +1,7 @@
 package io.basc.framework.net.convert;
 
+import java.util.Arrays;
+
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
@@ -16,7 +18,7 @@ public class TextMessageConverter extends StringMessageConverter<Object> impleme
 	private ConversionService conversionService;
 
 	public TextMessageConverter() {
-		getMimeTypes().add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
+		getMimeTypeRegistry().addAll(Arrays.asList(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL));
 	}
 
 	public ConversionService getConversionService() {

@@ -1,7 +1,6 @@
 package io.basc.framework.net.pattern;
 
 import io.basc.framework.core.convert.transform.stereotype.Properties;
-import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
@@ -28,7 +27,7 @@ public class RequestPatterns extends Services<RequestPattern> implements Request
 				return pattern.apply(request);
 			}
 		}
-		return Parameters.EMPTY_PARAMETERS;
+		return Properties.EMPTY_PROPERTIES;
 	}
 
 	@Override

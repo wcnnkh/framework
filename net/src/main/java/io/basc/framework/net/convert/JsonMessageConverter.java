@@ -1,5 +1,7 @@
 package io.basc.framework.net.convert;
 
+import java.util.Arrays;
+
 import io.basc.framework.json.JsonSupport;
 import io.basc.framework.json.JsonSupportAware;
 import io.basc.framework.json.JsonUtils;
@@ -10,8 +12,8 @@ public class JsonMessageConverter extends TextMessageConverter implements JsonSu
 	public static final MimeType JSON_ALL = new MimeType("application", "*+json");
 
 	public JsonMessageConverter() {
-		getMimeTypes().getMimeTypes().clear();
-		getMimeTypes().add(MimeTypeUtils.APPLICATION_JSON, JSON_ALL);
+		getMimeTypeRegistry().clear();
+		getMimeTypeRegistry().addAll(Arrays.asList(MimeTypeUtils.APPLICATION_JSON, JSON_ALL));
 		setConversionService(JsonUtils.getSupport());
 	}
 

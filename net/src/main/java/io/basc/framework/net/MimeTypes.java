@@ -1,13 +1,33 @@
 package io.basc.framework.net;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.collections.Streams;
 import lombok.NonNull;
 
 public interface MimeTypes extends Elements<MimeType>, Comparable<MimeTypes> {
+
+	public static class EmptyMimeTypes implements MimeTypes, Serializable {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Iterator<MimeType> iterator() {
+			return Collections.emptyIterator();
+		}
+
+		@Override
+		public Stream<MimeType> stream() {
+			return Streams.empty();
+		}
+
+	}
 
 	public static class StandardMimeTypes extends StandardListElements<MimeType, List<MimeType>> implements MimeTypes {
 		private static final long serialVersionUID = 1L;
@@ -34,6 +54,8 @@ public interface MimeTypes extends Elements<MimeType>, Comparable<MimeTypes> {
 		}
 
 	}
+
+	public static final MimeTypes EMPTY = new EmptyMimeTypes();
 
 	/**
 	 * 排序处理后进行构造

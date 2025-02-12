@@ -57,20 +57,12 @@ public class ConfigurableMessageConverter extends ConfigurableServices<MessageCo
 
 	@Override
 	public MimeTypes getSupportedMediaTypes() {
-		MimeTypes mimeTypes = new MimeTypes();
-		for (MessageConverter converter : this) {
-			mimeTypes.getMimeTypes().addAll(converter.getSupportedMediaTypes().getMimeTypes());
-		}
-		return mimeTypes.readyOnly();
+		return MimeTypes.forElements(flatMap((e) -> e.getSupportedMediaTypes()));
 	}
 
 	@Override
 	public MimeTypes getSupportedMediaTypes(TypeDescriptor typeDescriptor) {
-		MimeTypes mimeTypes = new MimeTypes();
-		for (MessageConverter converter : this) {
-			mimeTypes.getMimeTypes().addAll(converter.getSupportedMediaTypes(typeDescriptor).getMimeTypes());
-		}
-		return mimeTypes.readyOnly();
+		return MimeTypes.forElements(flatMap((e) -> e.getSupportedMediaTypes(typeDescriptor)));
 	}
 
 	@Override
