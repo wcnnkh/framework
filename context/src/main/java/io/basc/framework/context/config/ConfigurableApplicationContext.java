@@ -4,7 +4,6 @@ import java.io.Closeable;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
-import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.ConfigurableListableBeanFactory;
 import io.basc.framework.context.ApplicationContext;
 import io.basc.framework.context.ApplicationContextEvent;
@@ -16,7 +15,7 @@ import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.io.load.ProtocolResolver;
 
 public interface ConfigurableApplicationContext extends ApplicationContext, ClassLoaderAccessor, Lifecycle, Closeable,
-		ConfigurableBeanFactory, Dispatcher<ApplicationContextEvent> {
+		ConfigurableListableBeanFactory, Dispatcher<ApplicationContextEvent> {
 	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor);
 
 	void addProtocolResolver(ProtocolResolver protocolResolver);

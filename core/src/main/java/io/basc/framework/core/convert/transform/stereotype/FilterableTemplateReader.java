@@ -13,17 +13,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class FilterableTemplateReader<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable, F extends Iterable<? extends TemplateReadFilter<K, SV, S, TV, T, E>>>
+public class FilterableTemplateReader<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		implements TemplateReader<K, SV, S, TV, T, E> {
 	@NonNull
-	private final F templateReaderFilters;
+	private final Iterable<? extends TemplateReadFilter<K, SV, S, TV, T, E>> templateReadFilters;
 	private TemplateReader<K, SV, S, TV, T, E> templateReader;
 
 	@Override
 	public Elements<? extends SV> readFrom(TemplateContext<K, SV, S> sourceContext, @NonNull S source,
 			@NonNull TypeDescriptor sourceType, TemplateContext<K, TV, T> targetContext, @NonNull T target,
 			@NonNull TypeDescriptor targetType, @NonNull K index, @NonNull TV targetAccessor) throws E {
-		TemplateReaderChain<K, SV, S, TV, T, E> chain = new TemplateReaderChain<>(templateReaderFilters.iterator(),
+		TemplateReaderChain<K, SV, S, TV, T, E> chain = new TemplateReaderChain<>(templateReadFilters.iterator(),
 				templateReader);
 		return chain.readFrom(sourceContext, source, sourceType, targetContext, target, targetType, index,
 				targetAccessor);

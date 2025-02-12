@@ -1,32 +1,31 @@
 package io.basc.framework.context.primary;
 
 import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.util.element.Elements;
+import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class PrimaryResolvers extends ConfigurableServices<PrimaryResolver> implements PrimaryResolver {
 	private static volatile PrimaryResolvers defaults;
-	
+
 	public static PrimaryResolvers defaults() {
-		if(defaults == null) {
+		if (defaults == null) {
 			synchronized (PrimaryResolvers.class) {
-				if(defaults == null) {
+				if (defaults == null) {
 					defaults = new PrimaryResolvers();
-					defaults.configure(SPI.global());
+					defaults.doNativeConfigure();
 				}
 			}
 		}
 		return defaults;
 	}
-	
-	public PrimaryResolvers() {
-		super(PrimaryResolver.class);
-	}
 
+	public PrimaryResolvers() {
+		setServiceClass(PrimaryResolver.class);
+	}
+	
 	@Override
 	public Elements<BeanFactoryPostProcessor> getBeanFactoryPostProcessors(Class<?> primaryClass) {
-		return getServices().flatMap((e) -> e.getBeanFactoryPostProcessors(primaryClass));
+		return flatMap((e) -> e.getBeanFactoryPostProcessors(primaryClass));
 	}
 
 }

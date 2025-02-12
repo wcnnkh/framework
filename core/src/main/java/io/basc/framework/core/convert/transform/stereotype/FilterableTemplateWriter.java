@@ -12,10 +12,10 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class FilterableTemplateWriter<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable, F extends Iterable<? extends TemplateWriteFilter<K, SV, S, TV, T, E>>>
+public class FilterableTemplateWriter<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends SimpleTemplateWriter<K, SV, S, TV, T, E> {
 	@NonNull
-	private final F templateWriteFilters;
+	private final Iterable<? extends TemplateWriteFilter<K, SV, S, TV, T, E>> templateWriteFilters;
 	private TemplateWriter<K, SV, S, TV, T, E> templateWriter;
 
 	@Override

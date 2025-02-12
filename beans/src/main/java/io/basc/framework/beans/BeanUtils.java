@@ -11,8 +11,9 @@ import lombok.RequiredArgsConstructor;
 
 public class BeanUtils {
 	public static interface Filter {
-		boolean doFilter(Object source, BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
-				BeanPropertyDescriptor targetPropertyDescriptor, Mapping mapping) throws Throwable;
+		boolean doFilter(Object source, @NonNull BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				@NonNull BeanPropertyDescriptor targetPropertyDescriptor, @NonNull String name,
+				@NonNull Mapping mapping) throws Throwable;
 	}
 
 	@RequiredArgsConstructor
@@ -22,17 +23,17 @@ public class BeanUtils {
 		private final Mapping mapping;
 
 		@Override
-		public boolean doMapping(Object source, BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
-				BeanPropertyDescriptor targetPropertyDescriptor) throws Throwable {
+		public boolean doMapping(Object source, @NonNull BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				@NonNull BeanPropertyDescriptor targetPropertyDescriptor, @NonNull String name) throws Throwable {
 			MappingChain chain = new MappingChain(filters.iterator(), mapping);
-			return chain.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor);
+			return chain.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor, name);
 		}
 
 	}
 
 	public static interface Mapping {
 		boolean doMapping(Object source, @NonNull BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
-				@NonNull BeanPropertyDescriptor targetPropertyDescriptor) throws Throwable;
+				@NonNull BeanPropertyDescriptor targetPropertyDescriptor, @NonNull String name) throws Throwable;
 	}
 
 	@RequiredArgsConstructor
@@ -42,13 +43,13 @@ public class BeanUtils {
 		private final Mapping nextChain;
 
 		@Override
-		public boolean doMapping(Object source, BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
-				BeanPropertyDescriptor targetPropertyDescriptor) throws Throwable {
+		public boolean doMapping(Object source, @NonNull BeanPropertyDescriptor sourcePropertyDescriptor, Object target,
+				@NonNull BeanPropertyDescriptor targetPropertyDescriptor, @NonNull String name) throws Throwable {
 			if (iterator.hasNext()) {
 				return iterator.next().doFilter(source, sourcePropertyDescriptor, target, targetPropertyDescriptor,
-						this);
+						name, this);
 			} else if (nextChain != null) {
-				return nextChain.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor);
+				return nextChain.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor, name);
 			}
 			return false;
 		}
@@ -56,15 +57,11 @@ public class BeanUtils {
 
 	private static final BeanMappingRegistry BEAN_MAPPING_REGISTRY = new BeanMappingRegistry();
 
-	public static BeanMappingRegistry getBeanMappingRegistry() {
-		return BEAN_MAPPING_REGISTRY;
-	}
-
 	/**
 	 * 默认的映射
 	 */
-	public static final Mapping COPY_PROPERTIES = (source, sourcePropertyDescriptor, target,
-			targetProperyDescriptor) -> {
+	public static final Mapping COPY_PROPERTIES = (source, sourcePropertyDescriptor, target, targetProperyDescriptor,
+			name) -> {
 		if (!(sourcePropertyDescriptor.hasReadMethod() && sourcePropertyDescriptor.isReadable()
 				&& targetProperyDescriptor.hasWriteMethod() && targetProperyDescriptor.isWritable())) {
 			return false;
@@ -83,7 +80,7 @@ public class BeanUtils {
 	 * 忽略空
 	 */
 	public static final Filter IGNORE_NULL_FILTER = (source, sourcePropertyDescriptor, target, targetProperyDescriptor,
-			mapping) -> {
+			name, mapping) -> {
 		if (!sourcePropertyDescriptor.isReadable()) {
 			return false;
 		}
@@ -92,7 +89,7 @@ public class BeanUtils {
 		if (value == null) {
 			return false;
 		}
-		return mapping.doMapping(source, sourcePropertyDescriptor, target, targetProperyDescriptor);
+		return mapping.doMapping(source, sourcePropertyDescriptor, target, targetProperyDescriptor, name);
 	};
 
 	static {
@@ -117,17 +114,21 @@ public class BeanUtils {
 				while (iterator.hasNext()) {
 					BeanPropertyDescriptor sourcePropertyDescriptor = iterator.next();
 					try {
-						if (mapping.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor)) {
+						if (mapping.doMapping(source, sourcePropertyDescriptor, target, targetPropertyDescriptor,
+								name)) {
 							// 映射成功
 							iterator.remove();
 						}
 					} catch (Throwable e) {
-						throw new FatalBeanException("Could not copy property '" + targetPropertyDescriptor.getName()
-								+ "' from source to target", e);
+						throw new FatalBeanException("Could not copy property '" + name + "' from source to target", e);
 					}
 				}
 			}
 		}
+	}
+
+	public static BeanMappingRegistry getBeanMappingRegistry() {
+		return BEAN_MAPPING_REGISTRY;
 	}
 
 	public static BeanMapping getMapping(Class<?> beanClass) {

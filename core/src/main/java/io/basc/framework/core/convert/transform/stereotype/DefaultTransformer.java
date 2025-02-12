@@ -16,7 +16,8 @@ public class DefaultTransformer<X, Y, K, SV extends Value, S extends Template<K,
 
 	private final TemplateFactoryRegistry<Y, K, TV, T> targetTemplateProvider = new TemplateFactoryRegistry<>();
 
-	private final TemplateTransformer<K, SV, S, TV, T, E> templateTransformer = new TemplateTransformer<>();
+	@NonNull
+	private TemplateTransformer<K, SV, S, TV, T, E> templateTransformer = new TemplateTransformer<>();
 
 	@Override
 	public boolean canTransform(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {

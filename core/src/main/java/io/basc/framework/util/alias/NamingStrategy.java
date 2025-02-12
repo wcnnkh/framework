@@ -2,12 +2,12 @@ package io.basc.framework.util.alias;
 
 import java.util.function.Predicate;
 
-public interface NamingStrategy<K> extends Predicate<K> {
+public interface NamingStrategy extends Predicate<String> {
 	/**
 	 * 测试名称是否符合此策略
 	 */
 	@Override
-	boolean test(K name);
+	boolean test(String name);
 
 	/**
 	 * 是否是指定开头
@@ -16,7 +16,7 @@ public interface NamingStrategy<K> extends Predicate<K> {
 	 * @param prefix
 	 * @return
 	 */
-	boolean startsWith(K name, K prefix);
+	boolean startsWith(String name, String prefix);
 
 	/**
 	 * 指定开头的展示
@@ -25,7 +25,7 @@ public interface NamingStrategy<K> extends Predicate<K> {
 	 * @param prefix
 	 * @return
 	 */
-	K display(K name, K prefix);
+	String display(String name, String prefix);
 
 	/**
 	 * 拼接
@@ -34,5 +34,5 @@ public interface NamingStrategy<K> extends Predicate<K> {
 	 * @param right
 	 * @return
 	 */
-	K join(K left, K right);
+	String join(String left, String right);
 }
