@@ -16,6 +16,5 @@ public class GlobalRequestPatternFactory extends ConfigurableRequestPatternFacto
 	}
 
 	private GlobalRequestPatternFactory() {
-		// TODO
 	}
 }

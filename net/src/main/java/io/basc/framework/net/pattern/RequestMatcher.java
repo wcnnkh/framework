@@ -1,9 +1,11 @@
 package io.basc.framework.net.pattern;
 
 import io.basc.framework.core.convert.transform.stereotype.Properties;
-import io.basc.framework.core.execution.Parameters;
+import io.basc.framework.core.env.PropertySource;
+import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.Request;
+import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 
 /**
@@ -35,7 +37,7 @@ public class RequestMatcher implements RequestPattern {
 	@Override
 	public Properties apply(Request request) {
 		if (exclude.test(request)) {
-			return Parameters.EMPTY_PARAMETERS;
+			return PropertySource.EMPTY_PROPERTIES;
 		}
 
 		return include.apply(request);
@@ -43,26 +45,14 @@ public class RequestMatcher implements RequestPattern {
 
 	@Override
 	public MimeTypes getConsumes() {
-		MimeTypes mimeTypes = new MimeTypes();
-		for (RequestPattern pattern : include) {
-			if (exclude.contains(pattern)) {
-				continue;
-			}
-			mimeTypes.addAll(pattern.getConsumes());
-		}
-		return mimeTypes;
+		Elements<MimeType> elements = include.getConsumes().filter((e) -> !exclude.contains(e));
+		return MimeTypes.forElements(elements);
 	}
 
 	@Override
 	public MimeTypes getProduces() {
-		MimeTypes mimeTypes = new MimeTypes();
-		for (RequestPattern pattern : include) {
-			if (exclude.contains(pattern)) {
-				continue;
-			}
-			mimeTypes.addAll(pattern.getProduces());
-		}
-		return mimeTypes;
+		Elements<MimeType> elements = include.getProduces().filter((e) -> !exclude.contains(e));
+		return MimeTypes.forElements(elements);
 	}
 
 }

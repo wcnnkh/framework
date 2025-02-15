@@ -1,14 +1,8 @@
 package io.basc.framework.net.pattern;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.transform.stereotype.Properties;
-import io.basc.framework.core.execution.Parameter;
-import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.Request;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
@@ -45,14 +39,7 @@ public class PathPattern extends WildcardRequestPattern {
 		if (CollectionUtils.isEmpty(templateVariables)) {
 			return Properties.EMPTY_PROPERTIES;
 		}
-
-		int i = 0;
-		List<Parameter> parameters = new ArrayList<>();
-		for (Entry<String, String> entry : templateVariables.entrySet()) {
-			Parameter parameter = Parameter.of(i++, entry.getKey(), Value.of(entry.getValue()));
-			parameters.add(parameter);
-		}
-		return Parameters.forList(parameters);
+		return Properties.forMap(templateVariables);
 	}
 
 	@Override

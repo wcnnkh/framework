@@ -9,12 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DispatcherServer extends RequestPatternRegistry<Server> implements Server {
-	private final ConfigurableFilter configurableFilter = new ConfigurableFilter();
-	/**
-	 * 兜底服务，如果dispatcher找不到对应的服务那么执行此服务
-	 */
-	private Server bottomLineServer;
+public class Servers extends RequestPatternRegistry<Server> implements Server, Filter {
+	private final Filters filters = new Filters();
 
 	public Server dispatch(ServerRequest request) {
 		PathPattern pathPattern = request.getPattern();
@@ -26,16 +22,15 @@ public class DispatcherServer extends RequestPatternRegistry<Server> implements 
 	}
 
 	@Override
+	public void doFilter(ServerRequest request, ServerResponse response, Server server)
+			throws IOException, ServerException {
+		filters.doFilter(request, response, server);
+	}
+
+	@Override
 	public void service(ServerRequest request, ServerResponse response) throws IOException, ServerException {
 		Server server = dispatch(request);
-		if (server == null) {
-			if (bottomLineServer != null) {
-				bottomLineServer.service(request, response);
-			}
-			return;
-		}
-
-		configurableFilter.doFilter(request, response, server);
+		doFilter(request, response, server);
 	}
 
 }

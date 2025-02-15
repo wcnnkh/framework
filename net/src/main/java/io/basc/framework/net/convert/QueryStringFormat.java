@@ -1,15 +1,13 @@
-package io.basc.framework.net.text.query;
+package io.basc.framework.net.convert;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import io.basc.framework.beans.format.ObjectFormat;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.core.convert.lang.ObjectValue;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.text.ObjectFormat;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.codec.support.URLCodec;
@@ -36,7 +34,7 @@ public class QueryStringFormat extends ObjectFormat {
 		this.keyValueConnector = keyValueConnector;
 	}
 
-	public void setCharset(@Nullable Charset charset) {
+	public void setCharset(Charset charset) {
 		this.codec = charset == null ? null : new URLCodec(charset);
 	}
 
@@ -45,10 +43,10 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public void format(Stream<Pair<String, Value>> source, Appendable target) throws IOException {
-		Iterator<Pair<String, Value>> iterator = source.iterator();
+	public void format(Stream<KeyValue<String, Value>> source, Appendable target) throws IOException {
+		Iterator<KeyValue<String, Value>> iterator = source.iterator();
 		while (iterator.hasNext()) {
-			Pair<String, Value> pair = iterator.next();
+			KeyValue<String, Value> pair = iterator.next();
 			String key = pair.getKey();
 			String value = pair.getValue().getAsString();
 			if (codec != null) {
@@ -70,7 +68,7 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public Stream<Pair<String, Value>> parse(Readable source) throws IOException {
+	public Stream<KeyValue<String, Value>> parse(Readable source) throws IOException {
 		return IOUtils.split(source, connector).map((e) -> {
 			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
 			if (kv.length == 0) {
@@ -84,7 +82,7 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.decode(value);
 			}
 
-			return new Pair<>(key, new ObjectValue(value, null));
+			return KeyValue.of(key, Value.of(value));
 		});
 	}
 }

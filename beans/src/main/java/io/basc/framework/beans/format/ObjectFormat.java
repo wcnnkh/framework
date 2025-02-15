@@ -1,4 +1,4 @@
-package io.basc.framework.net.text;
+package io.basc.framework.beans.format;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,21 +11,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import io.basc.framework.beans.BeanMapping;
+import io.basc.framework.beans.BeanPropertyDescriptor;
 import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
-import io.basc.framework.core.convert.lang.ObjectValue;
 import io.basc.framework.core.convert.support.DefaultConversionService;
-import io.basc.framework.core.convert.transform.stereotype.stractegy.CollectionFactory;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.stereotype.FieldDescriptor;
-import io.basc.framework.mapper.stereotype.Mapping;
-import io.basc.framework.mapper.stereotype.MappingFactory;
+import io.basc.framework.core.convert.transform.mapping.FieldDescriptor;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.MultiValueMap;
 import io.basc.framework.util.reflect.ReflectionUtils;
 import lombok.Getter;
@@ -37,8 +35,6 @@ import lombok.Setter;
 public abstract class ObjectFormat implements PairFormat<String, Value>, ConversionServiceAware {
 	@NonNull
 	private ConversionService conversionService = DefaultConversionService.getInstance();
-	@NonNull
-	private MappingFactory mappingFactory = BeanUtils.getMapper();
 
 	@Override
 	public final String format(Stream<KeyValue<String, Value>> source) {
@@ -70,11 +66,12 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void formatMap(@Nullable String sourceKey, Map source, TypeDescriptor sourceType, Appendable target)
+	protected void formatMap(String sourceKey, Map source, TypeDescriptor sourceType, Appendable target)
 			throws IOException {
 		Set<Entry> entrySet = ((Map) source).entrySet();
 		for (Entry entry : entrySet) {
-			String key = conversionService.convert(entry.getKey(), sourceType.getMapKeyTypeDescriptor(), String.class);
+			String key = (String) conversionService.convert(entry.getKey(), sourceType.getMapKeyTypeDescriptor(),
+					TypeDescriptor.valueOf(String.class));
 			if (StringUtils.isNotEmpty(sourceKey)) {
 				key = joinKey(sourceKey, key);
 			}
@@ -119,12 +116,12 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 		}
 
 		// 兜底
-		Mapping<?> mapping = mappingFactory.getMapping(sourceType.getType());
+		BeanMapping mapping = BeanUtils.getMapping(sourceType.getType());
 		for (FieldDescriptor element : mapping.getElements()) {
 			String key = element.getName();
 			Object value;
 			try {
-				value = element.getter().get(source);
+				value = element.readFrom(source);
 			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
@@ -142,7 +139,7 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 		} else if (sourceType.isArray()) {
 			formatArray(sourceKey, source, sourceType, target);
 		} else {
-			Value value = new ObjectValue(source, sourceType);
+			Value value = Value.of(source, sourceType);
 			KeyValue<String, Value> pair = KeyValue.of(sourceKey, value);
 			Stream<KeyValue<String, Value>> stream = Stream.of(pair);
 			// 开始format
@@ -198,15 +195,17 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 				return Collections.emptyMap();
 			}
 
-			Map targetMap = CollectionFactory.createMap(targetType.getType(),
+			Map targetMap = CollectionUtils.createMap(targetType.getType(),
 					targetType.getMapKeyTypeDescriptor().getType(), sourceMap.size());
 			for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
 				Object key = entry.getKey();
-				key = conversionService.convert(key, targetType.getMapKeyTypeDescriptor());
+				key = conversionService.convert(key, TypeDescriptor.forObject(key),
+						targetType.getMapKeyTypeDescriptor());
 
 				Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
 						: entry.getValue();
-				value = conversionService.convert(value, targetType.getMapValueTypeDescriptor());
+				value = conversionService.convert(value, TypeDescriptor.forObject(value),
+						targetType.getMapValueTypeDescriptor());
 
 				targetMap.put(key, value);
 			}
@@ -215,20 +214,15 @@ public abstract class ObjectFormat implements PairFormat<String, Value>, Convers
 
 		// 兜底处理
 		Object target = ReflectionUtils.newInstance(targetType.getType());
-		Mapping<?> mapping = mappingFactory.getMapping(targetType.getType());
+		BeanMapping mapping = BeanUtils.getMapping(targetType.getType());
 		for (Entry<String, List<Value>> entry : sourceMap.entrySet()) {
-			FieldDescriptor element = mapping.getElements(entry.getKey()).first();
-			if (element == null) {
-				continue;
-			}
-
-			Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
-					: entry.getValue();
-			value = conversionService.convert(value, element.setter().getTypeDescriptor());
-			try {
-				element.setter().set(target, value);
-			} catch (Throwable e) {
-				throw new RuntimeException(e);
+			Elements<BeanPropertyDescriptor> elements = mapping.getValues(entry.getKey());
+			for (BeanPropertyDescriptor element : elements) {
+				Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
+						: entry.getValue();
+				value = conversionService.convert(value, TypeDescriptor.forObject(value),
+						element.getRequiredTypeDescriptor());
+				element.writeTo(target, value);
 			}
 		}
 		return target;

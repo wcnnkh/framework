@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import io.basc.framework.util.spi.ConfigurableServices;
 
-public class ConfigurableFilter extends ConfigurableServices<Filter> implements Filter {
+public class Filters extends ConfigurableServices<Filter> implements Filter {
 
-	public ConfigurableFilter() {
+	public Filters() {
 		setServiceClass(Filter.class);
 	}
 

@@ -1,8 +1,12 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import java.io.Serializable;
+import java.util.Map;
 
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.support.IdentityConversionService;
+import io.basc.framework.core.convert.transform.stereotype.collection.MapProperties;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.Lookup;
 import lombok.NonNull;
@@ -22,20 +26,8 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 		}
 	}
 
-	public static final Properties EMPTY_PROPERTIES = new EmptyProperties();
-
 	public static interface PropertiesWrapper<W extends Properties>
 			extends Properties, PropertyMappingWrapper<Property, W>, LookupWrapper<String, Property, W> {
-
-		@Override
-		default Elements<String> keys() {
-			return getSource().keys();
-		}
-
-		@Override
-		default Elements<Property> getElements() {
-			return getSource().getElements();
-		}
 
 		@Override
 		default boolean containsKey(String key) {
@@ -48,9 +40,26 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 		}
 
 		@Override
+		default Elements<Property> getElements() {
+			return getSource().getElements();
+		}
+
+		@Override
 		default Elements<Property> getValues(String key) {
 			return getSource().getValues(key);
 		}
+
+		@Override
+		default Elements<String> keys() {
+			return getSource().keys();
+		}
+	}
+
+	public static final Properties EMPTY_PROPERTIES = new EmptyProperties();
+
+	public static Properties forMap(Map<? extends String, ?> map) {
+		return new MapProperties(map, TypeDescriptor.map(map.getClass(), String.class, Object.class),
+				new IdentityConversionService());
 	}
 
 	default boolean containsKey(String key) {
@@ -63,6 +72,17 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 	@Override
 	default Elements<Property> getElements() {
 		return keys().map((key) -> get(key));
+	}
+
+	@Override
+	default Value getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
+		Property property = get(propertyDescriptor.getName());
+		if (property == null) {
+			return null;
+		}
+
+		return property.getTypeDescriptor().isAssignableTo(propertyDescriptor.getRequiredTypeDescriptor()) ? property
+				: null;
 	}
 
 	@Override
@@ -82,17 +102,6 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 		}
 
 		return property.getTypeDescriptor().isAssignableTo(propertyDescriptor.getRequiredTypeDescriptor());
-	}
-
-	@Override
-	default Value getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
-		Property property = get(propertyDescriptor.getName());
-		if (property == null) {
-			return null;
-		}
-
-		return property.getTypeDescriptor().isAssignableTo(propertyDescriptor.getRequiredTypeDescriptor()) ? property
-				: null;
 	}
 
 	@Override

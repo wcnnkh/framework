@@ -1,4 +1,4 @@
-package io.basc.framework.net.mvc;
+package io.basc.framework.net.server.dispatch;
 
 import java.io.IOException;
 
@@ -12,6 +12,6 @@ import io.basc.framework.net.server.ServerResponse;
  * @author shuchaowen
  *
  */
-public interface ExceptionHandler {
+public interface ErrorHandler {
 	void doError(ServerRequest request, ServerResponse response, Server server, Throwable error) throws IOException;
 }

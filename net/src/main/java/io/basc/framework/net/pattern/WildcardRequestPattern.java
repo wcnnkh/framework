@@ -10,8 +10,7 @@ public class WildcardRequestPattern implements RequestPattern {
 
 	@Override
 	public Properties apply(Request request) {
-		// TODO
-		return null;
+		return Properties.EMPTY_PROPERTIES;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package io.basc.framework.net.mvc;
+package io.basc.framework.net.server.dispatch;
 
 import java.io.IOException;
 
@@ -7,17 +7,15 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.core.execution.Function;
-import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.net.pattern.RequestPatternCapable;
+import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
-import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.convert.ServerMessageConverter;
 import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
@@ -35,7 +33,7 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 	private final RequestPattern requestPattern;
 	@NonNull
 	private ServerMessageConverter messageConverter;
-	private ExceptionHandler errorHandler;
+	private ErrorHandler errorHandler;
 	private ExecutionInterceptor executionInterceptor;
 
 	@Override
@@ -50,15 +48,9 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 	protected Object getArg(ServerRequest request, Properties requestPatternProperties,
 			ParameterDescriptor parameterDescriptor) throws IOException {
 		// 优先匹配额外参数
-		Elements<Property> elements = requestPatternProperties.getAccessors(parameterDescriptor);
-		for (Property property : elements) {
-			if (!property.isReadable()) {
-				continue;
-			}
-			
-			if (property.test(parameterDescriptor)) {
-				return parameter.getAsObject(parameterDescriptor.getTypeDescriptor());
-			}
+		Property property = requestPatternProperties.get(parameterDescriptor.getName());
+		if (property != null && property.isReadable()) {
+			return property.getAsObject(parameterDescriptor.getRequiredTypeDescriptor());
 		}
 		return messageConverter.readFrom(parameterDescriptor, request, request);
 	}

@@ -1,4 +1,4 @@
-package io.basc.framework.net.text;
+package io.basc.framework.beans.format;
 
 import java.io.IOException;
 import java.io.StringReader;
