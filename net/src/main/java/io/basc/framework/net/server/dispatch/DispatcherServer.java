@@ -5,7 +5,6 @@ import java.util.List;
 
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameters;
-import io.basc.framework.net.pattern.PathPattern;
 import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.net.pattern.factory.DefaultRequestPatternFactory;
 import io.basc.framework.net.server.Server;
@@ -27,15 +26,6 @@ public class DispatcherServer extends Servers {
 	private GroundServer groundServer;
 	private final DefaultRequestPatternFactory requestPatternFactory = new DefaultRequestPatternFactory();
 	private final DefaultServerMessageConverter serverMessageConverter = new DefaultServerMessageConverter();
-
-	public Server dispatch(ServerRequest request) {
-		PathPattern pathPattern = request.getPattern();
-		Server server = get(pathPattern);
-		if (server == null) {
-			server = entries().filter((e) -> e.getKey().test(request)).map((e) -> e.getValue()).first();
-		}
-		return server;
-	}
 
 	public Registration registerAction(Action action) {
 		return register(action, action);

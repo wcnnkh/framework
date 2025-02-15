@@ -1,4 +1,4 @@
-package io.basc.framework.net.rpc.factory;
+package io.basc.framework.net.client.rpc.factory;
 
 public class GlobalRemoteRequestFactory extends ConfigurableRemoteRequestFactory {
 	private static volatile GlobalRemoteRequestFactory instance;

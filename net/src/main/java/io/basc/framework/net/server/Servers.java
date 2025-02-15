@@ -2,7 +2,7 @@ package io.basc.framework.net.server;
 
 import java.io.IOException;
 
-import io.basc.framework.net.pattern.PathPattern;
+import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.net.pattern.RequestPatternRegistry;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +13,8 @@ public class Servers extends RequestPatternRegistry<Server> implements Server, F
 	private final Filters filters = new Filters();
 
 	public Server dispatch(ServerRequest request) {
-		PathPattern pathPattern = request.getPattern();
-		Server server = get(pathPattern);
+		RequestPattern requestPattern = request.getPattern();
+		Server server = get(requestPattern);
 		if (server == null) {
 			server = entries().filter((e) -> e.getKey().test(request)).map((e) -> e.getValue()).first();
 		}
