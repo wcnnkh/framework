@@ -1,28 +1,28 @@
 package io.basc.framework.http;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Request;
 import io.basc.framework.net.pattern.PathPattern;
+import io.basc.framework.util.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface HttpPattern extends PathPattern {
-	@Nullable
-	String getMethod();
-
-	default boolean test(HttpRequest request, String method) {
-		return method.equalsIgnoreCase(request.getRawMethod());
-	}
+@Getter
+@Setter
+public class HttpPattern extends PathPattern {
+	private String method;
 
 	@Override
-	default boolean test(Request request) {
-		String method = getMethod();
-		if (method != null) {
-			if (request instanceof HttpRequest) {
-				if (!test((HttpRequest) request, method)) {
-					return false;
-				}
+	public boolean test(Request request) {
+		if (this.method != null) {
+			if (!(request instanceof HttpRequest)) {
+				return false;
 			}
-			return false;
+
+			HttpRequest httpRequest = (HttpRequest) request;
+			if (!StringUtils.equals(httpRequest.getRawMethod(), this.method, true)) {
+				return false;
+			}
 		}
-		return PathPattern.super.test(request);
+		return super.test(request);
 	}
 }

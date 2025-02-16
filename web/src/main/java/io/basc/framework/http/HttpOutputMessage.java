@@ -4,11 +4,28 @@ import io.basc.framework.net.MimeType;
 import io.basc.framework.net.OutputMessage;
 
 public interface HttpOutputMessage extends OutputMessage, HttpMessage {
+	public static interface HttpOutputMessageWrapper<W extends HttpOutputMessage>
+			extends HttpOutputMessage, OutputMessageWrapper<W>, HttpMessageWrapper<W> {
+		@Override
+		default void setContentType(MediaType contentType) {
+			getSource().setContentType(contentType);
+		}
+
+		@Override
+		default void setContentType(MimeType contentType) {
+			getSource().setContentType(contentType);
+		}
+
+		@Override
+		default void setContentLength(long contentLength) {
+			getSource().setContentLength(contentLength);
+		}
+	}
 
 	default void setContentType(MediaType contentType) {
 		String charsetName = contentType.getCharsetName();
 		if (charsetName == null) {
-			charsetName = getCharacterEncoding();
+			charsetName = getCharsetName();
 			if (charsetName == null) {
 				getHeaders().setContentType(contentType);
 			} else {
@@ -25,14 +42,5 @@ public interface HttpOutputMessage extends OutputMessage, HttpMessage {
 
 	default void setContentLength(long contentLength) {
 		getHeaders().setContentLength(contentLength);
-	}
-
-	default void setCharacterEncoding(String charsetName) {
-		MediaType mediaType = getContentType();
-		if (mediaType == null) {
-			return;
-		}
-
-		setContentType(new MediaType(mediaType, charsetName));
 	}
 }

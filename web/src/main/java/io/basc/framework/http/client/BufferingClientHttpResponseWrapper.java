@@ -6,13 +6,15 @@ import java.io.InputStream;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
+import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.io.IOUtils;
+import lombok.NonNull;
 
 public final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
 	private final ClientHttpResponse response;
 
-	private byte[] body;
+	private Pipeline<InputStream, IOException> body;
 
 	BufferingClientHttpResponseWrapper(ClientHttpResponse response) {
 		this.response = response;
@@ -34,11 +36,14 @@ public final class BufferingClientHttpResponseWrapper implements ClientHttpRespo
 		return this.response.getHeaders();
 	}
 
-	public InputStream getInputStream() throws IOException {
+	@Override
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
 		if (this.body == null) {
-			this.body = IOUtils.copyToByteArray(this.response.getInputStream());
+			this.body = response.getInputStream().map((e) -> IOUtils.copyToByteArray(e))
+					.map((e) -> new ByteArrayInputStream(e));
+			this.body = this.body.newPipeline();
 		}
-		return new ByteArrayInputStream(this.body);
+		return body;
 	}
 
 	public void close() {

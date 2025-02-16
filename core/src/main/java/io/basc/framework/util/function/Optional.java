@@ -2,7 +2,6 @@ package io.basc.framework.util.function;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,52 +10,40 @@ import lombok.RequiredArgsConstructor;
 public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 	public static class EmptyOptional<T, E extends Throwable> implements Optional<T, E> {
 
-		@Override
 		public Optional<T, E> filter(@NonNull Predicate<? super T, ? extends E> filter) {
 			return this;
 		}
 
 		@Override
-		public T orElse(T other) throws E {
-			return other;
+		public <R, X extends Throwable> R flatMap(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+				throws E, X {
+			return mapper.apply(null);
 		}
 	}
 
-	@RequiredArgsConstructor
-	public static class FilteredOptional<T, E extends Throwable> implements Optional<T, E> {
-		@NonNull
-		protected final Optional<T, E> source;
-		@NonNull
-		protected final Predicate<? super T, ? extends E> filter;
-
-		@Override
-		public T orElse(T other) throws E {
-			T source = this.source.orElse(null);
-			if (source == null) {
-				return other;
-			}
-
-			if (!filter.test(source)) {
-				return other;
-			}
-			return source;
+	public static class MappedOptional<S, T, E extends Throwable, W extends Optional<S, E>>
+			extends MappedSource<S, T, E, W> implements Optional<T, E> {
+		public MappedOptional(@NonNull W source, @NonNull Function<? super S, ? extends T, ? extends E> mapper) {
+			super(source, mapper);
 		}
-	}
-
-	@RequiredArgsConstructor
-	public static class MappedOptional<S, T, E extends Throwable> implements Optional<T, E> {
-		@NonNull
-		protected final Optional<S, E> source;
-		@NonNull
-		protected final Function<? super S, ? extends T, ? extends E> pipeline;
 
 		@Override
 		public T orElse(T other) throws E {
 			S source = this.source.orElse(null);
-			if (source == null) {
-				return other;
-			}
-			return pipeline.apply(source);
+			return mapper.apply(source);
+		}
+
+		@Override
+		public <R> Optional<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> mapper) {
+			return Optional.super.map(mapper);
+		}
+
+		@Override
+		public <R, X extends Throwable> R flatMap(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+				throws E, X {
+			S source = this.source.orElse(null);
+			T target = this.mapper.apply(source);
+			return mapper.apply(target);
 		}
 	}
 
@@ -92,6 +79,23 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		default <X extends Throwable> T orElseGet(@NonNull Supplier<? extends T, ? extends X> source) throws E, X {
 			return getSource().orElseGet(source);
 		}
+
+		@Override
+		default <R, X extends Throwable> R ifPresentGet(Function<? super T, ? extends R, ? extends X> mapper)
+				throws E, X {
+			return getSource().ifPresentGet(mapper);
+		}
+
+		@Override
+		default java.util.Optional<T> apply() throws E {
+			return getSource().apply();
+		}
+
+		@Override
+		default <R, X extends Throwable> R flatMap(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+				throws E, X {
+			return getSource().flatMap(mapper);
+		}
 	}
 
 	@RequiredArgsConstructor
@@ -100,8 +104,9 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		protected final T target;
 
 		@Override
-		public T orElse(T other) throws E {
-			return target == null ? other : target;
+		public <R, X extends Throwable> R flatMap(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+				throws E, X {
+			return mapper.apply(target);
 		}
 	}
 
@@ -112,9 +117,9 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		protected final W source;
 
 		@Override
-		public T orElse(T other) throws E {
-			T value = source.get();
-			return value == null ? other : value;
+		public <R, X extends Throwable> R flatMap(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+				throws E, X {
+			return mapper.apply(source.get());
 		}
 	}
 
@@ -125,29 +130,19 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		return (Optional<U, E>) EMPTY_OPTIONAL;
 	}
 
-	public static <U, E extends Throwable> Optional<U, E> of(U value) {
+	public static <U, E extends Throwable> Optional<U, E> ofNullable(U value) {
 		if (value == null) {
 			return empty();
 		}
 		return new SharedOptional<>(value);
 	}
 
-	public static <U, E extends Throwable> Optional<U, E> ofSource(@NonNull Supplier<? extends U, ? extends E> source) {
+	public static <U, E extends Throwable> Optional<U, E> of(@NonNull Supplier<? extends U, ? extends E> source) {
 		return new SourceOptional<>(source);
 	}
 
 	default Optional<T, E> filter(@NonNull Predicate<? super T, ? extends E> filter) {
-		return new FilteredOptional<>(this, filter);
-	}
-
-	default <U, X extends Throwable> Optional<U, X> flatMap(
-			@NonNull Function<? super T, ? extends Optional<U, X>, ? extends E> mapper) throws E {
-		T value = orElse(null);
-		if (value == null) {
-			return empty();
-		} else {
-			return Objects.requireNonNull(mapper.apply(value));
-		}
+		return map((e) -> filter.test(e) ? null : e);
 	}
 
 	@Override
@@ -159,11 +154,26 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		return value;
 	}
 
-	default <X extends Throwable> void ifPresent(Consumer<? super T, ? extends X> endpoint) throws E, X {
-		T value = orElse(null);
-		if (value != null) {
-			endpoint.accept(value);
-		}
+	<R, X extends Throwable> R flatMap(@NonNull Function<? super T, ? extends R, ? extends X> mapper) throws E, X;
+
+	default <X extends Throwable> void ifPresent(Consumer<? super T, ? extends X> consumer) throws E, X {
+		flatMap((e) -> {
+			if (e == null) {
+				return e;
+			}
+			consumer.accept(e);
+			return e;
+		});
+	}
+
+	default <R, X extends Throwable> R ifPresentGet(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+			throws E, X {
+		return flatMap((e) -> {
+			if (e == null) {
+				return null;
+			}
+			return mapper.apply(e);
+		});
 	}
 
 	default boolean isPresent() throws E {
@@ -171,14 +181,26 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 	}
 
 	@Override
-	default <R> Optional<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
-		return new MappedOptional<>(this, pipeline);
+	default <R> Optional<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> mapper) {
+		return new MappedOptional<>(this, mapper);
 	}
 
-	T orElse(T other) throws E;
+	default T orElse(T other) throws E {
+		return flatMap((e) -> e == null ? other : e);
+	}
 
-	default <X extends Throwable> T orElseGet(@NonNull Supplier<? extends T, ? extends X> source) throws E, X {
-		T target = orElse(null);
-		return target == null ? source.get() : target;
+	default <X extends Throwable> T orElseGet(@NonNull Supplier<? extends T, ? extends X> suppler) throws E, X {
+		return flatMap((e) -> e == null ? suppler.get() : e);
+	}
+
+	/**
+	 * 应用
+	 * 
+	 * @see java.util.Optional
+	 * @return
+	 * @throws E
+	 */
+	default java.util.Optional<T> apply() throws E {
+		return flatMap(java.util.Optional::ofNullable);
 	}
 }

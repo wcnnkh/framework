@@ -1,7 +1,6 @@
 package io.basc.framework.http.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URI;
@@ -15,10 +14,9 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.util.io.ResourceUtils;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 
 public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor
 		implements ClientHttpRequestFactory {
@@ -89,12 +87,12 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 			return false;
 		}
 
-		InputStream is = ResourceUtils.getByteArrayInputStream(certTrustResource);
 		try {
-			this.sslSocketFactory = SSLContexts.custom()
-					.loadKeyMaterial(is, storePassword.toCharArray(), keyPassword.toCharArray()).build()
-					.getSocketFactory();
-		} catch (Exception e) {
+			this.sslSocketFactory = certTrustResource.getInputStream().option()
+					.flatMap((is) -> SSLContexts.custom()
+							.loadKeyMaterial(is, storePassword.toCharArray(), keyPassword.toCharArray()).build()
+							.getSocketFactory());
+		} catch (Throwable e) {
 			logger.error(e, "certTrustFile [{}], storePassword [{}], keyPassword [{}]", certTrustResource,
 					storePassword, keyPassword);
 			return false;

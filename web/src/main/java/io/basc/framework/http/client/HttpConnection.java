@@ -10,7 +10,6 @@ import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.HeadersBuilder;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.lang.Nullable;
 
 public interface HttpConnection
 		extends HttpClientConfigurable<HttpConnection>, HttpRequest, HeadersBuilder<HttpConnection> {
@@ -63,12 +62,10 @@ public interface HttpConnection
 	 *                       resolution
 	 * @return the built request entity
 	 */
-	HttpConnection body(Object body, @Nullable TypeDescriptor typeDescriptor);
+	HttpConnection body(Object body, TypeDescriptor typeDescriptor);
 
-	@Nullable
 	TypeDescriptor getTypeDescriptor();
 
-	@Nullable
 	Object getBody();
 
 	default boolean hasBody() {

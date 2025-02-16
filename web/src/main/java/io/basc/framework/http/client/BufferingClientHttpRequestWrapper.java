@@ -21,7 +21,6 @@ import java.net.URI;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.util.io.IOUtils;
 
 /**
  * Simple implementation of {@link ClientHttpRequest} that wraps another
@@ -52,7 +51,7 @@ public final class BufferingClientHttpRequestWrapper extends AbstractBufferingCl
 	@Override
 	protected ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
 		this.request.getHeaders().putAll(headers);
-		IOUtils.copy(bufferedOutput, this.request.getOutputStream());
+		request.write(bufferedOutput);
 		ClientHttpResponse response = this.request.execute();
 		return new BufferingClientHttpResponseWrapper(response);
 	}

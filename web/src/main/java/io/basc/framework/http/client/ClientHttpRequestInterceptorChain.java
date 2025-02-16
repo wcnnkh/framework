@@ -3,18 +3,16 @@ package io.basc.framework.http.client;
 import java.io.IOException;
 import java.util.Iterator;
 
-import io.basc.framework.lang.Nullable;
-
 public class ClientHttpRequestInterceptorChain implements ClientHttpRequestExecutor {
 	private Iterator<ClientHttpRequestInterceptor> iterator;
 	private ClientHttpRequestExecutor nextChain;
 
-	public ClientHttpRequestInterceptorChain(@Nullable Iterator<ClientHttpRequestInterceptor> iterator) {
+	public ClientHttpRequestInterceptorChain(Iterator<ClientHttpRequestInterceptor> iterator) {
 		this(iterator, null);
 	}
 
-	public ClientHttpRequestInterceptorChain(@Nullable Iterator<ClientHttpRequestInterceptor> iterator,
-			@Nullable ClientHttpRequestExecutor nextChain) {
+	public ClientHttpRequestInterceptorChain(Iterator<ClientHttpRequestInterceptor> iterator,
+			ClientHttpRequestExecutor nextChain) {
 		this.iterator = iterator;
 		this.nextChain = nextChain;
 	}

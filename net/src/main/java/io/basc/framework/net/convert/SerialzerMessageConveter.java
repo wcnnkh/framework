@@ -22,7 +22,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter {
 	@Override
 	protected Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException {
-		return inputMessage.getInputStream().export().map(source -> {
+		return inputMessage.getInputStream().option().map(source -> {
 			try {
 				return serializer.deserialize(source);
 			} catch (ClassNotFoundException e) {
@@ -33,7 +33,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter {
 
 	@Override
 	protected void doWrite(Value source, MimeType contentType, OutputMessage outputMessage) throws IOException {
-		outputMessage.getOutputStream().export().ifPresent((output) -> {
+		outputMessage.getOutputStream().option().ifPresent((output) -> {
 			byte[] data = serializer.serialize(source.get());
 			output.write(data);
 		});

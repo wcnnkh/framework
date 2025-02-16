@@ -21,13 +21,12 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Headers;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 
@@ -1293,12 +1292,6 @@ public class HttpHeaders extends Headers {
 		put(headerName, headerValues);
 	}
 
-	public void setAll(Map<String, String> values) {
-		for (Entry<String, String> entry : values.entrySet()) {
-			set(entry.getKey(), entry.getValue());
-		}
-	}
-
 	public Map<String, String> toSingleValueMap() {
 		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(size());
 		for (Entry<String, List<String>> entry : entrySet()) {
@@ -1348,7 +1341,6 @@ public class HttpHeaders extends Headers {
 	 * 
 	 * @return
 	 */
-	@Nullable
 	public String getIp() {
 		for (String name : GET_IP_HEADERES) {
 			String value = getFirst(name);
@@ -1385,7 +1377,7 @@ public class HttpHeaders extends Headers {
 				continue;
 			}
 
-			Pair<String, String> hs = StringUtils.parseKV(header, ":");
+			KeyValue<String, String> hs = StringUtils.parseKeyValue(header, ":");
 			if (hs == null) {
 				throw new IllegalStateException("error header [" + header + "]");
 			}

@@ -55,10 +55,10 @@ public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 	}
 
 	default D decode(Resource source) throws IOException, DecodeException {
-		return source.getInputStream().export().map(this::decode).get();
+		return source.getInputStream().option().map(this::decode).get();
 	}
 
 	default D decode(Resource source, int bufferSize) throws IOException, DecodeException {
-		return source.getInputStream().export().map((is) -> decode(is, bufferSize)).get();
+		return source.getInputStream().option().map((is) -> decode(is, bufferSize)).get();
 	}
 }

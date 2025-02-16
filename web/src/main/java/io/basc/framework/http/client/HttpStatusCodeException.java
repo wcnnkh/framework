@@ -57,7 +57,7 @@ public class HttpStatusCodeException extends HttpClientResponseException {
 	public HttpStatusCodeException(HttpStatus statusCode, String statusText, HttpHeaders responseHeaders,
 			byte[] responseBody, Charset responseCharset) {
 
-		super(statusCode.value() + " " + statusText, statusCode.value(), statusText, responseHeaders, responseBody,
+		super(statusCode.getCode() + " " + statusText, statusCode.getCode(), statusText, responseHeaders, responseBody,
 				responseCharset);
 		this.statusCode = statusCode;
 	}

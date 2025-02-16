@@ -11,7 +11,6 @@ import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.BodyBuilder;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriUtils;
 
 /**
@@ -62,15 +61,15 @@ public interface HttpClient extends HttpClientConfigurable<HttpClient> {
 		return execute(request, getCookieHandler(), responseType);
 	}
 
-	<T> HttpResponseEntity<T> execute(ClientHttpRequest request, @Nullable CookieHandler cookieHandler,
+	<T> HttpResponseEntity<T> execute(ClientHttpRequest request, CookieHandler cookieHandler,
 			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException, IOException;
 
-	default <T> HttpResponseEntity<T> execute(ClientHttpRequest request, @Nullable CookieHandler cookieHandler,
+	default <T> HttpResponseEntity<T> execute(ClientHttpRequest request, CookieHandler cookieHandler,
 			Class<? extends T> responseType) throws HttpClientException, IOException {
 		return execute(request, cookieHandler, TypeDescriptor.valueOf(responseType));
 	}
 
-	<T> HttpResponseEntity<T> execute(ClientHttpRequest request, @Nullable CookieHandler cookieHandler,
+	<T> HttpResponseEntity<T> execute(ClientHttpRequest request, CookieHandler cookieHandler,
 			TypeDescriptor responseType) throws HttpClientException, IOException;
 
 	default <T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestCallback requestCallback,
@@ -80,19 +79,19 @@ public interface HttpClient extends HttpClientConfigurable<HttpClient> {
 	}
 
 	<T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestFactory requestFactory,
-			@Nullable CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback,
-			@Nullable RedirectManager redirectManager, ClientHttpResponseExtractor<T> responseExtractor);
+			CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback, RedirectManager redirectManager,
+			ClientHttpResponseExtractor<T> responseExtractor);
 
 	default <T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestFactory requestFactory,
-			@Nullable CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback,
-			@Nullable RedirectManager redirectManager, Class<? extends T> responseType) {
+			CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback, RedirectManager redirectManager,
+			Class<? extends T> responseType) {
 		return execute(uri, httpMethod, requestFactory, cookieHandler, requestCallback, redirectManager,
 				TypeDescriptor.valueOf(responseType));
 	}
 
 	<T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestFactory requestFactory,
-			@Nullable CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback,
-			@Nullable RedirectManager redirectManager, TypeDescriptor responseType);
+			CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback, RedirectManager redirectManager,
+			TypeDescriptor responseType);
 
 	default <T> HttpResponseEntity<T> execute(URI uri, String httpMethod, Class<? extends T> responseType,
 			ClientHttpRequestCallback requestCallback) {

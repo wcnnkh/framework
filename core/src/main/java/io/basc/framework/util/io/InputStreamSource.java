@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
+import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.function.Wrapper;
@@ -59,9 +62,9 @@ public interface InputStreamSource<T extends InputStream> {
 		}
 
 		@Override
-		default <R extends Reader> ReaderSource<R> reader(
+		default <R extends Reader> ReaderSource<R> toReaderSource(
 				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
-			return getSource().reader(pipeline);
+			return getSource().toReaderSource(pipeline);
 		}
 
 		@Override
@@ -96,6 +99,18 @@ public interface InputStreamSource<T extends InputStream> {
 
 		@Override
 		default void transferTo(Path dest) throws IOException, IllegalStateException {
+			getSource().transferTo(dest);
+		}
+
+		@Override
+		default <E extends Throwable> void exportByteBuffer(Consumer<? super ByteBuffer, ? extends E> consumer)
+				throws IOException, E {
+			getSource().exportByteBuffer(consumer);
+		}
+
+		@Override
+		default <R extends OutputStream> void transferTo(@NonNull OutputStreamSource<? extends R> dest)
+				throws IOException {
 			getSource().transferTo(dest);
 		}
 	}
@@ -145,36 +160,45 @@ public interface InputStreamSource<T extends InputStream> {
 	@NonNull
 	Pipeline<T, IOException> getInputStream();
 
-	default <R extends Reader> ReaderSource<R> reader(
+	default <R extends Reader> ReaderSource<R> toReaderSource(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 		return new StandardDecodeInputStreamSource<>(this, pipeline);
 	}
 
 	default byte[] readAllBytes() throws NoSuchElementException, IOException {
-		return getInputStream().map(IOUtils::toByteArray).finish().get();
+		return getInputStream().map(IOUtils::toByteArray).get();
+	}
+
+	default <E extends Throwable> void exportByteBuffer(Consumer<? super ByteBuffer, ? extends E> consumer)
+			throws IOException, E {
 	}
 
 	default ReaderSource<Reader> toReaderSource() {
 		return new DefaultDecodeInputStreamSource<>(this);
 	}
 
-	default ReaderSource<Reader> toReaderSource(Charset charset) {
+	default ReaderSource<Reader> toReaderSource(@NonNull Charset charset) {
 		return new StandardCharsetInputStreamSource<>(this, charset);
 	}
 
-	default ReaderSource<Reader> toReaderSource(CharsetDecoder charsetDecoder) {
+	default ReaderSource<Reader> toReaderSource(@NonNull CharsetDecoder charsetDecoder) {
 		return new DefaultDecodeInputStreamSource<>(this, charsetDecoder);
 	}
 
-	default ReaderSource<Reader> toReaderSource(String charsetName) {
+	default ReaderSource<Reader> toReaderSource(@NonNull String charsetName) {
 		return new StandardCharsetInputStreamSource<>(this, charsetName);
 	}
 
-	default void transferTo(File dest) throws IOException, IllegalStateException {
-		getInputStream().export().ifPresent((is) -> FileUtils.copyInputStreamToFile(is, dest));
+	default void transferTo(@NonNull File dest) throws IOException, IllegalStateException {
+		getInputStream().option().ifPresent((is) -> FileUtils.copyInputStreamToFile(is, dest));
 	}
 
-	default void transferTo(Path dest) throws IOException, IllegalStateException {
-		getInputStream().export().ifPresent((is) -> FileUtils.copyInputStreamToPath(is, dest));
+	default void transferTo(@NonNull Path dest) throws IOException, IllegalStateException {
+		getInputStream().option().ifPresent((is) -> FileUtils.copyInputStreamToPath(is, dest));
+	}
+
+	default <R extends OutputStream> void transferTo(@NonNull OutputStreamSource<? extends R> dest) throws IOException {
+		getInputStream().option()
+				.ifPresent((is) -> dest.getOutputStream().option().ifPresent((os) -> IOUtils.copy(is, os)));
 	}
 }

@@ -17,6 +17,11 @@ public class SystemProperties implements Properties {
 	}
 
 	@Override
+	public Elements<Property> getElements() {
+		return keys().map((key) -> get(key));
+	}
+
+	@Override
 	public Elements<String> keys() {
 		Elements<String> systemKeys = Elements.of(System.getProperties().stringPropertyNames());
 		Elements<String> envKeys = Elements.of(System.getenv().keySet());

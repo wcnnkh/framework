@@ -76,7 +76,7 @@ public class InputStreamResource extends AbstractResource {
 					+ "do not use InputStreamResource if a stream needs to be read multiple times");
 		}
 		this.read = true;
-		return Pipeline.of(inputStream);
+		return Pipeline.forValue(inputStream);
 	}
 
 	@Override

@@ -9,5 +9,12 @@ import java.net.URI;
  *
  */
 public interface Request extends Message {
+	public static interface RequestWrapper<W extends Request> extends Request, MessageWrapper<W> {
+		@Override
+		default URI getURI() {
+			return getSource().getURI();
+		}
+	}
+
 	URI getURI();
 }

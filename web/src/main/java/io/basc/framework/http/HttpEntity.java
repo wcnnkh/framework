@@ -3,10 +3,10 @@ package io.basc.framework.http;
 import java.io.Serializable;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.Entity;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.MultiValueMap;
+import lombok.NonNull;
 
 public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -16,12 +16,11 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	 */
 	public static final HttpEntity<?> EMPTY = new HttpEntity<Object>();
 
+	@NonNull
 	private final HttpHeaders headers;
 
-	@Nullable
 	private final T body;
 
-	@Nullable
 	private final TypeDescriptor typeDescriptor;
 
 	/**
@@ -84,7 +83,6 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	 * 
 	 * @return the request's body type, or {@code null} if not known
 	 */
-	@Nullable
 	public TypeDescriptor getTypeDescriptor() {
 		if (this.typeDescriptor == null) {
 			T body = getBody();

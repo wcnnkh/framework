@@ -63,6 +63,6 @@ public abstract class StringMessageConverter<T> extends ObjectMessageConverter<T
 		if (outputMessage.getContentLength() < 0) {
 			outputMessage.setContentLength(array.length);
 		}
-		outputMessage.getOutputStream().export().ifPresent((e) -> e.write(array));
+		outputMessage.write(array);
 	}
 }

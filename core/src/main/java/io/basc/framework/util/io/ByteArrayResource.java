@@ -78,7 +78,7 @@ public class ByteArrayResource extends AbstractResource {
 	 */
 	@Override
 	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Pipeline.of(new ByteArrayInputStream(this.byteArray));
+		return Pipeline.forValue(new ByteArrayInputStream(this.byteArray));
 	}
 
 	/**

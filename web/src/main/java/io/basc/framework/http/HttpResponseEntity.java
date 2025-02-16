@@ -22,7 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.MultiValueMap;
@@ -76,7 +75,7 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	 */
 	public int getStatusCodeValue() {
 		if (this.status instanceof HttpStatus) {
-			return ((HttpStatus) this.status).value();
+			return ((HttpStatus) this.status).getCode();
 		} else {
 			return (Integer) this.status;
 		}
@@ -362,7 +361,7 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 			return body(body, null);
 		}
 
-		<T> HttpResponseEntity<T> body(T body, @Nullable TypeDescriptor bodyTypeDescriptor);
+		<T> HttpResponseEntity<T> body(T body, TypeDescriptor bodyTypeDescriptor);
 	}
 
 	private static class DefaultBuilder implements BodyBuilder {

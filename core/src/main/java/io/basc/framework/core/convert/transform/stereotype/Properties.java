@@ -16,12 +16,7 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Property get(String key) {
-			return null;
-		}
-
-		@Override
-		public Elements<String> keys() {
+		public Elements<Property> getElements() {
 			return Elements.empty();
 		}
 	}
@@ -30,28 +25,18 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 			extends Properties, PropertyMappingWrapper<Property, W>, LookupWrapper<String, Property, W> {
 
 		@Override
-		default boolean containsKey(String key) {
-			return getSource().containsKey(key);
-		}
-
-		@Override
 		default Property get(String key) {
 			return getSource().get(key);
 		}
 
 		@Override
-		default Elements<Property> getElements() {
-			return getSource().getElements();
+		default Value getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
+			return getSource().getProperty(propertyDescriptor);
 		}
 
 		@Override
-		default Elements<Property> getValues(String key) {
-			return getSource().getValues(key);
-		}
-
-		@Override
-		default Elements<String> keys() {
-			return getSource().keys();
+		default boolean hasProperty(@NonNull PropertyDescriptor propertyDescriptor) {
+			return getSource().hasProperty(propertyDescriptor);
 		}
 	}
 
@@ -62,16 +47,14 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 				new IdentityConversionService());
 	}
 
-	default boolean containsKey(String key) {
-		return get(key) != null;
-	}
-
 	@Override
-	Property get(String key);
+	default Property get(String key) {
+		Elements<Property> values = getValues(key);
+		if (values == null) {
+			return null;
+		}
 
-	@Override
-	default Elements<Property> getElements() {
-		return keys().map((key) -> get(key));
+		return values.isUnique() ? null : values.getUnique();
 	}
 
 	@Override
@@ -86,15 +69,6 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 	}
 
 	@Override
-	default Elements<Property> getValues(String key) {
-		Property property = get(key);
-		if (property == null) {
-			return Elements.empty();
-		}
-		return Elements.singleton(property);
-	}
-
-	@Override
 	default boolean hasProperty(@NonNull PropertyDescriptor propertyDescriptor) {
 		Property property = get(propertyDescriptor.getName());
 		if (property == null) {
@@ -103,8 +77,4 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 
 		return property.getTypeDescriptor().isAssignableTo(propertyDescriptor.getRequiredTypeDescriptor());
 	}
-
-	@Override
-	Elements<String> keys();
-
 }

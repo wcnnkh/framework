@@ -20,20 +20,20 @@ public class GenericMapAccess implements Accessor {
 	@NonNull
 	private final Object key;
 	@NonNull
-	private final TypeDescriptor typeDescriptor;
+	private final TypeDescriptor mapTypeDescriptor;
 	@NonNull
 	private final ConversionService conversionService;
 
 	@Override
 	public Object get() throws ConversionException {
 		Object value = map.get(key);
-		return conversionService.convert(Value.of(value), typeDescriptor);
+		return conversionService.convert(Value.of(value), mapTypeDescriptor);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set(Object value) throws UnsupportedOperationException {
-		Object target = conversionService.convert(Value.of(value), typeDescriptor);
+		Object target = conversionService.convert(Value.of(value), mapTypeDescriptor);
 		map.put(key, target);
 	}
 }

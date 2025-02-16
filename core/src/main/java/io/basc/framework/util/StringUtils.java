@@ -1309,13 +1309,13 @@ public final class StringUtils {
 		return toStringArray(result);
 	}
 
-	public static Range<String> parseKV(String text, String separator) {
+	public static KeyValue<String, String> parseKeyValue(String text, String separator) {
 		int index = text.indexOf(separator);
 		if (index == -1) {
 			return null;
 		}
 
-		return Range.closed(text.substring(0, index), text.substring(index + separator.length()));
+		return KeyValue.of(text.substring(0, index), text.substring(index + separator.length()));
 	}
 
 	/**

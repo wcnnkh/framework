@@ -6,7 +6,6 @@ import java.nio.charset.Charset;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.util.io.IOUtils;
 
 public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponseErrorHandler {
 	public static final ClientHttpResponseErrorHandler INSTANCE = new DefaultClientHttpResponseErrorHandler();
@@ -81,7 +80,7 @@ public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponse
 			throw new HttpServerErrorException(statusCode, response.getStatusText(), response.getHeaders(),
 					getResponseBody(response), getCharset(response));
 		default:
-			throw new UnknownHttpStatusCodeException(statusCode.value(), response.getStatusText(),
+			throw new UnknownHttpStatusCodeException(statusCode.getCode(), response.getStatusText(),
 					response.getHeaders(), getResponseBody(response), getCharset(response));
 		}
 	}
@@ -116,7 +115,7 @@ public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponse
 	 */
 	protected byte[] getResponseBody(ClientHttpResponse response) {
 		try {
-			return IOUtils.copyToByteArray(response.getInputStream());
+			return response.readAllBytes();
 		} catch (IOException ex) {
 			// ignore
 		}

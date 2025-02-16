@@ -7,19 +7,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.net.uri.DefaultUriTemplateHandler;
 import io.basc.framework.net.uri.UriTemplateHandler;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.retry.RetryOperations;
+import io.basc.framework.util.spi.Configurable;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
+import lombok.NonNull;
 
 public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	private ClientHttpRequestFactory requestFactory;
@@ -55,7 +56,6 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 		this.cloneBeforeSet = cloneBeforeSet;
 	}
 
-	@Nullable
 	public RetryOperations getRetryOperations() {
 		return retryOperations;
 	}
@@ -66,23 +66,17 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 
 	public abstract AbstractHttpClient clone();
 
-	private boolean configured;
-
 	@Override
-	public boolean isConfigured() {
-		return configured;
-	}
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		serviceLoaderFactory.loadService(ClientHttpRequestFactory.class).ifPresent((e) -> this.requestFactory = e);
-		serviceLoaderFactory.loadService(CookieHandler.class).ifPresent((e) -> this.cookieHandler = e);
-		serviceLoaderFactory.loadService(RedirectManager.class).ifPresent((e) -> this.redirectManager = e);
-		serviceLoaderFactory.loadService(UriTemplateHandler.class).ifPresent((e) -> this.uriTemplateHandler = e);
-		serviceLoaderFactory.loadService(ClientHttpResponseErrorHandler.class)
+	public Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery) {
+		discovery.getServiceLoader(ClientHttpRequestFactory.class).findFirst()
+				.ifPresent((e) -> this.requestFactory = e);
+		discovery.getServiceLoader(CookieHandler.class).findFirst().ifPresent((e) -> this.cookieHandler = e);
+		discovery.getServiceLoader(RedirectManager.class).findFirst().ifPresent((e) -> this.redirectManager = e);
+		discovery.getServiceLoader(UriTemplateHandler.class).findFirst().ifPresent((e) -> this.uriTemplateHandler = e);
+		discovery.getServiceLoader(ClientHttpResponseErrorHandler.class).findFirst()
 				.ifPresent((e) -> this.responseErrorHandler = e);
-		serviceLoaderFactory.loadService(RetryOperations.class).ifPresent((e) -> this.retryOperations = e);
-		configured = true;
+		discovery.getServiceLoader(RetryOperations.class).findFirst().ifPresent((e) -> this.retryOperations = e);
+		return Receipt.SUCCESS;
 	}
 
 	public UriTemplateHandler getUriTemplateHandler() {
@@ -179,7 +173,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	}
 
 	protected <T> HttpResponseEntity<T> execute(ClientHttpRequest request, CookieHandler cookieHandler,
-			ClientHttpResponseExtractor<T> responseExtractor, @Nullable TypeDescriptor responseType)
+			ClientHttpResponseExtractor<T> responseExtractor, TypeDescriptor responseType)
 			throws HttpClientException, IOException {
 		ClientHttpResponse response = null;
 		if (cookieHandler != null) {
@@ -242,7 +236,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	private <T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestFactory requestFactory,
 			CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback, RedirectManager redirectManager,
 			ClientHttpResponseExtractor<T> responseExtractor, TypeDescriptor responseType, long deep) {
-		Pair<HttpRequest, HttpResponseEntity<T>> response;
+		KeyValue<HttpRequest, HttpResponseEntity<T>> response;
 		RetryOperations retryOperations = getRetryOperations();
 		if (retryOperations == null) {
 			response = executeInternal(uri, httpMethod, requestFactory, cookieHandler, requestCallback,
@@ -277,7 +271,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 				responseExtractor, responseType, deep + 1);
 	}
 
-	private <T> Pair<HttpRequest, HttpResponseEntity<T>> executeInternal(URI uri, String httpMethod,
+	private <T> KeyValue<HttpRequest, HttpResponseEntity<T>> executeInternal(URI uri, String httpMethod,
 			ClientHttpRequestFactory requestFactory, CookieHandler cookieHandler,
 			ClientHttpRequestCallback requestCallback, ClientHttpResponseExtractor<T> responseExtractor,
 			TypeDescriptor responseType) throws HttpClientException {
@@ -286,7 +280,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 			request = requestFactory.createRequest(uri, httpMethod);
 			request = requestCallback(request, requestCallback);
 			HttpResponseEntity<T> responseEntity = execute(request, cookieHandler, responseExtractor, responseType);
-			return new Pair<>(request, responseEntity);
+			return KeyValue.of(request, responseEntity);
 		} catch (IOException e) {
 			throw new HttpClientResourceAccessException(
 					"I/O error on " + httpMethod + " request for \"" + uri + "\": " + e.getMessage(), e);

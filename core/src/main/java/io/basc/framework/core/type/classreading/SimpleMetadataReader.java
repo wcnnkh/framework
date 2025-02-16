@@ -41,7 +41,7 @@ final class SimpleMetadataReader implements MetadataReader {
 								+ "probably due to a new Java class file version that isn't supported yet: " + resource,
 						ex);
 			}
-		}).finish().get();
+		}).option().get();
 	}
 
 	@Override

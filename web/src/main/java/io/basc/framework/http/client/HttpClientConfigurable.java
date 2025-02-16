@@ -2,22 +2,18 @@ package io.basc.framework.http.client;
 
 import java.net.CookieHandler;
 
-import io.basc.framework.lang.Nullable;
-
 public interface HttpClientConfigurable<T extends HttpClientConfigurable<T>> extends Cloneable {
 	ClientHttpRequestFactory getRequestFactory();
 
 	T setRequestFactory(ClientHttpRequestFactory requestFactory);
 
-	@Nullable
 	CookieHandler getCookieHandler();
 
-	T setCookieHandler(@Nullable CookieHandler cookieHandler);
+	T setCookieHandler(CookieHandler cookieHandler);
 
-	@Nullable
 	RedirectManager getRedirectManager();
 
-	T setRedirectManager(@Nullable RedirectManager redirectManager);
+	T setRedirectManager(RedirectManager redirectManager);
 
 	/**
 	 * 设置最大的redirect深度

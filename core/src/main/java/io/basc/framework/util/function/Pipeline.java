@@ -3,6 +3,7 @@ package io.basc.framework.util.function;
 import java.io.Closeable;
 import java.io.IOException;
 
+import io.basc.framework.util.function.Function.FunctionPipeline;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -15,21 +16,33 @@ import lombok.RequiredArgsConstructor;
  * @param <E>
  */
 public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target<T, E> {
-	@RequiredArgsConstructor
-	public static class PipelineOptional<T, E extends Throwable, W extends Pipeline<T, E>> implements Optional<T, E> {
-		private final W source;
-		private volatile java.util.Optional<T> optional;
+	public static class PipelineOptional<S, T, E extends Throwable>
+			extends FunctionPipeline<S, T, E, Supplier<S, E>, Function<? super S, ? extends T, ? extends E>>
+			implements Optional<T, E> {
+
+		public PipelineOptional(@NonNull Supplier<S, E> source,
+				@NonNull Function<? super S, ? extends T, ? extends E> pipeline, Runnable<? extends E> processor) {
+			super(source, pipeline, processor);
+		}
 
 		@Override
-		public T orElse(T other) throws E {
-			if (optional == null) {
-				synchronized (this) {
-					if (optional == null) {
-						optional = source.finish();
-					}
-				}
+		public T get() throws E {
+			return Optional.super.get();
+		}
+
+		public <R, X extends Throwable> R flatMap(
+				io.basc.framework.util.function.Function<? super T, ? extends R, ? extends X> mapper) throws E, X {
+			try {
+				T value = super.get();
+				return mapper.apply(value);
+			} finally {
+				close();
 			}
-			return optional.orElse(other);
+		};
+
+		@Override
+		public <R> PipelineOptional<T, R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+			return new PipelineOptional<>(() -> super.get(), pipeline, this::close);
 		}
 	}
 
@@ -118,7 +131,8 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 		}
 	}
 
-	public static class NewPipeline<T, E extends Throwable, W extends Pipeline<T, E>> extends SupplierPipeline<T, E, W> {
+	public static class NewPipeline<T, E extends Throwable, W extends Pipeline<T, E>>
+			extends SupplierPipeline<T, E, W> {
 
 		public NewPipeline(@NonNull W source, Runnable<? extends E> processor) {
 			super(source, processor);
@@ -143,17 +157,13 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 		return new MappedPipeline<>(this, pipeline);
 	}
 
-	default Optional<T, E> export() {
-		return new PipelineOptional<>(this);
-	}
-
-	default java.util.Optional<T> finish() throws E {
-		try {
-			T value = get();
-			return java.util.Optional.ofNullable(value);
-		} finally {
-			close();
-		}
+	/**
+	 * 选项
+	 * 
+	 * @return
+	 */
+	default Optional<T, E> option() {
+		return new PipelineOptional<>(this, Function.identity(), this::close);
 	}
 
 	@Override
@@ -171,14 +181,19 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 		return new NewPipeline<>(this, processor);
 	}
 
-	public static <T, E extends Throwable> Pipeline<T, E> of(T value) {
+	public static <T, E extends Throwable> Pipeline<T, E> forValue(T value) {
 		Supplier<T, E> source = Supplier.forValue(value);
 		return source.newPipeline();
 	}
 
+	public static <T, E extends Throwable> Pipeline<T, E> of(@NonNull Supplier<? extends T, E> supplier) {
+		Supplier<T, E> source = supplier.map(Function.identity());
+		return source.newPipeline();
+	}
+
 	public static <T extends AutoCloseable> Pipeline<T, Exception> forAutoCloseable(
-			Supplier<? extends T, ? extends Exception> source) {
-		Supplier<T, Exception> target = Supplier.of(source);
+			@NonNull Supplier<? extends T, ? extends Exception> supplier) {
+		Supplier<T, Exception> target = Supplier.of(supplier);
 		return target.onClose(AutoCloseable::close).newPipeline();
 	}
 

@@ -10,14 +10,19 @@ import lombok.NonNull;
 public class MapProperty extends GenericMapAccess implements Property {
 
 	@SuppressWarnings("rawtypes")
-	public MapProperty(@NonNull Map map, @NonNull String key, @NonNull TypeDescriptor typeDescriptor,
+	public MapProperty(@NonNull Map map, @NonNull Object key, @NonNull TypeDescriptor typeDescriptor,
 			@NonNull ConversionService conversionService) {
 		super(map, key, typeDescriptor, conversionService);
 	}
 
 	@Override
 	public String getName() {
-		return (String) getKey();
+		Object key = getKey();
+		if (key instanceof String) {
+			return (String) key;
+		}
+		return (String) getConversionService().convert(getKey(), getMapTypeDescriptor().getMapKeyTypeDescriptor(),
+				TypeDescriptor.valueOf(String.class));
 	}
 
 }

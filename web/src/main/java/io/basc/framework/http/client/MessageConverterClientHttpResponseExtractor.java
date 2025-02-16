@@ -5,7 +5,6 @@ import java.io.IOException;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.net.convert.MessageConverter;
 
 public class MessageConverterClientHttpResponseExtractor<T> implements ClientHttpResponseExtractor<T> {
@@ -24,12 +23,12 @@ public class MessageConverterClientHttpResponseExtractor<T> implements ClientHtt
 			return null;
 		}
 
-		if (HttpStatus.OK.value() != response.getRawStatusCode()) {
+		if (HttpStatus.OK.getCode() != response.getRawStatusCode()) {
 			return null;
 		}
 
 		if (messageConverter == null || !messageConverter.isReadable(responseType, response.getContentType())) {
-			throw new UnsupportedException("not supported read responseType=" + responseType);
+			throw new UnsupportedOperationException("not supported read responseType=" + responseType);
 		}
 
 		return (T) messageConverter.readFrom(responseType, response);

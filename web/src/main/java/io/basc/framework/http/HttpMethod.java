@@ -1,7 +1,5 @@
 package io.basc.framework.http;
 
-import io.basc.framework.lang.Nullable;
-
 public enum HttpMethod {
 	CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE;
 
@@ -49,7 +47,6 @@ public enum HttpMethod {
 		return sb;
 	}
 
-	@Nullable
 	public static HttpMethod resolve(String method) {
 		return HttpMethod.valueOf(method.toUpperCase());
 	}

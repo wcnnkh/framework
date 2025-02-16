@@ -8,7 +8,6 @@ import java.util.Arrays;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.lang.Nullable;
 
 public abstract class AbstractHttpConnection implements HttpConnection {
 	private ClientHttpRequestFactory requestFactory;
@@ -17,9 +16,7 @@ public abstract class AbstractHttpConnection implements HttpConnection {
 	private String httpMethod;
 	private URI uri;
 	private final HttpHeaders headers;
-	@Nullable
 	private Object body;
-	@Nullable
 	private TypeDescriptor typeDescriptor;
 	private boolean cloneBeforeSet;
 
@@ -73,7 +70,7 @@ public abstract class AbstractHttpConnection implements HttpConnection {
 		return connection;
 	}
 
-	public HttpConnection headers(@Nullable HttpHeaders headers) {
+	public HttpConnection headers(HttpHeaders headers) {
 		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
 		if (headers != null) {
 			connection.headers.putAll(headers);

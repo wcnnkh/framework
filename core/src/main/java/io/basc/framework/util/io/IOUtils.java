@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.Assert;
@@ -368,7 +367,8 @@ public final class IOUtils {
 		closeQuietly(closeable, null);
 	}
 
-	public static void closeQuietly(final Closeable closeable, final Consumer<? super IOException> consumer) {
+	public static void closeQuietly(final Closeable closeable,
+			final java.util.function.Consumer<? super IOException> consumer) {
 		if (closeable != null) {
 			try {
 				closeable.close();
@@ -1318,6 +1318,10 @@ public final class IOUtils {
 		return copy(input, output, new char[DEFAULT_BUFFER_SIZE]);
 	}
 
+	public static long append(Reader input, Writer output) throws IOException {
+		return append(input, output, new char[DEFAULT_BUFFER_SIZE]);
+	}
+
 	/**
 	 * Copy chars from a large (over 2GB) <code>Reader</code> to a
 	 * <code>Writer</code>.
@@ -1338,6 +1342,16 @@ public final class IOUtils {
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
 			output.write(buffer, 0, n);
+			count += n;
+		}
+		return count;
+	}
+
+	public static long append(Reader input, Writer output, char[] buffer) throws IOException {
+		long count = 0;
+		int n = 0;
+		while (EOF != (n = input.read(buffer))) {
+			output.append(new String(buffer, 0, n));
 			count += n;
 		}
 		return count;
@@ -1686,8 +1700,48 @@ public final class IOUtils {
 		}
 	}
 
+	public static <E extends Throwable> long read(CharBuffer buffer,
+			BufferProcessor<? super char[], ? extends E> reader) throws E {
+		return read(buffer, DEFAULT_BUFFER_SIZE, reader);
+	}
+
 	public static <E extends Throwable> long read(ByteBuffer buffer, BufferProcessor<byte[], E> reader) throws E {
 		return read(buffer, DEFAULT_BUFFER_SIZE, reader);
+	}
+
+	public static <E extends Throwable> long read(CharBuffer buffer, int bufferSize,
+			BufferProcessor<? super char[], ? extends E> reader) throws E {
+		Assert.isTrue(bufferSize > 0, "Buffersize needs to be greater than 0");
+		if (reader == null) {
+			return 0;
+		}
+
+		if (buffer == null || !buffer.hasRemaining()) {
+			return 0;
+		}
+
+		if (buffer.hasArray()) {
+			char[] b = buffer.array();
+			int ofs = buffer.arrayOffset();
+			int pos = buffer.position();
+			int lim = buffer.limit();
+			reader.process(b, ofs + pos, lim - pos);
+			buffer.position(lim);
+			return lim - pos;
+		} else {
+			int len = buffer.remaining();
+			int n = Math.min(len, bufferSize);
+			char[] tempArray = new char[n];
+			long size = 0;
+			while (len > 0) {
+				int chunk = Math.min(len, tempArray.length);
+				buffer.get(tempArray, 0, chunk);
+				reader.process(tempArray, 0, chunk);
+				len -= chunk;
+				size += chunk;
+			}
+			return size;
+		}
 	}
 
 	public static <E extends Throwable> long read(ByteBuffer buffer, int bufferSize, BufferProcessor<byte[], E> reader)

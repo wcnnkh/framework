@@ -42,6 +42,12 @@ public interface KeyValues<K, V> extends Elements<KeyValue<K, V>>, Keys<K> {
 		return map((e) -> e.getKey());
 	}
 
+	@Override
+	default boolean hasKey(K key) {
+		Elements<V> values = getValues(key);
+		return values != null && !values.isEmpty();
+	}
+
 	/**
 	 * 获取值,默认调用{@link #getKeyValues(Object)}
 	 * 

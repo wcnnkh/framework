@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.basc.framework.net.InputMessage;
+import io.basc.framework.util.function.Pipeline;
+import lombok.NonNull;
 
 public class DefaultHttpInputMessage implements HttpInputMessage {
 	private HttpHeaders httpHeaders = new HttpHeaders();
@@ -15,7 +17,7 @@ public class DefaultHttpInputMessage implements HttpInputMessage {
 	}
 
 	@Override
-	public InputStream getInputStream() throws IOException {
+	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
 		return inputMessage.getInputStream();
 	}
 

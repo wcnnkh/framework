@@ -29,6 +29,6 @@ public class ByteArrayMessageConverter extends ObjectMessageConverter<byte[]> {
 	@Override
 	protected void write(TypeDescriptor typeDescriptor, byte[] body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException {
-		outputMessage.getOutputStream().export().ifPresent((e) -> e.write(body));
+		outputMessage.write(body);
 	}
 }

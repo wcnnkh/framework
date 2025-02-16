@@ -5,12 +5,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
-import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.core.Constants;
-import io.basc.framework.http.client.DefaultHttpClient;
-import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -20,19 +15,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 
 public final class HttpUtils {
-	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
-			HttpClient.class)
-			.ifAbsentDefaultService(() -> SPI.global().getServiceLoader(HttpClient.class, DefaultHttpClient.class)
-					.getServices().first());
-
-	public static HttpClient getClient() {
-		return CONFIGURATOR.get();
-	};
-
-	public static InheritableThreadLocalConfigurator<HttpClient> getConfigurator() {
-		return CONFIGURATOR;
-	}
-
 	private static int getPort(String scheme, int port) {
 		if (port == -1) {
 			if ("http".equals(scheme) || "ws".equals(scheme)) {
@@ -102,8 +84,7 @@ public final class HttpUtils {
 		}
 	}
 
-	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName,
-			@Nullable Charset charset) {
+	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName, Charset charset) {
 		Assert.requiredArgument(outputMessage != null, "outputMessage");
 		Assert.requiredArgument(fileName != null, "fileName");
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);

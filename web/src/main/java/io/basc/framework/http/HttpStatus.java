@@ -1,9 +1,7 @@
 package io.basc.framework.http;
 
-import io.basc.framework.util.Status;
-
 //注意：如果定义新的可用的code，那么应该定义在被弃用的code之前 , 可查看resolve方法查看，因为是按顺序解析的
-public enum HttpStatus implements Status {
+public enum HttpStatus {
 	// 1xx Informational
 
 	/**
@@ -498,39 +496,24 @@ public enum HttpStatus implements Status {
 	 */
 	NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required");
 
-	private final int value;
+	private final int code;
 
 	private final String reasonPhrase;
 
-	HttpStatus(int value, String reasonPhrase) {
-		this.value = value;
+	HttpStatus(int code, String reasonPhrase) {
+		this.code = code;
 		this.reasonPhrase = reasonPhrase;
 	}
 
 	/**
 	 * Return the integer value of this status code.
 	 */
-	public int value() {
-		return this.value;
-	}
-
-	@Override
-	public long getCode() {
-		return this.value;
-	}
-
-	@Override
-	public String getMsg() {
-		return reasonPhrase;
+	public int getCode() {
+		return this.code;
 	}
 
 	public String getReasonPhrase() {
 		return this.reasonPhrase;
-	}
-
-	@Override
-	public boolean isSuccess() {
-		return !isError();
 	}
 
 	public Series series() {
@@ -563,7 +546,7 @@ public enum HttpStatus implements Status {
 
 	@Override
 	public String toString() {
-		return this.value + " " + name();
+		return this.code + " " + name();
 	}
 
 	/**
@@ -590,7 +573,7 @@ public enum HttpStatus implements Status {
 	 */
 	public static HttpStatus resolve(int statusCode) {
 		for (HttpStatus status : values()) {
-			if (status.value == statusCode) {
+			if (status.code == statusCode) {
 				return status;
 			}
 		}
@@ -624,7 +607,7 @@ public enum HttpStatus implements Status {
 		 * @throws IllegalArgumentException if this enum has no corresponding constant
 		 */
 		public static Series valueOf(HttpStatus status) {
-			return valueOf(status.value);
+			return valueOf(status.code);
 		}
 
 		/**

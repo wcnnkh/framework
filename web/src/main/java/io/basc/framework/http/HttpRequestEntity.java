@@ -5,28 +5,29 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.MultiValueMap;
+import lombok.NonNull;
 
 public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	private static final long serialVersionUID = 1L;
 
-	@Nullable
+	@NonNull
 	private final String method;
 
+	@NonNull
 	private final URI url;
 
 	public HttpRequestEntity(String method, URI url) {
 		this(null, null, method, url, null);
 	}
 
-	public HttpRequestEntity(@Nullable T body, String method, URI url) {
+	public HttpRequestEntity(T body, String method, URI url) {
 		this(body, null, method, url, null);
 	}
 
-	public HttpRequestEntity(@Nullable T body, String method, URI url, TypeDescriptor typeDescriptor) {
+	public HttpRequestEntity(T body, String method, URI url, TypeDescriptor typeDescriptor) {
 		this(body, null, method, url, typeDescriptor);
 	}
 
@@ -34,19 +35,17 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		this(null, headers, method, url, null);
 	}
 
-	public HttpRequestEntity(@Nullable T body, @Nullable MultiValueMap<String, String> headers, @Nullable String method,
-			URI url) {
+	public HttpRequestEntity(T body, MultiValueMap<String, String> headers, String method, URI url) {
 		this(body, headers, method, url, null);
 	}
 
-	public HttpRequestEntity(@Nullable T body, @Nullable MultiValueMap<String, String> headers, @Nullable String method,
-			URI url, @Nullable TypeDescriptor typeDescriptor) {
+	public HttpRequestEntity(T body, MultiValueMap<String, String> headers, String method, URI url,
+			TypeDescriptor typeDescriptor) {
 		super(body, typeDescriptor, headers);
 		this.method = method;
 		this.url = url;
 	}
 
-	@Nullable
 	@Override
 	public String getRawMethod() {
 		return this.method;
@@ -58,7 +57,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
 		}
@@ -224,7 +223,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 
 		B header(String headerName, String... headerValues);
 
-		B headers(@Nullable HttpHeaders headers);
+		B headers(HttpHeaders headers);
 
 		B accept(MediaType... acceptableMediaTypes);
 
@@ -275,7 +274,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 			return this;
 		}
 
-		public DefaultBodyBuilder headers(@Nullable HttpHeaders headers) {
+		public DefaultBodyBuilder headers(HttpHeaders headers) {
 			if (headers != null) {
 				this.headers.putAll(headers);
 			}

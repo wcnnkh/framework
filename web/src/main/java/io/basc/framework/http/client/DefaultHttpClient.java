@@ -1,10 +1,13 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.net.convert.ConfigurableMessageConverter;
 import io.basc.framework.net.convert.DefaultMessageConverters;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.reflect.ReflectionApi;
+import io.basc.framework.util.spi.NativeServiceLoader;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
+import lombok.NonNull;
 
 public class DefaultHttpClient extends AbstractHttpClient {
 	private static final Class<?> SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS = ClassUtils
@@ -13,13 +16,12 @@ public class DefaultHttpClient extends AbstractHttpClient {
 	/**
 	 * 默认的requestFactory
 	 */
-	private static final ClientHttpRequestFactory REQUEST_FACTORY = SPI.global()
-			.getServiceLoader(ClientHttpRequestFactory.class, SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS).getServices()
-			.first();
+	private static final ClientHttpRequestFactory REQUEST_FACTORY = NativeServiceLoader
+			.load(ClientHttpRequestFactory.class).findFirst().orElseGet(() -> (ClientHttpRequestFactory) ReflectionApi
+					.newInstance(SIMPLE_CLIENT_HTTP_REQUEST_FACTORY_CLASS));
 
 	private final ConfigurableMessageConverter messageConverters;
 	private final ClientHttpRequestInterceptors interceptors;
-	private boolean configured = false;
 
 	public DefaultHttpClient() {
 		super(REQUEST_FACTORY);
@@ -34,16 +36,13 @@ public class DefaultHttpClient extends AbstractHttpClient {
 		super(client);
 		this.messageConverters = client.messageConverters;
 		this.interceptors = client.interceptors;
-		this.configured = client.configured;
 	}
 
 	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		// 此处不校验是否configured
-		configured = true;
-		interceptors.configure(serviceLoaderFactory);
-		messageConverters.configure(serviceLoaderFactory);
-		super.configure(serviceLoaderFactory);
+	public Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery) {
+		interceptors.doConfigure(discovery);
+		messageConverters.doConfigure(discovery);
+		return super.doConfigure(discovery);
 	}
 
 	public final ClientHttpRequestInterceptors getInterceptors() {
@@ -59,8 +58,4 @@ public class DefaultHttpClient extends AbstractHttpClient {
 		return new DefaultHttpClient(this);
 	}
 
-	@Override
-	public boolean isConfigured() {
-		return configured;
-	}
 }

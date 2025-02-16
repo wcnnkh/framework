@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 import io.basc.framework.core.Constants;
 import io.basc.framework.core.convert.Value;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.CollectionUtils;
@@ -65,7 +64,7 @@ public final class ContentDisposition {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
 		}
@@ -319,7 +318,7 @@ public final class ContentDisposition {
 
 		Builder filename(String filename);
 
-		Builder filename(String filename, @Nullable Charset charset);
+		Builder filename(String filename, Charset charset);
 
 		Builder attributes(Map<String, Value> attributes);
 
@@ -330,13 +329,10 @@ public final class ContentDisposition {
 
 		private String type;
 
-		@Nullable
 		private String name;
 
-		@Nullable
 		private String filename;
 
-		@Nullable
 		private Charset charset;
 
 		private Map<String, Value> attributes;
