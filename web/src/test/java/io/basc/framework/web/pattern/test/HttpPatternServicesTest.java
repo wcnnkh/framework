@@ -2,12 +2,12 @@ package io.basc.framework.web.pattern.test;
 
 import org.junit.Test;
 
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.cors.Cors;
+import io.basc.framework.http.server.cors.CorsRegistry;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.function.Function;
-import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
-import io.basc.framework.web.cors.Cors;
-import io.basc.framework.web.cors.CorsRegistry;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 public class HttpPatternServicesTest {

@@ -2,12 +2,12 @@ package io.basc.framework.mvc.action;
 
 import java.lang.reflect.Method;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.actor.EventListener;
 import io.basc.framework.util.actor.broadcast.BroadcastEventRegistry;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.event.ChangeEvent;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.web.ServerHttpRequest;
 
 public interface ActionManager extends BroadcastEventRegistry<ChangeEvent<Action>> {
 	Action getAction(Method method);

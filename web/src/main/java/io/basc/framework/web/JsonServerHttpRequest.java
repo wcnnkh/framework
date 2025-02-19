@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 
 import io.basc.framework.core.Constants;
 import io.basc.framework.http.HttpMethod;
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.json.EmptyJsonElement;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;

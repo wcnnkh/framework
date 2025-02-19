@@ -8,11 +8,11 @@ import io.basc.framework.http.HttpInputMessage;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.util.io.IOUtils;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class InputMessageConverter extends AbstractWebMessageConverter {

@@ -7,6 +7,8 @@ import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.context.annotation.ConditionalOnParameters;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.remote.DefaultRemoteResponseMessage;
 import io.basc.framework.rpc.remote.RemoteMessageCodec;
@@ -18,8 +20,6 @@ import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.comparator.Ordered;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.web.HttpService;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.pattern.HttpPattern;
 
 /**

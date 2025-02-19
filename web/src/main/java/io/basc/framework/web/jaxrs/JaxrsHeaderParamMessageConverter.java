@@ -8,8 +8,8 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.support.AbstractHeaderWebMessageConverter;
 

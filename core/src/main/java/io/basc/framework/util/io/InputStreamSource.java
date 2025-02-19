@@ -190,15 +190,15 @@ public interface InputStreamSource<T extends InputStream> {
 	}
 
 	default void transferTo(@NonNull File dest) throws IOException, IllegalStateException {
-		getInputStream().option().ifPresent((is) -> FileUtils.copyInputStreamToFile(is, dest));
+		getInputStream().optional().ifPresent((is) -> FileUtils.copyInputStreamToFile(is, dest));
 	}
 
 	default void transferTo(@NonNull Path dest) throws IOException, IllegalStateException {
-		getInputStream().option().ifPresent((is) -> FileUtils.copyInputStreamToPath(is, dest));
+		getInputStream().optional().ifPresent((is) -> FileUtils.copyInputStreamToPath(is, dest));
 	}
 
 	default <R extends OutputStream> void transferTo(@NonNull OutputStreamSource<? extends R> dest) throws IOException {
-		getInputStream().option()
-				.ifPresent((is) -> dest.getOutputStream().option().ifPresent((os) -> IOUtils.copy(is, os)));
+		getInputStream().optional()
+				.ifPresent((is) -> dest.getOutputStream().optional().ifPresent((os) -> IOUtils.copy(is, os)));
 	}
 }

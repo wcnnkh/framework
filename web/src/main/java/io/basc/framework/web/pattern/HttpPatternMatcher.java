@@ -1,7 +1,7 @@
 package io.basc.framework.web.pattern;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.web.ServerHttpRequest;
 
 public class HttpPatternMatcher<T> extends ServerHttpRequestMatcher<T> {
 	private ServerHttpRequestMatcher<ServerHttpRequestAccept> excludeMatcher = new ServerHttpRequestMatcher<>();

@@ -1,7 +1,7 @@
 package io.basc.framework.web.pattern;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
 
 public class PathRegistry extends WebProcessorRegistry<String, WebException> {

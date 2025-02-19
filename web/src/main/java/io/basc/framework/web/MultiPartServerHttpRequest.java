@@ -3,6 +3,7 @@ package io.basc.framework.web;
 import java.util.Collection;
 
 import io.basc.framework.http.MediaType;
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.collections.LinkedMultiValueMap;

@@ -2,7 +2,7 @@ package io.basc.framework.mvc;
 
 import io.basc.framework.beans.factory.ParameterFactory;
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.WebMessagelConverterException;

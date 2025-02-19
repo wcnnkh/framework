@@ -8,11 +8,11 @@ import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 
 public class WebMessageConverters extends ConfigurableServices<WebMessageConverter> implements WebMessageConverter {
 	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(

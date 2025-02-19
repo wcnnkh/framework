@@ -3,11 +3,13 @@ package io.basc.framework.web;
 import java.io.IOException;
 
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.web.cors.Cors;
-import io.basc.framework.web.cors.CorsRegistry;
-import io.basc.framework.web.cors.CorsUtils;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
+import io.basc.framework.http.server.cors.Cors;
+import io.basc.framework.http.server.cors.CorsRegistry;
+import io.basc.framework.http.server.cors.CorsUtils;
+import io.basc.framework.util.spi.Configurable;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class WebServer implements WebService, Configurable {
 

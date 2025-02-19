@@ -81,8 +81,8 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		}
 
 		@Override
-		default <R, X extends Throwable> R ifPresentGet(Function<? super T, ? extends R, ? extends X> mapper)
-				throws E, X {
+		default <R, X extends Throwable> java.util.Optional<R> ifPresentGet(
+				Function<? super T, ? extends R, ? extends X> mapper) throws E, X {
 			return getSource().ifPresentGet(mapper);
 		}
 
@@ -166,13 +166,13 @@ public interface Optional<T, E extends Throwable> extends Supplier<T, E> {
 		});
 	}
 
-	default <R, X extends Throwable> R ifPresentGet(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
-			throws E, X {
+	default <R, X extends Throwable> java.util.Optional<R> ifPresentGet(
+			@NonNull Function<? super T, ? extends R, ? extends X> mapper) throws E, X {
 		return flatMap((e) -> {
 			if (e == null) {
-				return null;
+				return java.util.Optional.empty();
 			}
-			return mapper.apply(e);
+			return java.util.Optional.ofNullable(mapper.apply(e));
 		});
 	}
 

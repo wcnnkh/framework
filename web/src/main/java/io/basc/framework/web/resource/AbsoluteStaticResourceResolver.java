@@ -1,9 +1,9 @@
 package io.basc.framework.web.resource;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.placeholder.support.SmartPlaceholderReplacer;
-import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 
 public class AbsoluteStaticResourceResolver implements StaticResourceResolver {

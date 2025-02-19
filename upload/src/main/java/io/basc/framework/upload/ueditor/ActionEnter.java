@@ -1,5 +1,6 @@
 package io.basc.framework.upload.ueditor;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.upload.ueditor.define.ActionMap;
 import io.basc.framework.upload.ueditor.define.AppInfo;
 import io.basc.framework.upload.ueditor.define.BaseState;
@@ -9,7 +10,6 @@ import io.basc.framework.upload.ueditor.hunter.ImageHunter;
 import io.basc.framework.upload.ueditor.upload.Uploader;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.MultiPartServerHttpRequest;
-import io.basc.framework.web.ServerHttpRequest;
 
 import java.util.List;
 import java.util.Map;

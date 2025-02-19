@@ -8,10 +8,10 @@ import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.net.convert.MessageConverterAware;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 

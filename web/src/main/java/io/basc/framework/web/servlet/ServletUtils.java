@@ -9,10 +9,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 
 public final class ServletUtils {
 	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext", null);// 是否支持异步处理

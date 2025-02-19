@@ -1,10 +1,10 @@
 package io.basc.framework.web.pattern;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.comparator.OrderComparator;
 import io.basc.framework.util.comparator.OrderComparator.OrderSourceProvider;
-import io.basc.framework.web.ServerHttpRequest;
 
 class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvider, Comparable<HttpPatternService<T>> {
 	private final T service;

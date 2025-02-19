@@ -2,8 +2,8 @@ package io.basc.framework.net.client.factory;
 
 import java.io.IOException;
 
+import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.client.ClientRequest;
-import io.basc.framework.net.pattern.RequestPattern;
 import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableClientRequestFactory extends ConfigurableServices<ClientRequestFactory>

@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
-import io.basc.framework.web.ServerHttpRequest;
 
 class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, ServerHttpRequestAccept {
 	private static Logger logger = LogManager.getLogger(HttpPatternServices.class);

@@ -3,10 +3,10 @@ package io.basc.framework.web.pattern;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.register.StandardRegistration;
 import io.basc.framework.util.register.Registration;
-import io.basc.framework.web.ServerHttpRequest;
 
 public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	private Map<String, Map<String, HttpPatternServices<T>>> matcherMap = new HashMap<>();

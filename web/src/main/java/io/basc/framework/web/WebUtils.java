@@ -13,6 +13,8 @@ import io.basc.framework.core.convert.Value;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
@@ -32,10 +34,11 @@ import io.basc.framework.util.codec.support.CharsetCodec;
 import io.basc.framework.util.codec.support.URLCodec;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.collections.MultiValueMap;
+import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.util.io.IOUtils;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.xml.XmlUtils;
 
@@ -73,7 +76,7 @@ public final class WebUtils {
 	public static void writeStaticResource(ServerHttpRequest request, ServerHttpResponse response, Resource resource,
 			MimeType mimeType) throws IOException {
 		if (resource == null || !resource.exists()) {
-			response.sendError(HttpStatus.NOT_FOUND.value(), "The resource does not exist!");
+			response.sendError(HttpStatus.NOT_FOUND.getCode(), "The resource does not exist!");
 			return;
 		}
 
@@ -84,7 +87,7 @@ public final class WebUtils {
 		if (!isExpired(request, response, resource.lastModified())) {
 			return;
 		}
-		IOUtils.copy(resource.getInputStream(), response.getOutputStream());
+		resource.transferTo(response);
 	}
 
 	public static Value getParameter(ServerHttpRequest request, String name) {
@@ -100,7 +103,7 @@ public final class WebUtils {
 			value = decodeGETParameter(request, value);
 			return Value.of(value);
 		}
-
+		
 		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
 		if (jsonServerHttpRequest != null) {
 			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();

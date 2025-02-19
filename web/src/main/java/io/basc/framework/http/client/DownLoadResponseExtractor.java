@@ -8,16 +8,14 @@ import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.io.FileUtils;
-import io.basc.framework.util.io.support.TemporaryFile;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 
 public class DownLoadResponseExtractor implements ClientHttpResponseExtractor<File> {
 	private static Logger logger = LogManager.getLogger(DownLoadResponseExtractor.class);
 
 	public static final ClientHttpResponseExtractor<File> INSTANCE = new DownLoadResponseExtractor();
+	private String rootPath;
 
 	public File execute(HttpRequest request, ClientHttpResponse response) throws IOException {
 		if (response.getStatusCode() != HttpStatus.OK && response.getStatusCode() != HttpStatus.NOT_MODIFIED) {
@@ -32,14 +30,15 @@ public class DownLoadResponseExtractor implements ClientHttpResponseExtractor<Fi
 			fileName = InetUtils.getFilename(request.getURI().getPath());
 		}
 
-		TemporaryFile file = new TemporaryFile(
-				FileUtils.getTempDirectory() + File.separator + XUtils.getUUID() + File.separator + fileName);
+		String filePath = StringUtils
+				.cleanPath(StringUtils.isEmpty(rootPath) ? fileName : (rootPath + File.separator + fileName));
 		if (logger.isDebugEnabled()) {
-			logger.debug("{} download to {}", request.getURI(), file.getPath());
+			logger.debug("{} download to {}", request.getURI(), filePath);
 		}
 
+		File file = new File(filePath);
 		try {
-			FileUtils.copyInputStreamToFile(response.getInputStream(), file);
+			response.transferTo(file);
 		} finally {
 			file.deleteOnExit();
 		}

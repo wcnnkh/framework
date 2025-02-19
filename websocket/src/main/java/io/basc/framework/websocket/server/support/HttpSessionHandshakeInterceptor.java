@@ -16,9 +16,9 @@
 
 package io.basc.framework.websocket.server.support;
 
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.security.session.Session;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;
 import io.basc.framework.websocket.server.HandshakeInterceptor;
@@ -127,7 +127,7 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
 			Map<String, Object> attributes) throws Exception {
-		Session session = request.getSession(isCreateSession());
+		HttpSession session = request.getSession(isCreateSession());
 		if (session != null) {
 			if (isCopyHttpSessionId()) {
 				attributes.put(HTTP_SESSION_ID_ATTR_NAME, session.getId());

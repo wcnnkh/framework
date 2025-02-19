@@ -3,10 +3,10 @@ package io.basc.framework.swagger.beans;
 import java.io.IOException;
 
 import io.basc.framework.http.MediaType;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.web.HttpService;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.models.OpenAPI;
 

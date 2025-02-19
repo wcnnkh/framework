@@ -5,8 +5,8 @@ import java.util.List;
 
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameters;
-import io.basc.framework.net.pattern.RequestPattern;
-import io.basc.framework.net.pattern.factory.DefaultRequestPatternFactory;
+import io.basc.framework.net.RequestPattern;
+import io.basc.framework.net.pattern.DefaultRequestPatternFactory;
 import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
@@ -28,7 +28,7 @@ public class DispatcherServer extends Servers {
 	private final DefaultServerMessageConverter serverMessageConverter = new DefaultServerMessageConverter();
 
 	public Registration registerAction(Action action) {
-		return register(action, action);
+		return register(action.getRequestPattern(), action);
 	}
 
 	public Registration registerFunction(Function function, Parameters parameters) {

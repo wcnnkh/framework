@@ -6,12 +6,12 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import io.basc.framework.http.MediaType;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.util.io.IOUtils;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.web.ServerHttpResponse;
 import lombok.Data;
 
 @Data

@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.collections.MultiValueMap;
-import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.model.ModelAndView;
 
 public final class MVCUtils {

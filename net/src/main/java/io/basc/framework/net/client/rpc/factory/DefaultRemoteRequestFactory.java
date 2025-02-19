@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameters;
+import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.client.factory.DefaultClientRequestFactory;
-import io.basc.framework.net.pattern.RequestPattern;
-import io.basc.framework.net.pattern.factory.DefaultRequestPatternFactory;
+import io.basc.framework.net.pattern.DefaultRequestPatternFactory;
 import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;

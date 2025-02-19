@@ -30,6 +30,11 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 			return Optional.super.get();
 		}
 
+		@Override
+		public Optional<T, E> optional() {
+			return this;
+		}
+
 		public <R, X extends Throwable> R flatMap(
 				io.basc.framework.util.function.Function<? super T, ? extends R, ? extends X> mapper) throws E, X {
 			try {
@@ -162,7 +167,7 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 	 * 
 	 * @return
 	 */
-	default Optional<T, E> option() {
+	default Optional<T, E> optional() {
 		return new PipelineOptional<>(this, Function.identity(), this::close);
 	}
 

@@ -56,7 +56,7 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 		}
 
 		if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {
-			resource.getInputStream().option().ifPresent((is) -> properties.loadFromXML(is));
+			resource.getInputStream().optional().ifPresent((is) -> properties.loadFromXML(is));
 		} else {
 			if (LOAD_METHOD == null) {
 				logger.warn(

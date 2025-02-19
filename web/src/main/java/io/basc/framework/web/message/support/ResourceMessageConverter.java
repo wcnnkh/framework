@@ -4,11 +4,11 @@ import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
 

@@ -4,8 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.http.MediaType;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
+import io.basc.framework.servlet.http.ServletMultiPartServerHttpRequest;
+import io.basc.framework.servlet.http.ServletServerHttpRequest;
+import io.basc.framework.servlet.http.ServletServerHttpResponse;
 
 public class DefaultHttpServletConverter implements HttpServletConverter {
 

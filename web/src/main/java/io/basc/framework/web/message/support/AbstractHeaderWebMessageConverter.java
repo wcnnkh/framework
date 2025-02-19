@@ -6,8 +6,8 @@ import java.util.List;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public abstract class AbstractHeaderWebMessageConverter extends AbstractWebMessageConverter {

@@ -16,11 +16,11 @@
 
 package io.basc.framework.websocket.server.support;
 
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.handler.ExceptionWebSocketHandlerDecorator;
 import io.basc.framework.websocket.handler.LoggingWebSocketHandlerDecorator;
