@@ -3,9 +3,6 @@ package io.basc.framework.util.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.util.function.Pipeline;
-import lombok.NonNull;
-
 /**
  * Simple {@link Resource} implementation that holds a resource description but
  * does not point to an actually readable resource.
@@ -39,7 +36,7 @@ public class DescriptiveResource extends AbstractResource {
 	}
 
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
+	public InputStream getInputStream() throws IOException {
 		throw new UnsupportedOperationException(
 				getDescription() + " cannot be opened because it does not point to a readable resource");
 	}

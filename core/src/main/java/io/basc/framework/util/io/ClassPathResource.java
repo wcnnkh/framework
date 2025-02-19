@@ -9,8 +9,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Pipeline;
-import lombok.NonNull;
 
 /**
  * {@link Resource} implementation for class path resources. Uses either a given
@@ -180,21 +178,19 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @see java.lang.Class#getResourceAsStream(String)
 	 */
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Pipeline.forCloseable(() -> {
-			InputStream is = ResourceUtils.getResourceAsStream(clazz, this.path);
-			if (is == null) {
-				is = ResourceUtils.getResourceAsStream(getClassLoader(), this.path);
-			}
+	public InputStream getInputStream() throws IOException {
+		InputStream is = ResourceUtils.getResourceAsStream(clazz, this.path);
+		if (is == null) {
+			is = ResourceUtils.getResourceAsStream(getClassLoader(), this.path);
+		}
 
-			if (is == null) {
-				is = ResourceUtils.getSystemResourceAsStream(ClassUtils.getDefaultClassLoader(), this.path);
-			}
-			if (is == null) {
-				throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
-			}
-			return is;
-		});
+		if (is == null) {
+			is = ResourceUtils.getSystemResourceAsStream(ClassUtils.getDefaultClassLoader(), this.path);
+		}
+		if (is == null) {
+			throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
+		}
+		return is;
 	}
 
 	/**

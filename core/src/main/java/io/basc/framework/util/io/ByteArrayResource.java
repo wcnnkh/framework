@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.function.Pipeline;
-import lombok.NonNull;
 
 /**
  * {@link Resource} implementation for a given byte array.
@@ -77,8 +75,8 @@ public class ByteArrayResource extends AbstractResource {
 	 * @see java.io.ByteArrayInputStream
 	 */
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Pipeline.forValue(new ByteArrayInputStream(this.byteArray));
+	public InputStream getInputStream() throws IOException {
+		return new ByteArrayInputStream(this.byteArray);
 	}
 
 	/**

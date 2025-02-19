@@ -32,7 +32,7 @@ final class SimpleMetadataReader implements MetadataReader {
 	}
 
 	private static ClassReader getClassReader(Resource resource) throws IOException {
-		return resource.getInputStream().map((is) -> {
+		return resource.getInputStreamPipeline().map((is) -> {
 			try {
 				return new ClassReader(is);
 			} catch (IllegalArgumentException ex) {
@@ -41,7 +41,7 @@ final class SimpleMetadataReader implements MetadataReader {
 								+ "probably due to a new Java class file version that isn't supported yet: " + resource,
 						ex);
 			}
-		}).option().get();
+		}).optional().get();
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import java.nio.charset.CharsetEncoder;
 
 import io.basc.framework.util.alias.Named;
 import io.basc.framework.util.function.Function;
-import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.io.watch.Variable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,7 +32,7 @@ import lombok.ToString;
 public interface Resource extends InputStreamSource<InputStream>, OutputStreamSource<OutputStream>, Variable, Named {
 
 	public static class CharsetResource<W extends Resource> extends CodecResource<W>
-			implements CharsetOutputStreamSource<OutputStream, W>, CharsetInputStreamSource<InputStream, W> {
+			implements CharsetOutputStreamFactory<OutputStream, W>, CharsetInputStreamFactory<InputStream, W> {
 		private final Object charset;
 
 		public CharsetResource(@NonNull W source, Charset charset) {
@@ -59,7 +58,7 @@ public interface Resource extends InputStreamSource<InputStream>, OutputStreamSo
 			if (charset instanceof String) {
 				return (String) charset;
 			}
-			return CharsetInputStreamSource.super.getCharsetName();
+			return CharsetInputStreamFactory.super.getCharsetName();
 		}
 	}
 
@@ -67,8 +66,8 @@ public interface Resource extends InputStreamSource<InputStream>, OutputStreamSo
 	@EqualsAndHashCode(callSuper = true)
 	@ToString(callSuper = true)
 	public static class CodecResource<W extends Resource>
-			extends StandardEncodeOutputStreamSource<OutputStream, Writer, W> implements ResourceWrapper<W>,
-			DecodeInputStreamSource<InputStream, Reader, W>, EncodeOutputStreamSource<OutputStream, Writer, W> {
+			extends StandardEncodeOutputStreamFactory<OutputStream, Writer, W> implements ResourceWrapper<W>,
+			DecodeInputStreamFactory<InputStream, Reader, W>, EncodeOutputStreamFactory<OutputStream, Writer, W> {
 		@NonNull
 		private final Function<? super InputStream, ? extends Reader, ? extends IOException> decoder;
 
@@ -127,12 +126,7 @@ public interface Resource extends InputStreamSource<InputStream>, OutputStreamSo
 		}
 
 		@Override
-		default @NonNull Pipeline<InputStream, IOException> getInputStream() throws UnsupportedOperationException {
-			return getSource().getInputStream();
-		}
-
-		@Override
-		default @NonNull Pipeline<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
+		default OutputStream getOutputStream() throws IOException {
 			return getSource().getOutputStream();
 		}
 
@@ -204,12 +198,7 @@ public interface Resource extends InputStreamSource<InputStream>, OutputStreamSo
 	File getFile() throws IOException, FileNotFoundException;
 
 	@Override
-	@NonNull
-	Pipeline<InputStream, IOException> getInputStream() throws UnsupportedOperationException;
-
-	@Override
-	@NonNull
-	default Pipeline<OutputStream, IOException> getOutputStream() throws UnsupportedOperationException {
+	default OutputStream getOutputStream() throws IOException {
 		throw new UnsupportedOperationException();
 	}
 

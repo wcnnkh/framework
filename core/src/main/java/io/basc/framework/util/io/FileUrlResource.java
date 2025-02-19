@@ -10,10 +10,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.io.load.DefaultResourceLoader;
-import lombok.NonNull;
 
 /**
  * Subclass of {@link UrlResource} which assumes file resolution, to the degree
@@ -85,8 +82,8 @@ public class FileUrlResource extends UrlResource {
 	}
 
 	@Override
-	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
-		return Supplier.of(() -> Files.newOutputStream(getFile().toPath())).onClose((e) -> e.close()).newPipeline();
+	public OutputStream getOutputStream() throws IOException {
+		return Files.newOutputStream(getFile().toPath());
 	}
 
 	public WritableByteChannel writableChannel() throws IOException {

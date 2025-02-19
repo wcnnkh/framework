@@ -56,7 +56,7 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	}
 
 	default boolean verify(Resource source, int bufferSize, E target) throws EncodeException, IOException {
-		return source.getInputStream().option().filter((is) -> verify(is, bufferSize, target)).isPresent();
+		return source.getInputStreamPipeline().optional().filter((is) -> verify(is, bufferSize, target)).isPresent();
 	}
 
 	/**
@@ -112,10 +112,10 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	}
 
 	default E encode(Resource source) throws IOException, EncodeException {
-		return source.getInputStream().option().map(this::encode).get();
+		return source.getInputStreamPipeline().optional().map(this::encode).get();
 	}
 
 	default E encode(Resource source, int bufferSize) throws IOException, EncodeException {
-		return source.getInputStream().option().map((is) -> encode(is, bufferSize)).get();
+		return source.getInputStreamPipeline().optional().map((is) -> encode(is, bufferSize)).get();
 	}
 }

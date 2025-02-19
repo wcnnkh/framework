@@ -8,11 +8,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Supplier;
 import lombok.NonNull;
 
 /**
@@ -166,19 +165,18 @@ public class UrlResource extends AbstractFileResolvingResource {
 	 * @see java.net.URLConnection#setUseCaches(boolean)
 	 * @see java.net.URLConnection#getInputStream()
 	 */
-
-	@SuppressWarnings("unchecked")
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return (io.basc.framework.util.function.Pipeline<InputStream, IOException>) Supplier.of(() -> url.openConnection()).onClose((con) -> {
+	public InputStream getInputStream() throws IOException {
+		URLConnection con = url.openConnection();
+		try {
+			ResourceUtils.useCachesIfNecessary(con);
+			return con.getInputStream();
+		} finally {
 			// Close the HTTP connection (if applicable).
 			if (con instanceof HttpURLConnection) {
 				((HttpURLConnection) con).disconnect();
 			}
-		}).map((con) -> {
-			ResourceUtils.useCachesIfNecessary(con);
-			return con.getInputStream();
-		}).onClose((e) -> e.close());
+		}
 	}
 
 	/**

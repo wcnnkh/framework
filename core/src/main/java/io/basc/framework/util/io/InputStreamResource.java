@@ -2,10 +2,6 @@ package io.basc.framework.util.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import io.basc.framework.util.function.Pipeline;
-import lombok.NonNull;
 
 /**
  * {@link Resource} implementation for a given {@link InputStream}.
@@ -70,23 +66,18 @@ public class InputStreamResource extends AbstractResource {
 	 * underlying stream multiple times.
 	 */
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() throws IllegalStateException {
+	public InputStream getInputStream() throws IOException {
 		if (this.read) {
 			throw new IllegalStateException("InputStream has already been read - "
 					+ "do not use InputStreamResource if a stream needs to be read multiple times");
 		}
 		this.read = true;
-		return Pipeline.forValue(inputStream);
+		return inputStream;
 	}
 
 	@Override
 	public boolean isWritable() {
 		return false;
-	}
-
-	@Override
-	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
-		throw new UnsupportedOperationException();
 	}
 
 	/**

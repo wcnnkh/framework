@@ -56,14 +56,14 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 		}
 
 		if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {
-			resource.getInputStream().optional().ifPresent((is) -> properties.loadFromXML(is));
+			resource.getInputStreamPipeline().optional().ifPresent((is) -> properties.loadFromXML(is));
 		} else {
 			if (LOAD_METHOD == null) {
 				logger.warn(
 						"The specified character set is only supported in versions of jdk 1.6 and above: " + resource);
-				resource.getInputStream().option().ifPresent((is) -> properties.load(is));
+				resource.getInputStreamPipeline().optional().ifPresent((is) -> properties.load(is));
 			} else {
-				resource.toReaderSource().getReader().option()
+				resource.toReaderFactory().getReaderPipeline().optional()
 						.ifPresent((is) -> ReflectionUtils.invoke(LOAD_METHOD, properties, is));
 			}
 		}
@@ -78,11 +78,11 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 
 		if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {
 			Optional<String> charsetName = CharsetCapable.getCharsetName(resource);
-			resource.getOutputStream().option().ifPresent((os) -> {
+			resource.getOutputStreamPipeline().optional().ifPresent((os) -> {
 				properties.storeToXML(os, null, charsetName.orElse(null));
 			});
 		} else {
-			resource.toWriterSource().getWriter().option().ifPresent((os) -> {
+			resource.toWriterFactory().getWriterPipeline().optional().ifPresent((os) -> {
 				properties.store(os, null);
 			});
 		}

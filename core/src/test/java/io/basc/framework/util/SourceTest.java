@@ -18,7 +18,7 @@ public class SourceTest {
 		source.onClose((e) -> System.out.println("映射结束")).newPipeline().map((e) -> {
 			System.out.println("进行映射");
 			return e;
-		}).option().isPresent();
+		}).optional().isPresent();
 
 		Pool<Object, Throwable> pool = source.onClose((e) -> System.out.println("close1:" + e));
 		Pipeline<?, ?> channel = pool.newPipeline().map((t) -> "-" + t)

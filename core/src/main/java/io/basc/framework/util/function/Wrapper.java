@@ -1,7 +1,6 @@
 package io.basc.framework.util.function;
 
 import lombok.NonNull;
-import java.util.Optional;
 
 /**
  * 对一个对象进行包装

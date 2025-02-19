@@ -8,9 +8,6 @@ import java.net.URL;
 
 import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Supplier;
-import lombok.NonNull;
 
 /**
  * JBoss VFS based {@link Resource} implementation.
@@ -36,8 +33,8 @@ public class VfsResource extends AbstractResource {
 	}
 
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return Supplier.of(() -> VfsUtils.getInputStream(this.resource)).onClose((e) -> e.close()).newPipeline();
+	public InputStream getInputStream() throws IOException {
+		return VfsUtils.getInputStream(this.resource);
 	}
 
 	@Override
