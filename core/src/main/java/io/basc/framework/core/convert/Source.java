@@ -14,6 +14,7 @@ import io.basc.framework.util.CharSequenceTemplate;
 import io.basc.framework.util.Version;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.Enumerable;
+import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Supplier;
 import io.basc.framework.util.math.BigDecimalValue;
 import io.basc.framework.util.math.NumberUtils;
@@ -192,6 +193,12 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 				@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
 			return getSource().map(requriedTypeDescriptor, converter);
 		}
+
+		@Override
+		default <R> Value<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
+			return getSource().map(mapper);
+		}
+
 	}
 
 	static final Source EMPTY = new EmptyValue();
@@ -507,24 +514,28 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 	}
 
 	default Object getAsObject(TypeDescriptor type) {
-		return getAsObject(type.getType(), () -> getAsValue(type, Converter.unsupported()).orElse(null));
+		return getAsObject(type.getType(), () -> map(type, Converter.unsupported()).orElse(null));
+	}
+
+	@Override
+	default <R> Value<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
+		Value<R> value = new Value<>();
+		value.setObject(this);
+		value.setMapper(mapper);
+		return value;
 	}
 
 	default <T> Value<T> getAsValue(Class<? extends T> requriedType) {
-		return getAsValue(TypeDescriptor.valueOf(requriedType));
+		return map(TypeDescriptor.valueOf(requriedType), Converter.unsupported());
 	}
 
-	default <T> Value<T> getAsValue(@NonNull TypeDescriptor typeDescriptor) {
-		return getAsValue(typeDescriptor, Converter.unsupported());
-	}
-
-	default <T> Value<T> getAsValue(@NonNull TypeDescriptor typeDescriptor,
+	default <T> Value<T> map(@NonNull TypeDescriptor typeDescriptor,
 			@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
-		ObjectValue source = new ObjectValue(value);
-		source.setTypeDescriptor(typeDescriptor);
-		source.setConverter(converter);
-		return source;
-		return new Value<>(this, typeDescriptor, converter);
+		Value<T> value = new Value<>();
+		value.setObject(this);
+		value.setTypeDescriptor(typeDescriptor);
+		value.setConverter(converter);
+		return value;
 	}
 
 	default short getAsShort() {

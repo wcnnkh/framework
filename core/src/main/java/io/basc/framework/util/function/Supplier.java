@@ -32,7 +32,8 @@ public interface Supplier<T, E extends Throwable> {
 	}
 
 	@RequiredArgsConstructor
-	public static class MappedSupplier<S, T, E extends Throwable, W extends Supplier<S, E>> implements Supplier<T, E> {
+	public static class MappedSupplier<S, T, E extends Throwable, W extends Supplier<? extends S, ? extends E>>
+			implements Supplier<T, E> {
 		@NonNull
 		protected final W source;
 		@NonNull
