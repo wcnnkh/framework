@@ -3,7 +3,6 @@ package io.basc.framework.transaction;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 public class StandardTransaction implements Transaction, Synchronization {
@@ -32,7 +31,7 @@ public class StandardTransaction implements Transaction, Synchronization {
 	}
 
 	public StandardTransaction(Transaction parent, TransactionDefinition definition, boolean active, boolean isNew,
-			@Nullable Savepoint savepoint) {
+			Savepoint savepoint) {
 		Assert.isTrue(!(!isNew && parent == null), "An old transaction must have a parent(一个旧的事务一定存在父级)");
 		this.savepoint = savepoint;
 		this.parent = parent;

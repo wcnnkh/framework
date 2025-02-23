@@ -1,15 +1,14 @@
 package io.basc.framework.servlet.http;
 
-import io.basc.framework.http.ContentDisposition;
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.MediaType;
-import io.basc.framework.net.MimeType;
-import io.basc.framework.net.multipart.MultipartMessage;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.http.Part;
+
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.net.ContentDisposition;
+import io.basc.framework.net.MediaType;
+import io.basc.framework.net.multipart.MultipartMessage;
 
 public class ServletMultipartMessage implements MultipartMessage {
 	private final Part part;
@@ -34,7 +33,7 @@ public class ServletMultipartMessage implements MultipartMessage {
 	}
 
 	@Override
-	public MimeType getContentType() {
+	public MediaType getContentType() {
 		String contentType = part.getContentType();
 		return MediaType.parseMediaType(contentType);
 	}

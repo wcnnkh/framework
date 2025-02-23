@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.MultiValueMap;

@@ -1,8 +1,8 @@
 package io.basc.framework.transaction.aop;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.transaction.TransactionDefinition;
+import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,12 +13,12 @@ public class ConfigurableTransactionDefinitionLoader extends ConfigurableService
 	private TransactionDefinition defaultTransactionDefinition;
 
 	public ConfigurableTransactionDefinitionLoader() {
-		super(TransactionDefinitionLoader.class);
+		setServiceClass(TransactionDefinitionLoader.class);
 	}
 
 	@Override
 	public TransactionDefinition load(Function function) {
-		for (TransactionDefinitionLoader loader : getServices()) {
+		for (TransactionDefinitionLoader loader : this) {
 			TransactionDefinition definition = loader.load(function);
 			if (definition != null) {
 				return definition;
@@ -29,7 +29,7 @@ public class ConfigurableTransactionDefinitionLoader extends ConfigurableService
 
 	@Override
 	public boolean isRollback(Function function, Throwable error) {
-		return getServices().allMatch((e) -> e.isRollback(function, error));
+		return this.allMatch((e) -> e.isRollback(function, error));
 	}
 
 }

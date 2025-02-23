@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.support.IdentityConversionService;
 import io.basc.framework.core.convert.transform.stereotype.collection.MapProperties;
 import io.basc.framework.util.collections.Elements;
@@ -30,7 +30,7 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 		}
 
 		@Override
-		default Value getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
+		default Source getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
 			return getSource().getProperty(propertyDescriptor);
 		}
 
@@ -58,7 +58,7 @@ public interface Properties extends PropertyTemplate<Property>, Lookup<String, P
 	}
 
 	@Override
-	default Value getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
+	default Source getProperty(@NonNull PropertyDescriptor propertyDescriptor) {
 		Property property = get(propertyDescriptor.getName());
 		if (property == null) {
 			return null;

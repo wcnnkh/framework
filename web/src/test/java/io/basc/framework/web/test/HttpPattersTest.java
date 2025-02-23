@@ -3,10 +3,10 @@ package io.basc.framework.web.test;
 import org.junit.Test;
 
 import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.net.MimeType;
-import io.basc.framework.net.MimeTypeUtils;
-import io.basc.framework.net.MimeTypes;
+import io.basc.framework.net.MediaTypes;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.io.MimeType;
+import io.basc.framework.util.io.MimeTypeUtils;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternMatcher;
 
@@ -26,11 +26,11 @@ public class HttpPattersTest {
 	@Test
 	public void add() {
 		HttpPatternMatcher<String> httpPatterns = new HttpPatternMatcher<String>();
-		MimeTypes types = new MimeTypes();
+		MediaTypes types = new MediaTypes();
 		types.add(MimeType.valueOf(MimeTypeUtils.APPLICATION_JSON_VALUE));
 		httpPatterns.add(new HttpPattern("/a", "GET", types), XUtils.getUUID());
 		
-		MimeTypes types2 = new MimeTypes();
+		MediaTypes types2 = new MediaTypes();
 		types2.add(MimeTypeUtils.TEXT_JSON);
 		httpPatterns.add(new HttpPattern("/a", "GET", types2), XUtils.getUUID());
 	}

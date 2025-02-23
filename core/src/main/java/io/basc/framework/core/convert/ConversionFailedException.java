@@ -7,9 +7,9 @@ public class ConversionFailedException extends ConversionException {
 
 	private final TypeDescriptor targetType;
 
-	private final Value value;
+	private final Source value;
 
-	public ConversionFailedException(Value value, TypeDescriptor targetType, Throwable cause) {
+	public ConversionFailedException(Source value, TypeDescriptor targetType, Throwable cause) {
 		super("Failed to convert from type [" + value.getTypeDescriptor() + "] to type [" + targetType + "] for value '"
 				+ ObjectUtils.toString(value) + "'", cause);
 		this.targetType = targetType;
@@ -21,14 +21,14 @@ public class ConversionFailedException extends ConversionException {
 		super("Failed to convert from type [" + sourceType + "] to type [" + targetType + "] for value '"
 				+ ObjectUtils.toString(value) + "'", cause);
 		this.targetType = targetType;
-		this.value = Value.of(value, sourceType);
+		this.value = Source.of(value, sourceType);
 	}
 
 	public TypeDescriptor getTargetType() {
 		return this.targetType;
 	}
 
-	public Value getValue() {
+	public Source getValue() {
 		return this.value;
 	}
 

@@ -7,9 +7,8 @@ import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
-import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
 
 /**
  * 以aop的方式管理事务
@@ -34,7 +33,7 @@ public final class TransactionExecutionInterceptor extends DefaultTransactionDef
 	}
 
 	@Override
-	public Object intercept(Function function, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(Function function, Object... args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
 		TransactionDefinition transactionDefinition = load(function);
 		if (transactionDefinition == null) {

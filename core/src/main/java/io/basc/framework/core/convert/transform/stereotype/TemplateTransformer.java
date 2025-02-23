@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.Transformer;
 import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TemplateTransformer<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
+public class TemplateTransformer<K, SV extends Source, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		implements Transformer<S, T, E>, TemplateWriter<K, SV, S, TV, T, E>, TemplateReader<K, SV, S, TV, T, E> {
 	private final DefaultTemplateReader<K, SV, S, TV, T, E> templateReader = new DefaultTemplateReader<>();
 	private final DefaultTemplateWriter<K, SV, S, TV, T, E> templateWriter = new DefaultTemplateWriter<>();

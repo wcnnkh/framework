@@ -5,7 +5,7 @@ import java.util.Map;
 
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.MimeTypes;
+import io.basc.framework.net.MediaTypes;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
@@ -18,8 +18,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 	private PathMatcher pathMatcher;
 	private String path;
 	private String method;
-	private MimeTypes consumes;
-	private MimeTypes produces;
+	private MediaTypes consumes;
+	private MediaTypes produces;
 
 	public HttpPattern(String path) {
 		this(path, null, null);
@@ -29,12 +29,12 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		this(path, method, null);
 	}
 
-	public HttpPattern(String path, @Nullable String method, @Nullable MimeTypes consumes) {
+	public HttpPattern(String path, @Nullable String method, @Nullable MediaTypes consumes) {
 		this(path, method, consumes, null);
 	}
 
-	public HttpPattern(String path, @Nullable String method, @Nullable MimeTypes consumes,
-			@Nullable MimeTypes produces) {
+	public HttpPattern(String path, @Nullable String method, @Nullable MediaTypes consumes,
+			@Nullable MediaTypes produces) {
 		Assert.requiredArgument(path != null, "path");
 		this.path = path;
 		this.method = method;
@@ -58,13 +58,13 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return httpPattern;
 	}
 
-	public HttpPattern setConsumes(MimeTypes consumes) {
+	public HttpPattern setConsumes(MediaTypes consumes) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.consumes = consumes;
 		return httpPattern;
 	}
 
-	public HttpPattern setProduces(MimeTypes produces) {
+	public HttpPattern setProduces(MediaTypes produces) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.produces = produces;
 		return httpPattern;
@@ -83,16 +83,16 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return method;
 	}
 
-	public MimeTypes getConsumes() {
-		return consumes == null ? MimeTypes.EMPTY : consumes;
+	public MediaTypes getConsumes() {
+		return consumes == null ? MediaTypes.EMPTY : consumes;
 	}
 
 	public boolean hasConsumes() {
 		return consumes != null && !consumes.isEmpty();
 	}
 
-	public MimeTypes getProduces() {
-		return produces == null ? MimeTypes.EMPTY : produces;
+	public MediaTypes getProduces() {
+		return produces == null ? MediaTypes.EMPTY : produces;
 	}
 
 	public boolean hasProduces() {

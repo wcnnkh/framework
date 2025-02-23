@@ -8,25 +8,7 @@ public interface HttpMessage extends Message {
 		default HttpHeaders getHeaders() {
 			return getSource().getHeaders();
 		}
-
-		@Override
-		default long getContentLength() {
-			return getSource().getContentLength();
-		}
-
-		@Override
-		default MediaType getContentType() {
-			return getSource().getContentType();
-		}
 	}
 
 	HttpHeaders getHeaders();
-
-	default long getContentLength() {
-		return getHeaders().getContentLength();
-	}
-
-	default MediaType getContentType() {
-		return getHeaders().getContentType();
-	}
 }

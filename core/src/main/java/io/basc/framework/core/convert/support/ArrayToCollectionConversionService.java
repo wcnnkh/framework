@@ -7,7 +7,7 @@ import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
@@ -24,7 +24,7 @@ class ArrayToCollectionConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getTypeDescriptor();

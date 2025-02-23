@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.Accessor;
 import io.basc.framework.core.convert.transform.stereotype.Template;
 import io.basc.framework.core.convert.transform.stereotype.TemplateContext;
@@ -53,7 +53,7 @@ public class ConfigurationProperties extends
 									e, targetAccessor).map((v) -> KeyValue.of(namingStrategy.display(e, prefix), v)));
 					if (targetAccessor.getRequiredTypeDescriptor().isCollection()) {
 						List<Accessor> list = keyValues.map((e) -> e.getValue()).toList();
-						Accessor value = Accessor.of(Value.of(list));
+						Accessor value = Accessor.of(Source.of(list));
 						elements = Elements.singleton(value);
 					} else if (targetAccessor.getRequiredTypeDescriptor().isMap()) {
 						Map<String, List<Accessor>> map = new LinkedHashMap<>();
@@ -74,7 +74,7 @@ public class ConfigurationProperties extends
 								result.put(entry.getKey(), entry.getValue());
 							}
 						}
-						Accessor value = Accessor.of(Value.of(result));
+						Accessor value = Accessor.of(Source.of(result));
 						return Elements.singleton(value);
 					}
 				}

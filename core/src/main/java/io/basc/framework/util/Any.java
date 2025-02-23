@@ -275,7 +275,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 
 	NumberValue getAsNumber();
 
-	default <T> T getAsObject(Class<? extends T> requiredType) {
+	default <R> R getAsObject(Class<? extends R> requiredType) {
 		return getAsObject(requiredType, () -> DEFAULT.getAsObject(requiredType));
 	}
 
@@ -292,7 +292,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 	 */
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
+	default <R> R getAsObject(Class<? extends R> requiredType, Supplier<? extends R> defaultSupplier) {
 		Object v = null;
 		if (String.class == requiredType) {
 			v = getAsString();
@@ -329,7 +329,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		} else {
 			v = defaultSupplier.get();
 		}
-		return (T) v;
+		return (R) v;
 	}
 
 	default short getAsShort() {

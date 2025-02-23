@@ -3,6 +3,10 @@ package io.basc.framework.dom;
 public class DomException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
+	public DomException(String message) {
+		super(message);
+	}
+
 	public DomException(Throwable e) {
 		super(e);
 	}

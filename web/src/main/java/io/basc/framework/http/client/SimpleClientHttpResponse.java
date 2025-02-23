@@ -22,9 +22,7 @@ import java.net.HttpURLConnection;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.io.IOUtils;
-import lombok.NonNull;
 
 final class SimpleClientHttpResponse implements ClientHttpResponse {
 
@@ -32,7 +30,7 @@ final class SimpleClientHttpResponse implements ClientHttpResponse {
 
 	private HttpHeaders headers;
 
-	private Pipeline<InputStream, IOException> responseStream;
+	private InputStream responseStream;
 
 	SimpleClientHttpResponse(HttpURLConnection connection) {
 		this.connection = connection;
@@ -69,18 +67,18 @@ final class SimpleClientHttpResponse implements ClientHttpResponse {
 	}
 
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		this.responseStream = Pipeline.of(() -> {
+	public InputStream getInputStream() throws IOException {
+		if (this.responseStream == null) {
 			InputStream errorStream = this.connection.getErrorStream();
-			return (errorStream != null ? errorStream : this.connection.getInputStream());
-		}).newPipeline();
+			this.responseStream = (errorStream != null ? errorStream : this.connection.getInputStream());
+		}
 		return this.responseStream;
 	}
 
 	public void close() {
 		if (this.responseStream != null) {
 			try {
-				this.responseStream.option().ifPresent(IOUtils::drain);
+				IOUtils.drain(responseStream);
 				this.responseStream.close();
 			} catch (Exception ex) {
 				// ignore

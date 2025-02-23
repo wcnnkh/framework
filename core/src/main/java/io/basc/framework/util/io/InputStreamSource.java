@@ -6,6 +6,7 @@ import java.io.InputStream;
 import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
+@FunctionalInterface
 public interface InputStreamSource<T extends InputStream> extends InputStreamFactory<T> {
 	public static interface InputStreamSourceWrapper<T extends InputStream, W extends InputStreamSource<T>>
 			extends InputStreamSource<T>, InputStreamFactoryWrapper<T, W> {

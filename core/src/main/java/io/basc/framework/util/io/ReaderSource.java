@@ -6,6 +6,7 @@ import java.io.Reader;
 import io.basc.framework.util.function.Pipeline;
 import lombok.NonNull;
 
+@FunctionalInterface
 public interface ReaderSource<T extends Reader> extends ReaderFactory<T> {
 	public static interface ReaderSourceWrapper<T extends Reader, W extends ReaderSource<T>>
 			extends ReaderSource<T>, ReaderFactoryWrapper<T, W> {

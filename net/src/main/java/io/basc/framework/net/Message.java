@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.io.CharsetCapable;
+import io.basc.framework.util.io.MimeType;
 
 public interface Message extends CharsetCapable {
 	@FunctionalInterface
@@ -25,7 +26,7 @@ public interface Message extends CharsetCapable {
 		}
 
 		@Override
-		default MimeType getContentType() {
+		default MediaType getContentType() {
 			return getSource().getContentType();
 		}
 
@@ -37,9 +38,13 @@ public interface Message extends CharsetCapable {
 
 	Headers getHeaders();
 
-	MimeType getContentType();
+	default long getContentLength() {
+		return getHeaders().getContentLength();
+	}
 
-	long getContentLength();
+	default MediaType getContentType() {
+		return getHeaders().getContentType();
+	}
 
 	default Charset getCharset() {
 		String name = getCharsetName();

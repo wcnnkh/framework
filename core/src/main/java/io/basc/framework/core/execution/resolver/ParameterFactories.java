@@ -1,6 +1,6 @@
 package io.basc.framework.core.execution.resolver;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.core.convert.transform.stereotype.PropertyFactory;
 import io.basc.framework.core.convert.transform.stereotype.PropertyPropertyFactories;
@@ -44,7 +44,7 @@ public class ParameterFactories extends ConfigurableServices<ParameterFactory>
 	}
 
 	@Override
-	public Value getProperty(PropertyDescriptor propertyDescriptor) {
+	public Source getProperty(PropertyDescriptor propertyDescriptor) {
 		if (configurablePropertyResolver.hasProperty(propertyDescriptor)) {
 			return configurablePropertyResolver.getProperty(propertyDescriptor);
 		}
@@ -66,7 +66,7 @@ public class ParameterFactories extends ConfigurableServices<ParameterFactory>
 		}
 
 		Elements<Parameter> elements = parameterTemplate.getParameterDescriptors().map((e) -> {
-			Value value = getProperty(e);
+			Source value = getProperty(e);
 			Parameter parameter = Parameter.of(e);
 			parameter.set(value.get());
 			return parameter;

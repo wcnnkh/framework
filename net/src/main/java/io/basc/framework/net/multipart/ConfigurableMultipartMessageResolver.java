@@ -3,9 +3,8 @@ package io.basc.framework.net.multipart;
 import java.io.IOException;
 import java.util.List;
 
-import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.net.InputMessage;
+import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableMultipartMessageResolver extends ConfigurableServices<MultipartMessageResolver>
 		implements MultipartMessageResolver {
@@ -16,7 +15,7 @@ public class ConfigurableMultipartMessageResolver extends ConfigurableServices<M
 
 	@Override
 	public boolean isMultipart(InputMessage inputMessage) {
-		for (MultipartMessageResolver resolver : getServices()) {
+		for (MultipartMessageResolver resolver : this) {
 			if (resolver.isMultipart(inputMessage)) {
 				return true;
 			}
@@ -26,12 +25,12 @@ public class ConfigurableMultipartMessageResolver extends ConfigurableServices<M
 
 	@Override
 	public List<MultipartMessage> resolve(InputMessage inputMessage) throws IOException {
-		for (MultipartMessageResolver resolver : getServices()) {
+		for (MultipartMessageResolver resolver : this) {
 			if (resolver.isMultipart(inputMessage)) {
 				return resolver.resolve(inputMessage);
 			}
 		}
-		throw new NotFoundException("Unable to find corresponding MultipartMessage Resolver");
+		throw new UnsupportedOperationException("Unable to find corresponding MultipartMessage Resolver");
 	}
 
 }

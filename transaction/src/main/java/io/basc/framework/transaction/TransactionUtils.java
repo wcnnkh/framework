@@ -1,9 +1,8 @@
 package io.basc.framework.transaction;
 
-import io.basc.framework.beans.factory.spi.SPI;
 import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.spi.NativeServiceLoader;
 
 public final class TransactionUtils {
 
@@ -13,8 +12,8 @@ public final class TransactionUtils {
 	/**
 	 * Global default transactions(全局默认使用的事务)
 	 */
-	private static final TransactionManager DEFAULT = SPI.global()
-			.getServiceLoader(TransactionManager.class, ThreadLocalTransactionManager.class).getServices().first();
+	private static final TransactionManager DEFAULT = NativeServiceLoader.load(TransactionManager.class).findFirst()
+			.orElseGet(() -> new ThreadLocalTransactionManager());
 	private static final ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
 			TransactionManager.class.getSimpleName());
 
@@ -35,19 +34,15 @@ public final class TransactionUtils {
 		}
 	}
 
-	@Nullable
 	public static FacadeTransaction getTransaction() {
 		return getTransaction(null);
 	}
 
-	@Nullable
 	public static FacadeTransaction getTransaction(TransactionDefinition definition) {
 		return getTransaction(getManager(), definition);
 	}
 
-	@Nullable
-	public static FacadeTransaction getTransaction(TransactionManager manager,
-			@Nullable TransactionDefinition definition) {
+	public static FacadeTransaction getTransaction(TransactionManager manager, TransactionDefinition definition) {
 		Assert.requiredArgument(manager != null, "manager");
 		Transaction transaction = definition == null ? manager.getTransaction() : manager.getTransaction(definition);
 		if (transaction == null) {

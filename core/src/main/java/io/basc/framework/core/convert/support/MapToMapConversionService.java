@@ -8,7 +8,7 @@ import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
@@ -24,7 +24,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;

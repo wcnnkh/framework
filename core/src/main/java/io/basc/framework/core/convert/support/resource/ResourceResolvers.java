@@ -59,7 +59,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 				&& getConversionService().canConvert(PROPERTIES_TYPE, targetType);
 	}
 
-	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
+	public Object resolveResource(Resource resource, TypeDescriptor targetType) throws IOException {
 		for (ResourceResolver resolver : this) {
 			if (resolver.canResolveResource(resource, targetType)) {
 				return resolver.resolveResource(resource, targetType);

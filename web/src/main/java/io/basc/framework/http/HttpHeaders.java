@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,12 +21,12 @@ import java.util.regex.Pattern;
 
 import io.basc.framework.net.Headers;
 import io.basc.framework.net.InetUtils;
-import io.basc.framework.net.MimeType;
-import io.basc.framework.net.MimeTypeUtils;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.io.MimeType;
+import io.basc.framework.util.io.MimeTypeUtils;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -182,12 +180,7 @@ public class HttpHeaders extends Headers {
 	 *      3.1.2.2 of RFC 7231</a>
 	 */
 	public static final String CONTENT_ENCODING = "Content-Encoding";
-	/**
-	 * The HTTP {@code Content-Disposition} header field name.
-	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc6266">RFC 6266</a>
-	 */
-	public static final String CONTENT_DISPOSITION = "Content-Disposition";
+
 	/**
 	 * The HTTP {@code Content-Language} header field name.
 	 * 
@@ -195,13 +188,7 @@ public class HttpHeaders extends Headers {
 	 *      3.1.3.2 of RFC 7231</a>
 	 */
 	public static final String CONTENT_LANGUAGE = "Content-Language";
-	/**
-	 * The HTTP {@code Content-Length} header field name.
-	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-3.3.2">Section
-	 *      3.3.2 of RFC 7230</a>
-	 */
-	public static final String CONTENT_LENGTH = "Content-Length";
+
 	/**
 	 * The HTTP {@code Content-Location} header field name.
 	 * 
@@ -216,13 +203,6 @@ public class HttpHeaders extends Headers {
 	 *      RFC 7233</a>
 	 */
 	public static final String CONTENT_RANGE = "Content-Range";
-	/**
-	 * The HTTP {@code Content-Type} header field name.
-	 * 
-	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Section
-	 *      3.1.1.5 of RFC 7231</a>
-	 */
-	public static final String CONTENT_TYPE = "Content-Type";
 	/**
 	 * The HTTP {@code Cookie} header field name.
 	 * 
@@ -362,13 +342,6 @@ public class HttpHeaders extends Headers {
 	 */
 	public static final String PROXY_AUTHORIZATION = "Proxy-Authorization";
 	/**
-	 * The HTTP {@code Range} header field name.
-	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-3.1">Section 3.1 of
-	 *      RFC 7233</a>
-	 */
-	public static final String RANGE = "Range";
-	/**
 	 * The HTTP {@code Referer} header field name.
 	 * 
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.5.2">Section
@@ -485,6 +458,14 @@ public class HttpHeaders extends Headers {
 	 */
 	private static final String[] DATE_FORMATS = new String[] { "EEE, dd MMM yyyy HH:mm:ss zzz",
 			"EEE, dd-MMM-yy HH:mm:ss zzz", "EEE MMM dd HH:mm:ss yyyy" };
+
+	/**
+	 * The HTTP {@code Range} header field name.
+	 * 
+	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-3.1">Section 3.1 of
+	 *      RFC 7233</a>
+	 */
+	public static final String RANGE = "Range";
 
 	public static final String X_REQUESTED_WITH = "X-Requested-With";
 
@@ -750,97 +731,6 @@ public class HttpHeaders extends Headers {
 	 */
 	public List<String> getConnection() {
 		return getValuesAsList(CONNECTION);
-	}
-
-	/**
-	 * Set the {@code Content-Disposition} header when creating a
-	 * {@code "multipart/form-data"} request.
-	 * 
-	 * @param name     the control name
-	 * @param filename the filename (may be {@code null})
-	 */
-	public void setContentDispositionFormData(String name, String filename) {
-		Assert.notNull(name, "'name' must not be null");
-		StringBuilder builder = new StringBuilder("form-data; name=\"");
-		builder.append(name).append('\"');
-		if (filename != null) {
-			builder.append("; filename=\"");
-			builder.append(filename).append('\"');
-		}
-		set(CONTENT_DISPOSITION, builder.toString());
-	}
-
-	/**
-	 * Set the {@literal Content-Disposition} header.
-	 * <p>
-	 * This could be used on a response to indicate if the content is expected to be
-	 * displayed inline in the browser or as an attachment to be saved locally.
-	 * <p>
-	 * It can also be used for a {@code "multipart/form-data"} request. For more
-	 * details see notes on {@link #setContentDispositionFormData}.
-	 * 
-	 * @see #getContentDisposition()
-	 */
-	public void setContentDisposition(ContentDisposition contentDisposition) {
-		set(CONTENT_DISPOSITION, contentDisposition.toString());
-	}
-
-	/**
-	 * Return a parsed representation of the {@literal Content-Disposition} header.
-	 * 
-	 * @see #setContentDisposition(ContentDisposition)
-	 */
-	public ContentDisposition getContentDisposition() {
-		String contentDisposition = getFirst(CONTENT_DISPOSITION);
-		if (contentDisposition != null) {
-			return ContentDisposition.parse(contentDisposition);
-		}
-		return ContentDisposition.empty();
-	}
-
-	/**
-	 * Set the length of the body in bytes, as specified by the
-	 * {@code Content-Length} header.
-	 */
-	public void setContentLength(long contentLength) {
-		set(CONTENT_LENGTH, Long.toString(contentLength));
-	}
-
-	/**
-	 * Return the length of the body in bytes, as specified by the
-	 * {@code Content-Length} header.
-	 * <p>
-	 * Returns -1 when the content-length is unknown.
-	 */
-	public long getContentLength() {
-		String value = getFirst(CONTENT_LENGTH);
-		return (value != null ? Long.parseLong(value) : -1);
-	}
-
-	/**
-	 * Set the {@linkplain MediaType media type} of the body, as specified by the
-	 * {@code Content-Type} header.
-	 */
-	public void setContentType(MediaType mediaType) {
-		if (mediaType == null) {
-			remove(CONTENT_TYPE);
-			return;
-		}
-
-		Assert.isTrue(!mediaType.isWildcardType(), "Content-Type cannot contain wildcard type '*'");
-		Assert.isTrue(!mediaType.isWildcardSubtype(), "Content-Type cannot contain wildcard subtype '*'");
-		set(CONTENT_TYPE, mediaType.toString());
-	}
-
-	/**
-	 * Return the {@linkplain MediaType media type} of the body, as specified by the
-	 * {@code Content-Type} header.
-	 * <p>
-	 * Returns {@code null} when the content-type is unknown.
-	 */
-	public MediaType getContentType() {
-		String value = getFirst(CONTENT_TYPE);
-		return (StringUtils.isEmpty(value) ? null : MediaType.parseMediaType(value));
 	}
 
 	/**
@@ -1245,59 +1135,6 @@ public class HttpHeaders extends Headers {
 			}
 		}
 		return builder.toString();
-	}
-
-	// MultiValueMap implementation
-
-	/**
-	 * Return the first header value for the given header name, if any.
-	 * 
-	 * @param headerName the header name
-	 * @return the first header value, or {@code null} if none
-	 */
-	public String getFirst(String headerName) {
-		List<String> headerValues = get(headerName);
-		if (CollectionUtils.isEmpty(headerValues)) {
-			return null;
-		}
-		return headerValues.get(0);
-	}
-
-	/**
-	 * Add the given, single header value under the given name.
-	 * 
-	 * @param headerName  the header name
-	 * @param headerValue the header value
-	 * @throws UnsupportedOperationException if adding headers is not supported
-	 */
-	public void add(String headerName, String headerValue) {
-		List<String> headerValues = get(headerName);
-		if (headerValues == null) {
-			headerValues = new LinkedList<String>();
-			put(headerName, headerValues);
-		}
-		headerValues.add(headerValue);
-	}
-
-	/**
-	 * Set the given, single header value under the given name.
-	 * 
-	 * @param headerName  the header name
-	 * @param headerValue the header value
-	 * @throws UnsupportedOperationException if adding headers is not supported
-	 */
-	public void set(String headerName, String headerValue) {
-		List<String> headerValues = new LinkedList<String>();
-		headerValues.add(headerValue);
-		put(headerName, headerValues);
-	}
-
-	public Map<String, String> toSingleValueMap() {
-		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(size());
-		for (Entry<String, List<String>> entry : entrySet()) {
-			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
-		}
-		return singleValueMap;
 	}
 
 	public boolean isFormContentType() {

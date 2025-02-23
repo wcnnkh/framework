@@ -20,7 +20,7 @@ import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.beans.factory.ioc.AutowireBeanPostProcessor;
 import io.basc.framework.beans.factory.ioc.DependencyInjection;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptorTemplate;
 import io.basc.framework.core.execution.Parameters;
@@ -75,7 +75,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	@Override
-	public Value getProperty(PropertyDescriptor propertyDescriptor) {
+	public Source getProperty(PropertyDescriptor propertyDescriptor) {
 		return dependencyInjection.resolveProperty(this, propertyDescriptor);
 	}
 

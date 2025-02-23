@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.net.Entity;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.MultiValueMap;
 import lombok.NonNull;

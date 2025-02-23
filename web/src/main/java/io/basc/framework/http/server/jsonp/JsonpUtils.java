@@ -4,8 +4,7 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.function.Wrapped;
+import io.basc.framework.util.function.Wrapper;
 
 public final class JsonpUtils {
 	private JsonpUtils() {
@@ -16,7 +15,7 @@ public final class JsonpUtils {
 	public static final String JSONP_CALLBACK = "callback";
 	private static final String JSONP_CALLBACK_VALID = "^[a-zA-Z_]+[\\w0-9_]*$";
 
-	public static ServerHttpResponse wrapper(ServerHttpRequest request, ServerHttpResponse response) {
+	public static ServerHttpResponse wrap(ServerHttpRequest request, ServerHttpResponse response) {
 		if (request.getMethod() != HttpMethod.GET) {
 			return response;
 		}
@@ -25,13 +24,9 @@ public final class JsonpUtils {
 		if (StringUtils.isEmpty(jsonp) || !validCallbackName(jsonp)) {
 			return response;
 		}
-		
-		JsonpServerHttpResponse<?> jsonpServerHttpResponse = XUtils.getDelegate(request, JsonpServerHttpResponse.class);
-		if (jsonpServerHttpResponse != null) {
-			return response;
-		}
 
-		return new JsonpServerHttpResponse(jsonp, response);
+		return Wrapper.isWrapperFor(response, JsonpServerHttpResponse.class) ? response
+				: new JsonpServerHttpResponse<>(response, jsonp);
 	}
 
 	public static boolean validCallbackName(String name) {

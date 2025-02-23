@@ -11,126 +11,94 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.dom.writer.ArrayWriter;
 import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.function.Consumer;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.io.load.ResourceLoader;
+import io.basc.framework.util.spi.Configurable;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
+import lombok.Getter;
+import lombok.NonNull;
 
+@Getter
 public class DocumentTemplate implements Configurable, DocumentParser, DocumentWriter, DocumentTransformer {
-	protected final ConfigurableServices<DocumentTransformer> transformers = new ConfigurableServices<DocumentTransformer>(
-			DocumentTransformer.class);
-	protected final ConfigurableServices<DocumentWriter> writers = new ConfigurableServices<DocumentWriter>(
-			DocumentWriter.class);
-	protected final ConfigurableServices<DocumentParser> parsers = new ConfigurableServices<>(DocumentParser.class);
+	protected final DocumentParserRegistry parserRegistry = new DocumentParserRegistry();
+	protected final DocumentTransformerRegistry transformerRegistry = new DocumentTransformerRegistry();
+	protected final DocumentWriterRegistry writerRegistry = new DocumentWriterRegistry();
 
 	public DocumentTemplate() {
-		writers.register(new MapWriter(this));
-		writers.register(new CollectionWriter(this));
-		writers.register(new ArrayWriter(this));
-	}
-
-	private boolean configured;
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		transformers.configure(serviceLoaderFactory);
-		writers.configure(serviceLoaderFactory);
-		parsers.configure(serviceLoaderFactory);
-		configured = true;
-	}
-
-	public ConfigurableServices<DocumentTransformer> getTransformers() {
-		return transformers;
-	}
-
-	public ConfigurableServices<DocumentWriter> getWriters() {
-		return writers;
-	}
-
-	public ConfigurableServices<DocumentParser> getParsers() {
-		return parsers;
-	}
-
-	@Override
-	public boolean canWrite(TypeDescriptor sourceTypeDescriptor) {
-		for (DocumentWriter writer : getWriters().getServices()) {
-			if (writer.canWrite(sourceTypeDescriptor)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void write(Document document, Node parentNode, String nodeName, Object source,
-			TypeDescriptor sourceTypeDescriptor) {
-		for (DocumentWriter writer : getWriters().getServices()) {
-			if (writer.canWrite(sourceTypeDescriptor)) {
-				writer.write(document, parentNode, nodeName, source, sourceTypeDescriptor);
-				return;
-			}
-		}
-		Element element = document.createElement(nodeName);
-		element.setTextContent(String.valueOf(source));
-		parentNode.appendChild(element);
+		writerRegistry.register(new MapWriter(this));
+		writerRegistry.register(new CollectionWriter(this));
+		writerRegistry.register(new ArrayWriter(this));
 	}
 
 	@Override
 	public boolean canParse(Resource resource) {
-		if (resource == null || !resource.exists()) {
-			return false;
-		}
-
-		for (DocumentParser parser : getParsers().getServices()) {
-			if (parser.canParse(resource)) {
-				return true;
-			}
-		}
-		return false;
+		return parserRegistry.canParse(resource);
 	}
 
 	@Override
-	public <T, E extends Throwable> T parse(Resource resource,
-			Function<? super Document, ? extends T, ? extends E> processor) throws DomException {
-		if (resource == null || !resource.exists()) {
-			return null;
-		}
+	public boolean canTransform(Document document) {
+		return transformerRegistry.canTransform(document);
+	}
 
-		for (DocumentParser parser : getParsers().getServices()) {
-			if (parser.canParse(resource)) {
-				try {
-					return parser.parse(resource, processor);
-				} catch (Throwable e) {
-					if (e instanceof DomException) {
-						throw (DomException) e;
-					}
-					throw new DomException(resource.getDescription(), e);
+	@Override
+	public boolean canWrite(TypeDescriptor sourceTypeDescriptor) {
+		return writerRegistry.canWrite(sourceTypeDescriptor);
+	}
+
+	private ArrayNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList,
+			HashSet<String> includeHashSet) throws DomException, IOException, RuntimeException {
+		ArrayNodeList list = new ArrayNodeList();
+		if (nodeList != null) {
+			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
+				Node n = nodeList.item(i);
+				if (n == null) {
+					continue;
+				}
+
+				if (n.getNodeName().equalsIgnoreCase("include")) {
+					ArrayNodeList n2 = getIncludeNodeList(resourceLoader, includeHashSet, n);
+					list.addAll(converIncludeNodeList(resourceLoader, n2, includeHashSet));
+				} else {
+					list.add(n);
 				}
 			}
 		}
-		throw new UnsupportedException(resource.getDescription());
+		return list;
 	}
 
-	public <E extends Throwable> void read(Resource resource, Consumer<Document, E> processor)
-			throws DomException {
-		parse(resource, (document) -> {
-			processor.process(document);
-			return null;
-		});
+	@Override
+	public Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery) {
+		transformerRegistry.doConfigure(discovery);
+		writerRegistry.doConfigure(discovery);
+		parserRegistry.doConfigure(discovery);
+		return Receipt.SUCCESS;
+	}
+
+	public NodeList getChildNodes(Node node, ResourceLoader resourceLoader)
+			throws DomException, IOException, RuntimeException {
+		if (node == null) {
+			return EmptyNodeList.EMPTY;
+		}
+
+		NodeList nodeList = resourceLoader != null
+				? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>())
+				: node.getChildNodes();
+		if (nodeList == null) {
+			return EmptyNodeList.EMPTY;
+		}
+		return nodeList;
 	}
 
 	private ArrayNodeList getIncludeNodeList(ResourceLoader resourceLoader, HashSet<String> includeHashSet,
-			Node includeNode) {
+			Node includeNode) throws DomException, IOException, RuntimeException {
 		String resourceName = DomUtils.getNodeAttributeValueOrNodeContent(includeNode, "resource");
 		if (StringUtils.isEmpty(resourceName)) {
 			return new ArrayNodeList();
@@ -163,90 +131,43 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		});
 	}
 
-	private ArrayNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList,
-			HashSet<String> includeHashSet) {
-		ArrayNodeList list = new ArrayNodeList();
-		if (nodeList != null) {
-			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
-				Node n = nodeList.item(i);
-				if (n == null) {
-					continue;
-				}
-
-				if (n.getNodeName().equalsIgnoreCase("include")) {
-					ArrayNodeList n2 = getIncludeNodeList(resourceLoader, includeHashSet, n);
-					list.addAll(converIncludeNodeList(resourceLoader, n2, includeHashSet));
-				} else {
-					list.add(n);
-				}
-			}
-		}
-		return list;
+	@Override
+	public <T, E extends Throwable> T parse(Resource resource,
+			Function<? super Document, ? extends T, ? extends E> processor) throws DomException, IOException, E {
+		return parserRegistry.parse(resource, processor);
 	}
 
-	public NodeList getChildNodes(Node node, @Nullable ResourceLoader resourceLoader) {
-		if (node == null) {
-			return EmptyNodeList.EMPTY;
-		}
-
-		NodeList nodeList = resourceLoader != null
-				? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>())
-				: node.getChildNodes();
-		if (nodeList == null) {
-			return EmptyNodeList.EMPTY;
-		}
-		return nodeList;
+	public <E extends Throwable> void read(Resource resource, Consumer<? super Document, ? extends E> processor)
+			throws DomException, IOException, E {
+		parse(resource, (document) -> {
+			processor.accept(document);
+			return null;
+		});
 	}
 
 	@Override
-	public boolean canTransform(Document document) {
-		for (DocumentTransformer transformer : getTransformers().getServices()) {
-			if (transformer.canTransform(document)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public String toString(Document document) throws DomException {
+	public String toString(Document document) throws DomException, IOException {
 		StringWriter writer = new StringWriter();
 		transform(document, writer);
 		return writer.toString();
 	}
 
 	@Override
-	public void transform(Document document, OutputStream output) throws DomException {
-		for (DocumentTransformer transformer : getTransformers().getServices()) {
-			if (transformer.canTransform(document)) {
-				try {
-					transformer.transform(document, output);
-				} catch (IOException e) {
-					throw new DomException(e);
-				}
-				return;
-			}
-		}
-		throw new UnsupportedException(document.toString());
+	public void transform(Document document, OutputStream output) throws DomException, IOException {
+		transformerRegistry.transform(document, output);
 	}
 
 	@Override
-	public void transform(Document document, Writer writer) throws DomException {
-		for (DocumentTransformer transformer : getTransformers().getServices()) {
-			if (transformer.canTransform(document)) {
-				try {
-					transformer.transform(document, writer);
-				} catch (IOException e) {
-					throw new DomException(e);
-				}
-				return;
-			}
-		}
-		throw new UnsupportedException(document.toString());
+	public void transform(Document document, Writer writer) throws DomException, IOException {
+		transformerRegistry.transform(document, writer);
 	}
 
 	@Override
-	public boolean isConfigured() {
-		return configured;
+	public void write(Document document, Node parentNode, String nodeName, Object source,
+			TypeDescriptor sourceTypeDescriptor) {
+		writerRegistry.write(document, parentNode, nodeName, source, sourceTypeDescriptor);
+		Element element = document.createElement(nodeName);
+		element.setTextContent(String.valueOf(source));
+		parentNode.appendChild(element);
 	}
 }

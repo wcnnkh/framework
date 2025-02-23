@@ -1,8 +1,6 @@
 package io.basc.framework.net.server.convert;
 
-import io.basc.framework.net.convert.MessageWriter;
-import io.basc.framework.net.convert.RequestReader;
+import io.basc.framework.net.convert.MessageConverter;
 
-public interface ServerMessageConverter extends MessageWriter, RequestReader {
-	
+public interface ServerMessageConverter extends MessageConverter {
 }

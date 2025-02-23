@@ -1,6 +1,6 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.util.attribute.SimpleAttributes;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +10,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class TemplateContext<K, V extends Value, T extends Template<K, ? extends V>>
+public class TemplateContext<K, V extends Source, T extends Template<K, ? extends V>>
 		extends SimpleAttributes<String, Object> {
 	private final T template;
 	private final K index;

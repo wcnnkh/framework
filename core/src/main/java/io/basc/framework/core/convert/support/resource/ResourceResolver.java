@@ -1,5 +1,7 @@
 package io.basc.framework.core.convert.support.resource;
 
+import java.io.IOException;
+
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.io.Resource;
 
@@ -8,5 +10,5 @@ public interface ResourceResolver {
 
 	boolean canResolveResource(Resource resource, TypeDescriptor targetType);
 
-	Object resolveResource(Resource resource, TypeDescriptor targetType);
+	Object resolveResource(Resource resource, TypeDescriptor targetType) throws IOException;
 }

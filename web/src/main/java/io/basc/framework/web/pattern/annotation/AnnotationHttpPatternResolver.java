@@ -10,7 +10,7 @@ import java.util.List;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.net.MimeTypes;
+import io.basc.framework.net.MediaTypes;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.ArrayUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
@@ -35,8 +35,8 @@ public class AnnotationHttpPatternResolver extends AbstractHttpPatternResolver {
 			return Collections.emptyList();
 		}
 
-		MimeTypes consumes = new MimeTypes(requestMapping.consumes());
-		MimeTypes produces = new MimeTypes(requestMapping.produces());
+		MediaTypes consumes = new MediaTypes(requestMapping.consumes());
+		MediaTypes produces = new MediaTypes(requestMapping.produces());
 		String path = StringUtils.cleanPath(requestMapping.value());
 		HttpMethod[] methods = requestMapping.methods();
 		if (ArrayUtils.isEmpty(methods)) {

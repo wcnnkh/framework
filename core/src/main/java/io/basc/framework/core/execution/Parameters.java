@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.util.collections.Elements;
 import lombok.Data;
@@ -61,7 +61,7 @@ public interface Parameters
 	public static Parameters forArgs(@NonNull Object... args) {
 		Parameter[] parameters = new Parameter[args.length];
 		for (int i = 0; i < parameters.length; i++) {
-			parameters[i] = Parameter.of(i, null, Value.of(args[i]));
+			parameters[i] = Parameter.of(i, null, Source.of(args[i]));
 		}
 		return completed(parameters);
 	}

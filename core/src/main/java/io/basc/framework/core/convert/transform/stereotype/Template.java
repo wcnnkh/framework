@@ -1,6 +1,6 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Wrapper;
 import lombok.NonNull;
@@ -12,8 +12,8 @@ import lombok.NonNull;
  *
  * @param <T>
  */
-public interface Template<K, V extends Value> {
-	public static interface TemplateWrapper<K, V extends Value, W extends Template<K, V>>
+public interface Template<K, V extends Source> {
+	public static interface TemplateWrapper<K, V extends Source, W extends Template<K, V>>
 			extends Template<K, V>, Wrapper<W> {
 		@Override
 		default Elements<K> getAccessorIndexes() {

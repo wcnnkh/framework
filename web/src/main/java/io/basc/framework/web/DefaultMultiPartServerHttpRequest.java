@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.http.MediaType;
+import io.basc.framework.http.MultiPartServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpRequestWrapper;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.net.multipart.MultipartMessageResolver;
 import io.basc.framework.util.logging.Logger;

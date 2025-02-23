@@ -35,7 +35,7 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 			return this;
 		}
 
-		public <R, X extends Throwable> R flatMap(
+		public <R, X extends Throwable> R apply(
 				io.basc.framework.util.function.Function<? super T, ? extends R, ? extends X> mapper) throws E, X {
 			try {
 				T value = super.get();
@@ -109,7 +109,7 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 	}
 
 	public static class MappedPipeline<S, T, E extends Throwable, W extends Pipeline<S, E>>
-			extends MappedSource<S, T, E, W> implements Pipeline<T, E> {
+			extends MappedSupplier<S, T, E, W> implements Pipeline<T, E> {
 
 		public MappedPipeline(@NonNull W source, @NonNull Function<? super S, ? extends T, ? extends E> mapper) {
 			super(source, mapper);

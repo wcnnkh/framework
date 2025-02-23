@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.util.collections.CollectionUtils;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class RecursiveConversionService implements ConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();

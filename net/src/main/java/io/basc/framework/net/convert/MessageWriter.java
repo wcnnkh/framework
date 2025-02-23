@@ -2,14 +2,16 @@ package io.basc.framework.net.convert;
 
 import java.io.IOException;
 
-import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.core.convert.Source;
+import io.basc.framework.core.convert.SourceDescriptor;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.net.Request;
+import io.basc.framework.util.io.MimeType;
 import lombok.NonNull;
 
 public interface MessageWriter {
-	boolean isWriteable(@NonNull TypeDescriptor typeDescriptor, MimeType contentType);
+	boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, MimeType contentType);
 
-	void writeTo(@NonNull Value source, MimeType contentType, @NonNull OutputMessage target) throws IOException;
+	void writeTo(@NonNull Source source, @NonNull Request request, @NonNull OutputMessage outputMessage)
+			throws IOException;
 }

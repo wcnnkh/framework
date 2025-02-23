@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.env.Environment;
 import io.basc.framework.core.env.EnvironmentAware;
 import io.basc.framework.lang.Nullable;
@@ -101,7 +101,7 @@ public abstract class AbstractLoadBalancer<T extends Node> implements LoadBalanc
 		 */
 		long time = 1;
 		if (environment != null) {
-			Value period = environment.get("basc.loadbalancer.refresh.period");
+			Source period = environment.get("basc.loadbalancer.refresh.period");
 			if (period.isPresent() && period.getAsLong() == 0) {
 				// 不启动
 				return false;

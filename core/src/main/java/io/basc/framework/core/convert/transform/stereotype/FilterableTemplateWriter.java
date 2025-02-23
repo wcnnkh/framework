@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class FilterableTemplateWriter<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
+public class FilterableTemplateWriter<K, SV extends Source, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends SimpleTemplateWriter<K, SV, S, TV, T, E> {
 	@NonNull
 	private final Iterable<? extends TemplateWriteFilter<K, SV, S, TV, T, E>> templateWriteFilters;

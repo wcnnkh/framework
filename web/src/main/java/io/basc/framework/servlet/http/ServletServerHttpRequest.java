@@ -16,67 +16,58 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.http.InvalidMediaTypeException;
-import io.basc.framework.http.MediaType;
 import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.net.InvalidMediaTypeException;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.servlet.ServletServerRequest;
-import io.basc.framework.util.Decorator;
+import io.basc.framework.servlet.AbstractServletServerRequestWrepper;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.collections.MultiValueMap;
-import io.basc.framework.web.Session;
 
-public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRequest>
-		implements ServerHttpRequest, Decorator {
+public class ServletServerHttpRequest<W extends HttpServletRequest> extends AbstractServletServerRequestWrepper<W>
+		implements ServerHttpRequest {
 	private HttpHeaders headers;
 	private MultiValueMap<String, String> parameterMap;
-	private MultiValueMap<String, String> restfulParameterMap;
 
-	public ServletServerHttpRequest(HttpServletRequest httpServletRequest) {
+	public ServletServerHttpRequest(W httpServletRequest) {
 		super(httpServletRequest);
 	}
 
 	public String getPath() {
-		return wrappedTarget.getServletPath();
+		return source.getServletPath();
 	}
 
-	public HttpCookie[] getCookies() {
-		javax.servlet.http.Cookie[] cookies = wrappedTarget.getCookies();
+	public Elements<HttpCookie> getCookies() {
+		javax.servlet.http.Cookie[] cookies = source.getCookies();
 		if (cookies == null) {
-			return new HttpCookie[0];
+			return Elements.empty();
 		}
-
-		HttpCookie[] values = new HttpCookie[cookies.length];
-		for (int i = 0; i < cookies.length; i++) {
-			values[i] = ServletCookieCodec.INSTANCE.encode(cookies[i]);
-		}
-		return values;
+		return Elements.forArray(cookies).map((e) -> ServletCookieCodec.INSTANCE.encode(e));
 	}
 
-	public HttpSession getSession() {
-		HttpSession session = wrappedTarget.getSession();
+	public io.basc.framework.http.HttpSession getSession() {
+		HttpSession session = source.getSession();
 		return session == null ? null : new ServletHttpSession(session);
 	}
 
-	public HttpSession getSession(boolean create) {
-		HttpSession httpSession = wrappedTarget.getSession(create);
+	public io.basc.framework.http.HttpSession getSession(boolean create) {
+		HttpSession httpSession = source.getSession(create);
 		return httpSession == null ? null : new ServletHttpSession(httpSession);
 	}
 
 	public Principal getPrincipal() {
-		return wrappedTarget.getUserPrincipal();
+		return source.getUserPrincipal();
 	}
 
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
-			for (Enumeration<?> names = wrappedTarget.getHeaderNames(); names.hasMoreElements();) {
+			for (Enumeration<?> names = source.getHeaderNames(); names.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
-				for (Enumeration<?> headerValues = wrappedTarget.getHeaders(headerName); headerValues
-						.hasMoreElements();) {
+				for (Enumeration<?> headerValues = source.getHeaders(headerName); headerValues.hasMoreElements();) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
 				}
@@ -87,13 +78,13 @@ public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRe
 			try {
 				MediaType contentType = this.headers.getContentType();
 				if (contentType == null) {
-					String requestContentType = wrappedTarget.getContentType();
+					String requestContentType = source.getContentType();
 					if (StringUtils.isNotEmpty(requestContentType)) {
 						this.headers.set(HttpHeaders.CONTENT_TYPE, requestContentType);
 					}
 				}
 				if (contentType != null && contentType.getCharset() == null) {
-					String requestEncoding = getCharacterEncoding();
+					String requestEncoding = getCharsetName();
 					if (StringUtils.isNotEmpty(requestEncoding)) {
 						Charset charSet = Charset.forName(requestEncoding);
 						Map<String, String> params = new LinkedCaseInsensitiveMap<String>();
@@ -109,7 +100,7 @@ public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRe
 			}
 
 			if (this.headers.getContentLength() < 0) {
-				int requestContentLength = wrappedTarget.getContentLength();
+				int requestContentLength = source.getContentLength();
 				if (requestContentLength != -1) {
 					this.headers.setContentLength(requestContentLength);
 				}
@@ -118,12 +109,8 @@ public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRe
 		return this.headers;
 	}
 
-	public HttpMethod getMethod() {
-		return HttpMethod.resolve(getRawMethod());
-	}
-
 	public URI getURI() {
-		return UriUtils.toUri(wrappedTarget.getRequestURI());
+		return UriUtils.toUri(source.getRequestURI());
 	}
 
 	private void initParameterMap() {
@@ -131,7 +118,7 @@ public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRe
 			return;
 		}
 
-		Map<String, String[]> map = wrappedTarget.getParameterMap();
+		Map<String, String[]> map = source.getParameterMap();
 		if (map.isEmpty()) {
 			this.parameterMap = CollectionUtils.emptyMultiValueMap();
 			return;
@@ -156,44 +143,32 @@ public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRe
 	}
 
 	@Override
-	public String getCharacterEncoding() {
-		String charsetName = ServerHttpRequest.super.getCharacterEncoding();
-		return charsetName == null ? wrappedTarget.getCharacterEncoding() : charsetName;
+	public String getCharsetName() {
+		String charsetName = super.getCharsetName();
+		return charsetName == null ? source.getCharacterEncoding() : charsetName;
 	}
 
 	public String getRawMethod() {
-		return wrappedTarget.getMethod();
+		return source.getMethod();
 	}
 
 	public String getContextPath() {
-		return wrappedTarget.getContextPath();
+		return source.getContextPath();
 	}
 
 	public String getIp() {
 		String ip = getHeaders().getIp();
-		return ip == null ? wrappedTarget.getRemoteHost() : ip;
-	}
-
-	public MultiValueMap<String, String> getRestfulParameterMap() {
-		if (restfulParameterMap == null) {
-			return CollectionUtils.emptyMultiValueMap();
-		}
-
-		return restfulParameterMap;
-	}
-
-	public void setRestfulParameterMap(MultiValueMap<String, String> restfulParameterMap) {
-		this.restfulParameterMap = CollectionUtils.unmodifiableMultiValueMap(restfulParameterMap);
+		return ip == null ? source.getRemoteHost() : ip;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(wrappedTarget.getMethod());
-		sb.append(" " + wrappedTarget.getServletPath());
-		sb.append(" " + wrappedTarget.getProtocol());
+		sb.append(source.getMethod());
+		sb.append(" " + source.getServletPath());
+		sb.append(" " + source.getProtocol());
 
-		String contentType = wrappedTarget.getContentType();
+		String contentType = source.getContentType();
 		if (StringUtils.isNotEmpty(contentType)) {
 			sb.append(" " + contentType);
 		}
@@ -201,10 +176,6 @@ public class ServletServerHttpRequest extends ServletServerRequest<HttpServletRe
 		MultiValueMap<String, String> parameters = getParameterMap();
 		if (!CollectionUtils.isEmpty(parameters)) {
 			sb.append(" parameters->").append(parameters);
-		}
-
-		if (!CollectionUtils.isEmpty(restfulParameterMap)) {
-			sb.append(" restful->").append(restfulParameterMap);
 		}
 		return sb.toString();
 	}

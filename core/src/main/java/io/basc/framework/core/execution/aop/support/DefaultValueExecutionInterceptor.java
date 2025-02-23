@@ -1,7 +1,7 @@
 package io.basc.framework.core.execution.aop.support;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
 import io.basc.framework.core.execution.Executor;
@@ -40,7 +40,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 				});
 		Object returnValue = function.execute(newArgs);
 		if (returnValue == null) {
-			Value defaultValue = getDefaultReturnValue(function);
+			Source defaultValue = getDefaultReturnValue(function);
 			if (defaultValue != null) {
 				returnValue = conversionService.convert(defaultValue, function.getReturnTypeDescriptor());
 			}
@@ -48,13 +48,13 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 		return returnValue;
 	}
 
-	protected Value getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
+	protected Source getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
 		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
 	}
 
-	protected Value getDefaultReturnValue(Function function) {
+	protected Source getDefaultReturnValue(Function function) {
 		return getDefaultValue(function, function.getReturnTypeDescriptor());
 	}
 
-	protected abstract Value getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
+	protected abstract Source getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
 }

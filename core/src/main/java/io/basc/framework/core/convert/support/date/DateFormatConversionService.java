@@ -7,7 +7,7 @@ import java.util.Set;
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.core.convert.support.AbstractConversionService;
@@ -47,7 +47,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;
@@ -86,7 +86,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return Value.of(source).getAsObject(targetType);
+				return Source.of(source).getAsObject(targetType);
 			}
 		}
 
@@ -139,11 +139,11 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return Value.of(source.getTime()).getAsObject(targetType);
+		return Source.of(source.getTime()).getAsObject(targetType);
 	}
 
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		long time = Value.of(source).getAsLong();
+		long time = Source.of(source).getAsLong();
 		return new Date(time);
 	}
 

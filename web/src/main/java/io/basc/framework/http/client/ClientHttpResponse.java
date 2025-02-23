@@ -7,6 +7,29 @@ import io.basc.framework.http.HttpStatus;
 import io.basc.framework.net.client.ClientResponse;
 
 public interface ClientHttpResponse extends HttpInputMessage, ClientResponse {
+	public static interface ClientHttpResponseWrapper<W extends ClientHttpResponse>
+			extends ClientHttpResponse, HttpInputMessageWrapper<W>, ClientResponseWrapper<W> {
+		@Override
+		default HttpStatus getStatusCode() throws IOException {
+			return getSource().getStatusCode();
+		}
+
+		@Override
+		default int getRawStatusCode() throws IOException {
+			return getSource().getRawStatusCode();
+		}
+
+		@Override
+		default String getStatusText() throws IOException {
+			return getSource().getStatusText();
+		}
+
+		@Override
+		default void close() {
+			getSource().close();
+		}
+	}
+
 	/**
 	 * Return the HTTP status code of the response.
 	 * 

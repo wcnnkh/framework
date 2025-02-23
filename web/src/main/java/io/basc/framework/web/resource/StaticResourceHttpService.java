@@ -6,7 +6,7 @@ import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.util.io.MimeType;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.WebUtils;

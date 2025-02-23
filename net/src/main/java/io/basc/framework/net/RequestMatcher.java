@@ -41,15 +41,15 @@ public class RequestMatcher implements RequestPattern {
 	}
 
 	@Override
-	public MimeTypes getConsumes() {
-		Elements<MimeType> elements = include.filter((e) -> !exclude.contains(e)).flatMap((e) -> e.getConsumes());
-		return MimeTypes.forElements(elements);
+	public MediaTypes getConsumes() {
+		Elements<MediaType> elements = include.filter((e) -> !exclude.contains(e)).flatMap((e) -> e.getConsumes());
+		return MediaTypes.forElements(elements);
 	}
 
 	@Override
-	public MimeTypes getProduces() {
-		Elements<MimeType> elements = include.filter((e) -> !exclude.contains(e)).flatMap((e) -> e.getProduces());
-		return MimeTypes.forElements(elements);
+	public MediaTypes getProduces() {
+		Elements<MediaType> elements = include.filter((e) -> !exclude.contains(e)).flatMap((e) -> e.getProduces());
+		return MediaTypes.forElements(elements);
 	}
 
 }

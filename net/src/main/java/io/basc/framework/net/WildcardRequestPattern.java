@@ -3,8 +3,8 @@ package io.basc.framework.net;
 import io.basc.framework.core.convert.transform.stereotype.Properties;
 
 public class WildcardRequestPattern implements RequestPattern {
-	private final MimeTypeRegistry consumes = new MimeTypeRegistry();
-	private final MimeTypeRegistry produces = new MimeTypeRegistry();
+	private final MediaTypeRegistry consumes = new MediaTypeRegistry();
+	private final MediaTypeRegistry produces = new MediaTypeRegistry();
 
 	@Override
 	public Properties apply(Request request) {
@@ -12,12 +12,12 @@ public class WildcardRequestPattern implements RequestPattern {
 	}
 
 	@Override
-	public MimeTypeRegistry getConsumes() {
+	public MediaTypeRegistry getConsumes() {
 		return consumes;
 	}
 
 	@Override
-	public MimeTypeRegistry getProduces() {
+	public MediaTypeRegistry getProduces() {
 		return produces;
 	}
 

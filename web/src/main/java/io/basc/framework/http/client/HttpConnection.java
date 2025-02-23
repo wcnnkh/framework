@@ -8,8 +8,8 @@ import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.HeadersBuilder;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.http.HttpResponseEntity;
-import io.basc.framework.http.MediaType;
 
 public interface HttpConnection
 		extends HttpClientConfigurable<HttpConnection>, HttpRequest, HeadersBuilder<HttpConnection> {

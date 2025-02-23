@@ -1,6 +1,6 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.util.spi.ConfigurableServices;
 
 public class PropertyPropertyFactories extends ConfigurableServices<PropertyFactory> implements PropertyFactory {
@@ -15,7 +15,7 @@ public class PropertyPropertyFactories extends ConfigurableServices<PropertyFact
 	}
 
 	@Override
-	public Value getProperty(PropertyDescriptor propertyDescriptor) {
+	public Source getProperty(PropertyDescriptor propertyDescriptor) {
 		for (PropertyFactory resolver : this) {
 			if (resolver.hasProperty(propertyDescriptor)) {
 				return resolver.getProperty(propertyDescriptor);

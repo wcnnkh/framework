@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import io.basc.framework.net.Headers;
 import io.basc.framework.net.InputMessage;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.net.MediaType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,7 +25,7 @@ public class InputMessageToMultipartMessage implements MultipartMessage {
 	}
 
 	@Override
-	public MimeType getContentType() {
+	public MediaType getContentType() {
 		return inputMessage.getContentType();
 	}
 

@@ -1,5 +1,6 @@
 package io.basc.framework.net.client.rpc;
 
+import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.Parameters;
@@ -29,7 +30,7 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 		Parameters parameters = Parameters.forTemplate(function, args);
 		ClientRequest request = requestFactory.createRequest(function, parameters);
 		for (Parameter parameter : parameters.getElements()) {
-			if (!messageConverter.isWriteable(parameter, request)) {
+			if (!messageConverter.isWriteable(parameter, request.getContentType())) {
 				// TODO ignore log
 				continue;
 			}
@@ -38,7 +39,7 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 
 		ClientResponse response = request.execute();
 		try {
-			return messageConverter.readFrom(function.getReturnTypeDescriptor(), response);
+			return messageConverter.readFrom(AccessDescriptor.of(function.getReturnTypeDescriptor()), response);
 		} finally {
 			response.close();
 		}

@@ -4,15 +4,15 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import io.basc.framework.net.MimeTypeUtils;
-import io.basc.framework.net.MimeTypes;
+import io.basc.framework.net.MediaTypes;
+import io.basc.framework.util.io.MimeTypeUtils;
 
 public class MimeTypesTest {
 	@Test
 	public void test() {
-		MimeTypes mimeTypes = new MimeTypes();
+		MediaTypes mimeTypes = new MediaTypes();
 		mimeTypes.add(MimeTypeUtils.APPLICATION_JSON);
-		MimeTypes mimeTypes2 = new MimeTypes();
+		MediaTypes mimeTypes2 = new MediaTypes();
 		mimeTypes2.add(MimeTypeUtils.TEXT_JSON);
 		assertFalse(mimeTypes.equals(mimeTypes2));
 	}

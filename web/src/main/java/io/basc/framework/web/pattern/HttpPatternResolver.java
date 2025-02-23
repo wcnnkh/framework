@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.net.MimeTypes;
+import io.basc.framework.net.MediaTypes;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 
@@ -46,11 +46,11 @@ public interface HttpPatternResolver {
 					httpMethod = HttpMethod.GET.name();
 				}
 
-				MimeTypes consumes = new MimeTypes();
+				MediaTypes consumes = new MediaTypes();
 				consumes.addAll(clazzPattern.getConsumes());
 				consumes.addAll(methodPattern.getConsumes());
 
-				MimeTypes produces = new MimeTypes();
+				MediaTypes produces = new MediaTypes();
 				produces.addAll(clazzPattern.getProduces());
 				produces.addAll(methodPattern.getProduces());
 				HttpPattern httpPattern = new HttpPattern(path, httpMethod, consumes.isEmpty() ? null : consumes,

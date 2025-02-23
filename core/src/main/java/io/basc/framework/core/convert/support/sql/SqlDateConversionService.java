@@ -9,7 +9,7 @@ import java.util.Set;
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.core.convert.support.AbstractConversionService;
@@ -26,7 +26,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 	}
 
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source instanceof Time) {
 			return sqlTimeToObject((Time) source, targetType.getType());

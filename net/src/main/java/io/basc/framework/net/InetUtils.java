@@ -65,9 +65,9 @@ public final class InetUtils {
 			outputMessage.setContentLength(len);
 		}
 
-		MimeType mimeType = inputMessage.getContentType();
-		if (mimeType != null) {
-			outputMessage.setContentType(mimeType);
+		MediaType mediaType = inputMessage.getContentType();
+		if (mediaType != null) {
+			outputMessage.setContentType(mediaType);
 		}
 
 		Headers headers = inputMessage.getHeaders();

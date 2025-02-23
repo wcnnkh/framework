@@ -1,7 +1,7 @@
 package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.core.convert.ValueDescriptor;
+import io.basc.framework.core.convert.SourceDescriptor;
 import io.basc.framework.util.function.Supplier;
 
 /**
@@ -11,7 +11,7 @@ import io.basc.framework.util.function.Supplier;
  *
  * @param <T>
  */
-public interface FactoryBean<T> extends Supplier<T, BeansException>, ValueDescriptor {
+public interface FactoryBean<T> extends Supplier<T, BeansException>, SourceDescriptor {
 
 	/**
 	 * 是否是单例

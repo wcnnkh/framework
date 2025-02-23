@@ -2,7 +2,6 @@ package io.basc.framework.transaction;
 
 import java.io.Serializable;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.ParentDiscover;
@@ -27,7 +26,7 @@ public final class Status implements Serializable, ParentDiscover<Status> {
 	private final int code;
 	private final String describe;
 
-	public Status(@Nullable Status parent, int code, String describe) {
+	public Status(Status parent, int code, String describe) {
 		Assert.requiredArgument(StringUtils.isNotEmpty(describe), "describe");
 		this.parent = parent;
 		this.code = code;

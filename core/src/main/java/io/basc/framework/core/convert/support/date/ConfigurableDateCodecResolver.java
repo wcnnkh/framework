@@ -2,7 +2,7 @@ package io.basc.framework.core.convert.support.date;
 
 import java.util.Date;
 
-import io.basc.framework.core.convert.ValueDescriptor;
+import io.basc.framework.core.convert.SourceDescriptor;
 import io.basc.framework.util.codec.Codec;
 import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.NonNull;
@@ -28,7 +28,7 @@ public class ConfigurableDateCodecResolver extends ConfigurableServices<DateCode
 	}
 
 	@Override
-	public Codec<Date, String> resolveDateCodec(@NonNull ValueDescriptor valueDescriptor) {
+	public Codec<Date, String> resolveDateCodec(@NonNull SourceDescriptor valueDescriptor) {
 		for (DateCodecResolver resolver : this) {
 			Codec<Date, String> codec = resolver.resolveDateCodec(valueDescriptor);
 			if (codec != null) {

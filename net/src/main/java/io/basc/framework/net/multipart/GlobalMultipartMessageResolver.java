@@ -1,7 +1,5 @@
 package io.basc.framework.net.multipart;
 
-import io.basc.framework.beans.factory.spi.SPI;
-
 public class GlobalMultipartMessageResolver extends ConfigurableMultipartMessageResolver {
 	private static volatile GlobalMultipartMessageResolver instance;
 
@@ -10,7 +8,7 @@ public class GlobalMultipartMessageResolver extends ConfigurableMultipartMessage
 			synchronized (GlobalMultipartMessageResolver.class) {
 				if (instance == null) {
 					instance = new GlobalMultipartMessageResolver();
-					instance.configure(SPI.global());
+					instance.doNativeConfigure();
 				}
 			}
 		}

@@ -2,7 +2,7 @@ package io.basc.framework.core.convert.support.date;
 
 import java.time.ZoneOffset;
 
-import io.basc.framework.core.convert.ValueDescriptor;
+import io.basc.framework.core.convert.SourceDescriptor;
 import lombok.NonNull;
 
 /**
@@ -12,5 +12,5 @@ import lombok.NonNull;
  *
  */
 public interface ZoneOffsetResolver {
-	ZoneOffset resolveZoneOffset(@NonNull ValueDescriptor valueDescriptor);
+	ZoneOffset resolveZoneOffset(@NonNull SourceDescriptor valueDescriptor);
 }

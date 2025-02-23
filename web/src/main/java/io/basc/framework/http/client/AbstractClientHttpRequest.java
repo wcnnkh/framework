@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.MediaType;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.function.Pipeline;
-import lombok.NonNull;
 
 public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 	private final HttpHeaders headers = new HttpHeaders();
@@ -22,9 +20,9 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 	}
 
 	@Override
-	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
+	public OutputStream getOutputStream() throws IOException {
 		assertNotExecuted();
-		return Pipeline.of(() -> getBodyInternal(headers)).newPipeline();
+		return getBodyInternal(headers);
 	}
 
 	@Override

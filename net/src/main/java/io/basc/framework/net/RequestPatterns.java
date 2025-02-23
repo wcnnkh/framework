@@ -37,15 +37,15 @@ public class RequestPatterns extends CollectionContainer<RequestPattern, Set<Ele
 	}
 
 	@Override
-	public MimeTypes getConsumes() {
-		Elements<MimeType> elements = flatMap((e) -> e.getConsumes());
-		return MimeTypes.forElements(elements);
+	public MediaTypes getConsumes() {
+		Elements<MediaType> elements = flatMap((e) -> e.getConsumes());
+		return MediaTypes.forElements(elements);
 	}
 
 	@Override
-	public MimeTypes getProduces() {
-		Elements<MimeType> elements = flatMap((e) -> e.getProduces());
-		return MimeTypes.forElements(elements);
+	public MediaTypes getProduces() {
+		Elements<MediaType> elements = flatMap((e) -> e.getProduces());
+		return MediaTypes.forElements(elements);
 	}
 
 	public Registration register(String path) {

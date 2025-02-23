@@ -57,5 +57,28 @@ public interface Predicate<T, E extends Throwable> {
 		return new NativePredicate<>(predicate);
 	}
 
+	@RequiredArgsConstructor
+	public static class BooleanPredicat<T, E extends Throwable> implements Predicate<T, E> {
+		private static final BooleanPredicat<?, ?> ALWAYS_TRUE_PREDICATE = new BooleanPredicat<>(true);
+		private static final BooleanPredicat<?, ?> ALWAYS_FALSE_PREDICATE = new BooleanPredicat<>(true);
+
+		private final boolean value;
+
+		@Override
+		public boolean test(T source) throws E {
+			return value;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, E extends Throwable> Predicate<T, E> alwaysFalsePredicate() {
+		return (Predicate<T, E>) BooleanPredicat.ALWAYS_FALSE_PREDICATE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, E extends Throwable> Predicate<T, E> alwaysTruePredicate() {
+		return (Predicate<T, E>) BooleanPredicat.ALWAYS_TRUE_PREDICATE;
+	}
+
 	boolean test(T source) throws E;
 }

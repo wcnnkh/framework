@@ -10,7 +10,7 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.BodyBuilder;
 import io.basc.framework.http.HttpResponseEntity;
-import io.basc.framework.http.MediaType;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriUtils;
 
 /**

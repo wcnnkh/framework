@@ -7,11 +7,11 @@ import java.nio.charset.Charset;
 import io.basc.framework.core.Constants;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
 

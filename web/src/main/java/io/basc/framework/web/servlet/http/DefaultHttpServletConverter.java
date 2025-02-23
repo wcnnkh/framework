@@ -3,12 +3,12 @@ package io.basc.framework.web.servlet.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.basc.framework.http.MediaType;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.servlet.http.ServletMultiPartServerHttpRequest;
 import io.basc.framework.servlet.http.ServletServerHttpRequest;
-import io.basc.framework.servlet.http.ServletServerHttpResponse;
+import io.basc.framework.servlet.http.ServletServerHttpResponseWrapper;
 
 public class DefaultHttpServletConverter implements HttpServletConverter {
 
@@ -35,7 +35,7 @@ public class DefaultHttpServletConverter implements HttpServletConverter {
 
 	@Override
 	public ServerHttpResponse convert(HttpServletResponse httpServletResponse) {
-		return new ServletServerHttpResponse(httpServletResponse);
+		return new ServletServerHttpResponseWrapper(httpServletResponse);
 	}
 
 }

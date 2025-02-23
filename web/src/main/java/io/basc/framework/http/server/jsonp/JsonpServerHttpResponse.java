@@ -2,16 +2,13 @@ package io.basc.framework.http.server.jsonp;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
-import io.basc.framework.http.MediaType;
 import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.http.server.ServerHttpResponse.ServerHttpResponseWrapper;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Pipeline;
 import io.basc.framework.util.function.Wrapped;
-import lombok.NonNull;
 
 /**
  * 使用结束后必须要调用close方法
@@ -25,26 +22,16 @@ public class JsonpServerHttpResponse<W extends ServerHttpResponse> extends Wrapp
 	private boolean writeJsonp = false;
 	private boolean close = false;
 
-	public JsonpServerHttpResponse(String jsonp, W targetResponse) {
+	public JsonpServerHttpResponse(W targetResponse, String jsonp) {
 		super(targetResponse);
 		Assert.requiredArgument(StringUtils.isNotEmpty(jsonp), "jsonp");
 		this.jsonp = jsonp;
 	}
 
 	@Override
-	public @NonNull Pipeline<OutputStream, IOException> getOutputStream() {
-		return ServerHttpResponseWrapper.super.getOutputStream().map((e) -> {
-			writeJsonp();
-			return e;
-		});
-	}
-
-	@Override
-	public @NonNull Pipeline<Writer, IOException> getWriter() {
-		return ServerHttpResponseWrapper.super.getWriter().map((e) -> {
-			writeJsonp();
-			return e;
-		});
+	public OutputStream getOutputStream() throws IOException {
+		writeJsonp();
+		return source.getOutputStream();
 	}
 
 	private void writeJsonp() throws IOException {
@@ -52,8 +39,10 @@ public class JsonpServerHttpResponse<W extends ServerHttpResponse> extends Wrapp
 			return;
 		}
 		getHeaders().setContentType(MediaType.TEXT_JAVASCRIPT);
-		append(jsonp);
-		append(JsonpUtils.JSONP_RESP_PREFIX);
+		toWriterFactory().getWriterPipeline().optional().ifPresent((writer) -> {
+			writer.append(jsonp);
+			writer.append(JsonpUtils.JSONP_RESP_PREFIX);
+		});
 		writeJsonp = true;
 	}
 
@@ -65,7 +54,9 @@ public class JsonpServerHttpResponse<W extends ServerHttpResponse> extends Wrapp
 
 		close = true;
 		if (writeJsonp) {
-			append(JsonpUtils.JSONP_RESP_SUFFIX);
+			toWriterFactory().getWriterPipeline().optional().ifPresent((writer) -> {
+				writer.append(JsonpUtils.JSONP_RESP_SUFFIX);
+			});
 		}
 		ServerHttpResponseWrapper.super.close();
 	}

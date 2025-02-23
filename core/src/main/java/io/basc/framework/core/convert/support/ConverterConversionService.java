@@ -6,7 +6,7 @@ import java.util.Set;
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.util.function.Function;
@@ -29,7 +29,7 @@ public class ConverterConversionService implements ConditionalConversionService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		try {
 			return converter.apply(value.get());
 		} catch (Throwable e) {

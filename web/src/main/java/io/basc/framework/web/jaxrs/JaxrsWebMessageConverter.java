@@ -9,9 +9,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.Method;
 import io.basc.framework.core.execution.ParameterDescriptor;
@@ -23,58 +20,44 @@ import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.util.collections.Elements;
+import io.basc.framework.util.exchange.Receipt;
+import io.basc.framework.util.spi.Configurable;
+import io.basc.framework.util.spi.ServiceLoaderDiscovery;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
+import lombok.NonNull;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class JaxrsWebMessageConverter implements WebMessageConverter, Configurable {
-	private final ConfigurableServices<MessageBodyReader> messageBodyReaders = new ConfigurableServices<>(
-			MessageBodyReader.class);
-	private final ConfigurableServices<MessageBodyWriter> messageBodyWriters = new ConfigurableServices<>(
-			MessageBodyWriter.class);
+	private MessageBodyReaders messageBodyReaders = new MessageBodyReaders<>();
+	private MessageBodyWriters messageBodyWriters = new MessageBodyWriters<>();
 
-	public ConfigurableServices<MessageBodyReader> getMessageBodyReaders() {
-		return messageBodyReaders;
+	{
+		messageBodyReaders.setServiceClass(MessageBodyReader.class);
+		messageBodyWriters.setServiceClass(MessageBodyWriter.class);
 	}
-
-	public ConfigurableServices<MessageBodyWriter> getMessageBodyWriters() {
-		return messageBodyWriters;
-	}
-
-	private boolean configured;
 
 	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		messageBodyReaders.configure(serviceLoaderFactory);
-		messageBodyWriters.configure(serviceLoaderFactory);
-		configured = true;
+	public Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery) {
+		messageBodyReaders.doConfigure(discovery);
+		messageBodyWriters.doConfigure(discovery);
+		return Receipt.SUCCESS;
 	}
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
 		MediaType mediaType = JaxrsUtils.convertMediaType(message.getContentType());
 		Annotation[] annotations = descriptor.getAnnotations();
-		for (MessageBodyReader messageBodyReader : messageBodyReaders.getServices()) {
-			if (messageBodyReader.isReadable(descriptor.getType(), descriptor.getResolvableType().getType(),
-					annotations, mediaType)) {
-				return true;
-			}
-		}
-		return false;
+		return messageBodyReaders.isReadable(descriptor.getType(), descriptor.getResolvableType().getType(),
+				annotations, mediaType);
 	}
 
 	@Override
 	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
 		MediaType mediaType = JaxrsUtils.convertMediaType(message.getContentType());
 		Annotation[] annotations = typeDescriptor.getAnnotations();
-		for (MessageBodyWriter messageBodyWriter : messageBodyWriters.getServices()) {
-			if (messageBodyWriter.isWriteable(typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
-					annotations, mediaType)) {
-				return true;
-			}
-		}
-		return false;
+		return messageBodyWriters.isWriteable(typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
+				annotations, mediaType);
 	}
 
 	@Override
@@ -83,13 +66,12 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 		MediaType mediaType = JaxrsUtils.convertMediaType(request.getContentType());
 		Annotation[] annotations = parameterDescriptor.getTypeDescriptor().getAnnotations();
 		MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(request.getHeaders());
-		for (MessageBodyReader messageBodyReader : messageBodyReaders.getServices()) {
-			if (messageBodyReader.isReadable(parameterDescriptor.getTypeDescriptor().getType(),
-					parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType)) {
-				return messageBodyReader.readFrom(parameterDescriptor.getTypeDescriptor().getType(),
-						parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType,
-						headerMap, request.getInputStream());
-			}
+
+		if (messageBodyReaders.isReadable(parameterDescriptor.getTypeDescriptor().getType(),
+				parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType)) {
+			return messageBodyReaders.readFrom(parameterDescriptor.getTypeDescriptor().getType(),
+					parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType,
+					headerMap, request.getInputStream());
 		}
 		throw new WebMessagelConverterException(parameterDescriptor, request, null);
 	}
@@ -99,16 +81,14 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 			Object body) throws IOException, WebMessagelConverterException {
 		MediaType mediaType = JaxrsUtils.convertMediaType(response.getContentType());
 		Annotation[] annotations = typeDescriptor.getAnnotations();
-		for (MessageBodyWriter messageBodyWriter : messageBodyWriters.getServices()) {
-			if (messageBodyWriter.isWriteable(typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
-					annotations, mediaType)) {
-				MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(response.getHeaders());
-				// 代理response output, 因为一些实现会在调用getOutputStream后无法再设置Headers
-				OutputStream proxyOutput = getProxyOutputStream(null, headerMap);
-				messageBodyWriter.writeTo(body, typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
-						annotations, mediaType, headerMap, proxyOutput);
-				return;
-			}
+		if (messageBodyWriters.isWriteable(typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
+				annotations, mediaType)) {
+			MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(response.getHeaders());
+			// 代理response output, 因为一些实现会在调用getOutputStream后无法再设置Headers
+			OutputStream proxyOutput = getProxyOutputStream(null, headerMap);
+			messageBodyWriters.writeTo(body, typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
+					annotations, mediaType, headerMap, proxyOutput);
+			return;
 		}
 	}
 
@@ -123,23 +103,15 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 			throws IOException, WebMessagelConverterException {
 		MediaType mediaType = JaxrsUtils.convertMediaType(request.getContentType());
 		Annotation[] annotations = parameterDescriptor.getTypeDescriptor().getAnnotations();
-		for (MessageBodyWriter messageBodyWriter : messageBodyWriters.getServices()) {
-			if (messageBodyWriter.isWriteable(parameterDescriptor.getTypeDescriptor().getType(),
-					parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType)) {
-				MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(request.getHeaders());
-				OutputStream proxyOutput = getProxyOutputStream(request, headerMap);
-				messageBodyWriter.writeTo(parameter, parameterDescriptor.getTypeDescriptor().getType(),
-						parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType,
-						headerMap, proxyOutput);
-				break;
-			}
+		if (messageBodyWriters.isWriteable(parameterDescriptor.getTypeDescriptor().getType(),
+				parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType)) {
+			MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(request.getHeaders());
+			OutputStream proxyOutput = getProxyOutputStream(request, headerMap);
+			messageBodyWriters.writeTo(parameter, parameterDescriptor.getTypeDescriptor().getType(),
+					parameterDescriptor.getTypeDescriptor().getResolvableType().getType(), annotations, mediaType,
+					headerMap, proxyOutput);
 		}
 		return request;
-	}
-
-	@Override
-	public boolean isConfigured() {
-		return configured;
 	}
 
 	protected OutputStream getProxyOutputStream(ClientHttpRequest request, MultivaluedMap<String, String> headerMap) {
@@ -167,7 +139,7 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 		}
 
 		@Override
-		public Object intercept(Method executor, Elements<? extends Object> args) throws Throwable {
+		public Object intercept(@NonNull Method executor, @NonNull Object... args) throws Throwable {
 			if (!outputMessage.getHeaders().isReadyOnly()) {
 				if (!headerTag) {
 					synchronized (this) {

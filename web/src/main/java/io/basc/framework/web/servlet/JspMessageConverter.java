@@ -14,8 +14,8 @@ import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.model.ModelAndView;
-import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
+import io.basc.framework.web.message.web.model.ModelAndView;
+import io.basc.framework.web.message.web.model.ModelAndViewMessageConverter;
 
 public class JspMessageConverter extends ModelAndViewMessageConverter {
 

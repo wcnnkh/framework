@@ -10,17 +10,16 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.env.Environment;
-import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.util.Pair;
+import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Function;
+import io.basc.framework.util.spi.NativeServiceLoader;
 
 public final class DomUtils {
-	private static final DocumentTemplate TEMPLATE = SPI.global()
-			.getServiceLoader(DocumentTemplate.class, DocumentTemplate.class).getServices().first();
+	private static final DocumentTemplate TEMPLATE = NativeServiceLoader.load(DocumentTemplate.class).findFirst()
+			.orElseGet(() -> new DocumentTemplate());
 
 	public static DocumentTemplate getTemplate() {
 		return TEMPLATE;
@@ -44,12 +43,11 @@ public final class DomUtils {
 
 				v = list == null ? n.getTextContent() : list;
 			}
-			return new Pair<String, Object>(n.getNodeName(), v);
+			return KeyValue.of(n.getNodeName(), v);
 		});
 	}
 
-	public static <E extends Throwable> List<Object> toList(Node node, Function<Node, Object, E> nodeConvert)
-			throws E {
+	public static <E extends Throwable> List<Object> toList(Node node, Function<Node, Object, E> nodeConvert) throws E {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -71,7 +69,7 @@ public final class DomUtils {
 				continue;
 			}
 
-			Object v = nodeConvert.process(n);
+			Object v = nodeConvert.apply(n);
 			if (v == null) {
 				continue;
 			}
@@ -83,7 +81,7 @@ public final class DomUtils {
 	}
 
 	public static <E extends Throwable> Map<String, Object> toMap(Node node,
-			Function<Node, Pair<String, Object>, E> nodeParse) throws E {
+			Function<Node, KeyValue<String, Object>, E> nodeParse) throws E {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -105,7 +103,7 @@ public final class DomUtils {
 				continue;
 			}
 
-			Pair<String, Object> keyValuePair = nodeParse.process(n);
+			KeyValue<String, Object> keyValuePair = nodeParse.apply(n);
 			if (keyValuePair != null) {
 				map.put(keyValuePair.getKey(), keyValuePair.getValue());
 			}
@@ -114,18 +112,18 @@ public final class DomUtils {
 		return map.isEmpty() ? null : map;
 	}
 
-	public static Value getNodeAttributeValue(Node node, String name) {
+	public static Source getNodeAttributeValue(Node node, String name) {
 		if (node == null) {
-			return Value.EMPTY;
+			return Source.EMPTY;
 		}
 
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
-			return Value.EMPTY;
+			return Source.EMPTY;
 		}
 
 		Node n = namedNodeMap.getNamedItem(name);
-		return n == null ? Value.EMPTY : Value.of(n.getNodeValue());
+		return n == null ? null : Source.of(n.getNodeValue());
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
@@ -138,30 +136,30 @@ public final class DomUtils {
 		return n == null ? node.getTextContent() : n.getNodeValue();
 	}
 
-	public static Value getRequireNodeAttributeValue(Node node, String name) {
-		Value value = getNodeAttributeValue(node, name);
-		if (!value.isPresent()) {
-			throw new NotFoundException("not found attribute [" + name + "]");
+	public static Source getRequireNodeAttributeValue(Node node, String name) {
+		Source value = getNodeAttributeValue(node, name);
+		if (value == null) {
+			throw new DomException("not found attribute [" + name + "]");
 		}
 		return value;
 	}
 
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
-			if (!DomUtils.getNodeAttributeValue(node, n).isPresent()) {
-				throw new NotFoundException("not found attribute [" + n + "]");
+			if (DomUtils.getNodeAttributeValue(node, n) == null) {
+				throw new DomException("not found attribute [" + n + "]");
 			}
 		}
 	}
 
-	public static Value getParentAttributeValue(Node node, String name) {
+	public static Source getParentAttributeValue(Node node, String name) {
 		Node parent = node.getParentNode();
 		if (parent == null) {
-			return Value.EMPTY;
+			return Source.EMPTY;
 		}
 
-		Value value = getNodeAttributeValue(node, name);
-		if (!value.isPresent()) {
+		Source value = getNodeAttributeValue(node, name);
+		if (value == null) {
 			return getParentAttributeValue(parent, name);
 		}
 		return value;
@@ -195,22 +193,21 @@ public final class DomUtils {
 			return value;
 		}
 
-		if (!getNodeAttributeValue(node, "replace").or(true).getAsBoolean()) {
+		Source nodeValue = getNodeAttributeValue(node, "replace");
+		if (nodeValue == null || !nodeValue.getAsBoolean()) {
 			return value;
 		}
-
 		return environment.replacePlaceholders(value);
 	}
 
-	public static Value getNodeAttributeValue(Environment environment, Node node, String name) {
-		Value value = getNodeAttributeValue(node, name);
-		if (!value.isPresent()) {
+	public static Source getNodeAttributeValue(Environment environment, Node node, String name) {
+		Source value = getNodeAttributeValue(node, name);
+		if (value == null) {
 			return value;
 		}
-
 		String str = value.getAsString();
 		str = formatNodeValue(environment, node, str);
-		return Value.of(str);
+		return Source.of(str);
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
@@ -225,15 +222,15 @@ public final class DomUtils {
 	public static String getRequireNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
-			throw new NotFoundException("not found attribute " + name);
+			throw new DomException("not found attribute " + name);
 		}
 		return formatNodeValue(environment, node, value);
 	}
 
-	public static Value getRequireNodeAttributeValue(Environment environment, Node node, String name) {
-		Value value = getNodeAttributeValue(environment, node, name);
-		if (!value.isPresent()) {
-			throw new NotFoundException("not found attribute " + name);
+	public static Source getRequireNodeAttributeValue(Environment environment, Node node, String name) {
+		Source value = getNodeAttributeValue(environment, node, name);
+		if (value == null) {
+			throw new DomException("not found attribute " + name);
 		}
 		return value;
 	}

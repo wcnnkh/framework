@@ -28,7 +28,7 @@ public abstract class AbstractMultiValueMap<K, V> implements MultiValueMap<K, V>
 
 	public V getFirst(K key) {
 		List<V> values = getTargetMap().get(key);
-		return (values != null ? values.get(0) : null);
+		return CollectionUtils.isEmpty(values) ? null : values.get(0);
 	}
 
 	public void set(K key, V value) {

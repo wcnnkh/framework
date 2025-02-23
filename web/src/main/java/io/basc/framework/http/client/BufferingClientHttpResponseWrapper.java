@@ -1,52 +1,26 @@
 package io.basc.framework.http.client;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpStatus;
-import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.http.client.ClientHttpResponse.ClientHttpResponseWrapper;
+import io.basc.framework.util.function.Wrapped;
 import io.basc.framework.util.io.IOUtils;
-import lombok.NonNull;
+import io.basc.framework.util.io.UnsafeByteArrayInputStream;
 
-public final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
+public final class BufferingClientHttpResponseWrapper<W extends ClientHttpResponse> extends Wrapped<W>
+		implements ClientHttpResponseWrapper<W> {
+	private byte[] body;
 
-	private final ClientHttpResponse response;
-
-	private Pipeline<InputStream, IOException> body;
-
-	BufferingClientHttpResponseWrapper(ClientHttpResponse response) {
-		this.response = response;
-	}
-
-	public HttpStatus getStatusCode() throws IOException {
-		return this.response.getStatusCode();
-	}
-
-	public int getRawStatusCode() throws IOException {
-		return this.response.getRawStatusCode();
-	}
-
-	public String getStatusText() throws IOException {
-		return this.response.getStatusText();
-	}
-
-	public HttpHeaders getHeaders() {
-		return this.response.getHeaders();
+	public BufferingClientHttpResponseWrapper(W source) {
+		super(source);
 	}
 
 	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
+	public InputStream getInputStream() throws IOException {
 		if (this.body == null) {
-			this.body = response.getInputStream().map((e) -> IOUtils.copyToByteArray(e))
-					.map((e) -> new ByteArrayInputStream(e));
-			this.body = this.body.newPipeline();
+			body = IOUtils.copyToByteArray(source.getInputStream());
 		}
-		return body;
-	}
-
-	public void close() {
-		this.response.close();
+		return new UnsafeByteArrayInputStream(body);
 	}
 }

@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
+import io.basc.framework.http.MultiPartServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.json.JsonArray;
@@ -23,7 +24,6 @@ import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.Message;
-import io.basc.framework.net.MimeType;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.net.multipart.MultipartMessageResolver;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -36,6 +36,7 @@ import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.collections.MultiValueMap;
 import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.util.io.IOUtils;
+import io.basc.framework.util.io.MimeType;
 import io.basc.framework.util.io.Resource;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
@@ -90,7 +91,7 @@ public final class WebUtils {
 		resource.transferTo(response);
 	}
 
-	public static Value getParameter(ServerHttpRequest request, String name) {
+	public static Source getParameter(ServerHttpRequest request, String name) {
 		String value = request.getParameterMap().getFirst(name);
 		if (value == null) {
 			Map<String, String> parameterMap = getRestfulParameterMap(request);
@@ -101,7 +102,7 @@ public final class WebUtils {
 
 		if (value != null) {
 			value = decodeGETParameter(request, value);
-			return Value.of(value);
+			return Source.of(value);
 		}
 		
 		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
@@ -120,19 +121,19 @@ public final class WebUtils {
 		if (multiPartServerHttpRequest != null) {
 			MultipartMessage multipartMessage = multiPartServerHttpRequest.getMultipartMessageMap().getFirst(name);
 			if (multipartMessage != null) {
-				return Value.of(multipartMessage);
+				return Source.of(multipartMessage);
 			}
 		}
-		return Value.EMPTY;
+		return Source.EMPTY;
 	}
 
-	public static Value[] getParameterValues(ServerHttpRequest request, String name) {
+	public static Source[] getParameterValues(ServerHttpRequest request, String name) {
 		List<String> valueList = request.getParameterMap().get(name);
 		if (!CollectionUtils.isEmpty(valueList)) {
-			Value[] values = new Value[valueList.size()];
+			Source[] values = new Source[valueList.size()];
 			int index = 0;
 			for (String value : valueList) {
-				values[index++] = Value.of(decodeGETParameter(request, value));
+				values[index++] = Source.of(decodeGETParameter(request, value));
 			}
 			return values;
 		}
@@ -144,7 +145,7 @@ public final class WebUtils {
 				JsonElement jsonElement = jsonObject.get(name);
 				if (jsonElement.isJsonArray()) {
 					JsonArray jsonArray = jsonElement.getAsJsonArray();
-					Value[] values = new Value[jsonArray.size()];
+					Source[] values = new Source[jsonArray.size()];
 					int index = 0;
 					for (JsonElement element : jsonElement.getAsJsonArray()) {
 						values[index++] = element;
@@ -158,15 +159,15 @@ public final class WebUtils {
 				MultiPartServerHttpRequest.class);
 		if (multiPartServerHttpRequest != null) {
 			List<MultipartMessage> items = multiPartServerHttpRequest.getMultipartMessageMap().get(name);
-			Value[] values = new Value[items.size()];
+			Source[] values = new Source[items.size()];
 			int index = 0;
 			for (MultipartMessage element : items) {
-				values[index++] = Value.of(element);
+				values[index++] = Source.of(element);
 			}
 			return values;
 		}
 
-		return Value.EMPTY_ARRAY;
+		return Source.EMPTY_ARRAY;
 	}
 
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request) {

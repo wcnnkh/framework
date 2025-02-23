@@ -1,7 +1,7 @@
 package io.basc.framework.net.convert;
 
-import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.net.MimeTypes;
+import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
+import io.basc.framework.net.MediaTypes;
 
 public interface MessageConverter extends MessageReader, MessageWriter {
 	/**
@@ -9,7 +9,7 @@ public interface MessageConverter extends MessageReader, MessageWriter {
 	 * 
 	 * @return
 	 */
-	MimeTypes getSupportedMediaTypes();
+	MediaTypes getSupportedMediaTypes();
 
 	/**
 	 * Return the list of media types supported by this converter for the given
@@ -17,11 +17,12 @@ public interface MessageConverter extends MessageReader, MessageWriter {
 	 * converter does not support the given Class or if it supports it only for a
 	 * subset of media types.
 	 * 
-	 * @param typeDescriptor
+	 * @param requiredDescriptor
 	 * @return
 	 */
-	default MimeTypes getSupportedMediaTypes(TypeDescriptor typeDescriptor) {
-		return (isReadable(typeDescriptor, null) || isWriteable(typeDescriptor, null)) ? getSupportedMediaTypes()
-				: MimeTypes.EMPTY;
+	default MediaTypes getSupportedMediaTypes(AccessDescriptor requiredDescriptor) {
+		return (isReadable(requiredDescriptor, null) || isWriteable(requiredDescriptor, null))
+				? getSupportedMediaTypes()
+				: MediaTypes.EMPTY;
 	}
 }

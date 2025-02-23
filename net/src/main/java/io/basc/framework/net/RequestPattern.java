@@ -15,16 +15,16 @@ public interface RequestPattern extends Predicate<Request>, Function<Request, Pr
 	@Override
 	boolean equals(Object obj);
 
-	MimeTypes getConsumes();
+	MediaTypes getConsumes();
 
-	MimeTypes getProduces();
+	MediaTypes getProduces();
 
 	@Override
 	int hashCode();
 
 	@Override
 	default boolean test(Request request) {
-		MimeTypes consumes = getConsumes();
+		MediaTypes consumes = getConsumes();
 		if (consumes != null && !consumes.isCompatibleWith(request.getContentType())) {
 			return false;
 		}

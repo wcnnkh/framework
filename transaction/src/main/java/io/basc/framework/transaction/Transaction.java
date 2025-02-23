@@ -1,6 +1,5 @@
 package io.basc.framework.transaction;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.function.ParentDiscover;
 
 /**
@@ -15,7 +14,6 @@ public interface Transaction extends Resource, RollbackOnly, ParentDiscover<Tran
 
 	void registerSynchronization(Synchronization synchronization) throws TransactionException;
 
-	@Nullable
 	<T> T getResource(Object name);
 
 	void registerResource(Object name, Object resource) throws TransactionException;

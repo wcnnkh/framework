@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.util.spi.ServiceMap;
 import lombok.Getter;
 import lombok.NonNull;
@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TemplateFactoryRegistry<S, K, V extends Value, T extends Template<K, ? extends V>>
+public class TemplateFactoryRegistry<S, K, V extends Source, T extends Template<K, ? extends V>>
 		extends ServiceMap<TemplateFactory<S, K, V, T>> implements TemplateProvider<S, K, V, T> {
 	private TemplateProvider<? super S, ? extends K, ? extends V, ? extends T> templateProvider;
 

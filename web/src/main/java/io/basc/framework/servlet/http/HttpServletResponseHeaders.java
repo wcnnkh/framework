@@ -7,7 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.MediaType;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.collections.CollectionUtils;
 

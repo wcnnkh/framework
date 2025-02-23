@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.util.Lifecycle;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.ServiceLoader.ReloadableElementsWrapper;
 import io.basc.framework.util.comparator.OrderComparator;
@@ -178,7 +179,15 @@ public class Services<S>
 	public void setComparator(Comparator<? super S> comparator) {
 		container.setComparator((h1, h2) -> {
 			int v = Integer.compare(h1.getOrder(), h2.getOrder());
-			return v == 0 ? comparator.compare(h1.getSource(), h2.getSource()) : v;
+			if (v == 0) {
+				v = comparator.compare(h1.getSource(), h2.getSource());
+				if (v == 0) {
+					if (!ObjectUtils.equals(h1.getSource(), h2.getSource())) {
+						v = 1;
+					}
+				}
+			}
+			return v;
 		});
 	}
 

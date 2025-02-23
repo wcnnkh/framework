@@ -6,13 +6,15 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 
 import io.basc.framework.core.Constants;
-import io.basc.framework.net.FileMimeTypeUitls;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.net.ContentDisposition;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.io.FileMimeTypeUitls;
+import io.basc.framework.util.io.MimeType;
 
 public final class HttpUtils {
 	private static int getPort(String scheme, int port) {
@@ -89,7 +91,7 @@ public final class HttpUtils {
 		Assert.requiredArgument(fileName != null, "fileName");
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
-			outputMessage.setContentType(mimeType);
+			outputMessage.setContentType(new MediaType(mimeType));
 		}
 
 		Charset charsetToUse = charset;

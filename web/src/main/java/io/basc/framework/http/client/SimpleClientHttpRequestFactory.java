@@ -88,7 +88,7 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 		}
 
 		try {
-			this.sslSocketFactory = certTrustResource.getInputStream().option()
+			this.sslSocketFactory = certTrustResource.getInputStreamPipeline().optional()
 					.flatMap((is) -> SSLContexts.custom()
 							.loadKeyMaterial(is, storePassword.toCharArray(), keyPassword.toCharArray()).build()
 							.getSocketFactory());

@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.MediaType;
+import io.basc.framework.net.MediaType;
 
 public abstract class AbstractHttpConnection implements HttpConnection {
 	private ClientHttpRequestFactory requestFactory;

@@ -2,18 +2,19 @@ package io.basc.framework.core.convert.config;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConverterNotFoundException;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
 import io.basc.framework.util.check.NestingChecker;
 import io.basc.framework.util.check.ThreadLocalNestingChecker;
 import io.basc.framework.util.exchange.Registration;
-import io.basc.framework.util.spi.ConfigurableServices;
+import io.basc.framework.util.spi.Providers;
 import lombok.NonNull;
 
-public class ConversionServices extends ConfigurableServices<ConversionService> implements ConversionService {
+public class ConversionServices extends Providers<ConversionService, ConversionException> implements ConversionService {
 	private static final NestingChecker<ConversionService> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
 
 	public ConversionServices() {
+		setNestingChecker(NESTING_CHECKERS);
 		setComparator(ConversionComparator.INSTANCE);
 		setServiceClass(ConversionService.class);
 		getInjectors().register((service) -> {
@@ -27,40 +28,17 @@ public class ConversionServices extends ConfigurableServices<ConversionService> 
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		for (ConversionService service : this) {
-			if (NESTING_CHECKERS.isNestingExists(service)) {
-				continue;
-			}
-
-			Registration registration = NESTING_CHECKERS.registerNestedElement(service);
-			try {
-				if (service.canConvert(sourceType, targetType)) {
-					return true;
-				}
-			} finally {
-				registration.cancel();
-			}
-		}
-		return false;
+		return optional().filter((e) -> e.canConvert(sourceType, targetType)).isPresent();
 	}
 
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
-		for (ConversionService service : this) {
-			if (NESTING_CHECKERS.isNestingExists(service)) {
-				continue;
-			}
-
-			Registration registration = NESTING_CHECKERS.registerNestedElement(service);
-			try {
-				if (service.canConvert(value.getTypeDescriptor(), targetType)) {
-					return service.convert(value, targetType);
-				}
-			} finally {
-				registration.cancel();
-			}
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		ConversionService conversionService = optional().filter((e) -> e.canConvert(targetType, targetType))
+				.orElse(null);
+		if (conversionService == null) {
+			throw new ConverterNotFoundException(value.getTypeDescriptor(), targetType);
 		}
-		throw new ConverterNotFoundException(value.getTypeDescriptor(), targetType);
+		return conversionService.convert(value, targetType);
 	}
 
 }

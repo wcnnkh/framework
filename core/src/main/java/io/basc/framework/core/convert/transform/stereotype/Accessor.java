@@ -1,14 +1,14 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.util.Assert;
 import lombok.NonNull;
 
-public interface Accessor extends Value, AccessDescriptor {
+public interface Accessor extends Source, AccessDescriptor {
 	@FunctionalInterface
 	public static interface AccessWrapper<W extends Accessor>
-			extends Accessor, ValueWrapper<W>, AccessDescriptorWrapper<W> {
+			extends Accessor, SourceWrapper<W>, AccessDescriptorWrapper<W> {
 
 		@Override
 		default boolean isReadable() {
@@ -47,7 +47,7 @@ public interface Accessor extends Value, AccessDescriptor {
 	 * @param value
 	 * @return
 	 */
-	public static Accessor create(Value value) {
+	public static Accessor create(Source value) {
 		return new StandardAccess<>(value);
 	}
 
@@ -57,14 +57,14 @@ public interface Accessor extends Value, AccessDescriptor {
 	 * @param value
 	 * @return
 	 */
-	public static Accessor of(Value value) {
+	public static Accessor of(Source value) {
 		if (value instanceof Accessor) {
 			return (Accessor) value;
 		}
 		return create(value);
 	}
 
-	public static class StandardAccess<W extends Value> implements Accessor, ValueWrapper<W> {
+	public static class StandardAccess<W extends Source> implements Accessor, SourceWrapper<W> {
 		private final W source;
 		private volatile SharedValue<W> holder;
 

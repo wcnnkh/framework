@@ -9,14 +9,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
+import io.basc.framework.http.MultiPartServerHttpRequest;
 import io.basc.framework.net.multipart.MultipartMessage;
 import io.basc.framework.util.collections.CollectionUtils;
-import io.basc.framework.web.MultiPartServerHttpRequest;
 import io.basc.framework.web.WebException;
 
-public class ServletMultiPartServerHttpRequest extends ServletServerHttpRequest implements MultiPartServerHttpRequest {
+public class ServletMultiPartServerHttpRequest<W extends HttpServletRequest> extends ServletServerHttpRequest<W>
+		implements MultiPartServerHttpRequest {
 
-	public ServletMultiPartServerHttpRequest(HttpServletRequest httpServletRequest) {
+	public ServletMultiPartServerHttpRequest(W httpServletRequest) {
 		super(httpServletRequest);
 	}
 
@@ -24,7 +25,7 @@ public class ServletMultiPartServerHttpRequest extends ServletServerHttpRequest 
 	public Collection<MultipartMessage> getMultipartMessages() {
 		Collection<Part> parts;
 		try {
-			parts = wrappedTarget.getParts();
+			parts = source.getParts();
 		} catch (IOException | ServletException e) {
 			throw new WebException(e);
 		}

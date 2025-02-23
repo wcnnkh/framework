@@ -1,27 +1,24 @@
 package io.basc.framework.net;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.io.OutputStreamFactory;
+import io.basc.framework.util.io.OutputStreamSource;
 import io.basc.framework.util.io.WriterFactory;
-import lombok.NonNull;
 
-public interface OutputMessage extends Message, OutputStreamFactory<OutputStream>, WriterFactory<Writer> {
+public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
 	@FunctionalInterface
-	public static interface OutputMessageWrapper<W extends OutputMessage> extends OutputMessage, MessageWrapper<W>,
-			OutputStreamSourceWrapper<OutputStream, W>, WriterSourceWrapper<Writer, W> {
+	public static interface OutputMessageWrapper<W extends OutputMessage>
+			extends OutputMessage, MessageWrapper<W>, OutputStreamSourceWrapper<OutputStream, W> {
 
 		@Override
-		default Pipeline<Writer, IOException> getWriter() {
-			return getSource().getWriter();
+		default WriterFactory<Writer> toWriterFactory() {
+			return getSource().toWriterFactory();
 		}
 
 		@Override
-		default void setContentType(MimeType contentType) {
+		default void setContentType(MediaType contentType) {
 			getSource().setContentType(contentType);
 		}
 
@@ -35,24 +32,41 @@ public interface OutputMessage extends Message, OutputStreamFactory<OutputStream
 			getSource().setCharsetName(charsetName);
 		}
 	}
+	
+	default void setContentType(MediaType contentType) {
+		String charsetName = contentType.getCharsetName();
+		if (charsetName == null) {
+			charsetName = getCharsetName();
+			if (charsetName == null) {
+				getHeaders().setContentType(contentType);
+			} else {
+				getHeaders().setContentType(new MediaType(contentType, charsetName));
+			}
+		} else {
+			getHeaders().setContentType(contentType);
+		}
+	}
 
-	void setContentType(MimeType contentType);
-
-	void setContentLength(long contentLength);
+	default void setContentLength(long contentLength) {
+		getHeaders().setContentLength(contentLength);
+	}
 
 	default void setCharsetName(String charsetName) {
-		MimeType mimeType = getContentType();
-		if (mimeType == null) {
+		MediaType mediaType = getContentType();
+		if (mediaType == null) {
+			mediaType = MediaType.ALL;
 			return;
 		}
 
-		setContentType(new MimeType(mimeType, charsetName));
+		setContentType(new MediaType(mediaType, charsetName));
 	}
 
 	@Override
-	default @NonNull Pipeline<Writer, IOException> getWriter() {
+	default WriterFactory<Writer> toWriterFactory() {
 		String charsetName = getCharsetName();
-		return StringUtils.isEmpty(charsetName) ? toWriterSource().getWriter()
-				: toWriterSource(charsetName).getWriter();
+		if (StringUtils.isEmpty(charsetName)) {
+			return OutputStreamSource.super.toWriterFactory();
+		}
+		return toWriterFactory(charsetName);
 	}
 }

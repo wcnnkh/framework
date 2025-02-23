@@ -58,7 +58,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 		public UpdateableElementRegistration and(@NonNull Registration registration) {
 			return new UpdateableElementRegistration(super.and(registration));
 		}
-
+		
 		@Override
 		public boolean cancel(BooleanSupplier cancel) {
 			return super.cancel(() -> {

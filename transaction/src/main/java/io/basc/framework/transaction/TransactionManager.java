@@ -1,7 +1,5 @@
 package io.basc.framework.transaction;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * 事务管理器
  * 
@@ -10,7 +8,6 @@ import io.basc.framework.lang.Nullable;
  *
  */
 public interface TransactionManager {
-	@Nullable
 	Transaction getTransaction();
 
 	default boolean hasTransaction() {

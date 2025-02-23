@@ -35,6 +35,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.LinkedMultiValueMap;
 import io.basc.framework.util.collections.MultiValueMap;
@@ -258,7 +259,6 @@ public final class SqlUtils {
 		return new SimpleSql(storedProcedure, targetSql, targetParams);
 	}
 
-	@Nullable
 	public static SqlExpression resolveExpression(Sql sql, Collection<? extends CharSequence> filters) {
 		String sourceSql = sql.getSql();
 		for (CharSequence filter : filters) {
@@ -333,7 +333,6 @@ public final class SqlUtils {
 		return resolveExpressionMap(set, Arrays.asList(","), Arrays.asList("="));
 	}
 
-	@Nullable
 	public static Sql resolveWhereSql(Sql sql, int start, int end) {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();
@@ -344,7 +343,6 @@ public final class SqlUtils {
 		return sub(sql, index + WHERE.length(), end);
 	}
 
-	@Nullable
 	public static Sql resolveUpdateWhereSql(Sql sql) {
 		String sourceSql = sql.getSql();
 		// 全部转小写
@@ -369,12 +367,12 @@ public final class SqlUtils {
 			throw new SqlException("The inser statement must have values keyword: <" + toString(sql) + ">");
 		}
 
-		Pair<Integer, Integer> pairIndex = StringUtils.indexOf(sourceSql, "(", ")",
-				valuesIndex + INSERT_VALUES.length(), sourceSql.length());
-		if (pairIndex == null) {
+		Range<Integer> range = StringUtils.indexOf(sourceSql, "(", ")", valuesIndex + INSERT_VALUES.length(),
+				sourceSql.length());
+		if (range == null) {
 			throw new SqlException("The inser statement must have values: <" + toString(sql) + ">");
 		}
-		return sub(sql, pairIndex.getKey() + 1, pairIndex.getValue());
+		return sub(sql, range.getLowerBound().get() + 1, range.getUpperBound().get());
 	}
 
 	public static List<Sql> resolveInsertColumns(Sql sql) {
@@ -468,7 +466,7 @@ public final class SqlUtils {
 		}
 		return sb.toString();
 	}
-	
+
 	public static void deregisterDriver() {
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		if (drivers != null) {

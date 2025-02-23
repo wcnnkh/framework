@@ -17,43 +17,31 @@
 package io.basc.framework.http.client;
 
 import java.io.IOException;
-import java.net.URI;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
+import io.basc.framework.http.client.ClientHttpRequest.ClientHttpRequestWrapper;
+import lombok.Getter;
 
 /**
  * Simple implementation of {@link ClientHttpRequest} that wraps another
  * request.
  *
  */
-public final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHttpRequest {
+@Getter
+public final class BufferingClientHttpRequestWrapper<W extends ClientHttpRequest>
+		extends AbstractBufferingClientHttpRequest implements ClientHttpRequestWrapper<W> {
+	private final W source;
 
-	private final ClientHttpRequest request;
-
-	public BufferingClientHttpRequestWrapper(ClientHttpRequest request) {
-		this.request = request;
-	}
-
-	public HttpMethod getMethod() {
-		return this.request.getMethod();
-	}
-
-	@Override
-	public String getRawMethod() {
-		return this.request.getRawMethod();
-	}
-
-	public URI getURI() {
-		return this.request.getURI();
+	public BufferingClientHttpRequestWrapper(W source) {
+		this.source = source;
 	}
 
 	@Override
 	protected ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
-		this.request.getHeaders().putAll(headers);
-		request.write(bufferedOutput);
-		ClientHttpResponse response = this.request.execute();
-		return new BufferingClientHttpResponseWrapper(response);
+		this.source.getHeaders().putAll(headers);
+		source.getOutputStreamPipeline().optional().ifPresent((e) -> e.write(bufferedOutput));
+		ClientHttpResponse response = this.source.execute();
+		return new BufferingClientHttpResponseWrapper<>(response);
 	}
 
 }

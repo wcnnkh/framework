@@ -2,14 +2,13 @@ package io.basc.framework.net.server.dispatch;
 
 import java.io.IOException;
 
-import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.ParameterDescriptor;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.RequestPatternCapable;
 import io.basc.framework.net.server.Server;
@@ -52,7 +51,7 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		if (property != null && property.isReadable()) {
 			return property.getAsObject(parameterDescriptor.getRequiredTypeDescriptor());
 		}
-		return messageConverter.readFrom(parameterDescriptor, request, request);
+		return messageConverter.readFrom(parameterDescriptor, request);
 	}
 
 	private Object[] getArgs(ServerRequest request) throws IOException {
@@ -81,15 +80,12 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 			return;
 		}
 
-		TypeDescriptor rtnTypeDescriptor = function.getReturnTypeDescriptor();
-		Value responseValue = Value.of(rtn, function.getReturnTypeDescriptor());
-		for (MimeType mimeType : requestPattern.getProduces()) {
-			if (messageConverter.isWriteable(rtnTypeDescriptor, mimeType)) {
-				messageConverter.writeTo(responseValue, mimeType, response);
+		Source responseValue = Source.of(rtn, function.getReturnTypeDescriptor());
+		for (MediaType mimeType : requestPattern.getProduces()) {
+			if (messageConverter.isWriteable(responseValue, mimeType)) {
+				messageConverter.writeTo(responseValue, request, response);
 				return;
 			}
 		}
-		// 兜底的message converter
-		messageConverter.writeTo(responseValue, null, response);
 	}
 }

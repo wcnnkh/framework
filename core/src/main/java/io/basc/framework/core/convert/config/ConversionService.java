@@ -2,8 +2,8 @@ package io.basc.framework.core.convert.config;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.Converter;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
 import lombok.NonNull;
 
 /**
@@ -12,14 +12,16 @@ import lombok.NonNull;
  * type conversion using this system.
  */
 public interface ConversionService extends Converter<Object, Object, ConversionException> {
+	
+	
 	@Override
 	boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType);
 
 	@Override
 	default Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		return convert(Value.of(source, sourceType), targetType);
+		return convert(Source.of(source, sourceType), targetType);
 	}
 
-	Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException;
+	Object convert(@NonNull Source source, @NonNull TypeDescriptor targetType) throws ConversionException;
 }

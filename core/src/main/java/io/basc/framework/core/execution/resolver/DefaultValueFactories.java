@@ -1,6 +1,6 @@
 package io.basc.framework.core.execution.resolver;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
 import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.NonNull;
@@ -17,7 +17,7 @@ public class DefaultValueFactories extends ConfigurableServices<DefaultValueFact
 	}
 
 	@Override
-	public Value getDefaultValue(@NonNull AccessDescriptor descriptor) {
+	public Source getDefaultValue(@NonNull AccessDescriptor descriptor) {
 		for (DefaultValueFactory resolver : this) {
 			if (resolver.hasDefaultValue(descriptor)) {
 				return resolver.getDefaultValue(descriptor);

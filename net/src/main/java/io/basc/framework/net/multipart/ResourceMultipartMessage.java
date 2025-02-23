@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.http.ContentDisposition;
-import io.basc.framework.http.MediaType;
-import io.basc.framework.net.FileMimeTypeUitls;
-import io.basc.framework.net.MimeType;
-import io.basc.framework.util.function.Function;
+import io.basc.framework.net.ContentDisposition;
+import io.basc.framework.net.MediaType;
+import io.basc.framework.util.io.FileMimeTypeUitls;
 import io.basc.framework.util.io.FileSystemResource;
+import io.basc.framework.util.io.MimeType;
 import io.basc.framework.util.io.Resource;
 
 public class ResourceMultipartMessage extends AbstractMultipartMessage {
@@ -35,11 +34,6 @@ public class ResourceMultipartMessage extends AbstractMultipartMessage {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return resource.getInputStream();
-	}
-
-	@Override
-	public <T, E extends Throwable> T read(Function<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
-		return resource.read(processor);
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package io.basc.framework.core.convert.support.date;
 
 import java.time.ZoneOffset;
 
-import io.basc.framework.core.convert.ValueDescriptor;
+import io.basc.framework.core.convert.SourceDescriptor;
 import io.basc.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOffsetResolver>
@@ -26,7 +26,7 @@ public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOff
 	}
 
 	@Override
-	public ZoneOffset resolveZoneOffset(ValueDescriptor valueDescriptor) {
+	public ZoneOffset resolveZoneOffset(SourceDescriptor valueDescriptor) {
 		for (ZoneOffsetResolver resolver : this) {
 			ZoneOffset zoneOffset = resolver.resolveZoneOffset(valueDescriptor);
 			if (zoneOffset != null) {

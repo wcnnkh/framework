@@ -1,11 +1,13 @@
 package io.basc.framework.core.convert.support.resource;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.ConversionFailedException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.config.ConditionalConversionService;
 import io.basc.framework.core.convert.config.ConvertiblePair;
 import io.basc.framework.util.io.Resource;
@@ -23,8 +25,12 @@ public class ResourceResolverConversionService implements ConditionalConversionS
 	}
 
 	@Override
-	public Object convert(@NonNull Value value, @NonNull TypeDescriptor targetType) throws ConversionException {
-		return resourceResolver.resolveResource((Resource) value.get(), targetType);
+	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		try {
+			return resourceResolver.resolveResource((Resource) value.get(), targetType);
+		} catch (IOException e) {
+			throw new ConversionFailedException(value, targetType, e);
+		}
 	}
 
 }

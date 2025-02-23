@@ -3,7 +3,6 @@ package io.basc.framework.net.multipart;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.io.AbstractResource;
 
@@ -26,14 +25,6 @@ class MultipartFileResource extends AbstractResource {
 	 */
 	@Override
 	public boolean exists() {
-		return true;
-	}
-
-	/**
-	 * This implementation always returns {@code true}.
-	 */
-	@Override
-	public boolean isOpen() {
 		return true;
 	}
 
@@ -65,7 +56,7 @@ class MultipartFileResource extends AbstractResource {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object other) {
+	public boolean equals(Object other) {
 		return (this == other || (other instanceof MultipartFileResource
 				&& ((MultipartFileResource) other).multipartMessage.equals(this.multipartMessage)));
 	}

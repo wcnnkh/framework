@@ -2,8 +2,8 @@ package io.basc.framework.web.resource;
 
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.FileMimeTypeUitls;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.util.io.FileMimeTypeUitls;
+import io.basc.framework.util.io.MimeType;
 import io.basc.framework.util.io.Resource;
 
 /**

@@ -1,7 +1,7 @@
 
 package io.basc.framework.core.convert.transform.stereotype;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -31,7 +31,7 @@ public interface Property extends Accessor, PropertyDescriptor {
 		return new SharedProperty<>(PropertyDescriptor.of(name, accessDescriptor));
 	}
 
-	public static Property of(String name, @NonNull Value value) {
+	public static Property of(String name, @NonNull Source value) {
 		Accessor access = Accessor.of(value);
 		return new StandardProperty<>(name, access);
 	}

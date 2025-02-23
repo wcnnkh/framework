@@ -8,5 +8,6 @@ import io.basc.framework.core.convert.TypeDescriptor;
 public interface DocumentWriter {
 	boolean canWrite(TypeDescriptor typeDescriptor);
 
-	void write(Document document, Node parentNode, String nodeName, Object value, TypeDescriptor valueType);
+	void write(Document document, Node parentNode, String nodeName, Object value, TypeDescriptor valueType)
+			throws DomException;
 }

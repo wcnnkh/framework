@@ -2,7 +2,7 @@ package io.basc.framework.core.execution;
 
 import java.util.function.Predicate;
 
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import io.basc.framework.util.StringUtils;
@@ -45,7 +45,7 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 		return of(ParameterDescriptor.of(index, propertyDescriptor));
 	}
 
-	public static Parameter of(int index, String name, @NonNull Value value) {
+	public static Parameter of(int index, String name, @NonNull Source value) {
 		Property property = Property.of(name, value);
 		return of(index, property);
 	}

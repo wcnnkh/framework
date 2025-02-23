@@ -1,11 +1,11 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.Value;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.util.spi.ConfigurableServices;
 import lombok.NonNull;
 
-public class TemplateWriteFilters<K, SV extends Value, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
+public class TemplateWriteFilters<K, SV extends Source, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends ConfigurableServices<TemplateWriteFilter<K, SV, S, TV, T, E>>
 		implements TemplateWriteFilter<K, SV, S, TV, T, E> {
 

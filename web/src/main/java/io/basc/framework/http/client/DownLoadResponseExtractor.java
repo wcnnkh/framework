@@ -3,9 +3,9 @@ package io.basc.framework.http.client;
 import java.io.File;
 import java.io.IOException;
 
-import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
+import io.basc.framework.net.ContentDisposition;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.logging.LogManager;

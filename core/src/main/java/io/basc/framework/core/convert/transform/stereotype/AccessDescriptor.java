@@ -1,16 +1,16 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
+import io.basc.framework.core.convert.SourceDescriptor;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.ValueDescriptor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
-public interface AccessDescriptor extends ValueDescriptor {
+public interface AccessDescriptor extends SourceDescriptor {
 	@FunctionalInterface
 	public static interface AccessDescriptorWrapper<W extends AccessDescriptor>
-			extends AccessDescriptor, ValueDescriptorWrapper<W> {
+			extends AccessDescriptor, SourceDescriptorWrapper<W> {
 		@Override
 		default TypeDescriptor getRequiredTypeDescriptor() {
 			return getSource().getRequiredTypeDescriptor();

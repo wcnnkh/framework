@@ -1,25 +1,17 @@
 package io.basc.framework.http;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import io.basc.framework.net.InputMessage;
-import io.basc.framework.util.function.Pipeline;
-import lombok.NonNull;
+import io.basc.framework.net.InputMessage.InputMessageWrapper;
+import io.basc.framework.util.function.Wrapped;
 
-public class DefaultHttpInputMessage implements HttpInputMessage {
+public class DefaultHttpInputMessage<W extends InputMessage> extends Wrapped<W>
+		implements InputMessageWrapper<W>, HttpInputMessage {
+	public DefaultHttpInputMessage(W source) {
+		super(source);
+		this.httpHeaders.putAll(source.getHeaders());
+	}
+
 	private HttpHeaders httpHeaders = new HttpHeaders();
-	private InputMessage inputMessage;
-
-	public DefaultHttpInputMessage(InputMessage inputMessage) {
-		this.inputMessage = inputMessage;
-		this.httpHeaders.putAll(inputMessage.getHeaders());
-	}
-
-	@Override
-	public @NonNull Pipeline<InputStream, IOException> getInputStream() {
-		return inputMessage.getInputStream();
-	}
 
 	public HttpHeaders getHeaders() {
 		return httpHeaders;

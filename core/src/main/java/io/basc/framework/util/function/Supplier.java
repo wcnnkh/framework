@@ -32,7 +32,7 @@ public interface Supplier<T, E extends Throwable> {
 	}
 
 	@RequiredArgsConstructor
-	public static class MappedSource<S, T, E extends Throwable, W extends Supplier<S, E>> implements Supplier<T, E> {
+	public static class MappedSupplier<S, T, E extends Throwable, W extends Supplier<S, E>> implements Supplier<T, E> {
 		@NonNull
 		protected final W source;
 		@NonNull
@@ -46,8 +46,8 @@ public interface Supplier<T, E extends Throwable> {
 
 		@Override
 		public <R> Supplier<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> mapper) {
-			return new MappedSource<>(this.source, (s) -> {
-				T target = MappedSource.this.mapper.apply(s);
+			return new MappedSupplier<>(this.source, (s) -> {
+				T target = MappedSupplier.this.mapper.apply(s);
 				return mapper.apply(target);
 			});
 		}
@@ -80,7 +80,7 @@ public interface Supplier<T, E extends Throwable> {
 	}
 
 	@FunctionalInterface
-	public static interface SourceWrapper<T, E extends Throwable, W extends Supplier<T, E>>
+	public static interface SupplierWrapper<T, E extends Throwable, W extends Supplier<T, E>>
 			extends Supplier<T, E>, Wrapper<W> {
 		@Override
 		default T get() throws E {
@@ -137,8 +137,8 @@ public interface Supplier<T, E extends Throwable> {
 
 	T get() throws E;
 
-	default <R> Supplier<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
-		return new MappedSource<>(this, pipeline);
+	default <R> Supplier<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> mapper) {
+		return new MappedSupplier<>(this, mapper);
 	}
 
 	default Pipeline<T, E> newPipeline() {

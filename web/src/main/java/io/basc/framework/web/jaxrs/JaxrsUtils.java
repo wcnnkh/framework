@@ -13,7 +13,7 @@ public class JaxrsUtils {
 	private JaxrsUtils() {
 	}
 
-	public static MediaType convertMediaType(io.basc.framework.http.MediaType mediaType) {
+	public static MediaType convertMediaType(io.basc.framework.net.MediaType mediaType) {
 		if(mediaType == null) {
 			return null;
 		}
