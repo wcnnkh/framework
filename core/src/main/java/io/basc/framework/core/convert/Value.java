@@ -29,7 +29,7 @@ public class Value<T> implements Optional<T, ConversionException> {
 	}
 
 	public Source any() {
-		ObjectValue value = new ObjectValue();
+		Target value = new Target();
 		value.setObject(this);
 		value.setConverter(this.converter);
 		return value;
