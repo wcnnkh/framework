@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.Any;
+import io.basc.framework.util.Value;
 import io.basc.framework.util.math.gcd.GreatestCommonDivisor;
 import lombok.NonNull;
 
@@ -206,7 +206,7 @@ public class Fraction extends RationalNumber {
 		return toString(molecule) + "/" + toString(denominator);
 	}
 
-	public int compareTo(Any value) {
+	public int compareTo(Value value) {
 		if (value.isNumber()) {
 			if (value instanceof Fraction) {
 				return molecule.multiply(((Fraction) value).denominator)

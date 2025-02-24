@@ -16,17 +16,17 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 			extends Parameter, PropertyWrapper<W>, ParameterDescriptorWrapper<W> {
 	}
 
-	public static class SharedParmeter<W extends ParameterDescriptor> extends SharedProperty<W>
+	public static class StandardParmeter<W extends ParameterDescriptor> extends StandardProperty<W>
 			implements Parameter, ParameterDescriptorWrapper<W> {
 		private static final long serialVersionUID = 1L;
 
-		public SharedParmeter(@NonNull W source) {
+		public StandardParmeter(@NonNull W source) {
 			super(source);
 		}
 	}
 
 	@Data
-	public static class StandardParameter<W extends Property> implements Parameter, PropertyWrapper<W> {
+	public static class PropertyParameter<W extends Property> implements Parameter, PropertyWrapper<W> {
 		private final int index;
 		@NonNull
 		private final W source;
@@ -38,7 +38,7 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 	}
 
 	public static Parameter of(int index, @NonNull Property property) {
-		return new StandardParameter<>(index, property);
+		return new PropertyParameter<>(index, property);
 	}
 
 	public static Parameter of(int index, @NonNull PropertyDescriptor propertyDescriptor) {
@@ -54,7 +54,7 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 		if (parameterDescriptor instanceof Parameter) {
 			return (Parameter) parameterDescriptor;
 		}
-		return new SharedParmeter<>(parameterDescriptor);
+		return new StandardParmeter<>(parameterDescriptor);
 	}
 
 	/**

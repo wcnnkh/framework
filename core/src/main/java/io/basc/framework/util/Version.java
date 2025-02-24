@@ -14,7 +14,7 @@ import lombok.NonNull;
  * @author shuchaowen
  *
  */
-public interface Version extends Any, Comparable<Any> {
+public interface Version extends Value, Comparable<Value> {
 	@Data
 	public static class JoinVersion implements Version {
 		@NonNull
@@ -22,9 +22,9 @@ public interface Version extends Any, Comparable<Any> {
 		private final CharSequence delimiter;
 
 		@Override
-		public int compareTo(Any other) {
+		public int compareTo(Value other) {
 			if (other.isMultiple()) {
-				Elements<? extends Any> otherElements = other.getAsElements().toList();
+				Elements<? extends Value> otherElements = other.getAsElements().toList();
 				int compare = compareTo(otherElements);
 				if (compare != 0) {
 					return compare;
@@ -49,12 +49,12 @@ public interface Version extends Any, Comparable<Any> {
 			}
 		}
 
-		private int compareTo(Elements<? extends Any> otherElements) {
+		private int compareTo(Elements<? extends Value> otherElements) {
 			Iterator<? extends Version> iterator = elements.iterator();
-			Iterator<? extends Any> otherIterator = otherElements.iterator();
+			Iterator<? extends Value> otherIterator = otherElements.iterator();
 			while (iterator.hasNext() && otherIterator.hasNext()) {
 				Version version = iterator.next();
-				Any other = otherIterator.next();
+				Value other = otherIterator.next();
 				int v = version.compareTo(other);
 				if (v == 0) {
 					continue;
@@ -97,10 +97,10 @@ public interface Version extends Any, Comparable<Any> {
 		}
 	}
 
-	public static interface VersionWrapper<W extends Version> extends Version, AnyWrapper<W> {
+	public static interface VersionWrapper<W extends Version> extends Version, ValueWrapper<W> {
 
 		@Override
-		default int compareTo(@NonNull Any other) {
+		default int compareTo(@NonNull Value other) {
 			return getSource().compareTo(other);
 		}
 
@@ -114,7 +114,7 @@ public interface Version extends Any, Comparable<Any> {
 	 * 默认使用字符串的方式比较，如果有更合理的方式请重写
 	 */
 	@Override
-	default int compareTo(@NonNull Any other) {
+	default int compareTo(@NonNull Value other) {
 		return getAsString().compareTo(other.getAsString());
 	}
 

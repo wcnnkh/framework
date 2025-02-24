@@ -9,21 +9,23 @@ import java.util.Collection;
 import java.util.stream.IntStream;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.Any;
 import io.basc.framework.util.CharSequenceTemplate;
+import io.basc.framework.util.Value;
 import io.basc.framework.util.Version;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.Enumerable;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Supplier;
+import io.basc.framework.util.function.Wrapped;
 import io.basc.framework.util.math.BigDecimalValue;
 import io.basc.framework.util.math.NumberUtils;
 import io.basc.framework.util.math.NumberValue;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @FunctionalInterface
-public interface Source extends SourceDescriptor, Any, Supplier<Object, ConversionException> {
+public interface Source extends SourceDescriptor, Value, Supplier<Object, ConversionException> {
 
 	public static class EmptyValue implements Source, Serializable {
 		private static final long serialVersionUID = 1L;
@@ -34,13 +36,16 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 		}
 	}
 
-	@Data
-	public static class SharedValue<W extends SourceDescriptor>
+	@Getter
+	@Setter
+	public static class StandardSource<W extends SourceDescriptor> extends Wrapped<W>
 			implements Source, SourceDescriptorWrapper<W>, Serializable {
 		private static final long serialVersionUID = 1L;
-		@NonNull
-		private final W source;
 		private Object value;
+
+		public StandardSource(W source) {
+			super(source);
+		}
 
 		@Override
 		public Object get() throws ConversionException {
@@ -49,13 +54,14 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 
 		@Override
 		public TypeDescriptor getTypeDescriptor() {
-			return getSource().getTypeDescriptor();
+			TypeDescriptor typeDescriptor = SourceDescriptorWrapper.super.getTypeDescriptor();
+			return typeDescriptor == null ? Source.super.getTypeDescriptor() : typeDescriptor;
 		}
 	}
 
 	@FunctionalInterface
-	public static interface SourceWrapper<W extends Source>
-			extends Source, SourceDescriptorWrapper<W>, AnyWrapper<W>, SupplierWrapper<Object, ConversionException, W> {
+	public static interface SourceWrapper<W extends Source> extends Source, SourceDescriptorWrapper<W>, ValueWrapper<W>,
+			SupplierWrapper<Object, ConversionException, W> {
 
 		@Override
 		default Object get() throws ConversionException {
@@ -93,8 +99,8 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 		}
 
 		@Override
-		default Version getAsVersion() {
-			return getSource().getAsVersion();
+		default <T> Data<T> getAsData(Class<? extends T> requriedType) {
+			return getSource().getAsData(requriedType);
 		}
 
 		@Override
@@ -169,6 +175,11 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 		}
 
 		@Override
+		default Version getAsVersion() {
+			return getSource().getAsVersion();
+		}
+
+		@Override
 		default TypeDescriptor getTypeDescriptor() {
 			return getSource().getTypeDescriptor();
 		}
@@ -184,19 +195,14 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 		}
 
 		@Override
-		default <T> Value<T> getAsValue(Class<? extends T> requriedType) {
-			return getSource().getAsValue(requriedType);
+		default <R> Data<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
+			return getSource().map(mapper);
 		}
 
 		@Override
-		default <T> Value<T> map(@NonNull TypeDescriptor requriedTypeDescriptor,
+		default <T> Data<T> map(@NonNull TypeDescriptor requriedTypeDescriptor,
 				@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
 			return getSource().map(requriedTypeDescriptor, converter);
-		}
-
-		@Override
-		default <R> Value<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
-			return getSource().map(mapper);
 		}
 
 	}
@@ -218,11 +224,10 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Source) value;
 		}
 
-		TypeDescriptor typeDescriptor = type == null ? TypeDescriptor.forObject(value) : type;
-		SharedValueDescriptor valueDescriptor = new SharedValueDescriptor(typeDescriptor);
-		SharedValue<SharedValueDescriptor> sharedValue = new SharedValue<>(valueDescriptor);
-		sharedValue.setValue(value);
-		return sharedValue;
+		Any any = new Any();
+		any.setObject(value);
+		any.setTypeDescriptor(type);
+		return any;
 	}
 
 	default BigDecimal getAsBigDecimal() {
@@ -239,14 +244,14 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return new BigDecimal((BigInteger) value);
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsBigDecimal();
+		if (value instanceof Value) {
+			return ((Value) value).getAsBigDecimal();
 		}
 
 		if (value instanceof Number) {
 			return new BigDecimal(((Number) value).doubleValue());
 		}
-		return getAsValue(BigDecimal.class).orElse(null);
+		return getAsData(BigDecimal.class).orElse(null);
 	}
 
 	default BigInteger getAsBigInteger() {
@@ -263,11 +268,11 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return ((BigDecimal) value).toBigInteger();
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsBigInteger();
+		if (value instanceof Value) {
+			return ((Value) value).getAsBigInteger();
 		}
 
-		return getAsValue(BigInteger.class).orElse(null);
+		return getAsData(BigInteger.class).orElse(null);
 	}
 
 	default boolean getAsBoolean() {
@@ -280,14 +285,14 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Boolean) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsBoolean();
+		if (value instanceof Value) {
+			return ((Value) value).getAsBoolean();
 		}
 
 		if (value instanceof Number) {
 			return ((Number) value).intValue() == 1;
 		}
-		return getAsValue(boolean.class).orElse(false);
+		return getAsData(boolean.class).orElse(false);
 	}
 
 	default byte getAsByte() {
@@ -300,15 +305,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Byte) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsByte();
+		if (value instanceof Value) {
+			return ((Value) value).getAsByte();
 		}
 
 		if (value instanceof Number) {
 			return ((Number) value).byteValue();
 		}
 
-		return getAsValue(byte.class).orElse(null);
+		return getAsData(byte.class).orElse(null);
 	}
 
 	default char getAsChar() {
@@ -321,29 +326,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Character) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsChar();
+		if (value instanceof Value) {
+			return ((Value) value).getAsChar();
 		}
 
-		return getAsValue(char.class).orElse((char) 0);
+		return getAsData(char.class).orElse((char) 0);
 	}
 
-	@Override
-	default Version getAsVersion() {
-		Object value = get();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof CharSequence) {
-			return new CharSequenceTemplate((CharSequence) value);
-		}
-
-		if (value instanceof Any) {
-			return ((Any) value).getAsVersion();
-		}
-
-		return getAsValue(Version.class).orElse(null);
+	default <T> Data<T> getAsData(Class<? extends T> requriedType) {
+		return map(TypeDescriptor.valueOf(requriedType), Converter.unsupported());
 	}
 
 	@Override
@@ -357,15 +348,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Double) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsDouble();
+		if (value instanceof Value) {
+			return ((Value) value).getAsDouble();
 		}
 
 		if (value instanceof Number) {
 			return ((Number) value).doubleValue();
 		}
 
-		return getAsValue(double.class).orElse(0d);
+		return getAsData(double.class).orElse(0d);
 	}
 
 	@Override
@@ -405,11 +396,11 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (T) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsEnum(enumType);
+		if (value instanceof Value) {
+			return ((Value) value).getAsEnum(enumType);
 		}
 
-		return getAsValue(enumType).orElse(null);
+		return getAsData(enumType).orElse(null);
 	}
 
 	default float getAsFloat() {
@@ -430,7 +421,7 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return ((Source) value).getAsFloat();
 		}
 
-		return getAsValue(float.class).orElse(0f);
+		return getAsData(float.class).orElse(0f);
 	}
 
 	@Override
@@ -444,15 +435,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Integer) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsInt();
+		if (value instanceof Value) {
+			return ((Value) value).getAsInt();
 		}
 
 		if (value instanceof Number) {
 			return ((Number) value).intValue();
 		}
 
-		return getAsValue(int.class).orElse(0);
+		return getAsData(int.class).orElse(0);
 	}
 
 	@Override
@@ -466,15 +457,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Long) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsLong();
+		if (value instanceof Value) {
+			return ((Value) value).getAsLong();
 		}
 
 		if (value instanceof Number) {
 			return ((Number) value).longValue();
 		}
 
-		return (long) getAsValue(long.class).orElse(0L);
+		return getAsData(long.class).orElse(0L);
 	}
 
 	default NumberValue getAsNumber() {
@@ -491,15 +482,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return new BigDecimalValue(getAsString());
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsNumber();
+		if (value instanceof Value) {
+			return ((Value) value).getAsNumber();
 		}
 
-		return getAsValue(NumberValue.class).orElse(null);
+		return getAsData(NumberValue.class).orElse(null);
 	}
 
 	default <T> T getAsObject(Class<? extends T> type) {
-		return getAsObject(type, () -> getAsValue(type).orElse(null));
+		return getAsObject(type, () -> getAsData(type).orElse(null));
 	}
 
 	default Object getAsObject(ResolvableType type) {
@@ -517,27 +508,6 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 		return getAsObject(type.getType(), () -> map(type, Converter.unsupported()).orElse(null));
 	}
 
-	@Override
-	default <R> Value<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
-		Value<R> value = new Value<>();
-		value.setObject(this);
-		value.setMapper(mapper);
-		return value;
-	}
-
-	default <T> Value<T> getAsValue(Class<? extends T> requriedType) {
-		return map(TypeDescriptor.valueOf(requriedType), Converter.unsupported());
-	}
-
-	default <T> Value<T> map(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
-		Value<T> value = new Value<>();
-		value.setObject(this);
-		value.setTypeDescriptor(typeDescriptor);
-		value.setConverter(converter);
-		return value;
-	}
-
 	default short getAsShort() {
 		Object value = get();
 		if (value == null) {
@@ -548,15 +518,15 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (Short) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsShort();
+		if (value instanceof Value) {
+			return ((Value) value).getAsShort();
 		}
 
 		if (value instanceof Number) {
 			return ((Number) value).shortValue();
 		}
 
-		return getAsValue(short.class).orElse((short) 0);
+		return getAsData(short.class).orElse((short) 0);
 	}
 
 	default String getAsString() {
@@ -569,15 +539,33 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return (String) value;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).getAsString();
+		if (value instanceof Value) {
+			return ((Value) value).getAsString();
 		}
 
 		if (value instanceof Enum) {
 			return ((Enum<?>) value).name();
 		}
 
-		return (String) getAsValue(String.class).orElse(null);
+		return (String) getAsData(String.class).orElse(null);
+	}
+
+	@Override
+	default Version getAsVersion() {
+		Object value = get();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof CharSequence) {
+			return new CharSequenceTemplate((CharSequence) value);
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsVersion();
+		}
+
+		return getAsData(Version.class).orElse(null);
 	}
 
 	default TypeDescriptor getTypeDescriptor() {
@@ -613,8 +601,8 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return true;
 		}
 
-		if (value instanceof Any) {
-			return ((Any) value).isNumber();
+		if (value instanceof Value) {
+			return ((Value) value).isNumber();
 		}
 
 		try {
@@ -623,5 +611,22 @@ public interface Source extends SourceDescriptor, Any, Supplier<Object, Conversi
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	default <R> Data<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
+		Data<R> value = new Data<>();
+		value.setObject(this);
+		value.setMapper(mapper);
+		return value;
+	}
+
+	default <T> Data<T> map(@NonNull TypeDescriptor typeDescriptor,
+			@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
+		Data<T> value = new Data<>();
+		value.setObject(this);
+		value.setTypeDescriptor(typeDescriptor);
+		value.setConverter(converter);
+		return value;
 	}
 }

@@ -2,11 +2,10 @@ package io.basc.framework.core.convert;
 
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Optional;
-import lombok.Data;
 import lombok.NonNull;
 
-@Data
-public class Value<T> implements Optional<T, ConversionException> {
+@lombok.Data
+public class Data<T> implements Optional<T, ConversionException> {
 	private Converter<? super Object, ? extends Object, ? extends ConversionException> converter;
 	private Function<? super Object, ? extends T, ? extends ConversionException> mapper;
 	private TypeDescriptor typeDescriptor;
@@ -21,15 +20,15 @@ public class Value<T> implements Optional<T, ConversionException> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <R> Value<R> map(@NonNull Function<? super T, ? extends R, ? extends ConversionException> mapper) {
-		Value<R> value = new Value<>();
+	public <R> Data<R> map(@NonNull Function<? super T, ? extends R, ? extends ConversionException> mapper) {
+		Data<R> value = new Data<>();
 		value.setObject(this);
 		value.setMapper((Function<Object, ? extends R, ? extends ConversionException>) mapper);
 		return value;
 	}
 
-	public Source any() {
-		Target value = new Target();
+	public Any any() {
+		Any value = new Any();
 		value.setObject(this);
 		value.setConverter(this.converter);
 		return value;
@@ -44,7 +43,7 @@ public class Value<T> implements Optional<T, ConversionException> {
 		}
 
 		Class<?> rawClass = valueTypeDescriptor.getType();
-		if (rawClass == Object.class || rawClass == null || Value.class.isAssignableFrom(rawClass)
+		if (rawClass == Object.class || rawClass == null || Data.class.isAssignableFrom(rawClass)
 				|| valueTypeDescriptor.isAssignableTo(valueTypeDescriptor)) {
 			return mapper == null ? (T) value : mapper.apply(value);
 		}

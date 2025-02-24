@@ -4,15 +4,15 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.Any;
+import io.basc.framework.util.Value;
 import io.basc.framework.util.Version;
 import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.util.math.NumberValue;
 
-public interface Lookup<K, V extends Any> {
+public interface Lookup<K, V extends Value> {
 
 	@FunctionalInterface
-	public interface LookupWrapper<K, V extends Any, W extends Lookup<K, V>> extends Lookup<K, V>, Wrapper<W> {
+	public interface LookupWrapper<K, V extends Value, W extends Lookup<K, V>> extends Lookup<K, V>, Wrapper<W> {
 		@Override
 		default V get(K key) {
 			return getSource().get(key);

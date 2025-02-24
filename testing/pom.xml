@@ -29,10 +29,5 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
 	</dependencies>
 </project>

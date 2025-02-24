@@ -13,9 +13,9 @@ import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.util.math.NumberValue;
 
-public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
+public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
 	@FunctionalInterface
-	public static interface AnyWrapper<W extends Any> extends Any, Wrapper<W> {
+	public static interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
 		@Override
 		default <T> T getAsArray(Class<? extends T> arrayType) {
 			return getSource().getAsArray(arrayType);
@@ -52,7 +52,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 
 		@Override
-		default Elements<? extends Any> getAsElements() {
+		default Elements<? extends Value> getAsElements() {
 			return getSource().getAsElements();
 		}
 
@@ -112,7 +112,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 	}
 
-	public static class DefaultValue implements Any {
+	public static class DefaultValue implements Value {
 
 		@Override
 		public BigDecimal getAsBigDecimal() {
@@ -145,7 +145,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		}
 
 		@Override
-		public Elements<? extends Any> getAsElements() {
+		public Elements<? extends Value> getAsElements() {
 			return Elements.empty();
 		}
 
@@ -201,16 +201,16 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 
 	}
 
-	public static final Any DEFAULT = new DefaultValue();
+	public static final Value DEFAULT = new DefaultValue();
 
 	@SuppressWarnings("unchecked")
 	default <T> T getAsArray(Class<? extends T> arrayType) {
 		Class<?> componentType = arrayType.getComponentType();
-		Any[] values = getAsElements().toArray(new Any[0]);
+		Value[] values = getAsElements().toArray(new Value[0]);
 		int len = values.length;
 		T array = (T) Array.newInstance(componentType, len);
 		for (int i = 0; i < len; i++) {
-			Any value = values[i];
+			Value value = values[i];
 			if (value == null) {
 				continue;
 			}
@@ -251,7 +251,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 		throw new UnsupportedOperationException("Not a double");
 	}
 
-	default Elements<? extends Any> getAsElements() {
+	default Elements<? extends Value> getAsElements() {
 		throw new UnsupportedOperationException("Not a Multiple");
 	}
 
@@ -322,7 +322,7 @@ public interface Any extends IntSupplier, LongSupplier, DoubleSupplier, BooleanS
 			v = getAsNumber();
 		} else if (requiredType.isEnum()) {
 			v = getAsEnum((Class<? extends Enum>) requiredType);
-		} else if (requiredType == Any.class) {
+		} else if (requiredType == Value.class) {
 			v = this;
 		} else if (requiredType.isArray()) {
 			v = getAsArray(requiredType);

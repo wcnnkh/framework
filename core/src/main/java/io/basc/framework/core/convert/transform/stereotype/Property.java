@@ -11,28 +11,28 @@ public interface Property extends Accessor, PropertyDescriptor {
 			extends Property, AccessWrapper<W>, PropertyDescriptorWrapper<W> {
 	}
 
-	public static class SharedProperty<W extends PropertyDescriptor> extends SharedAccess<W>
+	public static class StandardProperty<W extends PropertyDescriptor> extends StandardAccess<W>
 			implements Property, PropertyDescriptorWrapper<W> {
 		private static final long serialVersionUID = 1L;
 
-		public SharedProperty(@NonNull W source) {
+		public StandardProperty(@NonNull W source) {
 			super(source);
 		}
 	}
 
 	@Data
-	public static class StandardProperty<W extends Accessor> implements Property, AccessWrapper<W> {
+	public static class PropertyAccessor<W extends Accessor> implements Property, AccessWrapper<W> {
 		private final String name;
 		@NonNull
 		private final W source;
 	}
 
 	public static Property of(String name, @NonNull AccessDescriptor accessDescriptor) {
-		return new SharedProperty<>(PropertyDescriptor.of(name, accessDescriptor));
+		return new StandardProperty<>(PropertyDescriptor.of(name, accessDescriptor));
 	}
 
 	public static Property of(String name, @NonNull Source value) {
 		Accessor access = Accessor.of(value);
-		return new StandardProperty<>(name, access);
+		return new PropertyAccessor<>(name, access);
 	}
 }

@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.Any;
+import io.basc.framework.util.Value;
 import io.basc.framework.util.Version;
 import io.basc.framework.util.collections.Elements;
 
@@ -164,7 +164,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public Elements<? extends Any> getAsElements() {
+	public Elements<? extends Value> getAsElements() {
 		return Elements.singleton(this);
 	}
 

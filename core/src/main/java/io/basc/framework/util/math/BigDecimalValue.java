@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-import io.basc.framework.util.Any;
+import io.basc.framework.util.Value;
 import io.basc.framework.util.logging.LogManager;
 import io.basc.framework.util.logging.Logger;
 
@@ -125,7 +125,7 @@ public class BigDecimalValue extends RationalNumber {
 	}
 
 	@Override
-	public int compareTo(Any o) {
+	public int compareTo(Value o) {
 		if (o.isNumber()) {
 			BigDecimal value = o.getAsBigDecimal();
 			return this.value.compareTo(value);

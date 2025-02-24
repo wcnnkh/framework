@@ -25,12 +25,12 @@ public interface Accessor extends Source, AccessDescriptor {
 			getSource().set(source);
 		}
 	}
-
-	public static class SharedAccess<W extends AccessDescriptor> extends SharedValue<W>
+	
+	public static class StandardAccess<W extends AccessDescriptor> extends StandardSource<W>
 			implements Accessor, AccessDescriptorWrapper<W> {
 		private static final long serialVersionUID = 1L;
 
-		public SharedAccess(@NonNull W source) {
+		public StandardAccess(@NonNull W source) {
 			super(source);
 		}
 
@@ -48,7 +48,7 @@ public interface Accessor extends Source, AccessDescriptor {
 	 * @return
 	 */
 	public static Accessor create(Source value) {
-		return new StandardAccess<>(value);
+		return new SourceAccess<>(value);
 	}
 
 	/**
@@ -64,11 +64,11 @@ public interface Accessor extends Source, AccessDescriptor {
 		return create(value);
 	}
 
-	public static class StandardAccess<W extends Source> implements Accessor, SourceWrapper<W> {
+	public static class SourceAccess<W extends Source> implements Accessor, SourceWrapper<W> {
 		private final W source;
-		private volatile SharedValue<W> holder;
+		private volatile StandardSource<W> holder;
 
-		public StandardAccess(@NonNull W source) {
+		public SourceAccess(@NonNull W source) {
 			this.source = source;
 		}
 
@@ -77,11 +77,11 @@ public interface Accessor extends Source, AccessDescriptor {
 			return source;
 		}
 
-		public SharedValue<W> getHolder() {
+		public StandardSource<W> getHolder() {
 			if (holder == null) {
 				synchronized (this) {
 					if (holder == null) {
-						holder = new SharedValue<>(source);
+						holder = new StandardSource<>(source);
 						holder.setValue(source.get());
 					}
 				}
