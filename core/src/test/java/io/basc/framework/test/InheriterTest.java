@@ -24,17 +24,17 @@ public class InheriterTest {
 			executor.execute(() -> {
 				System.out.println("1" + threadLocal.get());
 				assertTrue(threadLocal.get() == null);
-				threadLocal.set(UUIDSequences.getUUID());
+				threadLocal.set(UUIDSequences.global().next());
 			});
 		}
 
-		String id = UUIDSequences.getUUID();
+		String id = UUIDSequences.global().next();
 		threadLocal.set(id);
 		for (int i = 0; i < 10; i++) {
 			executor.execute(() -> {
 				System.out.println("2:" + threadLocal.get());
 				assertEquals(id, threadLocal.get());
-				threadLocal.set(UUIDSequences.getUUID());
+				threadLocal.set(UUIDSequences.global().next());
 			});
 		}
 	}

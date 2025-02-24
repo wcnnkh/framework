@@ -16,14 +16,14 @@ import io.basc.framework.util.sequences.uuid.UUIDSequences;
 public class FileRecordsTest {
 	@Test
 	public void test() throws IOException {
-		File file = File.createTempFile(UUIDSequences.getUUID(), UUIDSequences.getUUID());
+		File file = File.createTempFile(UUIDSequences.global().next(), UUIDSequences.global().next());
 		FileRecords<String> records = new FileRecords<String>(file, CharsetCodec.UTF_8);
 		try {
 			List<String> list = new ArrayList<String>();
 			for (int i = 0; i < 10; i++) {
 				StringBuilder sb = new StringBuilder();
 				for (int a = 0; a < 10; a++) {
-					sb.append(UUIDSequences.getUUID());
+					sb.append(UUIDSequences.global().next());
 				}
 				list.add(sb.toString());
 				records.append(list.get(i));

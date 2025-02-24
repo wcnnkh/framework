@@ -9,7 +9,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
+			<artifactId>core</artifactId>
 		</dependency>
 	</dependencies>
 </project>

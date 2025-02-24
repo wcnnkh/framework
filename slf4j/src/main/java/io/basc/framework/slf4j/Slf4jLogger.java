@@ -42,7 +42,7 @@ public class Slf4jLogger implements io.basc.framework.util.logging.Logger {
 		} else if (level.getName().equalsIgnoreCase(CustomLevel.ERROR.getName())) {
 			return logger.isErrorEnabled();
 		} else {
-			return io.basc.framework.util.logging.Logger.super.isLoggable(level);
+			return true;
 		}
 	}
 

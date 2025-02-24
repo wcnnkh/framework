@@ -205,6 +205,10 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 			return getSource().map(requriedTypeDescriptor, converter);
 		}
 
+		@Override
+		default Any any(@NonNull TypeDescriptor typeDescriptor) {
+			return getSource().any(typeDescriptor);
+		}
 	}
 
 	static final Source EMPTY = new EmptyValue();
@@ -505,7 +509,7 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 	}
 
 	default Object getAsObject(TypeDescriptor type) {
-		return getAsObject(type.getType(), () -> map(type, Converter.unsupported()).orElse(null));
+		return getAsObject(type.getType(), () -> any(type).orElse(null));
 	}
 
 	default short getAsShort() {
@@ -619,6 +623,13 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 		value.setObject(this);
 		value.setMapper(mapper);
 		return value;
+	}
+
+	default Any any(@NonNull TypeDescriptor typeDescriptor) {
+		Any any = new Any();
+		any.setObject(this);
+		any.setTypeDescriptor(typeDescriptor);
+		return any;
 	}
 
 	default <T> Data<T> map(@NonNull TypeDescriptor typeDescriptor,

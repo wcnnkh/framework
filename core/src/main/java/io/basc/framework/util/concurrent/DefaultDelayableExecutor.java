@@ -15,7 +15,7 @@ import io.basc.framework.util.sequences.uuid.UUIDSequences;
 public class DefaultDelayableExecutor implements DelayableExecutor {
 	private static Logger logger = LogManager.getLogger(DefaultDelayableExecutor.class);
 	private final ScheduledExecutorService scheduledExecutorService;
-	private StringSequence taskIdSequence = UUIDSequences.getInstance();
+	private StringSequence taskIdSequence = UUIDSequences.global();
 
 	public DefaultDelayableExecutor() {
 		this(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));

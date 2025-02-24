@@ -10,7 +10,7 @@ import io.basc.framework.util.sequences.uuid.UUIDSequences;
 public class CloneableTest {
 	@Test
 	public void test() throws CloneNotSupportedException {
-		A a = new A(UUIDSequences.getInstance().next());
+		A a = new A(UUIDSequences.global().next());
 		A b = a.clone();
 		assertTrue(StringUtils.equals(a.a, b.a));
 	}

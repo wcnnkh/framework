@@ -16,11 +16,11 @@ public class BeanMapperTest {
 	@Test
 	public void util() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("k", UUIDSequences.getUUID());
-		map.put("b.bk", UUIDSequences.getUUID());
+		map.put("k", UUIDSequences.global().next());
+		map.put("b.bk", UUIDSequences.global().next());
 		map.put("bk", "bk");
-		map.put("s.a", UUIDSequences.getUUID());
-		map.put("s.b", UUIDSequences.getUUID());
+		map.put("s.a", UUIDSequences.global().next());
+		map.put("s.b", UUIDSequences.global().next());
 		BeanMapper mapper = new BeanMapper();
 		A a = mapper.convert(map, A.class);
 		System.out.println(map);

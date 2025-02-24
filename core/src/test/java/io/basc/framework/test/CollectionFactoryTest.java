@@ -15,8 +15,8 @@ public class CollectionFactoryTest {
 	@Test
 	public void list() throws ClassNotFoundException, SerializerException {
 		TestList bean = new TestList();
-		bean.add(UUIDSequences.getInstance().next());
-		bean.setV(UUIDSequences.getInstance().next());
+		bean.add(UUIDSequences.global().next());
+		bean.setV(UUIDSequences.global().next());
 
 		TestList clone = CollectionUtils.clone(bean);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
@@ -25,8 +25,8 @@ public class CollectionFactoryTest {
 	@Test
 	public void map() {
 		TestMap bean = new TestMap();
-		bean.put(UUIDSequences.getInstance().next(), UUIDSequences.getInstance().next());
-		bean.setV(UUIDSequences.getInstance().next());
+		bean.put(UUIDSequences.global().next(), UUIDSequences.global().next());
+		bean.setV(UUIDSequences.global().next());
 
 		TestMap clone = CollectionUtils.clone(bean);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);

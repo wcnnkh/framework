@@ -90,13 +90,8 @@ public class DynamicLogger implements Logger, Wrapper<Logger> {
 		return logRecord;
 	}
 
-	@Override
 	public Level getLevel() {
-		Level level = this.level;
-		if (level == null) {
-			level = source.getLevel();
-		}
-		return level;
+		return this.level;
 	}
 
 	@Override
@@ -113,6 +108,16 @@ public class DynamicLogger implements Logger, Wrapper<Logger> {
 		if (isLoggable(record.getLevel())) {
 			source.log(record);
 		}
+	}
+
+	@Override
+	public boolean isLoggable(Level level) {
+		Level acceptLevel = getLevel();
+		if (acceptLevel == null) {
+			return true;
+		}
+
+		return CustomLevel.isGreaterOrEqual(level, acceptLevel);
 	}
 
 	@Override

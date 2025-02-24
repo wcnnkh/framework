@@ -16,19 +16,19 @@ public class StreamProcessorTest {
 		List<String> list = new LinkedList<>();
 		list.add(a);
 		for (int i = 0; i < 10; i++) {
-			list.add(UUIDSequences.getUUID());
+			list.add(UUIDSequences.global().next());
 		}
 
 		Stream<String> stream = StreamSupport.stream(list.spliterator(), false).map((value) -> {
 			System.out.println("s1");
-			return "s1" + UUIDSequences.getUUID();
+			return "s1" + UUIDSequences.global().next();
 		}).onClose(() -> {
 			System.out.println("关闭s1");
 		});
 
 		stream = stream.map((value) -> {
 			System.out.println("s2");
-			return "s2-" + UUIDSequences.getUUID();
+			return "s2-" + UUIDSequences.global().next();
 		}).onClose(() -> {
 			System.out.println("关闭s2");
 		});

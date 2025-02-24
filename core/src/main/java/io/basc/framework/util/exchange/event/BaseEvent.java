@@ -38,7 +38,7 @@ public class BaseEvent extends EventObject {
 	 * @param source
 	 */
 	public BaseEvent(@NonNull Object source) {
-		this(source, UUIDSequences.getInstance().next(), System.currentTimeMillis());
+		this(source, UUIDSequences.global().next(), System.currentTimeMillis());
 	}
 
 	/**

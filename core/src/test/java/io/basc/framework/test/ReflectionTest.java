@@ -18,8 +18,8 @@ public class ReflectionTest {
 	@Test
 	public void test() {
 		TestBean bean = new TestBean();
-		bean.a = UUIDSequences.getInstance().next();
-		bean.b = new String[] { UUIDSequences.getInstance().next() };
+		bean.a = UUIDSequences.global().next();
+		bean.b = new String[] { UUIDSequences.global().next() };
 		bean.c = "sss";
 		bean.d = bean;
 		String a = bean.toString();
@@ -32,8 +32,8 @@ public class ReflectionTest {
 		assertTrue(ReflectionUtils.getDeclaredFields(a.getClass()).hashCode(a) == ReflectionUtils
 				.getDeclaredFields(b.getClass()).hashCode(b));
 
-		Map<String, Object> map = Collections.singletonMap(UUIDSequences.getInstance().next(),
-				UUIDSequences.getInstance().next());
+		Map<String, Object> map = Collections.singletonMap(UUIDSequences.global().next(),
+				UUIDSequences.global().next());
 		Map<String, Object> cloneMap = CollectionUtils.clone(map, true);
 		assertTrue(map.equals(cloneMap));
 
@@ -44,7 +44,7 @@ public class ReflectionTest {
 	@Test
 	public void cloneA() {
 		CloneA cloneA = new CloneA();
-		cloneA.a = UUIDSequences.getInstance().next();
+		cloneA.a = UUIDSequences.global().next();
 
 		CloneA c = cloneA.clone();
 		assertTrue(StringUtils.equals(cloneA.a, c.a));

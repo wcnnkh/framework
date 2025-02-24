@@ -33,7 +33,7 @@ public class ResponsiveIteratorTest {
 		@Override
 		public void run() {
 			while (++count < 100) {
-				String uuid = UUIDSequences.getUUID();
+				String uuid = UUIDSequences.global().next();
 				try {
 					iterator.put(uuid);
 					pushList.add(uuid);

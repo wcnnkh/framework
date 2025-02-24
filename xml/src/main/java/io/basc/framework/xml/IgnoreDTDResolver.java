@@ -7,18 +7,12 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import io.basc.framework.core.convert.Source;
-import io.basc.framework.core.env.SystemProperties;
-
 public class IgnoreDTDResolver implements EntityResolver {
-	private static final Source IGNORE_DTD = SystemProperties.getInstance().get("io.basc.framework.xml.ignore.dtd")
-			.or(true);
-
-	public static final EntityResolver INSTANCE = new IgnoreDTDResolver();
+	private boolean ignore = true;
 
 	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-		if (IGNORE_DTD.getAsBoolean() && systemId != null && systemId.endsWith(".dtd")) {
+		if (ignore && systemId != null && systemId.endsWith(".dtd")) {
 			return new InputSource(new StringReader(""));
 		}
 		return null;

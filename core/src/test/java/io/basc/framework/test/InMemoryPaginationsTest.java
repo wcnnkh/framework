@@ -16,7 +16,7 @@ public class InMemoryPaginationsTest {
 		int count = 100;
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < count; i++) {
-			list.add(UUIDSequences.getUUID());
+			list.add(UUIDSequences.global().next());
 		}
 
 		for (int i = 1; i < count; i++) {

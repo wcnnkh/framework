@@ -31,7 +31,7 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 	@NonNull
 	@Getter
 	@Setter
-	private StringSequence taskIdSequence = UUIDSequences.getInstance();
+	private StringSequence taskIdSequence = UUIDSequences.global();
 
 	public TaskQueue() {
 		this(new LinkedBlockingQueue<>());

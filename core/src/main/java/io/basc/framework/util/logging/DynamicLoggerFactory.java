@@ -79,6 +79,7 @@ public class DynamicLoggerFactory implements LoggerFactory {
 	}
 
 	public void setLevel(String name, Level level) {
+		//TODO 这样设计有BUG
 		synchronized (this) {
 			DynamicLogger logger = getLogger(name);
 			logger.setLevel(level);

@@ -10,7 +10,7 @@ public class ToStringTest {
 	public void test() {
 		ToStringBean bean = new ToStringBean();
 		bean.setA(new int[] { 1, 2 });
-		bean.setB(UUIDSequences.getUUID());
+		bean.setB(UUIDSequences.global().next());
 		bean.setC(new int[][] { { 1, 2 }, { 1, 2 } });
 		System.out.println(bean);
 	}

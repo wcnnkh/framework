@@ -13,10 +13,6 @@
 			<artifactId>boot</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>mvc</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-websocket</artifactId>
 		</dependency>

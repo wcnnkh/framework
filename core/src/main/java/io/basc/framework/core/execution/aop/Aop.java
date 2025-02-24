@@ -32,7 +32,7 @@ public class Aop extends CglibProxyFactory {
 	private final ExecutionInterceptorRegistry executionInterceptorRegistry = new ExecutionInterceptorRegistry();
 
 	public Aop() {
-		this.id = UUIDSequences.getInstance().next();
+		this.id = UUIDSequences.global().next();
 	}
 
 	public final String getId() {

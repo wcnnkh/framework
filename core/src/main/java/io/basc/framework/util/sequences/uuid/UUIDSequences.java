@@ -6,19 +6,24 @@ import io.basc.framework.util.Range;
 import io.basc.framework.util.spi.ConfigurableServices;
 
 public class UUIDSequences extends ConfigurableServices<UUIDSequence> implements UUIDSequence {
-	private static UUIDSequences instance;
+	private static UUIDSequences global;
 
-	public static UUIDSequences getInstance() {
-		if (instance == null) {
+	/**
+	 * 全局的UUID序列实现
+	 * 
+	 * @return
+	 */
+	public static UUIDSequences global() {
+		if (global == null) {
 			synchronized (UUIDSequences.class) {
-				if (instance == null) {
-					instance = new UUIDSequences();
-					instance.register(RandomUUIDSequence.getInstance());
-					instance.doNativeConfigure();
+				if (global == null) {
+					global = new UUIDSequences();
+					global.register(RandomUUIDSequence.getInstance());
+					global.doNativeConfigure();
 				}
 			}
 		}
-		return instance;
+		return global;
 	}
 
 	@Override
@@ -41,9 +46,5 @@ public class UUIDSequences extends ConfigurableServices<UUIDSequence> implements
 		}
 		throw new UnsupportedOperationException(
 				"Unsupported length range " + lengthRange + " or version range " + versionRange);
-	}
-
-	public static String getUUID() {
-		return getInstance().next();
 	}
 }

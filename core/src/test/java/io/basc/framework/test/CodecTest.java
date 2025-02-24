@@ -25,7 +25,7 @@ import io.basc.framework.util.codec.support.URLCodec;
 import io.basc.framework.util.sequences.uuid.UUIDSequences;
 
 public class CodecTest {
-	public static String content = UUIDSequences.getUUID() + "这是一段加解密测试内容!";
+	public static String content = UUIDSequences.global().next() + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 
 	@Test

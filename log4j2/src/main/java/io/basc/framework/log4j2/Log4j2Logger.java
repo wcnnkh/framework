@@ -6,14 +6,13 @@ import java.util.logging.LogRecord;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.placeholder.FormatableMessage;
 
 public class Log4j2Logger implements io.basc.framework.util.logging.Logger {
 	private final Logger logger;
 	private final String placeholder;
 
-	public Log4j2Logger(Logger logger, @Nullable String placeholder) {
+	public Log4j2Logger(Logger logger, String placeholder) {
 		this.placeholder = placeholder;
 		this.logger = logger;
 	}

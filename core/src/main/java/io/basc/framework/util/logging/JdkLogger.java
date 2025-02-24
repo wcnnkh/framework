@@ -21,11 +21,6 @@ public class JdkLogger implements io.basc.framework.util.logging.Logger {
 	}
 
 	@Override
-	public Level getLevel() {
-		return logger.getLevel();
-	}
-
-	@Override
 	public String getName() {
 		return logger.getName();
 	}

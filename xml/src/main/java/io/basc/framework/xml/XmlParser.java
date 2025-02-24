@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,66 +16,40 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import io.basc.framework.beans.factory.spi.SPI;
+import io.basc.framework.core.convert.Any;
 import io.basc.framework.core.convert.ConversionException;
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.env.SystemProperties;
 import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.io.Resource;
-import io.basc.framework.util.logging.Logger;
 import io.basc.framework.util.logging.LogManager;
+import io.basc.framework.util.logging.Logger;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@RequiredArgsConstructor
+@Getter
+@Setter
 public class XmlParser implements DocumentParser, ConversionService {
 	private static Logger logger = LogManager.getLogger(XmlParser.class);
-	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
-	@Nullable
-	private static final EntityResolver ENTITY_RESOLVER = SPI.getServices(EntityResolver.class).first();
-
-	static {
-		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(SystemProperties.getInstance()
-				.get("io.basc.framework.xml.ignoring.element.content.whitespace").or(true).getAsBoolean());
-		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(
-				SystemProperties.getInstance().get("io.basc.framework.xml.ignoring.comments").or(true).getAsBoolean());
-		DOCUMENT_BUILDER_FACTORY.setCoalescing(
-				SystemProperties.getInstance().get("io.basc.framework.dom.coalescing").or(true).getAsBoolean());
-		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(
-				SystemProperties.getInstance().getAsBoolean("io.basc.framework.xml.expand.entity.references"));
-		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(
-				SystemProperties.getInstance().getAsBoolean("io.basc.framework.xml.namespace.aware"));
-		try {
-			DOCUMENT_BUILDER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		} catch (ParserConfigurationException e) {
-			logger.warn(e, "config document builder factory error!");
-		}
-	}
-
-	private final DocumentBuilderFactory documentBuilderFactory;
-	private EntityResolver entityResolver;
+	@NonNull
+	private DocumentBuilderFactory documentBuilderFactory;
+	@NonNull
+	private EntityResolver entityResolver = new IgnoreDTDResolver();
 
 	public XmlParser() {
-		this(DOCUMENT_BUILDER_FACTORY);
-	}
-
-	public XmlParser(DocumentBuilderFactory documentBuilderFactory) {
-		Assert.requiredArgument(documentBuilderFactory != null, "documentBuilderFactory");
-		this.documentBuilderFactory = documentBuilderFactory;
-	}
-
-	public EntityResolver getEntityResolver() {
-		if (entityResolver == null) {
-			return IgnoreDTDResolver.INSTANCE;
-		}
-		return entityResolver;
-	}
-
-	public void setEntityResolver(EntityResolver entityResolver) {
-		this.entityResolver = entityResolver;
+		this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		this.documentBuilderFactory.setIgnoringElementContentWhitespace(true);
+		this.documentBuilderFactory.setIgnoringComments(true);
+		this.documentBuilderFactory.setCoalescing(true);
+		this.documentBuilderFactory.setExpandEntityReferences(false);
+		this.documentBuilderFactory.setNamespaceAware(false);
 	}
 
 	public DocumentBuilder getDocumentBuilder() {
@@ -101,7 +74,7 @@ public class XmlParser implements DocumentParser, ConversionService {
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource,
 			Function<? super Document, ? extends T, ? extends E> processor) throws IOException, DomException, E {
-		return resource.read((is) -> {
+		return resource.getInputStreamPipeline().optional().apply((is) -> {
 			Document document = parse(is);
 			if (document == null) {
 				return null;
@@ -191,18 +164,20 @@ public class XmlParser implements DocumentParser, ConversionService {
 						|| InputSource.class.isAssignableFrom(sourceType.getType())
 						|| File.class.isAssignableFrom(sourceType.getType()));
 	}
-
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (InputStream.class.isAssignableFrom(sourceType.getType())) {
-			return XmlUtils.getTemplate().getParser().parse((InputStream) source);
-		} else if (Reader.class.isAssignableFrom(sourceType.getType())) {
-			return XmlUtils.getTemplate().getParser().parse((Reader) source);
-		} else if (String.class.isAssignableFrom(sourceType.getType())) {
-			return XmlUtils.getTemplate().getParser().parse((String) source);
+	
+	@Override
+	public Object convert(@NonNull Source source, @NonNull TypeDescriptor targetType) throws ConversionException {
+		Object input = source.any(targetType).orElse(null);
+		if (input instanceof InputStream) {
+			return parse((InputStream) source.get());
+		} else if (Reader.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
+			return parse((Reader) source);
+		} else if (String.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
+			return parse((String) source.get());
 		} else if (InputSource.class.isAssignableFrom(sourceType.getType())) {
-			return XmlUtils.getTemplate().getParser().parse((InputSource) source);
+			return parse((InputSource) source);
 		} else if (File.class.isAssignableFrom(sourceType.getType())) {
-			return XmlUtils.getTemplate().getParser().parse((File) source);
+			return parse((File) source);
 		}
 		throw new ConversionException(sourceType.toString());
 	}

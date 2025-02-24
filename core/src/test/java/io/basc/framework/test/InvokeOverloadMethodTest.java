@@ -17,7 +17,7 @@ public class InvokeOverloadMethodTest {
 		}
 
 		for (int i = 0; i < 100; i++) {
-			int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, UUIDSequences.getUUID());
+			int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, UUIDSequences.global().next());
 			assertTrue(value == 10);
 		}
 	}

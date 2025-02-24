@@ -53,8 +53,6 @@ public interface Logger {
 		log(createRecord(CustomLevel.ERROR, e, msg, args));
 	}
 
-	Level getLevel();
-
 	String getName();
 
 	default void info(String msg) {
@@ -85,14 +83,7 @@ public interface Logger {
 		return isLoggable(CustomLevel.INFO);
 	}
 
-	default boolean isLoggable(Level level) {
-		Level acceptLevel = getLevel();
-		if (acceptLevel == null) {
-			return true;
-		}
-
-		return CustomLevel.isGreaterOrEqual(level, acceptLevel);
-	}
+	boolean isLoggable(Level level);
 
 	default boolean isTraceEnabled() {
 		return isLoggable(CustomLevel.TRACE);

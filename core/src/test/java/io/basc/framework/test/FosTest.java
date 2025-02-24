@@ -23,7 +23,7 @@ public class FosTest {
 				try {
 					OutputStreamWriter write = new OutputStreamWriter(fos);
 					try {
-						String content = UUIDSequences.getUUID() + "\n";
+						String content = UUIDSequences.global().next() + "\n";
 						write.append(content);
 						sb.append(content);
 						write.flush();

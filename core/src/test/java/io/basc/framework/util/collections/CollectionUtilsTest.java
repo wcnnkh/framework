@@ -13,7 +13,7 @@ public class CollectionUtilsTest {
 	public void test() {
 		TreeMap<String, String> map = new TreeMap<String, String>((e1, e2) -> e2.compareTo(e1));
 		for (int i = 0; i < 100; i++) {
-			String value = UUIDSequences.getUUID();
+			String value = UUIDSequences.global().next();
 			map.put(value, value);
 		}
 		assertTrue(CollectionUtils.equals(map.keySet(), map.values()));
