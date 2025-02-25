@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.core.convert.Source;
+import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.config.ConversionService;
 import io.basc.framework.core.convert.config.ConversionServiceAware;
@@ -21,6 +22,7 @@ import io.basc.framework.core.convert.support.DefaultConversionService;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.net.Request;
 import io.basc.framework.net.convert.support.AbstractMessageConverter;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
@@ -49,28 +51,28 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	@NonNull
 	private MultipartMessageResolver multipartMessageResolver = GlobalMultipartMessageResolver.getInstance();
 	@NonNull
-	private StringSequence boundarySequence = UUIDSequences.getInstance();
+	private StringSequence boundarySequence = UUIDSequences.global();
 
 	public MultipartMessageConverter() {
 		getMediaTypeRegistry().add(MediaType.MULTIPART_FORM_DATA);
 	}
 
-	protected boolean canReadType(TypeDescriptor type) {
-		if (type.isArray() || type.isCollection()) {
-			return type.getElementTypeDescriptor().getType() == MultipartMessage.class;
+	protected boolean canReadType(TargetDescriptor targetDescriptor) {
+		if (targetDescriptor.getRequiredTypeDescriptor().isArray() || targetDescriptor.getRequiredTypeDescriptor().isCollection()) {
+			return targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor().getType() == MultipartMessage.class;
 		}
 
-		return type.getType() == MultipartMessage.class;
+		return targetDescriptor.getRequiredTypeDescriptor().getType() == MultipartMessage.class;
 	}
-
+	
 	@Override
-	public boolean isReadable(TypeDescriptor typeDescriptor, MimeType contentType) {
-		return multipartMessageResolver != null && canReadType(typeDescriptor)
-				&& super.isReadable(typeDescriptor, contentType);
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, MimeType contentType) {
+		return multipartMessageResolver != null && canReadType(targetDescriptor)
+				&& super.isReadable(targetDescriptor, contentType);
 	}
-
+	
 	@Override
-	protected Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
+	protected Object doRead(TargetDescriptor targetDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException {
 		List<MultipartMessage> fileItems;
 		if (multipartMessageResolver.isMultipart(inputMessage)) {
@@ -80,7 +82,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 					inputMessage);
 			fileItems = Arrays.asList(multipartMessage);
 		}
-		return convert(fileItems, typeDescriptor);
+		return convert(fileItems, targetDescriptor.getRequiredTypeDescriptor());
 	}
 
 	protected Object convert(Collection<MultipartMessage> messages, TypeDescriptor typeDescriptor) {
@@ -103,9 +105,10 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 			return Elements.of(messages).first();
 		}
 	}
-
+	
 	@Override
-	protected void doWrite(Source source, MediaType contentType, OutputMessage outputMessage) throws IOException {
+	protected void doWrite(Source source, MediaType contentType, Request request, OutputMessage outputMessage)
+			throws IOException {
 		String boundary;
 		MediaType mimeType = contentType;
 		if (contentType != null) {

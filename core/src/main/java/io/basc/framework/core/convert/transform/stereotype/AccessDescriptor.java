@@ -1,24 +1,20 @@
 package io.basc.framework.core.convert.transform.stereotype;
 
 import io.basc.framework.core.convert.SourceDescriptor;
+import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.core.convert.TypeDescriptor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
-public interface AccessDescriptor extends SourceDescriptor {
+public interface AccessDescriptor extends SourceDescriptor, TargetDescriptor {
 	@FunctionalInterface
 	public static interface AccessDescriptorWrapper<W extends AccessDescriptor>
-			extends AccessDescriptor, SourceDescriptorWrapper<W> {
+			extends AccessDescriptor, SourceDescriptorWrapper<W>, TargetDescriptorWrapper<W> {
 		@Override
 		default TypeDescriptor getRequiredTypeDescriptor() {
 			return getSource().getRequiredTypeDescriptor();
-		}
-
-		@Override
-		default boolean isRequired() {
-			return getSource().isRequired();
 		}
 	}
 
@@ -49,14 +45,5 @@ public interface AccessDescriptor extends SourceDescriptor {
 	 */
 	default TypeDescriptor getRequiredTypeDescriptor() {
 		return getTypeDescriptor();
-	}
-
-	/**
-	 * 是否是必需的
-	 * 
-	 * @return true表示set是不能插入空值
-	 */
-	default boolean isRequired() {
-		return false;
 	}
 }

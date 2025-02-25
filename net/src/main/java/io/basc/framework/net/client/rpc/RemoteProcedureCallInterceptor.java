@@ -34,12 +34,12 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 				// TODO ignore log
 				continue;
 			}
-			messageConverter.writeTo(parameter, request, request);
+			messageConverter.writeTo(parameter, null, request, request);
 		}
 
 		ClientResponse response = request.execute();
 		try {
-			return messageConverter.readFrom(AccessDescriptor.of(function.getReturnTypeDescriptor()), response);
+			return messageConverter.readFrom(AccessDescriptor.of(function.getReturnTypeDescriptor()), null, response);
 		} finally {
 			response.close();
 		}

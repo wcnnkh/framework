@@ -21,14 +21,10 @@ import java.util.regex.Pattern;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
-import lombok.NonNull;
 
 public final class InetUtils {
 	private InetUtils() {
 	};
-
-	private static final String MESSAGE_ID = "io-basc-framework-message-id";
 
 	/**
 	 * 本地ip
@@ -215,26 +211,6 @@ public final class InetUtils {
 		} catch (MalformedURLException e) {
 			return false;
 		}
-	}
-
-	public static String getMessageId(@NonNull Message input, Message output) {
-		String messageId = input.getHeaders().getFirst(MESSAGE_ID);
-		if (messageId != null) {
-			return messageId;
-		}
-
-		if (output != null && input != output) {
-			messageId = output.getHeaders().getFirst(MESSAGE_ID);
-			if (messageId != null) {
-				return messageId;
-			}
-		}
-
-		messageId = UUIDSequences.getInstance().next();
-		if (output != null) {
-			output.getHeaders().set(MESSAGE_ID, messageId);
-		}
-		return messageId;
 	}
 
 	public static boolean isAvailablePort(int port) {

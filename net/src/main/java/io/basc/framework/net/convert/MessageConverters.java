@@ -6,8 +6,10 @@ import java.util.Comparator;
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.SourceDescriptor;
+import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
 import io.basc.framework.net.InputMessage;
+import io.basc.framework.net.MediaType;
 import io.basc.framework.net.MediaTypes;
 import io.basc.framework.net.OutputMessage;
 import io.basc.framework.net.Request;
@@ -66,28 +68,27 @@ public class MessageConverters<T extends MessageConverter> extends Providers<T, 
 	}
 
 	@Override
-	public boolean isReadable(@NonNull AccessDescriptor targetDescriptor, MimeType contentType) {
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, MimeType contentType) {
 		return optional().filter((e) -> e.isReadable(targetDescriptor, contentType)).isPresent();
 	}
 
 	@Override
-	public Object readFrom(@NonNull AccessDescriptor targetDescriptor, @NonNull InputMessage inputMessage)
-			throws IOException {
+	public Object readFrom(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
+			@NonNull InputMessage inputMessage) throws IOException {
 		return optional().filter((e) -> e.isReadable(targetDescriptor, inputMessage.getContentType()))
 				.apply((converter) -> {
 					if (converter == null) {
 						if (logger.isDebugEnabled()) {
 							logger.debug("not support read descriptor={}, contentType={}", targetDescriptor,
-									inputMessage.getContentType());
+									contentType);
 						}
 						return null;
 					}
 
 					if (logger.isTraceEnabled()) {
-						logger.trace("{} read descriptor={}, contentType={}", converter, targetDescriptor,
-								inputMessage.getContentType());
+						logger.trace("{} read descriptor={}, contentType={}", converter, targetDescriptor, contentType);
 					}
-					return converter.readFrom(targetDescriptor, inputMessage);
+					return converter.readFrom(targetDescriptor, contentType, inputMessage);
 				});
 	}
 
@@ -97,20 +98,20 @@ public class MessageConverters<T extends MessageConverter> extends Providers<T, 
 	}
 
 	@Override
-	public void writeTo(Source value, @NonNull Request request, @NonNull OutputMessage outputMessage)
-			throws IOException {
-		optional().filter((e) -> e.isWriteable(value, outputMessage.getContentType())).map((e) -> {
+	public void writeTo(Source value, MediaType contentType, @NonNull Request request,
+			@NonNull OutputMessage outputMessage) throws IOException {
+		optional().filter((e) -> e.isWriteable(value, contentType)).map((e) -> {
 			if (e == null) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("not support wirte body={}, contentType={}", value, outputMessage.getContentType());
+					logger.debug("not support wirte body={}, contentType={}", value, contentType);
 				}
 			}
 			return e;
 		}).ifPresent((converter) -> {
 			if (logger.isTraceEnabled()) {
-				logger.trace("{} write body={}, contentType={}", converter, value, outputMessage.getContentType());
+				logger.trace("{} write body={}, contentType={}", converter, value, contentType);
 			}
-			converter.writeTo(value, request, outputMessage);
+			converter.writeTo(value, contentType, request, outputMessage);
 		});
 	}
 }

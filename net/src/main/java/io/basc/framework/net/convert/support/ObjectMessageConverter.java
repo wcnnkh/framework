@@ -2,41 +2,39 @@ package io.basc.framework.net.convert.support;
 
 import java.io.IOException;
 
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Data;
 import io.basc.framework.core.convert.Source;
+import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.net.Request;
 import io.basc.framework.util.io.MimeType;
+import lombok.NonNull;
 
 public abstract class ObjectMessageConverter<T> extends AbstractMessageConverter {
+	private final Class<? extends T> requriedType;
 
-	protected long getContentLength(T source, MimeType contentType) {
-		return -1;
+	public ObjectMessageConverter(@NonNull Class<? extends T> requriedType) {
+		this.requriedType = requriedType;
 	}
 
 	@Override
-	protected final Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
+	protected final Object doRead(TargetDescriptor targetDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException {
-		return read(typeDescriptor, contentType, inputMessage);
+		return readFrom(targetDescriptor, contentType, inputMessage);
 	}
 
-	protected abstract T read(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
+	protected abstract T readObject(TargetDescriptor targetDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException;
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected final void doWrite(Source source, MediaType contentType, OutputMessage outputMessage) throws IOException {
-		T value = (T) source.get();
-		if (outputMessage.getContentLength() < 0) {
-			Long contentLength = getContentLength(value, contentType);
-			if (contentLength != null && contentLength >= 0) {
-				outputMessage.setContentLength(contentLength);
-			}
-		}
-		write(source.getTypeDescriptor(), value, contentType, outputMessage);
+	protected final void doWrite(Source source, MediaType contentType, Request request, OutputMessage outputMessage)
+			throws IOException {
+		Data<T> data = source.getAsData(requriedType);
+		writeObject(data, contentType, request, outputMessage);
 	}
 
-	protected abstract void write(TypeDescriptor sourceTypeDescriptor, T source, MediaType contentType,
+	protected abstract void writeObject(Data<T> data, MediaType contentType, Request request,
 			OutputMessage outputMessage) throws IOException;
 }

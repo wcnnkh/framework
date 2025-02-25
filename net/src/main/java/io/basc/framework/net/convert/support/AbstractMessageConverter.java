@@ -2,17 +2,19 @@ package io.basc.framework.net.convert.support;
 
 import java.io.IOException;
 
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
+import io.basc.framework.core.convert.SourceDescriptor;
+import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.MediaTypeRegistry;
 import io.basc.framework.net.MediaTypes;
-import io.basc.framework.net.Message;
 import io.basc.framework.net.OutputMessage;
+import io.basc.framework.net.Request;
 import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.util.io.MimeType;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -20,19 +22,11 @@ import lombok.Setter;
 public abstract class AbstractMessageConverter implements MessageConverter {
 	private final MediaTypeRegistry mediaTypeRegistry = new MediaTypeRegistry();
 
-	protected abstract Object doRead(TypeDescriptor typeDescriptor, MimeType contentType, InputMessage inputMessage)
+	protected abstract Object doRead(TargetDescriptor targetDescriptor, MimeType contentType, InputMessage inputMessage)
 			throws IOException;
 
-	protected abstract void doWrite(Source source, MediaType contentType, OutputMessage outputMessage)
+	protected abstract void doWrite(Source source, MediaType contentType, Request request, OutputMessage outputMessage)
 			throws IOException;
-
-	protected MediaType getContentType(TypeDescriptor type, Message message) throws IOException {
-		MediaType mediaType = mediaTypeRegistry.first();
-		if (mediaType.isWildcardType() || mediaType.isWildcardSubtype()) {
-			return null;
-		}
-		return mediaType;
-	}
 
 	@Override
 	public MediaTypes getSupportedMediaTypes() {
@@ -40,7 +34,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isReadable(TypeDescriptor typeDescriptor, MimeType contentType) {
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, MimeType contentType) {
 		if (contentType == null) {
 			return true;
 		}
@@ -54,7 +48,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isWriteable(TypeDescriptor typeDescriptor, MimeType contentType) {
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, MimeType contentType) {
 		if (contentType == null || MediaType.ALL.equalsTypeAndSubtype(contentType)) {
 			return true;
 		}
@@ -68,26 +62,28 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public final Object readFrom(TypeDescriptor typeDescriptor, InputMessage inputMessage) throws IOException {
-		MimeType contentTypeToUse = inputMessage.getContentType();
+	public final Object readFrom(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
+			@NonNull InputMessage inputMessage) throws IOException {
+		MimeType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {
 			contentTypeToUse = mediaTypeRegistry.first();
 		}
 
-		return doRead(typeDescriptor, contentTypeToUse, inputMessage);
+		return doRead(targetDescriptor, contentTypeToUse, inputMessage);
 	}
 
 	@Override
-	public final void writeTo(Source source, MediaType contentType, OutputMessage outputMessage) throws IOException {
+	public final void writeTo(@NonNull Source source, MediaType contentType, @NonNull Request request,
+			@NonNull OutputMessage outputMessage) throws IOException {
 		MediaType contentTypeToUse = contentType;
-		if (contentType == null) {
-			contentTypeToUse = outputMessage.getContentType();
-		} else if (outputMessage.getContentType() == null) {
-			if (contentTypeToUse == null || contentTypeToUse.isWildcardType() || contentTypeToUse.isWildcardSubtype()) {
-				contentTypeToUse = getContentType(source.getTypeDescriptor(), outputMessage);
-			}
+		if (contentTypeToUse == null) {
+			contentTypeToUse = mediaTypeRegistry.filter((e) -> !e.isWildcardType() && !e.isWildcardSubtype()).first();
+		}
+
+		if (contentTypeToUse != null) {
 			outputMessage.setContentType(contentTypeToUse);
 		}
-		doWrite(source, contentTypeToUse, outputMessage);
+
+		doWrite(source, contentTypeToUse, request, outputMessage);
 	}
 }

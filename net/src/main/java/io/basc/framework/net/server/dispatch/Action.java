@@ -51,7 +51,7 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		if (property != null && property.isReadable()) {
 			return property.getAsObject(parameterDescriptor.getRequiredTypeDescriptor());
 		}
-		return messageConverter.readFrom(parameterDescriptor, request);
+		return messageConverter.readFrom(parameterDescriptor, request.getContentType(), request);
 	}
 
 	private Object[] getArgs(ServerRequest request) throws IOException {
@@ -83,7 +83,7 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		Source responseValue = Source.of(rtn, function.getReturnTypeDescriptor());
 		for (MediaType mimeType : requestPattern.getProduces()) {
 			if (messageConverter.isWriteable(responseValue, mimeType)) {
-				messageConverter.writeTo(responseValue, request, response);
+				messageConverter.writeTo(responseValue, mimeType, request, response);
 				return;
 			}
 		}
