@@ -2,8 +2,8 @@ package io.basc.framework.core.convert.transform.stereotype;
 
 import java.util.Iterator;
 
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.util.collections.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -6,10 +6,10 @@ import java.util.Date;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
-import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import lombok.Data;
 import lombok.NonNull;
 

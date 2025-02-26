@@ -2,19 +2,19 @@ package io.basc.framework.http.client;
 
 import java.io.IOException;
 
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.net.convert.MessageConverter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class MessageConverterClientHttpResponseExtractor<T> implements ClientHttpResponseExtractor<T> {
+	@NonNull
 	private final MessageConverter messageConverter;
-	private final TypeDescriptor responseType;
-
-	public MessageConverterClientHttpResponseExtractor(MessageConverter messageConverter, TypeDescriptor responseType) {
-		this.messageConverter = messageConverter;
-		this.responseType = responseType;
-	}
+	@NonNull
+	private final TargetDescriptor targetDescriptor;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -27,11 +27,7 @@ public class MessageConverterClientHttpResponseExtractor<T> implements ClientHtt
 			return null;
 		}
 
-		if (messageConverter == null || !messageConverter.isReadable(responseType, response.getContentType())) {
-			throw new UnsupportedOperationException("not supported read responseType=" + responseType);
-		}
-
-		return (T) messageConverter.readFrom(responseType, response);
+		return (T) messageConverter.readFrom(targetDescriptor, response.getContentType(), response, response);
 	}
 
 }

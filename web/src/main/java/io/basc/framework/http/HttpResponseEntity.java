@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Data;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
@@ -35,24 +35,16 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 		this(null, null, status);
 	}
 
-	public HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, HttpStatus status) {
-		this(body, bodyTypeDescriptor, null, status);
+	public HttpResponseEntity(Data<T> body, HttpStatus status) {
+		this(body, null, status);
 	}
 
 	public HttpResponseEntity(MultiValueMap<String, String> headers, HttpStatus status) {
-		this(null, null, headers, status);
+		this(null, headers, status);
 	}
 
-	public HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers,
-			HttpStatus status) {
-		super(body, bodyTypeDescriptor, headers);
-		Assert.notNull(status, "HttpStatus must not be null");
-		this.status = status;
-	}
-
-	private HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers,
-			Object status) {
-		super(body, bodyTypeDescriptor, headers);
+	private HttpResponseEntity(Data<T> body, MultiValueMap<String, String> headers, Object status) {
+		super(body, headers);
 		this.status = status;
 	}
 
@@ -108,10 +100,9 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 			builder.append(((HttpStatus) this.status).getReasonPhrase());
 		}
 		builder.append(',');
-		T body = getBody();
 		HttpHeaders headers = getHeaders();
-		if (body != null) {
-			builder.append(body);
+		if(hasBody()) {
+			builder.append(getBody().any().getAsString());
 			if (headers != null) {
 				builder.append(',');
 			}
@@ -161,7 +152,7 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	 * 
 	 * @return the created {@code ResponseEntity}
 	 */
-	public static <T> HttpResponseEntity<T> ok(T body) {
+	public static <T> HttpResponseEntity<T> ok(Data<T> body) {
 		BodyBuilder builder = ok();
 		return builder.body(body);
 	}
@@ -358,11 +349,7 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 		 * @param body the body of the response entity
 		 * @return the built response entity
 		 */
-		default <T> HttpResponseEntity<T> body(T body) {
-			return body(body, null);
-		}
-
-		<T> HttpResponseEntity<T> body(T body, TypeDescriptor bodyTypeDescriptor);
+		<T> HttpResponseEntity<T> body(Data<T> body);
 	}
 
 	private static class DefaultBuilder implements BodyBuilder {
@@ -444,8 +431,8 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 			return body(null);
 		}
 
-		public <T> HttpResponseEntity<T> body(T body, TypeDescriptor typeDescriptor) {
-			return new HttpResponseEntity<T>(body, typeDescriptor, this.headers, this.statusCode);
+		public <T> HttpResponseEntity<T> body(Data<T> body) {
+			return new HttpResponseEntity<T>(body, this.headers, this.statusCode);
 		}
 	}
 

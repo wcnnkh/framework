@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.Set;
 
 import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
-import io.basc.framework.core.convert.config.ConditionalConversionService;
-import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.config.ConvertiblePair;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConditionalConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConvertiblePair;
 import lombok.NonNull;
 
 class CollectionToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {

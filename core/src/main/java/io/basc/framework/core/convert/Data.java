@@ -1,11 +1,14 @@
 package io.basc.framework.core.convert;
 
+import java.io.Serializable;
+
 import io.basc.framework.util.function.Function;
 import io.basc.framework.util.function.Optional;
 import lombok.NonNull;
 
 @lombok.Data
-public class Data<T> implements Optional<T, ConversionException> {
+public class Data<T> implements SourceDescriptor, Optional<T, ConversionException>, Serializable {
+	private static final long serialVersionUID = 1L;
 	private Converter<? super Object, ? extends Object, ? extends ConversionException> converter;
 	private Function<? super Object, ? extends T, ? extends ConversionException> mapper;
 	private TypeDescriptor typeDescriptor;

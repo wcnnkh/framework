@@ -1,6 +1,8 @@
 package io.basc.framework.net.convert.support;
 
-public class GlobalMessageConverter extends ConfigurableMessageConverter {
+import io.basc.framework.net.convert.MessageConverters;
+
+public class GlobalMessageConverter extends MessageConverters {
 	private static volatile GlobalMessageConverter instance;
 
 	public static GlobalMessageConverter getInstance() {
@@ -19,7 +21,7 @@ public class GlobalMessageConverter extends ConfigurableMessageConverter {
 	private final ByteArrayMessageConverter byteArrayMessageConverter = new ByteArrayMessageConverter();
 	private final QueryStringMessageConveter queryStringMessageConveter = new QueryStringMessageConveter();
 
-	public GlobalMessageConverter() {
+	private GlobalMessageConverter() {
 		register(textMessageConverter);
 		register(byteArrayMessageConverter);
 		register(queryStringMessageConveter);

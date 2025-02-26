@@ -3,13 +3,14 @@ package io.basc.framework.http.client;
 import java.io.File;
 import java.nio.charset.Charset;
 
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.HeadersBuilder;
-import io.basc.framework.net.MediaType;
 import io.basc.framework.http.HttpResponseEntity;
+import io.basc.framework.net.MediaType;
 
 public interface HttpConnection
 		extends HttpClientConfigurable<HttpConnection>, HttpRequest, HeadersBuilder<HttpConnection> {
@@ -45,28 +46,14 @@ public interface HttpConnection
 	}
 
 	/**
-	 * Set the body of the request entity and build the RequestEntity.
-	 * 
-	 * @param body the body of the request entity
-	 * @return the built request entity
-	 */
-	default HttpConnection body(Object body) {
-		return body(body, null);
-	}
-
-	/**
 	 * Set the body and type of the request entity and build the RequestEntity.
 	 * 
 	 * @param body           the body of the request entity
-	 * @param typeDescriptor the type of the body, useful for generic type
-	 *                       resolution
 	 * @return the built request entity
 	 */
-	HttpConnection body(Object body, TypeDescriptor typeDescriptor);
-
-	TypeDescriptor getTypeDescriptor();
-
-	Object getBody();
+	HttpConnection body(Source body);
+	
+	Source getBody();
 
 	default boolean hasBody() {
 		return getBody() != null;
@@ -75,7 +62,7 @@ public interface HttpConnection
 	@SuppressWarnings("unchecked")
 	@Override
 	default <T> HttpRequestEntity<T> build() {
-		return new HttpRequestEntity<T>((T) getBody(), getHeaders(), getRawMethod(), getURI(), getTypeDescriptor());
+		return new HttpRequestEntity<T>(getBody(), getHeaders(), getRawMethod(), getURI());
 	}
 
 	<T> HttpResponseEntity<T> execute(ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException;

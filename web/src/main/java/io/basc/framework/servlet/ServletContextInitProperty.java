@@ -4,7 +4,7 @@ import javax.servlet.ServletContext;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

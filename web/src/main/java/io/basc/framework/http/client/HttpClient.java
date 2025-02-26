@@ -5,6 +5,7 @@ import java.net.CookieHandler;
 import java.net.URI;
 import java.util.Map;
 
+import io.basc.framework.core.convert.Source;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
@@ -165,7 +166,7 @@ public interface HttpClient extends HttpClientConfigurable<HttpClient> {
 		return post(responseType, UriUtils.toUri(url), body, contentType);
 	}
 
-	default <T> HttpResponseEntity<T> post(TypeDescriptor responseType, URI uri, Object body, MediaType contentType)
+	default <T> HttpResponseEntity<T> post(TypeDescriptor responseType, URI uri, Source body, MediaType contentType)
 			throws HttpClientException {
 		BodyBuilder<?> bodyBuilder = HttpRequestEntity.post(uri);
 		if (contentType != null) {

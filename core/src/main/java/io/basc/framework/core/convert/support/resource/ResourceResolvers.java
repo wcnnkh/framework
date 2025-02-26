@@ -5,8 +5,8 @@ import java.util.Properties;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.util.exchange.Receipt;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.io.Resource;

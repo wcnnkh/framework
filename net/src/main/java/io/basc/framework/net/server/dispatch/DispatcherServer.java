@@ -6,13 +6,17 @@ import java.util.List;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.net.RequestPattern;
+import io.basc.framework.net.convert.MessageConverters;
+import io.basc.framework.net.convert.UriParameterConverters;
+import io.basc.framework.net.convert.support.DefaultMessageConverters;
+import io.basc.framework.net.convert.support.DefaultUriParameterConverters;
 import io.basc.framework.net.pattern.DefaultRequestPatternFactory;
+import io.basc.framework.net.pattern.RequestPatternFactory;
 import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
 import io.basc.framework.net.server.Servers;
-import io.basc.framework.net.server.convert.DefaultServerMessageConverter;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Registrations;
@@ -24,8 +28,9 @@ import lombok.Setter;
 public class DispatcherServer extends Servers {
 	private ErrorHandler errorHandler;
 	private GroundServer groundServer;
-	private final DefaultRequestPatternFactory requestPatternFactory = new DefaultRequestPatternFactory();
-	private final DefaultServerMessageConverter serverMessageConverter = new DefaultServerMessageConverter();
+	private final RequestPatternFactory requestPatternFactory = new DefaultRequestPatternFactory();
+	private final MessageConverters serverMessageConverter = new DefaultMessageConverters();
+	private final UriParameterConverters uriParameterConverters = new DefaultUriParameterConverters();
 
 	public Registration registerAction(Action action) {
 		return register(action.getRequestPattern(), action);
@@ -38,7 +43,7 @@ public class DispatcherServer extends Servers {
 
 		Elements<RequestPattern> requestPatterns = requestPatternFactory.getRequestPatterns(function, parameters);
 		Elements<Action> actions = requestPatterns.map((requestPattern) -> {
-			Action action = new Action(function, requestPattern, serverMessageConverter);
+			Action action = new Action(function, requestPattern, serverMessageConverter, uriParameterConverters);
 			action.setErrorHandler(this.errorHandler);
 			return action;
 		});

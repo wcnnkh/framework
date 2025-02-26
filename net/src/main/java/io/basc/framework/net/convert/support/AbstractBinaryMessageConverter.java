@@ -9,6 +9,7 @@ import io.basc.framework.net.MediaType;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.OutputMessage;
 import io.basc.framework.net.Request;
+import io.basc.framework.net.Response;
 import io.basc.framework.util.io.MimeType;
 import lombok.NonNull;
 
@@ -20,26 +21,27 @@ public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageCon
 	protected abstract T parseObject(byte[] body, TargetDescriptor targetDescriptor, MimeType contentType,
 			Message message) throws IOException;
 
-	protected abstract byte[] toBinary(Data<T> body, MediaType mediaType, Message message) throws IOException;
+	protected abstract byte[] toBinary(@NonNull Data<T> body, MediaType mediaType, @NonNull Message message)
+			throws IOException;
 
 	@Override
-	protected T readObject(TargetDescriptor targetDescriptor, MimeType contentType, InputMessage inputMessage)
-			throws IOException {
-		byte[] body = inputMessage.readAllBytes();
-		return parseObject(body, targetDescriptor, contentType, inputMessage);
+	protected T readObject(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
+			@NonNull InputMessage request, @NonNull Response response) throws IOException {
+		byte[] body = request.readAllBytes();
+		return parseObject(body, targetDescriptor, contentType, response);
 	}
 
 	@Override
-	protected void writeObject(Data<T> data, MediaType contentType, Request request, OutputMessage outputMessage)
+	protected void writeObject(Data<T> data, MediaType contentType, Request request, OutputMessage response)
 			throws IOException {
-		byte[] body = toBinary(data, contentType, outputMessage);
-		if(body == null) {
-			return ;
+		byte[] body = toBinary(data, contentType, request);
+		if (body == null) {
+			return;
 		}
-		
-		if (outputMessage.getContentLength() < 0) {
-			outputMessage.setContentLength(body.length);
+
+		if (response.getContentLength() < 0) {
+			response.setContentLength(body.length);
 		}
-		outputMessage.getOutputStreamPipeline().optional().ifPresent((e) -> e.write(body));
+		response.getOutputStreamPipeline().optional().ifPresent((e) -> e.write(body));
 	}
 }

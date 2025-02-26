@@ -1,6 +1,8 @@
 package io.basc.framework.net.convert.support;
 
-public class DefaultMessageConverters extends ConfigurableMessageConverter {
+import io.basc.framework.net.convert.MessageConverters;
+
+public class DefaultMessageConverters extends MessageConverters {
 
 	public DefaultMessageConverters() {
 		setLast(GlobalMessageConverter.getInstance());

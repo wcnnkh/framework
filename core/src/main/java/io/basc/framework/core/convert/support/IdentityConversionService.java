@@ -1,9 +1,9 @@
 package io.basc.framework.core.convert.support;
 
 import io.basc.framework.core.convert.ConversionException;
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
-import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
 
 public class IdentityConversionService implements ConversionService {
 

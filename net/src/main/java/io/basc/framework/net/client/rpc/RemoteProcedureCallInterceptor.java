@@ -1,14 +1,14 @@
 package io.basc.framework.net.client.rpc;
 
-import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.client.ClientResponse;
-import io.basc.framework.net.client.convert.ClientMessageConverter;
 import io.basc.framework.net.client.rpc.factory.RemoteRequestFactory;
+import io.basc.framework.net.convert.MessageConverter;
+import io.basc.framework.net.convert.UriParameterConverter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -20,26 +20,32 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 	@NonNull
 	private final RemoteRequestFactory requestFactory;
 	/**
-	 * 传输协议转换
+	 * 消息转换
 	 */
 	@NonNull
-	private final ClientMessageConverter messageConverter;
+	private final MessageConverter messageConverter;
+
+	/**
+	 * uri参数转换
+	 */
+	@NonNull
+	private final UriParameterConverter uriParameterConverter;
 
 	@Override
 	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
 		Parameters parameters = Parameters.forTemplate(function, args);
 		ClientRequest request = requestFactory.createRequest(function, parameters);
 		for (Parameter parameter : parameters.getElements()) {
-			if (!messageConverter.isWriteable(parameter, request.getContentType())) {
+			if (!messageConverter.isWriteable(parameter, request)) {
 				// TODO ignore log
 				continue;
 			}
-			messageConverter.writeTo(parameter, null, request, request);
+			messageConverter.writeTo(parameter, request, request);
 		}
 
 		ClientResponse response = request.execute();
 		try {
-			return messageConverter.readFrom(AccessDescriptor.of(function.getReturnTypeDescriptor()), null, response);
+			return messageConverter.readFrom(() -> function.getReturnTypeDescriptor(), response, response);
 		} finally {
 			response.close();
 		}

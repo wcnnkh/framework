@@ -2,10 +2,10 @@ package io.basc.framework.web.message.support;
 
 import java.io.IOException;
 
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
-import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;

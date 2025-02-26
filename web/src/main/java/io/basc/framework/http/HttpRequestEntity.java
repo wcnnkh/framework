@@ -4,7 +4,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.Data;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -21,28 +21,19 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	private final URI url;
 
 	public HttpRequestEntity(String method, URI url) {
-		this(null, null, method, url, null);
+		this(null, null, method, url);
 	}
 
-	public HttpRequestEntity(T body, String method, URI url) {
-		this(body, null, method, url, null);
-	}
-
-	public HttpRequestEntity(T body, String method, URI url, TypeDescriptor typeDescriptor) {
-		this(body, null, method, url, typeDescriptor);
+	public HttpRequestEntity(Data<T> body, String method, URI url) {
+		this(body, null, method, url);
 	}
 
 	public HttpRequestEntity(MultiValueMap<String, String> headers, String method, URI url) {
-		this(null, headers, method, url, null);
+		this(null, headers, method, url);
 	}
 
-	public HttpRequestEntity(T body, MultiValueMap<String, String> headers, String method, URI url) {
-		this(body, headers, method, url, null);
-	}
-
-	public HttpRequestEntity(T body, MultiValueMap<String, String> headers, String method, URI url,
-			TypeDescriptor typeDescriptor) {
-		super(body, typeDescriptor, headers);
+	public HttpRequestEntity(Data<T> body, MultiValueMap<String, String> headers, String method, URI url) {
+		super(body, headers);
 		this.method = method;
 		this.url = url;
 	}
@@ -89,10 +80,9 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		builder.append(' ');
 		builder.append(getURI());
 		builder.append(',');
-		T body = getBody();
 		HttpHeaders headers = getHeaders();
-		if (body != null) {
-			builder.append(body);
+		if (hasBody()) {
+			builder.append(getBody().any().getAsString());
 			builder.append(',');
 		}
 		builder.append(headers);
@@ -246,9 +236,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 
 		B contentType(MediaType contentType);
 
-		<T> HttpRequestEntity<T> body(T body);
-
-		<T> HttpRequestEntity<T> body(T body, TypeDescriptor typeDescriptor);
+		<T> HttpRequestEntity<T> body(Data<T> body);
 	}
 
 	private static class DefaultBodyBuilder implements BodyBuilder<DefaultBodyBuilder> {
@@ -317,12 +305,8 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 			return new HttpRequestEntity<>(this.headers, this.method, this.url);
 		}
 
-		public <T> HttpRequestEntity<T> body(T body) {
+		public <T> HttpRequestEntity<T> body(Data<T> body) {
 			return new HttpRequestEntity<T>(body, this.headers, this.method, this.url);
-		}
-
-		public <T> HttpRequestEntity<T> body(T body, TypeDescriptor typeDescriptor) {
-			return new HttpRequestEntity<T>(body, this.headers, this.method, this.url, typeDescriptor);
 		}
 	}
 }

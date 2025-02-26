@@ -1,7 +1,7 @@
 package io.basc.framework.core.convert.support;
 
-import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServices;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServices;
 import io.basc.framework.core.convert.support.date.ConfigurableDateCodecResolver;
 import io.basc.framework.core.convert.support.date.ConfigurableZoneOffsetResolver;
 import io.basc.framework.core.convert.support.date.DateFormatConversionService;

@@ -8,11 +8,11 @@ import io.basc.framework.core.convert.Data;
 import io.basc.framework.core.convert.SourceDescriptor;
 import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.core.convert.TypeDescriptor;
-import io.basc.framework.core.convert.config.ConversionService;
-import io.basc.framework.core.convert.config.ConversionServiceAware;
+import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.core.convert.support.DefaultConversionService;
 import io.basc.framework.net.MediaType;
-import io.basc.framework.util.io.MimeType;
+import io.basc.framework.net.Message;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -30,19 +30,19 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	public final boolean isReadable(@NonNull TargetDescriptor targetDescriptor, MimeType contentType) {
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message request) {
 		return getConversionService().canConvert(TypeDescriptor.valueOf(String.class),
-				targetDescriptor.getRequiredTypeDescriptor()) && super.isReadable(targetDescriptor, contentType);
+				targetDescriptor.getRequiredTypeDescriptor()) && super.isReadable(targetDescriptor, request);
 	}
 
 	@Override
-	public final boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, MimeType contentType) {
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message response) {
 		return getConversionService().canConvert(sourceDescriptor.getTypeDescriptor(),
-				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, contentType);
+				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, response);
 	}
 
 	@Override
-	protected Object parseObject(String body, TargetDescriptor targetDescriptor) throws IOException{
+	protected Object parseObject(String body, TargetDescriptor targetDescriptor) throws IOException {
 		return getConversionService().convert(body, TypeDescriptor.forObject(body),
 				targetDescriptor.getRequiredTypeDescriptor());
 	}

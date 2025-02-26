@@ -11,11 +11,14 @@ import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.RequestPatternCapable;
+import io.basc.framework.net.convert.MessageConverter;
+import io.basc.framework.net.convert.UriParameterConverter;
 import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
-import io.basc.framework.net.server.convert.ServerMessageConverter;
+import io.basc.framework.net.uri.UriComponents;
+import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.collections.Elements;
 import lombok.Getter;
 import lombok.NonNull;
@@ -31,7 +34,9 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 	@NonNull
 	private final RequestPattern requestPattern;
 	@NonNull
-	private ServerMessageConverter messageConverter;
+	private MessageConverter messageConverter;
+	@NonNull
+	private UriParameterConverter uriParameterConverter;
 	private ErrorHandler errorHandler;
 	private ExecutionInterceptor executionInterceptor;
 
@@ -44,31 +49,37 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		}
 	}
 
-	protected Object getArg(ServerRequest request, Properties requestPatternProperties,
-			ParameterDescriptor parameterDescriptor) throws IOException {
+	protected Object getArg(ParameterDescriptor parameterDescriptor, ServerRequest request, ServerResponse response,
+			Properties requestPatternProperties, UriComponents uriComponents) throws IOException {
 		// 优先匹配额外参数
 		Property property = requestPatternProperties.get(parameterDescriptor.getName());
 		if (property != null && property.isReadable()) {
 			return property.getAsObject(parameterDescriptor.getRequiredTypeDescriptor());
 		}
-		return messageConverter.readFrom(parameterDescriptor, request.getContentType(), request);
+
+		if (uriParameterConverter.canConvert(parameterDescriptor)) {
+			return uriParameterConverter.readFrom(parameterDescriptor, uriComponents);
+		}
+
+		return messageConverter.readFrom(parameterDescriptor, request, response);
 	}
 
-	private Object[] getArgs(ServerRequest request) throws IOException {
+	private Object[] getArgs(ServerRequest request, ServerResponse response) throws IOException {
 		// 额外参数
 		Properties requestPatternProperties = requestPattern.apply(request);
 		ParameterDescriptor[] paraemterDescriptors = function.getParameterDescriptors()
 				.toArray(new ParameterDescriptor[0]);
+		UriComponents uriComponents = UriComponentsBuilder.fromUri(request.getURI()).build();
 		Object[] args = new Object[paraemterDescriptors.length];
 		for (int i = 0; i < paraemterDescriptors.length; i++) {
-			args[i] = getArg(request, requestPatternProperties, paraemterDescriptors[i]);
+			args[i] = getArg(paraemterDescriptors[i], request, response, requestPatternProperties, uriComponents);
 		}
 		return args;
 	}
 
 	@Override
 	public void service(ServerRequest request, ServerResponse response) throws IOException {
-		Object[] args = getArgs(request);
+		Object[] args = getArgs(request, response);
 		Object rtn;
 		try {
 			rtn = intercept(function, Elements.forArray(args));
@@ -81,11 +92,16 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		}
 
 		Source responseValue = Source.of(rtn, function.getReturnTypeDescriptor());
-		for (MediaType mimeType : requestPattern.getProduces()) {
-			if (messageConverter.isWriteable(responseValue, mimeType)) {
-				messageConverter.writeTo(responseValue, mimeType, request, response);
-				return;
+		if (response.getContentType() == null) {
+			for (MediaType mimeType : requestPattern.getProduces()) {
+				response.setContentType(mimeType);
+				if (messageConverter.isWriteable(responseValue, response)) {
+					messageConverter.writeTo(responseValue, request, response);
+					return;
+				}
 			}
+		} else {
+			messageConverter.writeTo(responseValue, request, response);
 		}
 	}
 }

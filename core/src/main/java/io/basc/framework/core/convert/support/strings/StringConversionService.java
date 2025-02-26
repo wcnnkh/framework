@@ -2,9 +2,9 @@ package io.basc.framework.core.convert.support.strings;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.convert.ConversionFailedException;
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
-import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.util.Assert;
 import lombok.NonNull;
 

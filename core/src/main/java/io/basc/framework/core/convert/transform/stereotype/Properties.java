@@ -3,8 +3,8 @@ package io.basc.framework.core.convert.transform.stereotype;
 import java.io.Serializable;
 import java.util.Map;
 
-import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.Source;
+import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.convert.support.IdentityConversionService;
 import io.basc.framework.core.convert.transform.stereotype.collection.MapProperties;
 import io.basc.framework.util.collections.Elements;

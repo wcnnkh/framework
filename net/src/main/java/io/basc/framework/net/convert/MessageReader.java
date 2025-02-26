@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.net.InputMessage;
-import io.basc.framework.util.io.MimeType;
+import io.basc.framework.net.Message;
+import io.basc.framework.net.Response;
 import lombok.NonNull;
 
 public interface MessageReader {
-	boolean isReadable(@NonNull TargetDescriptor targetDescriptor, MimeType contentType);
+	boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message request);
 
-	Object readFrom(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
-			@NonNull InputMessage inputMessage) throws IOException;
+	Object readFrom(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage request,
+			@NonNull Response response) throws IOException;
 }

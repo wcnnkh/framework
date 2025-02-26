@@ -2,7 +2,7 @@ package io.basc.framework.servlet;
 
 import javax.servlet.ServletContext;
 
-import io.basc.framework.core.convert.config.ConversionService;
+import io.basc.framework.core.convert.service.ConversionService;
 import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.util.collections.Elements;
