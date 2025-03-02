@@ -9,7 +9,6 @@ import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.net.Request;
 import io.basc.framework.util.io.MimeType;
 import lombok.Getter;
 import lombok.NonNull;
@@ -42,32 +41,35 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 	}
 
 	@Override
-	protected final T parseObject(byte[] body, TargetDescriptor targetDescriptor, MimeType contentType, Message message)
-			throws IOException {
+	protected T parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) throws IOException {
 		Charset charset = getCharset(contentType, message);
 		String text = new String(body, charset);
 		return parseObject(text, targetDescriptor);
 	}
 
 	@Override
-	protected final byte[] toBinary(Data<T> body, MediaType mediaType, Message message) throws IOException {
+	protected byte[] toBinary(@NonNull Data<T> body, @NonNull Message message, MediaType mediaType) throws IOException {
 		Charset charset = getCharset(mediaType, message);
 		String text = toString(body, mediaType, charset);
 		return text.getBytes(charset);
 	}
 
 	@Override
-	protected final void writeObject(Data<T> data, MediaType contentType, Request request, OutputMessage outputMessage)
+	protected void writeObject(@NonNull Data<T> data, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
 		MediaType contentTypeToUse = contentType;
-		Charset charset = getCharset(contentType, outputMessage);
+		Charset charset = getCharset(contentType, message);
 		if (contentTypeToUse.getCharset() == null) {
 			if (!contentTypeToUse.isWildcardType() && !contentTypeToUse.isWildcardSubtype()) {
 				contentTypeToUse = new MediaType(contentTypeToUse, charset);
 			}
 		}
-		outputMessage.setContentType(contentTypeToUse);
-		super.writeObject(data, contentTypeToUse, request, outputMessage);
+
+		if (message.getContentType() != null) {
+			message.setContentType(contentTypeToUse);
+		}
+		super.writeObject(data, message, contentTypeToUse);
 	}
 
 	protected abstract T parseObject(String body, TargetDescriptor targetDescriptor) throws IOException;

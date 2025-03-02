@@ -2,6 +2,8 @@ package io.basc.framework.net.convert;
 
 import io.basc.framework.core.convert.transform.stereotype.AccessDescriptor;
 import io.basc.framework.net.MediaTypes;
+import io.basc.framework.net.Message;
+import lombok.NonNull;
 
 public interface MessageConverter extends MessageReader, MessageWriter {
 	/**
@@ -18,10 +20,11 @@ public interface MessageConverter extends MessageReader, MessageWriter {
 	 * subset of media types.
 	 * 
 	 * @param requiredDescriptor
+	 * @param message
 	 * @return
 	 */
-	default MediaTypes getSupportedMediaTypes(AccessDescriptor requiredDescriptor) {
-		return (isReadable(requiredDescriptor, null) || isWriteable(requiredDescriptor, null))
+	default MediaTypes getSupportedMediaTypes(@NonNull AccessDescriptor requiredDescriptor, @NonNull Message message) {
+		return (isReadable(requiredDescriptor, message, null) || isWriteable(requiredDescriptor, message, null))
 				? getSupportedMediaTypes()
 				: MediaTypes.EMPTY;
 	}

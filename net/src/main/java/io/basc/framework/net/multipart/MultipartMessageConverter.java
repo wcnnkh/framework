@@ -23,8 +23,6 @@ import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.net.Request;
-import io.basc.framework.net.Response;
 import io.basc.framework.net.convert.support.AbstractMessageConverter;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
@@ -70,20 +68,21 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message request) {
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) {
 		return multipartMessageResolver != null && canReadType(targetDescriptor)
-				&& super.isReadable(targetDescriptor, request);
+				&& super.isReadable(targetDescriptor, message, contentType);
 	}
 
 	@Override
-	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
-			@NonNull InputMessage request, @NonNull Response response) throws IOException {
+	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+			MimeType contentType) throws IOException {
 		List<MultipartMessage> fileItems;
-		if (multipartMessageResolver.isMultipart(request)) {
-			fileItems = multipartMessageResolver.resolve(request);
+		if (multipartMessageResolver.isMultipart(message)) {
+			fileItems = multipartMessageResolver.resolve(message);
 		} else {
 			MultipartMessage multipartMessage = new InputMessageToMultipartMessage(boundarySequence.next(), null,
-					request);
+					message);
 			fileItems = Arrays.asList(multipartMessage);
 		}
 		return convert(fileItems, targetDescriptor.getRequiredTypeDescriptor());
@@ -111,16 +110,16 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	protected void doWrite(Source source, MediaType contentType, Request request, OutputMessage outputMessage)
+	protected void doWrite(@NonNull Source source, @NonNull OutputMessage message, MediaType contentType)
 			throws IOException {
 		String boundary;
 		MediaType mimeType = contentType;
 		if (contentType != null) {
 			boundary = contentType.getParameter(BOUNDARY_NAME);
 			if (StringUtils.isEmpty(boundary)) {
-				MimeType outputMessageContentType = outputMessage.getContentType();
-				if (outputMessageContentType != null) {
-					boundary = outputMessageContentType.getParameter(BOUNDARY_NAME);
+				MimeType messageContentType = message.getContentType();
+				if (messageContentType != null) {
+					boundary = messageContentType.getParameter(BOUNDARY_NAME);
 				}
 			}
 
@@ -129,18 +128,18 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 				Map<String, String> map = new LinkedHashMap<String, String>(mimeType.getParameters());
 				map.put(BOUNDARY_NAME, boundary);
 				mimeType = new MediaType(mimeType, map);
-				outputMessage.setContentType(mimeType);
+				message.setContentType(mimeType);
 			}
 		} else {
 			boundary = boundarySequence.next();
 			Map<String, String> map = new LinkedHashMap<String, String>(mimeType.getParameters());
 			map.put(BOUNDARY_NAME, boundary);
 			mimeType = new MediaType(MediaType.MULTIPART_FORM_DATA, map);
-			outputMessage.setContentType(mimeType);
+			message.setContentType(mimeType);
 		}
 
-		write(boundary, source, outputMessage, contentType);
-		OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getOutputStream(), contentType.getCharset());
+		write(boundary, source, message, contentType);
+		OutputStreamWriter osw = new OutputStreamWriter(message.getOutputStream(), contentType.getCharset());
 		osw.write(LINE);
 		osw.write(BOUNDARY_APPEND);
 		osw.write(boundary);

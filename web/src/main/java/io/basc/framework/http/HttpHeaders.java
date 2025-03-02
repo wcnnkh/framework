@@ -1,5 +1,6 @@
 package io.basc.framework.http;
 
+import java.net.HttpCookie;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -25,8 +26,11 @@ import io.basc.framework.net.MediaType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.KeyValue;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.io.MimeType;
 import io.basc.framework.util.io.MimeTypeUtils;
+import lombok.NonNull;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -1221,5 +1225,19 @@ public class HttpHeaders extends Headers {
 
 			add(hs.getKey(), hs.getValue());
 		}
+	}
+
+	public void addCookie(@NonNull HttpCookie httpCookie) {
+		String value = httpCookie.toString();
+		add(COOKIE, value);
+	}
+
+	public Elements<HttpCookie> getCookies() {
+		List<String> headerValues = get(COOKIE);
+		if (CollectionUtils.isEmpty(headerValues)) {
+			return Elements.empty();
+		}
+
+		return Elements.of(headerValues).flatMap((e) -> Elements.of(HttpCookie.parse(e)));
 	}
 }

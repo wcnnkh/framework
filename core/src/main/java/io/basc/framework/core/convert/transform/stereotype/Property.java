@@ -9,6 +9,10 @@ public interface Property extends Accessor, PropertyDescriptor {
 
 	public static interface PropertyWrapper<W extends Property>
 			extends Property, AccessWrapper<W>, PropertyDescriptorWrapper<W> {
+		@Override
+		default Property rename(String name) {
+			return Property.super.rename(name);
+		}
 	}
 
 	public static class StandardProperty<W extends PropertyDescriptor> extends StandardAccess<W>
@@ -17,6 +21,11 @@ public interface Property extends Accessor, PropertyDescriptor {
 
 		public StandardProperty(@NonNull W source) {
 			super(source);
+		}
+
+		@Override
+		public Property rename(String name) {
+			return Property.super.rename(name);
 		}
 	}
 
@@ -34,5 +43,11 @@ public interface Property extends Accessor, PropertyDescriptor {
 	public static Property of(String name, @NonNull Source value) {
 		Accessor access = Accessor.of(value);
 		return new PropertyAccessor<>(name, access);
+	}
+
+	@Override
+	default Property rename(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -31,4 +31,10 @@ public class Field<T extends FieldDescriptor> implements Property, FieldDescript
 	public TypeDescriptor getTypeDescriptor() {
 		return source.getTypeDescriptor();
 	}
+
+	@Override
+	public Field<T> rename(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

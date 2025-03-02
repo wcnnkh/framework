@@ -61,7 +61,12 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 			return uriParameterConverter.readFrom(parameterDescriptor, uriComponents);
 		}
 
-		return messageConverter.readFrom(parameterDescriptor, request, response);
+		for (MediaType mediaType : getRequestPattern().getConsumes()) {
+			if (messageConverter.isReadable(parameterDescriptor, request, mediaType)) {
+				return messageConverter.readFrom(parameterDescriptor, request, mediaType);
+			}
+		}
+		return messageConverter.readFrom(parameterDescriptor, request, request.getContentType());
 	}
 
 	private Object[] getArgs(ServerRequest request, ServerResponse response) throws IOException {
@@ -94,14 +99,13 @@ public class Action implements Server, ExecutionInterceptor, RequestPatternCapab
 		Source responseValue = Source.of(rtn, function.getReturnTypeDescriptor());
 		if (response.getContentType() == null) {
 			for (MediaType mimeType : requestPattern.getProduces()) {
-				response.setContentType(mimeType);
-				if (messageConverter.isWriteable(responseValue, response)) {
-					messageConverter.writeTo(responseValue, request, response);
+				if (messageConverter.isWriteable(responseValue, response, mimeType)) {
+					messageConverter.writeTo(responseValue, response, mimeType);
 					return;
 				}
 			}
 		} else {
-			messageConverter.writeTo(responseValue, request, response);
+			messageConverter.writeTo(responseValue, response, response.getContentType());
 		}
 	}
 }

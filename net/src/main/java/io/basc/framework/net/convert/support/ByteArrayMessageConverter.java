@@ -8,6 +8,7 @@ import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.Message;
 import io.basc.framework.util.io.MimeType;
+import lombok.NonNull;
 
 public class ByteArrayMessageConverter extends AbstractBinaryMessageConverter<byte[]> {
 
@@ -17,13 +18,14 @@ public class ByteArrayMessageConverter extends AbstractBinaryMessageConverter<by
 	}
 
 	@Override
-	protected byte[] parseObject(byte[] body, TargetDescriptor targetDescriptor, MimeType contentType, Message message)
-			throws IOException {
+	protected byte[] parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) throws IOException {
 		return body;
 	}
 
 	@Override
-	protected byte[] toBinary(Data<byte[]> body, MediaType mediaType, Message message) throws IOException {
+	protected byte[] toBinary(@NonNull Data<byte[]> body, @NonNull Message message, MediaType mediaType)
+			throws IOException {
 		return body.orElse(null);
 	}
 }

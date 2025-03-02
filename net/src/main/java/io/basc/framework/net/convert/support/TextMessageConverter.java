@@ -13,6 +13,7 @@ import io.basc.framework.core.convert.service.ConversionServiceAware;
 import io.basc.framework.core.convert.support.DefaultConversionService;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.Message;
+import io.basc.framework.util.io.MimeType;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -30,15 +31,18 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message request) {
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) {
 		return getConversionService().canConvert(TypeDescriptor.valueOf(String.class),
-				targetDescriptor.getRequiredTypeDescriptor()) && super.isReadable(targetDescriptor, request);
+				targetDescriptor.getRequiredTypeDescriptor())
+				&& super.isReadable(targetDescriptor, message, contentType);
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message response) {
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
+			MimeType contentType) {
 		return getConversionService().canConvert(sourceDescriptor.getTypeDescriptor(),
-				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, response);
+				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
 	@Override

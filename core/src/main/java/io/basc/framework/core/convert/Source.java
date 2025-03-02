@@ -632,6 +632,12 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 		return any;
 	}
 
+	default Any any() {
+		Any value = new Any();
+		value.setObject(this);
+		return value;
+	}
+
 	default <T> Data<T> map(@NonNull TypeDescriptor typeDescriptor,
 			@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
 		Data<T> value = new Data<>();

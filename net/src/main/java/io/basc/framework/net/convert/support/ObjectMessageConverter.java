@@ -8,8 +8,6 @@ import io.basc.framework.core.convert.TargetDescriptor;
 import io.basc.framework.net.InputMessage;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.net.Request;
-import io.basc.framework.net.Response;
 import io.basc.framework.util.io.MimeType;
 import lombok.NonNull;
 
@@ -21,21 +19,21 @@ public abstract class ObjectMessageConverter<T> extends AbstractMessageConverter
 	}
 
 	@Override
-	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
-			@NonNull InputMessage request, @NonNull Response response) throws IOException {
-		return readObject(targetDescriptor, contentType, request, response);
+	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+			MimeType contentType) throws IOException {
+		return readObject(targetDescriptor, message, contentType);
 	}
 
-	protected abstract T readObject(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
-			@NonNull InputMessage request, @NonNull Response response) throws IOException;
+	protected abstract T readObject(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+			MimeType contentType) throws IOException;
 
 	@Override
-	protected void doWrite(Source source, MediaType contentType, Request request, OutputMessage response)
+	protected void doWrite(@NonNull Source source, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
 		Data<T> data = source.getAsData(requriedType);
-		writeObject(data, contentType, request, response);
+		writeObject(data, message, contentType);
 	}
 
-	protected abstract void writeObject(Data<T> data, MediaType contentType, Request request, OutputMessage response)
-			throws IOException;
+	protected abstract void writeObject(@NonNull Data<T> data, @NonNull OutputMessage message,
+			@NonNull MediaType contentType) throws IOException;
 }

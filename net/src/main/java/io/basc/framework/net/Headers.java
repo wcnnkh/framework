@@ -44,6 +44,9 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	private Map<String, List<String>> headers;
 	private boolean readyOnly;
 
+	/**
+	 * @param caseSensitiveKey 是否区别大小写
+	 */
 	public Headers(boolean caseSensitiveKey) {
 		if (caseSensitiveKey) {
 			this.headers = new LinkedHashMap<String, List<String>>(8);

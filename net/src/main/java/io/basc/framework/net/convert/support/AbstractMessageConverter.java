@@ -11,8 +11,6 @@ import io.basc.framework.net.MediaTypeRegistry;
 import io.basc.framework.net.MediaTypes;
 import io.basc.framework.net.Message;
 import io.basc.framework.net.OutputMessage;
-import io.basc.framework.net.Request;
-import io.basc.framework.net.Response;
 import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.util.io.MimeType;
 import lombok.Getter;
@@ -24,11 +22,11 @@ import lombok.Setter;
 public abstract class AbstractMessageConverter implements MessageConverter {
 	private final MediaTypeRegistry mediaTypeRegistry = new MediaTypeRegistry();
 
-	protected abstract Object doRead(@NonNull TargetDescriptor targetDescriptor, MimeType contentType,
-			@NonNull InputMessage request, @NonNull Response response) throws IOException;
+	protected abstract Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+			MimeType contentType) throws IOException;
 
-	protected abstract void doWrite(Source source, MediaType contentType, Request request, OutputMessage response)
-			throws IOException;
+	protected abstract void doWrite(@NonNull Source source, @NonNull OutputMessage message,
+			@NonNull MediaType contentType) throws IOException;
 
 	@Override
 	public MediaTypes getSupportedMediaTypes() {
@@ -36,8 +34,8 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message request) {
-		MediaType contentType = request.getContentType();
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) {
 		if (contentType == null) {
 			return true;
 		}
@@ -51,8 +49,8 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message response) {
-		MediaType contentType = response.getContentType();
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
+			MimeType contentType) {
 		if (contentType == null || MediaType.ALL.equalsTypeAndSubtype(contentType)) {
 			return true;
 		}
@@ -66,29 +64,29 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public Object readFrom(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage request,
-			@NonNull Response response) throws IOException {
-		MimeType contentTypeToUse = request.getContentType();
+	public Object readFrom(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+			MimeType contentType) throws IOException {
+		MimeType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {
 			contentTypeToUse = mediaTypeRegistry.first();
 		}
 
-		return doRead(targetDescriptor, contentTypeToUse, request, response);
+		return doRead(targetDescriptor, message, contentTypeToUse);
 	}
 
 	@Override
-	public void writeTo(@NonNull Source source, @NonNull Request request, @NonNull OutputMessage response)
+	public void writeTo(@NonNull Source source, @NonNull OutputMessage message, MediaType contentType)
 			throws IOException {
-		MediaType contentTypeToUse = response.getContentType();
+		MediaType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {
 			contentTypeToUse = mediaTypeRegistry.filter((e) -> !e.isWildcardType() && !e.isWildcardSubtype()).first();
 		}
 
-		if (contentTypeToUse != null) {
-			response.setContentType(contentTypeToUse);
+		if (contentTypeToUse != null && message.getContentType() == null) {
+			message.setContentType(contentTypeToUse);
 		}
 
-		doWrite(source, contentTypeToUse, request, response);
+		doWrite(source, message, contentTypeToUse);
 	}
 
 }

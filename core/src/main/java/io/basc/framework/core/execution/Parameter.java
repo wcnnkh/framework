@@ -14,6 +14,10 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 	@FunctionalInterface
 	public static interface ParameterWrapper<W extends Parameter>
 			extends Parameter, PropertyWrapper<W>, ParameterDescriptorWrapper<W> {
+		@Override
+		default Parameter rename(String name) {
+			return Parameter.super.rename(name);
+		}
 	}
 
 	public static class StandardParmeter<W extends ParameterDescriptor> extends StandardProperty<W>
@@ -22,6 +26,11 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 
 		public StandardParmeter(@NonNull W source) {
 			super(source);
+		}
+
+		@Override
+		public Parameter rename(String name) {
+			return Parameter.super.rename(name);
 		}
 	}
 
@@ -32,7 +41,7 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 		private final W source;
 
 		@Override
-		public ParameterDescriptor rename(String name) {
+		public Parameter rename(String name) {
 			return Parameter.super.rename(name);
 		}
 	}
@@ -79,5 +88,11 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 			}
 		}
 		return false;
+	}
+
+	@Override
+	default Parameter rename(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

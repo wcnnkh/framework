@@ -1,8 +1,9 @@
-package io.basc.framework.web.jaxrs;
+package io.basc.framework.http.jaxrs;
 
 import java.io.IOException;
 
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.PathParam;
 
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
@@ -11,19 +12,19 @@ import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.support.AbstractParamWebMessageConverter;
+import io.basc.framework.web.message.support.AbstractPathParamWebMessageConverter;
 
-public class JaxrsQueryParamWebMessageConverter extends AbstractParamWebMessageConverter {
+public class JaxrsPathParamWebMessageConverter extends AbstractPathParamWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
-		return descriptor.isAnnotationPresent(QueryParam.class);
+		return descriptor.isAnnotationPresent(FormParam.class);
 	}
 
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		QueryParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(QueryParam.class);
+		PathParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -31,22 +32,18 @@ public class JaxrsQueryParamWebMessageConverter extends AbstractParamWebMessageC
 	}
 
 	@Override
-	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
-		return false;
-	}
-
-	@Override
-	public boolean canWrite(TypeDescriptor typeDescriptor, Object parameter) {
-		return typeDescriptor.isAnnotationPresent(QueryParam.class);
-	}
-
-	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		QueryParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(QueryParam.class);
+		PathParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(builder, parameterDescriptor, parameter);
 		}
 		return super.write(builder, parameterDescriptor.rename(param.value()), parameter);
 	}
+
+	@Override
+	public boolean canWrite(TypeDescriptor typeDescriptor, Object parameter) {
+		return typeDescriptor.isAnnotationPresent(PathParam.class);
+	}
+
 }

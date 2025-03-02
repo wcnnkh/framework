@@ -2,14 +2,14 @@ package io.basc.framework.net.convert.support;
 
 import io.basc.framework.net.convert.MessageConverters;
 
-public class GlobalMessageConverter extends MessageConverters {
-	private static volatile GlobalMessageConverter instance;
+public class GlobalMessageConverters extends MessageConverters {
+	private static volatile GlobalMessageConverters instance;
 
-	public static GlobalMessageConverter getInstance() {
+	public static GlobalMessageConverters getInstance() {
 		if (instance == null) {
-			synchronized (GlobalMessageConverter.class) {
+			synchronized (GlobalMessageConverters.class) {
 				if (instance == null) {
-					instance = new GlobalMessageConverter();
+					instance = new GlobalMessageConverters();
 					instance.doNativeConfigure();
 				}
 			}
@@ -21,7 +21,7 @@ public class GlobalMessageConverter extends MessageConverters {
 	private final ByteArrayMessageConverter byteArrayMessageConverter = new ByteArrayMessageConverter();
 	private final QueryStringMessageConveter queryStringMessageConveter = new QueryStringMessageConveter();
 
-	private GlobalMessageConverter() {
+	private GlobalMessageConverters() {
 		register(textMessageConverter);
 		register(byteArrayMessageConverter);
 		register(queryStringMessageConveter);

@@ -10,6 +10,7 @@ import io.basc.framework.net.Message;
 import io.basc.framework.net.convert.MessageConvertException;
 import io.basc.framework.util.io.MimeType;
 import io.basc.framework.util.io.serializer.Serializer;
+import lombok.NonNull;
 
 public class SerializableMessageConveter extends AbstractBinaryMessageConverter<Object> {
 	private final Serializer serializer;
@@ -21,8 +22,8 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
 	}
 
 	@Override
-	protected Object parseObject(byte[] body, TargetDescriptor targetDescriptor, MimeType contentType, Message message)
-			throws IOException {
+	protected Object parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) throws IOException {
 		try {
 			return serializer.deserialize(body);
 		} catch (ClassNotFoundException e) {
@@ -31,7 +32,8 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
 	}
 
 	@Override
-	protected byte[] toBinary(Data<Object> body, MediaType mediaType, Message message) throws IOException {
+	protected byte[] toBinary(@NonNull Data<Object> body, @NonNull Message message, MediaType mediaType)
+			throws IOException {
 		return serializer.serialize(body.get());
 	}
 

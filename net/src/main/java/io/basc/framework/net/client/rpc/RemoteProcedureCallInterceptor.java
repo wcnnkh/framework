@@ -36,16 +36,16 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 		Parameters parameters = Parameters.forTemplate(function, args);
 		ClientRequest request = requestFactory.createRequest(function, parameters);
 		for (Parameter parameter : parameters.getElements()) {
-			if (!messageConverter.isWriteable(parameter, request)) {
+			if (!messageConverter.isWriteable(parameter, request, null)) {
 				// TODO ignore log
 				continue;
 			}
-			messageConverter.writeTo(parameter, request, request);
+			messageConverter.writeTo(parameter, request, null);
 		}
 
 		ClientResponse response = request.execute();
 		try {
-			return messageConverter.readFrom(() -> function.getReturnTypeDescriptor(), response, response);
+			return messageConverter.readFrom(() -> function.getReturnTypeDescriptor(), response, null);
 		} finally {
 			response.close();
 		}
