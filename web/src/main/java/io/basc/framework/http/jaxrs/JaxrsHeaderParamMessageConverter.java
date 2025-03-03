@@ -5,43 +5,49 @@ import java.io.IOException;
 import javax.ws.rs.HeaderParam;
 
 import io.basc.framework.core.convert.TypeDescriptor;
+import io.basc.framework.core.execution.Parameter;
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.http.HttpMessage;
-import io.basc.framework.http.client.ClientHttpRequest;
-import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.convert.HeaderParameterMessageConverter;
+import io.basc.framework.net.InputMessage;
+import io.basc.framework.net.Message;
+import io.basc.framework.net.OutputMessage;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.support.AbstractHeaderWebMessageConverter;
+import lombok.NonNull;
 
-public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageConverter {
+public class JaxrsHeaderParamMessageConverter extends HeaderParameterMessageConverter {
 
-	@Override
-	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
-		return descriptor.isAnnotationPresent(HeaderParam.class);
-	}
-
-	@Override
-	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
-			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
-		if (param == null || StringUtils.isEmpty(param.value())) {
-			return super.read(request, parameterDescriptor);
+	private String getHeaderName(String name, TypeDescriptor typeDescriptor) {
+		HeaderParam headerParam = typeDescriptor.getAnnotation(HeaderParam.class);
+		if (headerParam == null) {
+			return null;
 		}
-		return super.read(request, parameterDescriptor.rename(param.value()));
+		return StringUtils.isEmpty(headerParam.value()) ? name : headerParam.value();
 	}
 
 	@Override
-	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
-		return typeDescriptor.isAnnotationPresent(HeaderParam.class);
+	protected boolean isReadable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message request) {
+		return StringUtils.isNotEmpty(
+				getHeaderName(parameterDescriptor.getName(), parameterDescriptor.getRequiredTypeDescriptor()))
+				&& super.isReadable(parameterDescriptor, request);
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
-		if (param == null || StringUtils.isEmpty(param.value())) {
-			return super.write(request, parameterDescriptor, parameter);
-		}
-		return super.write(request, parameterDescriptor.rename(param.value()), parameter);
+	protected Object doRead(@NonNull ParameterDescriptor parameterDescriptor, @NonNull InputMessage message)
+			throws IOException {
+		String name = getHeaderName(parameterDescriptor.getName(), parameterDescriptor.getRequiredTypeDescriptor());
+		return super.doRead(parameterDescriptor.rename(name), message);
+	}
+
+	@Override
+	protected boolean isWriteable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message response) {
+		return StringUtils
+				.isNotEmpty(getHeaderName(parameterDescriptor.getName(), parameterDescriptor.getTypeDescriptor()))
+				&& super.isWriteable(parameterDescriptor, response);
+	}
+
+	@Override
+	protected void doWrite(@NonNull Parameter parameter, @NonNull OutputMessage message) throws IOException {
+		String name = getHeaderName(parameter.getName(), parameter.getTypeDescriptor());
+		super.doWrite(parameter.rename(name), message);
 	}
 }

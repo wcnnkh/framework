@@ -11,7 +11,7 @@ public class ServerFilterRegistry extends ConfigurableServices<ServerFilter> imp
 	}
 
 	@Override
-	public void doFilter(ServerRequest request, ServerResponse response, Server chain)
+	public void doFilter(ServerRequest request, ServerResponse response, Service chain)
 			throws IOException, ServerException {
 		ServerFilterChain filterChain = new ServerFilterChain(iterator(), chain);
 		filterChain.service(request, response);

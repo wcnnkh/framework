@@ -13,7 +13,7 @@ import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.RequestPatternCapable;
 import io.basc.framework.net.convert.MessageConverter;
 import io.basc.framework.net.convert.UriParameterConverter;
-import io.basc.framework.net.server.Server;
+import io.basc.framework.net.server.Service;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
@@ -28,7 +28,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class Action implements Server, ExecutionInterceptor, RequestPatternCapable {
+public class Action implements Service, ExecutionInterceptor, RequestPatternCapable {
 	@NonNull
 	private final Function function;
 	@NonNull

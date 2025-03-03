@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public final class QueryStringMessageConveter extends TextMessageConverter {
+public class QueryStringMessageConveter extends TextMessageConverter {
 	public QueryStringMessageConveter() {
 		getMediaTypeRegistry().clear();
 		getMediaTypeRegistry().add(MediaType.APPLICATION_FORM_URLENCODED);

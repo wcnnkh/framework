@@ -2,7 +2,7 @@ package io.basc.framework.net.server.dispatch;
 
 import java.io.IOException;
 
-import io.basc.framework.net.server.Server;
+import io.basc.framework.net.server.Service;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
@@ -13,7 +13,7 @@ import io.basc.framework.net.server.ServerResponse;
  * @author alisa
  *
  */
-public interface GroundServer extends Server {
+public interface GroundServer extends Service {
 	@Override
 	void service(ServerRequest request, ServerResponse response) throws IOException, ServerException;
 }

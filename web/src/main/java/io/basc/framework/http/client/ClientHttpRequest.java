@@ -13,7 +13,29 @@ public interface ClientHttpRequest extends HttpOutputMessage, HttpRequest, Clien
 		default ClientHttpResponse execute() throws IOException {
 			return getSource().execute();
 		}
+
+		@Override
+		default ClientHttpRequest buffered() {
+			return getSource().buffered();
+		}
 	}
 
 	ClientHttpResponse execute() throws IOException;
+
+	public static class BufferingClientHttpRequest<W extends ClientHttpRequest> extends BufferingHttpOutputMessage<W>
+			implements ClientHttpRequestWrapper<W> {
+
+		public BufferingClientHttpRequest(W source) {
+			super(source);
+		}
+
+		@Override
+		public ClientHttpRequest buffered() {
+			return this;
+		}
+	}
+
+	default ClientHttpRequest buffered() {
+		return new BufferingClientHttpRequest<>(this);
+	}
 }

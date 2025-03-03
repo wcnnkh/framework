@@ -6,12 +6,15 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 
 import io.basc.framework.core.Constants;
+import io.basc.framework.http.server.ServerHttpRequest;
+import io.basc.framework.http.server.ServerHttpResponse;
 import io.basc.framework.net.ContentDisposition;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.codec.support.CharsetCodec;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.io.FileMimeTypeUitls;
 import io.basc.framework.util.io.MimeType;
@@ -106,6 +109,41 @@ public final class HttpUtils {
 		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
 				.filename(fileName, charsetToUse).build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
+	}
+	
+	public static boolean isExpired(ServerHttpRequest request, ServerHttpResponse response, long lastModified) {
+		response.getHeaders().setLastModified(lastModified);
+		long ifModifiedSince = request.getHeaders().getIfModifiedSince();
+		if (ifModifiedSince < 0 || lastModified < 0) {
+			// 缓存已过期,请求中没有此值
+			return true;
+		}
+
+		// 不比较毫秒
+		if (ifModifiedSince / 1000 != lastModified / 1000) {
+			// 缓存已过期
+			return true;
+		}
+
+		// 客户端缓存未过期
+		response.setStatusCode(HttpStatus.NOT_MODIFIED);
+		return false;
+	}
+	
+	public static String decodeGETParameter(ServerHttpRequest request, String value) {
+		if (StringUtils.isEmpty(value)) {
+			return value;
+		}
+
+		if (request.getMethod() != HttpMethod.GET) {
+			return value;
+		}
+
+		if (StringUtils.containsChinese(value)) {
+			return value;
+		}
+
+		return new CharsetCodec(request.getCharset()).decode(CharsetCodec.ISO_8859_1.encode(value));
 	}
 
 	private HttpUtils() {

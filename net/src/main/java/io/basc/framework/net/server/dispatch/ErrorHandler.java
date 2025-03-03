@@ -2,7 +2,7 @@ package io.basc.framework.net.server.dispatch;
 
 import java.io.IOException;
 
-import io.basc.framework.net.server.Server;
+import io.basc.framework.net.server.Service;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
 
@@ -13,5 +13,5 @@ import io.basc.framework.net.server.ServerResponse;
  *
  */
 public interface ErrorHandler {
-	void doError(ServerRequest request, ServerResponse response, Server server, Throwable error) throws IOException;
+	void doError(ServerRequest request, ServerResponse response, Service server, Throwable error) throws IOException;
 }

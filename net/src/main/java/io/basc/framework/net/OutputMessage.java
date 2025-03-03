@@ -1,11 +1,16 @@
 package io.basc.framework.net;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.function.Pipeline;
+import io.basc.framework.util.function.Wrapped;
 import io.basc.framework.util.io.OutputStreamSource;
 import io.basc.framework.util.io.WriterFactory;
+import lombok.NonNull;
+import lombok.Setter;
 
 public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
 	@FunctionalInterface
@@ -31,8 +36,13 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 		default void setCharsetName(String charsetName) {
 			getSource().setCharsetName(charsetName);
 		}
+
+		@Override
+		default OutputMessage buffered() {
+			return getSource().buffered();
+		}
 	}
-	
+
 	default void setContentType(MediaType contentType) {
 		String charsetName = contentType.getCharsetName();
 		if (charsetName == null) {
@@ -68,5 +78,37 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 			return OutputStreamSource.super.toWriterFactory();
 		}
 		return toWriterFactory(charsetName);
+	}
+
+	@Setter
+	public static class BufferingOutputMessage<W extends OutputMessage> extends Wrapped<W>
+			implements OutputMessageWrapper<W> {
+		private OutputStream outputStream;
+
+		public BufferingOutputMessage(W source) {
+			super(source);
+		}
+
+		@Override
+		public OutputStream getOutputStream() throws IOException {
+			if (outputStream == null) {
+				outputStream = getSource().getOutputStream();
+			}
+			return outputStream;
+		}
+
+		@Override
+		public @NonNull Pipeline<OutputStream, IOException> getOutputStreamPipeline() {
+			return Pipeline.of(() -> getOutputStream());
+		}
+
+		@Override
+		public OutputMessage buffered() {
+			return this;
+		}
+	}
+
+	default OutputMessage buffered() {
+		return new BufferingOutputMessage<>(this);
 	}
 }

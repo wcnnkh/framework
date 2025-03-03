@@ -13,7 +13,7 @@ public class ServerFilters implements ServerFilter {
 	private final Iterable<? extends ServerFilter> filters;
 
 	@Override
-	public void doFilter(ServerRequest request, ServerResponse response, Server chain)
+	public void doFilter(ServerRequest request, ServerResponse response, Service chain)
 			throws IOException, ServerException {
 		ServerFilterChain filterChain = new ServerFilterChain(filters.iterator(), chain);
 		filterChain.service(request, response);

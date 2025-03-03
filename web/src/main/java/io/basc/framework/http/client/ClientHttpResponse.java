@@ -28,6 +28,11 @@ public interface ClientHttpResponse extends HttpInputMessage, ClientResponse {
 		default void close() {
 			getSource().close();
 		}
+
+		@Override
+		default ClientHttpResponse buffered() {
+			return getSource().buffered();
+		}
 	}
 
 	/**
@@ -47,4 +52,21 @@ public interface ClientHttpResponse extends HttpInputMessage, ClientResponse {
 	String getStatusText() throws IOException;
 
 	void close();
+
+	public static class BufferingClientHttpResponse<W extends ClientHttpResponse> extends BufferingHttpInputMessage<W>
+			implements ClientHttpResponseWrapper<W> {
+
+		public BufferingClientHttpResponse(W source) {
+			super(source);
+		}
+
+		@Override
+		public ClientHttpResponse buffered() {
+			return this;
+		}
+	}
+
+	default ClientHttpResponse buffered() {
+		return new BufferingClientHttpResponse<>(this);
+	}
 }

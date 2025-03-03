@@ -16,36 +16,37 @@ import lombok.NonNull;
 
 public class JaxrsCookieParamMessageConverter extends CookieParameterMessageConverter {
 
-	private String getParameterName(TypeDescriptor typeDescriptor) {
+	private String getParameterName(String name, TypeDescriptor typeDescriptor) {
 		CookieParam headerParam = typeDescriptor.getAnnotation(CookieParam.class);
-		if (headerParam == null || StringUtils.isEmpty(headerParam.value())) {
+		if (headerParam == null) {
 			return null;
 		}
-		return headerParam.value();
+
+		return StringUtils.isEmpty(headerParam.value()) ? name : headerParam.value();
 	}
 
 	@Override
 	protected boolean isReadable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message request) {
-		return getParameterName(parameterDescriptor.getRequiredTypeDescriptor()) != null
+		return getParameterName(parameterDescriptor.getName(), parameterDescriptor.getRequiredTypeDescriptor()) != null
 				&& super.isReadable(parameterDescriptor, request);
 	}
 
 	@Override
 	protected Object doRead(@NonNull ParameterDescriptor parameterDescriptor, @NonNull InputMessage message)
 			throws IOException {
-		String name = getParameterName(parameterDescriptor.getRequiredTypeDescriptor());
+		String name = getParameterName(parameterDescriptor.getName(), parameterDescriptor.getRequiredTypeDescriptor());
 		return super.doRead(parameterDescriptor.rename(name), message);
 	}
 
 	@Override
 	protected boolean isWriteable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message response) {
-		return getParameterName(parameterDescriptor.getTypeDescriptor()) != null
+		return getParameterName(parameterDescriptor.getName(), parameterDescriptor.getTypeDescriptor()) != null
 				&& super.isWriteable(parameterDescriptor, response);
 	}
 
 	@Override
 	protected void doWrite(@NonNull Parameter parameter, @NonNull OutputMessage message) throws IOException {
-		String name = getParameterName(parameter.getTypeDescriptor());
+		String name = getParameterName(parameter.getName(), parameter.getTypeDescriptor());
 		super.doWrite(parameter.rename(name), message);
 	}
 }

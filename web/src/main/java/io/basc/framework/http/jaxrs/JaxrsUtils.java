@@ -7,20 +7,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.net.Headers;
+import io.basc.framework.util.io.MimeType;
 
 public class JaxrsUtils {
 	private JaxrsUtils() {
 	}
 
-	public static MediaType convertMediaType(io.basc.framework.net.MediaType mediaType) {
-		if(mediaType == null) {
+	public static MediaType convertMediaType(MimeType contentType) {
+		if(contentType == null) {
 			return null;
 		}
-		return new MediaType(mediaType.getType(), mediaType.getSubtype(), mediaType.getParameters());
+		return new MediaType(contentType.getType(), contentType.getSubtype(), contentType.getParameters());
 	}
 
-	public static MultivaluedMap<String, String> convertHeaders(HttpHeaders headers) {
+	public static MultivaluedMap<String, String> convertHeaders(Headers headers) {
 		MultivaluedMap<String, String> headerMap = new MultivaluedHashMap<>();
 		for (Entry<String, List<String>> entry : headers.entrySet()) {
 			headerMap.put(entry.getKey(), entry.getValue());

@@ -5,7 +5,7 @@ import java.io.IOException;
 import io.basc.framework.http.HttpRequestMapping;
 import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.http.server.ServerHttpResponse;
-import io.basc.framework.net.server.Server;
+import io.basc.framework.net.server.Service;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerFilter;
 import io.basc.framework.net.server.ServerRequest;
@@ -20,7 +20,7 @@ import io.basc.framework.net.server.ServerResponse;
 public class CorsRegistry extends HttpRequestMapping<Cors> implements ServerFilter {
 
 	@Override
-	public void doFilter(ServerRequest request, ServerResponse response, Server chain)
+	public void doFilter(ServerRequest request, ServerResponse response, Service chain)
 			throws IOException, ServerException {
 		if (request instanceof ServerHttpRequest && response instanceof ServerHttpResponse) {
 			ServerHttpRequest serverHttpRequest = (ServerHttpRequest) request;

@@ -15,17 +15,17 @@ import lombok.NonNull;
 
 public class HeaderParameterMessageConverter extends AbstractParameterMessageConverter {
 	@Override
-	public boolean isReadable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message request) {
+	protected boolean isReadable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message request) {
 		return true;
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message response) {
+	protected boolean isWriteable(@NonNull ParameterDescriptor parameterDescriptor, @NonNull Message response) {
 		return !response.getHeaders().isReadyOnly();
 	}
 
 	@Override
-	public Object doRead(@NonNull ParameterDescriptor parameterDescriptor, @NonNull InputMessage message)
+	protected Object doRead(@NonNull ParameterDescriptor parameterDescriptor, @NonNull InputMessage message)
 			throws IOException {
 		Object value;
 		if (ClassUtils.isMultipleValues(parameterDescriptor.getRequiredTypeDescriptor().getType())) {
@@ -43,7 +43,7 @@ public class HeaderParameterMessageConverter extends AbstractParameterMessageCon
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void doWrite(@NonNull Parameter parameter, @NonNull OutputMessage message) throws IOException {
+	protected void doWrite(@NonNull Parameter parameter, @NonNull OutputMessage message) throws IOException {
 		if (ClassUtils.isMultipleValues(parameter.getTypeDescriptor().getType())) {
 			List<String> values = (List<String>) getConversionService().convert(parameter,
 					TypeDescriptor.collection(List.class, String.class));
