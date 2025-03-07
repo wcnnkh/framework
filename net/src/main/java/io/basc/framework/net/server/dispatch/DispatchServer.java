@@ -12,11 +12,11 @@ import io.basc.framework.net.convert.support.DefaultMessageConverters;
 import io.basc.framework.net.convert.support.DefaultUriParameterConverters;
 import io.basc.framework.net.pattern.DefaultRequestPatternFactory;
 import io.basc.framework.net.pattern.RequestPatternFactory;
-import io.basc.framework.net.server.Service;
+import io.basc.framework.net.server.Server;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
-import io.basc.framework.net.server.Server;
+import io.basc.framework.net.server.Service;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.exchange.Registrations;
@@ -25,9 +25,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DispatcherServer extends Server {
+public class DispatchServer extends Server {
 	private ErrorHandler errorHandler;
-	private GroundServer groundServer;
+	private GroundService groundService;
 	private final RequestPatternFactory requestPatternFactory = new DefaultRequestPatternFactory();
 	private final MessageConverters serverMessageConverter = new DefaultMessageConverters();
 	private final UriParameterConverters uriParameterConverters = new DefaultUriParameterConverters();
@@ -56,7 +56,7 @@ public class DispatcherServer extends Server {
 	public void doFilter(ServerRequest request, ServerResponse response, Service server)
 			throws IOException, ServerException {
 		if (server == null) {
-			server = groundServer;
+			server = groundService;
 		}
 
 		try {

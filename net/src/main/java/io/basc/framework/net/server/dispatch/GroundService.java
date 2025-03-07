@@ -13,7 +13,7 @@ import io.basc.framework.net.server.ServerResponse;
  * @author alisa
  *
  */
-public interface GroundServer extends Service {
+public interface GroundService extends Service {
 	@Override
 	void service(ServerRequest request, ServerResponse response) throws IOException, ServerException;
 }

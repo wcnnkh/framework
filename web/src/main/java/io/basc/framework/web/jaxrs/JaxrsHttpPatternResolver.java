@@ -1,4 +1,4 @@
-package io.basc.framework.http.jaxrs;
+package io.basc.framework.web.jaxrs;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -13,11 +13,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.http.HttpPattern;
 import io.basc.framework.net.MediaTypes;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
-import io.basc.framework.web.pattern.HttpPattern;
 
 public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
 
@@ -40,12 +40,21 @@ public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
 		MediaTypes produceTypes = MediaTypes.forArray(produces.value());
 		String path = StringUtils.cleanPath(pathAnnotation.value());
 		if (CollectionUtils.isEmpty(httpMethods)) {
-			return Arrays.asList(new HttpPattern(path, null, consumeTypes, produceTypes));
+			HttpPattern pattern = new HttpPattern();
+			pattern.setPath(path);
+			pattern.getConsumes().registers(consumeTypes);
+			pattern.getProduces().registers(produceTypes);
+			return Arrays.asList(pattern);
 		}
 
 		Set<HttpPattern> httpPatterns = new LinkedHashSet<HttpPattern>();
 		for (HttpMethod httpMethod : httpMethods) {
-			httpPatterns.add(new HttpPattern(path, httpMethod.value(), consumeTypes, produceTypes));
+			HttpPattern pattern = new HttpPattern();
+			pattern.setPath(path);
+			pattern.setMethod(httpMethod.value());
+			pattern.getConsumes().registers(consumeTypes);
+			pattern.getProduces().registers(produceTypes);
+			httpPatterns.add(pattern);
 		}
 		return httpPatterns;
 	}

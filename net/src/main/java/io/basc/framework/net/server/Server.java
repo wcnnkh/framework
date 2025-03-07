@@ -12,15 +12,15 @@ public class Server extends RequestMapping<Service> implements Service, ServerFi
 	private final ServerFilterRegistry filters = new ServerFilterRegistry();
 
 	@Override
-	public void doFilter(ServerRequest request, ServerResponse response, Service server)
+	public void doFilter(ServerRequest request, ServerResponse response, Service service)
 			throws IOException, ServerException {
-		filters.doFilter(request, response, server);
+		filters.doFilter(request, response, service);
 	}
 
 	@Override
 	public void service(ServerRequest request, ServerResponse response) throws IOException, ServerException {
-		Service server = dispatch(request);
-		doFilter(request, response, server);
+		Service service = dispatch(request);
+		doFilter(request, response, service);
 	}
 
 }

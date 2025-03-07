@@ -13,7 +13,7 @@ public class Slf4jTest {
 	public void test() {
 		logger.info("This is info message");
 		logger.debug("This is debug message");
-		LogManager.getSource().setLoggerFactory(new JdkLoggerFactory());
+		LogManager.getConfigurable().setLoggerFactory(new JdkLoggerFactory());
 		logger.warn("This is warn message");
 		logger.error("This is error message");
 	}

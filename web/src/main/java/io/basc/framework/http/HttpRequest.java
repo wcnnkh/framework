@@ -1,5 +1,8 @@
 package io.basc.framework.http;
 
+import java.net.URI;
+
+import io.basc.framework.net.PathPattern;
 import io.basc.framework.net.Request;
 
 public interface HttpRequest extends HttpMessage, Request {
@@ -28,4 +31,13 @@ public interface HttpRequest extends HttpMessage, Request {
 	}
 
 	String getRawMethod();
+	
+	URI getURI();
+
+	@Override
+	default PathPattern getRequestPattern() {
+		PathPattern pathPattern = new PathPattern();
+		pathPattern.setPath(getURI().getPath());
+		return pathPattern;
+	}
 }

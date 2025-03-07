@@ -13,7 +13,7 @@ import io.basc.framework.util.placeholder.FormatableMessage;
  * @author wcnnkh
  *
  */
-public class JdkLogger implements io.basc.framework.util.logging.Logger {
+public class JdkLogger extends AbstractLogger {
 	private final Logger logger;
 
 	public JdkLogger(Logger logger) {
@@ -31,7 +31,7 @@ public class JdkLogger implements io.basc.framework.util.logging.Logger {
 
 	@Override
 	public boolean isLoggable(Level level) {
-		return logger.isLoggable(level);
+		return super.isLoggable(level) && logger.isLoggable(level);
 	}
 
 	@Override
@@ -44,6 +44,7 @@ public class JdkLogger implements io.basc.framework.util.logging.Logger {
 
 	@Override
 	public void setLevel(Level level) {
+		super.setLevel(level);
 		logger.setLevel(level);
 		Logger parent = this.logger;
 		while (parent != null) {

@@ -2,6 +2,8 @@ package io.basc.framework.util.logging;
 
 import java.util.logging.Level;
 
+import lombok.NonNull;
+
 public interface LevelFactory {
 	/**
 	 * 获取日志等级
@@ -9,5 +11,5 @@ public interface LevelFactory {
 	 * @param name
 	 * @return
 	 */
-	Level getLevel(String name);
+	Level getLevel(@NonNull String name);
 }

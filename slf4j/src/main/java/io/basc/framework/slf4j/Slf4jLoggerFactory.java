@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 
 import io.basc.framework.util.logging.Logger;
 
-public class Slf4jLoggerFactory implements LoggerFactory {
+public class Slf4jLoggerFactory implements io.basc.framework.util.logging.LoggerFactory {
 
 	@Override
 	public Logger getLogger(String name) {

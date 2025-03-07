@@ -5,9 +5,10 @@ import java.util.logging.LogRecord;
 
 import org.apache.log4j.Logger;
 
+import io.basc.framework.util.logging.AbstractLogger;
 import io.basc.framework.util.placeholder.FormatableMessage;
 
-public class Log4jLogger implements io.basc.framework.util.logging.Logger {
+public class Log4jLogger extends AbstractLogger {
 	private final Logger logger;
 	private final String placeholder;
 
@@ -29,11 +30,12 @@ public class Log4jLogger implements io.basc.framework.util.logging.Logger {
 
 	@Override
 	public void setLevel(Level level) {
+		super.setLevel(level);
 		logger.setLevel(parse(level));
 	}
 
 	public boolean isLoggable(Level level) {
-		return logger.isEnabledFor(parse(level));
+		return super.isLoggable(level) && logger.isEnabledFor(parse(level));
 	}
 
 	@Override

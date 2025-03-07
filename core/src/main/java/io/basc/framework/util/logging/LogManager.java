@@ -1,19 +1,45 @@
 package io.basc.framework.util.logging;
 
+import io.basc.framework.util.exchange.Receipt;
+
 public final class LogManager {
-	private static final JdkLoggerFactory JDK_LOGGER_FACTORY = new JdkLoggerFactory();
-	private static DynamicLoggerFactory source = new DynamicLoggerFactory(JDK_LOGGER_FACTORY);
+	private static final ConfigurableLoggerFactory CONFIGURABLE = new ConfigurableLoggerFactory();
+
+	private static volatile Receipt receipt;
+
+	public static Receipt getReceipt() {
+		if (receipt == null) {
+			synchronized (CONFIGURABLE) {
+				if (receipt == null) {
+					receipt = reloadReceipt();
+				}
+			}
+		}
+		return receipt;
+	}
+
+	public static Receipt reloadReceipt() {
+		synchronized (CONFIGURABLE) {
+			Receipt receipt = CONFIGURABLE.doNativeConfigure();
+			LogManager.receipt = receipt;
+			return receipt;
+		}
+	}
+
+	public static ConfigurableLoggerFactory getConfigurable() {
+		return CONFIGURABLE;
+	}
 
 	public static Logger getLogger(Class<?> clazz) {
 		return getLogger(clazz.getName());
 	}
 
 	public static Logger getLogger(String name) {
-		return source.getLogger(name);
-	}
-
-	public static DynamicLoggerFactory getSource() {
-		return source;
+		Receipt receipt = getReceipt();
+		if (!receipt.isSuccess()) {
+			reloadReceipt();
+		}
+		return CONFIGURABLE.getLogger(name);
 	}
 
 	private LogManager() {

@@ -111,8 +111,6 @@ public interface Logger {
 
 	void log(LogRecord record);
 
-	void setLevel(Level level);
-
 	default void trace(String msg) {
 		log(createRecord(CustomLevel.TRACE, null, msg, ObjectUtils.EMPTY_ARRAY));
 	}

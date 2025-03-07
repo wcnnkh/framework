@@ -35,6 +35,7 @@ public class PathPattern extends WildcardRequestPattern {
 			return Properties.EMPTY_PROPERTIES;
 		}
 
+		RequestPattern requestPattern = request.getRequestPattern();
 		String requestPath = request.getURI().getPath();
 		Map<String, String> templateVariables = getPathMatcher().extractUriTemplateVariables(path, requestPath);
 		if (CollectionUtils.isEmpty(templateVariables)) {
