@@ -1,7 +1,7 @@
 package io.basc.framework.net.resource;
 
-import io.basc.framework.net.server.Server;
+import io.basc.framework.net.server.DispatchServer;
 
-public class ResourceServer extends Server{
+public class ResourceServer extends DispatchServer{
 
 }

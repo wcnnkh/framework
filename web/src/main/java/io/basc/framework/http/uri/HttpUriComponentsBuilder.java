@@ -3,8 +3,8 @@ package io.basc.framework.http.uri;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.basc.framework.http.HttpRequest;
 import io.basc.framework.net.Headers;
-import io.basc.framework.net.Request;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
@@ -32,7 +32,7 @@ public class HttpUriComponentsBuilder extends UriComponentsBuilder {
 	 * @param request the source request
 	 * @return the URI components of the URI
 	 */
-	public static HttpUriComponentsBuilder fromHttpRequest(Request request) {
+	public static HttpUriComponentsBuilder fromHttpRequest(HttpRequest request) {
 		HttpUriComponentsBuilder builder = new HttpUriComponentsBuilder();
 		builder.uri(request.getURI());
 		builder.adaptFromForwardedHeaders(request.getHeaders());

@@ -1,7 +1,7 @@
 package io.basc.framework.http;
 
-import io.basc.framework.net.PathPattern;
 import io.basc.framework.net.Request;
+import io.basc.framework.net.uri.PathPattern;
 import io.basc.framework.util.StringUtils;
 import lombok.Getter;
 import lombok.Setter;

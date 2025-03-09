@@ -20,14 +20,14 @@ import io.basc.framework.http.server.ServerHttpRequest;
 import io.basc.framework.net.InvalidMediaTypeException;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.servlet.AbstractServletServerRequestWrepper;
+import io.basc.framework.servlet.ServletServerRequestWrepper;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.collections.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.collections.MultiValueMap;
 
-public class ServletServerHttpRequest<W extends HttpServletRequest> extends AbstractServletServerRequestWrepper<W>
+public class ServletServerHttpRequest<W extends HttpServletRequest> extends ServletServerRequestWrepper<W>
 		implements ServerHttpRequest {
 	private HttpHeaders headers;
 	private MultiValueMap<String, String> parameterMap;

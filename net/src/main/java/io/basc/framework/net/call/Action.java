@@ -1,4 +1,4 @@
-package io.basc.framework.net.server.dispatch;
+package io.basc.framework.net.call;
 
 import java.io.IOException;
 
@@ -7,19 +7,15 @@ import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.core.convert.transform.stereotype.Property;
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.ParameterDescriptor;
-import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.net.MediaType;
 import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.RequestPatternCapable;
 import io.basc.framework.net.convert.MessageConverter;
-import io.basc.framework.net.convert.UriParameterConverter;
-import io.basc.framework.net.server.Service;
+import io.basc.framework.net.server.ErrorHandler;
 import io.basc.framework.net.server.ServerException;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerResponse;
-import io.basc.framework.net.uri.UriComponents;
-import io.basc.framework.net.uri.UriComponentsBuilder;
-import io.basc.framework.util.collections.Elements;
+import io.basc.framework.net.server.Service;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,37 +24,21 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class Action implements Service, ExecutionInterceptor, RequestPatternCapable {
+public class Action implements Service, RequestPatternCapable {
 	@NonNull
 	private final Function function;
 	@NonNull
 	private final RequestPattern requestPattern;
 	@NonNull
 	private MessageConverter messageConverter;
-	@NonNull
-	private UriParameterConverter uriParameterConverter;
 	private ErrorHandler errorHandler;
-	private ExecutionInterceptor executionInterceptor;
-
-	@Override
-	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
-		if (executionInterceptor == null) {
-			return function.execute(args);
-		} else {
-			return executionInterceptor.intercept(function, args);
-		}
-	}
 
 	protected Object getArg(ParameterDescriptor parameterDescriptor, ServerRequest request, ServerResponse response,
-			Properties requestPatternProperties, UriComponents uriComponents) throws IOException {
+			Properties requestPatternProperties) throws IOException {
 		// 优先匹配额外参数
 		Property property = requestPatternProperties.get(parameterDescriptor.getName());
 		if (property != null && property.isReadable()) {
 			return property.getAsObject(parameterDescriptor.getRequiredTypeDescriptor());
-		}
-
-		if (uriParameterConverter.canConvert(parameterDescriptor)) {
-			return uriParameterConverter.readFrom(parameterDescriptor, uriComponents);
 		}
 
 		for (MediaType mediaType : getRequestPattern().getConsumes()) {
@@ -74,10 +54,9 @@ public class Action implements Service, ExecutionInterceptor, RequestPatternCapa
 		Properties requestPatternProperties = requestPattern.apply(request);
 		ParameterDescriptor[] paraemterDescriptors = function.getParameterDescriptors()
 				.toArray(new ParameterDescriptor[0]);
-		UriComponents uriComponents = UriComponentsBuilder.fromUri(request.getURI()).build();
 		Object[] args = new Object[paraemterDescriptors.length];
 		for (int i = 0; i < paraemterDescriptors.length; i++) {
-			args[i] = getArg(paraemterDescriptors[i], request, response, requestPatternProperties, uriComponents);
+			args[i] = getArg(paraemterDescriptors[i], request, response, requestPatternProperties);
 		}
 		return args;
 	}
@@ -87,7 +66,7 @@ public class Action implements Service, ExecutionInterceptor, RequestPatternCapa
 		Object[] args = getArgs(request, response);
 		Object rtn;
 		try {
-			rtn = intercept(function, Elements.forArray(args));
+			rtn = function.execute(args);
 		} catch (Throwable e) {
 			if (errorHandler == null) {
 				throw new ServerException(e);

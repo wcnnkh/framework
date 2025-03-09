@@ -1,6 +1,4 @@
-package io.basc.framework.net.convert.support;
-
-import io.basc.framework.net.convert.UriParameterConverters;
+package io.basc.framework.net.convert.uri;
 
 public class GlobalUriParameterConverters extends UriParameterConverters {
 	private static volatile UriParameterConverters instance;

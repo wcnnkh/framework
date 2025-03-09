@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.server.ServerHttpResponse;
-import io.basc.framework.servlet.AbstractServletServerResponseWrapper;
+import io.basc.framework.servlet.ServletServerResponseWrapper;
 
-public class ServletServerHttpResponseWrapper extends AbstractServletServerResponseWrapper<HttpServletResponse>
+public class ServletServerHttpResponseWrapper extends ServletServerResponseWrapper<HttpServletResponse>
 		implements ServerHttpResponse {
 	private HttpServletResponseHeaders headers;
 

@@ -6,9 +6,10 @@ import java.util.logging.LogRecord;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import io.basc.framework.util.logging.AbstractLogger;
 import io.basc.framework.util.placeholder.FormatableMessage;
 
-public class Log4j2Logger implements io.basc.framework.util.logging.Logger {
+public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;
 	private final String placeholder;
 
@@ -19,6 +20,7 @@ public class Log4j2Logger implements io.basc.framework.util.logging.Logger {
 
 	@Override
 	public void setLevel(Level level) {
+		super.setLevel(level);
 		Configurator.setLevel(this.logger, LevelCodec.INSTANCE.encode(level));
 	}
 

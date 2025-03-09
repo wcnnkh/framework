@@ -1,8 +1,11 @@
-package io.basc.framework.net;
+package io.basc.framework.net.uri;
 
 import java.util.Map;
 
 import io.basc.framework.core.convert.transform.stereotype.Properties;
+import io.basc.framework.net.Request;
+import io.basc.framework.net.RequestPattern;
+import io.basc.framework.net.WildcardRequestPattern;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.match.AntPathMatcher;
@@ -36,20 +39,28 @@ public class PathPattern extends WildcardRequestPattern {
 		}
 
 		RequestPattern requestPattern = request.getRequestPattern();
-		String requestPath = request.getURI().getPath();
-		Map<String, String> templateVariables = getPathMatcher().extractUriTemplateVariables(path, requestPath);
-		if (CollectionUtils.isEmpty(templateVariables)) {
-			return Properties.EMPTY_PROPERTIES;
+		if (requestPattern instanceof PathPattern) {
+			PathPattern requestPathPattern = (PathPattern) requestPattern;
+			Map<String, String> templateVariables = getPathMatcher().extractUriTemplateVariables(path,
+					requestPathPattern.getPath());
+			if (CollectionUtils.isEmpty(templateVariables)) {
+				return Properties.EMPTY_PROPERTIES;
+			}
+			return Properties.forMap(templateVariables);
 		}
-		return Properties.forMap(templateVariables);
+		return Properties.EMPTY_PROPERTIES;
 	}
 
 	@Override
 	public boolean test(Request request) {
 		if (super.test(request)) {
 			String path = getPath();
-			if (path != null) {
-				String requestPath = request.getURI().getPath();
+			if (path == null) {
+				return true;
+			}
+
+			if (request instanceof PathRequest) {
+				String requestPath = ((PathRequest) request).getPath();
 				if (isPattern()) {
 					if (getPathMatcher().match(path, requestPath)) {
 						return true;
@@ -61,7 +72,6 @@ public class PathPattern extends WildcardRequestPattern {
 					}
 				}
 			}
-			return true;
 		}
 		return false;
 	}

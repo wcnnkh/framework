@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.basc.framework.core.convert.transform.stereotype.Properties;
+import io.basc.framework.net.uri.PathPattern;
 import io.basc.framework.util.collections.Elements;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.container.CollectionContainer;

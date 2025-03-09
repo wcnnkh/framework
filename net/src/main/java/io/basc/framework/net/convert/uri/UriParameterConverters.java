@@ -1,4 +1,4 @@
-package io.basc.framework.net.convert;
+package io.basc.framework.net.convert.uri;
 
 import io.basc.framework.core.convert.ConversionException;
 import io.basc.framework.core.execution.Parameter;

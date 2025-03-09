@@ -15,11 +15,11 @@ import javax.ws.rs.Produces;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.http.HttpPattern;
 import io.basc.framework.net.MediaTypes;
+import io.basc.framework.net.pattern.RequestPatternFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
-import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 
-public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
+public class JaxrsHttpPatternResolver implements RequestPatternFactory {
 
 	@Override
 	public boolean canResolve(Class<?> clazz) {

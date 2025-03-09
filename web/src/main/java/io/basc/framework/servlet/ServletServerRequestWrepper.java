@@ -9,6 +9,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import io.basc.framework.net.Headers;
 import io.basc.framework.net.server.ServerAsyncControl;
 import io.basc.framework.net.server.ServerRequest;
 import io.basc.framework.net.server.ServerRequestDispatcher;
@@ -18,12 +19,12 @@ import io.basc.framework.util.function.Wrapped;
 import io.basc.framework.util.function.Wrapper;
 import io.basc.framework.util.io.ReaderSource;
 
-public abstract class AbstractServletServerRequestWrepper<W extends ServletRequest> extends Wrapped<W> implements ServerRequest {
+public class ServletServerRequestWrepper<W extends ServletRequest> extends Wrapped<W> implements ServerRequest {
 	private InetSocketAddress localAddress;
 	private InetSocketAddress remoteAddress;
 	private ServletServerAsyncControl serverAsyncControl;
 
-	public AbstractServletServerRequestWrepper(W wrappedTarget) {
+	public ServletServerRequestWrepper(W wrappedTarget) {
 		super(wrappedTarget);
 	}
 
@@ -111,4 +112,8 @@ public abstract class AbstractServletServerRequestWrepper<W extends ServletReque
 		return requestDispatcher == null ? null : new ServletRequestDispatcher(requestDispatcher);
 	}
 
+	@Override
+	public Headers getHeaders() {
+		return Headers.EMPTY;
+	}
 }

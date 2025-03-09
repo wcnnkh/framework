@@ -2,8 +2,8 @@ package io.basc.framework.http;
 
 import java.net.URI;
 
-import io.basc.framework.net.PathPattern;
 import io.basc.framework.net.Request;
+import io.basc.framework.net.uri.PathPattern;
 
 public interface HttpRequest extends HttpMessage, Request {
 	public static interface HttpRequestWrapper<W extends HttpRequest>
@@ -22,6 +22,16 @@ public interface HttpRequest extends HttpMessage, Request {
 		default String getRawMethod() {
 			return getSource().getRawMethod();
 		}
+
+		@Override
+		default URI getURI() {
+			return getSource().getURI();
+		}
+
+		@Override
+		default PathPattern getRequestPattern() {
+			return getSource().getRequestPattern();
+		}
 	}
 
 	HttpHeaders getHeaders();
@@ -31,7 +41,7 @@ public interface HttpRequest extends HttpMessage, Request {
 	}
 
 	String getRawMethod();
-	
+
 	URI getURI();
 
 	@Override

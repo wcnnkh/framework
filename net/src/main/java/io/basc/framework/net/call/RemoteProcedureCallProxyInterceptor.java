@@ -1,4 +1,4 @@
-package io.basc.framework.net.client.rpc;
+package io.basc.framework.net.call;
 
 import io.basc.framework.core.execution.Function;
 import io.basc.framework.core.execution.Parameter;
@@ -6,19 +6,18 @@ import io.basc.framework.core.execution.Parameters;
 import io.basc.framework.core.execution.aop.ExecutionInterceptor;
 import io.basc.framework.net.client.ClientRequest;
 import io.basc.framework.net.client.ClientResponse;
-import io.basc.framework.net.client.rpc.factory.RemoteRequestFactory;
 import io.basc.framework.net.convert.MessageConverter;
-import io.basc.framework.net.convert.UriParameterConverter;
+import io.basc.framework.net.convert.uri.UriParameterConverter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
+public class RemoteProcedureCallProxyInterceptor implements ExecutionInterceptor {
 	/**
 	 * 构造请求
 	 */
 	@NonNull
-	private final RemoteRequestFactory requestFactory;
+	private final RemoteProcedureCallFactory remoteProcedureCallFactory;
 	/**
 	 * 消息转换
 	 */
@@ -34,7 +33,7 @@ public class RemoteProcedureCallInterceptor implements ExecutionInterceptor {
 	@Override
 	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
 		Parameters parameters = Parameters.forTemplate(function, args);
-		ClientRequest request = requestFactory.createRequest(function, parameters);
+		ClientRequest request = remoteProcedureCallFactory.createRequest(function, parameters);
 		for (Parameter parameter : parameters.getElements()) {
 			if (!messageConverter.isWriteable(parameter, request, null)) {
 				// TODO ignore log

@@ -7,15 +7,16 @@ import java.io.Writer;
 
 import javax.servlet.ServletResponse;
 
+import io.basc.framework.net.Headers;
 import io.basc.framework.net.server.ServerResponse;
 import io.basc.framework.util.function.Wrapped;
 import io.basc.framework.util.io.WriterSource;
 
-public abstract class AbstractServletServerResponseWrapper<W extends ServletResponse> extends Wrapped<W>
+public class ServletServerResponseWrapper<W extends ServletResponse> extends Wrapped<W>
 		implements ServerResponse, WriterSource<PrintWriter> {
 	private boolean bodyUse = false;
 
-	public AbstractServletServerResponseWrapper(W source) {
+	public ServletServerResponseWrapper(W source) {
 		super(source);
 	}
 
@@ -35,7 +36,7 @@ public abstract class AbstractServletServerResponseWrapper<W extends ServletResp
 		bodyUse = true;
 		return source.getWriter();
 	}
-	
+
 	@Override
 	public WriterSource<Writer> toWriterFactory() {
 		return () -> getWriter();
@@ -56,6 +57,11 @@ public abstract class AbstractServletServerResponseWrapper<W extends ServletResp
 	@Override
 	public boolean isCommitted() {
 		return source.isCommitted();
+	}
+
+	@Override
+	public Headers getHeaders() {
+		return Headers.EMPTY;
 	}
 
 }

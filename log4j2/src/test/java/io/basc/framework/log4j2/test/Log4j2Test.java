@@ -12,7 +12,7 @@ import io.basc.framework.util.sequences.uuid.UUIDSequences;
 public class Log4j2Test {
 	@Test
 	public void test() {
-		LogManager.getSource().setLevel("io.basc.framework.log4j2", CustomLevel.DEBUG);
+		LogManager.getConfigurable().setLevel("io.basc.framework.log4j2", CustomLevel.DEBUG);
 		Logger logger = LogManager.getLogger(Log4j2Test.class.getName());
 		// assertTrue(logger.isInfoEnabled());
 		logger.info(UUIDSequences.global().next());

@@ -1,5 +1,6 @@
 package io.basc.framework.net;
 
+import io.basc.framework.net.uri.PathPattern;
 import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.container.DefaultMapContainer;
 import lombok.Getter;
