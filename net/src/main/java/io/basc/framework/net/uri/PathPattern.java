@@ -1,27 +1,34 @@
 package io.basc.framework.net.uri;
 
 import java.util.Map;
+import java.util.Objects;
 
 import io.basc.framework.core.convert.transform.stereotype.Properties;
 import io.basc.framework.net.Request;
-import io.basc.framework.net.RequestPattern;
 import io.basc.framework.net.WildcardRequestPattern;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.match.AntPathMatcher;
 import io.basc.framework.util.match.PathMatcher;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.ToString;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(of = "path", callSuper = true)
-@ToString(of = "path", callSuper = true)
+@Getter
+@Setter
 public class PathPattern extends WildcardRequestPattern {
-	private String path;
+	@NonNull
+	private UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 	@NonNull
 	private PathMatcher pathMatcher = AntPathMatcher.DEFAULT;
+
+	public String getPath() {
+		return builder.build().getPath();
+	}
+
+	public void setPath(String path) {
+		builder.path(path);
+	}
 
 	public boolean isPattern() {
 		String path = getPath();
@@ -32,17 +39,39 @@ public class PathPattern extends WildcardRequestPattern {
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hashCode(getPath());
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
+
+		if (other instanceof PathPattern) {
+			String path = getPath();
+			String otherPath = ((PathPattern) other).getPath();
+			return StringUtils.equals(path, otherPath);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return builder.toUriString();
+	}
+
+	@Override
 	public Properties apply(Request request) {
 		String path = getPath();
 		if (StringUtils.isEmpty(path)) {
 			return Properties.EMPTY_PROPERTIES;
 		}
 
-		RequestPattern requestPattern = request.getRequestPattern();
-		if (requestPattern instanceof PathPattern) {
-			PathPattern requestPathPattern = (PathPattern) requestPattern;
-			Map<String, String> templateVariables = getPathMatcher().extractUriTemplateVariables(path,
-					requestPathPattern.getPath());
+		if (request instanceof PathRequest) {
+			String requestPath = ((PathRequest) request).getPath();
+			Map<String, String> templateVariables = getPathMatcher().extractUriTemplateVariables(path, requestPath);
 			if (CollectionUtils.isEmpty(templateVariables)) {
 				return Properties.EMPTY_PROPERTIES;
 			}

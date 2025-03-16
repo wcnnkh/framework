@@ -13,22 +13,27 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.execution.Executable;
 import io.basc.framework.http.HttpPattern;
 import io.basc.framework.net.MediaTypes;
-import io.basc.framework.net.pattern.RequestPatternFactory;
+import io.basc.framework.net.RequestPattern;
+import io.basc.framework.net.call.RequestPatternResolver;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.collections.CollectionUtils;
+import io.basc.framework.util.collections.Elements;
 
-public class JaxrsHttpPatternResolver implements RequestPatternFactory {
+public class JaxrsHttpPatternResolver implements RequestPatternResolver {
 
 	@Override
-	public boolean canResolve(Class<?> clazz) {
-		return AnnotatedElementUtils.hasAnnotation(clazz, Path.class);
+	public boolean canResolve(Executable executable) {
+		return executable.isAnnotated(Path.class.getName());
 	}
-
+	
 	@Override
-	public boolean canResolve(Method method) {
-		return AnnotatedElementUtils.hasAnnotation(method, Path.class);
+	public Elements<RequestPattern> resolveRequestPatterns(Executable executable, Object... args) {
+		Collection<HttpPattern> rootPatterns = resolveByAnnotation(executable.getDeclaringTypeDescriptor().getType());
+		Collection<HttpPattern> rootPatterns = resolveByAnnotation(executable.getAnnotations());
+		return null;
 	}
 
 	protected Collection<HttpPattern> resolveByAnnotation(AnnotatedElement annotatedElement) {

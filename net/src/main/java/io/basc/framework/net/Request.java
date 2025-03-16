@@ -6,17 +6,7 @@ package io.basc.framework.net;
  * @author shuchaowen
  *
  */
-public interface Request extends Message, RequestPatternCapable {
-	public static interface RequestWrapper<W extends Request>
-			extends Request, MessageWrapper<W>, RequestPatternCapableWrapper<W> {
-		@Override
-		default RequestPattern getRequestPattern() {
-			return getSource().getRequestPattern();
-		}
-	}
-
-	@Override
-	default RequestPattern getRequestPattern() {
-		return RequestPattern.ANY_REQUEST_PATTERN;
+public interface Request extends Message {
+	public static interface RequestWrapper<W extends Request> extends Request, MessageWrapper<W> {
 	}
 }

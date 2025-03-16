@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicLong;
@@ -254,7 +255,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		default E index(long index) throws IndexOutOfBoundsException {
+		default Optional<Indexed<E>> index(long index) {
 			return getSource().index(index);
 		}
 
@@ -501,12 +502,13 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		default E index(long index) throws IndexOutOfBoundsException {
+		default Optional<Indexed<E>> index(long index) {
 			if (index > Integer.MAX_VALUE) {
-				throw new IndexOutOfBoundsException("index out of range: " + index);
+				return Optional.empty();
 			}
 
-			return get((int) index);
+			E value = get((int) index);
+			return Optional.of(new Indexed<>(index, value));
 		}
 
 		@Override
@@ -1170,12 +1172,12 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		Streamable.super.forEach(action);
 	}
 
-	default E index(long index) throws IndexOutOfBoundsException {
+	default Optional<Indexed<E>> index(long index) {
 		Indexed<E> indexed = index == 0 ? indexed().first() : indexed().filter((e) -> e.getIndex() == index).first();
 		if (indexed == null) {
-			throw new IndexOutOfBoundsException("index out of range: " + index);
+			return Optional.empty();
 		}
-		return indexed.getElement();
+		return Optional.of(indexed);
 	}
 
 	default Elements<Indexed<E>> indexed() {

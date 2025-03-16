@@ -8,19 +8,7 @@ public interface PathRequest extends Request {
 		default String getPath() {
 			return getSource().getPath();
 		}
-
-		@Override
-		default PathPattern getRequestPattern() {
-			return getSource().getRequestPattern();
-		}
 	}
 
 	String getPath();
-
-	@Override
-	default PathPattern getRequestPattern() {
-		PathPattern pathPattern = new PathPattern();
-		pathPattern.setPath(getPath());
-		return pathPattern;
-	}
 }

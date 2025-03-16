@@ -4,9 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.basc.framework.core.convert.transform.stereotype.Properties;
-import io.basc.framework.net.uri.PathPattern;
 import io.basc.framework.util.collections.Elements;
-import io.basc.framework.util.exchange.Registration;
 import io.basc.framework.util.register.container.CollectionContainer;
 import io.basc.framework.util.register.container.ElementRegistration;
 
@@ -47,11 +45,5 @@ public class RequestPatterns extends CollectionContainer<RequestPattern, Set<Ele
 	public MediaTypes getProduces() {
 		Elements<MediaType> elements = flatMap((e) -> e.getProduces());
 		return MediaTypes.forElements(elements);
-	}
-
-	public Registration register(String path) {
-		PathPattern pathPattern = new PathPattern();
-		pathPattern.setPath(path);
-		return register(pathPattern);
 	}
 }

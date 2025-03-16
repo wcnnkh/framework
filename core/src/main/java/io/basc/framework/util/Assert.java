@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.collections.CollectionUtils;
 import io.basc.framework.util.io.FilenameUtils;
+import lombok.NonNull;
 
 /**
  * Assertion utility class that assists in validating arguments. Useful for
@@ -54,6 +55,12 @@ public abstract class Assert {
 	public static void isTrue(boolean expression, String message) {
 		if (!expression) {
 			throw new IllegalArgumentException(message);
+		}
+	}
+
+	public static void isTrue(boolean expression, @NonNull Supplier<? extends String> messageSupplier) {
+		if (!expression) {
+			throw new IllegalArgumentException(messageSupplier.get());
 		}
 	}
 
