@@ -1,4 +1,4 @@
-package io.basc.framework.core.annotation;
+package io.basc.framework.lang.annotation;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -14,12 +14,12 @@ class EmptyAnnotatedElement implements AnnotatedElement, Serializable {
 
 	@Override
 	public Annotation[] getAnnotations() {
-		return Annotations.EMPTY;
+		return AnnotationUtils.EMPTY;
 	}
 
 	@Override
 	public Annotation[] getDeclaredAnnotations() {
-		return Annotations.EMPTY;
+		return AnnotationUtils.EMPTY;
 	}
 
 }

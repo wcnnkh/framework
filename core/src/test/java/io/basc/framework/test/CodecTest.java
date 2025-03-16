@@ -81,7 +81,7 @@ public class CodecTest {
 		Encoder<String, String> encoder = charsetCodec.toEncoder(rsaSigner).toEncoder(Base64.DEFAULT);
 		String sign = encoder.encode(content);
 		System.out.println("sign:" + sign);
-		assertTrue(encoder.verify(content, sign));
+		assertTrue(encoder.test(content, sign));
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class CodecTest {
 				.toEncoder(new MD5().wrapperSecretKey(charsetCodec.encode(msg)).toHex());
 		String sign = md5.encode(msg);
 		System.out.println("md5:" + sign);
-		assertTrue(md5.verify(msg, sign));
+		assertTrue(md5.test(msg, sign));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class CodecTest {
 				.toEncoder(new io.basc.framework.util.codec.encode.HmacSHA1("1234".getBytes()).toHex());
 		String sign = mac.encode(content);
 		System.out.println("HmacSHA1:" + sign);
-		assertTrue(mac.verify(content, sign));
+		assertTrue(mac.test(content, sign));
 	}
 
 	@Test
@@ -128,6 +128,6 @@ public class CodecTest {
 				.toEncoder(new io.basc.framework.util.codec.encode.HmacMD5("1234".getBytes()).toHex());
 		String sign = mac.encode(content);
 		System.out.println("HmacMD5:" + sign);
-		assertTrue(mac.verify(content, sign));
+		assertTrue(mac.test(content, sign));
 	}
 }

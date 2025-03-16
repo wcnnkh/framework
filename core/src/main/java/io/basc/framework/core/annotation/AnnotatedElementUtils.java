@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.annotation.MergedAnnotation.Adapt;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
+import io.basc.framework.lang.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.util.collections.MultiValueMap;
 import lombok.NonNull;
 

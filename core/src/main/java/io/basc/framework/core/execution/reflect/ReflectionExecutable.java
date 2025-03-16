@@ -6,10 +6,10 @@ import java.lang.reflect.Type;
 
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.convert.TypeDescriptor;
 import io.basc.framework.core.execution.ParameterDescriptor;
+import io.basc.framework.lang.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.util.collections.Elements;
 import lombok.NonNull;
 

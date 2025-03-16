@@ -10,6 +10,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
+@FunctionalInterface
 public interface TypeProvider extends ParameterizedType, WildcardType, TypeVariableResolver {
 	public static final TypeProvider[] EMPTY_TYPES_ARRAY = new TypeProvider[0];
 	public static final TypeProvider NONE = new GenericTypeProvider<>(Object.class);

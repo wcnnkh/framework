@@ -1,11 +1,12 @@
-package io.basc.framework.core.annotation;
+package io.basc.framework.lang.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import lombok.NonNull;
 
-public final class Annotations {
+public final class AnnotationUtils {
 	public static final Annotation[] EMPTY = new Annotation[0];
 
 	public static final AnnotatedElement EMPTY_ANNOTATED_ELEMENT = new EmptyAnnotatedElement();

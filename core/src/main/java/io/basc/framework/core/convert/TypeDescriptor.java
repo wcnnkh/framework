@@ -14,9 +14,9 @@ import java.util.stream.Stream;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
-import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.convert.service.ConversionService;
+import io.basc.framework.lang.annotation.AnnotationArrayAnnotatedElement;
+import io.basc.framework.lang.annotation.AnnotationUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -95,7 +95,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public TypeDescriptor(ResolvableType resolvableType, Class<?> type, AnnotatedElement annotatedElement) {
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.toClass());
-		this.annotatedElement = annotatedElement == null ? Annotations.EMPTY_ANNOTATED_ELEMENT
+		this.annotatedElement = annotatedElement == null ? AnnotationUtils.EMPTY_ANNOTATED_ELEMENT
 				: (annotatedElement instanceof Serializable ? annotatedElement
 						: new AnnotationArrayAnnotatedElement(annotatedElement));
 	}

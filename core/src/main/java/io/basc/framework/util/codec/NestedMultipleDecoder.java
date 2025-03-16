@@ -1,5 +1,6 @@
 package io.basc.framework.util.codec;
 
+import io.basc.framework.util.codec.MultipleDecoder.MultipleDecoderWrapper;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -1,10 +1,12 @@
-package io.basc.framework.core.annotation;
+package io.basc.framework.lang.annotation;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
 
+import lombok.ToString;
+
+@ToString
 public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serializable {
 	private static final long serialVersionUID = 1L;
 	protected final Annotation[] annotations;
@@ -12,8 +14,8 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 
 	public AnnotationArrayAnnotatedElement(AnnotatedElement annotatedElement) {
 		if (annotatedElement == null || annotatedElement instanceof EmptyAnnotatedElement) {
-			this.annotations = Annotations.EMPTY;
-			this.declaredAnnotations = Annotations.EMPTY;
+			this.annotations = AnnotationUtils.EMPTY;
+			this.declaredAnnotations = AnnotationUtils.EMPTY;
 		} else if (annotatedElement instanceof AnnotationArrayAnnotatedElement) {
 			this.annotations = ((AnnotationArrayAnnotatedElement) annotatedElement).annotations;
 			this.declaredAnnotations = ((AnnotationArrayAnnotatedElement) annotatedElement).declaredAnnotations;
@@ -28,8 +30,8 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 	}
 
 	public AnnotationArrayAnnotatedElement(Annotation[] annotations, Annotation[] declaredAnnotations) {
-		this.annotations = annotations == null ? Annotations.EMPTY : annotations;
-		this.declaredAnnotations = declaredAnnotations == null ? Annotations.EMPTY : declaredAnnotations;
+		this.annotations = annotations == null ? AnnotationUtils.EMPTY : annotations;
+		this.declaredAnnotations = declaredAnnotations == null ? AnnotationUtils.EMPTY : declaredAnnotations;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,9 +52,4 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 		return declaredAnnotations.clone();
 	}
 
-	@Override
-	public String toString() {
-		return "AnnotationArrayAnnotatedElement(annotations=" + Arrays.toString(annotations) + ", declaredAnnotations="
-				+ Arrays.toString(declaredAnnotations) + ")";
-	}
 }

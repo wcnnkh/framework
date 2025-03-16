@@ -20,7 +20,7 @@ public class NestedCodec<P extends Codec<D, T>, C extends Codec<T, E>, D, T, E> 
 	}
 
 	@Override
-	public boolean verify(D source, E encode) throws EncodeException {
-		return codec.verify(parent.encode(source), encode);
+	public boolean test(D source, E encode) throws EncodeException {
+		return codec.test(parent.encode(source), encode);
 	}
 }
