@@ -3,29 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>io.basc.framework</groupId>
+		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
 		<version>1.8.4</version>
 	</parent>
 	<artifactId>web</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>io.basc.framework</groupId>
+			<groupId>run.soeasy.framework</groupId>
 			<artifactId>net</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>context</artifactId>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-		<!-- 如果不想支持jax-rs也可以排队该依赖 -->
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
+			<groupId>run.soeasy.framework</groupId>
 			<artifactId>testing</artifactId>
 			<scope>test</scope>
 		</dependency>

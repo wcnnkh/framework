@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.util.collections.CollectionUtils;
-import io.basc.framework.util.io.serializer.SerializerException;
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.ToString;
+import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.io.serializer.SerializerException;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class CollectionFactoryTest {
 	@Test

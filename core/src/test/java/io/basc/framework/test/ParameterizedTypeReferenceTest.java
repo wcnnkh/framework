@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import io.basc.framework.core.ParameterizedTypeReference;
+import run.soeasy.framework.core.ParameterizedTypeReference;
 
 public class ParameterizedTypeReferenceTest {
 

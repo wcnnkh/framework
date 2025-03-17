@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 
-import io.basc.framework.util.RandomUtils;
+import run.soeasy.framework.util.RandomUtils;
 
 public class StreamIteratorTest {
 	@Test

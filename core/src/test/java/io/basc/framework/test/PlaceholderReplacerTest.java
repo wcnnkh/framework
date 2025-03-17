@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.util.placeholder.PropertyPlaceholderHelper;
+import run.soeasy.framework.util.placeholder.PropertyPlaceholderHelper;
 
 public class PlaceholderReplacerTest {
 	@Test

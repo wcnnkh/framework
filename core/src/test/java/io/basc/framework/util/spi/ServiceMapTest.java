@@ -2,7 +2,8 @@ package io.basc.framework.util.spi;
 
 import org.junit.Test;
 
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.spi.ServiceMap;
 
 public class ServiceMapTest {
 	@Test

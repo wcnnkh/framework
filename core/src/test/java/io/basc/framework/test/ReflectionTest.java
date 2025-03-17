@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.collections.CollectionUtils;
-import io.basc.framework.util.io.ClassPathResource;
-import io.basc.framework.util.reflect.ReflectionUtils;
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.ToString;
+import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.io.ClassPathResource;
+import run.soeasy.framework.util.reflect.ReflectionUtils;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class ReflectionTest {
 	@Test

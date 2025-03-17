@@ -7,8 +7,8 @@ import java.lang.reflect.Field;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.core.Members;
-import io.basc.framework.util.reflect.ReflectionUtils;
+import run.soeasy.framework.core.Members;
+import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 public class MembersTest {
 

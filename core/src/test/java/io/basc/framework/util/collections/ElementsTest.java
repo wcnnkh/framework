@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import run.soeasy.framework.util.collections.Elements;
+
 public class ElementsTest {
 	@Test
 	public void concat() {

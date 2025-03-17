@@ -11,18 +11,20 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
 
-import io.basc.framework.util.codec.Codec;
-import io.basc.framework.util.codec.Encoder;
-import io.basc.framework.util.codec.encode.MD5;
-import io.basc.framework.util.codec.encode.SHA1WithRSASigner;
-import io.basc.framework.util.codec.support.AES;
-import io.basc.framework.util.codec.support.Base64;
-import io.basc.framework.util.codec.support.CharsetCodec;
-import io.basc.framework.util.codec.support.DES;
-import io.basc.framework.util.codec.support.HexCodec;
-import io.basc.framework.util.codec.support.RSA;
-import io.basc.framework.util.codec.support.URLCodec;
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.codec.Codec;
+import run.soeasy.framework.util.codec.Encoder;
+import run.soeasy.framework.util.codec.encode.HmacMD5;
+import run.soeasy.framework.util.codec.encode.HmacSHA1;
+import run.soeasy.framework.util.codec.encode.MD5;
+import run.soeasy.framework.util.codec.encode.SHA1WithRSASigner;
+import run.soeasy.framework.util.codec.support.AES;
+import run.soeasy.framework.util.codec.support.Base64;
+import run.soeasy.framework.util.codec.support.CharsetCodec;
+import run.soeasy.framework.util.codec.support.DES;
+import run.soeasy.framework.util.codec.support.HexCodec;
+import run.soeasy.framework.util.codec.support.RSA;
+import run.soeasy.framework.util.codec.support.URLCodec;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class CodecTest {
 	public static String content = UUIDSequences.global().next() + "这是一段加解密测试内容!";
@@ -116,7 +118,7 @@ public class CodecTest {
 	@Test
 	public void HmacSHA1() {
 		Encoder<String, String> mac = charsetCodec
-				.toEncoder(new io.basc.framework.util.codec.encode.HmacSHA1("1234".getBytes()).toHex());
+				.toEncoder(new HmacSHA1("1234".getBytes()).toHex());
 		String sign = mac.encode(content);
 		System.out.println("HmacSHA1:" + sign);
 		assertTrue(mac.test(content, sign));
@@ -125,7 +127,7 @@ public class CodecTest {
 	@Test
 	public void HmacMD5() {
 		Encoder<String, String> mac = charsetCodec
-				.toEncoder(new io.basc.framework.util.codec.encode.HmacMD5("1234".getBytes()).toHex());
+				.toEncoder(new HmacMD5("1234".getBytes()).toHex());
 		String sign = mac.encode(content);
 		System.out.println("HmacMD5:" + sign);
 		assertTrue(mac.test(content, sign));

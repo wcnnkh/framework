@@ -1,0 +1,40 @@
+package run.soeasy.framework.net.convert.support;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import lombok.NonNull;
+import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.net.MediaType;
+import run.soeasy.framework.net.Message;
+import run.soeasy.framework.net.convert.MessageConvertException;
+import run.soeasy.framework.util.io.MimeType;
+import run.soeasy.framework.util.io.serializer.Serializer;
+
+public class SerializableMessageConveter extends AbstractBinaryMessageConverter<Object> {
+	private final Serializer serializer;
+
+	public SerializableMessageConveter(Serializer serializer) {
+		super(Object.class);
+		getMediaTypeRegistry().addAll(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+		this.serializer = serializer;
+	}
+
+	@Override
+	protected Object parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+			MimeType contentType) throws IOException {
+		try {
+			return serializer.deserialize(body);
+		} catch (ClassNotFoundException e) {
+			throw new MessageConvertException(e);
+		}
+	}
+
+	@Override
+	protected byte[] toBinary(@NonNull Data<Object> body, @NonNull Message message, MediaType mediaType)
+			throws IOException {
+		return serializer.serialize(body.get());
+	}
+
+}

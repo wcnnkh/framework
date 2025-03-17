@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
-import io.basc.framework.util.transmittable.AnyInheriterRegistry;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.transmittable.AnyInheriterRegistry;
 
 public class InheriterTest {
 	private ThreadLocal<Object> threadLocal = new ThreadLocal<>();

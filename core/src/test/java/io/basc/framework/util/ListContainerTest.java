@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.util.exchange.Registration;
-import io.basc.framework.util.register.container.ElementRegistration;
-import io.basc.framework.util.register.container.ListContainer;
-import io.basc.framework.util.sequences.uuid.RandomUUIDSequence;
+import run.soeasy.framework.util.exchange.Registration;
+import run.soeasy.framework.util.register.container.ElementRegistration;
+import run.soeasy.framework.util.register.container.ListContainer;
+import run.soeasy.framework.util.sequences.uuid.RandomUUIDSequence;
 
 public class ListContainerTest {
 	@Test

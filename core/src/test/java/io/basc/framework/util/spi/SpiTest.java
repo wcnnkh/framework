@@ -4,7 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.util.spi.NativeServiceLoader;
 
 public class SpiTest implements SpiTestInterface {
 	private static final String TEST_TEXT = "hello";

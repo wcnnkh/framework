@@ -7,7 +7,7 @@ import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class StreamProcessorTest {
 	@Test

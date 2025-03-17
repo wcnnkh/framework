@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-import io.basc.framework.util.comparator.TypeComparator;
+import run.soeasy.framework.util.comparator.TypeComparator;
 
 public class TypeComparatorTest {
 	@Test

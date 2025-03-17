@@ -1,17 +1,16 @@
 package io.basc.framework.web.test;
 
-import io.basc.framework.http.HttpUtils;
-import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.http.client.HttpClientErrorException;
-import io.basc.framework.http.client.HttpClientResourceAccessException;
-import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LogManager;
+import run.soeasy.framework.http.HttpResponseEntity;
+import run.soeasy.framework.http.HttpUtils;
+import run.soeasy.framework.http.client.HttpClient;
+import run.soeasy.framework.http.client.HttpClientErrorException;
+import run.soeasy.framework.http.client.HttpClientResourceAccessException;
+import run.soeasy.framework.util.logging.LogManager;
+import run.soeasy.framework.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import io.basc.framework.http.HttpResponseEntity;
 
 public class HttpClientTest {
 	private static Logger logger = LogManager.getLogger(HttpClientTest.class);

@@ -6,7 +6,8 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class CollectionUtilsTest {
 	@Test

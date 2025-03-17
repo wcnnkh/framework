@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.basc.framework</groupId>
+	<groupId>run.soeasy.framework</groupId>
 	<artifactId>framework</artifactId>
 	<!-- 批量修改模块系统中的版本号 http://www.mojohaus.org/versions-maven-plugin/set-mojo.html -->
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
@@ -37,9 +37,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<!-- tomcat7只支持jdk1.6及以上的版本 -->
-		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>9.0.73</tomcat.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<lombok.version>1.18.26</lombok.version>
 	</properties>
@@ -108,102 +105,69 @@
 				<artifactId>tomcat-embed-jasper</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
-			<!-- tomcat -->
-			<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
 			<dependency>
-				<groupId>javax.websocket</groupId>
-				<artifactId>javax.websocket-api</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>core</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>net</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>beans</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>context</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>transaction</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>boot</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>jdbc</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>log4j2</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>cloud</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>web</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>tomcat</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>slf4j</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>dom</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>xml</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>console</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<!-- 测试 -->
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>testing</artifactId>
 				<version>1.8.4</version>
 				<scope>test</scope>
@@ -215,17 +179,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
-		<dependency>
-			<groupId>javax.websocket</groupId>
-			<artifactId>javax.websocket-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -310,23 +263,17 @@
 	</build>
 	<modules>
 		<module>core</module>
-		<module>cloud</module>
-		<module>tomcat</module>
 		<module>web</module>
 		<module>log4j</module>
 		<module>log4j2</module>
-		<module>transaction</module>
-		<module>boot</module>
-		<module>context</module>
 		<module>slf4j</module>
 		<module>dom</module>
 		<module>xml</module>
 		<module>testing</module>
-		<module>console</module>
-		<module>spring-context</module>
 		<module>jdbc</module>
 		<module>net</module>
 		<module>beans</module>
+		<module>retry</module>
 	</modules>
 	<profiles>
 		<profile>

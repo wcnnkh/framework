@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.basc.framework.log4j2.Log4j2Utils;
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.log4j2.Log4j2Utils;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class Slf4jToLog4j2Test {
 	@Test

@@ -2,13 +2,13 @@ package io.basc.framework.web.test;
 
 import org.junit.Test;
 
-import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.net.MediaTypes;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.io.MimeType;
-import io.basc.framework.util.io.MimeTypeUtils;
-import io.basc.framework.web.pattern.HttpPattern;
-import io.basc.framework.web.pattern.HttpPatternMatcher;
+import run.soeasy.framework.lang.AlreadyExistsException;
+import run.soeasy.framework.net.MediaTypes;
+import run.soeasy.framework.util.XUtils;
+import run.soeasy.framework.util.io.MimeType;
+import run.soeasy.framework.util.io.MimeTypeUtils;
+import run.soeasy.framework.web.pattern.HttpPattern;
+import run.soeasy.framework.web.pattern.HttpPatternMatcher;
 
 public class HttpPattersTest {
 	@Test

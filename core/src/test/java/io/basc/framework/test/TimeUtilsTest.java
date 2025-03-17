@@ -7,7 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import io.basc.framework.util.TimeUtils;
+import run.soeasy.framework.util.TimeUtils;
 
 public class TimeUtilsTest {
 

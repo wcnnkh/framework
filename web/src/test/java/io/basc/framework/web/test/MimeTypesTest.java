@@ -4,8 +4,8 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import io.basc.framework.net.MediaTypes;
-import io.basc.framework.util.io.MimeTypeUtils;
+import run.soeasy.framework.net.MediaTypes;
+import run.soeasy.framework.util.io.MimeTypeUtils;
 
 public class MimeTypesTest {
 	@Test

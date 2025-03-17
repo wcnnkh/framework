@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.StopWatch;
 import lombok.ToString;
+import run.soeasy.framework.beans.BeanUtils;
+import run.soeasy.framework.core.ResolvableType;
 
 public class BeanUtilsTest {
 	@Test
@@ -25,11 +25,7 @@ public class BeanUtilsTest {
 		Source source = new Source();
 		source.setList(list);
 		System.out.println(source);
-		StopWatch stopWatch = new StopWatch("copy test");
-		stopWatch.start("first copy");
 		BeanUtils.copyProperties(source, target);
-		stopWatch.stop();
-		System.out.println(stopWatch.toString());
 
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());
@@ -39,15 +35,12 @@ public class BeanUtilsTest {
 		List<String> deepList = new ArrayList<>();
 		deepList.add("b");
 		source.setList(deepList);
-		stopWatch.start();
 		BeanUtils.copyProperties(source, target);
-		stopWatch.stop();
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());
 		target.getList().clear();
 		System.out.println(source);
 		assertTrue(target.getList().size() != source.getList().size());
-		System.out.println(stopWatch.prettyPrint());
 	}
 
 	@ToString(callSuper = true)

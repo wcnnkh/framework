@@ -1,0 +1,21 @@
+package run.soeasy.framework.beans.factory.config;
+
+import run.soeasy.framework.beans.BeansException;
+import run.soeasy.framework.util.collections.Elements;
+
+public interface SingletonBeanRegistry {
+	void registerSingleton(String name, Object singletonObject) throws BeansException;
+
+	void removeSingleton(String name) throws BeansException;
+
+	Object getSingleton(String name) throws BeansException;
+
+	boolean containsSingleton(String name);
+
+	/**
+	 * 保持注册时的顺序
+	 * 
+	 * @return
+	 */
+	Elements<String> getRegistrationOrderSingletonNames();
+}

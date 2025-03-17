@@ -2,9 +2,9 @@ package io.basc.framework.util;
 
 import org.junit.Test;
 
-import io.basc.framework.util.function.Pipeline;
-import io.basc.framework.util.function.Pool;
-import io.basc.framework.util.function.Supplier;
+import run.soeasy.framework.util.function.Pipeline;
+import run.soeasy.framework.util.function.Pool;
+import run.soeasy.framework.util.function.Supplier;
 
 public class SourceTest {
 	@Test

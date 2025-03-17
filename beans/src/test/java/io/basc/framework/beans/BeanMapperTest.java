@@ -7,10 +7,11 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import run.soeasy.framework.beans.BeanMapper;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class BeanMapperTest {
 	@Test

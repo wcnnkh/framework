@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>io.basc.framework</groupId>
+		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
 		<version>1.8.4</version>
 	</parent>
@@ -24,7 +24,7 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>io.basc.framework</groupId>
+			<groupId>run.soeasy.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
 	</dependencies>
@@ -51,22 +51,22 @@
 					<rules>
 						<rule>
 							<pattern>org.objectweb.asm.*</pattern>
-							<result>io.basc.framework.asm.$@1</result>
+							<result>run.soeasy.framework.asm.$@1</result>
 						</rule>
 						<rule>
 							<pattern>org.objectweb.asm.**.*</pattern>
-							<result>io.basc.framework.asm.@1.$@2</result>
+							<result>run.soeasy.framework.asm.@1.$@2</result>
 						</rule>
 						<rule>
 							<pattern>net.sf.cglib.*</pattern>
-							<result>io.basc.framework.cglib.$@1</result>
+							<result>run.soeasy.framework.cglib.$@1</result>
 						</rule>
 						<rule>
 							<pattern>net.sf.cglib.**.*</pattern>
-							<result>io.basc.framework.cglib.@1.$@2</result>
+							<result>run.soeasy.framework.cglib.@1.$@2</result>
 						</rule>
 						<keep>
-							<pattern>io.basc.framework.**.*</pattern>
+							<pattern>run.soeasy.framework.**.*</pattern>
 						</keep>
 					</rules>
 				</configuration>

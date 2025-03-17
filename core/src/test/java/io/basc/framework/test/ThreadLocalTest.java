@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.lang.NamedInheritableThreadLocal;
+import run.soeasy.framework.lang.NamedInheritableThreadLocal;
 
 public class ThreadLocalTest {
 	private static InheritableThreadLocal<Object> inheritableThreadLocal = new NamedInheritableThreadLocal<>("test",

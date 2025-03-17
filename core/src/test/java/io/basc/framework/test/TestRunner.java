@@ -6,13 +6,13 @@ import java.io.IOException;
 
 import org.junit.runner.JUnitCore;
 
-import io.basc.framework.core.scan.PackagePatternMetadataReaderScanner;
-import io.basc.framework.core.scan.TypeScanner;
-import io.basc.framework.core.type.classreading.MetadataReader;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.collections.Elements;
-import io.basc.framework.util.logging.Logger;
-import io.basc.framework.util.logging.LogManager;
+import run.soeasy.framework.core.scan.PackagePatternMetadataReaderScanner;
+import run.soeasy.framework.core.scan.TypeScanner;
+import run.soeasy.framework.core.type.classreading.MetadataReader;
+import run.soeasy.framework.util.ClassUtils;
+import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.logging.LogManager;
+import run.soeasy.framework.util.logging.Logger;
 
 public class TestRunner {
 	private static Logger logger = LogManager.getLogger(TestRunner.class);

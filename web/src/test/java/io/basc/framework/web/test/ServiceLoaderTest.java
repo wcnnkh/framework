@@ -2,10 +2,10 @@ package io.basc.framework.web.test;
 
 import org.junit.Test;
 
-import io.basc.framework.beans.factory.spi.SPI;
-import io.basc.framework.http.client.ClientHttpRequestFactory;
-import io.basc.framework.observe.service.ObservableServiceLoader;
-import io.basc.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.beans.factory.spi.SPI;
+import run.soeasy.framework.http.client.ClientHttpRequestFactory;
+import run.soeasy.framework.observe.service.ObservableServiceLoader;
+import run.soeasy.framework.util.collections.ServiceLoader;
 
 public class ServiceLoaderTest {
 	@Test

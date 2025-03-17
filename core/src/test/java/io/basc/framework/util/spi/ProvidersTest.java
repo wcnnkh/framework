@@ -2,6 +2,8 @@ package io.basc.framework.util.spi;
 
 import org.junit.Test;
 
+import run.soeasy.framework.util.spi.Providers;
+
 public class ProvidersTest {
 	@Test
 	public void test() {

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.util.match.AntPathMatcher;
+import run.soeasy.framework.util.match.AntPathMatcher;
 
 public class AntPathMatcherTest {
 	@Test

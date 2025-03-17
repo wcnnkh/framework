@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class CloneableTest {
 	@Test
