@@ -274,6 +274,7 @@
 		<module>net</module>
 		<module>beans</module>
 		<module>retry</module>
+		<module>messaging</module>
 	</modules>
 	<profiles>
 		<profile>
