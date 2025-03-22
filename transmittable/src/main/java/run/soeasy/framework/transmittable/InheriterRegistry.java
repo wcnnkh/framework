@@ -1,0 +1,35 @@
+package run.soeasy.framework.transmittable;
+
+import run.soeasy.framework.util.spi.Services;
+
+public class InheriterRegistry<A, B> extends Services<Inheriter<A, B>>
+		implements Inheriter<InheriterCapture<A, B>, InheriterBackup<A, B>> {
+
+	@Override
+	public InheriterCapture<A, B> capture() {
+		InheriterCapture<A, B> capture = new InheriterCapture<>();
+		for (Inheriter<A, B> inheriter : this) {
+			capture.put(inheriter, inheriter.capture());
+		}
+		return capture;
+	}
+
+	@Override
+	public InheriterBackup<A, B> replay(InheriterCapture<A, B> capture) {
+		return capture.replay();
+	}
+
+	@Override
+	public void restore(InheriterBackup<A, B> backup) {
+		backup.restore();
+	}
+
+	@Override
+	public InheriterBackup<A, B> clear() {
+		InheriterBackup<A, B> backup = new InheriterBackup<>();
+		for (Inheriter<A, B> inheriter : this) {
+			backup.put(inheriter, inheriter.clear());
+		}
+		return backup;
+	}
+}

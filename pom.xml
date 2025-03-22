@@ -165,6 +165,11 @@
 				<artifactId>xml</artifactId>
 				<version>1.8.4</version>
 			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>transmittable</artifactId>
+				<version>1.8.4</version>
+			</dependency>
 			<!-- 测试 -->
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
@@ -275,6 +280,7 @@
 		<module>beans</module>
 		<module>retry</module>
 		<module>messaging</module>
+		<module>transmittable</module>
 	</modules>
 	<profiles>
 		<profile>
