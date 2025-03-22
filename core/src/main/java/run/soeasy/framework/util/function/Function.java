@@ -157,7 +157,7 @@ public interface Function<S, T, E extends Throwable> {
 	}
 
 	@FunctionalInterface
-	public interface PipelineWrapper<S, T, E extends Throwable, W extends Function<S, T, E>>
+	public interface FunctionWrapper<S, T, E extends Throwable, W extends Function<S, T, E>>
 			extends Function<S, T, E>, Wrapper<W> {
 		@Override
 		default T apply(S source) throws E {

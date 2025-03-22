@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
 import java.util.Properties;
@@ -42,7 +43,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiFunction;
@@ -84,8 +84,8 @@ public abstract class CollectionUtils {
 	private static final Set<Class<?>> approximableMapTypes = new HashSet<Class<?>>();
 	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumSet.class, "elementType");
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
+	@SuppressWarnings({ "rawtypes" })
+	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new DefaultMultiValueMap<>(Collections.emptyMap());
 
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumMap.class, "keyType");
 
@@ -1423,8 +1423,7 @@ public abstract class CollectionUtils {
 	 * @return the multi-value map
 	 */
 	public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> map) {
-		return new MultiValueMapWrapper<K, V>(map);
-
+		return new DefaultMultiValueMap<>(map);
 	}
 
 	public static <E> Set<E> toSet(Iterable<E> iterable) {

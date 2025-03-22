@@ -1,4 +1,4 @@
-package run.soeasy.framework.lang.type;
+package run.soeasy.framework.lang;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;

@@ -15,7 +15,7 @@ import run.soeasy.framework.util.function.Function.FunctionPipeline;
  * @param <T>
  * @param <E>
  */
-public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target<T, E> {
+public interface Pipeline<T, E extends Throwable> extends Supplier<T, E> {
 	public static class PipelineOptional<S, T, E extends Throwable>
 			extends FunctionPipeline<S, T, E, Supplier<S, E>, Function<? super S, ? extends T, ? extends E>>
 			implements Optional<T, E> {
@@ -150,6 +150,45 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E>, Target
 			} finally {
 				source.close();
 			}
+		}
+	}
+
+	@FunctionalInterface
+	public static interface PipelineWrapper<T, E extends Throwable, W extends Pipeline<T, E>>
+			extends Pipeline<T, E>, SupplierWrapper<T, E, W> {
+		@Override
+		default void close() throws E {
+			getSource().close();
+		}
+
+		@Override
+		default boolean isClosed() {
+			return getSource().isClosed();
+		}
+
+		@Override
+		default <R> Pipeline<R, E> map(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+			return getSource().map(pipeline);
+		}
+
+		@Override
+		default Optional<T, E> optional() {
+			return getSource().optional();
+		}
+
+		@Override
+		default Pipeline<T, E> newPipeline() {
+			return getSource().newPipeline();
+		}
+
+		@Override
+		default Pool<T, E> onClose(@NonNull Consumer<? super T, ? extends E> endpoint) {
+			return getSource().onClose(endpoint);
+		}
+
+		@Override
+		default Pipeline<T, E> onClose(@NonNull Runnable<? extends E> processor) {
+			return getSource().onClose(processor);
 		}
 	}
 

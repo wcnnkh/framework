@@ -1,5 +1,6 @@
 package run.soeasy.framework.messaging;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,7 +15,7 @@ import run.soeasy.framework.util.collections.AbstractMultiValueMap;
 import run.soeasy.framework.util.collections.CollectionUtils;
 import run.soeasy.framework.util.collections.LinkedCaseInsensitiveMap;
 
-public class Headers extends AbstractMultiValueMap<String, String> {
+public class Headers extends AbstractMultiValueMap<String, String, Map<String, List<String>>> implements Serializable {
 	/**
 	 * The {@code Content-Length} header field name.
 	 * 
@@ -41,22 +42,26 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	private static final long serialVersionUID = 1L;
 	public static final Headers EMPTY = new Headers(Collections.emptyMap(), true);
 
-	private Map<String, List<String>> headers;
+	private Map<String, List<String>> source;
 	private boolean readyOnly;
+
+	{
+		setValuesCreator((key) -> new LinkedList<>());
+	}
 
 	/**
 	 * @param caseSensitiveKey 是否区别大小写
 	 */
 	public Headers(boolean caseSensitiveKey) {
 		if (caseSensitiveKey) {
-			this.headers = new LinkedHashMap<String, List<String>>(8);
+			this.source = new LinkedHashMap<String, List<String>>(8);
 		} else {
-			this.headers = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
+			this.source = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
 		}
 	}
 
 	public Headers(Map<String, List<String>> headers, boolean readyOnly) {
-		this.headers = readyOnly ? Collections.unmodifiableMap(headers) : headers;
+		this.source = readyOnly ? Collections.unmodifiableMap(headers) : headers;
 		this.readyOnly = readyOnly;
 	}
 
@@ -66,24 +71,29 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	 * @param headers
 	 */
 	public Headers(Headers headers) {
-		this.headers = headers.readyOnly ? headers.headers : CollectionUtils.clone(headers.headers);
+		this.source = headers.readyOnly ? headers.source : CollectionUtils.clone(headers.source);
 		this.readyOnly = headers.readyOnly;
 	}
 
+	@Override
+	public Map<String, List<String>> getSource() {
+		return source;
+	}
+
 	public void caseSensitiveKey(boolean caseSensitiveKey) {
-		Map<String, List<String>> map = headers;
+		Map<String, List<String>> map = source;
 		if (caseSensitiveKey) {
-			if (headers instanceof LinkedCaseInsensitiveMap) {
+			if (source instanceof LinkedCaseInsensitiveMap) {
 				map = new LinkedHashMap<String, List<String>>();
-				map.putAll(headers);
+				map.putAll(source);
 			}
 		} else {
-			if (!(headers instanceof LinkedCaseInsensitiveMap)) {
-				map = new LinkedCaseInsensitiveMap<List<String>>(headers.size(), Locale.ENGLISH);
-				map.putAll(headers);
+			if (!(source instanceof LinkedCaseInsensitiveMap)) {
+				map = new LinkedCaseInsensitiveMap<List<String>>(source.size(), Locale.ENGLISH);
+				map.putAll(source);
 			}
 		}
-		this.headers = map;
+		this.source = map;
 	}
 
 	public final boolean isReadyOnly() {
@@ -91,7 +101,7 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	}
 
 	public final boolean isCaseSensitiveKey() {
-		return !(headers instanceof LinkedCaseInsensitiveMap);
+		return !(source instanceof LinkedCaseInsensitiveMap);
 	}
 
 	public void readyOnly() {
@@ -99,22 +109,12 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 			return;
 		}
 		this.readyOnly = true;
-		this.headers = Collections.unmodifiableMap(this.headers);
+		this.source = Collections.unmodifiableMap(this.source);
 	}
 
 	public void readyOnly(boolean caseSensitiveKey) {
 		caseSensitiveKey(caseSensitiveKey);
 		readyOnly();
-	}
-
-	@Override
-	protected final Map<String, List<String>> getTargetMap() {
-		return headers;
-	}
-
-	@Override
-	protected List<String> createList() {
-		return new LinkedList<>();
 	}
 
 	/**

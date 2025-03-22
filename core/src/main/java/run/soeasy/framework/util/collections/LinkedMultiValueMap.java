@@ -16,10 +16,12 @@
 
 package run.soeasy.framework.util.collections;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+
+import lombok.NonNull;
 
 /**
  * Simple implementation of {@link MultiValueMap} that wraps a
@@ -31,87 +33,28 @@ import java.util.Map;
  * single thread only.
  *
  */
-public class LinkedMultiValueMap<K, V> extends AbstractMultiValueMap<K, V> {
-
+public class LinkedMultiValueMap<K, V> extends DefaultMultiValueMap<K, V, LinkedHashMap<K, List<V>>>
+		implements Serializable {
 	private static final long serialVersionUID = 3801124242820219131L;
 
-	private final Map<K, List<V>> targetMap;
-
-	/**
-	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap}.
-	 */
 	public LinkedMultiValueMap() {
-		this.targetMap = new LinkedHashMap<K, List<V>>() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
-				return overrideRemoveEldestEntry(eldest);
-			}
-		};
+		this(new LinkedHashMap<>());
 	}
 
-	/**
-	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap} with the
-	 * given initial capacity.
-	 * 
-	 * @param initialCapacity the initial capacity
-	 */
 	public LinkedMultiValueMap(int initialCapacity) {
-		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
-				return overrideRemoveEldestEntry(eldest);
-			}
-		};
+		this(new LinkedHashMap<>(initialCapacity));
 	}
 
 	public LinkedMultiValueMap(int initialCapacity, float loadFactor) {
-		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity, loadFactor) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
-				return overrideRemoveEldestEntry(eldest);
-			}
-		};
+		this(new LinkedHashMap<>(initialCapacity, loadFactor));
 	}
 
 	public LinkedMultiValueMap(int initialCapacity, float loadFactor, boolean accessOrder) {
-		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity, loadFactor, accessOrder) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
-				return overrideRemoveEldestEntry(eldest);
-			}
-		};
+		this(new LinkedHashMap<>(initialCapacity, loadFactor, accessOrder));
 	}
 
-	/**
-	 * 重写LinkedHashMap的此方法
-	 * 
-	 * @param eldest
-	 * @return
-	 */
-	protected boolean overrideRemoveEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
-		return false;
+	public LinkedMultiValueMap(@NonNull LinkedHashMap<K, List<V>> source) {
+		super(source);
 	}
 
-	/**
-	 * Copy constructor: Create a new LinkedMultiValueMap with the same mappings as
-	 * the specified Map.
-	 * 
-	 * @param otherMap the Map whose mappings are to be placed in this Map
-	 */
-	public LinkedMultiValueMap(Map<K, List<V>> otherMap) {
-		this.targetMap = new LinkedHashMap<K, List<V>>(otherMap);
-	}
-
-	@Override
-	protected Map<K, List<V>> getTargetMap() {
-		return targetMap;
-	}
 }

@@ -169,7 +169,7 @@ public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC e
 	}
 
 	@Override
-	public final V getFirst(K key) {
+	public final V getFirst(Object key) {
 		return read((map) -> {
 			if (map == null) {
 				return null;

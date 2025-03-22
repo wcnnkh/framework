@@ -23,11 +23,6 @@ import run.soeasy.framework.util.placeholder.PlaceholderFormat;
 public final class StringUtils {
 	private static final String CURRENT_PATH = ".";
 
-	/**
-	 * 默认的分割符 [" ", ",", ";", "、"]
-	 */
-	private static final String[] DEFAULT_SEPARATOR = new String[] { " ", ",", ";", "、" };
-
 	public static final String[] EMPTY_ARRAY = new String[0];
 
 	private static final char EXTENSION_SEPARATOR = '.';
@@ -1480,15 +1475,6 @@ public final class StringUtils {
 		return array;
 	}
 
-	/**
-	 * @see StringUtils#DEFAULT_SEPARATOR
-	 * @param charSequence
-	 * @return
-	 */
-	public static Elements<CharSequenceTemplate> split(CharSequence charSequence) {
-		return split(charSequence, DEFAULT_SEPARATOR);
-	}
-
 	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, boolean trimTokens,
 			boolean ignoreEmptyTokens, CharSequence... filters) {
 		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
@@ -1528,10 +1514,6 @@ public final class StringUtils {
 			return Elements.singleton(new CharSequenceTemplate(charSequence));
 		}
 		return Elements.of(() -> new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
-	}
-
-	public static String[] splitToArray(CharSequence charSequence) {
-		return splitToArray(charSequence, DEFAULT_SEPARATOR);
 	}
 
 	public static String[] splitToArray(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
