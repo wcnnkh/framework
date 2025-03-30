@@ -44,6 +44,11 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		default @NonNull Pipeline<R, IOException> getWriterPipeline() {
 			return getSource().getOutputStreamPipeline().map(getEncoder());
 		}
+		
+		@Override
+		default boolean isEncoded() {
+			return true;
+		}
 	}
 
 	@FunctionalInterface
@@ -53,7 +58,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		default Pipeline<T, IOException> getOutputStreamPipeline() {
 			return getSource().getOutputStreamPipeline();
 		}
-
+		
 		@Override
 		default <R extends Writer> WriterFactory<R> toWriterFactory(
 				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
@@ -78,6 +83,11 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		@Override
 		default WriterFactory<Writer> toWriterFactory(String charsetName) {
 			return getSource().toWriterFactory(charsetName);
+		}
+		
+		@Override
+		default boolean isEncoded() {
+			return getSource().isEncoded();
 		}
 	}
 
@@ -125,6 +135,10 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 	@NonNull
 	Pipeline<T, IOException> getOutputStreamPipeline();
+	
+	default boolean isEncoded() {
+		return false;
+	}
 
 	default <R extends Writer> WriterFactory<R> toWriterFactory(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {

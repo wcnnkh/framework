@@ -1,43 +1,27 @@
 package run.soeasy.framework.xml;
 
-import java.util.Map;
-
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import run.soeasy.framework.core.convert.TypeDescriptor;
+import lombok.Getter;
+import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.dom.DocumentTemplate;
 
+@Getter
 public class XmlTemplate extends DocumentTemplate {
 	private final XmlTransformer transformer = new XmlTransformer();
 	private final XmlParser parser = new XmlParser();
 
 	public XmlTemplate() {
-		parsers.register(parser);
-		transformers.register(transformer);
+		getParsers().register(parser);
+		getTransformers().register(transformer);
 	}
 
-	public XmlTransformer getTransformer() {
-		return transformer;
-	}
-
-	public XmlParser getParser() {
-		return parser;
-	}
-
-	public Document parse(Object source, TypeDescriptor sourceType) {
+	public Document newDocument(Source source, String rootTagName) {
 		Document document = getParser().getDocumentBuilder().newDocument();
-		write(document, document, "xml", source, sourceType);
+		Element rootElement = document.createElement(rootTagName);
+		writeTo(source, rootElement);
+		document.appendChild(rootElement);
 		return document;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public Document parse(Map map) {
-		return parse(map, TypeDescriptor.map(Map.class, Object.class, Object.class));
-	}
-
-	@SuppressWarnings("rawtypes")
-	public String toString(Map map) {
-		Document document = parse(map);
-		return toString(document);
 	}
 }

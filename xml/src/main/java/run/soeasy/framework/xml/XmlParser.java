@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -20,24 +21,20 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.Any;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.dom.DocumentParser;
 import run.soeasy.framework.dom.DomException;
+import run.soeasy.framework.dom.resource.ResourceParser;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class XmlParser implements DocumentParser, ConversionService {
-	private static Logger logger = LogManager.getLogger(XmlParser.class);
+public class XmlParser implements ResourceParser, ConversionService {
 	@NonNull
 	private DocumentBuilderFactory documentBuilderFactory;
 	@NonNull
@@ -73,18 +70,14 @@ public class XmlParser implements DocumentParser, ConversionService {
 
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource,
-			Function<? super Document, ? extends T, ? extends E> processor) throws IOException, DomException, E {
+			Function<? super Node, ? extends T, ? extends E> processor) throws IOException, E {
 		return resource.getInputStreamPipeline().optional().apply((is) -> {
 			Document document = parse(is);
 			if (document == null) {
 				return null;
 			}
 
-			try {
-				return processor.process(document);
-			} catch (Throwable e) {
-				throw new DomException(e);
-			}
+			return processor.apply(document.getDocumentElement());
 		});
 	}
 
@@ -164,7 +157,7 @@ public class XmlParser implements DocumentParser, ConversionService {
 						|| InputSource.class.isAssignableFrom(sourceType.getType())
 						|| File.class.isAssignableFrom(sourceType.getType()));
 	}
-	
+
 	@Override
 	public Object convert(@NonNull Source source, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object input = source.any(targetType).orElse(null);
@@ -174,11 +167,11 @@ public class XmlParser implements DocumentParser, ConversionService {
 			return parse((Reader) source);
 		} else if (String.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
 			return parse((String) source.get());
-		} else if (InputSource.class.isAssignableFrom(sourceType.getType())) {
+		} else if (InputSource.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
 			return parse((InputSource) source);
-		} else if (File.class.isAssignableFrom(sourceType.getType())) {
+		} else if (File.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
 			return parse((File) source);
 		}
-		throw new ConversionException(sourceType.toString());
+		throw new ConversionException(source.getTypeDescriptor().toString());
 	}
 }

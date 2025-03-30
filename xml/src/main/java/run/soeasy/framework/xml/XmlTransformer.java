@@ -1,5 +1,6 @@
 package run.soeasy.framework.xml;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -16,13 +17,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 
-import run.soeasy.framework.dom.DocumentTransformer;
 import run.soeasy.framework.dom.DomException;
+import run.soeasy.framework.dom.resource.ResourceTransformer;
 import run.soeasy.framework.util.Assert;
+import run.soeasy.framework.util.io.OutputStreamFactory;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;
 
-public class XmlTransformer implements DocumentTransformer {
+public class XmlTransformer implements ResourceTransformer {
 	private static Logger logger = LogManager.getLogger(XmlTransformer.class);
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 	static {
@@ -32,7 +34,7 @@ public class XmlTransformer implements DocumentTransformer {
 			logger.warn(e, "config transformer factory error!");
 		}
 	}
-	
+
 	private final TransformerFactory transformerFactory;
 
 	public XmlTransformer() {
@@ -45,7 +47,12 @@ public class XmlTransformer implements DocumentTransformer {
 	}
 
 	@Override
-	public boolean canTransform(Document document) {
+	public boolean canTransform(Node node) {
+		Document document = node.getOwnerDocument();
+		if (document == null) {
+			return false;
+		}
+
 		DocumentType documentType = document.getDoctype();
 		return documentType != null && "xml".equals(documentType.getName());
 	}
@@ -55,13 +62,12 @@ public class XmlTransformer implements DocumentTransformer {
 	}
 
 	@Override
-	public final void transform(Document document, OutputStream output) throws DomException {
-		transform((Node) document, output);
-	}
-
-	@Override
-	public final void transform(Document document, Writer writer) throws DomException {
-		transform((Node) document, writer);
+	public void transform(Node source, OutputStreamFactory<?> target) throws IOException {
+		if (target.isEncoded()) {
+			target.toWriterFactory().getWriterPipeline().optional().ifPresent((w) -> transform(source, w));
+		} else {
+			target.getOutputStreamPipeline().optional().ifPresent((os) -> transform(source, os));
+		}
 	}
 
 	public void transform(Node node, OutputStream output) throws DomException {

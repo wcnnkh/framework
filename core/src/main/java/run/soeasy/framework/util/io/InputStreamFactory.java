@@ -39,6 +39,11 @@ public interface InputStreamFactory<T extends InputStream> {
 		default @NonNull Pipeline<R, IOException> getReaderPipeline() {
 			return getSource().getInputStreamPipeline().map(getDecoder());
 		}
+
+		@Override
+		default boolean isDecoded() {
+			return true;
+		}
 	}
 
 	public static class DefaultDecodeInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
@@ -113,6 +118,11 @@ public interface InputStreamFactory<T extends InputStream> {
 				throws IOException {
 			getSource().transferTo(dest);
 		}
+
+		@Override
+		default boolean isDecoded() {
+			return getSource().isDecoded();
+		}
 	}
 
 	public static class StandardCharsetInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
@@ -159,6 +169,10 @@ public interface InputStreamFactory<T extends InputStream> {
 
 	@NonNull
 	Pipeline<T, IOException> getInputStreamPipeline();
+
+	default boolean isDecoded() {
+		return false;
+	}
 
 	default <R extends Reader> ReaderFactory<R> toReaderFactory(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {

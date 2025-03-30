@@ -1,85 +1,86 @@
 package run.soeasy.framework.dom;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.dom.writer.ArrayWriter;
-import run.soeasy.framework.dom.writer.CollectionWriter;
-import run.soeasy.framework.dom.writer.MapWriter;
+import lombok.Setter;
+import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.dom.convert.NodeReader;
+import run.soeasy.framework.dom.convert.NodeReaders;
+import run.soeasy.framework.dom.convert.NodeWriter;
+import run.soeasy.framework.dom.convert.NodeWriters;
+import run.soeasy.framework.dom.resource.ResourceParser;
+import run.soeasy.framework.dom.resource.ResourceParsers;
+import run.soeasy.framework.dom.resource.ResourceTransformer;
+import run.soeasy.framework.dom.resource.ResourceTransformers;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.exchange.Receipt;
-import run.soeasy.framework.util.function.Consumer;
 import run.soeasy.framework.util.function.Function;
+import run.soeasy.framework.util.io.OutputStreamFactory;
 import run.soeasy.framework.util.io.Resource;
 import run.soeasy.framework.util.io.load.ResourceLoader;
-import run.soeasy.framework.util.spi.Configurable;
-import run.soeasy.framework.util.spi.ServiceLoaderDiscovery;
 
 @Getter
-public class DocumentTemplate implements Configurable, DocumentParser, DocumentWriter, DocumentTransformer {
-	protected final DocumentParserRegistry parserRegistry = new DocumentParserRegistry();
-	protected final DocumentTransformerRegistry transformerRegistry = new DocumentTransformerRegistry();
-	protected final DocumentWriterRegistry writerRegistry = new DocumentWriterRegistry();
+@Setter
+public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser, ResourceTransformer {
+	private final NodeReaders readers = new NodeReaders();
+	private final NodeWriters writers = new NodeWriters();
+	private final ResourceParsers parsers = new ResourceParsers();
+	private final ResourceTransformers transformers = new ResourceTransformers();
+	@NonNull
+	private ConversionService conversionService = DefaultConversionService.getInstance();
 
-	public DocumentTemplate() {
-		writerRegistry.register(new MapWriter(this));
-		writerRegistry.register(new CollectionWriter(this));
-		writerRegistry.register(new ArrayWriter(this));
+	@Override
+	public boolean canTransform(Node node) {
+		return transformers.canTransform(node);
+	}
+
+	@Override
+	public void transform(Node node, OutputStreamFactory<?> target) throws IOException {
+		transformers.transform(node, target);
 	}
 
 	@Override
 	public boolean canParse(Resource resource) {
-		return parserRegistry.canParse(resource);
+		return parsers.canParse(resource);
 	}
 
 	@Override
-	public boolean canTransform(Document document) {
-		return transformerRegistry.canTransform(document);
+	public <T, E extends Throwable> T parse(Resource resource,
+			Function<? super Node, ? extends T, ? extends E> processor) throws IOException, E {
+		return parsers.parse(resource, processor);
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor sourceTypeDescriptor) {
-		return writerRegistry.canWrite(sourceTypeDescriptor);
-	}
-
-	private ArrayNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList,
-			HashSet<String> includeHashSet) throws DomException, IOException, RuntimeException {
-		ArrayNodeList list = new ArrayNodeList();
-		if (nodeList != null) {
-			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
-				Node n = nodeList.item(i);
-				if (n == null) {
-					continue;
-				}
-
-				if (n.getNodeName().equalsIgnoreCase("include")) {
-					ArrayNodeList n2 = getIncludeNodeList(resourceLoader, includeHashSet, n);
-					list.addAll(converIncludeNodeList(resourceLoader, n2, includeHashSet));
-				} else {
-					list.add(n);
-				}
-			}
-		}
-		return list;
+	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
+		return writers.isWriteable(sourceDescriptor);
 	}
 
 	@Override
-	public Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery) {
-		transformerRegistry.doConfigure(discovery);
-		writerRegistry.doConfigure(discovery);
-		parserRegistry.doConfigure(discovery);
-		return Receipt.SUCCESS;
+	public void writeTo(Source source, Node node) throws DOMException {
+		writers.writeTo(source, node);
+	}
+
+	@Override
+	public boolean isReadable(TargetDescriptor targetDescriptor) {
+		return readers.isReadable(targetDescriptor);
+	}
+
+	@Override
+	public Object readFrom(TargetDescriptor targetDescriptor, Node node) throws DOMException {
+		return readers.readFrom(targetDescriptor, node);
 	}
 
 	public NodeList getChildNodes(Node node, ResourceLoader resourceLoader)
@@ -89,7 +90,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		}
 
 		NodeList nodeList = resourceLoader != null
-				? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>())
+				? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashMap<>())
 				: node.getChildNodes();
 		if (nodeList == null) {
 			return EmptyNodeList.EMPTY;
@@ -97,7 +98,28 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		return nodeList;
 	}
 
-	private ArrayNodeList getIncludeNodeList(ResourceLoader resourceLoader, HashSet<String> includeHashSet,
+	private NodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList,
+			Map<String, NodeList> includeMap) throws DomException, IOException, RuntimeException {
+		ArrayNodeList list = new ArrayNodeList();
+		if (nodeList != null) {
+			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
+				Node n = nodeList.item(i);
+				if (n == null) {
+					continue;
+				}
+
+				if (n.getNodeName().equalsIgnoreCase("include")) {
+					NodeList n2 = getIncludeNodeList(resourceLoader, includeMap, n);
+					list.addNodeList(converIncludeNodeList(resourceLoader, n2, includeMap));
+				} else {
+					list.add(n);
+				}
+			}
+		}
+		return list;
+	}
+
+	private NodeList getIncludeNodeList(ResourceLoader resourceLoader, Map<String, NodeList> includeMap,
 			Node includeNode) throws DomException, IOException, RuntimeException {
 		String resourceName = DomUtils.getNodeAttributeValueOrNodeContent(includeNode, "resource");
 		if (StringUtils.isEmpty(resourceName)) {
@@ -105,69 +127,35 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		}
 
 		resourceName = StringUtils.cleanPath(resourceName);
-		if (includeHashSet.contains(resourceName)) {
-			throw new RuntimeException(resourceName + "存在循环引用，请检查include地址");
-		}
-
-		includeHashSet.add(resourceName);
-		Resource resource = resourceLoader.getResource(resourceName);
-		return parse(resource, (document) -> {
-			Node root = document.getDocumentElement();
-			if (root == null) {
-				return new ArrayNodeList();
-			}
-
-			NodeList nodeList = root.getChildNodes();
-			ArrayNodeList list = new ArrayNodeList();
-			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
-				Node n = nodeList.item(i);
-				if (n == null) {
-					continue;
+		NodeList result = includeMap.get(resourceName);
+		if (result == null) {
+			Resource resource = resourceLoader.getResource(resourceName);
+			result = parse(resource, (root) -> {
+				if (root == null) {
+					return new ArrayNodeList();
 				}
 
-				list.add(n);
-			}
-			return list;
-		});
+				NodeList nodeList = root.getChildNodes();
+				ArrayNodeList list = new ArrayNodeList();
+				for (int i = 0, size = nodeList.getLength(); i < size; i++) {
+					Node n = nodeList.item(i);
+					if (n == null) {
+						continue;
+					}
+
+					list.add(n);
+				}
+				return list;
+			});
+			includeMap.put(resourceName, result);
+		}
+		return result;
 	}
 
-	@Override
-	public <T, E extends Throwable> T parse(Resource resource,
-			Function<? super Document, ? extends T, ? extends E> processor) throws DomException, IOException, E {
-		return parserRegistry.parse(resource, processor);
-	}
-
-	public <E extends Throwable> void read(Resource resource, Consumer<? super Document, ? extends E> processor)
-			throws DomException, IOException, E {
-		parse(resource, (document) -> {
-			processor.accept(document);
-			return null;
-		});
-	}
-
-	@Override
-	public String toString(Document document) throws DomException, IOException {
-		StringWriter writer = new StringWriter();
-		transform(document, writer);
-		return writer.toString();
-	}
-
-	@Override
-	public void transform(Document document, OutputStream output) throws DomException, IOException {
-		transformerRegistry.transform(document, output);
-	}
-
-	@Override
-	public void transform(Document document, Writer writer) throws DomException, IOException {
-		transformerRegistry.transform(document, writer);
-	}
-
-	@Override
-	public void write(Document document, Node parentNode, String nodeName, Object source,
-			TypeDescriptor sourceTypeDescriptor) {
-		writerRegistry.write(document, parentNode, nodeName, source, sourceTypeDescriptor);
-		Element element = document.createElement(nodeName);
-		element.setTextContent(String.valueOf(source));
-		parentNode.appendChild(element);
+	public String toString(Node node) throws IOException {
+		StringWriter stringWriter = new StringWriter();
+		transform(node, null); 
+		// TODO
+		return node.toString();
 	}
 }

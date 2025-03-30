@@ -15,16 +15,8 @@ import run.soeasy.framework.core.env.Environment;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Function;
-import run.soeasy.framework.util.spi.NativeServiceLoader;
 
 public final class DomUtils {
-	private static final DocumentTemplate TEMPLATE = NativeServiceLoader.load(DocumentTemplate.class).findFirst()
-			.orElseGet(() -> new DocumentTemplate());
-
-	public static DocumentTemplate getTemplate() {
-		return TEMPLATE;
-	}
-
 	private DomUtils() {
 	}
 

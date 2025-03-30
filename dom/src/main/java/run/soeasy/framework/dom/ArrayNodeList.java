@@ -15,4 +15,10 @@ public class ArrayNodeList extends ArrayList<Node> implements NodeList {
 	public int getLength() {
 		return size();
 	}
+
+	public void addNodeList(NodeList nodeList) {
+		for (int i = 0, len = nodeList.getLength(); i < len; i++) {
+			add(nodeList.item(i));
+		}
+	}
 }
