@@ -63,7 +63,7 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 						"The specified character set is only supported in versions of jdk 1.6 and above: " + resource);
 				resource.getInputStreamPipeline().optional().ifPresent((is) -> properties.load(is));
 			} else {
-				resource.toReaderFactory().getReaderPipeline().optional()
+				resource.decode().getReaderPipeline().optional()
 						.ifPresent((is) -> ReflectionUtils.invoke(LOAD_METHOD, properties, is));
 			}
 		}
@@ -82,7 +82,7 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 				properties.storeToXML(os, null, charsetName.orElse(null));
 			});
 		} else {
-			resource.toWriterFactory().getWriterPipeline().optional().ifPresent((os) -> {
+			resource.encode().getWriterPipeline().optional().ifPresent((os) -> {
 				properties.store(os, null);
 			});
 		}

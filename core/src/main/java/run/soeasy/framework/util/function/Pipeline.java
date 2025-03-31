@@ -16,6 +16,8 @@ import run.soeasy.framework.util.function.Function.FunctionPipeline;
  * @param <E>
  */
 public interface Pipeline<T, E extends Throwable> extends Supplier<T, E> {
+	public static final Pipeline<?, ?> EMPTY_PIPELINE = Optional.empty().newPipeline();
+
 	public static class PipelineOptional<S, T, E extends Throwable>
 			extends FunctionPipeline<S, T, E, Supplier<S, E>, Function<? super S, ? extends T, ? extends E>>
 			implements Optional<T, E> {
@@ -245,5 +247,10 @@ public interface Pipeline<T, E extends Throwable> extends Supplier<T, E> {
 			Supplier<? extends T, ? extends IOException> source) {
 		Supplier<T, IOException> target = Supplier.of(source);
 		return target.onClose(Closeable::close).newPipeline();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, E extends Throwable> Pipeline<T, E> empty() {
+		return (Pipeline<T, E>) EMPTY_PIPELINE;
 	}
 }

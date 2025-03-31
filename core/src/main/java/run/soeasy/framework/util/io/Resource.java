@@ -67,7 +67,7 @@ public interface Resource extends InputStreamSource<InputStream>, OutputStreamSo
 	@ToString(callSuper = true)
 	public static class CodecResource<W extends Resource>
 			extends StandardEncodeOutputStreamFactory<OutputStream, Writer, W> implements ResourceWrapper<W>,
-			DecodeInputStreamFactory<InputStream, Reader, W>, EncodeOutputStreamFactory<OutputStream, Writer, W> {
+			DecodeInputStreamFactory<InputStream, Reader, W>, EncodedOutputStreamFactory<OutputStream, Writer, W> {
 		@NonNull
 		private final Function<? super InputStream, ? extends Reader, ? extends IOException> decoder;
 

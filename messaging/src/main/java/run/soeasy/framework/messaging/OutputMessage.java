@@ -9,8 +9,8 @@ import lombok.Setter;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Pipeline;
 import run.soeasy.framework.util.function.Wrapped;
+import run.soeasy.framework.util.io.OutputFactory;
 import run.soeasy.framework.util.io.OutputStreamSource;
-import run.soeasy.framework.util.io.WriterFactory;
 
 public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
 	@FunctionalInterface
@@ -18,8 +18,8 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 			extends OutputMessage, MessageWrapper<W>, OutputStreamSourceWrapper<OutputStream, W> {
 
 		@Override
-		default WriterFactory<Writer> toWriterFactory() {
-			return getSource().toWriterFactory();
+		default OutputFactory<OutputStream, Writer> encode() {
+			return getSource().encode();
 		}
 
 		@Override
@@ -72,12 +72,12 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 	}
 
 	@Override
-	default WriterFactory<Writer> toWriterFactory() {
+	default OutputFactory<OutputStream, Writer> encode() {
 		String charsetName = getCharsetName();
 		if (StringUtils.isEmpty(charsetName)) {
-			return OutputStreamSource.super.toWriterFactory();
+			return OutputStreamSource.super.encode();
 		}
-		return toWriterFactory(charsetName);
+		return encode(charsetName);
 	}
 
 	@Setter

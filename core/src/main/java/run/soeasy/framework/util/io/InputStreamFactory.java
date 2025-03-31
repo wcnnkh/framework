@@ -31,7 +31,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	}
 
 	public static interface DecodeInputStreamFactory<T extends InputStream, R extends Reader, W extends InputStreamFactory<T>>
-			extends ReaderFactory<R>, InputStreamFactoryWrapper<T, W> {
+			extends InputFactory<T, R>, InputStreamFactoryWrapper<T, W> {
 
 		Function<? super T, ? extends R, ? extends IOException> getDecoder();
 
@@ -67,9 +67,9 @@ public interface InputStreamFactory<T extends InputStream> {
 		}
 
 		@Override
-		default <R extends Reader> ReaderFactory<R> toReaderFactory(
+		default <R extends Reader> ReaderFactory<R> decode(
 				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
-			return getSource().toReaderFactory(pipeline);
+			return getSource().decode(pipeline);
 		}
 
 		@Override
@@ -78,23 +78,23 @@ public interface InputStreamFactory<T extends InputStream> {
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory() {
-			return getSource().toReaderFactory();
+		default InputFactory<T, Reader> decode() {
+			return getSource().decode();
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory(Charset charset) {
-			return getSource().toReaderFactory(charset);
+		default InputFactory<T, Reader> decode(Charset charset) {
+			return getSource().decode(charset);
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory(CharsetDecoder charsetDecoder) {
-			return getSource().toReaderFactory(charsetDecoder);
+		default InputFactory<T, Reader> decode(CharsetDecoder charsetDecoder) {
+			return getSource().decode(charsetDecoder);
 		}
 
 		@Override
-		default ReaderFactory<Reader> toReaderFactory(String charsetName) {
-			return getSource().toReaderFactory(charsetName);
+		default InputFactory<T, Reader> decode(String charsetName) {
+			return getSource().decode(charsetName);
 		}
 
 		@Override
@@ -174,7 +174,7 @@ public interface InputStreamFactory<T extends InputStream> {
 		return false;
 	}
 
-	default <R extends Reader> ReaderFactory<R> toReaderFactory(
+	default <R extends Reader> ReaderFactory<R> decode(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 		return new StandardDecodeInputStreamFactory<>(this, pipeline);
 	}
@@ -187,19 +187,19 @@ public interface InputStreamFactory<T extends InputStream> {
 			throws IOException, E {
 	}
 
-	default ReaderFactory<Reader> toReaderFactory() {
+	default InputFactory<T, Reader> decode() {
 		return new DefaultDecodeInputStreamFactory<>(this);
 	}
 
-	default ReaderFactory<Reader> toReaderFactory(@NonNull Charset charset) {
+	default InputFactory<T, Reader> decode(@NonNull Charset charset) {
 		return new StandardCharsetInputStreamFactory<>(this, charset);
 	}
 
-	default ReaderFactory<Reader> toReaderFactory(@NonNull CharsetDecoder charsetDecoder) {
+	default InputFactory<T, Reader> decode(@NonNull CharsetDecoder charsetDecoder) {
 		return new DefaultDecodeInputStreamFactory<>(this, charsetDecoder);
 	}
 
-	default ReaderFactory<Reader> toReaderFactory(@NonNull String charsetName) {
+	default InputFactory<T, Reader> decode(@NonNull String charsetName) {
 		return new StandardCharsetInputStreamFactory<>(this, charsetName);
 	}
 

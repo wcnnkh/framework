@@ -64,7 +64,7 @@ public class XmlTransformer implements ResourceTransformer {
 	@Override
 	public void transform(Node source, OutputStreamFactory<?> target) throws IOException {
 		if (target.isEncoded()) {
-			target.toWriterFactory().getWriterPipeline().optional().ifPresent((w) -> transform(source, w));
+			target.encode().getWriterPipeline().optional().ifPresent((w) -> transform(source, w));
 		} else {
 			target.getOutputStreamPipeline().optional().ifPresent((os) -> transform(source, os));
 		}

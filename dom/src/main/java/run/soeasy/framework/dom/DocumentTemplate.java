@@ -1,6 +1,6 @@
 package run.soeasy.framework.dom;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -29,6 +29,7 @@ import run.soeasy.framework.dom.resource.ResourceTransformers;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.io.OutputStreamFactory;
+import run.soeasy.framework.util.io.OutputStreamSource;
 import run.soeasy.framework.util.io.Resource;
 import run.soeasy.framework.util.io.load.ResourceLoader;
 
@@ -153,8 +154,9 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	}
 
 	public String toString(Node node) throws IOException {
-		StringWriter stringWriter = new StringWriter();
-		transform(node, null); 
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		OutputStreamSource<ByteArrayOutputStream> source = () -> os;
+		//transform(node, source.toWriterFactory(null)); 
 		// TODO
 		return node.toString();
 	}

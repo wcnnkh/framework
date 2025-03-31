@@ -12,6 +12,6 @@ public class ResourceToString implements Converter<Resource, String, IOException
 
 	@Override
 	public String convert(Resource source, TypeDescriptor sourceType, TypeDescriptor targetType) throws IOException {
-		return source.toReaderFactory().readAllCharacters();
+		return source.decode().readAllCharacters();
 	}
 }

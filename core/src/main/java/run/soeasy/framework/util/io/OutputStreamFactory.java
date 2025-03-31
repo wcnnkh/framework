@@ -17,7 +17,7 @@ import run.soeasy.framework.util.function.Wrapper;
 public interface OutputStreamFactory<T extends OutputStream> {
 
 	public static interface CharsetOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
-			extends EncodeOutputStreamFactory<T, Writer, W>, CharsetCapable {
+			extends EncodedOutputStreamFactory<T, Writer, W>, CharsetCapable {
 		@Override
 		default Function<? super T, ? extends Writer, ? extends IOException> getEncoder() {
 			return (e) -> new OutputStreamWriter(e, getCharset());
@@ -36,15 +36,15 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		}
 	}
 
-	public static interface EncodeOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
-			extends OutputStreamFactoryWrapper<T, W>, WriterFactory<R> {
+	public static interface EncodedOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
+			extends OutputStreamFactoryWrapper<T, W>, OutputFactory<T, R> {
 		Function<? super T, ? extends R, ? extends IOException> getEncoder();
 
 		@Override
 		default @NonNull Pipeline<R, IOException> getWriterPipeline() {
 			return getSource().getOutputStreamPipeline().map(getEncoder());
 		}
-		
+
 		@Override
 		default boolean isEncoded() {
 			return true;
@@ -58,33 +58,33 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		default Pipeline<T, IOException> getOutputStreamPipeline() {
 			return getSource().getOutputStreamPipeline();
 		}
-		
+
 		@Override
-		default <R extends Writer> WriterFactory<R> toWriterFactory(
+		default <R extends Writer> OutputFactory<T, R> encode(
 				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
-			return getSource().toWriterFactory(pipeline);
+			return getSource().encode(pipeline);
 		}
 
 		@Override
-		default WriterFactory<Writer> toWriterFactory() {
-			return getSource().toWriterFactory();
+		default OutputFactory<T, Writer> encode() {
+			return getSource().encode();
 		}
 
 		@Override
-		default WriterFactory<Writer> toWriterFactory(Charset charset) {
-			return getSource().toWriterFactory(charset);
+		default OutputFactory<T, Writer> encode(Charset charset) {
+			return getSource().encode(charset);
 		}
 
 		@Override
-		default WriterFactory<Writer> toWriterFactory(CharsetEncoder charsetEncoder) {
-			return getSource().toWriterFactory(charsetEncoder);
+		default OutputFactory<T, Writer> encode(CharsetEncoder charsetEncoder) {
+			return getSource().encode(charsetEncoder);
 		}
 
 		@Override
-		default WriterFactory<Writer> toWriterFactory(String charsetName) {
-			return getSource().toWriterFactory(charsetName);
+		default OutputFactory<T, Writer> encode(String charsetName) {
+			return getSource().encode(charsetName);
 		}
-		
+
 		@Override
 		default boolean isEncoded() {
 			return getSource().isEncoded();
@@ -126,7 +126,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 	@Data
 	public static class StandardEncodeOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
-			implements EncodeOutputStreamFactory<T, R, W> {
+			implements EncodedOutputStreamFactory<T, R, W> {
 		@NonNull
 		private final W source;
 		@NonNull
@@ -135,29 +135,29 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 	@NonNull
 	Pipeline<T, IOException> getOutputStreamPipeline();
-	
+
 	default boolean isEncoded() {
 		return false;
 	}
 
-	default <R extends Writer> WriterFactory<R> toWriterFactory(
+	default <R extends Writer> OutputFactory<T, R> encode(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
 		return new StandardEncodeOutputStreamFactory<>(this, pipeline);
 	}
 
-	default WriterFactory<Writer> toWriterFactory() {
+	default OutputFactory<T, Writer> encode() {
 		return new DefaultEncodeOutputStreamFactory<>(this);
 	}
 
-	default WriterFactory<Writer> toWriterFactory(Charset charset) {
+	default OutputFactory<T, Writer> encode(Charset charset) {
 		return new StandardCharsetOutputStreamFactory<>(this, charset);
 	}
 
-	default WriterFactory<Writer> toWriterFactory(CharsetEncoder charsetEncoder) {
+	default OutputFactory<T, Writer> encode(CharsetEncoder charsetEncoder) {
 		return new DefaultEncodeOutputStreamFactory<>(this, charsetEncoder);
 	}
 
-	default WriterFactory<Writer> toWriterFactory(String charsetName) {
+	default OutputFactory<T, Writer> encode(String charsetName) {
 		return new StandardCharsetOutputStreamFactory<>(this, charsetName);
 	}
 }

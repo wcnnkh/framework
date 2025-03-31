@@ -10,16 +10,16 @@ import lombok.Setter;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Pipeline;
 import run.soeasy.framework.util.function.Wrapped;
+import run.soeasy.framework.util.io.InputFactory;
 import run.soeasy.framework.util.io.InputStreamSource;
-import run.soeasy.framework.util.io.ReaderFactory;
 
 public interface InputMessage extends Message, InputStreamSource<InputStream> {
 	@FunctionalInterface
 	public static interface InputMessageWrapper<W extends InputMessage>
 			extends InputMessage, MessageWrapper<W>, InputStreamSourceWrapper<InputStream, W> {
 		@Override
-		default ReaderFactory<Reader> toReaderFactory() {
-			return getSource().toReaderFactory();
+		default InputFactory<InputStream, Reader> decode() {
+			return getSource().decode();
 		}
 
 		@Override
@@ -27,14 +27,14 @@ public interface InputMessage extends Message, InputStreamSource<InputStream> {
 			return getSource().buffered();
 		}
 	}
-	
+
 	@Override
-	default ReaderFactory<Reader> toReaderFactory() {
+	default InputFactory<InputStream, Reader> decode() {
 		String charsetName = getCharsetName();
 		if (StringUtils.isEmpty(charsetName)) {
-			return InputStreamSource.super.toReaderFactory();
+			return InputStreamSource.super.decode();
 		}
-		return toReaderFactory(charsetName);
+		return decode(charsetName);
 	}
 
 	@Setter
@@ -59,7 +59,7 @@ public interface InputMessage extends Message, InputStreamSource<InputStream> {
 		public @NonNull Pipeline<InputStream, IOException> getInputStreamPipeline() {
 			return Pipeline.of(() -> getInputStream());
 		}
-		
+
 		@Override
 		public InputMessage buffered() {
 			return this;
