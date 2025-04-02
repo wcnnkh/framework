@@ -17,8 +17,8 @@ public interface Listable<E> {
 		}
 
 		@Override
-		default boolean isEmpty() {
-			return getSource().isEmpty();
+		default boolean hasElements() {
+			return getSource().hasElements();
 		}
 	}
 
@@ -30,11 +30,11 @@ public interface Listable<E> {
 	Elements<E> getElements();
 
 	/**
-	 * 是否是空的
+	 * 是否存在元素
 	 * 
 	 * @return
 	 */
-	default boolean isEmpty() {
+	default boolean hasElements() {
 		return getElements().isEmpty();
 	}
 }

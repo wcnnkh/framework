@@ -24,14 +24,14 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		}
 	}
 
-	public static class DefaultEncodeOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
-			extends StandardEncodeOutputStreamFactory<T, Writer, W> {
+	public static class DefaultEncodedOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
+			extends StandardEncodedOutputStreamFactory<T, Writer, W> {
 
-		public DefaultEncodeOutputStreamFactory(@NonNull W source) {
+		public DefaultEncodedOutputStreamFactory(@NonNull W source) {
 			super(source, OutputStreamWriter::new);
 		}
 
-		public DefaultEncodeOutputStreamFactory(@NonNull W source, @NonNull CharsetEncoder charsetEncoder) {
+		public DefaultEncodedOutputStreamFactory(@NonNull W source, @NonNull CharsetEncoder charsetEncoder) {
 			super(source, (e) -> new OutputStreamWriter(e, charsetEncoder));
 		}
 	}
@@ -92,7 +92,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	}
 
 	public static class StandardCharsetOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
-			extends StandardEncodeOutputStreamFactory<T, Writer, W> implements CharsetOutputStreamFactory<T, W> {
+			extends StandardEncodedOutputStreamFactory<T, Writer, W> implements CharsetOutputStreamFactory<T, W> {
 		private final Object charset;
 
 		public StandardCharsetOutputStreamFactory(@NonNull W source, Charset charset) {
@@ -125,7 +125,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	}
 
 	@Data
-	public static class StandardEncodeOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
+	public static class StandardEncodedOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
 			implements EncodedOutputStreamFactory<T, R, W> {
 		@NonNull
 		private final W source;
@@ -142,11 +142,11 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 	default <R extends Writer> OutputFactory<T, R> encode(
 			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
-		return new StandardEncodeOutputStreamFactory<>(this, pipeline);
+		return new StandardEncodedOutputStreamFactory<>(this, pipeline);
 	}
 
 	default OutputFactory<T, Writer> encode() {
-		return new DefaultEncodeOutputStreamFactory<>(this);
+		return new DefaultEncodedOutputStreamFactory<>(this);
 	}
 
 	default OutputFactory<T, Writer> encode(Charset charset) {
@@ -154,7 +154,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	}
 
 	default OutputFactory<T, Writer> encode(CharsetEncoder charsetEncoder) {
-		return new DefaultEncodeOutputStreamFactory<>(this, charsetEncoder);
+		return new DefaultEncodedOutputStreamFactory<>(this, charsetEncoder);
 	}
 
 	default OutputFactory<T, Writer> encode(String charsetName) {

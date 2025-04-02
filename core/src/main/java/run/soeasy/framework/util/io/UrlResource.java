@@ -1,6 +1,5 @@
 package run.soeasy.framework.util.io;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -14,15 +13,7 @@ import lombok.NonNull;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 
-/**
- * {@link Resource} implementation for {@code java.net.URL} locators. Supports
- * resolution as a {@code URL} and also as a {@code File} in case of the
- * {@code "file:"} protocol.
- *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/io/UrlResource.java
- * @see java.net.URL
- */
-public class UrlResource extends AbstractFileResolvingResource {
+public class UrlResource extends AbstractResource {
 
 	/**
 	 * Original URI, if available; used for URI and File access.
@@ -192,35 +183,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 	 */
 	@Override
 	public URI getURI() throws IOException {
-		if (this.uri != null) {
-			return this.uri;
-		} else {
-			return super.getURI();
-		}
-	}
-
-	@Override
-	public boolean isFile() {
-		if (this.uri != null) {
-			return super.isFile(this.uri);
-		} else {
-			return super.isFile();
-		}
-	}
-
-	/**
-	 * This implementation returns a File reference for the underlying URL/URI,
-	 * provided that it refers to a file in the file system.
-	 * 
-	 * @see run.soeasy.framework.util.io.ResourceUtils#getFile(java.net.URL, String)
-	 */
-	@Override
-	public File getFile() throws IOException {
-		if (this.uri != null) {
-			return super.getFile(this.uri);
-		} else {
-			return super.getFile();
-		}
+		return this.uri == null ? super.getURI() : this.uri;
 	}
 
 	/**
@@ -259,7 +222,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 	 */
 	@Override
 	public String getName() {
-		return StringUtils.getFilename(getCleanedUrl().getPath());
+		return Resource.getName(getCleanedUrl().getPath());
 	}
 
 	/**
@@ -286,4 +249,5 @@ public class UrlResource extends AbstractFileResolvingResource {
 	public int hashCode() {
 		return getCleanedUrl().hashCode();
 	}
+
 }

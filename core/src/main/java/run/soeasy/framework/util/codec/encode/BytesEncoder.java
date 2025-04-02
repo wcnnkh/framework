@@ -1,5 +1,7 @@
 package run.soeasy.framework.util.codec.encode;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,8 +15,6 @@ import run.soeasy.framework.util.codec.MultipleEncoder;
 import run.soeasy.framework.util.io.BufferProcessor;
 import run.soeasy.framework.util.io.FileUtils;
 import run.soeasy.framework.util.io.IOUtils;
-import run.soeasy.framework.util.io.UnsafeByteArrayInputStream;
-import run.soeasy.framework.util.io.UnsafeByteArrayOutputStream;
 
 public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<byte[]>, MultipleEncoder<byte[]> {
 
@@ -24,18 +24,18 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 	}
 
 	default void encode(byte[] source, File target, int count) throws IOException, EncodeException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(source);
+		ByteArrayInputStream input = new ByteArrayInputStream(source);
 		encode(input, source.length, target, count);
 	}
 
 	@Override
 	default void encode(byte[] source, OutputStream target) throws IOException, EncodeException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(source);
+		ByteArrayInputStream input = new ByteArrayInputStream(source);
 		encode(input, source.length, target);
 	}
 
 	default void encode(byte[] source, OutputStream target, int count) throws IOException, EncodeException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(source);
+		ByteArrayInputStream input = new ByteArrayInputStream(source);
 		encode(input, source.length, target, count);
 	}
 
@@ -53,7 +53,7 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 	 */
 	@Override
 	default byte[] encode(InputStream source, int bufferSize) throws IOException, EncodeException {
-		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream(bufferSize);
+		ByteArrayOutputStream target = new ByteArrayOutputStream(bufferSize);
 		encode(source, bufferSize, target);
 		return target.toByteArray();
 	}

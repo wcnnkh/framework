@@ -9,6 +9,7 @@ import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.exchange.Publisher;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;
 import run.soeasy.framework.util.exchange.event.ChangeType;
+import run.soeasy.framework.util.io.Variable;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;
 

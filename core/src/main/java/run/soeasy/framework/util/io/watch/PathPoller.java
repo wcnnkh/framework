@@ -14,6 +14,7 @@ import run.soeasy.framework.util.exchange.Publisher;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;
 import run.soeasy.framework.util.exchange.event.ChangeType;
+import run.soeasy.framework.util.io.FileVariable;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;
 import run.soeasy.framework.util.register.PayloadRegistration;

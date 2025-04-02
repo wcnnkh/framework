@@ -1,11 +1,11 @@
 package run.soeasy.framework.messaging.multipart;
 
-import run.soeasy.framework.messaging.ContentDisposition;
-import run.soeasy.framework.messaging.MediaType;
-import run.soeasy.framework.util.io.UnsafeByteArrayInputStream;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import run.soeasy.framework.messaging.ContentDisposition;
+import run.soeasy.framework.messaging.MediaType;
 
 public class FromMultipartMessage extends AbstractMultipartMessage {
 	private final byte[] body;
@@ -25,6 +25,6 @@ public class FromMultipartMessage extends AbstractMultipartMessage {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return new UnsafeByteArrayInputStream(body);
+		return new ByteArrayInputStream(body);
 	}
 }

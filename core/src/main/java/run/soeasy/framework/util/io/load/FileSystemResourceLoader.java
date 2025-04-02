@@ -1,6 +1,5 @@
 package run.soeasy.framework.util.io.load;
 
-import run.soeasy.framework.util.io.ContextResource;
 import run.soeasy.framework.util.io.FileSystemResource;
 import run.soeasy.framework.util.io.Resource;
 

@@ -20,7 +20,7 @@ import org.w3c.dom.Node;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceTransformer;
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.io.OutputStreamFactory;
+import run.soeasy.framework.util.io.Resource;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;
 
@@ -62,11 +62,11 @@ public class XmlTransformer implements ResourceTransformer {
 	}
 
 	@Override
-	public void transform(Node source, OutputStreamFactory<?> target) throws IOException {
-		if (target.isEncoded()) {
-			target.encode().getWriterPipeline().optional().ifPresent((w) -> transform(source, w));
+	public void transform(Node source, Resource resource) throws IOException {
+		if (resource.isEncoded()) {
+			resource.getWriterPipeline().optional().ifPresent((w) -> transform(source, w));
 		} else {
-			target.getOutputStreamPipeline().optional().ifPresent((os) -> transform(source, os));
+			resource.getOutputStreamPipeline().optional().ifPresent((os) -> transform(source, os));
 		}
 	}
 

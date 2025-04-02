@@ -12,6 +12,14 @@ import run.soeasy.framework.util.function.Pipeline;
 
 public interface OutputFactory<O extends OutputStream, W extends Writer>
 		extends OutputStreamFactory<O>, WriterFactory<W> {
+	public static interface OutputFactoryWrapper<O extends OutputStream, E extends Writer, W extends OutputFactory<O, E>>
+			extends OutputFactory<O, E>, OutputStreamFactoryWrapper<O, W>, WriterFactoryWrapper<E, W> {
+		@Override
+		default boolean isEncoded() {
+			return getSource().isEncoded();
+		}
+	}
+
 	@Override
 	boolean isEncoded();
 

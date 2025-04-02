@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import org.w3c.dom.Node;
 
-import run.soeasy.framework.util.io.OutputStreamFactory;
+import run.soeasy.framework.util.io.Resource;
 
 public interface ResourceTransformer {
 	boolean canTransform(Node source);
 
-	void transform(Node node, OutputStreamFactory<?> target) throws IOException;
+	void transform(Node node, Resource resource) throws IOException;
 }

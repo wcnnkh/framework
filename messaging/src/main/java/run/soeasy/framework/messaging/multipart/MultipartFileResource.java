@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.io.AbstractResource;
+import run.soeasy.framework.util.math.LongValue;
+import run.soeasy.framework.util.math.NumberValue;
 
 /**
  * Adapt {@link MultipartFile} to {@link run.soeasy.framework.util.io.Resource},
@@ -29,8 +31,8 @@ class MultipartFileResource extends AbstractResource {
 	}
 
 	@Override
-	public long contentLength() {
-		return this.multipartMessage.getSize();
+	public NumberValue contentLength() {
+		return new LongValue(this.multipartMessage.getSize());
 	}
 
 	@Override

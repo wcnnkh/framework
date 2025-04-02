@@ -2,6 +2,8 @@ package run.soeasy.framework.util.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 
 import lombok.NonNull;
 import run.soeasy.framework.util.function.Pipeline;
@@ -19,6 +21,11 @@ public interface InputStreamSource<T extends InputStream> extends InputStreamFac
 		default @NonNull Pipeline<T, IOException> getInputStreamPipeline() {
 			return getSource().getInputStreamPipeline();
 		}
+
+		@Override
+		default ReadableByteChannel readableChannel() throws IOException {
+			return getSource().readableChannel();
+		}
 	}
 
 	T getInputStream() throws IOException;
@@ -26,5 +33,9 @@ public interface InputStreamSource<T extends InputStream> extends InputStreamFac
 	@Override
 	default @NonNull Pipeline<T, IOException> getInputStreamPipeline() {
 		return Pipeline.forCloseable(this::getInputStream);
+	}
+
+	default ReadableByteChannel readableChannel() throws IOException {
+		return Channels.newChannel(getInputStream());
 	}
 }

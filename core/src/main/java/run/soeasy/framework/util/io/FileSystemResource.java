@@ -18,27 +18,9 @@ import java.nio.file.StandardOpenOption;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.util.math.LongValue;
+import run.soeasy.framework.util.math.NumberValue;
 
-/**
- * {@link Resource} implementation for {@code java.io.File} and
- * {@code java.nio.file.Path} handles with a file system target. Supports
- * resolution as a {@code File} and also as a {@code URL}. Implements the
- * extended {@link WritableResource} interface.
- *
- * <p>
- * Note: This {@link Resource} implementation uses NIO.2 API for read/write
- * interactions. As of 5.1, it may be constructed with a
- * {@link java.nio.file.Path} handle in which case it will perform all file
- * system interactions via NIO.2, only resorting to {@link File} on
- * {@link #getFile()}.
- *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/io/FileSystemResource.java
- * @see #FileSystemResource(String)
- * @see #FileSystemResource(File)
- * @see #FileSystemResource(Path)
- * @see java.io.File
- * @see java.nio.file.Files
- */
 public class FileSystemResource extends AbstractResource {
 
 	private final String path;
@@ -269,17 +251,17 @@ public class FileSystemResource extends AbstractResource {
 	 * This implementation returns the underlying File/Path length.
 	 */
 	@Override
-	public long contentLength() throws IOException {
+	public NumberValue contentLength() throws IOException {
 		if (this.file != null) {
 			long length = this.file.length();
 			if (length == 0L && !this.file.exists()) {
 				throw new FileNotFoundException(
 						getDescription() + " cannot be resolved in the file system for checking its content length");
 			}
-			return length;
+			return new LongValue(length);
 		} else {
 			try {
-				return Files.size(this.filePath);
+				return new LongValue(Files.size(this.filePath));
 			} catch (NoSuchFileException ex) {
 				throw new FileNotFoundException(ex.getMessage());
 			}
@@ -292,7 +274,7 @@ public class FileSystemResource extends AbstractResource {
 	@Override
 	public long lastModified() throws IOException {
 		if (this.file != null) {
-			return super.lastModified();
+			return file.lastModified();
 		} else {
 			try {
 				return Files.getLastModifiedTime(this.filePath).toMillis();

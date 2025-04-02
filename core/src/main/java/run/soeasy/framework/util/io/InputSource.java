@@ -3,30 +3,51 @@ package run.soeasy.framework.util.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.NoSuchElementException;
+
+import lombok.NonNull;
+import run.soeasy.framework.util.function.Pipeline;
 
 public interface InputSource<I extends InputStream, R extends Reader>
 		extends InputFactory<I, R>, InputStreamSource<I>, ReaderSource<R> {
-	public static class DefaultInputSource<I extends InputStream, S extends InputStreamSource<? extends I>, R extends Reader, T extends ReaderSource<? extends R>>
-			extends DefaultInputFactory<I, S, R, T> implements InputSource<I, R> {
-
-		public DefaultInputSource(S inputStream, T reader) {
-			super(inputStream, reader);
+	public static interface InputSourceWrapper<I extends InputStream, R extends Reader, W extends InputSource<I, R>>
+			extends InputSource<I, R>, InputFactoryWrapper<I, R, W>, InputStreamSourceWrapper<I, W>,
+			ReaderSourceWrapper<R, W> {
+		@Override
+		default boolean isReadable() {
+			return getSource().isReadable();
 		}
 
 		@Override
-		public I getInputStream() throws IOException {
-			return inputStreamFactory == null ? null : inputStreamFactory.getInputStream();
+		default String readAllCharacters() throws NoSuchElementException, IOException {
+			return getSource().readAllCharacters();
 		}
 
 		@Override
-		public R getReader() throws IOException {
-			return readerFactory == null ? null : readerFactory.getReader();
+		default @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
+			return getSource().getInputStreamPipeline();
 		}
 
+		@Override
+		default @NonNull Pipeline<R, IOException> getReaderPipeline() {
+			return getSource().getReaderPipeline();
+		}
 	}
 
-	public static <I extends InputStream, R extends Reader> InputSource<I, R> forSource(
-			InputStreamSource<I> inputStreamSource, ReaderSource<R> readerSource) {
-		return new DefaultInputSource<>(inputStreamSource, readerSource);
+	boolean isReadable();
+
+	@Override
+	default @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
+		return isReadable() ? InputStreamSource.super.getInputStreamPipeline() : Pipeline.empty();
+	}
+
+	@Override
+	default @NonNull Pipeline<R, IOException> getReaderPipeline() {
+		return isReadable() ? ReaderSource.super.getReaderPipeline() : Pipeline.empty();
+	}
+
+	@Override
+	default String readAllCharacters() throws NoSuchElementException, IOException {
+		return decode().readAllCharacters();
 	}
 }

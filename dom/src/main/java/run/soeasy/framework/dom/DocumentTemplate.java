@@ -1,8 +1,6 @@
 package run.soeasy.framework.dom;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +26,8 @@ import run.soeasy.framework.dom.resource.ResourceTransformer;
 import run.soeasy.framework.dom.resource.ResourceTransformers;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Function;
-import run.soeasy.framework.util.io.OutputStreamFactory;
-import run.soeasy.framework.util.io.OutputStreamSource;
 import run.soeasy.framework.util.io.Resource;
+import run.soeasy.framework.util.io.StringBufferResource;
 import run.soeasy.framework.util.io.load.ResourceLoader;
 
 @Getter
@@ -49,8 +46,8 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	}
 
 	@Override
-	public void transform(Node node, OutputStreamFactory<?> target) throws IOException {
-		transformers.transform(node, target);
+	public void transform(Node node, Resource resource) throws IOException {
+		transformers.transform(node, resource);
 	}
 
 	@Override
@@ -154,10 +151,8 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	}
 
 	public String toString(Node node) throws IOException {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		OutputStreamSource<ByteArrayOutputStream> source = () -> os;
-		//transform(node, source.toWriterFactory(null)); 
-		// TODO
-		return node.toString();
+		StringBufferResource resource = new StringBufferResource();
+		transform(node, resource);
+		return resource.readAllCharacters();
 	}
 }

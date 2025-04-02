@@ -19,7 +19,7 @@ import run.soeasy.framework.util.StringUtils;
  * resides in the file system, but not for resources in a JAR. Always supports
  * resolution as URL.
  */
-public class ClassPathResource extends AbstractFileResolvingResource {
+public class ClassPathResource extends AbstractResource {
 	private final String path;
 
 	private ClassLoader classLoader;
@@ -120,18 +120,6 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @return the resolved URL, or {@code null} if not resolvable
 	 */
 	protected URL resolveURL() {
-		URL url = ResourceUtils.getResource(clazz, this.path);
-		if (url == null) {
-			url = ResourceUtils.getResource(getClassLoader(), this.path);
-		}
-
-		if (url == null) {
-			url = ResourceUtils.getSystemResource(ClassUtils.getDefaultClassLoader(), this.path);
-		}
-		return url;
-	}
-
-	protected URL resolveURLInternal(String path) {
 		URL url = null;
 		if (this.clazz != null) {
 			url = this.clazz.getResource(path);
@@ -151,7 +139,14 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		return url;
 	}
 
-	protected InputStream getInputStreamInternal(String path) throws IOException {
+	/**
+	 * This implementation opens an InputStream for the given class path resource.
+	 * 
+	 * @see java.lang.ClassLoader#getResourceAsStream(String)
+	 * @see java.lang.Class#getResourceAsStream(String)
+	 */
+	@Override
+	public InputStream getInputStream() throws IOException {
 		InputStream is = null;
 		if (this.clazz != null) {
 			is = this.clazz.getResourceAsStream(path);
@@ -167,28 +162,6 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 
 		if (is == null) {
 			is = ClassLoader.getSystemResourceAsStream(path);
-		}
-		return is;
-	}
-
-	/**
-	 * This implementation opens an InputStream for the given class path resource.
-	 * 
-	 * @see java.lang.ClassLoader#getResourceAsStream(String)
-	 * @see java.lang.Class#getResourceAsStream(String)
-	 */
-	@Override
-	public InputStream getInputStream() throws IOException {
-		InputStream is = ResourceUtils.getResourceAsStream(clazz, this.path);
-		if (is == null) {
-			is = ResourceUtils.getResourceAsStream(getClassLoader(), this.path);
-		}
-
-		if (is == null) {
-			is = ResourceUtils.getSystemResourceAsStream(ClassUtils.getDefaultClassLoader(), this.path);
-		}
-		if (is == null) {
-			throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
 		}
 		return is;
 	}

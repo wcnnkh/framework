@@ -1,5 +1,6 @@
 package run.soeasy.framework.util.codec.decode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,13 +10,12 @@ import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.Decoder;
 import run.soeasy.framework.util.io.BufferProcessor;
 import run.soeasy.framework.util.io.FileUtils;
-import run.soeasy.framework.util.io.UnsafeByteArrayOutputStream;
 
 public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 
 	@Override
 	default byte[] decode(E source) throws DecodeException {
-		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try {
 			decode(source, target);
 		} catch (IOException e) {

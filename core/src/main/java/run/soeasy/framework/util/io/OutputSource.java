@@ -4,29 +4,39 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import lombok.NonNull;
+import run.soeasy.framework.util.function.Pipeline;
+
 public interface OutputSource<O extends OutputStream, W extends Writer>
 		extends OutputFactory<O, W>, OutputStreamSource<O>, WriterSource<W> {
-	public static class DefaultOutputSource<O extends OutputStream, S extends OutputStreamSource<? extends O>, W extends Writer, T extends WriterSource<? extends W>>
-			extends DefaultOutputFactory<O, S, W, T> implements OutputSource<O, W> {
-
-		public DefaultOutputSource(S outputStreamFactory, T writerFactory) {
-			super(outputStreamFactory, writerFactory);
+	public static interface OutputSourceWrapper<O extends OutputStream, E extends Writer, W extends OutputSource<O, E>>
+			extends OutputSource<O, E>, OutputFactoryWrapper<O, E, W>, OutputStreamSourceWrapper<O, W>,
+			WriterSourceWrapper<E, W> {
+		@Override
+		default boolean isWritable() {
+			return getSource().isWritable();
 		}
 
 		@Override
-		public O getOutputStream() throws IOException {
-			return outputStreamFactory == null ? null : outputStreamFactory.getOutputStream();
+		default @NonNull Pipeline<O, IOException> getOutputStreamPipeline() {
+			return getSource().getOutputStreamPipeline();
 		}
 
 		@Override
-		public W getWriter() throws IOException {
-			return writerFactory == null ? null : writerFactory.getWriter();
+		default @NonNull Pipeline<E, IOException> getWriterPipeline() {
+			return getSource().getWriterPipeline();
 		}
-
 	}
 
-	public static <O extends OutputStream, W extends Writer> OutputSource<O, W> forSource(
-			OutputStreamSource<? extends O> outputStreamSource, WriterSource<? extends W> writerSource) {
-		return new DefaultOutputSource<>(outputStreamSource, writerSource);
+	boolean isWritable();
+
+	@Override
+	default @NonNull Pipeline<O, IOException> getOutputStreamPipeline() {
+		return isWritable() ? OutputStreamSource.super.getOutputStreamPipeline() : Pipeline.empty();
+	}
+
+	@Override
+	default @NonNull Pipeline<W, IOException> getWriterPipeline() {
+		return isWritable() ? WriterSource.super.getWriterPipeline() : Pipeline.empty();
 	}
 }

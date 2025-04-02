@@ -1,6 +1,6 @@
-package run.soeasy.framework.util.io;
+package run.soeasy.framework.util.io.load;
 
-import run.soeasy.framework.util.io.load.ResourceLoader;
+import run.soeasy.framework.util.io.Resource;
 
 /**
  * Extended interface for a resource that is loaded from an enclosing 'context',

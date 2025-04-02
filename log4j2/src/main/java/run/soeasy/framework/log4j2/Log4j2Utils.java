@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.io.ResourceUtils;
+import run.soeasy.framework.util.io.load.SystemResourceLoader;
 
 public class Log4j2Utils {
 	private static Logger logger = LogManager.getLogger(Log4j2Utils.class);
@@ -13,13 +13,13 @@ public class Log4j2Utils {
 	private static final String CONFIG_LOCATION = "log4j2.xml";
 
 	public static void reconfigure() {
-		Resource resource = ResourceUtils.getSystemResource(CONFIG_LOCATION);
+		Resource resource = SystemResourceLoader.getInstance().getResource(CONFIG_LOCATION);
 		if (resource != null && resource.exists()) {
 			reconfigure(resource);
 			return;
 		}
 
-		resource = ResourceUtils.getSystemResource(DEFAULT_CONFIG_LOCATION);
+		resource = SystemResourceLoader.getInstance().getResource(DEFAULT_CONFIG_LOCATION);
 		reconfigure(resource);
 	}
 

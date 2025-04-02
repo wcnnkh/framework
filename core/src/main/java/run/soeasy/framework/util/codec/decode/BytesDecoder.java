@@ -1,5 +1,7 @@
 package run.soeasy.framework.util.codec.decode;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,8 +15,6 @@ import run.soeasy.framework.util.codec.MultipleDecoder;
 import run.soeasy.framework.util.io.BufferProcessor;
 import run.soeasy.framework.util.io.FileUtils;
 import run.soeasy.framework.util.io.IOUtils;
-import run.soeasy.framework.util.io.UnsafeByteArrayInputStream;
-import run.soeasy.framework.util.io.UnsafeByteArrayOutputStream;
 
 public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<byte[]>, MultipleDecoder<byte[]> {
 
@@ -32,24 +32,24 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 	}
 
 	default void decode(byte[] source, File target, int count) throws DecodeException, IOException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(source);
+		ByteArrayInputStream input = new ByteArrayInputStream(source);
 		decode(input, source.length, target, count);
 	}
 
 	@Override
 	default void decode(byte[] source, OutputStream target) throws DecodeException, IOException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(source);
+		ByteArrayInputStream input = new ByteArrayInputStream(source);
 		decode(input, source.length, target);
 	}
 
 	default void decode(byte[] source, OutputStream target, int count) throws DecodeException, IOException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(source);
+		ByteArrayInputStream input = new ByteArrayInputStream(source);
 		decode(input, source.length, target, count);
 	}
 
 	@Override
 	default byte[] decode(InputStream source, int bufferSize) throws IOException, DecodeException {
-		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		decode(source, bufferSize, target);
 		return target.toByteArray();
 	}

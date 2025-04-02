@@ -1,5 +1,7 @@
 package run.soeasy.framework.util.io.serializer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,8 +14,6 @@ import run.soeasy.framework.util.codec.EncodeException;
 import run.soeasy.framework.util.codec.support.SerializerCodec;
 import run.soeasy.framework.util.codec.support.ToBytesCodec;
 import run.soeasy.framework.util.io.IOUtils;
-import run.soeasy.framework.util.io.UnsafeByteArrayInputStream;
-import run.soeasy.framework.util.io.UnsafeByteArrayOutputStream;
 
 /**
  * 序列化与反序列化
@@ -46,14 +46,14 @@ public interface Serializer extends ToBytesCodec<Object>, CrossLanguageSerialize
 	}
 
 	default byte[] serialize(Object data) throws SerializerException {
-		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try {
 			serialize(data, target);
 			return target.toByteArray();
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		} finally {
-			target.close();
+			IOUtils.closeQuietly(target);
 		}
 	}
 
@@ -64,13 +64,13 @@ public interface Serializer extends ToBytesCodec<Object>, CrossLanguageSerialize
 	}
 
 	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
+		ByteArrayInputStream input = new ByteArrayInputStream(data);
 		try {
 			return deserialize(input);
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		} finally {
-			input.close();
+			IOUtils.closeQuietly(input);
 		}
 	}
 

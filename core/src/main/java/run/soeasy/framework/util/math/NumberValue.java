@@ -11,13 +11,16 @@ import run.soeasy.framework.util.Version;
 import run.soeasy.framework.util.collections.Elements;
 
 public abstract class NumberValue extends Number implements Version {
-	public static final BigInteger BYTE_MAX_VALUE = BigInteger.valueOf(Byte.MAX_VALUE);
-	public static final BigDecimal DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE);
-	public static final BigDecimal FLOAT_MAX_VALUE = BigDecimal.valueOf(Float.MAX_VALUE);
-	public static final BigInteger INTEGER_MAX_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
-	public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 	private static final long serialVersionUID = 1L;
-	public static final BigInteger SHORT_MAX_VALUE = BigInteger.valueOf(Short.MAX_VALUE);
+
+	public static final NumberValue MINUS_ONE = new IntValue(-1);
+	public static final NumberValue ZERO = new IntValue(0);
+	public static final NumberValue ONE = new IntValue(1);
+	public static final NumberValue TEN = new IntValue(10);
+
+	private static RuntimeException createTooHighException(Number number) {
+		return new IllegalStateException("The value[" + number + "] is too high");
+	}
 
 	/**
 	 * 绝对值
@@ -33,6 +36,60 @@ public abstract class NumberValue extends Number implements Version {
 	 * @return
 	 */
 	public abstract NumberValue add(NumberValue value);
+
+	public boolean canAsByte() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigInteger.valueOf(Byte.MAX_VALUE)) <= 0;
+	}
+
+	public boolean canAsDouble() {
+		BigDecimal number = getAsBigDecimal();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigDecimal.valueOf(Double.MAX_VALUE)) <= 0;
+	}
+
+	public boolean canAsFloat() {
+		BigDecimal number = getAsBigDecimal();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigDecimal.valueOf(Float.MAX_VALUE)) <= 0;
+	}
+
+	public boolean canAsInt() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0;
+	}
+
+	public boolean canAsLong() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) <= 0;
+	}
+
+	public boolean canAsShort() {
+		BigInteger number = getAsBigInteger();
+		if (number == null) {
+			return false;
+		}
+
+		return number.compareTo(BigInteger.valueOf(Short.MAX_VALUE)) <= 0;
+	}
 
 	/**
 	 * 除法
@@ -65,6 +122,12 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
+	public abstract BigDecimal getAsBigDecimal();
+
+	@Override
+	public abstract BigInteger getAsBigInteger();
+
+	@Override
 	public boolean getAsBoolean() {
 		BigInteger number = getAsBigInteger();
 		if (number == null) {
@@ -81,8 +144,8 @@ public abstract class NumberValue extends Number implements Version {
 			return 0;
 		}
 
-		if (number.compareTo(BYTE_MAX_VALUE) > 0) {
-			throw new IllegalAccessError("The value[" + number + "] is too high");
+		if (number.compareTo(BigInteger.valueOf(Byte.MAX_VALUE)) > 0) {
+			throw createTooHighException(number);
 		}
 		return number.byteValue();
 	}
@@ -99,10 +162,15 @@ public abstract class NumberValue extends Number implements Version {
 			return 0;
 		}
 
-		if (number.compareTo(DOUBLE_MAX_VALUE) > 0) {
-			throw new IllegalAccessError("The value[" + number + "] is too high");
+		if (number.compareTo(BigDecimal.valueOf(Double.MAX_VALUE)) > 0) {
+			throw createTooHighException(number);
 		}
 		return number.doubleValue();
+	}
+
+	@Override
+	public Elements<? extends Value> getAsElements() {
+		return Elements.singleton(this);
 	}
 
 	@Override
@@ -131,8 +199,8 @@ public abstract class NumberValue extends Number implements Version {
 			return 0;
 		}
 
-		if (number.compareTo(FLOAT_MAX_VALUE) > 0) {
-			throw new IllegalAccessError("The value[" + number + "] is too high");
+		if (number.compareTo(BigDecimal.valueOf(Float.MAX_VALUE)) > 0) {
+			throw createTooHighException(number);
 		}
 		return number.floatValue();
 	}
@@ -144,8 +212,8 @@ public abstract class NumberValue extends Number implements Version {
 			return 0;
 		}
 
-		if (number.compareTo(INTEGER_MAX_VALUE) > 0) {
-			throw new IllegalAccessError("The value[" + number + "] is too high");
+		if (number.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+			throw createTooHighException(number);
 		}
 		return number.intValue();
 	}
@@ -157,15 +225,10 @@ public abstract class NumberValue extends Number implements Version {
 			return 0;
 		}
 
-		if (number.compareTo(LONG_MAX_VALUE) > 0) {
-			throw new IllegalAccessError("The value[" + number + "] is too high");
+		if (number.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
+			throw createTooHighException(number);
 		}
 		return number.longValue();
-	}
-
-	@Override
-	public Elements<? extends Value> getAsElements() {
-		return Elements.singleton(this);
 	}
 
 	@Override
@@ -189,8 +252,8 @@ public abstract class NumberValue extends Number implements Version {
 			return 0;
 		}
 
-		if (number.compareTo(SHORT_MAX_VALUE) > 0) {
-			throw new IllegalAccessError("The value[" + number + "] is too high");
+		if (number.compareTo(BigInteger.valueOf(Short.MAX_VALUE)) > 0) {
+			throw createTooHighException(number);
 		}
 		return number.shortValue();
 	}

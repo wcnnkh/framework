@@ -28,7 +28,7 @@ public class ResourceMultipartMessage extends AbstractMultipartMessage {
 		if (mimeType != null) {
 			getHeaders().setContentType(new MediaType(mimeType));
 		}
-		getHeaders().setContentLength(resource.contentLength());
+		getHeaders().setContentLength(resource.contentLength().longValue());
 	}
 
 	@Override

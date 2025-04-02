@@ -8,6 +8,7 @@ import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.CollectionUtils;
 import run.soeasy.framework.util.collections.LinkedMultiValueMap;
 import run.soeasy.framework.util.collections.MultiValueMap;
+import run.soeasy.framework.util.io.load.SystemResourceLoader;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;
 
@@ -26,8 +27,7 @@ public class FileMimeTypeUitls {
 
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
 		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
-		String mimeTypesFileName = "/io/basc/framework/net/mime/mime.types";
-		Resource resource = ResourceUtils.getSystemResource(mimeTypesFileName);
+		Resource resource = SystemResourceLoader.getInstance().getResource("/io/basc/framework/net/mime/mime.types");
 		for (String line : resource.decode(MimeTypeUtils.US_ASCII).readAllLines().toList()) {
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue;

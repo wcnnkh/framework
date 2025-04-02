@@ -13,6 +13,7 @@ import run.soeasy.framework.util.collections.Elements.ElementsWrapper;
 import run.soeasy.framework.util.exchange.Publisher;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;
+import run.soeasy.framework.util.io.FileVariable;
 import run.soeasy.framework.util.register.RegistrationException;
 import run.soeasy.framework.util.register.Registry;
 

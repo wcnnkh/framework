@@ -27,10 +27,49 @@ public class IntValue extends RationalNumber {
 	}
 
 	@Override
+	public NumberValue add(NumberValue value) {
+		if (value.canAsInt()) {
+			try {
+				int newValue = Math.addExact(this.value, value.intValue());
+				return new IntValue(newValue);
+			} catch (ArithmeticException e) {
+				// 结果溢出
+			}
+		}
+		return super.add(value);
+	}
+
+	@Override
+	public NumberValue subtract(NumberValue value) {
+		if (value.canAsInt()) {
+			try {
+				int newValue = Math.subtractExact(this.value, value.intValue());
+				return new IntValue(newValue);
+			} catch (ArithmeticException e) {
+				// 结果溢出
+			}
+		}
+		return super.subtract(value);
+	}
+
+	@Override
+	public NumberValue multiply(NumberValue value) {
+		if (value.canAsInt()) {
+			try {
+				int newValue = Math.multiplyExact(this.value, value.intValue());
+				return new IntValue(newValue);
+			} catch (ArithmeticException e) {
+				// 结果溢出
+			}
+		}
+		return super.multiply(value);
+	}
+
+	@Override
 	public int compareTo(Value o) {
 		if (o.isNumber()) {
 			BigInteger value = o.getAsBigInteger();
-			if (value.compareTo(INTEGER_MAX_VALUE) >= 0) {
+			if (value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
 				return -1;
 			}
 

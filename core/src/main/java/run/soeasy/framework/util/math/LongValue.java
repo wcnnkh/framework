@@ -30,11 +30,49 @@ public class LongValue extends RationalNumber {
 	public int compareTo(Value o) {
 		if (o.isNumber()) {
 			BigInteger value = o.getAsBigInteger();
-			if (value.compareTo(LONG_MAX_VALUE) >= 0) {
+			if (value.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) >= 0) {
 				return -1;
 			}
 		}
 		return super.compareTo(o);
 	}
 
+	@Override
+	public NumberValue add(NumberValue value) {
+		if (value.canAsLong()) {
+			try {
+				long newValue = Math.addExact(this.value, value.longValue());
+				return new LongValue(newValue);
+			} catch (ArithmeticException e) {
+				// 结果溢出
+			}
+		}
+		return super.add(value);
+	}
+
+	@Override
+	public NumberValue subtract(NumberValue value) {
+		if (value.canAsLong()) {
+			try {
+				long newValue = Math.subtractExact(this.value, value.longValue());
+				return new LongValue(newValue);
+			} catch (ArithmeticException e) {
+				// 结果溢出
+			}
+		}
+		return super.subtract(value);
+	}
+
+	@Override
+	public NumberValue multiply(NumberValue value) {
+		if (value.canAsLong()) {
+			try {
+				long newValue = Math.multiplyExact(this.value, value.longValue());
+				return new LongValue(newValue);
+			} catch (ArithmeticException e) {
+				// 结果溢出
+			}
+		}
+		return super.multiply(value);
+	}
 }

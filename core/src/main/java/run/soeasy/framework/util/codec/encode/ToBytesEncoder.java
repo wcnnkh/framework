@@ -1,5 +1,6 @@
 package run.soeasy.framework.util.codec.encode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import run.soeasy.framework.util.codec.support.HexCodec;
 import run.soeasy.framework.util.io.BufferProcessor;
 import run.soeasy.framework.util.io.FileUtils;
 import run.soeasy.framework.util.io.IOUtils;
-import run.soeasy.framework.util.io.UnsafeByteArrayOutputStream;
 
 public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 
@@ -40,7 +40,7 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 
 	@Override
 	default byte[] encode(D source) throws EncodeException {
-		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try {
 			encode(source, target);
 		} catch (IOException e) {

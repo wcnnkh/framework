@@ -13,8 +13,8 @@ public interface PropertyDescriptors<T extends PropertyDescriptor> extends KeyVa
 	public static interface PropertyDescriptorsWrapper<T extends PropertyDescriptor, W extends PropertyDescriptors<T>>
 			extends PropertyDescriptors<T>, KeyValuesWrapper<String, T, W>, ListableWrapper<T, W> {
 		@Override
-		default boolean isEmpty() {
-			return getSource().isEmpty();
+		default boolean hasElements() {
+			return getSource().hasElements();
 		}
 
 		@Override
@@ -29,8 +29,8 @@ public interface PropertyDescriptors<T extends PropertyDescriptor> extends KeyVa
 	}
 
 	@Override
-	default boolean isEmpty() {
-		return Listable.super.isEmpty();
+	default boolean hasElements() {
+		return Listable.super.hasElements();
 	}
 
 	@Override

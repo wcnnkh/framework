@@ -4,7 +4,6 @@ import run.soeasy.framework.lang.DefaultClassLoaderAccessor;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.io.ClassPathResource;
-import run.soeasy.framework.util.io.ContextResource;
 import run.soeasy.framework.util.io.Resource;
 
 /**

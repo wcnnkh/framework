@@ -25,7 +25,7 @@ public interface Includes<S, I extends Include<S>> extends Registrations<I>, Inc
 	}
 
 	@Override
-	default boolean isEmpty() {
-		return Registrations.super.isEmpty();
+	default boolean hasElements() {
+		return Registrations.super.hasElements();
 	}
 }

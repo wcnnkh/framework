@@ -3,6 +3,7 @@ package run.soeasy.framework.util.io;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.Closeable;
 import java.io.EOFException;
@@ -17,6 +18,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
@@ -71,7 +73,7 @@ public final class IOUtils {
 
 	static {
 		// avoid security issues
-		UnsafeStringWriter buf = new UnsafeStringWriter(4);
+		StringWriter buf = new StringWriter(4);
 		PrintWriter out = new PrintWriter(buf);
 		out.println();
 		LINE_SEPARATOR = buf.toString();
@@ -419,11 +421,7 @@ public final class IOUtils {
 	 * @throws IOException          if an I/O error occurs
 	 */
 	public static byte[] toByteArray(InputStream input) throws IOException {
-		if (input instanceof UnsafeByteArrayInputStream) {
-			return ((UnsafeByteArrayInputStream) input).toByteArray();
-		}
-
-		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		copy(input, output);
 		return output.toByteArray();
 	}
@@ -506,7 +504,7 @@ public final class IOUtils {
 	 * @throws IOException          if an I/O error occurs
 	 */
 	public static byte[] toByteArray(Reader input) throws IOException {
-		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		copy(input, output);
 		return output.toByteArray();
 	}
@@ -528,7 +526,7 @@ public final class IOUtils {
 	 * @throws IOException          if an I/O error occurs
 	 */
 	public static byte[] toByteArray(Reader input, String encoding) throws IOException {
-		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		copy(input, output, encoding);
 		return output.toByteArray();
 	}
@@ -627,7 +625,7 @@ public final class IOUtils {
 	 * @throws IOException          if an I/O error occurs
 	 */
 	public static String toString(@NonNull InputStream input, String encoding) throws IOException {
-		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		copy(input, out);
 		return StringUtils.hasText(encoding) ? out.toString(encoding) : out.toString();
 	}
@@ -2000,11 +1998,7 @@ public final class IOUtils {
 			return new byte[0];
 		}
 
-		if (in instanceof UnsafeByteArrayInputStream) {
-			return ((UnsafeByteArrayInputStream) in).toByteArray();
-		}
-
-		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream(bufferSize);
+		ByteArrayOutputStream out = new ByteArrayOutputStream(bufferSize);
 		copy(in, out, new byte[bufferSize]);
 		return out.toByteArray();
 	}

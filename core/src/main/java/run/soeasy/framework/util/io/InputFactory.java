@@ -11,6 +11,16 @@ import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.function.Pipeline;
 
 public interface InputFactory<I extends InputStream, R extends Reader> extends InputStreamFactory<I>, ReaderFactory<R> {
+	public static interface InputFactoryWrapper<I extends InputStream, R extends Reader, W extends InputFactory<I, R>>
+			extends InputFactory<I, R>, InputStreamFactoryWrapper<I, W>, ReaderFactoryWrapper<R, W> {
+
+		@Override
+		default boolean isDecoded() {
+			return getSource().isDecoded();
+		}
+
+	}
+	
 	@RequiredArgsConstructor
 	@Getter
 	public static class DefaultInputFactory<I extends InputStream, S extends InputStreamFactory<? extends I>, R extends Reader, T extends ReaderFactory<? extends R>>

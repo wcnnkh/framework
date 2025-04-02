@@ -1,4 +1,4 @@
-package run.soeasy.framework.util.io.watch;
+package run.soeasy.framework.util.io;
 
 import java.io.File;
 import java.io.IOException;
