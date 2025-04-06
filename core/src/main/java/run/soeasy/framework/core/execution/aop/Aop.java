@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import run.soeasy.framework.core.execution.Function;
-import run.soeasy.framework.core.execution.aop.cglib.CglibProxyFactory;
+import run.soeasy.framework.core.execution.aop.jdk.JdkProxyFactory;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.ArrayUtils;
@@ -13,7 +13,7 @@ import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Aop extends CglibProxyFactory {
+public class Aop extends JdkProxyFactory {
 	private static volatile Aop global;
 
 	public static Aop global() {

@@ -2,11 +2,11 @@ package run.soeasy.framework.messaging.convert.support;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.Constants;
 import run.soeasy.framework.core.convert.Data;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.messaging.MediaType;
@@ -18,7 +18,7 @@ import run.soeasy.framework.util.io.MimeType;
 @Setter
 public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMessageConverter<T> {
 	@NonNull
-	private Charset defaultCharset = Constants.UTF_8;
+	private Charset defaultCharset = StandardCharsets.UTF_8;
 
 	public AbstractTextMessageConverter(@NonNull Class<? extends T> requriedType) {
 		super(requriedType);

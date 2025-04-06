@@ -1,8 +1,13 @@
 package run.soeasy.framework.core.execution;
 
+import java.lang.reflect.AnnotatedElement;
+
 import lombok.NonNull;
+import run.soeasy.framework.core.AnnotatedElementWrapper;
+import run.soeasy.framework.core.MergedAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.util.collections.Elements;
 
 public interface Getter extends Executable, PropertyDescriptor {
@@ -31,7 +36,8 @@ public interface Getter extends Executable, PropertyDescriptor {
 		}
 	}
 
-	public class MergedGetter<E extends Getter> extends MergedPropertyDescriptor<E> implements Getter {
+	public class MergedGetter<E extends Getter> extends MergedPropertyDescriptor<E>
+			implements Getter, AnnotatedElementWrapper<AnnotatedElement> {
 
 		public MergedGetter(Elements<? extends E> elements) {
 			super(elements);
@@ -60,6 +66,11 @@ public interface Getter extends Executable, PropertyDescriptor {
 		public MergedGetter<E> rename(String name) {
 			MergedPropertyDescriptor<E> mergedPropertyDescriptor = super.rename(name);
 			return new MergedGetter<>(mergedPropertyDescriptor);
+		}
+
+		@Override
+		public AnnotatedElement getSource() {
+			return new MergedAnnotatedElement(getElements());
 		}
 	}
 

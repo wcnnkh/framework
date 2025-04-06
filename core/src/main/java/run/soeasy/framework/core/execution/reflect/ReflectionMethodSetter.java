@@ -37,7 +37,7 @@ public class ReflectionMethodSetter extends ReflectionMethod implements Setter {
 
 	@Override
 	public ReflectionMethodSetter rename(String name) {
-		ReflectionMethodSetter setter = new ReflectionMethodSetter(getMember());
+		ReflectionMethodSetter setter = new ReflectionMethodSetter(getSource());
 		setter.name = name;
 		return setter;
 	}

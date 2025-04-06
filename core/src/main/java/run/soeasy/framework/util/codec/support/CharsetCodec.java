@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-import run.soeasy.framework.core.Constants;
 import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
@@ -27,11 +27,11 @@ public class CharsetCodec implements ToBytesCodec<String> {
 	 */
 	public static final CharsetCodec DEFAULT = new CharsetCodec(Charset.defaultCharset());
 
-	public static final CharsetCodec UTF_8 = new CharsetCodec(Constants.UTF_8);
+	public static final CharsetCodec UTF_8 = new CharsetCodec(StandardCharsets.UTF_8);
 
-	public static final CharsetCodec ISO_8859_1 = new CharsetCodec(Constants.ISO_8859_1);
+	public static final CharsetCodec ISO_8859_1 = new CharsetCodec(StandardCharsets.ISO_8859_1);
 
-	public static final CharsetCodec US_ASCII = new CharsetCodec(Constants.US_ASCII);
+	public static final CharsetCodec US_ASCII = new CharsetCodec(StandardCharsets.US_ASCII);
 
 	private final Object charset;
 

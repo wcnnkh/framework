@@ -5,15 +5,15 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.MethodParameter;
-import run.soeasy.framework.core.ResolvableType;
-import run.soeasy.framework.core.annotation.MergedAnnotations;
+import run.soeasy.framework.core.AnnotatedElementWrapper;
+import run.soeasy.framework.core.AnnotationArrayAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.execution.ParameterDescriptor;
-import run.soeasy.framework.lang.annotation.AnnotationArrayAnnotatedElement;
+import run.soeasy.framework.core.param.ParameterDescriptor;
+import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collections.Elements;
 
-public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T> {
+public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T>
+		implements AnnotatedElementWrapper<T> {
 
 	@NonNull
 	private volatile TypeDescriptor declaringTypeDescriptor;
@@ -35,8 +35,8 @@ public class ReflectionExecutable<T extends Executable> extends ReflectionMember
 			synchronized (this) {
 				if (declaringTypeDescriptor == null) {
 					declaringTypeDescriptor = new TypeDescriptor(
-							ResolvableType.forClass(getMember().getDeclaringClass()), getMember().getDeclaringClass(),
-							new AnnotationArrayAnnotatedElement(getMember().getDeclaredAnnotations()));
+							ResolvableType.forType(getSource().getDeclaringClass()), getSource().getDeclaringClass(),
+							new AnnotationArrayAnnotatedElement(getSource().getDeclaredAnnotations()));
 				}
 			}
 		}
@@ -48,9 +48,9 @@ public class ReflectionExecutable<T extends Executable> extends ReflectionMember
 		if (exceptionTypeDescriptors == null) {
 			synchronized (this) {
 				if (exceptionTypeDescriptors == null) {
-					AnnotatedType[] annotatedExceptionTypes = getMember().getAnnotatedExceptionTypes();
-					Class<?>[] exceptionTypes = getMember().getExceptionTypes();
-					Type[] genericExceptionTypes = getMember().getGenericExceptionTypes();
+					AnnotatedType[] annotatedExceptionTypes = getSource().getAnnotatedExceptionTypes();
+					Class<?>[] exceptionTypes = getSource().getExceptionTypes();
+					Type[] genericExceptionTypes = getSource().getGenericExceptionTypes();
 					TypeDescriptor[] typeDescriptors = new TypeDescriptor[exceptionTypes.length];
 					for (int i = 0; i < typeDescriptors.length; i++) {
 						typeDescriptors[i] = new TypeDescriptor(ResolvableType.forType(genericExceptionTypes[i]),
@@ -68,7 +68,7 @@ public class ReflectionExecutable<T extends Executable> extends ReflectionMember
 		if (parameterDescriptors == null) {
 			synchronized (this) {
 				if (parameterDescriptors == null) {
-					parameterDescriptors = ParameterDescriptor.forExecutable(getMember());
+					parameterDescriptors = ParameterDescriptor.forExecutable(getSource());
 				}
 			}
 		}
@@ -80,24 +80,10 @@ public class ReflectionExecutable<T extends Executable> extends ReflectionMember
 		if (returnTypeDescriptor == null) {
 			synchronized (this) {
 				if (returnTypeDescriptor == null) {
-					returnTypeDescriptor = new TypeDescriptor(MethodParameter.forExecutable(getMember(), -1));
+					returnTypeDescriptor = TypeDescriptor.forMethodReturnType(getSource());
 				}
 			}
 		}
 		return returnTypeDescriptor;
-	}
-
-	private volatile MergedAnnotations annotations;
-
-	@Override
-	public MergedAnnotations getAnnotations() {
-		if (annotations == null) {
-			synchronized (this) {
-				if (annotations == null) {
-					annotations = MergedAnnotations.from(getMember());
-				}
-			}
-		}
-		return annotations;
 	}
 }

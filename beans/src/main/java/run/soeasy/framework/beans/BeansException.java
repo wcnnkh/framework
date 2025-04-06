@@ -1,8 +1,6 @@
 package run.soeasy.framework.beans;
 
-import run.soeasy.framework.lang.NestedRuntimeException;
-
-public class BeansException extends NestedRuntimeException {
+public class BeansException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public BeansException(String message) {

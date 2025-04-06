@@ -27,8 +27,8 @@ import run.soeasy.framework.util.math.NumberValue;
  * @author shuchaowen
  *
  */
-public interface Resource extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable, Named,
-		Listable<Resource> {
+public interface Resource extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable,
+		Named, Listable<Resource> {
 
 	@Data
 	public static class RenamedResource<W extends Resource> implements ResourceWrapper<W> {
@@ -353,15 +353,7 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 		return Elements.empty();
 	}
 
-	default boolean exists() {
-		if (isFile()) {
-			try {
-				return getFile().exists();
-			} catch (IOException e) {
-			}
-		}
-		return isReadable() || isWritable();
-	}
+	boolean exists();
 
 	@Override
 	default long lastModified() throws IOException {

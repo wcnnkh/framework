@@ -16,6 +16,6 @@ public class JdkProxyExecutor extends ReflectionMethod {
 
 	@Override
 	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
-		return ProxyUtils.invokeIgnoreMethod(target, getMember(), args);
+		return ProxyUtils.invokeIgnoreMethod(target, getSource(), args);
 	}
 }

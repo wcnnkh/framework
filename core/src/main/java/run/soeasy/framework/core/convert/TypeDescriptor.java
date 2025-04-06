@@ -1,40 +1,25 @@
 package run.soeasy.framework.core.convert;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.MethodParameter;
-import run.soeasy.framework.core.ResolvableType;
-import run.soeasy.framework.core.annotation.AnnotatedElementUtils;
-import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.lang.annotation.AnnotationArrayAnnotatedElement;
-import run.soeasy.framework.lang.annotation.AnnotationUtils;
+import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.ObjectUtils;
+import run.soeasy.framework.util.ResolvableType;
+import run.soeasy.framework.util.collections.LRULinkedHashMap;
 
-/**
- * Contextual descriptor about a type to convert from or to. Capable of
- * representing arrays and generic collection types.
- *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/convert/TypeDescriptor.java
- * @author wcnnkh
- * @see ConversionService#canConvert(TypeDescriptor, TypeDescriptor)
- * @see ConversionService#convert(Object, TypeDescriptor, TypeDescriptor)
- */
-public class TypeDescriptor implements AnnotatedElement, Serializable {
-	private static final long serialVersionUID = 1L;
-
-	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new HashMap<Class<?>, TypeDescriptor>(32);
+public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement> {
+	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(
+			256);
 
 	private static final Class<?>[] CACHED_COMMON_TYPES = { boolean.class, Boolean.class, byte.class, Byte.class,
 			char.class, Character.class, double.class, Double.class, float.class, Float.class, int.class, Integer.class,
@@ -50,36 +35,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 
 	private final ResolvableType resolvableType;
 
-	private final AnnotatedElement annotatedElement;
-
-	/**
-	 * Create a new type descriptor from a {@link MethodParameter}.
-	 * <p>
-	 * Use this constructor when a source or target conversion point is a
-	 * constructor parameter, method parameter, or method return value.
-	 * 
-	 * @param methodParameter the method parameter
-	 */
-	public TypeDescriptor(MethodParameter methodParameter) {
-		this.resolvableType = ResolvableType.forMethodParameter(methodParameter);
-		this.type = this.resolvableType.resolve(methodParameter.getNestedParameterType());
-		this.annotatedElement = new AnnotationArrayAnnotatedElement(
-				methodParameter.getParameterIndex() == -1 ? methodParameter.getMethodAnnotations()
-						: methodParameter.getParameterAnnotations());
-	}
-
-	/**
-	 * Create a new type descriptor from a {@link Field}.
-	 * <p>
-	 * Use this constructor when a source or target conversion point is a field.
-	 * 
-	 * @param field the field
-	 */
-	public TypeDescriptor(Field field) {
-		this.resolvableType = ResolvableType.forField(field);
-		this.type = this.resolvableType.resolve(field.getType());
-		this.annotatedElement = new AnnotationArrayAnnotatedElement(field);
-	}
+	private final AnnotatedElement source;
 
 	/**
 	 * Create a new type descriptor from a {@link ResolvableType}.
@@ -92,12 +48,15 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	 *                         resolved)
 	 * @param annotatedElement the type annotations
 	 */
-	public TypeDescriptor(ResolvableType resolvableType, Class<?> type, AnnotatedElement annotatedElement) {
+	public TypeDescriptor(ResolvableType resolvableType, Class<?> type, AnnotatedElement source) {
 		this.resolvableType = resolvableType;
-		this.type = (type != null ? type : resolvableType.toClass());
-		this.annotatedElement = annotatedElement == null ? AnnotationUtils.EMPTY_ANNOTATED_ELEMENT
-				: (annotatedElement instanceof Serializable ? annotatedElement
-						: new AnnotationArrayAnnotatedElement(annotatedElement));
+		this.type = (type != null ? type : resolvableType.getRawType());
+		this.source = source;
+	}
+
+	@Override
+	public AnnotatedElement getSource() {
+		return source;
 	}
 
 	/**
@@ -132,23 +91,12 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		return this.resolvableType;
 	}
 
-	/**
-	 * Return the underlying source of the descriptor. Will return a {@link Field},
-	 * {@link MethodParameter} or {@link Type} depending on how the
-	 * {@link TypeDescriptor} was constructed. This method is primarily to provide
-	 * access to additional type information or meta-data that alternative JVM
-	 * languages may provide.
-	 */
-	public Object getSource() {
-		return this.resolvableType.getSource();
-	}
-
 	public TypeDescriptor getNested(int nestingLevel) {
-		return new TypeDescriptor(resolvableType.getNested(nestingLevel), null, this.annotatedElement);
+		return new TypeDescriptor(resolvableType.getNested(nestingLevel), null, this);
 	}
 
 	public TypeDescriptor getGeneric(int... indexes) {
-		return new TypeDescriptor(resolvableType.getGeneric(indexes), null, this.annotatedElement);
+		return new TypeDescriptor(resolvableType.getActualTypeArgument(indexes), null, this);
 	}
 
 	/**
@@ -180,7 +128,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	}
 
 	public TypeDescriptor convert(ResolvableType type) {
-		return new TypeDescriptor(type, type.getRawClass(), this);
+		return new TypeDescriptor(type, type.getRawType(), this);
 	}
 
 	/**
@@ -224,48 +172,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	 * @return
 	 */
 	public boolean isGeneric() {
-		return getResolvableType().hasGenerics();
-	}
-
-	/**
-	 * Return the annotations associated with this type descriptor, if any.
-	 * 
-	 * @return the annotations, or an empty array if none
-	 */
-	public Annotation[] getAnnotations() {
-		return this.annotatedElement.getAnnotations();
-	}
-
-	/**
-	 * Determine if this type descriptor has the specified annotation.
-	 * 
-	 * @param annotationType the annotation type
-	 * @return <tt>true</tt> if the annotation is present
-	 */
-	public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
-		/*
-		 * if (this.annotatedElement.isEmpty()) { // Shortcut: AnnotatedElementUtils
-		 * would have to expect AnnotatedElement.getAnnotations() // to return a copy of
-		 * the array, whereas we can do it more efficiently here. return false; }
-		 */
-		return AnnotatedElementUtils.hasAnnotation(this.annotatedElement, annotationType);
-	}
-
-	/**
-	 * Obtain the annotation of the specified {@code annotationType} that is on this
-	 * type descriptor.
-	 * 
-	 * @param annotationType the annotation type
-	 * @return the annotation, or {@code null} if no such annotation exists on this
-	 *         type descriptor
-	 */
-	public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-		/*
-		 * if (this.annotatedElement.isEmpty()) { // Shortcut: AnnotatedElementUtils
-		 * would have to expect AnnotatedElement.getAnnotations() // to return a copy of
-		 * the array, whereas we can do it more efficiently here. return null; }
-		 */
-		return AnnotatedElementUtils.getMergedAnnotation(this.annotatedElement, annotationType);
+		return getResolvableType().hasActualTypeArguments();
 	}
 
 	/**
@@ -343,9 +250,9 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			return new TypeDescriptor(getResolvableType().getComponentType(), null, this);
 		}
 		if (Stream.class.isAssignableFrom(getType())) {
-			return getRelatedIfResolvable(this, getResolvableType().as(Stream.class).getGeneric(0));
+			return getRelatedIfResolvable(this, getResolvableType().as(Stream.class).getActualTypeArgument(0));
 		}
-		return getRelatedIfResolvable(this, getResolvableType().asCollection().getGeneric(0));
+		return getRelatedIfResolvable(this, getResolvableType().as(Collection.class).getActualTypeArgument(0));
 	}
 
 	/**
@@ -392,7 +299,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	 */
 	public TypeDescriptor getMapKeyTypeDescriptor() {
 		Assert.state(isMap(), "Not a [java.util.Map]");
-		return getRelatedIfResolvable(this, getResolvableType().asMap().getGeneric(0));
+		return getRelatedIfResolvable(this, getResolvableType().as(Map.class).getActualTypeArgument(0));
 	}
 
 	/**
@@ -433,7 +340,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	 */
 	public TypeDescriptor getMapValueTypeDescriptor() {
 		Assert.state(isMap(), "Not a [java.util.Map]");
-		return getRelatedIfResolvable(this, getResolvableType().asMap().getGeneric(1));
+		return getRelatedIfResolvable(this, getResolvableType().as(Map.class).getActualTypeArgument(1));
 	}
 
 	/**
@@ -471,71 +378,6 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		return null;
 	}
 
-	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
-			return true;
-		}
-		if (!(other instanceof TypeDescriptor)) {
-			return false;
-		}
-		TypeDescriptor otherDesc = (TypeDescriptor) other;
-		if (getType() != otherDesc.getType()) {
-			return false;
-		}
-		if (!annotationsMatch(otherDesc)) {
-			return false;
-		}
-		if (isCollection() || isArray()) {
-			return ObjectUtils.equals(getElementTypeDescriptor(), otherDesc.getElementTypeDescriptor());
-		} else if (isMap()) {
-			return (ObjectUtils.equals(getMapKeyTypeDescriptor(), otherDesc.getMapKeyTypeDescriptor())
-					&& ObjectUtils.equals(getMapValueTypeDescriptor(), otherDesc.getMapValueTypeDescriptor()));
-		} else {
-			return true;
-		}
-	}
-
-	private boolean annotationsMatch(TypeDescriptor otherDesc) {
-		Annotation[] anns = getAnnotations();
-		Annotation[] otherAnns = otherDesc.getAnnotations();
-		if (anns == otherAnns) {
-			return true;
-		}
-		if (anns.length != otherAnns.length) {
-			return false;
-		}
-		if (anns.length > 0) {
-			for (int i = 0; i < anns.length; i++) {
-				if (!annotationEquals(anns[i], otherAnns[i])) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	private boolean annotationEquals(Annotation ann, Annotation otherAnn) {
-		// Annotation.equals is reflective and pretty slow, so let's check identity and
-		// proxy type first.
-		return (ann == otherAnn || (ann.getClass() == otherAnn.getClass() && ann.equals(otherAnn)));
-	}
-
-	@Override
-	public int hashCode() {
-		return getType().hashCode();
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Annotation ann : getAnnotations()) {
-			builder.append("@").append(ann.annotationType().getName()).append(' ');
-		}
-		builder.append(getResolvableType().toString());
-		return builder.toString();
-	}
-
 	/**
 	 * Create a new type descriptor for an object.
 	 * <p>
@@ -552,8 +394,24 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		return (source != null ? valueOf(source.getClass()) : null);
 	}
 
-	public static TypeDescriptor forMethodReturnType(Method method) {
-		return new TypeDescriptor(ResolvableType.forMethodReturnType(method), null, method);
+	public static TypeDescriptor forMethodReturnType(@NonNull Executable executable) {
+		if (executable instanceof Method) {
+			return new TypeDescriptor(ResolvableType.forType(((Method) executable).getGenericReturnType()), null,
+					executable);
+		}
+		return new TypeDescriptor(ResolvableType.forType(executable.getDeclaringClass()), null, executable);
+	}
+
+	public static TypeDescriptor forFieldType(@NonNull Field field) {
+		return new TypeDescriptor(ResolvableType.forType(field.getGenericType()), null, field);
+	}
+
+	public static TypeDescriptor forParameterType(Executable executable, int index) {
+		if (index >= executable.getParameterCount()) {
+			throw new IndexOutOfBoundsException("index: " + index);
+		}
+		Parameter parameter = executable.getParameters()[index];
+		return new TypeDescriptor(ResolvableType.forType(parameter.getParameterizedType()), null, parameter);
 	}
 
 	/**
@@ -574,7 +432,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			type = Object.class;
 		}
 		TypeDescriptor desc = commonTypesCache.get(type);
-		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, type));
+		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forType(type), null, type));
 	}
 
 	public static TypeDescriptor valueOf(Type type) {
@@ -587,7 +445,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 
 	public static TypeDescriptor valueOf(ResolvableType type) {
 		if (type == null) {
-			type = ResolvableType.forClass(Object.class);
+			type = ResolvableType.forType(Object.class);
 		}
 		return new TypeDescriptor(type, null, null);
 	}
@@ -628,7 +486,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	}
 
 	public static TypeDescriptor collection(Class<?> collectionType, Class<?> elementType) {
-		return collection(collectionType, ResolvableType.forClass(elementType));
+		return collection(collectionType, ResolvableType.forType(elementType));
 	}
 
 	/**
@@ -672,7 +530,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	}
 
 	public static TypeDescriptor map(@NonNull Class<?> mapType, Class<?> keyType, Class<?> valueType) {
-		return map(mapType, ResolvableType.forClass(keyType), ResolvableType.forClass(valueType));
+		return map(mapType, ResolvableType.forType(keyType), ResolvableType.forType(valueType));
 	}
 
 	/**
@@ -709,108 +567,13 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		if (elementType == null) {
 			return null;
 		}
-		return array(ResolvableType.forClass(elementType));
-	}
-
-	/**
-	 * Create a type descriptor for a nested type declared within the method
-	 * parameter.
-	 * <p>
-	 * For example, if the methodParameter is a {@code List<String>} and the nesting
-	 * level is 1, the nested type descriptor will be String.class.
-	 * <p>
-	 * If the methodParameter is a {@code List<List<String>>} and the nesting level
-	 * is 2, the nested type descriptor will also be a String.class.
-	 * <p>
-	 * If the methodParameter is a {@code Map<Integer, String>} and the nesting
-	 * level is 1, the nested type descriptor will be String, derived from the map
-	 * value.
-	 * <p>
-	 * If the methodParameter is a {@code List<Map<Integer, String>>} and the
-	 * nesting level is 2, the nested type descriptor will be String, derived from
-	 * the map value.
-	 * <p>
-	 * Returns {@code null} if a nested type cannot be obtained because it was not
-	 * declared. For example, if the method parameter is a {@code List<?>}, the
-	 * nested type descriptor returned will be {@code null}.
-	 * 
-	 * @param methodParameter the method parameter with a nestingLevel of 1
-	 * @param nestingLevel    the nesting level of the collection/array element or
-	 *                        map key/value declaration within the method parameter
-	 * @return the nested type descriptor at the specified nesting level, or
-	 *         {@code null} if it could not be obtained
-	 * @throws IllegalArgumentException if the nesting level of the input
-	 *                                  {@link MethodParameter} argument is not 1,
-	 *                                  or if the types up to the specified nesting
-	 *                                  level are not of collection, array, or map
-	 *                                  types
-	 */
-	public static TypeDescriptor nested(MethodParameter methodParameter, int nestingLevel) {
-		if (methodParameter.getNestingLevel() != 1) {
-			throw new IllegalArgumentException("MethodParameter nesting level must be 1: "
-					+ "use the nestingLevel parameter to specify the desired nestingLevel for nested type traversal");
-		}
-		return nested(new TypeDescriptor(methodParameter), nestingLevel);
-	}
-
-	/**
-	 * Create a type descriptor for a nested type declared within the field.
-	 * <p>
-	 * For example, if the field is a {@code List<String>} and the nesting level is
-	 * 1, the nested type descriptor will be {@code String.class}.
-	 * <p>
-	 * If the field is a {@code List<List<String>>} and the nesting level is 2, the
-	 * nested type descriptor will also be a {@code String.class}.
-	 * <p>
-	 * If the field is a {@code Map<Integer, String>} and the nesting level is 1,
-	 * the nested type descriptor will be String, derived from the map value.
-	 * <p>
-	 * If the field is a {@code List<Map<Integer, String>>} and the nesting level is
-	 * 2, the nested type descriptor will be String, derived from the map value.
-	 * <p>
-	 * Returns {@code null} if a nested type cannot be obtained because it was not
-	 * declared. For example, if the field is a {@code List<?>}, the nested type
-	 * descriptor returned will be {@code null}.
-	 * 
-	 * @param field        the field
-	 * @param nestingLevel the nesting level of the collection/array element or map
-	 *                     key/value declaration within the field
-	 * @return the nested type descriptor at the specified nesting level, or
-	 *         {@code null} if it could not be obtained
-	 * @throws IllegalArgumentException if the types up to the specified nesting
-	 *                                  level are not of collection, array, or map
-	 *                                  types
-	 */
-	public static TypeDescriptor nested(Field field, int nestingLevel) {
-		return nested(new TypeDescriptor(field), nestingLevel);
-	}
-
-	private static TypeDescriptor nested(TypeDescriptor typeDescriptor, int nestingLevel) {
-		ResolvableType nested = typeDescriptor.resolvableType;
-		for (int i = 0; i < nestingLevel; i++) {
-			if (Object.class == nested.getType()) {
-				// Could be a collection type but we don't know about its element type,
-				// so let's just assume there is an element type of type Object...
-			} else {
-				nested = nested.getNested(2);
-			}
-		}
-		if (nested == ResolvableType.NONE) {
-			return null;
-		}
-		return getRelatedIfResolvable(typeDescriptor, nested);
+		return array(ResolvableType.forType(elementType));
 	}
 
 	private static TypeDescriptor getRelatedIfResolvable(TypeDescriptor source, ResolvableType type) {
-		if (type.resolve() == null) {
+		if (type == null) {
 			return null;
 		}
 		return new TypeDescriptor(type, null, source);
 	}
-
-	@Override
-	public Annotation[] getDeclaredAnnotations() {
-		return this.annotatedElement.getDeclaredAnnotations();
-	}
-
 }

@@ -6,24 +6,25 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execution.Executable;
+import run.soeasy.framework.util.function.Wrapper;
 
 @Data
-public abstract class ReflectionMember<T extends Member> implements Executable {
+public abstract class ReflectionMember<T extends Member> implements Executable, Wrapper<T> {
 	@NonNull
-	private final T member;
+	private final T source;
 
 	@Override
 	public String getName() {
-		return getMember().getName();
+		return getSource().getName();
 	}
 
 	@Override
 	public int getModifiers() {
-		return getMember().getModifiers();
+		return getSource().getModifiers();
 	}
 
 	public Class<?> getDeclaringClass() {
-		return getMember().getDeclaringClass();
+		return getSource().getDeclaringClass();
 	}
 
 	@Override

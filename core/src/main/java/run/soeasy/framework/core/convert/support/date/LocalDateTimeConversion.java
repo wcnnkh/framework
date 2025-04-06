@@ -6,12 +6,12 @@ import java.util.Date;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
+import run.soeasy.framework.util.ResolvableType;
 
 @Data
 public class LocalDateTimeConversion implements ConversionService, ConversionServiceAware {
@@ -26,7 +26,7 @@ public class LocalDateTimeConversion implements ConversionService, ConversionSer
 		}
 
 		return LocalDateTime.class.isAssignableFrom(sourceType.getType())
-				&& conversionService.canConvert(sourceType.convert(ResolvableType.forClass(Date.class)), targetType)
+				&& conversionService.canConvert(sourceType.convert(ResolvableType.forType(Date.class)), targetType)
 				&& zoneOffsetResolver.resolveZoneOffset(() -> targetType) != null;
 	}
 
@@ -40,7 +40,7 @@ public class LocalDateTimeConversion implements ConversionService, ConversionSer
 		}
 
 		long milli = ((LocalDateTime) source).toInstant(zoneOffset).toEpochMilli();
-		return conversionService.convert(new Date(milli), sourceType.convert(ResolvableType.forClass(Date.class)),
+		return conversionService.convert(new Date(milli), sourceType.convert(ResolvableType.forType(Date.class)),
 				targetType);
 	}
 }

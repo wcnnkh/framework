@@ -21,12 +21,12 @@ public class ReflectionFieldSetter extends ReflectionField implements Setter {
 
 	@Override
 	public void set(Object target, Object value) {
-		ReflectionUtils.set(getMember(), target, value);
+		ReflectionUtils.set(getSource(), target, value);
 	}
 
 	@Override
 	public ReflectionFieldSetter rename(String name) {
-		ReflectionFieldSetter setter = new ReflectionFieldSetter(getMember());
+		ReflectionFieldSetter setter = new ReflectionFieldSetter(getSource());
 		setter.name = name;
 		return setter;
 	}

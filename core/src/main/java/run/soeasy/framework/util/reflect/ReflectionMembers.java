@@ -4,10 +4,9 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-import run.soeasy.framework.core.DecorationMembers;
-import run.soeasy.framework.core.Members;
-import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.util.Assert;
+import run.soeasy.framework.util.Members;
+import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collections.Elements;
 
 public abstract class ReflectionMembers<E extends Member, R extends ReflectionMembers<E, R>>
@@ -44,7 +43,7 @@ public abstract class ReflectionMembers<E extends Member, R extends ReflectionMe
 				return null;
 			}
 			// 子类会获取到父类的public member,这里进行过滤
-			return es.filter((member) -> member != null && member.getDeclaringClass() == type.getRawClass());
+			return es.filter((member) -> member != null && member.getDeclaringClass() == type.getRawType());
 		}));
 	}
 

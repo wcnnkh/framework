@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationHandler;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.annotation.MergedAnnotations;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execution.aop.ExecutionInterceptor;
 import run.soeasy.framework.core.execution.aop.Proxy;
@@ -41,10 +40,5 @@ public class JdkProxy implements Proxy {
 		}
 		return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces == null ? new Class<?>[0] : interfaces,
 				invocationHandler);
-	}
-
-	@Override
-	public MergedAnnotations getAnnotations() {
-		return MergedAnnotations.from(returnTypeDescriptor);
 	}
 }

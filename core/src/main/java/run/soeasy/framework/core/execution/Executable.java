@@ -7,6 +7,9 @@ import java.util.Iterator;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.param.ParameterDescriptor;
+import run.soeasy.framework.core.param.ParameterDescriptorTemplate;
+import run.soeasy.framework.core.param.Parameters;
 import run.soeasy.framework.util.alias.Named;
 import run.soeasy.framework.util.collections.Elements;
 
@@ -20,6 +23,10 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 	@FunctionalInterface
 	public static interface ExecutableWrapper<W extends Executable>
 			extends Executable, ExecutedWrapper<W>, NamedWrapper<W>, ParameterDescriptorTemplateWrapper<W> {
+		@Override
+		@NonNull
+		W getSource();
+
 		@Override
 		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
 			return getSource().canExecuted(parameterTypes);

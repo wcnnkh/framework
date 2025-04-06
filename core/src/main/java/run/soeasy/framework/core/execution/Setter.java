@@ -1,13 +1,19 @@
 package run.soeasy.framework.core.execution;
 
+import java.lang.reflect.AnnotatedElement;
+
 import lombok.NonNull;
+import run.soeasy.framework.core.AnnotatedElementWrapper;
+import run.soeasy.framework.core.MergedAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.util.collections.Elements;
 
 public interface Setter extends Executable, PropertyDescriptor {
 
-	public class MergedSetter<E extends Setter> extends MergedPropertyDescriptor<E> implements Setter {
+	public class MergedSetter<E extends Setter> extends MergedPropertyDescriptor<E>
+			implements Setter, AnnotatedElementWrapper<AnnotatedElement> {
 
 		public MergedSetter(Elements<? extends E> elements) {
 			super(elements);
@@ -36,6 +42,11 @@ public interface Setter extends Executable, PropertyDescriptor {
 		@Override
 		public void set(Object target, Object value) {
 			getMaster().set(target, value);
+		}
+
+		@Override
+		public AnnotatedElement getSource() {
+			return new MergedAnnotatedElement(getElements());
 		}
 	}
 

@@ -1,5 +1,7 @@
 package run.soeasy.framework.util.io;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -14,6 +16,51 @@ import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 
 public class UrlResource extends AbstractResource {
+	private class InternalInputStream extends InputStream {
+		private URLConnection urlConnection;
+		private InputStream inputStream;
+
+		public InputStream getInputStream() throws IOException {
+			if (urlConnection == null) {
+				urlConnection = connect(true);
+			}
+
+			if (inputStream == null) {
+				inputStream = urlConnection.getInputStream();
+			}
+			return inputStream;
+		}
+
+		@Override
+		public int read() throws IOException {
+			return getInputStream().read();
+		}
+
+		@Override
+		public int read(byte[] b) throws IOException {
+			return getInputStream().read(b);
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			return getInputStream().read(b, off, len);
+		}
+
+		@Override
+		public void close() throws IOException {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} finally {
+				if (urlConnection != null) {
+					if (urlConnection instanceof HttpURLConnection) {
+						((HttpURLConnection) urlConnection).disconnect();
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Original URI, if available; used for URI and File access.
@@ -147,30 +194,6 @@ public class UrlResource extends AbstractResource {
 	}
 
 	/**
-	 * This implementation opens an InputStream for the given URL.
-	 * <p>
-	 * It sets the {@code useCaches} flag to {@code false}, mainly to avoid jar file
-	 * locking on Windows.
-	 * 
-	 * @see java.net.URL#openConnection()
-	 * @see java.net.URLConnection#setUseCaches(boolean)
-	 * @see java.net.URLConnection#getInputStream()
-	 */
-	@Override
-	public InputStream getInputStream() throws IOException {
-		URLConnection con = url.openConnection();
-		try {
-			ResourceUtils.useCachesIfNecessary(con);
-			return con.getInputStream();
-		} finally {
-			// Close the HTTP connection (if applicable).
-			if (con instanceof HttpURLConnection) {
-				((HttpURLConnection) con).disconnect();
-			}
-		}
-	}
-
-	/**
 	 * This implementation returns the underlying URL reference.
 	 */
 	@Override
@@ -250,4 +273,117 @@ public class UrlResource extends AbstractResource {
 		return getCleanedUrl().hashCode();
 	}
 
+	protected URLConnection connect(boolean read) throws IOException {
+		URLConnection urlConnection = url.openConnection();
+		try {
+			customizeConnection(urlConnection, read);
+			urlConnection.connect();
+		} catch (IOException e) {
+			disconnect(urlConnection);
+			throw e;
+		}
+		return urlConnection;
+	}
+
+	protected void customizeConnection(URLConnection con, boolean read) throws IOException {
+		con.setUseCaches(con.getClass().getSimpleName().startsWith("JNLP"));
+		if (con instanceof HttpURLConnection) {
+			customizeHttpURLConnection((HttpURLConnection) con, read);
+		}
+	}
+
+	protected void customizeHttpURLConnection(HttpURLConnection con, boolean read) throws IOException {
+		con.setRequestMethod(read ? "GET" : "HEAD");
+	}
+
+	protected void disconnect(URLConnection urlConnection) throws IOException {
+		if (urlConnection instanceof HttpURLConnection) {
+			((HttpURLConnection) urlConnection).disconnect();
+		}
+	}
+
+	@Override
+	public long lastModified() throws IOException {
+		boolean fileCheck = false;
+		if (isFile()) {
+			fileCheck = true;
+			File file = getFile();
+			if (file.exists()) {
+				return file.lastModified();
+			}
+		}
+
+		// Try a URL connection last-modified header
+		URLConnection con = connect(false);
+		try {
+			con.connect();
+			long lastModified = con.getLastModified();
+			if (fileCheck && lastModified == 0 && con.getContentLengthLong() <= 0) {
+				throw new FileNotFoundException(getDescription()
+						+ " cannot be resolved in the file system for checking its last-modified timestamp");
+			}
+			return lastModified;
+		} finally {
+			disconnect(con);
+		}
+	}
+
+	@Override
+	public boolean exists() {
+		if (isFile()) {
+			try {
+				return getFile().exists();
+			} catch (IOException e) {
+			}
+		}
+		try {
+			// Try a URL connection content-length header
+			URLConnection con = connect(false);
+			try {
+				HttpURLConnection httpCon = (con instanceof HttpURLConnection ? (HttpURLConnection) con : null);
+				if (httpCon != null) {
+					int code = httpCon.getResponseCode();
+					if (code == HttpURLConnection.HTTP_OK) {
+						return true;
+					} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+						return false;
+					}
+				}
+				if (con.getContentLengthLong() > 0) {
+					return true;
+				}
+				if (httpCon != null) {
+					return false;
+				} else {
+					// Fall back to stream existence: can we open the stream?
+					getInputStream().close();
+					return true;
+				}
+			} finally {
+				disconnect(con);
+			}
+		} catch (IOException ex) {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isReadable() {
+		return true;
+	}
+
+	/**
+	 * This implementation opens an InputStream for the given URL.
+	 * <p>
+	 * It sets the {@code useCaches} flag to {@code false}, mainly to avoid jar file
+	 * locking on Windows.
+	 * 
+	 * @see java.net.URL#openConnection()
+	 * @see java.net.URLConnection#setUseCaches(boolean)
+	 * @see java.net.URLConnection#getInputStream()
+	 */
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return new InternalInputStream();
+	}
 }

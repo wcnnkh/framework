@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.transform.mapping.FieldDescriptor;
@@ -19,6 +18,7 @@ import run.soeasy.framework.core.execution.reflect.ReflectionFieldGetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionFieldSetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionMethodGetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionMethodSetter;
+import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 

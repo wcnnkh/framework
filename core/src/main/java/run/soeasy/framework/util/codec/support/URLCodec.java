@@ -4,14 +4,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-import run.soeasy.framework.core.Constants;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
 import run.soeasy.framework.util.codec.MultipleCodec;
 
 public class URLCodec implements MultipleCodec<String> {
-	public static final URLCodec UTF_8 = new URLCodec(Constants.UTF_8_NAME);
+	public static final URLCodec UTF_8 = new URLCodec(StandardCharsets.UTF_8);
 	private final String charsetName;
 
 	public URLCodec(String charsetName) {

@@ -16,7 +16,7 @@ public class ReflectionFieldGetter extends ReflectionField implements Getter {
 
 	@Override
 	public Object get(Object target) {
-		return ReflectionUtils.get(getMember(), target);
+		return ReflectionUtils.get(getSource(), target);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class ReflectionFieldGetter extends ReflectionField implements Getter {
 
 	@Override
 	public ReflectionFieldGetter rename(String name) {
-		ReflectionFieldGetter fieldGetter = new ReflectionFieldGetter(getMember());
+		ReflectionFieldGetter fieldGetter = new ReflectionFieldGetter(getSource());
 		fieldGetter.name = name;
 		return fieldGetter;
 	}

@@ -5,10 +5,8 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
-import run.soeasy.framework.core.annotation.MergedAnnotations;
+import run.soeasy.framework.core.MergedAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.type.AnnotatedTypeMetadata;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.alias.Named;
@@ -17,8 +15,7 @@ import run.soeasy.framework.util.function.Selector;
 
 public interface PropertyDescriptor extends Named, AccessDescriptor {
 	@RequiredArgsConstructor
-	public static class MergedPropertyDescriptor<E extends PropertyDescriptor>
-			implements PropertyDescriptor, AnnotatedTypeMetadata {
+	public static class MergedPropertyDescriptor<E extends PropertyDescriptor> implements PropertyDescriptor {
 		@NonNull
 		private final Elements<? extends E> elements;
 		private volatile E master;
@@ -97,11 +94,6 @@ public interface PropertyDescriptor extends Named, AccessDescriptor {
 				Assert.isTrue(master != null, "Master has already been selected, cannot set selector again");
 			}
 			this.selector = selector;
-		}
-
-		@Override
-		public MergedAnnotations getAnnotations() {
-			return MergedAnnotations.from(elements);
 		}
 	}
 

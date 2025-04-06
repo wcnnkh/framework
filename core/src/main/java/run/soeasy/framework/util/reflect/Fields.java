@@ -5,8 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import run.soeasy.framework.core.Members;
 import run.soeasy.framework.util.Assert;
+import run.soeasy.framework.util.Members;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.Elements;
@@ -109,10 +109,10 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 			return;
 		}
 
-		sb.append(members.getSource().getRawClass().getSimpleName());
+		sb.append(members.getSource().getRawType().getSimpleName());
 		sb.append('(');
 		Members<Field> superStructure = members.getSuperclass();
-		if (superStructure != null && superStructure.getSource().getRawClass() != Object.class) {
+		if (superStructure != null && superStructure.getSource().getRawType() != Object.class) {
 			sb.append("super=");
 			toString(superStructure, sb, entity, deep);
 			if (iterator.hasNext()) {

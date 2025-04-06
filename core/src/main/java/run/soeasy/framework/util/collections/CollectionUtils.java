@@ -82,13 +82,10 @@ public abstract class CollectionUtils {
 	private static final Set<Class<?>> approximableCollectionTypes = new HashSet<Class<?>>();
 
 	private static final Set<Class<?>> approximableMapTypes = new HashSet<Class<?>>();
-	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumSet.class, "elementType");
-
 	@SuppressWarnings({ "rawtypes" })
 	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new DefaultMultiValueMap<>(Collections.emptyMap());
-
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumMap.class, "keyType");
-
+	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumSet.class, "elementType");
 	static {
 		ReflectionUtils.makeAccessible(KEY_TYPE_FIELD);
 		ReflectionUtils.makeAccessible(ELEMENT_TYPE_FIELD);
@@ -132,23 +129,6 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Cast the given type to a subtype of {@link Enum}.
-	 * 
-	 * @param enumType the enum type, never {@code null}
-	 * @return the given type as subtype of {@link Enum}
-	 * @throws IllegalArgumentException if the given type is not a subtype of
-	 *                                  {@link Enum}
-	 */
-	@SuppressWarnings("rawtypes")
-	private static Class<? extends Enum> asEnumType(Class<?> enumType) {
-		Assert.notNull(enumType, "Enum type must not be null");
-		if (!Enum.class.isAssignableFrom(enumType)) {
-			throw new IllegalArgumentException("Supplied type is not an enum: " + enumType.getName());
-		}
-		return enumType.asSubclass(Enum.class);
-	}
-
-	/**
 	 * 克隆一个{@link Collection}
 	 * 
 	 * @param <C>
@@ -186,15 +166,15 @@ public abstract class CollectionUtils {
 			cloneCollection = (C) new TreeSet<E>(((TreeSet<E>) collection).comparator());
 		} else {
 			try {
-				cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
-						collection.size());
+				cloneCollection = (C) CollectionUtils.createCollection(collection.getClass(),
+						CollectionUtils.getEnumSetElementType(collection), collection.size());
 			} catch (IllegalArgumentException e) {
 				return ReflectionUtils.clone(collection, deep);
 			}
 		}
 
 		for (Fields fields : ReflectionUtils.getDeclaredFields(collectionClass).entity().recursion()) {
-			Class<?> sourceClass = fields.getSource().getRawClass();
+			Class<?> sourceClass = fields.getSource().getRawType();
 			if (sourceClass == Object.class || sourceClass.getName().startsWith("java.util.")
 					|| sourceClass.getName().endsWith("Set") || sourceClass.getName().endsWith("List")) {
 				continue;
@@ -247,14 +227,15 @@ public abstract class CollectionUtils {
 			cloneMap = (M) new TreeMap<K, V>(((TreeMap<K, V>) map).comparator());
 		} else {
 			try {
-				cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
+				cloneMap = (M) CollectionUtils.createMap(map.getClass(), CollectionUtils.getEnumMapKeyType(map),
+						map.size());
 			} catch (Exception e) {
 				return ReflectionUtils.clone(map, deep);
 			}
 		}
 
 		for (Fields fields : ReflectionUtils.getDeclaredFields(mapType).entity().recursion()) {
-			Class<?> sourceClass = fields.getSource().getRawClass();
+			Class<?> sourceClass = fields.getSource().getRawType();
 			if (sourceClass == Object.class || sourceClass.getName().startsWith("java.util.")
 					|| sourceClass.getName().endsWith("Map")) {
 				continue;
@@ -269,156 +250,39 @@ public abstract class CollectionUtils {
 		return cloneMap;
 	}
 
-	public static <T> int compare(Collection<? extends T> collection1, Collection<? extends T> collection2,
-			Comparator<T> comparator) {
-		if (CollectionUtils.isEmpty(collection1)) {
-			return CollectionUtils.isEmpty(collection2) ? 0 : -1;
-		}
-
-		if (CollectionUtils.isEmpty(collection2)) {
-			return CollectionUtils.isEmpty(collection1) ? 0 : 1;
-		}
-
-		Iterator<? extends T> iterator1 = collection1.iterator();
-		Iterator<? extends T> iterator2 = collection2.iterator();
-		while (iterator1.hasNext() && iterator2.hasNext()) {
-			int v = comparator.compare(iterator1.next(), iterator2.next());
-			if (v != 0) {
-				return v;
-			}
-		}
-		return collection1.size() - collection2.size();
-	}
-
-	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
-			Comparator<T> comparator) {
-		if (CollectionUtils.isEmpty(iterator1)) {
-			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
-		}
-
-		if (CollectionUtils.isEmpty(iterator2)) {
-			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
-		}
-
-		while (iterator1.hasNext() && iterator2.hasNext()) {
-			int v = comparator.compare(iterator1.next(), iterator2.next());
-			if (v != 0) {
-				return v;
-			}
-		}
-		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
-	}
-
-	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate) {
-		if (isEmpty(universal)) {
-			return Collections.emptyList();
-		}
-
-		if (isEmpty(subaggregate)) {
-			return Streams.stream(universal.iterator()).collect(Collectors.toList());
-		}
-
-		if (universal instanceof Set) {
-			Set<E> universalSet = new LinkedHashSet<>();
-			universal.forEach(universalSet::add);
-			subaggregate.forEach(universalSet::remove);
-			return universalSet;
-		}
-		return complementary(universal.iterator(), subaggregate.iterator());
-	}
-
-	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate,
-			Comparator<? super E> comparator) {
-		if (isEmpty(universal)) {
-			return Collections.emptyList();
-		}
-
-		return complementary(universal.iterator(),
-				subaggregate == null ? Collections.emptyIterator() : subaggregate.iterator(), comparator);
-	}
-
-	public static <E> Collection<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate) {
-		return complementary(universal, subaggregate, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
-	}
-
 	/**
-	 * 获取补集(一定有全集大于子集)
+	 * Cast the given type to a subtype of {@link Enum}.
 	 * 
-	 * @param <E>          元素类型
-	 * @param universal    全集
-	 * @param subaggregate 子集
-	 * @param comparator   比较器
-	 * @return 返回补集
-	 */
-	public static <E> List<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate,
-			Comparator<? super E> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		if (isEmpty(universal)) {
-			// 如果全集不存在那么也就没有补集
-			return Collections.emptyList();
-		}
-
-		List<E> universalSet = new ArrayList<>();
-		universal.forEachRemaining(universalSet::add);
-		if (isEmpty(subaggregate)) {
-			return universalSet;
-		}
-
-		while (subaggregate.hasNext()) {
-			E element = subaggregate.next();
-			Iterator<E> iterator = universalSet.iterator();
-			while (iterator.hasNext()) {
-				E source = iterator.next();
-				if (comparator.compare(source, element) == 0) {
-					iterator.remove();
-					break;
-				}
-			}
-		}
-		return universalSet;
-	}
-
-	/**
-	 * Return {@code true} if any element in '{@code candidates}' is contained in
-	 * '{@code source}'; otherwise returns {@code false}.
-	 * 
-	 * @param source     the source Collection
-	 * @param candidates the candidates to search for
-	 * @return whether any of the candidates has been found
+	 * @param enumType the enum type, never {@code null}
+	 * @return the given type as subtype of {@link Enum}
+	 * @throws IllegalArgumentException if the given type is not a subtype of
+	 *                                  {@link Enum}
 	 */
 	@SuppressWarnings("rawtypes")
-	public static boolean containsAny(Collection source, Collection candidates) {
-		if (isEmpty(source) || isEmpty(candidates)) {
-			return false;
+	private static Class<? extends Enum> asEnumType(Class<?> enumType) {
+		Assert.notNull(enumType, "Enum type must not be null");
+		if (!Enum.class.isAssignableFrom(enumType)) {
+			throw new IllegalArgumentException("Supplied type is not an enum: " + enumType.getName());
 		}
-		for (Object candidate : candidates) {
-			if (source.contains(candidate)) {
-				return true;
-			}
-		}
-		return false;
+		return enumType.asSubclass(Enum.class);
 	}
 
-	/**
-	 * Check whether the given Collection contains the given element instance.
-	 * <p>
-	 * Enforces the given instance to be present, rather than returning {@code true}
-	 * for an equal element as well.
-	 * 
-	 * @param collection the Collection to check
-	 * @param element    the element to look for
-	 * @return {@code true} if found, {@code false} else
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean containsInstance(Collection collection, Object element) {
-		if (collection != null) {
-			for (Object candidate : collection) {
-				if (candidate == element) {
-					return true;
-				}
-			}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> Class<T> getEnumMapKeyType(Map map) {
+		Class<T> keyType = null;
+		if (map instanceof EnumMap) {
+			keyType = (Class<T>) ReflectionUtils.get(KEY_TYPE_FIELD, map);
 		}
-		return false;
+		return keyType;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getEnumSetElementType(@SuppressWarnings("rawtypes") Collection collection) {
+		Class<T> elementType = null;
+		if (collection instanceof EnumSet) {
+			elementType = (Class<T>) ReflectionUtils.get(ELEMENT_TYPE_FIELD, collection);
+		}
+		return elementType;
 	}
 
 	public static <K, V, SK, SV, E extends Throwable> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
@@ -764,6 +628,158 @@ public abstract class CollectionUtils {
 		};
 	}
 
+	public static <T> int compare(Collection<? extends T> collection1, Collection<? extends T> collection2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(collection1)) {
+			return CollectionUtils.isEmpty(collection2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(collection2)) {
+			return CollectionUtils.isEmpty(collection1) ? 0 : 1;
+		}
+
+		Iterator<? extends T> iterator1 = collection1.iterator();
+		Iterator<? extends T> iterator2 = collection2.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return collection1.size() - collection2.size();
+	}
+
+	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(iterator1)) {
+			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(iterator2)) {
+			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
+		}
+
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
+	}
+
+	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate) {
+		if (CollectionUtils.isEmpty(universal)) {
+			return Collections.emptyList();
+		}
+
+		if (CollectionUtils.isEmpty(subaggregate)) {
+			return Streams.stream(universal.iterator()).collect(Collectors.toList());
+		}
+
+		if (universal instanceof Set) {
+			Set<E> universalSet = new LinkedHashSet<>();
+			universal.forEach(universalSet::add);
+			subaggregate.forEach(universalSet::remove);
+			return universalSet;
+		}
+		return complementary(universal.iterator(), subaggregate.iterator());
+	}
+
+	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate,
+			Comparator<? super E> comparator) {
+		if (CollectionUtils.isEmpty(universal)) {
+			return Collections.emptyList();
+		}
+
+		return complementary(universal.iterator(),
+				subaggregate == null ? Collections.emptyIterator() : subaggregate.iterator(), comparator);
+	}
+
+	public static <E> Collection<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate) {
+		return complementary(universal, subaggregate, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+	}
+
+	/**
+	 * 获取补集(一定有全集大于子集)
+	 * 
+	 * @param <E>          元素类型
+	 * @param universal    全集
+	 * @param subaggregate 子集
+	 * @param comparator   比较器
+	 * @return 返回补集
+	 */
+	public static <E> List<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate,
+			Comparator<? super E> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		if (CollectionUtils.isEmpty(universal)) {
+			// 如果全集不存在那么也就没有补集
+			return Collections.emptyList();
+		}
+
+		List<E> universalSet = new ArrayList<>();
+		universal.forEachRemaining(universalSet::add);
+		if (CollectionUtils.isEmpty(subaggregate)) {
+			return universalSet;
+		}
+
+		while (subaggregate.hasNext()) {
+			E element = subaggregate.next();
+			Iterator<E> iterator = universalSet.iterator();
+			while (iterator.hasNext()) {
+				E source = iterator.next();
+				if (comparator.compare(source, element) == 0) {
+					iterator.remove();
+					break;
+				}
+			}
+		}
+		return universalSet;
+	}
+
+	/**
+	 * Return {@code true} if any element in '{@code candidates}' is contained in
+	 * '{@code source}'; otherwise returns {@code false}.
+	 * 
+	 * @param source     the source Collection
+	 * @param candidates the candidates to search for
+	 * @return whether any of the candidates has been found
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean containsAny(Collection source, Collection candidates) {
+		if (CollectionUtils.isEmpty(source) || CollectionUtils.isEmpty(candidates)) {
+			return false;
+		}
+		for (Object candidate : candidates) {
+			if (source.contains(candidate)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check whether the given Collection contains the given element instance.
+	 * <p>
+	 * Enforces the given instance to be present, rather than returning {@code true}
+	 * for an equal element as well.
+	 * 
+	 * @param collection the Collection to check
+	 * @param element    the element to look for
+	 * @return {@code true} if found, {@code false} else
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean containsInstance(Collection collection, Object element) {
+		if (collection != null) {
+			for (Object candidate : collection) {
+				if (candidate == element) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * 深度递归
 	 * 
@@ -971,24 +987,6 @@ public abstract class CollectionUtils {
 			return iterator.next();
 		}
 		return null;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> Class<T> getEnumMapKeyType(Map map) {
-		Class<T> keyType = null;
-		if (map instanceof EnumMap) {
-			keyType = (Class<T>) ReflectionUtils.get(KEY_TYPE_FIELD, map);
-		}
-		return keyType;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Class<T> getEnumSetElementType(@SuppressWarnings("rawtypes") Collection collection) {
-		Class<T> elementType = null;
-		if (collection instanceof EnumSet) {
-			elementType = (Class<T>) ReflectionUtils.get(ELEMENT_TYPE_FIELD, collection);
-		}
-		return elementType;
 	}
 
 	/**

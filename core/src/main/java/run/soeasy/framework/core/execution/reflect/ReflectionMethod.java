@@ -18,7 +18,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements ru
 
 	@Override
 	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
-		return ReflectionUtils.invoke(getMember(), target, args);
+		return ReflectionUtils.invoke(getSource(), target, args);
 	}
 
 	@Override

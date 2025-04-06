@@ -37,7 +37,7 @@ public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 
 	@Override
 	public ReflectionMethodGetter rename(String name) {
-		ReflectionMethodGetter getter = new ReflectionMethodGetter(getMember());
+		ReflectionMethodGetter getter = new ReflectionMethodGetter(getSource());
 		getter.name = name;
 		return getter;
 	}

@@ -1,6 +1,7 @@
 package run.soeasy.framework.util.io;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import run.soeasy.framework.core.Constants;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.CollectionUtils;
@@ -26,7 +26,7 @@ public final class MimeTypeUtils {
 
 	private static final Random RND = new SecureRandom();
 
-	public static Charset US_ASCII = Constants.US_ASCII;
+	public static Charset US_ASCII = StandardCharsets.US_ASCII;
 
 	/**
 	 * Comparator used by {@link #sortBySpecificity(List)}.
@@ -356,7 +356,7 @@ public final class MimeTypeUtils {
 	}
 
 	public static String generateMultipartBoundaryString() {
-		return new String(generateMultipartBoundary(), US_ASCII);
+		return new String(generateMultipartBoundary(), StandardCharsets.US_ASCII);
 	}
 
 }

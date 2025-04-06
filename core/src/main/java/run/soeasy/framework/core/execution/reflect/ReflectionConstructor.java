@@ -12,7 +12,7 @@ public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>> 
 
 	@Override
 	public Object execute(@NonNull Object... args) throws Throwable {
-		return getMember().newInstance(args);
+		return getSource().newInstance(args);
 	}
 
 }

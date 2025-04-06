@@ -1,6 +1,7 @@
 package run.soeasy.framework.core.execution;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.param.Parameters;
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.ObjectUtils;
 

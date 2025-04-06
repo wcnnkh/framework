@@ -1,117 +1,46 @@
 package run.soeasy.framework.util.check;
 
-import java.util.Comparator;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.function.Supplier;
 
-import run.soeasy.framework.util.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.register.DisposableRegistration;
 
-public class ThreadLocalNestingChecker<E> extends ThreadLocal<LinkedList<E>> implements NestingChecker<E> {
+@RequiredArgsConstructor
+public class ThreadLocalNestingChecker<E> extends ThreadLocal<Collection<E>> implements NestingChecker<E> {
+	@NonNull
+	private final Supplier<? extends Collection<E>> supplier;
 
-	private Comparator<E> comparator = (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1;
-
-	/**
-	 * 0表示不检查
-	 */
-	private int inspectionDepth;
-
-	/**
-	 * 默认检查最后一个
-	 */
 	public ThreadLocalNestingChecker() {
-		this(1);
-	}
-
-	/**
-	 * @param inspectionDepth 0表示不检查 -1表示检查所有
-	 */
-	public ThreadLocalNestingChecker(int inspectionDepth) {
-		this.inspectionDepth = inspectionDepth;
-	}
-
-	public Comparator<E> getComparator() {
-		return comparator;
-	}
-
-	public void setComparator(Comparator<E> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		this.comparator = comparator;
-	}
-
-	public int getInspectionDepth() {
-		return inspectionDepth;
+		this(HashSet::new);
 	}
 
 	@Override
 	public boolean isNestingExists(E element) {
-		return isNestingExists(element, getInspectionDepth(), getComparator());
+		Collection<E> collection = get();
+		return collection == null ? false : collection.contains(element);
 	}
-
-	public boolean isNestingExists(E element, int inspectionDepth, Comparator<? super E> comparator) {
-		if (element == null) {
-			return false;
-		}
-
-		LinkedList<E> list = get();
-		if (list == null) {
-			return false;
-		}
-
-		int depth = 0;
-		ListIterator<E> listIterator = list.listIterator(list.size());
-		while (listIterator.hasPrevious()) {
-			E e = listIterator.previous();
-			if (inspectionDepth >= 0 && depth >= inspectionDepth) {
-				return false;
-			}
-
-			if (comparator.compare(element, e) == 0) {
-				return true;
-			}
-			depth++;
-		}
-		return false;
-	}
-
+	
 	@Override
 	public Registration registerNestedElement(E element) {
 		if (element == null) {
 			return Registration.FAILURE;
 		}
 
-		LinkedList<E> list = get();
-		if (list == null) {
-			list = new LinkedList<E>();
-			set(list);
+		Collection<E> collection = get();
+		if (collection == null) {
+			collection = supplier.get();
+			set(collection);
 		}
-		list.add(element);
-		return new DisposableRegistration(() -> stackOut(element));
+		
+		if(collection.add(element)) {
+			return new DisposableRegistration(() -> collection.remove(element));
+		}
+		return Registration.FAILURE;
 	}
-
-	public void setInspectionDepth(int inspectionDepth) {
-		this.inspectionDepth = inspectionDepth;
-	}
-
-	public void stackOut(E element) {
-		LinkedList<E> list = get();
-		if (list == null) {
-			throw new IllegalStateException("remove nesting element " + element);
-		}
-
-		E nesting = list.getLast();
-		if (!ObjectUtils.equals(element, nesting)) {
-			throw new IllegalStateException("remove nesting [" + nesting + "] conversion service [" + element + "]");
-		}
-
-		list.removeLast();
-		if (list.isEmpty()) {
-			remove();
-		} else {
-			set(list);
-		}
-	}
-
 }

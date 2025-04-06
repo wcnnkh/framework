@@ -2,6 +2,7 @@ package run.soeasy.framework.messaging;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import run.soeasy.framework.core.Constants;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
@@ -97,7 +97,7 @@ public final class ContentDisposition {
 			sb.append(this.name).append('\"');
 		}
 		if (this.filename != null) {
-			if (this.charset == null || Constants.US_ASCII.equals(this.charset)) {
+			if (this.charset == null || StandardCharsets.US_ASCII.equals(this.charset)) {
 				sb.append("; filename=\"");
 				sb.append(escapeQuotationsInFilename(this.filename)).append('\"');
 			} else {
@@ -162,12 +162,12 @@ public final class ContentDisposition {
 					int idx2 = value.indexOf('\'', idx1 + 1);
 					if (idx1 != -1 && idx2 != -1) {
 						charset = Charset.forName(value.substring(0, idx1).trim());
-						Assert.isTrue(Constants.UTF_8.equals(charset) || Constants.ISO_8859_1.equals(charset),
+						Assert.isTrue(StandardCharsets.UTF_8.equals(charset) || StandardCharsets.ISO_8859_1.equals(charset),
 								"Charset should be UTF-8 or ISO-8859-1");
 						filename = decodeFilename(value.substring(idx2 + 1), charset);
 					} else {
 						// US ASCII
-						filename = decodeFilename(value, Constants.US_ASCII);
+						filename = decodeFilename(value, StandardCharsets.US_ASCII);
 					}
 				} else if (attribute.equals("filename") && (filename == null)) {
 					filename = value;
@@ -287,8 +287,8 @@ public final class ContentDisposition {
 	private static String encodeFilename(String input, Charset charset) {
 		Assert.notNull(input, "`input` is required");
 		Assert.notNull(charset, "`charset` is required");
-		Assert.isTrue(!Constants.US_ASCII.equals(charset), "ASCII does not require encoding");
-		Assert.isTrue(Constants.UTF_8.equals(charset) || Constants.ISO_8859_1.equals(charset),
+		Assert.isTrue(!StandardCharsets.US_ASCII.equals(charset), "ASCII does not require encoding");
+		Assert.isTrue(StandardCharsets.UTF_8.equals(charset) || StandardCharsets.ISO_8859_1.equals(charset),
 				"Only UTF-8 and ISO-8859-1 supported.");
 		byte[] source = input.getBytes(charset);
 		int len = source.length;

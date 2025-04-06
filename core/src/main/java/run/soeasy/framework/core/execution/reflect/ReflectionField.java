@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.annotation.MergedAnnotations;
+import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
-public abstract class ReflectionField extends ReflectionMember<Field> implements PropertyDescriptor, Serializable {
+public abstract class ReflectionField extends ReflectionMember<Field>
+		implements PropertyDescriptor, AnnotatedElementWrapper<Field>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final Class<?> declaringClass;
@@ -22,11 +23,11 @@ public abstract class ReflectionField extends ReflectionMember<Field> implements
 	}
 
 	@Override
-	public Field getMember() {
-		Field field = super.getMember();
+	public Field getSource() {
+		Field field = super.getSource();
 		if (field == null) {
 			synchronized (this) {
-				field = super.getMember();
+				field = super.getSource();
 				if (field == null) {
 					field = ReflectionUtils.getField(declaringClass, name);
 				}
@@ -50,20 +51,6 @@ public abstract class ReflectionField extends ReflectionMember<Field> implements
 		return Elements.empty();
 	}
 
-	private volatile MergedAnnotations annotations;
-
-	@Override
-	public MergedAnnotations getAnnotations() {
-		if (annotations == null) {
-			synchronized (this) {
-				if (annotations == null) {
-					annotations = MergedAnnotations.from(getMember());
-				}
-			}
-		}
-		return annotations;
-	}
-
 	private volatile TypeDescriptor typeDescriptor;
 
 	@Override
@@ -71,7 +58,7 @@ public abstract class ReflectionField extends ReflectionMember<Field> implements
 		if (typeDescriptor == null) {
 			synchronized (this) {
 				if (typeDescriptor == null) {
-					typeDescriptor = new TypeDescriptor(getMember());
+					typeDescriptor = TypeDescriptor.forFieldType(getSource());
 				}
 			}
 		}

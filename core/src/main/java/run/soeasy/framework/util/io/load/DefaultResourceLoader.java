@@ -3,7 +3,7 @@ package run.soeasy.framework.util.io.load;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import run.soeasy.framework.lang.ClassLoaderProvider;
+import lombok.Getter;
 import run.soeasy.framework.lang.DefaultClassLoaderAccessor;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
@@ -14,34 +14,19 @@ import run.soeasy.framework.util.io.UrlResource;
 import run.soeasy.framework.util.spi.Configurable;
 import run.soeasy.framework.util.spi.ServiceLoaderDiscovery;
 
-public class DefaultResourceLoader extends DefaultClassLoaderAccessor
-		implements ConfigurableResourceLoader, Configurable {
-	private final ConfigurableProtocolResolver protocolResolver = new ConfigurableProtocolResolver();
-
-	public DefaultResourceLoader() {
-	}
-
-	public DefaultResourceLoader(ClassLoader classLoader) {
-		super(classLoader);
-	}
-
-	public DefaultResourceLoader(ClassLoaderProvider classLoaderProvider) {
-		super(classLoaderProvider);
-	}
+@Getter
+public class DefaultResourceLoader extends DefaultClassLoaderAccessor implements ResourceLoader, Configurable {
+	private final ProtocolResolvers protocolResolvers = new ProtocolResolvers();
 
 	@Override
 	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
-		return protocolResolver.doConfigure(discovery);
-	}
-
-	public ConfigurableProtocolResolver getProtocolResolver() {
-		return protocolResolver;
+		return protocolResolvers.doConfigure(discovery);
 	}
 
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
 
-		Resource resource = protocolResolver.resolve(location, this);
+		Resource resource = protocolResolvers.resolve(location, this);
 		if (resource != null) {
 			return resource;
 		}
