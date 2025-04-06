@@ -2,7 +2,7 @@ package run.soeasy.framework.core;
 
 import java.lang.annotation.Annotation;
 
-import run.soeasy.framework.core.convert.transform.stereotype.Properties;
+import run.soeasy.framework.core.transform.stereotype.Properties;
 
 public interface SynthesizedAnnotation extends Annotation {
 	public static <A extends Annotation> A synthesize(Class<A> annotationType, Iterable<? extends A> annotations) {

@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.transform.mapping.MappingDescriptor;
+import run.soeasy.framework.core.transform.mapping.MappingDescriptor;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.collections.Reloadable;

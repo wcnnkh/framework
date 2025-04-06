@@ -1,12 +1,12 @@
 package run.soeasy.framework.core.execution.resolver;
 
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyFactory;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyPropertyFactories;
 import run.soeasy.framework.core.param.Parameter;
 import run.soeasy.framework.core.param.ParameterDescriptorTemplate;
 import run.soeasy.framework.core.param.Parameters;
+import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.stereotype.PropertyFactory;
+import run.soeasy.framework.core.transform.stereotype.PropertyPropertyFactories;
 import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.Receipts;

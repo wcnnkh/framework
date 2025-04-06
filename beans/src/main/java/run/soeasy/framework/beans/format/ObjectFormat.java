@@ -22,7 +22,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
 import run.soeasy.framework.core.convert.support.DefaultConversionService;
-import run.soeasy.framework.core.convert.transform.mapping.FieldDescriptor;
+import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.CollectionUtils;

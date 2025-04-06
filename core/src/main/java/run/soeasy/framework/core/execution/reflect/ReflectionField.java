@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import lombok.NonNull;
 import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 

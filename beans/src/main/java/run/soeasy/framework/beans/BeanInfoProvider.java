@@ -5,7 +5,7 @@ import java.beans.IntrospectionException;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.transform.mapping.MappingTemplateProvider;
+import run.soeasy.framework.core.transform.mapping.MappingTemplateProvider;
 
 public interface BeanInfoProvider
 		extends BeanInfoFactory, MappingTemplateProvider<BeanPropertyDescriptor, BeanMapping> {

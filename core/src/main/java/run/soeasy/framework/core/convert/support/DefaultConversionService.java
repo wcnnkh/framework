@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert.support;
 
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.service.ConversionServices;
+import run.soeasy.framework.core.convert.service.ConifgurableConversionService;
 import run.soeasy.framework.core.convert.support.date.ConfigurableDateCodecResolver;
 import run.soeasy.framework.core.convert.support.date.ConfigurableZoneOffsetResolver;
 import run.soeasy.framework.core.convert.support.date.DateFormatConversionService;
@@ -16,7 +16,7 @@ import run.soeasy.framework.util.reflect.ReflectionUtils;
  * @author shuchaowen
  *
  */
-public class DefaultConversionService extends ConversionServices {
+public class DefaultConversionService extends ConifgurableConversionService {
 
 	private static volatile DefaultConversionService instance;
 

@@ -10,7 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.collections.Elements;
 

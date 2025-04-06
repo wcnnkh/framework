@@ -5,8 +5,8 @@ import java.lang.annotation.Annotation;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.transform.stereotype.Properties;
-import run.soeasy.framework.core.convert.transform.stereotype.Properties.PropertiesWrapper;
+import run.soeasy.framework.core.transform.stereotype.Properties;
+import run.soeasy.framework.core.transform.stereotype.Properties.PropertiesWrapper;
 
 @Getter
 @RequiredArgsConstructor

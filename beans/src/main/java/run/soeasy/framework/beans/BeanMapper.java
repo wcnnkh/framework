@@ -1,6 +1,6 @@
 package run.soeasy.framework.beans;
 
-import run.soeasy.framework.core.convert.transform.mapping.DefaultMapper;
+import run.soeasy.framework.core.transform.mapping.DefaultMapper;
 
 public class BeanMapper extends DefaultMapper {
 

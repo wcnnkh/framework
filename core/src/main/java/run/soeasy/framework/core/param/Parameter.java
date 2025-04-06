@@ -5,8 +5,8 @@ import java.util.function.Predicate;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.transform.stereotype.Property;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.util.StringUtils;
 
 public interface Parameter extends ParameterDescriptor, Property, Predicate<ParameterDescriptor> {

@@ -6,8 +6,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.core.MergedAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.core.param.ParameterDescriptor;
+import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.util.collections.Elements;
 
 public interface Getter extends Executable, PropertyDescriptor {

@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.transform.stereotype.Properties;
-import run.soeasy.framework.core.convert.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.stereotype.Properties;
+import run.soeasy.framework.core.transform.stereotype.Property;
 import run.soeasy.framework.util.collections.Elements;
 
 @AllArgsConstructor

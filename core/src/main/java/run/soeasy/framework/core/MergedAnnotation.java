@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.stereotype.Property;
 import run.soeasy.framework.util.collections.ArrayUtils;
 import run.soeasy.framework.util.collections.Elements;
 import run.soeasy.framework.util.collections.LRULinkedHashMap;

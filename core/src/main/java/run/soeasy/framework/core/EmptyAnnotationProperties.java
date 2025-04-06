@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.transform.stereotype.Properties.EmptyProperties;
+import run.soeasy.framework.core.transform.stereotype.Properties.EmptyProperties;
 
 @RequiredArgsConstructor
 @Getter

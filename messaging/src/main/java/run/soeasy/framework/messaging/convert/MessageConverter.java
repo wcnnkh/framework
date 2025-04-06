@@ -1,7 +1,7 @@
 package run.soeasy.framework.messaging.convert;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.transform.stereotype.AccessDescriptor;
+import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
 import run.soeasy.framework.messaging.MediaTypes;
 import run.soeasy.framework.messaging.Message;
 
