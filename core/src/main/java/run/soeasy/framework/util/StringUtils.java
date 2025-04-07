@@ -18,7 +18,6 @@ import lombok.NonNull;
 import run.soeasy.framework.util.collections.ArrayUtils;
 import run.soeasy.framework.util.collections.CollectionUtils;
 import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.placeholder.PlaceholderFormat;
 
 public final class StringUtils {
 	private static final String CURRENT_PATH = ".";
@@ -1252,15 +1251,11 @@ public final class StringUtils {
 	 * @param paths
 	 * @return
 	 */
-	public static String mergePaths(@NonNull Collection<String> paths, PlaceholderFormat placeholderFormat) {
+	public static String mergePaths(@NonNull Iterable<? extends String> paths) {
 		StringBuilder sb = new StringBuilder();
 		for (String path : paths) {
 			if (StringUtils.isEmpty(path)) {
 				continue;
-			}
-
-			if (placeholderFormat != null) {
-				path = placeholderFormat.replacePlaceholders(path);
 			}
 
 			path = StringUtils.cleanPath(path);
@@ -1272,8 +1267,8 @@ public final class StringUtils {
 		return cleanPath(sb.toString());
 	}
 
-	public static String mergePaths(String... paths) {
-		return mergePaths(Arrays.asList(paths), null);
+	public static String mergePaths(@NonNull String... paths) {
+		return mergePaths(Arrays.asList(paths));
 	}
 
 	/**

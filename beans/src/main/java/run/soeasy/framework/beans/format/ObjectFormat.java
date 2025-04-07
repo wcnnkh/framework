@@ -21,7 +21,7 @@ import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
@@ -34,7 +34,7 @@ import run.soeasy.framework.util.reflect.ReflectionUtils;
 @Setter
 public abstract class ObjectFormat implements PairFormat<String, Source>, ConversionServiceAware {
 	@NonNull
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	@Override
 	public final String format(Stream<KeyValue<String, Source>> source) {

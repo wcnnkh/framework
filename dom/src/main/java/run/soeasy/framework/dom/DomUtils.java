@@ -11,7 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.env.Environment;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.function.Function;
@@ -178,53 +177,6 @@ public final class DomUtils {
 			properties.put(n.getNodeName(), n);
 		}
 		return properties;
-	}
-
-	public static String formatNodeValue(Environment environment, Node node, String value) {
-		if (StringUtils.isEmpty(value)) {
-			return value;
-		}
-
-		Source nodeValue = getNodeAttributeValue(node, "replace");
-		if (nodeValue == null || !nodeValue.getAsBoolean()) {
-			return value;
-		}
-		return environment.replacePlaceholders(value);
-	}
-
-	public static Source getNodeAttributeValue(Environment environment, Node node, String name) {
-		Source value = getNodeAttributeValue(node, name);
-		if (value == null) {
-			return value;
-		}
-		String str = value.getAsString();
-		str = formatNodeValue(environment, node, str);
-		return Source.of(str);
-	}
-
-	public static String getNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
-		String value = getNodeAttributeValueOrNodeContent(node, name);
-		if (StringUtils.isEmpty(value)) {
-			return null;
-		}
-
-		return formatNodeValue(environment, node, value);
-	}
-
-	public static String getRequireNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
-		String value = getNodeAttributeValueOrNodeContent(node, name);
-		if (StringUtils.isEmpty(value)) {
-			throw new DomException("not found attribute " + name);
-		}
-		return formatNodeValue(environment, node, value);
-	}
-
-	public static Source getRequireNodeAttributeValue(Environment environment, Node node, String name) {
-		Source value = getNodeAttributeValue(environment, node, name);
-		if (value == null) {
-			throw new DomException("not found attribute " + name);
-		}
-		return value;
 	}
 
 	public static NodeList toNodeList(final NamedNodeMap namedNodeMap) {

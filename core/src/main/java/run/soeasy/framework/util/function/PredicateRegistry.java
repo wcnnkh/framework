@@ -1,10 +1,9 @@
-package run.soeasy.framework.util.check;
+package run.soeasy.framework.util.function;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.function.Functions;
 
 public class PredicateRegistry<T> implements Predicate<T> {
 	private Predicate<T> predicate;

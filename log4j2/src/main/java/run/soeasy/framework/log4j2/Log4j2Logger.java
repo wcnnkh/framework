@@ -6,8 +6,8 @@ import java.util.logging.LogRecord;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import run.soeasy.framework.util.io.FormatableMessage;
 import run.soeasy.framework.util.logging.AbstractLogger;
-import run.soeasy.framework.util.placeholder.FormatableMessage;
 
 public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;

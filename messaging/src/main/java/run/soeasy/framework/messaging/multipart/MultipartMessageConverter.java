@@ -21,7 +21,7 @@ import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -47,7 +47,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	private static final String LINE = "\r\n";
 	private static Logger logger = LogManager.getLogger(Logger.class);
 	@NonNull
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 	@NonNull
 	private MultipartMessageResolver multipartMessageResolver = GlobalMultipartMessageResolver.getInstance();
 	@NonNull

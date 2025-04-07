@@ -7,12 +7,12 @@ import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.spi.Providers;
 
 public class NodeWriters extends Providers<NodeWriter, DOMException> implements NodeWriter {
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	public NodeWriters() {
 		setServiceClass(NodeWriter.class);

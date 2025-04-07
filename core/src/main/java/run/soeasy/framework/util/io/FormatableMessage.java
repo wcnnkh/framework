@@ -1,4 +1,4 @@
-package run.soeasy.framework.util.placeholder;
+package run.soeasy.framework.util.io;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.ArrayUtils;
-import run.soeasy.framework.util.io.Printable;
 
 public final class FormatableMessage implements Printable<Appendable>, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;

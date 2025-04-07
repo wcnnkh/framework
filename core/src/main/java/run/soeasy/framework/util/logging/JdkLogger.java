@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import run.soeasy.framework.util.placeholder.FormatableMessage;
+import run.soeasy.framework.util.io.FormatableMessage;
 
 /**
  * 包装的jdk日志记录器

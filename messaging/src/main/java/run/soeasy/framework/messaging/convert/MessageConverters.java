@@ -14,8 +14,6 @@ import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.MediaTypes;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
-import run.soeasy.framework.util.check.NestingChecker;
-import run.soeasy.framework.util.check.ThreadLocalNestingChecker;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.io.MimeType;
 import run.soeasy.framework.util.logging.LogManager;
@@ -39,14 +37,12 @@ public class MessageConverters extends Providers<MessageConverter, ConversionExc
 
 	private static final ComparatorMessageConverter COMPARATOR_MESSAGE_CONVERTER = new ComparatorMessageConverter();
 	private static Logger logger = LogManager.getLogger(MessageConverters.class);
-	private static final NestingChecker<MessageConverter> NESTING_CHECKERS = new ThreadLocalNestingChecker<>();
 
 	@NonNull
 	private MessageConverter messageConverterAware = this;
 
 	public MessageConverters() {
 		setServiceClass(MessageConverter.class);
-		setNestingChecker(NESTING_CHECKERS);
 		setComparator(COMPARATOR_MESSAGE_CONVERTER);
 		getInjectors().register((e) -> {
 			if (e instanceof MessageConverterAware) {

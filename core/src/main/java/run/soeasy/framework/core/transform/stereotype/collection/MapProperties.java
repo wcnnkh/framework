@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.stereotype.Properties;
 import run.soeasy.framework.core.transform.stereotype.Property;
 import run.soeasy.framework.util.collections.Elements;
@@ -25,7 +25,7 @@ public class MapProperties implements Properties {
 	@NonNull
 	private final TypeDescriptor typeDescriptor;
 	@NonNull
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	@Override
 	public Elements<Property> getElements() {

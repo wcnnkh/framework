@@ -16,15 +16,15 @@ import run.soeasy.framework.util.reflect.ReflectionUtils;
  * @author shuchaowen
  *
  */
-public class DefaultConversionService extends ConifgurableConversionService {
+public class SystemConversionService extends ConifgurableConversionService {
 
-	private static volatile DefaultConversionService instance;
+	private static volatile SystemConversionService instance;
 
-	public static DefaultConversionService getInstance() {
+	public static SystemConversionService getInstance() {
 		if (instance == null) {
-			synchronized (DefaultConversionService.class) {
+			synchronized (SystemConversionService.class) {
 				if (instance == null) {
-					instance = new DefaultConversionService();
+					instance = new SystemConversionService();
 					instance.doNativeConfigure();
 				}
 			}
@@ -32,7 +32,7 @@ public class DefaultConversionService extends ConifgurableConversionService {
 		return instance;
 	}
 
-	public DefaultConversionService() {
+	public SystemConversionService() {
 		register(new ArrayToArrayConversionService(this));
 		register(new ArrayToCollectionConversionService(this));
 

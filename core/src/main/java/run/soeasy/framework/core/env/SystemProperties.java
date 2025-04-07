@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.stereotype.collection;
+package run.soeasy.framework.core.env;
 
 import run.soeasy.framework.core.transform.stereotype.Properties;
 import run.soeasy.framework.core.transform.stereotype.Property;

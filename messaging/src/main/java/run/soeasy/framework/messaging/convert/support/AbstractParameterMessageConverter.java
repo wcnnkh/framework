@@ -9,7 +9,7 @@ import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.param.Parameter;
 import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.messaging.InputMessage;
@@ -22,7 +22,7 @@ import run.soeasy.framework.util.io.MimeType;
 @Setter
 public abstract class AbstractParameterMessageConverter extends AbstractMessageConverter {
 	@NonNull
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	protected abstract Object doRead(@NonNull ParameterDescriptor parameterDescriptor, @NonNull InputMessage message)
 			throws IOException;

@@ -1,6 +1,5 @@
 package io.basc.framework.beans;
 
-
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import run.soeasy.framework.util.ResolvableType;
 public class BeanUtilsTest {
 	@Test
 	public void copyTest() {
-		assertTrue(ResolvableType.forClass(List.class)
+		assertTrue(ResolvableType.forType(List.class)
 				.isAssignableFrom(ResolvableType.forClassWithGenerics(List.class, String.class)));
 		assertTrue(Object.class.isAssignableFrom(String.class));
 

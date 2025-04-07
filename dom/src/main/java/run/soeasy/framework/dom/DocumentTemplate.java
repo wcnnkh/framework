@@ -15,7 +15,7 @@ import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.dom.convert.NodeReader;
 import run.soeasy.framework.dom.convert.NodeReaders;
 import run.soeasy.framework.dom.convert.NodeWriter;
@@ -38,7 +38,7 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	private final ResourceParsers parsers = new ResourceParsers();
 	private final ResourceTransformers transformers = new ResourceTransformers();
 	@NonNull
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	@Override
 	public boolean canTransform(Node node) {

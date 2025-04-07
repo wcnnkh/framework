@@ -13,7 +13,7 @@ import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
-import run.soeasy.framework.core.convert.support.DefaultConversionService;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.util.io.MimeType;
@@ -23,7 +23,7 @@ import run.soeasy.framework.util.io.MimeType;
 public class TextMessageConverter extends AbstractTextMessageConverter<Object> implements ConversionServiceAware {
 	public static final MediaType TEXT_ALL = new MediaType("text", "*");
 	@NonNull
-	private ConversionService conversionService = DefaultConversionService.getInstance();
+	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	public TextMessageConverter() {
 		super(Object.class);

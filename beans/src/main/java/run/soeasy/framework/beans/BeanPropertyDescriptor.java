@@ -4,14 +4,15 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
+import run.soeasy.framework.core.MergedAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execution.Getter;
-import run.soeasy.framework.core.execution.Setter;
 import run.soeasy.framework.core.execution.Getter.MergedGetter;
+import run.soeasy.framework.core.execution.Setter;
 import run.soeasy.framework.core.execution.Setter.MergedSetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionFieldGetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionFieldSetter;
@@ -47,10 +48,9 @@ public class BeanPropertyDescriptor implements FieldDescriptor {
 			synchronized (this) {
 				if (typeDescriptor == null) {
 					MergedAnnotatedElement mergedAnnotatedElement = new MergedAnnotatedElement(
-							getReader().getTypeDescriptor(), getWriter().getTypeDescriptor());
-					ResolvableType resolvableType = ResolvableType.forClass(propertyDescriptor.getPropertyType());
-					this.typeDescriptor = new TypeDescriptor(resolvableType, propertyDescriptor.getPropertyType(),
-							mergedAnnotatedElement);
+							Arrays.asList(getReader().getTypeDescriptor(), getWriter().getTypeDescriptor()));
+					ResolvableType resolvableType = ResolvableType.forType(propertyDescriptor.getPropertyType());
+					this.typeDescriptor = new TypeDescriptor(resolvableType, null, mergedAnnotatedElement);
 				}
 			}
 		}
