@@ -6,24 +6,19 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import run.soeasy.framework.lang.NamedThreadLocal;
 import run.soeasy.framework.util.codec.CodecException;
 import run.soeasy.framework.util.codec.EncodeException;
 import run.soeasy.framework.util.io.IOUtils;
 
 public class MessageDigestEncoder implements BytesEncoder, Cloneable {
-	private final NamedThreadLocal<MessageDigest> threadLocal;
-
 	protected final String algorithm;
 	private byte[] secretKey;
 
 	public MessageDigestEncoder(String algorithm) {
 		this.algorithm = algorithm;
-		threadLocal = new NamedThreadLocal<MessageDigest>(algorithm);
 	}
 
 	protected MessageDigestEncoder(MessageDigestEncoder encoder) {
-		this.threadLocal = encoder.threadLocal;
 		this.algorithm = encoder.algorithm;
 		this.secretKey = encoder.secretKey;
 	}
@@ -46,29 +41,17 @@ public class MessageDigestEncoder implements BytesEncoder, Cloneable {
 	}
 
 	public MessageDigest getMessageDigest() {
-		MessageDigest messageDigest = threadLocal.get();
-		if (messageDigest != null) {
-			messageDigest.reset();
-			return messageDigest;
+		try {
+			return MessageDigest.getInstance(algorithm);
+		} catch (NoSuchAlgorithmException e) {
+			throw new CodecException(algorithm, e);
 		}
-
-		messageDigest = getMessageDigest(algorithm);
-		threadLocal.set(messageDigest);
-		return messageDigest;
 	}
 
 	public MessageDigestEncoder wrapperSecretKey(byte[] secretKey) {
 		MessageDigestEncoder signer = clone();
 		signer.secretKey = secretKey;
 		return signer;
-	}
-
-	public static MessageDigest getMessageDigest(String algorithm) {
-		try {
-			return MessageDigest.getInstance(algorithm);
-		} catch (NoSuchAlgorithmException e) {
-			throw new CodecException(algorithm, e);
-		}
 	}
 
 	@Override

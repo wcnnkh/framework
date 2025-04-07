@@ -281,6 +281,7 @@
 		<module>retry</module>
 		<module>messaging</module>
 		<module>transmittable</module>
+		<module>codec-support</module>
 	</modules>
 	<profiles>
 		<profile>

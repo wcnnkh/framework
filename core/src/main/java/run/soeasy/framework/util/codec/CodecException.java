@@ -1,8 +1,6 @@
 package run.soeasy.framework.util.codec;
 
-import run.soeasy.framework.lang.NestedRuntimeException;
-
-public class CodecException extends NestedRuntimeException {
+public class CodecException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public CodecException(String msg) {

@@ -17,16 +17,12 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import run.soeasy.framework.lang.ImpossibleException;
-import run.soeasy.framework.lang.NestedExceptionUtils;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collection.ConcurrentReferenceHashMap;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Consumer;
-import run.soeasy.framework.util.function.Supplier;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
 
 public abstract class ReflectionUtils {
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).getElements().filter((method) -> {
@@ -42,8 +38,6 @@ public abstract class ReflectionUtils {
 	 * 实体成员，忽略静态的
 	 */
 	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers());
-
-	private static volatile Logger logger;
 
 	/**
 	 * 作用域比较
@@ -426,17 +420,6 @@ public abstract class ReflectionUtils {
 		return new Fields(sourceClass, Class::getFields);
 	}
 
-	private static Logger getLogger() {
-		if (logger == null) {
-			synchronized (ReflectionUtils.class) {
-				if (logger == null) {
-					logger = LogManager.getLogger(ReflectionUtils.class);
-				}
-			}
-		}
-		return logger;
-	}
-
 	/**
 	 * @see Class#getMethod(String, Class...)
 	 * @param clazz
@@ -648,21 +631,6 @@ public abstract class ReflectionUtils {
 		return (T) invoke(results.getExecutable(), target, results.getUnsafeParams());
 	}
 
-	public static boolean isAvailable(Class<?> clazz) {
-		return isAvailable(clazz, () -> getLogger());
-	}
-
-	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
-			Supplier<? extends Logger, ? extends E> loggerSource) throws E {
-		return isAvailable(clazz, loggerSource == null ? null : (e) -> {
-			Logger logger = loggerSource.get();
-			if (logger == null) {
-				logger = getLogger();
-			}
-			isAvailableLogger(clazz, logger, e);
-		});
-	}
-
 	/**
 	 * 判断此类是否可用(会静态初始化)
 	 * 
@@ -683,19 +651,6 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 		return true;
-	}
-
-	public static boolean isAvailable(Class<?> clazz, Logger logger) {
-		return isAvailable(clazz, logger == null ? null : (e) -> isAvailableLogger(clazz, logger, e));
-	}
-
-	private static void isAvailableLogger(Class<?> clazz, Logger logger, Throwable e) {
-		if (logger.isTraceEnabled()) {
-			logger.trace(e, "This class[{}] cannot be included because:", clazz.getName());
-		} else if (logger.isDebugEnabled()) {
-			logger.debug("This class[{}] cannot be included because {}: {}", clazz.getName(),
-					NestedExceptionUtils.getRootCause(e).getClass(), NestedExceptionUtils.getNonEmptyMessage(e, false));
-		}
 	}
 
 	public static boolean isCloneable(Object source) {
@@ -969,7 +924,8 @@ public abstract class ReflectionUtils {
 	 * @throws UnsupportedOperationException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws UnsupportedOperationException {
+	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params)
+			throws UnsupportedOperationException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Assert.requiredArgument(params != null, "params");
 		Elements<ExecutableMatchingResults<Constructor<?>>> elements = matchParams(

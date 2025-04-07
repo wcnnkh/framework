@@ -15,7 +15,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import lombok.NonNull;
-import run.soeasy.framework.lang.NamedThreadLocal;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.codec.CodecException;
@@ -24,7 +23,6 @@ import run.soeasy.framework.util.io.IOUtils;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 public class CipherFactory implements Cloneable {
-	private final ThreadLocal<Cipher> threadLocal;
 	private final int opmode;
 	private final String transformation;
 	private final Object key;
@@ -45,7 +43,6 @@ public class CipherFactory implements Cloneable {
 			Object params, SecureRandom secureRandom) {
 		Assert.requiredArgument(StringUtils.hasText(transformation), "transformation");
 		Assert.requiredArgument(key != null, "key");
-		this.threadLocal = new NamedThreadLocal<Cipher>(transformation);
 		this.transformation = transformation;
 		this.provider = provider;
 		this.opmode = opmode;
@@ -55,7 +52,6 @@ public class CipherFactory implements Cloneable {
 	}
 
 	protected CipherFactory(CipherFactory cipherFactory) {
-		this.threadLocal = cipherFactory.threadLocal;
 		this.transformation = cipherFactory.transformation;
 		this.provider = cipherFactory.provider;
 		this.opmode = cipherFactory.opmode;
@@ -95,11 +91,7 @@ public class CipherFactory implements Cloneable {
 
 	public Cipher getCipher() throws CodecException, NoSuchAlgorithmException, NoSuchPaddingException,
 			NoSuchProviderException, InvalidKeyException, InvalidAlgorithmParameterException {
-		Cipher cipher = threadLocal.get();
-		if (cipher != null) {
-			return cipher;
-		}
-
+		Cipher cipher;
 		if (provider == null) {
 			cipher = Cipher.getInstance(transformation);
 		} else if (provider instanceof String) {
@@ -115,7 +107,6 @@ public class CipherFactory implements Cloneable {
 		} catch (NoSuchMethodException e) {
 			throw new CodecException(e);
 		}
-		threadLocal.set(cipher);
 		return cipher;
 	}
 

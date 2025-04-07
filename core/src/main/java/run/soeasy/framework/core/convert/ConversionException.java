@@ -1,8 +1,6 @@
 package run.soeasy.framework.core.convert;
 
-import run.soeasy.framework.lang.NestedRuntimeException;
-
-public class ConversionException extends NestedRuntimeException {
+public class ConversionException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**

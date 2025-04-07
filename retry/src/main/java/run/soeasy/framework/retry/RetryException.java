@@ -1,8 +1,6 @@
 package run.soeasy.framework.retry;
 
-import run.soeasy.framework.lang.NestedRuntimeException;
-
-public class RetryException extends NestedRuntimeException {
+public class RetryException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public RetryException(String msg, Throwable cause) {

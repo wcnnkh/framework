@@ -12,7 +12,6 @@ import java.security.Signature;
 import java.security.cert.Certificate;
 
 import lombok.NonNull;
-import run.soeasy.framework.lang.NamedThreadLocal;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.CodecException;
 import run.soeasy.framework.util.codec.EncodeException;
@@ -32,8 +31,6 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 	private final String algorithm;
 	private final Object verifyKey;
 	private final PrivateKey privateKey;
-	private final NamedThreadLocal<Signature> encodeLocal;
-	private final NamedThreadLocal<Signature> verifyLocal;
 	private final SecureRandom secureRandom;
 
 	public AsymmetricSigner(@NonNull String algorithm, PrivateKey privateKey, PublicKey publicKey) {
@@ -46,8 +43,6 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 		this.privateKey = privateKey;
 		this.verifyKey = publicKey;
 		this.secureRandom = secureRandom;
-		this.encodeLocal = new NamedThreadLocal<>(algorithm);
-		this.verifyLocal = new NamedThreadLocal<Signature>(algorithm);
 	}
 
 	public AsymmetricSigner(@NonNull String algorithm, PrivateKey privateKey, Certificate certificate) {
@@ -60,8 +55,6 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 		this.privateKey = privateKey;
 		this.verifyKey = certificate;
 		this.secureRandom = secureRandom;
-		this.encodeLocal = new NamedThreadLocal<>(algorithm);
-		this.verifyLocal = new NamedThreadLocal<Signature>(algorithm);
 	}
 
 	protected AsymmetricSigner(AsymmetricSigner signer) {
@@ -69,8 +62,6 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 		this.privateKey = signer.privateKey;
 		this.verifyKey = signer.verifyKey;
 		this.secureRandom = signer.secureRandom;
-		this.encodeLocal = signer.encodeLocal;
-		this.verifyLocal = signer.verifyLocal;
 	}
 
 	@Override
@@ -79,33 +70,22 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 	}
 
 	public Signature getEncodeSignature() throws CodecException {
-		Signature signature = encodeLocal.get();
-		if (signature != null) {
-			return signature;
-		}
-
 		try {
-			signature = Signature.getInstance(algorithm);
+			Signature signature = Signature.getInstance(algorithm);
 			if (secureRandom == null) {
 				signature.initSign(privateKey);
 			} else {
 				signature.initSign(privateKey, secureRandom);
 			}
+			return signature;
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			throw new CodecException(algorithm, e);
 		}
-		encodeLocal.set(signature);
-		return signature;
 	}
 
 	public Signature getVerifySignature() throws CodecException {
-		Signature signature = verifyLocal.get();
-		if (signature != null) {
-			return signature;
-		}
-
 		try {
-			signature = Signature.getInstance(algorithm);
+			Signature signature = Signature.getInstance(algorithm);
 			if (verifyKey instanceof PublicKey) {
 				signature.initVerify((PublicKey) verifyKey);
 			} else if (verifyKey instanceof Certificate) {
@@ -114,11 +94,10 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 				// 不支持的类型
 				throw new CodecException(verifyKey.toString());
 			}
+			return signature;
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			throw new CodecException(algorithm, e);
 		}
-		verifyLocal.set(signature);
-		return signature;
 	}
 
 	@Override

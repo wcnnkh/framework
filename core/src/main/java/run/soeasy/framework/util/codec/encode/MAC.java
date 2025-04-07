@@ -13,7 +13,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import lombok.NonNull;
-import run.soeasy.framework.lang.NamedThreadLocal;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.CodecException;
 import run.soeasy.framework.util.codec.EncodeException;
@@ -27,7 +26,6 @@ import run.soeasy.framework.util.io.IOUtils;
  *
  */
 public class MAC implements BytesEncoder, Cloneable {
-	private final NamedThreadLocal<Mac> threadLocal;
 	private final Key key;
 	private final AlgorithmParameterSpec algorithmParameterSpec;
 
@@ -47,13 +45,11 @@ public class MAC implements BytesEncoder, Cloneable {
 		Assert.requiredArgument(key != null, "key");
 		this.key = key;
 		this.algorithmParameterSpec = algorithmParameterSpec;
-		this.threadLocal = new NamedThreadLocal<Mac>(key.getAlgorithm());
 	}
 
 	protected MAC(MAC mac) {
 		this.key = mac.key;
 		this.algorithmParameterSpec = mac.algorithmParameterSpec;
-		this.threadLocal = mac.threadLocal;
 	}
 
 	public Key getKey() {
@@ -70,13 +66,14 @@ public class MAC implements BytesEncoder, Cloneable {
 	}
 
 	public Mac getMac() throws CodecException {
-		Mac mac = threadLocal.get();
-		if (mac != null) {
-			mac.reset();
-			return mac;
+		String algorithm = this.key.getAlgorithm();
+		Mac mac;
+		try {
+			mac = Mac.getInstance(algorithm);
+		} catch (NoSuchAlgorithmException e) {
+			throw new CodecException(algorithm, e);
 		}
 
-		mac = getMac(this.key.getAlgorithm());
 		try {
 			if (algorithmParameterSpec == null) {
 				mac.init(key);
@@ -87,16 +84,7 @@ public class MAC implements BytesEncoder, Cloneable {
 		} catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
 			throw new CodecException(key.getAlgorithm(), e);
 		}
-		threadLocal.set(mac);
 		return mac;
-	}
-
-	public static Mac getMac(String algorithm) throws CodecException {
-		try {
-			return Mac.getInstance(algorithm);
-		} catch (NoSuchAlgorithmException e) {
-			throw new CodecException(algorithm, e);
-		}
 	}
 
 	@Override

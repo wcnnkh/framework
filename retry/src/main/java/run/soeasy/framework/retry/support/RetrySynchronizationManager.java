@@ -1,6 +1,5 @@
 package run.soeasy.framework.retry.support;
 
-import run.soeasy.framework.lang.NamedThreadLocal;
 import run.soeasy.framework.retry.RetryContext;
 import run.soeasy.framework.retry.RetryOperations;
 
@@ -9,8 +8,7 @@ public final class RetrySynchronizationManager {
 	private RetrySynchronizationManager() {
 	}
 
-	private static final ThreadLocal<RetryContext> context = new NamedThreadLocal<RetryContext>(
-			RetrySynchronizationManager.class.getSimpleName());
+	private static final ThreadLocal<RetryContext> context = new ThreadLocal<RetryContext>();
 
 	/**
 	 * Public accessor for the locally enclosing {@link RetryContext}.

@@ -1,13 +1,11 @@
 package run.soeasy.framework.transmittable;
 
-import run.soeasy.framework.lang.NamedThreadLocal;
 import run.soeasy.framework.util.Assert;
 
 /**
  * {@link InheritableThreadLocal} subclass that exposes a specified name as
  * {@link #toString()} result (allowing for introspection).
  *
- * @see NamedThreadLocal
  */
 public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 
