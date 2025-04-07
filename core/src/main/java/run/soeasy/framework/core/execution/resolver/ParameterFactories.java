@@ -7,7 +7,7 @@ import run.soeasy.framework.core.param.Parameters;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.core.transform.stereotype.PropertyFactory;
 import run.soeasy.framework.core.transform.stereotype.PropertyPropertyFactories;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.Receipts;
 import run.soeasy.framework.util.spi.ConfigurableServices;

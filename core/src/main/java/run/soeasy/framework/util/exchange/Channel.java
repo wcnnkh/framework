@@ -2,7 +2,7 @@ package run.soeasy.framework.util.exchange;
 
 import java.util.concurrent.TimeUnit;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface Channel<T> extends Publisher<T> {
 	public static interface BatchChannel<T> extends Channel<Elements<T>>, BatchPublisher<T> {

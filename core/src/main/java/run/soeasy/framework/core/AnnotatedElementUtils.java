@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.UnsafeArrayList;
+import run.soeasy.framework.util.collection.UnsafeArrayList;
 
 public class AnnotatedElementUtils {
 	public static final AnnotatedElement EMPTY_ANNOTATED_ELEMENT = new EmptyAnnotatedElement();

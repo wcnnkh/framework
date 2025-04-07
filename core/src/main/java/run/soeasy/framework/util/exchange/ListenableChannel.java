@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.exchange;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface ListenableChannel<T> extends Channel<T>, Dispatcher<T> {
 

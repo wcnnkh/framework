@@ -7,8 +7,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.stereotype.collection.MapProperties;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Lookup;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Lookup;
 
 public interface Properties extends PropertyTemplate<Property>, Lookup<String, Property>, PropertyFactory {
 	public static class EmptyProperties implements Properties, Serializable {

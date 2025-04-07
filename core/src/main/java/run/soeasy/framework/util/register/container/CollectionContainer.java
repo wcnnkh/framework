@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Publisher;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.Registration;

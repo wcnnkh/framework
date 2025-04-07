@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.page.Paginations;
 import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 

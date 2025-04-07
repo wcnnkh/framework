@@ -11,7 +11,7 @@ import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.core.param.ParameterDescriptorTemplate;
 import run.soeasy.framework.core.param.Parameters;
 import run.soeasy.framework.util.alias.Named;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 所有执行的基类

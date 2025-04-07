@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.attribute;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface EditableAttributes<K, V> extends Attributes<K, V> {
 	public interface EditableAttributesWrapper<K, V, W extends EditableAttributes<K, V>>

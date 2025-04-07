@@ -12,7 +12,7 @@ import lombok.ToString;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface ParameterDescriptor extends PropertyDescriptor {
 	@Getter

@@ -11,9 +11,9 @@ import java.util.Map;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.AbstractMultiValueMap;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.LinkedCaseInsensitiveMap;
+import run.soeasy.framework.util.collection.AbstractMultiValueMap;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.LinkedCaseInsensitiveMap;
 
 public class Headers extends AbstractMultiValueMap<String, String, Map<String, List<String>>> implements Serializable {
 	/**

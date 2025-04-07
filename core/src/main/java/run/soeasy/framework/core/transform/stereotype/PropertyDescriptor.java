@@ -10,7 +10,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.alias.Named;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Selector;
 
 public interface PropertyDescriptor extends Named, AccessDescriptor {

@@ -25,9 +25,9 @@ import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.MultiValueMap;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.MultiValueMap;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 @Getter

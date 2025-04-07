@@ -1,7 +1,7 @@
 package run.soeasy.framework.util;
 
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Listable;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Listable;
 
 public class Throwables extends Throwable implements Listable<Throwable> {
 	private static final long serialVersionUID = 1L;

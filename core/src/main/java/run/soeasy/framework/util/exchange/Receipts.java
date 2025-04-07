@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.exchange;
 
 import run.soeasy.framework.util.Throwables;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 @FunctionalInterface
 public interface Receipts<R extends Receipt> extends Registrations<R>, Receipt {

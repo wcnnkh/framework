@@ -3,7 +3,7 @@ package run.soeasy.framework.util.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Wrapper;
 
 public interface CursorWrapper<K, T, W extends Cursor<K, T>> extends Cursor<K, T>, Wrapper<W> {

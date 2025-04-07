@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface PropertyTemplate<T extends Property> extends PropertyDescriptors<T>, Template<Object, T> {
 

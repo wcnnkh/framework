@@ -6,7 +6,7 @@ import java.util.Map;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class MapAttributes<K, V> implements EditableAttributes<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;

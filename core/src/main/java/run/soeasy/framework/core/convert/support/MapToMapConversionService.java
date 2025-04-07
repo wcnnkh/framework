@@ -14,7 +14,7 @@ import run.soeasy.framework.core.convert.service.ConditionalConversionService;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConvertiblePair;
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 

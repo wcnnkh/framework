@@ -2,7 +2,7 @@ package run.soeasy.framework.core.env;
 
 import run.soeasy.framework.core.transform.stereotype.Properties;
 import run.soeasy.framework.core.transform.stereotype.Property;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class SystemProperties implements Properties {
 	@Override

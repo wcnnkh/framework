@@ -11,7 +11,7 @@ import run.soeasy.framework.core.execution.Executor;
 import run.soeasy.framework.core.execution.Function;
 import run.soeasy.framework.core.execution.aop.ExecutionInterceptor;
 import run.soeasy.framework.core.param.ParameterDescriptor;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 对调用参数默认值的处理

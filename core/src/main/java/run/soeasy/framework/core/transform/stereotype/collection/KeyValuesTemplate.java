@@ -9,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.KeyValues;
-import run.soeasy.framework.util.collections.Elements.ElementsWrapper;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.KeyValues;
+import run.soeasy.framework.util.collection.Elements.ElementsWrapper;
 
 @RequiredArgsConstructor
 @Getter

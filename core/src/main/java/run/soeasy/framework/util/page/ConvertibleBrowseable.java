@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.Codec;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class ConvertibleBrowseable<M extends Browseable<SK, ST>, SK, ST, K, T>
 		extends ConvertibleCursor<M, SK, ST, K, T> implements Browseable<K, T> {

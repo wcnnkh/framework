@@ -7,8 +7,8 @@ import run.soeasy.framework.core.execution.Function;
 import run.soeasy.framework.core.execution.aop.jdk.JdkProxyFactory;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.ArrayUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.ArrayUtils;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 @Data

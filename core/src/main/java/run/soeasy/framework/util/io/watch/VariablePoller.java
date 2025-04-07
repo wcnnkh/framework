@@ -5,7 +5,7 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Publisher;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;
 import run.soeasy.framework.util.exchange.event.ChangeType;

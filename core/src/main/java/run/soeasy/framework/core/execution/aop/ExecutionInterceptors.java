@@ -3,7 +3,7 @@ package run.soeasy.framework.core.execution.aop;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.execution.Function;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 @Data
 public class ExecutionInterceptors implements ExecutionInterceptor {

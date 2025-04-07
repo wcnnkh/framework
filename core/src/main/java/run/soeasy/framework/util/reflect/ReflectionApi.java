@@ -11,7 +11,7 @@ import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.ConcurrentReferenceHashMap;
+import run.soeasy.framework.util.collection.ConcurrentReferenceHashMap;
 import run.soeasy.framework.util.function.Function;
 
 /**

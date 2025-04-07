@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import run.soeasy.framework.util.collections.Reloadable;
+import run.soeasy.framework.util.collection.Reloadable;
 import run.soeasy.framework.util.exchange.Registrations;
 
 @FunctionalInterface

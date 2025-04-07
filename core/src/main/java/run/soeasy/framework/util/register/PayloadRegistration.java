@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Registration;
 
 public interface PayloadRegistration<T> extends Registration {

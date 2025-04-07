@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.io.load;
 
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 import run.soeasy.framework.util.io.Resource;
 
 public class SystemResourceLoader extends DefaultResourceLoader implements ResourceLoader {

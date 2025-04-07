@@ -3,7 +3,7 @@ package run.soeasy.framework.util.io.watch;
 import java.nio.file.WatchKey;
 import java.util.Iterator;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.register.container.ArrayListContainer;
 import run.soeasy.framework.util.register.container.ElementRegistration;
 

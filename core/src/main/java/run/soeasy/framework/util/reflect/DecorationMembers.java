@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import run.soeasy.framework.util.Members;
 import run.soeasy.framework.util.ResolvableType;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public abstract class DecorationMembers<E, R extends DecorationMembers<E, R>> extends Members<E> {
 

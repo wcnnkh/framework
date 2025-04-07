@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.LinkedMultiValueMap;
-import run.soeasy.framework.util.collections.MultiValueMap;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.LinkedMultiValueMap;
+import run.soeasy.framework.util.collection.MultiValueMap;
 
 /**
  * 键值对格式化

@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.exchange.event;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.ListenableChannel;
 import run.soeasy.framework.util.exchange.Listener;
 import run.soeasy.framework.util.exchange.ListenableChannel.BatchListenableChannel;

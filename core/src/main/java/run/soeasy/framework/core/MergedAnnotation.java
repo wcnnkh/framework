@@ -13,9 +13,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.transform.stereotype.Property;
-import run.soeasy.framework.util.collections.ArrayUtils;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.LRULinkedHashMap;
+import run.soeasy.framework.util.collection.ArrayUtils;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.LRULinkedHashMap;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 @RequiredArgsConstructor

@@ -15,9 +15,9 @@ import java.util.TreeSet;
 import java.util.function.IntPredicate;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.ArrayUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.ArrayUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.Elements;
 
 public final class StringUtils {
 	private static final String CURRENT_PATH = ".";

@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Supplier;
 
 public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends CollectionContainer<E, Q>

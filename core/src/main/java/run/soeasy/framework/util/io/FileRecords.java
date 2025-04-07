@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.support.RecordCodec;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Streams;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Streams;
 import run.soeasy.framework.util.function.Consumer;
 import run.soeasy.framework.util.function.Supplier;
 

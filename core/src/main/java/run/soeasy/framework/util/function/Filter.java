@@ -5,7 +5,7 @@ import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 多对多

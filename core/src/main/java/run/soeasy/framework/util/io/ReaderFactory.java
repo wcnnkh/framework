@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Pipeline;
 import run.soeasy.framework.util.function.Wrapper;
 

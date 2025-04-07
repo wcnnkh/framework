@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 
 public abstract class AbstractAnnotationProperties<A extends Annotation> implements AnnotationProperties<A> {
 

@@ -12,8 +12,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Reloadable;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Reloadable;
 import run.soeasy.framework.util.match.StringMatcher;
 import run.soeasy.framework.util.match.StringMatchers;
 

@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 
 public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 	private final Map<String, Set<String>> aliasMap;

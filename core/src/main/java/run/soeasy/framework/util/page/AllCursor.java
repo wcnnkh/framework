@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.page;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class AllCursor<S extends Browseable<K, T>, K, T> implements Cursor<K, T> {
 	protected final S source;

@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.CloseableIterator;
+import run.soeasy.framework.util.collection.CloseableIterator;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.function.Pipeline;
 

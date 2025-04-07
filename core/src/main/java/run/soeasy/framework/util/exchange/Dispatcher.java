@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.exchange;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface Dispatcher<T> extends Publisher<T>, Listenable<T> {
 

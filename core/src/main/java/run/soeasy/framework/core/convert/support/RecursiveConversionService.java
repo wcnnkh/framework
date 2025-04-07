@@ -11,7 +11,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 
 /**
  * 递归转换

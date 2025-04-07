@@ -16,7 +16,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.Decoder;
 import run.soeasy.framework.util.codec.support.DateCodec;
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 
 public class TimeUtils extends DateCodec {
 	public static final TimeUtils YEAR = new TimeUtils(Calendar.DAY_OF_YEAR, "yyyy");

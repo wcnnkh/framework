@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.Codec;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
 

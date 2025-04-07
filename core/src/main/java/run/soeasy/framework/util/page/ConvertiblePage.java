@@ -2,7 +2,7 @@ package run.soeasy.framework.util.page;
 
 import java.util.function.Function;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class ConvertiblePage<M extends Page<SK, ST>, SK, ST, K, T> extends ConvertibleCursor<M, SK, ST, K, T>
 		implements Page<K, T> {

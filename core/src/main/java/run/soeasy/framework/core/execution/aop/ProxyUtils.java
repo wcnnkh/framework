@@ -2,7 +2,7 @@ package run.soeasy.framework.core.execution.aop;
 
 import java.lang.reflect.Method;
 
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 public class ProxyUtils {

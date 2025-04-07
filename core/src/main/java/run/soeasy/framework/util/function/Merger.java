@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 合并器

@@ -9,7 +9,7 @@ import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.Members;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public final class Fields extends ReflectionMembers<Field, Fields> {
 	@SuppressWarnings("unchecked")

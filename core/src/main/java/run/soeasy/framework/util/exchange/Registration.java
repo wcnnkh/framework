@@ -8,7 +8,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Consumer;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.function.Wrapper;

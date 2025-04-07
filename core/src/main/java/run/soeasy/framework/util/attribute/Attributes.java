@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.attribute;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Wrapper;
 
 public interface Attributes<K, V> {

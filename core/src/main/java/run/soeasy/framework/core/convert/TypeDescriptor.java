@@ -15,7 +15,7 @@ import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.ResolvableType;
-import run.soeasy.framework.util.collections.LRULinkedHashMap;
+import run.soeasy.framework.util.collection.LRULinkedHashMap;
 
 public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement> {
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(

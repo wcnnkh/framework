@@ -6,7 +6,7 @@ import java.util.function.Function;
 import lombok.NonNull;
 import lombok.ToString;
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.exchange.Registrations;
 

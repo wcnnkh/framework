@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 
 import lombok.NonNull;
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.MultiValueMap;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.MultiValueMap;
 import run.soeasy.framework.util.concurrent.AtomicEntry;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.Receipts;

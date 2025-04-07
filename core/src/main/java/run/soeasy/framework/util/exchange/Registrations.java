@@ -2,8 +2,8 @@ package run.soeasy.framework.util.exchange;
 
 import java.util.List;
 
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Listable;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Listable;
 
 @FunctionalInterface
 public interface Registrations<R extends Registration> extends Registration, Listable<R> {

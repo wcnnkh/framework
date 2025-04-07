@@ -6,7 +6,7 @@ import run.soeasy.framework.core.execution.aop.ExecutionInterceptor;
 import run.soeasy.framework.core.execution.aop.Proxy;
 import run.soeasy.framework.core.execution.aop.ProxyFactories;
 import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 
 public class JdkProxyFactory extends ProxyFactories {
 

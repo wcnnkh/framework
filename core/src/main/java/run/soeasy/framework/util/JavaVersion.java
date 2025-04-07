@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import run.soeasy.framework.lang.RequiredJavaVersion;
 import run.soeasy.framework.util.Version.JoinVersion;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.math.IntValue;
 
 public class JavaVersion extends JoinVersion implements Serializable {

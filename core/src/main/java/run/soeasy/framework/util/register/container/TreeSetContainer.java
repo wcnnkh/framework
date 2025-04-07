@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;
 import run.soeasy.framework.util.exchange.event.ChangeType;
 import run.soeasy.framework.util.register.PayloadRegistration;

@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.page;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 分页操作

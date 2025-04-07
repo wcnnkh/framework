@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class CollectionUtilsTest {

@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.page;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class SharedPageable<K, T> extends SharedPage<K, T> implements Pageable<K, T> {
 	private static final long serialVersionUID = 1L;

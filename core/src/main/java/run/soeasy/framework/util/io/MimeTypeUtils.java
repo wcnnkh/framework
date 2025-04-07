@@ -15,7 +15,7 @@ import java.util.Random;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.io.MimeType.SpecificityComparator;
 
 public final class MimeTypeUtils {

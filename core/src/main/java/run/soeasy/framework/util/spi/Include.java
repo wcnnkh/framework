@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.util.collection.ServiceLoader;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.exchange.Receipt.Receipted;
 

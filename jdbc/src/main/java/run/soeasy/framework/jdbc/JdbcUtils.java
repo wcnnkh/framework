@@ -19,8 +19,8 @@ import java.util.Enumeration;
 
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.LinkedMultiValueMap;
-import run.soeasy.framework.util.collections.MultiValueMap;
+import run.soeasy.framework.util.collection.LinkedMultiValueMap;
+import run.soeasy.framework.util.collection.MultiValueMap;
 
 public final class JdbcUtils {
 	public static Object[] getRowValues(ResultSet resultSet, int size) throws SQLException {

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.function.Optional.SharedOptional;
 
 public final class Bound<T> extends SharedOptional<T, RuntimeException> {

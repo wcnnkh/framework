@@ -17,8 +17,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.transform.mapping.MappingDescriptor;
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Reloadable;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Reloadable;
 
 @Getter
 public class BeanMapping implements BeanInfo, MappingDescriptor<BeanPropertyDescriptor>, Reloadable {

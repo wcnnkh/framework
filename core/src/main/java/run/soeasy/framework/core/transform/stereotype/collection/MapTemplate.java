@@ -5,7 +5,7 @@ import java.util.Map;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class MapTemplate<K> extends KeyValuesTemplate<K, GenericMapAccess> {
 

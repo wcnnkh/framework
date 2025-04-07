@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.collections.ResponsiveIterator;
-import run.soeasy.framework.util.collections.Streams;
+import run.soeasy.framework.util.collection.ResponsiveIterator;
+import run.soeasy.framework.util.collection.Streams;
 import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
 
 public class ResponsiveIteratorTest {

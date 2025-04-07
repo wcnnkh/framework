@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.Codec;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class ConvertiblePages<M extends Pageable<SK, ST>, SK, ST, K, T> extends ConvertiblePage<M, SK, ST, K, T>
 		implements Pageable<K, T> {

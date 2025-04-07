@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import run.soeasy.framework.util.Value;
 import run.soeasy.framework.util.Version;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public abstract class NumberValue extends Number implements Version {
 	private static final long serialVersionUID = 1L;

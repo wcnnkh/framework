@@ -4,7 +4,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Registration;
 
 /**

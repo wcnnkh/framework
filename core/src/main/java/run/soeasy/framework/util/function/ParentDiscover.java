@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.function;
 
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface ParentDiscover<T extends ParentDiscover<T>> {
 	T getParent();

@@ -14,8 +14,8 @@ import java.util.TreeSet;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.LinkedCaseInsensitiveMap;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.LinkedCaseInsensitiveMap;
 
 public class MimeType implements CharsetCapable, Comparable<MimeType>, Serializable {
 

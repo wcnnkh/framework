@@ -20,7 +20,7 @@ import run.soeasy.framework.core.execution.reflect.ReflectionMethodGetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionMethodSetter;
 import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
 import run.soeasy.framework.util.ResolvableType;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 public class BeanPropertyDescriptor implements FieldDescriptor {

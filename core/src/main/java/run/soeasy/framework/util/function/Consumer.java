@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collections.Streamable;
+import run.soeasy.framework.util.collection.Streamable;
 
 /**
  * 一个终点的定义

@@ -17,7 +17,7 @@ import run.soeasy.framework.core.transform.stereotype.TemplateTransformer;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.alias.JoinNamingStrategy;
 import run.soeasy.framework.util.alias.NamingStrategy;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 配置属性

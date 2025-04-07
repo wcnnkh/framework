@@ -20,9 +20,9 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.lang.ClassLoaderProvider;
-import run.soeasy.framework.util.collections.ArrayUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.ArrayUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.page.Browseable;
 import run.soeasy.framework.util.page.StandardBrowseable;
 import run.soeasy.framework.util.page.StandardCursor;

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.support.RecordCodec;
-import run.soeasy.framework.util.collections.CloseableIterator;
+import run.soeasy.framework.util.collection.CloseableIterator;
 import run.soeasy.framework.util.function.Functions;
 
 /**

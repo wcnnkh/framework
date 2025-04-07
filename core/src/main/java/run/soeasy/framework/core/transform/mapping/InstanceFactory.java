@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 
 /**
  * 一个实例工厂

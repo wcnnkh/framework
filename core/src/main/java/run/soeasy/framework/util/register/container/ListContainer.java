@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Supplier;
 
 public class ListContainer<E, C extends List<ElementRegistration<E>>> extends CollectionContainer<E, C>

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.io.FilenameUtils;
 
 /**

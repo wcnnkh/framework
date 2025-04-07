@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.spi;
 
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.ServiceLoader;
 import run.soeasy.framework.util.exchange.Listenable;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;
 

@@ -10,7 +10,7 @@ import run.soeasy.framework.core.AnnotationArrayAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.util.ResolvableType;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T>
 		implements AnnotatedElementWrapper<T> {

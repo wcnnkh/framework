@@ -4,7 +4,7 @@ import java.util.function.BiPredicate;
 
 import lombok.NonNull;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Wrapper;
 
 @FunctionalInterface

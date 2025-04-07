@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 
 public final class ContentDisposition {
 	private static final String INVALID_HEADER_FIELD_PARAMETER_FORMAT = "Invalid header field parameter format (as defined in RFC 5987)";

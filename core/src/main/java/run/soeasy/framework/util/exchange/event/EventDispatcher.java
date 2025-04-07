@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.AbstractChannel;
 import run.soeasy.framework.util.exchange.ListenableChannel;
 import run.soeasy.framework.util.exchange.Listener;

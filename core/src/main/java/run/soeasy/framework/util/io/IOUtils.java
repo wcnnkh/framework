@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.Streams;
+import run.soeasy.framework.util.collection.Streams;
 
 public final class IOUtils {
 	// NOTE: This class is focussed on InputStream, OutputStream, Reader and

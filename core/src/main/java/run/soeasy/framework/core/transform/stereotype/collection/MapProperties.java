@@ -12,7 +12,7 @@ import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.stereotype.Properties;
 import run.soeasy.framework.core.transform.stereotype.Property;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.register.container;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.register.LifecycleRegistration;
 import run.soeasy.framework.util.register.PayloadRegistration;

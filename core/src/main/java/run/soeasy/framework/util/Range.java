@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public final class Range<T> implements Serializable {
 	private static final long serialVersionUID = 1L;

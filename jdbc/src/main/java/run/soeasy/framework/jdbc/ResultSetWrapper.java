@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Streams;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Streams;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.function.Pipeline;
 

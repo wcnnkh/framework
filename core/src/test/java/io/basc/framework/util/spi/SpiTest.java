@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.util.collection.ServiceLoader;
 import run.soeasy.framework.util.spi.NativeServiceLoader;
 
 public class SpiTest implements SpiTestInterface {

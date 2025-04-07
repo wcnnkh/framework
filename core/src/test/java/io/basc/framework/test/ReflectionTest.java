@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import lombok.ToString;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.io.ClassPathResource;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 import run.soeasy.framework.util.sequences.uuid.UUIDSequences;

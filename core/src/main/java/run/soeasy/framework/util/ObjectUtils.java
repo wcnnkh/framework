@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import run.soeasy.framework.core.transform.mapping.InstanceFactory.CollectionFactory;
-import run.soeasy.framework.util.collections.ArrayUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 /**

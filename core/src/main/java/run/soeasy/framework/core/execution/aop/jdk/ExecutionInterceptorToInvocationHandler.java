@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 import lombok.Data;
 import run.soeasy.framework.core.execution.aop.ExecutionInterceptor;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 @Data
 final class ExecutionInterceptorToInvocationHandler implements InvocationHandler, Serializable {

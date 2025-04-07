@@ -12,7 +12,7 @@ import java.util.Map;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.comparator.CompoundComparator;
 import run.soeasy.framework.util.io.InvalidMimeTypeException;
 import run.soeasy.framework.util.io.MimeType;

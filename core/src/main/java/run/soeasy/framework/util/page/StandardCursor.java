@@ -3,7 +3,7 @@ package run.soeasy.framework.util.page;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 @Data
 @NoArgsConstructor

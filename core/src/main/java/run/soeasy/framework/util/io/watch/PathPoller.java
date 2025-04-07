@@ -9,7 +9,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Publisher;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.event.ChangeEvent;

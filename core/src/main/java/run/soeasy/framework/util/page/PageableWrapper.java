@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import run.soeasy.framework.util.codec.Codec;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public interface PageableWrapper<K, T, W extends Pageable<K, T>>
 		extends BrowseableWrapper<K, T, W>, PageWrapper<K, T, W>, Pageable<K, T> {

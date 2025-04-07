@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;

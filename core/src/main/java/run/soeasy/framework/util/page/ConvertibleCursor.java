@@ -3,7 +3,7 @@ package run.soeasy.framework.util.page;
 import java.util.function.Function;
 
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class ConvertibleCursor<M extends Cursor<SK, ST>, SK, ST, K, T> implements Cursor<K, T> {
 	protected final M source;

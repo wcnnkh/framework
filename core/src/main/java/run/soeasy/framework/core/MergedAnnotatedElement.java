@@ -7,7 +7,7 @@ import java.util.Iterator;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collections.CollectionUtils;
+import run.soeasy.framework.util.collection.CollectionUtils;
 
 @RequiredArgsConstructor
 @Getter

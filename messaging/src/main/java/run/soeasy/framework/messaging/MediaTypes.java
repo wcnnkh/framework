@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Streams;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Streams;
 import run.soeasy.framework.util.io.MimeType;
 import run.soeasy.framework.util.io.MimeTypeUtils;
 

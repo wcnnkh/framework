@@ -6,9 +6,9 @@ import java.beans.MethodDescriptor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.KeyValues;
-import run.soeasy.framework.util.collections.Elements.ElementsWrapper;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.KeyValues;
+import run.soeasy.framework.util.collection.Elements.ElementsWrapper;
 
 @RequiredArgsConstructor
 public class MethodDescriptors implements KeyValues<String, MethodDescriptor>,

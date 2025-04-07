@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.register;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Registration;
 
 public class StandardPayloadRegistration<W extends Registration, T> extends StandardRegistrationWrapper<W>

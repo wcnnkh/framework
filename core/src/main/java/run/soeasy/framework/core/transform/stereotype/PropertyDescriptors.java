@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.KeyValues;
-import run.soeasy.framework.util.collections.Listable;
+import run.soeasy.framework.util.collection.KeyValues;
+import run.soeasy.framework.util.collection.Listable;
 
 @FunctionalInterface
 public interface PropertyDescriptors<T extends PropertyDescriptor> extends KeyValues<String, T>, Listable<T> {

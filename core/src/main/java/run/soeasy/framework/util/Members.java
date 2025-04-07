@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Elements.MergedElements;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Elements.MergedElements;
 
 /**
  * 成员

@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.Elements;
+import run.soeasy.framework.util.collection.Elements;
 
 public class LoggerRegistry extends LevelRegistry implements LoggerFactory {
 	private Map<String, FacadeLogger> loggerMap = new TreeMap<String, FacadeLogger>();

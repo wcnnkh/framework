@@ -3,7 +3,7 @@ package run.soeasy.framework.util.register;
 import java.util.Arrays;
 
 import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collections.KeyValues;
+import run.soeasy.framework.util.collection.KeyValues;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.Registration;
 

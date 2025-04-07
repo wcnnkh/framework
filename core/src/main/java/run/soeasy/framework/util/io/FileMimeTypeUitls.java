@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Locale;
 
 import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collections.CollectionUtils;
-import run.soeasy.framework.util.collections.LinkedMultiValueMap;
-import run.soeasy.framework.util.collections.MultiValueMap;
+import run.soeasy.framework.util.collection.CollectionUtils;
+import run.soeasy.framework.util.collection.LinkedMultiValueMap;
+import run.soeasy.framework.util.collection.MultiValueMap;
 import run.soeasy.framework.util.io.load.SystemResourceLoader;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;

@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.spi;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collections.ServiceLoader;
+import run.soeasy.framework.util.collection.ServiceLoader;
 
 @FunctionalInterface
 public interface ServiceLoaderDiscovery {

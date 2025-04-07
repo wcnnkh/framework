@@ -7,7 +7,7 @@ import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
-import run.soeasy.framework.util.collections.ArrayUtils;
+import run.soeasy.framework.util.collection.ArrayUtils;
 
 public final class MoneyFormat implements Codec<BigDecimal, String> {
 	/**

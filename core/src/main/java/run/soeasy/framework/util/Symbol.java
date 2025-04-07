@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import run.soeasy.framework.util.alias.Named;
-import run.soeasy.framework.util.collections.Elements;
-import run.soeasy.framework.util.collections.Elements.StandardListElements;
+import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.collection.Elements.StandardListElements;
 import run.soeasy.framework.util.comparator.TypeComparator;
 
 /**
