@@ -89,7 +89,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 		TypeVariable<?>[] typeParameters = getRawType().getTypeParameters();
 		if (typeParameters.length != 0) {
 			for (int i = 0; i < typeParameters.length; i++) {
-				if(typeParameters[i].getName().equals(typeVariable.getName())) {
+				if (typeParameters[i].getName().equals(typeVariable.getName())) {
 					ResolvableType resolved = getActualTypeArgument(i);
 					if (resolved != null && resolved != NONE) {
 						return resolved;
@@ -98,20 +98,23 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 			}
 		}
 
-		ResolvableType resolved = getOwnerType().resolveTypeVariable(typeVariable);
-		if (resolved != null && resolved != NONE) {
-			return resolved;
+		ResolvableType ownerType = getOwnerType();
+		if (ownerType != null) {
+			ResolvableType resolved = ownerType.resolveTypeVariable(typeVariable);
+			if (resolved != null && resolved != NONE) {
+				return resolved;
+			}
 		}
 
 		for (ResolvableType bound : getUpperBounds()) {
-			resolved = bound.resolveTypeVariable(typeVariable);
+			ResolvableType resolved = bound.resolveTypeVariable(typeVariable);
 			if (resolved != null && resolved != NONE) {
 				return resolved;
 			}
 		}
 
 		for (ResolvableType bound : getLowerBounds()) {
-			resolved = bound.resolveTypeVariable(typeVariable);
+			ResolvableType resolved = bound.resolveTypeVariable(typeVariable);
 			if (resolved != null && resolved != NONE) {
 				return resolved;
 			}

@@ -7,7 +7,9 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import run.soeasy.framework.util.KeyValue;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collections.Elements;
@@ -19,6 +21,10 @@ public class LevelRegistry implements LevelFactory, Reloadable {
 	@NonNull
 	private volatile StringMatcher nameMatcher = StringMatchers.PREFIX;
 	private volatile Map<String, Level> levelMap;
+	@Getter
+	@Setter
+	@NonNull
+	private Level defaultLevel = Levels.INFO.getValue();
 
 	public StringMatcher getNameMatcher() {
 		return nameMatcher;
@@ -94,14 +100,8 @@ public class LevelRegistry implements LevelFactory, Reloadable {
 
 	@Override
 	public Level getLevel(@NonNull String name) {
-		if (levelMap == null) {
-			synchronized (this) {
-				if (levelMap == null) {
-					return internalGetLevel(name);
-				}
-			}
-		}
-		return internalGetLevel(name);
+		Level level = levelMap == null ? null : internalGetLevel(name);
+		return level == null ? defaultLevel : level;
 	}
 
 }
