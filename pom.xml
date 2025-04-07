@@ -53,66 +53,15 @@
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-nop -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>7.3.1</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/cglib/cglib -->
-			<dependency>
-				<groupId>cglib</groupId>
-				<artifactId>cglib</artifactId>
-				<version>3.3.0</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.ws.rs</groupId>
-				<artifactId>javax.ws.rs-api</artifactId>
-				<version>2.1.1</version>
-			</dependency>
-			<!-- tomcat -->
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-el</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-websocket</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-core</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-jasper</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>core</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>net</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
@@ -123,31 +72,6 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>jdbc</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>log4j2</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>cloud</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>web</artifactId>
-				<version>1.8.4</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>tomcat</artifactId>
 				<version>1.8.4</version>
 			</dependency>
 			<dependency>
@@ -231,29 +155,9 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.11.0</version>
 				</plugin>
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>jarjar-maven-plugin</artifactId>
-					<version>1.9</version>
-				</plugin>
-				<!-- 打包成war时使用的插件 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>3.3.2</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<packagingExcludes>
-							WEB-INF/lib/tomcat-*.jar
-						</packagingExcludes>
-				</configuration>
-			</plugin>
 			<plugin>
 				<!-- java编译插件 -->
 				<groupId>org.apache.maven.plugins</groupId>
@@ -268,20 +172,15 @@
 	</build>
 	<modules>
 		<module>core</module>
-		<module>web</module>
-		<module>log4j</module>
-		<module>log4j2</module>
 		<module>slf4j</module>
 		<module>dom</module>
 		<module>xml</module>
 		<module>testing</module>
 		<module>jdbc</module>
-		<module>net</module>
 		<module>beans</module>
 		<module>retry</module>
 		<module>messaging</module>
 		<module>transmittable</module>
-		<module>codec-support</module>
 	</modules>
 	<profiles>
 		<profile>
