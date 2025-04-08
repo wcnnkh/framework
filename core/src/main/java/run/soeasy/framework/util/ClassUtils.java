@@ -787,20 +787,6 @@ public final class ClassUtils {
 		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
 	}
 
-	/**
-	 * 此类是否可用
-	 * 
-	 * @see JavaVersion#isSupported(Class)
-	 * @param clazz
-	 * @return
-	 */
-	public static boolean isAvailable(Class<?> clazz) {
-		if (clazz == null) {
-			return false;
-		}
-		return JavaVersion.isSupported(clazz);
-	}
-
 	public static boolean isBoolean(Type type) {
 		return type == boolean.class || type == Boolean.class;
 	}

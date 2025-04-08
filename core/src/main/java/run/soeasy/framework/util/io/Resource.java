@@ -153,6 +153,7 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 		}
 	}
 
+	public static final String EXTENSION_SEPARATOR = ".";
 	public static final String FOLDER_SEPARATOR = "/";
 	public static final String URL_PROTOCOL_FILE = "file";
 
@@ -162,6 +163,29 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 		}
 		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
 		return (separatorIndex != -1 ? path.substring(separatorIndex + 1) : path);
+	}
+
+	/**
+	 * Extract the filename extension from the given path, e.g. "mypath/myfile.txt"
+	 * -&gt; "txt".
+	 * 
+	 * @param path the file path (may be {@code null})
+	 * @return the extracted filename extension, or {@code null} if none
+	 */
+	public static String getExtension(String path) {
+		if (path == null) {
+			return null;
+		}
+
+		int extIndex = path.lastIndexOf(EXTENSION_SEPARATOR);
+		if (extIndex == -1) {
+			return null;
+		}
+		int folderIndex = path.lastIndexOf(FOLDER_SEPARATOR);
+		if (folderIndex > extIndex) {
+			return null;
+		}
+		return path.substring(extIndex + 1);
 	}
 
 	/**

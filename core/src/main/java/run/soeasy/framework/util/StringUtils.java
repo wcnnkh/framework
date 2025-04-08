@@ -24,8 +24,6 @@ public final class StringUtils {
 
 	public static final String[] EMPTY_ARRAY = new String[0];
 
-	private static final char EXTENSION_SEPARATOR = '.';
-
 	private static final String FOLDER_SEPARATOR = "/";
 
 	private static final String TOP_PATH = "..";
@@ -52,74 +50,6 @@ public final class StringUtils {
 		} else {
 			return relativePath;
 		}
-	}
-
-	/**
-	 * Convenience method to return a String array as a CSV String. E.g. useful for
-	 * {@code toString()} implementations.
-	 * 
-	 * @param arr the array to display
-	 * @return the delimited String
-	 */
-	public static String arrayToCommaDelimitedString(Object[] arr) {
-		return arrayToDelimitedString(arr, ",");
-	}
-
-	/**
-	 * Convenience method to return a String array as a delimited (e.g. CSV) String.
-	 * E.g. useful for {@code toString()} implementations.
-	 * 
-	 * @param arr   the array to display
-	 * @param delim the delimiter to use (probably a ",")
-	 * @return the delimited String
-	 */
-	public static String arrayToDelimitedString(Object[] arr, String delim) {
-		if (ObjectUtils.isEmpty(arr)) {
-			return "";
-		}
-		if (arr.length == 1) {
-			return ObjectUtils.toString(arr[0]);
-		}
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < arr.length; i++) {
-			if (i > 0) {
-				sb.append(delim);
-			}
-			sb.append(arr[i]);
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * Capitalize a {@code String}, changing the first letter to upper case as per
-	 * {@link Character#toUpperCase(char)}. No other letters are changed.
-	 * 
-	 * @param str the {@code String} to capitalize
-	 * @return the capitalized {@code String}
-	 */
-	public static String capitalize(String str) {
-		return changeFirstCharacterCase(str, true);
-	}
-
-	private static String changeFirstCharacterCase(String str, boolean capitalize) {
-		if (isEmpty(str)) {
-			return str;
-		}
-
-		char baseChar = str.charAt(0);
-		char updatedChar;
-		if (capitalize) {
-			updatedChar = Character.toUpperCase(baseChar);
-		} else {
-			updatedChar = Character.toLowerCase(baseChar);
-		}
-		if (baseChar == updatedChar) {
-			return str;
-		}
-
-		char[] chars = str.toCharArray();
-		chars[0] = updatedChar;
-		return new String(chars, 0, chars.length);
 	}
 
 	/**
@@ -266,29 +196,6 @@ public final class StringUtils {
 		}
 	}
 
-	/**
-	 * Concatenate the given String arrays into one, with overlapping array elements
-	 * included twice.
-	 * <p>
-	 * The order of elements in the original arrays is preserved.
-	 * 
-	 * @param array1 the first array (can be {@code null})
-	 * @param array2 the second array (can be {@code null})
-	 * @return the new array ({@code null} if both given arrays were {@code null})
-	 */
-	public static String[] concatenateStringArrays(String[] array1, String[] array2) {
-		if (ObjectUtils.isEmpty(array1)) {
-			return array2;
-		}
-		if (ObjectUtils.isEmpty(array2)) {
-			return array1;
-		}
-		String[] newArr = new String[array1.length + array2.length];
-		System.arraycopy(array1, 0, newArr, 0, array1.length);
-		System.arraycopy(array2, 0, newArr, array1.length, array2.length);
-		return newArr;
-	}
-
 	public static boolean contains(String text, String index, boolean ignoreCase) {
 		if (text == null || index == null) {
 			return text == index;
@@ -339,76 +246,6 @@ public final class StringUtils {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * 把unicode 转成中文
-	 * 
-	 * @return
-	 */
-	public static String convertUnicode(String ori) {
-		char aChar;
-		int len = ori.length();
-		StringBuffer outBuffer = new StringBuffer(len);
-		for (int x = 0; x < len;) {
-			aChar = ori.charAt(x++);
-			if (aChar == '\\') {
-				aChar = ori.charAt(x++);
-				if (aChar == 'u') {
-					// Read the xxxx
-					int value = 0;
-					for (int i = 0; i < 4; i++) {
-						aChar = ori.charAt(x++);
-						switch (aChar) {
-						case '0':
-						case '1':
-						case '2':
-						case '3':
-						case '4':
-						case '5':
-						case '6':
-						case '7':
-						case '8':
-						case '9':
-							value = (value << 4) + aChar - '0';
-							break;
-						case 'a':
-						case 'b':
-						case 'c':
-						case 'd':
-						case 'e':
-						case 'f':
-							value = (value << 4) + 10 + aChar - 'a';
-							break;
-						case 'A':
-						case 'B':
-						case 'C':
-						case 'D':
-						case 'E':
-						case 'F':
-							value = (value << 4) + 10 + aChar - 'A';
-							break;
-						default:
-							throw new IllegalArgumentException("Malformed   \\uxxxx   encoding.");
-						}
-					}
-					outBuffer.append((char) value);
-				} else {
-					if (aChar == 't')
-						aChar = '\t';
-					else if (aChar == 'r')
-						aChar = '\r';
-					else if (aChar == 'n')
-						aChar = '\n';
-					else if (aChar == 'f')
-						aChar = '\f';
-					outBuffer.append(aChar);
-				}
-			} else
-				outBuffer.append(aChar);
-
-		}
-		return outBuffer.toString();
 	}
 
 	public static int count(CharSequence charSequence, CharSequence target) {
@@ -643,46 +480,9 @@ public final class StringUtils {
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
-	/**
-	 * Extract the filename from the given path, e.g. "mypath/myfile.txt" --&gt;
-	 * "myfile.txt".
-	 * 
-	 * @param path the file path (may be {@code null})
-	 * @return the extracted filename, or {@code null} if none
-	 */
-	public static String getFilename(String path) {
-		if (path == null) {
-			return null;
-		}
-		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		return (separatorIndex != -1 ? path.substring(separatorIndex + 1) : path);
-	}
-
 	// ---------------------------------------------------------------------
 	// Convenience methods for working with formatted Strings
 	// ---------------------------------------------------------------------
-
-	/**
-	 * Extract the filename extension from the given path, e.g. "mypath/myfile.txt"
-	 * -&gt; "txt".
-	 * 
-	 * @param path the file path (may be {@code null})
-	 * @return the extracted filename extension, or {@code null} if none
-	 */
-	public static String getFilenameExtension(String path) {
-		if (path == null) {
-			return null;
-		}
-		int extIndex = path.lastIndexOf(EXTENSION_SEPARATOR);
-		if (extIndex == -1) {
-			return null;
-		}
-		int folderIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		if (folderIndex > extIndex) {
-			return null;
-		}
-		return path.substring(extIndex + 1);
-	}
 
 	/**
 	 * Check whether the given CharSequence has actual text. More specifically,
@@ -1429,47 +1229,6 @@ public final class StringUtils {
 		return sb.toString();
 	}
 
-	/**
-	 * 颠倒字符串
-	 * 
-	 * @param str
-	 * @return
-	 */
-	public static String reversed(String str) {
-		if (isEmpty(str)) {
-			return str;
-		}
-
-		return new String(reversedCharArray(str.toCharArray()));
-	}
-
-	public static char[] reversedCharArray(char[] array) {
-		if (array == null) {
-			return array;
-		}
-
-		char[] newArray = new char[array.length];
-		int index = 0;
-		for (int i = newArray.length - 1; i >= 0; i--, index++) {
-			newArray[index] = array[i];
-		}
-		return newArray;
-	}
-
-	/**
-	 * Turn given source String array into sorted array.
-	 * 
-	 * @param array the source array
-	 * @return the sorted array (never {@code null})
-	 */
-	public static String[] sortStringArray(String[] array) {
-		if (ObjectUtils.isEmpty(array)) {
-			return EMPTY_ARRAY;
-		}
-		Arrays.sort(array);
-		return array;
-	}
-
 	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, boolean trimTokens,
 			boolean ignoreEmptyTokens, CharSequence... filters) {
 		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
@@ -1566,28 +1325,6 @@ public final class StringUtils {
 		String lcStr = str.substring(0, prefix.length()).toLowerCase();
 		String lcPrefix = prefix.toLowerCase();
 		return lcStr.equals(lcPrefix);
-	}
-
-	/**
-	 * Strip the filename extension from the given path, e.g. "mypath/myfile.txt"
-	 * -&gt; "mypath/myfile".
-	 * 
-	 * @param path the file path (may be {@code null})
-	 * @return the path with stripped filename extension, or {@code null} if none
-	 */
-	public static String stripFilenameExtension(String path) {
-		if (path == null) {
-			return null;
-		}
-		int extIndex = path.lastIndexOf(EXTENSION_SEPARATOR);
-		if (extIndex == -1) {
-			return path;
-		}
-		int folderIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		if (folderIndex > extIndex) {
-			return path;
-		}
-		return path.substring(0, extIndex);
 	}
 
 	/**
@@ -1696,22 +1433,6 @@ public final class StringUtils {
 		return new String(chars);
 	}
 
-	public static String toString(Object value, Object defaultValue) {
-		return toString(value, defaultValue, true);
-	}
-
-	public static String toString(Object value, Object defaultValue, boolean checkLength) {
-		if (value == null) {
-			return defaultValue == null ? null : defaultValue.toString();
-		}
-
-		String v = (value instanceof String) ? (String) value : value.toString();
-		if (checkLength && isEmpty(v)) {
-			return defaultValue.toString();
-		}
-		return v;
-	}
-
 	/**
 	 * Copy the given Collection into a String array. The Collection must contain
 	 * String elements only.
@@ -1727,14 +1448,6 @@ public final class StringUtils {
 		return collection.toArray(new String[collection.size()]);
 	}
 
-	/**
-	 * Copy the given Enumeration into a String array. The Enumeration must contain
-	 * String elements only.
-	 * 
-	 * @param enumeration the Enumeration to copy
-	 * @return the String array ({@code null} if the passed-in Enumeration was
-	 *         {@code null})
-	 */
 	public static String[] toStringArray(Enumeration<String> enumeration) {
 		if (enumeration == null) {
 			return null;
@@ -1801,33 +1514,6 @@ public final class StringUtils {
 			}
 		}
 		return sb;
-	}
-
-	public static String trimAllWhitespace(String charSequence) {
-		if (charSequence == null) {
-			return charSequence;
-		}
-
-		return trimAllWhitespace((CharSequence) charSequence).toString();
-	}
-
-	/**
-	 * Trim the elements of the given String array, calling {@code String.trim()} on
-	 * each of them.
-	 * 
-	 * @param array the original String array
-	 * @return the resulting array (of the same size) with trimmed elements
-	 */
-	public static String[] trimArrayElements(String[] array) {
-		if (ObjectUtils.isEmpty(array)) {
-			return new String[0];
-		}
-		String[] result = new String[array.length];
-		for (int i = 0; i < array.length; i++) {
-			String element = array[i];
-			result[i] = (element != null ? element.trim() : null);
-		}
-		return result;
 	}
 
 	/**
@@ -1931,80 +1617,6 @@ public final class StringUtils {
 		}
 
 		return trimTrailingWhitespace((CharSequence) charSequence).toString();
-	}
-
-	/**
-	 * Trim leading and trailing whitespace from the given String.
-	 * 
-	 * @param charSequence the String to check
-	 * @return the trimmed {@link CharSequence}
-	 * @see java.lang.Character#isWhitespace
-	 */
-	public static CharSequence trimWhitespace(CharSequence charSequence) {
-		if (isEmpty(charSequence)) {
-			return charSequence;
-		}
-		StringBuilder sb = new StringBuilder(charSequence);
-		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
-			sb.deleteCharAt(0);
-		}
-		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
-			sb.deleteCharAt(sb.length() - 1);
-		}
-		return sb;
-	}
-
-	public static String trimWhitespace(String charSequence) {
-		if (charSequence == null) {
-			return charSequence;
-		}
-		return trimWhitespace((CharSequence) charSequence).toString();
-	}
-
-	/**
-	 * Uncapitalize a {@code String}, changing the first letter to lower case as per
-	 * {@link Character#toLowerCase(char)}. No other letters are changed.
-	 * 
-	 * @param str the {@code String} to uncapitalize
-	 * @return the uncapitalized {@code String}
-	 */
-	public static String uncapitalize(String str) {
-		return changeFirstCharacterCase(str, false);
-	}
-
-	/**
-	 * Unqualify a string qualified by a '.' dot character. For example,
-	 * "this.name.is.qualified", returns "qualified".
-	 * 
-	 * @param qualifiedName the qualified name
-	 */
-	public static String unqualify(String qualifiedName) {
-		return unqualify(qualifiedName, '.');
-	}
-
-	/**
-	 * Unqualify a string qualified by a separator character. For example,
-	 * "this:name:is:qualified" returns "qualified" if using a ':' separator.
-	 * 
-	 * @param qualifiedName the qualified name
-	 * @param separator     the separator
-	 */
-	public static String unqualify(String qualifiedName, char separator) {
-		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
-	}
-
-	/**
-	 * 验证包名是否合法
-	 * 
-	 * @param packageName
-	 * @return
-	 */
-	public static boolean verifyPackageName(CharSequence packageName) {
-		if (isEmpty(packageName)) {
-			return false;
-		}
-
-		return split(packageName, ".").allMatch((e) -> e.length() > 0 && Character.isAlphabetic(e.charAt(0)));
 	}
 
 	private StringUtils() {

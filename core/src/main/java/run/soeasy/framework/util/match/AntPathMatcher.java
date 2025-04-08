@@ -52,8 +52,6 @@ import run.soeasy.framework.util.StringUtils;
  * both be relative in order for the two to match. Therefore it is recommended
  * that users of this implementation to sanitize patterns in order to prefix
  * them with "/" as it makes sense in the context in which they're used.
- *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/util/AntPathMatcher.java
  */
 public class AntPathMatcher implements PathMatcher {
 	public static final AntPathMatcher POINT_PATH_MATCHER = new AntPathMatcher(".");
@@ -76,7 +74,6 @@ public class AntPathMatcher implements PathMatcher {
 
 	private boolean trimTokens = false;
 
-	
 	private volatile Boolean cachePatterns;
 
 	private final Map<String, String[]> tokenizedPatternCache = new ConcurrentHashMap<>(256);
@@ -107,7 +104,7 @@ public class AntPathMatcher implements PathMatcher {
 	 * <p>
 	 * Default is "/", as in Ant.
 	 */
-	public void setPathSeparator( String pathSeparator) {
+	public void setPathSeparator(String pathSeparator) {
 		this.pathSeparator = (pathSeparator != null ? pathSeparator : DEFAULT_PATH_SEPARATOR);
 		this.pathSeparatorPatternCache = new PathSeparatorPatternCache(this.pathSeparator);
 	}
@@ -156,7 +153,7 @@ public class AntPathMatcher implements PathMatcher {
 	}
 
 	@Override
-	public boolean isPattern( String path) {
+	public boolean isPattern(String path) {
 		if (path == null) {
 			return false;
 		}
@@ -197,8 +194,8 @@ public class AntPathMatcher implements PathMatcher {
 	 * @return {@code true} if the supplied {@code path} matched, {@code false} if
 	 *         it didn't
 	 */
-	protected boolean doMatch(String pattern,  String path, boolean fullMatch,
-			 Map<String, String> uriTemplateVariables) {
+	protected boolean doMatch(String pattern, String path, boolean fullMatch,
+			Map<String, String> uriTemplateVariables) {
 
 		if (path == null || path.startsWith(this.pathSeparator) != pattern.startsWith(this.pathSeparator)) {
 			return false;
@@ -425,7 +422,7 @@ public class AntPathMatcher implements PathMatcher {
 	 * @return {@code true} if the string matches against the pattern, or
 	 *         {@code false} otherwise
 	 */
-	private boolean matchStrings(String pattern, String str,  Map<String, String> uriTemplateVariables) {
+	private boolean matchStrings(String pattern, String str, Map<String, String> uriTemplateVariables) {
 
 		return getStringMatcher(pattern).matchStrings(str, uriTemplateVariables);
 	}
@@ -728,7 +725,6 @@ public class AntPathMatcher implements PathMatcher {
 
 		private final boolean exactMatch;
 
-		
 		private final Pattern pattern;
 
 		private final List<String> variableNames = new ArrayList<>();
@@ -791,7 +787,7 @@ public class AntPathMatcher implements PathMatcher {
 		 * @return {@code true} if the string matches against the pattern, or
 		 *         {@code false} otherwise.
 		 */
-		public boolean matchStrings(String str,  Map<String, String> uriTemplateVariables) {
+		public boolean matchStrings(String str, Map<String, String> uriTemplateVariables) {
 			if (this.exactMatch) {
 				return this.caseSensitive ? this.rawPattern.equals(str) : this.rawPattern.equalsIgnoreCase(str);
 			} else if (this.pattern != null) {
@@ -911,7 +907,6 @@ public class AntPathMatcher implements PathMatcher {
 		 */
 		private static class PatternInfo {
 
-			
 			private final String pattern;
 
 			private int uriVars;
@@ -924,10 +919,9 @@ public class AntPathMatcher implements PathMatcher {
 
 			private boolean prefixPattern;
 
-			
 			private Integer length;
 
-			public PatternInfo( String pattern) {
+			public PatternInfo(String pattern) {
 				this.pattern = pattern;
 				if (this.pattern != null) {
 					initCounters();

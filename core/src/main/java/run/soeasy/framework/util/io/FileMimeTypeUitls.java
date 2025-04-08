@@ -61,7 +61,7 @@ public class FileMimeTypeUitls {
 	}
 
 	public static List<MimeType> getMimeTypes(String filename) {
-		String ext = StringUtils.getFilenameExtension(filename);
+		String ext = Resource.getExtension(filename);
 		if (ext == null) {
 			return Collections.emptyList();
 		}

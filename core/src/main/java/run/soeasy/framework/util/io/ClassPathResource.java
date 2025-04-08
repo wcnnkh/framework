@@ -200,7 +200,7 @@ public class ClassPathResource extends AbstractResource {
 	 */
 	@Override
 	public String getName() {
-		return StringUtils.getFilename(this.path);
+		return Resource.getName(this.path);
 	}
 
 	/**

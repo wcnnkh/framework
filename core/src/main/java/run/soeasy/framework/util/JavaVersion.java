@@ -2,17 +2,17 @@ package run.soeasy.framework.util;
 
 import java.io.Serializable;
 
-import run.soeasy.framework.lang.RequiredJavaVersion;
+import lombok.NonNull;
 import run.soeasy.framework.util.Version.JoinVersion;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.math.IntValue;
 
-public class JavaVersion extends JoinVersion implements Serializable {
+public final class JavaVersion extends JoinVersion implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final JavaVersion INSTANCE;
+	public static final JavaVersion INSTANCE = parse(System.getProperty("java.version"));
 
-	static {
-		CharSequenceTemplate versionTemplate = new CharSequenceTemplate(System.getProperty("java.version"), ".");
+	public static JavaVersion parse(String version) {
+		CharSequenceTemplate versionTemplate = new CharSequenceTemplate(version, ".");
 		Version[] array = versionTemplate.getAsElements().toArray(Version[]::new);
 		if (array.length > 1) {
 			Version fragment = array[0];
@@ -23,12 +23,12 @@ public class JavaVersion extends JoinVersion implements Serializable {
 				array = fragments;
 			}
 		}
-		INSTANCE = new JavaVersion(Elements.forArray(array), versionTemplate.getDelimiter(), array[1]);
+		return new JavaVersion(Elements.forArray(array), versionTemplate.getDelimiter(), array[1]);
 	}
 
 	private final Version master;
 
-	JavaVersion(Elements<Version> elements, CharSequence delimiter, Version master) {
+	private JavaVersion(Elements<Version> elements, CharSequence delimiter, Version master) {
 		super(elements, delimiter);
 		this.master = master;
 	}
@@ -57,10 +57,25 @@ public class JavaVersion extends JoinVersion implements Serializable {
 		return version >= getMaster().getAsInt();
 	}
 
-	public static boolean isSupported(Class<?> clazz) {
-		RequiredJavaVersion requiredJavaVersion = clazz.getAnnotation(RequiredJavaVersion.class);
-		if (requiredJavaVersion != null) {
-			if (!INSTANCE.isSupported(requiredJavaVersion.value())) {
+	public boolean isSupported(@NonNull Class<?> clazz) {
+		Package pkg = clazz.getPackage();
+		if (pkg == null) {
+			// 未知的情况返回true
+			return true;
+		}
+
+		String implementationVersion = pkg.getImplementationVersion();
+		if (StringUtils.isNotEmpty(implementationVersion)) {
+			JavaVersion version = parse(implementationVersion);
+			if (version.getMaster().compareTo(this.master) > 0) {
+				return false;
+			}
+		}
+
+		String specificationVersion = pkg.getSpecificationVersion();
+		if (StringUtils.isNotEmpty(specificationVersion)) {
+			JavaVersion version = parse(specificationVersion);
+			if (version.getMaster().compareTo(this.master) > 0) {
 				return false;
 			}
 		}
