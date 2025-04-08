@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.SortedProperties;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.reflect.Fields;
 import run.soeasy.framework.util.reflect.ReflectionUtils;

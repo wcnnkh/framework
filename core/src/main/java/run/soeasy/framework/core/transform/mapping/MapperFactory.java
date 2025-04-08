@@ -2,10 +2,10 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.convert.ConverterFactory;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.config.ConverterFactory;
 import run.soeasy.framework.core.transform.Transformer;
-import run.soeasy.framework.core.transform.config.TransformerFactory;
+import run.soeasy.framework.core.transform.TransformerFactory;
 
 public interface MapperFactory<S, E extends Throwable>
 		extends ConverterFactory<S, E>, TransformerFactory<S, E>, Mapper<S, Object, E> {

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.core.convert.support.strings.StringConverter;
+import run.soeasy.framework.core.convert.strings.StringConverter;
 
 public class StringUtilsTest {
 

@@ -89,7 +89,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 		TypeVariable<?>[] typeParameters = getRawType().getTypeParameters();
 		if (typeParameters.length != 0) {
 			for (int i = 0; i < typeParameters.length; i++) {
-				if (typeParameters[i].getName().equals(typeVariable.getName())) {
+				if (StringUtils.equals(typeParameters[i].getName(), typeVariable.getName())) {
 					ResolvableType resolved = getActualTypeArgument(i);
 					if (resolved != null && resolved != NONE) {
 						return resolved;

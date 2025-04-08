@@ -4,7 +4,23 @@ import run.soeasy.framework.core.transform.stereotype.Properties;
 import run.soeasy.framework.core.transform.stereotype.Property;
 import run.soeasy.framework.util.collection.Elements;
 
-public class SystemProperties implements Properties {
+public final class SystemProperties implements Properties {
+	private static volatile SystemProperties instance;
+
+	public static SystemProperties getInstance() {
+		if (instance == null) {
+			synchronized (SystemProperties.class) {
+				if (instance == null) {
+					instance = new SystemProperties();
+				}
+			}
+		}
+		return instance;
+	}
+
+	private SystemProperties() {
+	}
+
 	@Override
 	public Property get(String key) {
 		return new SystemProperty(key);
