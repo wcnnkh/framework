@@ -8,7 +8,6 @@ import java.util.function.Function;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.ToString;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.math.BigDecimalValue;
 import run.soeasy.framework.util.math.NumberValue;
@@ -21,7 +20,6 @@ import run.soeasy.framework.util.math.NumberValue;
  */
 @Data
 @EqualsAndHashCode(of = "value")
-@ToString(of = "value")
 public class CharSequenceTemplate implements CharSequence, Version, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final CharSequence value;
@@ -172,5 +170,10 @@ public class CharSequenceTemplate implements CharSequence, Version, Serializable
 		Elements<Version> elements = getAsElements().map(Function.identity());
 		elements = elements.concat(Elements.singleton(version));
 		return new JoinVersion(elements, delimiter);
+	}
+
+	@Override
+	public String toString() {
+		return getAsString();
 	}
 }

@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collection.ConcurrentReferenceHashMap;
 import run.soeasy.framework.util.function.Function;
@@ -221,30 +220,6 @@ public class ReflectionApi implements Supplier<Object> {
 	}
 
 	public static <T> T newInstance(Class<T> type) throws UnsupportedOperationException {
-		return newInstance(type, ObjectUtils.EMPTY_ARRAY);
-	}
-
-	/**
-	 * 实例一个对象，无论对象是否存在无参的构造方法
-	 * 
-	 * @see #REFLECTION_FACTORY
-	 * @see ReflectionApi#UNSAFE
-	 * @see #getConstructor(Class)
-	 * @param <T>
-	 * @param type
-	 * @param params 可选的参数
-	 * @return
-	 * @throws UnsupportedOperationException
-	 */
-	public static <T> T newInstance(Class<T> type, Object... params) throws UnsupportedOperationException {
-		if (params != null && params.length > 0) {
-			try {
-				return ReflectionUtils.newInstanceWithParams(type, params);
-			} catch (UnsupportedOperationException e) {
-				// 忽略
-			}
-		}
-
 		Constructor<T> constructor = getConstructor(type);
 		if (constructor != null) {
 			try {

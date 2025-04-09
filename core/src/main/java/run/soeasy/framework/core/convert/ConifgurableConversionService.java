@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.spi.Providers;
+import run.soeasy.framework.util.spi.ServiceProvider;
 
-public class ConifgurableConversionService extends Providers<ConversionService, ConversionException>
+public class ConifgurableConversionService extends ServiceProvider<ConversionService, ConversionException>
 		implements ConversionService {
 	public ConifgurableConversionService() {
 		setComparator(ConversionComparator.INSTANCE);

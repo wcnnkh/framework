@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.util.collection.Provider;
 
 /**
  * jdk原生实现
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
  * @param <S>
  */
 @RequiredArgsConstructor
-public class NativeServiceLoader<S> implements run.soeasy.framework.util.collection.ServiceLoader<S> {
+public class NativeServiceLoader<S> implements Provider<S> {
 	/**
 	 * Creates a new service loader for the given service type, using the current
 	 * thread's {@linkplain java.lang.Thread#getContextClassLoader context class
@@ -47,7 +48,7 @@ public class NativeServiceLoader<S> implements run.soeasy.framework.util.collect
 	 *
 	 * @return A new service loader
 	 */
-	public static <S> run.soeasy.framework.util.collection.ServiceLoader<S> load(Class<S> service) {
+	public static <S> Provider<S> load(Class<S> service) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(service);
 		return new NativeServiceLoader<>(serviceLoader);
 	}
@@ -66,7 +67,7 @@ public class NativeServiceLoader<S> implements run.soeasy.framework.util.collect
 	 *
 	 * @return A new service loader
 	 */
-	public static <S> run.soeasy.framework.util.collection.ServiceLoader<S> load(Class<S> service, ClassLoader loader) {
+	public static <S> Provider<S> load(Class<S> service, ClassLoader loader) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(service, loader);
 		return new NativeServiceLoader<>(serviceLoader);
 	}
@@ -104,7 +105,7 @@ public class NativeServiceLoader<S> implements run.soeasy.framework.util.collect
 	 *
 	 * @return A new service loader
 	 */
-	public static <S> run.soeasy.framework.util.collection.ServiceLoader<S> loadInstalled(Class<S> service) {
+	public static <S> Provider<S> loadInstalled(Class<S> service) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.loadInstalled(service);
 		return new NativeServiceLoader<>(serviceLoader);
 	}

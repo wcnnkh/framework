@@ -24,7 +24,7 @@ public class LevelRegistry implements LevelFactory, Reloadable {
 	@Getter
 	@Setter
 	@NonNull
-	private Level defaultLevel = Levels.INFO.getValue();
+	private volatile Level defaultLevel;
 
 	public StringMatcher getNameMatcher() {
 		return nameMatcher;

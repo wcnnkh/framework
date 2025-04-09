@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.util.Lifecycle;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.collection.ServiceLoader.ReloadableElementsWrapper;
+import run.soeasy.framework.util.collection.Provider.ReloadableElementsWrapper;
 import run.soeasy.framework.util.comparator.OrderComparator;
 import run.soeasy.framework.util.exchange.Listener;
 import run.soeasy.framework.util.exchange.Publisher;

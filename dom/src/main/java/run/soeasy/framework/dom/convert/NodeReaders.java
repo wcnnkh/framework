@@ -4,9 +4,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.convert.TargetDescriptor;
-import run.soeasy.framework.util.spi.Providers;
+import run.soeasy.framework.util.spi.ServiceProvider;
 
-public class NodeReaders extends Providers<NodeReader, DOMException> implements NodeReader {
+public class NodeReaders extends ServiceProvider<NodeReader, DOMException> implements NodeReader {
 
 	public NodeReaders() {
 		setServiceClass(NodeReader.class);

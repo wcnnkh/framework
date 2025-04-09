@@ -96,5 +96,10 @@ public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends 
 			return registration.getPayload();
 		});
 	}
+	
+	@Override
+	public <T> T[] toArray(T[] array) {
+		return super.toArray(array);
+	}
 
 }

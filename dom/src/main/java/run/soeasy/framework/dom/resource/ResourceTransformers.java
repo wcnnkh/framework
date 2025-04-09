@@ -6,9 +6,9 @@ import org.w3c.dom.Node;
 
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.spi.Providers;
+import run.soeasy.framework.util.spi.ServiceProvider;
 
-public class ResourceTransformers extends Providers<ResourceTransformer, DomException> implements ResourceTransformer {
+public class ResourceTransformers extends ServiceProvider<ResourceTransformer, DomException> implements ResourceTransformer {
 
 	public ResourceTransformers() {
 		setServiceClass(ResourceTransformer.class);

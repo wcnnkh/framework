@@ -8,6 +8,8 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.util.codec.EncodeException;
 import run.soeasy.framework.util.codec.Encoder;
+import run.soeasy.framework.util.codec.security.MD5;
+import run.soeasy.framework.util.codec.security.SHA1;
 import run.soeasy.framework.util.codec.support.Base64;
 import run.soeasy.framework.util.codec.support.HexCodec;
 import run.soeasy.framework.util.io.BufferProcessor;

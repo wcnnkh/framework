@@ -1,9 +1,9 @@
 package run.soeasy.framework.util.spi;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collection.ServiceLoader;
+import run.soeasy.framework.util.collection.Provider;
 
 @FunctionalInterface
 public interface ServiceLoaderDiscovery {
-	<S> ServiceLoader<S> getServiceLoader(@NonNull Class<S> requiredType);
+	<S> Provider<S> getServiceLoader(@NonNull Class<S> requiredType);
 }

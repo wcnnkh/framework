@@ -22,13 +22,13 @@ public interface Listenable<T> {
 	public static interface FakeBatchListenable<T, W extends Listenable<T>> extends BatchListenable<T>, Wrapper<W> {
 		@Override
 		default Registration registerListener(Listener<Elements<T>> listener) {
-			Listener.FakeSingleListener<T, Listener<? super Elements<T>>> singleListener = () -> listener;
+			Listener.FakeSingleListener<T, Listener<Elements<T>>> singleListener = () -> listener;
 			return getSource().registerListener(singleListener);
 		}
 	}
 
 	@FunctionalInterface
-	public static interface FakeSingleListenable<T, W extends Listenable<? extends Elements<? extends T>>>
+	public static interface FakeSingleListenable<T, W extends Listenable<Elements<T>>>
 			extends Listenable<T>, Wrapper<W> {
 		@Override
 		default Registration registerListener(Listener<T> listener) {

@@ -2,7 +2,6 @@ package run.soeasy.framework.util.reflect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
@@ -12,14 +11,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import run.soeasy.framework.lang.ImpossibleException;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collection.ConcurrentReferenceHashMap;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Consumer;
@@ -102,28 +98,6 @@ public abstract class ReflectionUtils {
 			handleReflectionException(ex);
 			throw new IllegalStateException(
 					"Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex.getMessage());
-		}
-	}
-
-	/**
-	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
-	 * 
-	 * @see #matchParams(Stream, boolean, Object...)
-	 * @param <T>
-	 * @param elements
-	 * @param strict   true表示严格的验证参数(包含有效长度、类型等)
-	 * @param params
-	 * @return
-	 * @throws NoSuchMethodException
-	 */
-	public static <T extends Executable> ExecutableMatchingResults<T> getByParams(Elements<T> elements, boolean strict,
-			Object... params) throws NoSuchMethodException {
-		Elements<ExecutableMatchingResults<T>> stream = matchParams(elements, strict, params);
-		try {
-			return stream.findFirst().get();
-		} catch (NoSuchElementException e) {
-			throw (e.getLocalizedMessage() == null ? new NoSuchMethodException()
-					: new NoSuchMethodException(e.getLocalizedMessage()));
 		}
 	}
 
@@ -366,36 +340,6 @@ public abstract class ReflectionUtils {
 		return new Methods(sourceClass, Class::getDeclaredMethods);
 	}
 
-	private static <T extends Executable> ExecutableMatchingResults<T> getExecutableMatchingResults(T executable,
-			Object[] params, int minStart) {
-		Class<?>[] parameterTypes = executable.getParameterTypes();
-		if (parameterTypes.length == 0) {
-			return new ExecutableMatchingResults<>(executable, new Object[0], 0);
-		}
-
-		Object[] cloneParams = params.clone();
-		Object[] args = new Object[parameterTypes.length];
-		int count = 0;
-		for (int i = 0; i < parameterTypes.length; i++) {
-			Class<?> parameterType = parameterTypes[i];
-			// 取最小值的目的是可以动态控制初始查找位置
-			for (int a = Math.min(minStart, i); a < cloneParams.length; a++) {
-				Object value = cloneParams[a];
-				if (value == null) {
-					continue;
-				}
-
-				if (ClassUtils.isAssignableValue(parameterType, value)) {
-					args[i] = value;
-					cloneParams[a] = null;
-					count++;
-					break;
-				}
-			}
-		}
-		return new ExecutableMatchingResults<>(executable, args, count);
-	}
-
 	/**
 	 * @see Class#getField(String)
 	 * @param clazz
@@ -462,14 +406,6 @@ public abstract class ReflectionUtils {
 	public static Methods getMethods(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Methods(sourceClass, Class::getMethods);
-	}
-
-	public static ExecutableMatchingResults<Method> getOverloadMethod(Class<?> sourceClass, String methodName,
-			boolean strict, Predicate<Method> predicate, Object... args) throws NoSuchMethodException {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Elements<Method> methods = getMethods(sourceClass).all().getElements()
-				.filter((m) -> StringUtils.isEmpty(methodName) || methodName.equals(m.getName())).filter(predicate);
-		return getByParams(methods, strict, args);
 	}
 
 	/**
@@ -603,32 +539,6 @@ public abstract class ReflectionUtils {
 			}
 		}
 		return getDeclaredFields(source.getClass()).all().clone(source, deep);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T invokeOverloadConstructor(Class<? extends T> sourceClass, boolean strict, Object... args)
-			throws NoSuchMethodException {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Elements<Constructor<?>> constructors = getConstructors(sourceClass);
-		ExecutableMatchingResults<Constructor<?>> results = getByParams(constructors, strict, args);
-		return (T) newInstance(results.getExecutable(), results.getUnsafeParams());
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T invokeOverloadMethod(Class<?> sourceClass, String methodName, boolean strict, Object... args)
-			throws NoSuchMethodException {
-		ExecutableMatchingResults<Method> results = getOverloadMethod(sourceClass, methodName, strict,
-				(m) -> Modifier.isStatic(m.getModifiers()), args);
-		return (T) invoke(results.getExecutable(), null, results.getUnsafeParams());
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T invokeOverloadMethod(Object target, String methodName, boolean strict, Object... args)
-			throws NoSuchMethodException {
-		Assert.requiredArgument(target != null, "target");
-		ExecutableMatchingResults<Method> results = getOverloadMethod(target.getClass(), methodName, strict,
-				(m) -> !Modifier.isStatic(m.getModifiers()), args);
-		return (T) invoke(results.getExecutable(), target, results.getUnsafeParams());
 	}
 
 	/**
@@ -804,64 +714,6 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
-	 * 
-	 * @param <T>
-	 * @param elements
-	 * @param strict   true表示严格的验证参数(包含有效长度、类型等)
-	 * @param params
-	 * @return
-	 */
-	public static <T extends Executable> Elements<ExecutableMatchingResults<T>> matchParams(Elements<T> elements,
-			boolean strict, Object... params) {
-		Elements<ExecutableMatchingResults<T>> stream;
-		if (strict) {
-			long validParametersCount = Arrays.asList(params).stream().filter((e) -> e != null).count();
-			stream = matchParams(elements, (int) validParametersCount, params)
-					.filter((e) -> e.getMatchingResultes() == validParametersCount);
-		} else {
-			stream = matchParams(elements, params.length, params);
-		}
-		return stream;
-	}
-
-	public static <T extends Executable> Elements<ExecutableMatchingResults<T>> matchParams(Elements<T> elements,
-			int validParametersCount, Object... params) {
-		Assert.requiredArgument(elements != null, "elements");
-		Assert.requiredArgument(params != null, "params");
-		return elements.filter((e) -> e.getParameterCount() <= validParametersCount).sorted(MEMBER_SCOPE_COMPARATOR)
-				.sorted((e1, e2) -> {
-					Class<?>[] parameterTypes1 = e1.getParameterTypes();
-					Class<?>[] parameterTypes2 = e2.getParameterTypes();
-					int v = Integer.compare(parameterTypes1.length, parameterTypes2.length);
-					if (v == 0) {
-						int leftCount = 0;
-						int rightCount = 0;
-						for (int i = 0; i < parameterTypes1.length; i++) {
-							if (ClassUtils.isAssignable(parameterTypes1[i], parameterTypes2[i])) {
-								leftCount++;
-							}
-
-							if (ClassUtils.isAssignable(parameterTypes2[i], parameterTypes1[i])) {
-								rightCount++;
-							}
-						}
-
-						if (leftCount == rightCount) {
-							// 参数数量相同，比较参数顺序
-							ExecutableMatchingResults<T> matchingResults1 = getExecutableMatchingResults(e1, params,
-									params.length);
-							ExecutableMatchingResults<T> matchingResults2 = getExecutableMatchingResults(e2, params,
-									params.length);
-							return matchingResults1.compareTo(matchingResults2);
-						}
-						return leftCount - rightCount;
-					}
-					return -v;
-				}).map((e) -> getExecutableMatchingResults(e, params, 0)).sorted();
-	}
-
-	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
 	 * @param <T>
@@ -910,34 +762,6 @@ public abstract class ReflectionUtils {
 		while (iterator.hasNext()) {
 			Constructor<?> constructor = iterator.next();
 			return (T) newInstance(constructor, new Object[constructor.getParameterCount()]);
-		}
-		throw new UnsupportedOperationException(entityClass.getName());
-	}
-
-	/**
-	 * 根据参数来构造实体
-	 * 
-	 * @param <T>
-	 * @param entityClass
-	 * @param params
-	 * @return
-	 * @throws UnsupportedOperationException
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params)
-			throws UnsupportedOperationException {
-		Assert.requiredArgument(entityClass != null, "entityClass");
-		Assert.requiredArgument(params != null, "params");
-		Elements<ExecutableMatchingResults<Constructor<?>>> elements = matchParams(
-				ReflectionUtils.getDeclaredConstructors(entityClass), false, params);
-		Iterator<ExecutableMatchingResults<Constructor<?>>> iterator = elements.iterator();
-		if (iterator.hasNext()) {
-			ExecutableMatchingResults<Constructor<?>> results = iterator.next();
-			try {
-				return (T) ReflectionUtils.newInstance(results.getExecutable(), results.getParams());
-			} catch (Exception e) {
-				// 忽略
-			}
 		}
 		throw new UnsupportedOperationException(entityClass.getName());
 	}

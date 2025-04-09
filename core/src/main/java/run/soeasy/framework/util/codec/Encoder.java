@@ -35,6 +35,15 @@ public interface Encoder<D, E> extends BiPredicate<D, E> {
 		default Elements<E> encodeAll(@NonNull Elements<? extends D> sources) throws EncodeException {
 			return getSource().encodeAll(sources);
 		}
+
+		@Override
+		default boolean canEncode() {
+			return getSource().canEncode();
+		}
+	}
+
+	default boolean canEncode() {
+		return true;
 	}
 
 	E encode(D source) throws EncodeException;

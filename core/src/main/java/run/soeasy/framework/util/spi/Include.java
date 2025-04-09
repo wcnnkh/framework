@@ -6,28 +6,28 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collection.ServiceLoader;
-import run.soeasy.framework.util.exchange.Registration;
+import run.soeasy.framework.util.collection.Provider;
 import run.soeasy.framework.util.exchange.Receipt.Receipted;
+import run.soeasy.framework.util.exchange.Registration;
 
-public interface Include<S> extends Registration, ServiceLoader<S> {
+public interface Include<S> extends Registration, Provider<S> {
 
 	public static class Included<S> extends Receipted
-			implements Configured<S>, ServiceLoaderWrapper<S, ServiceLoader<S>> {
+			implements Configured<S>, ProviderWrapper<S, Provider<S>> {
 		private static final long serialVersionUID = 1L;
-		private final ServiceLoader<S> source;
+		private final Provider<S> source;
 
 		public Included(boolean done, boolean success, Throwable cause) {
-			this(done, success, cause, ServiceLoader.empty());
+			this(done, success, cause, Provider.empty());
 		}
 
-		public Included(boolean done, boolean success, Throwable cause, ServiceLoader<S> source) {
+		public Included(boolean done, boolean success, Throwable cause, Provider<S> source) {
 			super(done, success, cause);
 			this.source = source;
 		}
 
 		@Override
-		public ServiceLoader<S> getSource() {
+		public Provider<S> getSource() {
 			return source;
 		}
 
@@ -39,7 +39,7 @@ public interface Include<S> extends Registration, ServiceLoader<S> {
 
 	@FunctionalInterface
 	public static interface IncludeWrapper<S, W extends Include<S>>
-			extends Include<S>, RegistrationWrapper<W>, ServiceLoaderWrapper<S, W> {
+			extends Include<S>, RegistrationWrapper<W>, ProviderWrapper<S, W> {
 
 		@Override
 		default <U> Include<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
@@ -81,7 +81,7 @@ public interface Include<S> extends Registration, ServiceLoader<S> {
 		}
 	}
 
-	public static class ConvertedInclude<S, T, W extends Include<S>> extends ConvertedServiceLoader<S, T, W>
+	public static class ConvertedInclude<S, T, W extends Include<S>> extends ConvertedProvider<S, T, W>
 			implements Include<T> {
 
 		public ConvertedInclude(@NonNull W target,

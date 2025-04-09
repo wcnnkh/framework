@@ -48,7 +48,7 @@ import run.soeasy.framework.util.function.Merger;
 public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	public static class CacheableElements<E, C extends Collection<E>>
-			implements ServiceLoader<E>, CollectionElementsWrapper<E, C>, Serializable {
+			implements Provider<E>, CollectionElementsWrapper<E, C>, Serializable {
 		private static final long serialVersionUID = 1L;
 		private volatile C cached;
 		@NonNull
@@ -63,7 +63,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		public ServiceLoader<E> cacheable() {
+		public Provider<E> cacheable() {
 			return this;
 		}
 
@@ -210,7 +210,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	public static interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, StreamableWrapper<E, W> {
 
 		@Override
-		default ServiceLoader<E> cacheable() {
+		default Provider<E> cacheable() {
 			return getSource().cacheable();
 		}
 
@@ -329,8 +329,8 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public ServiceLoader<E> cacheable() {
-			return ServiceLoader.empty();
+		public Provider<E> cacheable() {
+			return Provider.empty();
 		}
 
 		@Override
@@ -1112,7 +1112,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * 
 	 * @return
 	 */
-	default ServiceLoader<E> cacheable() {
+	default Provider<E> cacheable() {
 		return new CacheableElements<>(this, Collectors.toList());
 	}
 

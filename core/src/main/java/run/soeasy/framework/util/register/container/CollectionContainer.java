@@ -307,6 +307,11 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 	public Object[] toArray() {
 		return toList().toArray();
 	}
+	
+	@Override
+	public <T> T[] toArray(T[] array) {
+		return super.toArray(array);
+	}
 
 	private final Registrations<ElementRegistration<E>> writeRegistrations(
 			Function<? super C, ? extends Elements<ElementRegistration<E>>> writer,

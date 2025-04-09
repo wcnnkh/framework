@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.util.collection.ServiceLoader;
+import run.soeasy.framework.util.collection.Provider;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.spi.Include.IncludeWrapper;
@@ -98,7 +98,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				return Configured.failure();
 			}
 
-			ServiceLoader<S> serviceLoader = discovery.getServiceLoader(serviceClass);
+			Provider<S> serviceLoader = discovery.getServiceLoader(serviceClass);
 			if (serviceLoader == null) {
 				return Configured.failure();
 			}
@@ -109,7 +109,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		}
 	}
 
-	private Configuration doConfigure(ServiceLoaderDiscovery discovery, ServiceLoader<S> serviceLoader,
+	private Configuration doConfigure(ServiceLoaderDiscovery discovery, Provider<S> serviceLoader,
 			boolean reloadable) {
 		if (discoveryMap == null) {
 			discoveryMap = new HashMap<>(2, 1);

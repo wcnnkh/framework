@@ -27,6 +27,15 @@ public interface Decoder<E, D> {
 		default Elements<D> decodeAll(@NonNull Elements<? extends E> sources) throws DecodeException {
 			return getSource().decodeAll(sources);
 		}
+
+		@Override
+		default boolean canDecode() {
+			return getSource().canDecode();
+		}
+	}
+
+	default boolean canDecode() {
+		return true;
 	}
 
 	D decode(E source) throws DecodeException;

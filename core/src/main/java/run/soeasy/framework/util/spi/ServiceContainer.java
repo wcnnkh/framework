@@ -18,7 +18,7 @@ import run.soeasy.framework.util.Lifecycle;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.collection.Reloadable;
-import run.soeasy.framework.util.collection.ServiceLoader;
+import run.soeasy.framework.util.collection.Provider;
 import run.soeasy.framework.util.exchange.Listenable;
 import run.soeasy.framework.util.exchange.Listener;
 import run.soeasy.framework.util.exchange.Registration;
@@ -31,7 +31,7 @@ import run.soeasy.framework.util.register.container.CollectionContainer;
 import run.soeasy.framework.util.register.container.ElementRegistration;
 import run.soeasy.framework.util.register.container.TreeSetContainer;
 
-public class ServiceContainer<E> extends TreeSetContainer<E> implements ServiceLoader<E> {
+public class ServiceContainer<E> extends TreeSetContainer<E> implements Provider<E> {
 
 	@RequiredArgsConstructor
 	@Getter

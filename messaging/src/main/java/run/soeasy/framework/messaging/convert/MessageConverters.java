@@ -18,9 +18,9 @@ import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.io.MimeType;
 import run.soeasy.framework.util.logging.LogManager;
 import run.soeasy.framework.util.logging.Logger;
-import run.soeasy.framework.util.spi.Providers;
+import run.soeasy.framework.util.spi.ServiceProvider;
 
-public class MessageConverters extends Providers<MessageConverter, ConversionException> implements MessageConverter {
+public class MessageConverters extends ServiceProvider<MessageConverter, ConversionException> implements MessageConverter {
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {
 
 		public int compare(MessageConverter o1, MessageConverter o2) {
