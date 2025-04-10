@@ -11,6 +11,7 @@ import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
 import run.soeasy.framework.util.codec.Encoder;
+import run.soeasy.framework.util.codec.binary.ToBytesCodec;
 import run.soeasy.framework.util.codec.crypto.HmacMD5;
 import run.soeasy.framework.util.codec.crypto.HmacSHA1;
 import run.soeasy.framework.util.io.IOUtils;

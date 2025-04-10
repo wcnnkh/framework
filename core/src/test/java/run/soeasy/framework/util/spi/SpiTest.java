@@ -16,7 +16,7 @@ public class SpiTest implements SpiTestInterface {
 
 	@Test
 	public void run() {
-		Provider<SpiTestInterface> spiServiceLoader = NativeServiceLoader.load(SpiTestInterface.class);
+		Provider<SpiTestInterface> spiServiceLoader = NativeProvider.load(SpiTestInterface.class);
 		SpiTestInterface spiTestInterface = spiServiceLoader.first();
 		String text = spiTestInterface.test();
 		assertTrue(TEST_TEXT.equals(text));

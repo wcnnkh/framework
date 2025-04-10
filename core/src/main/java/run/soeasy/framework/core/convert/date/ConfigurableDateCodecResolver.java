@@ -16,7 +16,7 @@ public class ConfigurableDateCodecResolver extends ConfigurableServices<DateCode
 			synchronized (ConfigurableDateCodecResolver.class) {
 				if (instance == null) {
 					instance = new ConfigurableDateCodecResolver();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

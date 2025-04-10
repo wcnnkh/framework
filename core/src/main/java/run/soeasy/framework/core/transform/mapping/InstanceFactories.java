@@ -12,7 +12,7 @@ public class InstanceFactories extends ConfigurableServices<InstanceFactory> imp
 			synchronized (InstanceFactories.class) {
 				if (instance == null) {
 					instance = new InstanceFactories();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

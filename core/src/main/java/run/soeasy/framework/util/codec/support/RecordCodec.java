@@ -9,6 +9,7 @@ import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
+import run.soeasy.framework.util.codec.binary.ToBytesCodec;
 import run.soeasy.framework.util.io.Bits;
 import run.soeasy.framework.util.io.IOUtils;
 

@@ -5,6 +5,6 @@ import run.soeasy.framework.messaging.convert.MessageConverters;
 public class DefaultMessageConverters extends MessageConverters {
 
 	public DefaultMessageConverters() {
-		setLast(GlobalMessageConverters.getInstance());
+		setLast(SystemMessageConverters.getInstance());
 	}
 }

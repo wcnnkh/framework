@@ -25,7 +25,7 @@ public class SystemConversionService extends ConifgurableConversionService {
 			synchronized (SystemConversionService.class) {
 				if (instance == null) {
 					instance = new SystemConversionService();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

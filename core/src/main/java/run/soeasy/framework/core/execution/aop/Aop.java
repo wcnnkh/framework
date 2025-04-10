@@ -21,7 +21,7 @@ public class Aop extends JdkProxyFactory {
 			synchronized (Aop.class) {
 				if (global == null) {
 					global = new Aop();
-					global.doNativeConfigure();
+					global.configure();
 				}
 			}
 		}

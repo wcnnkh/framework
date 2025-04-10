@@ -14,6 +14,7 @@ import java.util.zip.ZipOutputStream;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
+import run.soeasy.framework.util.codec.binary.BytesCodec;
 import run.soeasy.framework.util.io.FileUtils;
 import run.soeasy.framework.util.io.IOUtils;
 

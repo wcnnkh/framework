@@ -10,5 +10,5 @@ import run.soeasy.framework.messaging.convert.MessageConverterAware;
 @Setter
 public abstract class AbstractNestedMessageConverter extends AbstractMessageConverter implements MessageConverterAware{
 	@NonNull
-	private MessageConverter messageConverter = GlobalMessageConverters.getInstance();
+	private MessageConverter messageConverter = SystemMessageConverters.getInstance();
 }

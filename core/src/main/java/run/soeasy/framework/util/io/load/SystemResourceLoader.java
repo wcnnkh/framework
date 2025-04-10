@@ -4,7 +4,7 @@ import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collection.ArrayUtils;
 import run.soeasy.framework.util.io.Resource;
 
-public class SystemResourceLoader extends DefaultResourceLoader implements ResourceLoader {
+public final class SystemResourceLoader extends DefaultResourceLoader implements ResourceLoader {
 	private static volatile SystemResourceLoader instance;
 
 	public static SystemResourceLoader getInstance() {
@@ -12,7 +12,7 @@ public class SystemResourceLoader extends DefaultResourceLoader implements Resou
 			synchronized (SystemResourceLoader.class) {
 				if (instance == null) {
 					instance = new SystemResourceLoader();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

@@ -14,7 +14,7 @@ public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOff
 			synchronized (ConfigurableZoneOffsetResolver.class) {
 				if (instance == null) {
 					instance = new ConfigurableZoneOffsetResolver();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

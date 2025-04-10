@@ -18,7 +18,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	private final class Configuration
 			implements Configured<ServiceHolder<S>>, IncludeWrapper<ServiceHolder<S>, Include<ServiceHolder<S>>> {
 		private final Receipt receipt;
-		private final ServiceLoaderDiscovery serviceLoaderDiscovery;
+		private final ProviderFactory serviceLoaderDiscovery;
 		private final Include<ServiceHolder<S>> source;
 
 		@Override
@@ -82,15 +82,15 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		}
 	}
 
-	private volatile Map<ServiceLoaderDiscovery, Include<ServiceHolder<S>>> discoveryMap;
+	private volatile Map<ProviderFactory, Include<ServiceHolder<S>>> discoveryMap;
 	private volatile Class<S> serviceClass;
 
 	@Override
-	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
-		return doConfigure(discovery, true);
+	public Receipt configure(ProviderFactory discovery) {
+		return configure(discovery, true);
 	}
 
-	public Configured<ServiceHolder<S>> doConfigure(ServiceLoaderDiscovery discovery, boolean reloadable) {
+	public Configured<ServiceHolder<S>> configure(ProviderFactory discovery, boolean reloadable) {
 		Lock lock = getContainer().writeLock();
 		lock.lock();
 		try {
@@ -98,19 +98,18 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				return Configured.failure();
 			}
 
-			Provider<S> serviceLoader = discovery.getServiceLoader(serviceClass);
+			Provider<S> serviceLoader = discovery.getProvider(serviceClass);
 			if (serviceLoader == null) {
 				return Configured.failure();
 			}
 
-			return doConfigure(discovery, serviceLoader, reloadable);
+			return configure(discovery, serviceLoader, reloadable);
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	private Configuration doConfigure(ServiceLoaderDiscovery discovery, Provider<S> serviceLoader,
-			boolean reloadable) {
+	private Configuration configure(ProviderFactory discovery, Provider<S> serviceLoader, boolean reloadable) {
 		if (discoveryMap == null) {
 			discoveryMap = new HashMap<>(2, 1);
 		}

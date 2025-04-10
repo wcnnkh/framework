@@ -12,7 +12,7 @@ import run.soeasy.framework.util.exchange.Registration;
 import run.soeasy.framework.util.io.Resource;
 import run.soeasy.framework.util.io.resolver.ConfigurablePropertiesResolver;
 import run.soeasy.framework.util.spi.ConfigurableServices;
-import run.soeasy.framework.util.spi.ServiceLoaderDiscovery;
+import run.soeasy.framework.util.spi.ProviderFactory;
 
 public class ResourceResolvers extends ConfigurableServices<ResourceResolver> implements ResourceResolver {
 	private static final TypeDescriptor PROPERTIES_TYPE = TypeDescriptor.valueOf(Properties.class);
@@ -36,9 +36,9 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 	}
 
 	@Override
-	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
-		propertiesResolvers.doConfigure(discovery);
-		return super.doConfigure(discovery);
+	public Receipt configure(ProviderFactory discovery) {
+		propertiesResolvers.configure(discovery);
+		return super.configure(discovery);
 	}
 
 	public ConfigurablePropertiesResolver getPropertiesResolvers() {

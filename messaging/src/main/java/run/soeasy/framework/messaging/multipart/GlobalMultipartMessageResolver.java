@@ -8,7 +8,7 @@ public class GlobalMultipartMessageResolver extends ConfigurableMultipartMessage
 			synchronized (GlobalMultipartMessageResolver.class) {
 				if (instance == null) {
 					instance = new GlobalMultipartMessageResolver();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

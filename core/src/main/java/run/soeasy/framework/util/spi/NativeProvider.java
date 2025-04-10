@@ -14,7 +14,7 @@ import run.soeasy.framework.util.collection.Provider;
  * @param <S>
  */
 @RequiredArgsConstructor
-public class NativeServiceLoader<S> implements Provider<S> {
+public class NativeProvider<S> implements Provider<S> {
 	/**
 	 * Creates a new service loader for the given service type, using the current
 	 * thread's {@linkplain java.lang.Thread#getContextClassLoader context class
@@ -50,7 +50,7 @@ public class NativeServiceLoader<S> implements Provider<S> {
 	 */
 	public static <S> Provider<S> load(Class<S> service) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(service);
-		return new NativeServiceLoader<>(serviceLoader);
+		return new NativeProvider<>(serviceLoader);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class NativeServiceLoader<S> implements Provider<S> {
 	 */
 	public static <S> Provider<S> load(Class<S> service, ClassLoader loader) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.load(service, loader);
-		return new NativeServiceLoader<>(serviceLoader);
+		return new NativeProvider<>(serviceLoader);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class NativeServiceLoader<S> implements Provider<S> {
 	 */
 	public static <S> Provider<S> loadInstalled(Class<S> service) {
 		ServiceLoader<S> serviceLoader = ServiceLoader.loadInstalled(service);
-		return new NativeServiceLoader<>(serviceLoader);
+		return new NativeProvider<>(serviceLoader);
 	}
 
 	private final ServiceLoader<S> serviceLoader;

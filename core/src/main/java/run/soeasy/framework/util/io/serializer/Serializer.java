@@ -11,8 +11,8 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
+import run.soeasy.framework.util.codec.binary.ToBytesCodec;
 import run.soeasy.framework.util.codec.support.SerializerCodec;
-import run.soeasy.framework.util.codec.support.ToBytesCodec;
 import run.soeasy.framework.util.io.IOUtils;
 
 /**

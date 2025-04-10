@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.util.codec.DecodeException;
 import run.soeasy.framework.util.codec.EncodeException;
+import run.soeasy.framework.util.codec.binary.ToBytesCodec;
 import run.soeasy.framework.util.io.serializer.Serializer;
 
 public class SerializerCodec<T> implements ToBytesCodec<T> {

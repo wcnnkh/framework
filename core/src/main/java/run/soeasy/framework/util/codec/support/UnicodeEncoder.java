@@ -1,4 +1,4 @@
-package run.soeasy.framework.util.codec.encode;
+package run.soeasy.framework.util.codec.support;
 
 import run.soeasy.framework.util.codec.EncodeException;
 import run.soeasy.framework.util.codec.MultipleEncoder;

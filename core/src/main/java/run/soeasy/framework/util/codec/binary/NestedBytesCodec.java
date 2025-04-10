@@ -1,4 +1,4 @@
-package run.soeasy.framework.util.codec.support;
+package run.soeasy.framework.util.codec.binary;
 
 import java.io.File;
 import java.io.IOException;

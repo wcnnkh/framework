@@ -12,15 +12,15 @@ import run.soeasy.framework.util.io.ClassPathResource;
 import run.soeasy.framework.util.io.Resource;
 import run.soeasy.framework.util.io.UrlResource;
 import run.soeasy.framework.util.spi.Configurable;
-import run.soeasy.framework.util.spi.ServiceLoaderDiscovery;
+import run.soeasy.framework.util.spi.ProviderFactory;
 
 @Getter
 public class DefaultResourceLoader extends DefaultClassLoaderAccessor implements ResourceLoader, Configurable {
 	private final ProtocolResolvers protocolResolvers = new ProtocolResolvers();
 
 	@Override
-	public Receipt doConfigure(ServiceLoaderDiscovery discovery) {
-		return protocolResolvers.doConfigure(discovery);
+	public Receipt configure(ProviderFactory discovery) {
+		return protocolResolvers.configure(discovery);
 	}
 
 	public Resource getResource(String location) {

@@ -2,15 +2,15 @@ package run.soeasy.framework.messaging.convert.support;
 
 import run.soeasy.framework.messaging.convert.MessageConverters;
 
-public class GlobalMessageConverters extends MessageConverters {
-	private static volatile GlobalMessageConverters instance;
+public final class SystemMessageConverters extends MessageConverters {
+	private static volatile SystemMessageConverters instance;
 
-	public static GlobalMessageConverters getInstance() {
+	public static SystemMessageConverters getInstance() {
 		if (instance == null) {
-			synchronized (GlobalMessageConverters.class) {
+			synchronized (SystemMessageConverters.class) {
 				if (instance == null) {
-					instance = new GlobalMessageConverters();
-					instance.doNativeConfigure();
+					instance = new SystemMessageConverters();
+					instance.configure();
 				}
 			}
 		}
@@ -21,7 +21,7 @@ public class GlobalMessageConverters extends MessageConverters {
 	private final ByteArrayMessageConverter byteArrayMessageConverter = new ByteArrayMessageConverter();
 	private final QueryStringMessageConveter queryStringMessageConveter = new QueryStringMessageConveter();
 
-	private GlobalMessageConverters() {
+	private SystemMessageConverters() {
 		register(textMessageConverter);
 		register(byteArrayMessageConverter);
 		register(queryStringMessageConveter);

@@ -2,10 +2,10 @@ package run.soeasy.framework.util.math;
 
 import run.soeasy.framework.util.math.gcd.DivisionAlgorithm;
 import run.soeasy.framework.util.math.gcd.GreatestCommonDivisor;
-import run.soeasy.framework.util.spi.NativeServiceLoader;
+import run.soeasy.framework.util.spi.NativeProvider;
 
 public final class MathUtils {
-	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = NativeServiceLoader
+	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = NativeProvider
 			.load(GreatestCommonDivisor.class).findFirst().orElseGet(DivisionAlgorithm::new);
 
 	private MathUtils() {

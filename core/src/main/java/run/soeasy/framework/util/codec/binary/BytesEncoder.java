@@ -1,4 +1,4 @@
-package run.soeasy.framework.util.codec.encode;
+package run.soeasy.framework.util.codec.binary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

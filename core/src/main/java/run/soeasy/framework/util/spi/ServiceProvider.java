@@ -22,11 +22,11 @@ public class ServiceProvider<T, E extends Throwable> extends ConfigurableService
 	}
 
 	public Optional<T, E> optional(Predicate<? super T, ? extends E> predicate) {
-		return new Provider(predicate);
+		return new SingleProvider(predicate);
 	}
 
 	@RequiredArgsConstructor
-	private class Provider implements Optional<T, E> {
+	private class SingleProvider implements Optional<T, E> {
 		@NonNull
 		private final Predicate<? super T, ? extends E> predicate;
 

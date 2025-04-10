@@ -12,19 +12,19 @@ import run.soeasy.framework.util.exchange.Receipt;
 public interface Configurable {
 
 	/**
-	 * 执行配置
+	 * 配置
 	 * 
 	 * @param discovery
 	 * @return
 	 */
-	Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery);
+	Receipt configure(@NonNull ProviderFactory discovery);
 
 	/**
-	 * 执行原生的spi配置
+	 * 进行系统配置
 	 * 
 	 * @return
 	 */
-	default Receipt doNativeConfigure() {
-		return doConfigure(NativeServiceLoader::load);
+	default Receipt configure() {
+		return configure(SystemProviderFactory.getInstance());
 	}
 }

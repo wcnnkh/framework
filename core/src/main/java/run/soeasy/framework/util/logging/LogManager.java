@@ -20,7 +20,7 @@ public final class LogManager {
 
 	public static Receipt reloadReceipt() {
 		synchronized (CONFIGURABLE) {
-			Receipt receipt = CONFIGURABLE.doNativeConfigure();
+			Receipt receipt = CONFIGURABLE.configure();
 			LogManager.receipt = receipt;
 			return receipt;
 		}

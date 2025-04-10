@@ -1,9 +1,7 @@
-package run.soeasy.framework.util.codec.support;
+package run.soeasy.framework.util.codec.binary;
 
 import run.soeasy.framework.util.codec.Codec;
 import run.soeasy.framework.util.codec.MultipleCodec;
-import run.soeasy.framework.util.codec.decode.BytesDecoder;
-import run.soeasy.framework.util.codec.encode.BytesEncoder;
 
 public interface BytesCodec
 		extends MultipleCodec<byte[]>, BytesEncoder, BytesDecoder, ToBytesCodec<byte[]>, FromBytesCodec<byte[]> {

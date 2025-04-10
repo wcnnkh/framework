@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.param;
 
-public class SystemParameterNameDiscoverer extends ConfigurableParameterNameDiscoverer {
+public final class SystemParameterNameDiscoverer extends ConfigurableParameterNameDiscoverer {
 	private SystemParameterNameDiscoverer() {
 		register(new NativeParameterNameDiscoverer());
 	}
@@ -12,7 +12,7 @@ public class SystemParameterNameDiscoverer extends ConfigurableParameterNameDisc
 			synchronized (SystemParameterNameDiscoverer.class) {
 				if (instance == null) {
 					instance = new SystemParameterNameDiscoverer();
-					instance.doNativeConfigure();
+					instance.configure();
 				}
 			}
 		}

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.util.exchange.Receipt;
 import run.soeasy.framework.util.spi.Configurable;
-import run.soeasy.framework.util.spi.ServiceLoaderDiscovery;
+import run.soeasy.framework.util.spi.ProviderFactory;
 
 @Getter
 public class ConfigurableLoggerFactory extends LoggerRegistry implements Configurable {
@@ -52,9 +52,9 @@ public class ConfigurableLoggerFactory extends LoggerRegistry implements Configu
 	}
 
 	@Override
-	public Receipt doConfigure(@NonNull ServiceLoaderDiscovery discovery) {
+	public Receipt configure(@NonNull ProviderFactory discovery) {
 		try {
-			LoggerFactory loggerFactory = discovery.getServiceLoader(LoggerFactory.class).first();
+			LoggerFactory loggerFactory = discovery.getProvider(LoggerFactory.class).first();
 			if (loggerFactory == null) {
 				setLoggerFactory(loggerFactory);
 			}

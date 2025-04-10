@@ -94,7 +94,7 @@ public class BeanUtils {
 
 	static {
 		BeanInfoFactories beanInfoFactories = new BeanInfoFactories();
-		beanInfoFactories.doNativeConfigure();
+		beanInfoFactories.configure();
 		BEAN_MAPPING_REGISTRY.setMappingDescriptorFactory(beanInfoFactories);
 	}
 

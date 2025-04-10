@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 import run.soeasy.framework.util.codec.CodecException;
 import run.soeasy.framework.util.codec.EncodeException;
-import run.soeasy.framework.util.codec.encode.BytesEncoder;
+import run.soeasy.framework.util.codec.binary.BytesEncoder;
 import run.soeasy.framework.util.io.IOUtils;
 
 public class MessageDigestEncoder implements BytesEncoder, Cloneable {

@@ -19,7 +19,7 @@ public class UUIDSequences extends ConfigurableServices<UUIDSequence> implements
 				if (global == null) {
 					global = new UUIDSequences();
 					global.register(RandomUUIDSequence.getInstance());
-					global.doNativeConfigure();
+					global.configure();
 				}
 			}
 		}
