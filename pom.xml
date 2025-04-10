@@ -6,7 +6,7 @@
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
 	<!-- mvn versions:set -DnewVersion=1.8.0 -DgenerateBackupPoms=false -->
-	<version>1.8.4</version>
+	<version>1.8.0</version>
 	<packaging>pom</packaging>
 	<name>framework</name>
 	<description>一些常见的实现</description>
@@ -62,43 +62,43 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>core</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>beans</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>jdbc</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>slf4j</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>dom</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>xml</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>transmittable</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 			</dependency>
 			<!-- 测试 -->
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>testing</artifactId>
-				<version>1.8.4</version>
+				<version>1.8.0</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- 测试 -->

@@ -28,7 +28,8 @@ public class FileMimeTypeUitls {
 
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
 		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
-		Resource resource = SystemResourceLoader.getInstance().getResource("/io/basc/framework/net/mime/mime.types");
+		Resource resource = SystemResourceLoader.getInstance()
+				.getResource(FileMimeTypeUitls.class.getPackage().getName().replace(".", "/") + "/mime.types");
 		for (String line : resource.decode(StandardCharsets.US_ASCII).readAllLines().toList()) {
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue;

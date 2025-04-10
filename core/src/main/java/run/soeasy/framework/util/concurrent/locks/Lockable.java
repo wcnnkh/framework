@@ -4,12 +4,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
-
 public interface Lockable extends Lock {
-	static Logger defaultLogger = LogManager.getLogger(Lockable.class);
-
 	@Override
 	default void lock() {
 		while (true) {
@@ -18,16 +13,13 @@ public interface Lockable extends Lock {
 				break;
 			} catch (InterruptedException e) {
 				// ignore 一直等
-				defaultLogger.trace(e, "ignore this error");
 			}
 		}
 	}
 
 	@Override
 	default void lockInterruptibly() throws InterruptedException {
-		while (tryLock(Long.MAX_VALUE, TimeUnit.MILLISECONDS)) {
-			defaultLogger.warn("Exceeded maximum duration");
-		}
+		while (tryLock(Long.MAX_VALUE, TimeUnit.MILLISECONDS)) {};
 	}
 
 	@Override

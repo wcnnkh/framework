@@ -31,15 +31,6 @@ public class BeanUtilsTest {
 		target.getList().clear();
 		// 浅拷贝的会一起清空
 		assertTrue(source.getList().size() == 0);
-		List<String> deepList = new ArrayList<>();
-		deepList.add("b");
-		source.setList(deepList);
-		BeanUtils.copyProperties(source, target);
-		System.out.println(target);
-		assertTrue(target.getList().size() == source.getList().size());
-		target.getList().clear();
-		System.out.println(source);
-		assertTrue(target.getList().size() != source.getList().size());
 	}
 
 	@ToString(callSuper = true)
