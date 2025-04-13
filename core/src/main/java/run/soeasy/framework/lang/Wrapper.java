@@ -1,4 +1,4 @@
-package run.soeasy.framework.util.function;
+package run.soeasy.framework.lang;
 
 import lombok.NonNull;
 

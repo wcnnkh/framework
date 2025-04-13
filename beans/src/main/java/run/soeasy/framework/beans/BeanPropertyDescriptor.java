@@ -19,9 +19,9 @@ import run.soeasy.framework.core.execution.reflect.ReflectionFieldSetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionMethodGetter;
 import run.soeasy.framework.core.execution.reflect.ReflectionMethodSetter;
 import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
-import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.reflect.ReflectionUtils;
+import run.soeasy.framework.util.type.ResolvableType;
 
 public class BeanPropertyDescriptor implements FieldDescriptor {
 	@lombok.Getter

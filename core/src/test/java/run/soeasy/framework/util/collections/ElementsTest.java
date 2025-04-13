@@ -14,6 +14,6 @@ public class ElementsTest {
 
 		Elements<String> all = left.concat(right);
 
-		assertTrue(all.count() == (left.count() + right.count()));
+		assertTrue(all.count().longValue() == (left.count().longValue() + right.count().longValue()));
 	}
 }

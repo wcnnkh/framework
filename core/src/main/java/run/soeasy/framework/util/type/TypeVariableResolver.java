@@ -1,4 +1,4 @@
-package run.soeasy.framework.util;
+package run.soeasy.framework.util.type;
 
 import java.lang.reflect.TypeVariable;
 

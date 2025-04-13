@@ -12,8 +12,7 @@ import run.soeasy.framework.util.exchange.Registration;
 
 public interface Include<S> extends Registration, Provider<S> {
 
-	public static class Included<S> extends Receipted
-			implements Configured<S>, ProviderWrapper<S, Provider<S>> {
+	public static class Included<S> extends Receipted implements Configured<S>, ProviderWrapper<S, Provider<S>> {
 		private static final long serialVersionUID = 1L;
 		private final Provider<S> source;
 
@@ -32,8 +31,9 @@ public interface Include<S> extends Registration, Provider<S> {
 		}
 
 		@Override
-		public <U> Configured<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return Configured.super.convert(converter);
+		public <U> Configured<U> convert(boolean resize,
+				@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return Configured.super.convert(resize, converter);
 		}
 	}
 
@@ -42,8 +42,9 @@ public interface Include<S> extends Registration, Provider<S> {
 			extends Include<S>, RegistrationWrapper<W>, ProviderWrapper<S, W> {
 
 		@Override
-		default <U> Include<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return getSource().convert(converter);
+		default <U> Include<U> convert(boolean resize,
+				@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return getSource().convert(resize, converter);
 		}
 
 		@Override
@@ -84,9 +85,9 @@ public interface Include<S> extends Registration, Provider<S> {
 	public static class ConvertedInclude<S, T, W extends Include<S>> extends ConvertedProvider<S, T, W>
 			implements Include<T> {
 
-		public ConvertedInclude(@NonNull W target,
+		public ConvertedInclude(@NonNull W target, boolean resize,
 				@NonNull Function<? super Stream<S>, ? extends Stream<T>> converter) {
-			super(target, converter);
+			super(target, resize, converter);
 		}
 
 		@Override
@@ -105,15 +106,16 @@ public interface Include<S> extends Registration, Provider<S> {
 		}
 
 		@Override
-		public <U> Include<U> convert(Function<? super Stream<T>, ? extends Stream<U>> converter) {
-			return Include.super.convert(converter);
+		public <U> Include<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
+			return Include.super.convert(resize, converter);
 		}
 
 	}
 
 	@Override
-	default <U> Include<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return new ConvertedInclude<>(this, converter);
+	default <U> Include<U> convert(boolean resize,
+			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return new ConvertedInclude<>(this, resize, converter);
 	}
 
 	@Override

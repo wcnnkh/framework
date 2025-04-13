@@ -3,9 +3,9 @@ package run.soeasy.framework.util.register;
 import java.util.function.BooleanSupplier;
 
 import lombok.NonNull;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.function.Wrapper;
 
 public class StandardRegistrationWrapper<W extends Registration>
 		extends InterceptableRegisration<Registration, Registration, Registration> implements Wrapper<W> {

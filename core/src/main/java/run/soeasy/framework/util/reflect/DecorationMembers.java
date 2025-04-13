@@ -3,9 +3,9 @@ package run.soeasy.framework.util.reflect;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import run.soeasy.framework.util.Members;
-import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.type.Members;
+import run.soeasy.framework.util.type.ResolvableType;
 
 public abstract class DecorationMembers<E, R extends DecorationMembers<E, R>> extends Members<E> {
 

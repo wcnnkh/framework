@@ -49,7 +49,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	}
 
 	public long getTotal() {
-		return total == null ? elements.count() : total;
+		return total == null ? elements.count().longValue() : total;
 	}
 
 	public void setTotal(Long total) {

@@ -3,8 +3,8 @@ package run.soeasy.framework.util.logging;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.function.Wrapper;
 
 public class FacadeLogger extends AbstractLogger implements Wrapper<Logger> {
 	private volatile Logger source;

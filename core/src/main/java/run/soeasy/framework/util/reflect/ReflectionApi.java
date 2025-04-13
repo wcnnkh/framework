@@ -20,11 +20,20 @@ import run.soeasy.framework.util.function.Function;
  *
  */
 public class ReflectionApi implements Supplier<Object> {
+	private static final Constructor<Object> OBJECT_CONSTRUCTOR;
+	static {
+		try {
+			OBJECT_CONSTRUCTOR = Object.class.getConstructor();
+		} catch (NoSuchMethodException e) {
+			// Object对象怎么可能没有默认的构造方法
+			throw new UnsupportedOperationException(ReflectionUtils.class.getName(), e);
+		}
+	}
+
 	private final Class<?> declaringClass;
 	private final Function<? super Class<?>, ? extends Object, ? extends Throwable> processor;
 
-	public ReflectionApi( Class<?> declaringClass,
-			 Function<Class<?>, Object, ? extends Throwable> processor) {
+	public ReflectionApi(Class<?> declaringClass, Function<Class<?>, Object, ? extends Throwable> processor) {
 		this.declaringClass = declaringClass;
 		this.processor = processor;
 	}
@@ -58,7 +67,6 @@ public class ReflectionApi implements Supplier<Object> {
 		}
 	}
 
-	
 	public Method getMethod(String name, Class<?>... parameterTypes) {
 		if (this.declaringClass == null) {
 			return null;
@@ -151,7 +159,7 @@ public class ReflectionApi implements Supplier<Object> {
 		Assert.isTrue(REFLECTION_FACTORY.isAvailable());
 		Assert.requiredArgument(type != null, "type");
 		return (Constructor<T>) REFLECTION_FACTORY.invoke(NEW_CONSTRUCTOR_FOR_SERIALIZATION_METHOD, type,
-				ReflectionUtils.OBJECT_CONSTRUCTOR);
+				OBJECT_CONSTRUCTOR);
 	}
 
 	private static final ConcurrentReferenceHashMap<Class<?>, Constructor<?>> CONSTRUCTOR_MAP = new ConcurrentReferenceHashMap<Class<?>, Constructor<?>>(
@@ -195,7 +203,7 @@ public class ReflectionApi implements Supplier<Object> {
 	 * @param type
 	 * @return {@link REFLECTION_FACTORY}不可用时返回空
 	 */
-	
+
 	public static <T> Constructor<T> getConstructor(Class<T> type) {
 		Assert.requiredArgument(type != null, "type");
 		Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(type);
@@ -236,7 +244,6 @@ public class ReflectionApi implements Supplier<Object> {
 				// 忽略
 			}
 		}
-
-		return ReflectionUtils.newInstanceWithNullValues(type);
+		throw new UnsupportedOperationException(type.getName());
 	}
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execution.Executable;
-import run.soeasy.framework.util.function.Wrapper;
+import run.soeasy.framework.lang.Wrapper;
 
 @Data
 public abstract class ReflectionMember<T extends Member> implements Executable, Wrapper<T> {

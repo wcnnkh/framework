@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.Members;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.type.Members;
 
 public final class Fields extends ReflectionMembers<Field, Fields> {
 	@SuppressWarnings("unchecked")

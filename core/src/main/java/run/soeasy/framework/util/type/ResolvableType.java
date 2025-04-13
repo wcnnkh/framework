@@ -1,4 +1,4 @@
-package run.soeasy.framework.util;
+package run.soeasy.framework.util.type;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -9,6 +9,9 @@ import java.lang.reflect.WildcardType;
 import java.util.Map;
 
 import lombok.NonNull;
+import run.soeasy.framework.util.ClassUtils;
+import run.soeasy.framework.util.ObjectUtils;
+import run.soeasy.framework.util.StringUtils;
 
 @FunctionalInterface
 public interface ResolvableType extends ParameterizedType, WildcardType, TypeVariableResolver {

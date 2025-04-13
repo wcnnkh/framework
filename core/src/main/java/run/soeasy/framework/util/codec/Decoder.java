@@ -1,8 +1,8 @@
 package run.soeasy.framework.util.codec;
 
 import lombok.NonNull;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Wrapper;
 
 @FunctionalInterface
 public interface Decoder<E, D> {

@@ -13,8 +13,9 @@ public interface Configured<S> extends Include<S>, Receipt {
 	public static interface ConfiguredWrapper<S, W extends Configured<S>>
 			extends Configured<S>, IncludeWrapper<S, W>, ReceiptWrapper<W> {
 		@Override
-		default <U> Configured<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return getSource().convert(converter);
+		default <U> Configured<U> convert(boolean resize,
+				@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return getSource().convert(resize, converter);
 		}
 
 		@Override
@@ -38,14 +39,14 @@ public interface Configured<S> extends Include<S>, Receipt {
 	public static class ConvertedConfigured<S, T, W extends Configured<S>> extends ConvertedInclude<S, T, W>
 			implements Configured<T> {
 
-		public ConvertedConfigured(@NonNull W target,
+		public ConvertedConfigured(@NonNull W target, boolean resize,
 				@NonNull Function<? super Stream<S>, ? extends Stream<T>> converter) {
-			super(target, converter);
+			super(target, resize, converter);
 		}
 
 		@Override
-		public <U> Configured<U> convert(Function<? super Stream<T>, ? extends Stream<U>> converter) {
-			return Configured.super.convert(converter);
+		public <U> Configured<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
+			return Configured.super.convert(resize, converter);
 		}
 
 		@Override
@@ -78,7 +79,8 @@ public interface Configured<S> extends Include<S>, Receipt {
 	}
 
 	@Override
-	default <U> Configured<U> convert(@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return new ConvertedConfigured<>(this, converter);
+	default <U> Configured<U> convert(boolean resize,
+			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return new ConvertedConfigured<>(this, resize, converter);
 	}
 }

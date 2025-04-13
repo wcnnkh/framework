@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.param;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Wrapper;
 
 /**
  * 参数模板

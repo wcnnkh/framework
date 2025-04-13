@@ -1,9 +1,7 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.lang;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-
-import run.soeasy.framework.util.function.Wrapper;
 
 @FunctionalInterface
 public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends AnnotatedElement, Wrapper<W> {

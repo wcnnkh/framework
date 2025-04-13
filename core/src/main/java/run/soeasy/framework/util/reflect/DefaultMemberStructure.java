@@ -3,7 +3,7 @@ package run.soeasy.framework.util.reflect;
 import java.lang.reflect.Member;
 import java.util.function.Function;
 
-import run.soeasy.framework.util.Members;
+import run.soeasy.framework.util.type.Members;
 
 final class DefaultMemberStructure<E extends Member, R extends ReflectionMembers<E, R>> extends ReflectionMembers<E, R> {
 	private final Function<? super ReflectionMembers<E, R>, ? extends R> membersDecorator;

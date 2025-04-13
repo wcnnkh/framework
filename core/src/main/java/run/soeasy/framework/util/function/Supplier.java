@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.function.Function.FunctionPipeline;
 
 /**

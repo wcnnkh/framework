@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.AnnotatedElementWrapper;
+import run.soeasy.framework.lang.AnnotatedElementWrapper;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collection.LRULinkedHashMap;
+import run.soeasy.framework.util.type.ResolvableType;
 
 public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement> {
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(

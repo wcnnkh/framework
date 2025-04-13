@@ -3,8 +3,8 @@ package run.soeasy.framework.core.execution.aop;
 import java.lang.reflect.AnnotatedElement;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.core.execution.Executor;
+import run.soeasy.framework.lang.AnnotatedElementWrapper;
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.ObjectUtils;
 

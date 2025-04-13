@@ -3,6 +3,7 @@ package run.soeasy.framework.util.function;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.lang.Wrapper;
 
 @FunctionalInterface
 public interface Predicate<T, E extends Throwable> {

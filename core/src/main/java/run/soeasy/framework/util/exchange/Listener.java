@@ -3,8 +3,8 @@ package run.soeasy.framework.util.exchange;
 import java.util.EventListener;
 import java.util.function.Consumer;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Wrapper;
 
 public interface Listener<T> extends Consumer<T>, EventListener {
 	@Override

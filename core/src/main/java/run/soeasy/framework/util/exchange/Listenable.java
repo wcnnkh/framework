@@ -1,8 +1,8 @@
 package run.soeasy.framework.util.exchange;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.exchange.Listener.BatchListener;
-import run.soeasy.framework.util.function.Wrapper;
 
 /**
  * 可监听的

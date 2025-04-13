@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Streamable;
 
 /**

@@ -2,8 +2,8 @@ package run.soeasy.framework.util.spi;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.comparator.Ordered;
-import run.soeasy.framework.util.function.Wrapper;
 
 /**
  * @author shuchaowen

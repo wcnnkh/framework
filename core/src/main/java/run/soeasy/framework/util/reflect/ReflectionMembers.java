@@ -5,9 +5,9 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.Members;
-import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.type.Members;
+import run.soeasy.framework.util.type.ResolvableType;
 
 public abstract class ReflectionMembers<E extends Member, R extends ReflectionMembers<E, R>>
 		extends DecorationMembers<E, R> {

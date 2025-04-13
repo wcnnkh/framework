@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.lang.Wrapper;
 
 /**
  * 一个功能的定义

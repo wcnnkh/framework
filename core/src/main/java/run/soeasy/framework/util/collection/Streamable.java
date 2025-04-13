@@ -23,9 +23,11 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
-import run.soeasy.framework.util.function.Wrapper;
+import run.soeasy.framework.util.math.LongValue;
+import run.soeasy.framework.util.math.NumberValue;
 
 /**
  * 就像{@link Iterable}可以返回{@link Iterator}一样，{@link Streamable}可以返回{@link Stream}
@@ -71,7 +73,7 @@ public interface Streamable<E> {
 		}
 
 		@Override
-		default long count() {
+		default NumberValue count() {
 			return getSource().count();
 		}
 
@@ -82,7 +84,8 @@ public interface Streamable<E> {
 
 		@Override
 		default <T, X extends Throwable> T export(
-				run.soeasy.framework.util.function.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
+				run.soeasy.framework.util.function.Function<? super Stream<E>, ? extends T, ? extends X> processor)
+				throws X {
 			return getSource().export(processor);
 		}
 
@@ -269,10 +272,10 @@ public interface Streamable<E> {
 		return anyMatch((e) -> e == element || ObjectUtils.equals(e, element));
 	}
 
-	default long count() {
+	default NumberValue count() {
 		Stream<E> stream = stream();
 		try {
-			return stream.count();
+			return new LongValue(stream.count());
 		} finally {
 			stream.close();
 		}
@@ -316,7 +319,8 @@ public interface Streamable<E> {
 	}
 
 	default <T, X extends Throwable> T export(
-			run.soeasy.framework.util.function.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
+			run.soeasy.framework.util.function.Function<? super Stream<E>, ? extends T, ? extends X> processor)
+			throws X {
 		Stream<E> stream = stream();
 		try {
 			return processor.apply(stream);

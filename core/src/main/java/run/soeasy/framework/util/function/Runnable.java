@@ -2,6 +2,7 @@ package run.soeasy.framework.util.function;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.lang.Wrapper;
 
 /**
  * @see java.lang.Runnable

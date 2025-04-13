@@ -3,9 +3,9 @@ package run.soeasy.framework.util.codec;
 import java.util.function.BiPredicate;
 
 import lombok.NonNull;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Wrapper;
 
 @FunctionalInterface
 public interface Encoder<D, E> extends BiPredicate<D, E> {

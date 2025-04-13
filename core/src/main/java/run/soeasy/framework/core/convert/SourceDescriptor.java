@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.util.function.Wrapper;
+import run.soeasy.framework.lang.Wrapper;
 
 @FunctionalInterface
 public interface SourceDescriptor {

@@ -30,7 +30,7 @@ public interface Selector<E> extends Function<Elements<? extends E>, E> {
 
 		@Override
 		public E apply(@NonNull Elements<? extends E> elements) {
-			return elements.convert((e) -> e.sorted(comparator)).first();
+			return elements.sorted(comparator).first();
 		}
 	}
 

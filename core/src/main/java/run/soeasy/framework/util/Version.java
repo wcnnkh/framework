@@ -30,22 +30,16 @@ public interface Version extends Value, Comparable<Value> {
 					return compare;
 				}
 
-				long count = elements.count();
-				long otherCount = otherElements.count();
-				if (count == otherCount) {
-					return 0;// 相等
-				} else if (count > otherCount) {
-					return 1;
-				} else {
-					return -1;
-				}
+				NumberValue count = elements.count();
+				NumberValue otherCount = otherElements.count();
+				return count.compareTo(otherCount);
 			} else {
 				if (elements.isEmpty()) {
 					return -1;
 				}
 
 				int value = elements.first().compareTo(other);
-				return value == 0 ? (elements.count() > 1 ? 1 : 0) : value;
+				return value == 0 ? (elements.count().compareTo(NumberValue.ONE) > 0 ? 1 : 0) : value;
 			}
 		}
 

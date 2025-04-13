@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
-import run.soeasy.framework.core.transform.mapping.InstanceFactory.CollectionFactory;
 import run.soeasy.framework.util.collection.ArrayUtils;
 import run.soeasy.framework.util.collection.CollectionUtils;
 import run.soeasy.framework.util.reflect.ReflectionUtils;

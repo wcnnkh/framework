@@ -76,9 +76,9 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		}
 
 		@Override
-		public <U> Configured<U> convert(
+		public <U> Configured<U> convert(boolean resize,
 				@NonNull Function<? super Stream<ServiceHolder<S>>, ? extends Stream<U>> converter) {
-			return Configured.super.convert(converter);
+			return Configured.super.convert(resize, converter);
 		}
 	}
 

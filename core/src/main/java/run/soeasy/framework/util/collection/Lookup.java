@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.Value;
 import run.soeasy.framework.util.Version;
-import run.soeasy.framework.util.function.Wrapper;
 import run.soeasy.framework.util.math.NumberValue;
 
 public interface Lookup<K, V extends Value> {

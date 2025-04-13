@@ -1,9 +1,10 @@
-package run.soeasy.framework.util;
+package run.soeasy.framework.util.type;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import lombok.NonNull;
+import run.soeasy.framework.util.Assert;
 
 public class GenericType<T extends Type> implements ResolvableType {
 	private ResolvableType[] actualTypeArguments;

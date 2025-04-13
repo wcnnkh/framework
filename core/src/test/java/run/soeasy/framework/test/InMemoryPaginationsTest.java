@@ -22,7 +22,8 @@ public class InMemoryPaginationsTest {
 		for (int i = 1; i < count; i++) {
 			Paginations<String> paginations = new Paginations<String>(Elements.of(list));
 			paginations.setPageSize(i);
-			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getElements().count() == 0);
+			Assert.assertTrue(
+					paginations.jumpToPage(paginations.getPages() + 1).getElements().count().longValue() == 0);
 			Assert.assertTrue(!paginations.jumpToPage(paginations.getPages()).hasNext());
 			Assert.assertArrayEquals(list.toArray(new String[0]),
 					paginations.all().getElements().toArray(String[]::new));

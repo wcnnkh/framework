@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import run.soeasy.framework.util.function.Wrapper;
+import run.soeasy.framework.lang.Wrapper;
 
 @FunctionalInterface
 public interface MapWrapper<K, V, W extends Map<K, V>> extends Map<K, V>, Wrapper<W> {

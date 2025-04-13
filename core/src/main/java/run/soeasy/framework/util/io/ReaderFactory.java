@@ -7,9 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
 import run.soeasy.framework.util.function.Pipeline;
-import run.soeasy.framework.util.function.Wrapper;
 
 @FunctionalInterface
 public interface ReaderFactory<T extends Reader> {

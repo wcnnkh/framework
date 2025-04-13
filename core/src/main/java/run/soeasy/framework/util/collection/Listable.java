@@ -1,6 +1,6 @@
 package run.soeasy.framework.util.collection;
 
-import run.soeasy.framework.util.function.Wrapper;
+import run.soeasy.framework.lang.Wrapper;
 
 /**
  * 可列出的

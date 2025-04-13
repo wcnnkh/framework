@@ -2,8 +2,8 @@ package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Wrapper;
 
 /**
  * 模板

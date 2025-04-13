@@ -4,78 +4,21 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.function.Predicate;
 
 import run.soeasy.framework.lang.ImpossibleException;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
 import run.soeasy.framework.util.collection.ConcurrentReferenceHashMap;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Consumer;
 
-public abstract class ReflectionUtils {
-	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).getElements().filter((method) -> {
-		return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
-				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
-				&& method.getParameterTypes().length == 0;
-	}).toArray(Method[]::new);
-
+public class ReflectionUtils {
 	private static final ConcurrentReferenceHashMap<Class<?>, Constructor<?>> CONSTRUCTOR_MAP = new ConcurrentReferenceHashMap<Class<?>, Constructor<?>>(
 			128);
-
-	/**
-	 * 实体成员，忽略静态的
-	 */
-	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers());
-
-	/**
-	 * 作用域比较
-	 */
-	public static final Comparator<Member> MEMBER_SCOPE_COMPARATOR = new MemberScopeComparator<Member>();
-
-	/**
-	 * Object对象的默认构造方法
-	 */
-	public static final Constructor<Object> OBJECT_CONSTRUCTOR;
-
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
-
-	static {
-		try {
-			OBJECT_CONSTRUCTOR = Object.class.getConstructor();
-		} catch (NoSuchMethodException e) {
-			// Object对象怎么可能没有默认的构造方法
-			throw new UnsupportedOperationException(ReflectionUtils.class.getName(), e);
-		}
-	}
-
-	/**
-	 * Determine whether the given method explicitly declares the given exception or
-	 * one of its superclasses, which means that an exception of that type can be
-	 * propagated as-is within a reflective invocation.
-	 * 
-	 * @param method        the declaring method
-	 * @param exceptionType the exception to throw
-	 * @return {@code true} if the exception can be thrown as-is; {@code false} if
-	 *         it needs to be wrapped
-	 */
-	public static boolean declaresException(Method method, Class<?> exceptionType) {
-		Assert.notNull(method, "Method must not be null");
-		Class<?>[] declaredExceptions = method.getExceptionTypes();
-		for (Class<?> declaredException : declaredExceptions) {
-			if (declaredException.isAssignableFrom(exceptionType)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * Get the field represented by the supplied {@link Field field object} on the
@@ -409,31 +352,6 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * Return the qualified name of the given method, consisting of fully qualified
-	 * interface/class name + "." + method name.
-	 * 
-	 * @param method the method
-	 * @return the qualified name of the method
-	 */
-	public static String getQualifiedMethodName(Method method) {
-		return getQualifiedMethodName(method, null);
-	}
-
-	/**
-	 * Return the qualified name of the given method, consisting of fully qualified
-	 * interface/class name + "." + method name.
-	 * 
-	 * @param method the method
-	 * @param clazz  the clazz that the method is being invoked on (may be
-	 *               {@code null} to indicate the method's declaring class)
-	 * @return the qualified name of the method
-	 */
-	public static String getQualifiedMethodName(Method method, Class<?> clazz) {
-		Assert.notNull(method, "Method must not be null");
-		return (clazz != null ? clazz : method.getDeclaringClass()).getName() + '.' + method.getName();
-	}
-
-	/**
 	 * Handle the given invocation target exception. Should only be called if no
 	 * checked exception is expected to be thrown by the target method.
 	 * <p>
@@ -539,28 +457,6 @@ public abstract class ReflectionUtils {
 			}
 		}
 		return getDeclaredFields(source.getClass()).all().clone(source, deep);
-	}
-
-	/**
-	 * 判断此类是否可用(会静态初始化)
-	 * 
-	 * @param clazz
-	 * @param accept
-	 * @return
-	 * @throws E
-	 */
-	public static <E extends Throwable> boolean isAvailable(Class<?> clazz, Consumer<Throwable, E> accept) throws E {
-		try {
-			for (Method method : CLASS_PRESENT_METHODS) {
-				method.invoke(clazz);
-			}
-		} catch (Throwable e) {
-			if (accept != null) {
-				accept.accept(e);
-			}
-			return false;
-		}
-		return true;
 	}
 
 	public static boolean isCloneable(Object source) {
@@ -743,27 +639,6 @@ public abstract class ReflectionUtils {
 			handleReflectionException(ex);
 		}
 		throw new IllegalStateException("Should never get here");
-	}
-
-	/**
-	 * 使用空值构造实体
-	 * 
-	 * @param <T>
-	 * @param entityClass
-	 * @return
-	 * @throws UnsupportedOperationException
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws UnsupportedOperationException {
-		Assert.requiredArgument(entityClass != null, "entityClass");
-		Elements<Constructor<?>> elements = ReflectionUtils.getDeclaredConstructors(entityClass).convert((s) -> s
-				.sorted(MEMBER_SCOPE_COMPARATOR).sorted(Comparator.comparingInt(Constructor::getParameterCount)));
-		Iterator<Constructor<?>> iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			Constructor<?> constructor = iterator.next();
-			return (T) newInstance(constructor, new Object[constructor.getParameterCount()]);
-		}
-		throw new UnsupportedOperationException(entityClass.getName());
 	}
 
 	/**

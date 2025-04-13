@@ -1,10 +1,13 @@
 package run.soeasy.framework.util.collection;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.util.math.NumberValue;
 
 public interface Provider<S> extends Elements<S>, Reloadable {
 
@@ -21,8 +24,8 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		}
 
 		@Override
-		default <U> Provider<U> convert(Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return getSource().convert(converter);
+		default <U> Provider<U> convert(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return getSource().convert(resize, converter);
 		}
 
 		@Override
@@ -34,10 +37,25 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		default Provider<S> concat(Provider<? extends S> serviceLoader) {
 			return getSource().concat(serviceLoader);
 		}
+
+		@Override
+		default Provider<S> knownSize(@NonNull Function<? super Elements<S>, ? extends NumberValue> statisticsSize) {
+			return getSource().knownSize(statisticsSize);
+		}
+
+		@Override
+		default Provider<S> filter(@NonNull Predicate<? super S> predicate) {
+			return getSource().filter(predicate);
+		}
+
+		@Override
+		default <U> Provider<U> map(Function<? super S, ? extends U> mapper) {
+			return getSource().map(mapper);
+		}
 	}
 
 	@RequiredArgsConstructor
-	public static class StaticProvider<S> implements ReloadableElementsWrapper<S, Elements<S>> {
+	public static class IterableProvider<S> implements ReloadableElementsWrapper<S, Elements<S>> {
 		@NonNull
 		private final Iterable<? extends S> source;
 
@@ -56,17 +74,28 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 
 	public static class EmptyProvider<S> extends EmptyElements<S> implements Provider<S> {
 		private static final long serialVersionUID = 1L;
+		private static final Provider<?> EMPTY_PROVIDER = new EmptyProvider<>();
 
 		public void reload() {
+		}
+
+		@Override
+		public Provider<S> filter(Predicate<? super S> predicate) {
+			return this;
+		}
+
+		@Override
+		public <U> Provider<U> map(Function<? super S, ? extends U> mapper) {
+			return empty();
 		}
 	}
 
 	public static class ConvertedProvider<S, T, W extends Provider<S>> extends ConvertedElements<S, T, W>
 			implements Provider<T> {
 
-		public ConvertedProvider(@NonNull W target,
+		public ConvertedProvider(@NonNull W target, boolean resize,
 				@NonNull Function<? super Stream<S>, ? extends Stream<T>> converter) {
-			super(target, converter);
+			super(target, resize, converter);
 		}
 
 		@Override
@@ -75,8 +104,8 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		}
 
 		@Override
-		public <U> Provider<U> convert(Function<? super Stream<T>, ? extends Stream<U>> converter) {
-			return Provider.super.convert(converter);
+		public <U> Provider<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
+			return Provider.super.convert(resize, converter);
 		}
 
 		@Override
@@ -88,14 +117,29 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		public Stream<T> stream() {
 			return getSource().stream();
 		}
+
+		@Override
+		public Provider<T> knownSize(@NonNull Function<? super Elements<T>, ? extends NumberValue> statisticsSize) {
+			return Provider.super.knownSize(statisticsSize);
+		}
+
+		@Override
+		public Provider<T> filter(@NonNull Predicate<? super T> predicate) {
+			return Provider.super.filter(predicate);
+		}
+
+		@Override
+		public <U> Provider<U> map(Function<? super T, ? extends U> mapper) {
+			return Provider.super.map(mapper);
+		}
 	}
 
 	public static interface ReloadableElementsWrapper<S, W extends Elements<S>>
 			extends Provider<S>, ElementsWrapper<S, W> {
 
 		@Override
-		default <U> Provider<U> convert(Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return Provider.super.convert(converter);
+		default <U> Provider<U> convert(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
+			return Provider.super.convert(resize, converter);
 		}
 
 		@Override
@@ -106,6 +150,21 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		@Override
 		default Stream<S> stream() {
 			return ElementsWrapper.super.stream();
+		}
+
+		@Override
+		default Provider<S> knownSize(@NonNull Function<? super Elements<S>, ? extends NumberValue> statisticsSize) {
+			return Provider.super.knownSize(statisticsSize);
+		}
+
+		@Override
+		default Provider<S> filter(@NonNull Predicate<? super S> predicate) {
+			return Provider.super.filter(predicate);
+		}
+
+		@Override
+		default <U> Provider<U> map(Function<? super S, ? extends U> mapper) {
+			return Provider.super.map(mapper);
 		}
 	}
 
@@ -133,11 +192,9 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		}
 	}
 
-	static final Provider<?> EMPTY_PROVIDER = new EmptyProvider<>();
-
 	@SuppressWarnings("unchecked")
 	public static <E> Provider<E> empty() {
-		return (Provider<E>) EMPTY_PROVIDER;
+		return (Provider<E>) EmptyProvider.EMPTY_PROVIDER;
 	}
 
 	/**
@@ -146,21 +203,21 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Provider<T> of(Iterable<? extends T> iterable) {
-		if (iterable == null) {
-			return empty();
-		}
-
+	public static <T> Provider<T> forIterable(@NonNull Iterable<? extends T> iterable) {
 		if (iterable instanceof Provider) {
 			return (Provider<T>) iterable;
 		}
 
-		return new StaticProvider<>(iterable);
+		return new IterableProvider<>(iterable);
+	}
+
+	public static <T> Provider<T> forSupplier(@NonNull Supplier<? extends T> supplier) {
+		return forIterable(Elements.forSupplier(supplier));
 	}
 
 	@Override
 	default Provider<S> concat(Elements<? extends S> elements) {
-		Provider<S> serviceLoader = Provider.of(elements.map((e) -> e));
+		Provider<S> serviceLoader = Provider.forIterable(elements.map((e) -> e));
 		return Provider.this.concat(serviceLoader);
 	}
 
@@ -169,8 +226,37 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 	}
 
 	@Override
-	default <U> Provider<U> convert(Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return new ConvertedProvider<>(this, converter);
+	default <U> Provider<U> convert(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return new ConvertedProvider<>(this, resize, converter);
+	}
+
+	public static class KnownSizeProvider<S, W extends Provider<S>> extends KnownSizeElements<S, W>
+			implements ReloadableElementsWrapper<S, W> {
+
+		public KnownSizeProvider(@NonNull W source,
+				@NonNull Function<? super W, ? extends NumberValue> statisticsSize) {
+			super(source, statisticsSize);
+		}
+
+		@Override
+		public void reload() {
+			getSource().reload();
+		}
+	}
+
+	@Override
+	default Provider<S> filter(@NonNull Predicate<? super S> predicate) {
+		return convert(true, (e) -> e.filter(predicate));
+	}
+
+	@Override
+	default <U> Provider<U> map(Function<? super S, ? extends U> mapper) {
+		return convert(false, (e) -> e.map(mapper));
+	}
+
+	@Override
+	default Provider<S> knownSize(@NonNull Function<? super Elements<S>, ? extends NumberValue> statisticsSize) {
+		return new KnownSizeProvider<>(this, statisticsSize);
 	}
 
 	@Override

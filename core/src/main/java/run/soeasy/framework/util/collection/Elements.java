@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ import lombok.ToString;
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ObjectUtils;
 import run.soeasy.framework.util.function.Merger;
+import run.soeasy.framework.util.math.NumberValue;
 
 /**
  * 和{@link Streamable}类似，但此接口可以返回无需关闭的{@link Iterator}
@@ -193,11 +195,16 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	}
 
+	public static interface WrappedMethod {
+		<V> V apply(Supplier<? extends V> left, Supplier<? extends V> right);
+	}
+
 	@RequiredArgsConstructor
 	@Getter
 	public static class ConvertedElements<S, E, W extends Elements<S>> implements ElementsWrapper<E, Elements<E>> {
 		@NonNull
 		private final W target;
+		private final boolean resize;
 		@NonNull
 		private final Function<? super Stream<S>, ? extends Stream<E>> converter;
 
@@ -205,10 +212,28 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		public Elements<E> getSource() {
 			return Elements.of(() -> converter.apply(target.stream()));
 		}
+
+		@Override
+		public NumberValue count() {
+			return resize ? ElementsWrapper.super.count() : target.count();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return resize ? ElementsWrapper.super.isEmpty() : target.isEmpty();
+		}
+
+		@Override
+		public boolean isUnique() {
+			return resize ? ElementsWrapper.super.isUnique() : target.isUnique();
+		}
+	}
+
+	public static interface ConvertStrategy {
+
 	}
 
 	public static interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, StreamableWrapper<E, W> {
-
 		@Override
 		default Provider<E> cacheable() {
 			return getSource().cacheable();
@@ -220,8 +245,8 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
-			return getSource().convert(converter);
+		default <U> Elements<U> convert(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
+			return getSource().convert(resize, converter);
 		}
 
 		@Override
@@ -323,10 +348,16 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		default Elements<E> unordered() {
 			return getSource().unordered();
 		}
+
+		default run.soeasy.framework.util.collection.Elements<E> knownSize(
+				Function<? super Elements<E>, ? extends NumberValue> statisticsSize) {
+			return getSource().knownSize(statisticsSize);
+		};
 	}
 
 	public static class EmptyElements<E> extends EmptyStreamable<E> implements Elements<E> {
 		private static final long serialVersionUID = 1L;
+		private static final EmptyElements<Object> EMPTY_ELEMENTS = new EmptyElements<>();
 
 		@Override
 		public Provider<E> cacheable() {
@@ -1036,11 +1067,43 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 	}
 
-	public static final EmptyElements<Object> EMPTY_ELEMENTS = new EmptyElements<>();
-
 	@SuppressWarnings("unchecked")
 	public static <T> Elements<T> empty() {
-		return (Elements<T>) EMPTY_ELEMENTS;
+		return (Elements<T>) EmptyElements.EMPTY_ELEMENTS;
+	}
+
+	@RequiredArgsConstructor
+	@Getter
+	public static class KnownSizeElements<E, W extends Elements<E>> implements ElementsWrapper<E, W> {
+		@NonNull
+		private final W source;
+		@NonNull
+		private final Function<? super W, ? extends NumberValue> statisticsSize;
+
+		@Override
+		public NumberValue count() {
+			return statisticsSize.apply(source);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return count().compareTo(NumberValue.ZERO) == 0;
+		}
+
+		@Override
+		public boolean isUnique() {
+			return count().compareTo(NumberValue.ONE) == 0;
+		}
+	}
+
+	/**
+	 * 已知大小的
+	 * 
+	 * @param statisticsSize
+	 * @return
+	 */
+	default Elements<E> knownSize(@NonNull Function<? super Elements<E>, ? extends NumberValue> statisticsSize) {
+		return new KnownSizeElements<>(this, statisticsSize);
 	}
 
 	@SafeVarargs
@@ -1103,6 +1166,10 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new StandardStreamableElements<>((Streamable<T>) streamable);
 	}
 
+	public static <T> Elements<T> forSupplier(@NonNull Supplier<T> supplier) {
+		return Elements.of(() -> Stream.generate(supplier));
+	}
+
 	public static <T> Elements<T> singleton(T element) {
 		return of(Collections.singleton(element));
 	}
@@ -1121,8 +1188,16 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new MergedElements<>(this, elements);
 	}
 
-	default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
-		return new ConvertedElements<>(this, converter);
+	/**
+	 * 转换
+	 * 
+	 * @param <U>
+	 * @param resize    converter是否可能改变大小
+	 * @param converter
+	 * @return
+	 */
+	default <U> Elements<U> convert(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
+		return new ConvertedElements<>(this, resize, converter);
 	}
 
 	/**
@@ -1131,7 +1206,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * @return
 	 */
 	default Elements<E> distinct() {
-		return convert((e) -> e.distinct());
+		return convert(true, (e) -> e.distinct());
 	}
 
 	@Override
@@ -1144,19 +1219,17 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new IteratorToEnumeration<>(iterator, Function.identity());
 	}
 
-	default Elements<E> exclude(Predicate<? super E> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	default Elements<E> exclude(@NonNull Predicate<? super E> predicate) {
 		return filter(predicate.negate());
 	}
 
-	default Elements<E> filter(Predicate<? super E> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
-		return convert((stream) -> stream.filter(predicate));
+	default Elements<E> filter(@NonNull Predicate<? super E> predicate) {
+		return convert(true, (stream) -> stream.filter(predicate));
 	}
 
 	default <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
 		Assert.requiredArgument(mapper != null, "mapper");
-		return convert((stream) -> {
+		return convert(true, (stream) -> {
 			return stream.flatMap((e) -> {
 				Streamable<U> streamy = mapper.apply(e);
 				return streamy == null ? Stream.empty() : streamy.stream();
@@ -1195,16 +1268,16 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	Iterator<E> iterator();
 
 	default Elements<E> limit(long maxSize) {
-		return convert((e) -> e.limit(maxSize));
+		return convert(true, (e) -> e.limit(maxSize));
 	}
 
 	default <U> Elements<U> map(Function<? super E, ? extends U> mapper) {
 		Assert.requiredArgument(mapper != null, "mapper");
-		return convert((stream) -> stream.map(mapper));
+		return convert(false, (stream) -> stream.map(mapper));
 	}
 
 	default Elements<E> parallel() {
-		return convert((e) -> e.parallel());
+		return convert(false, (e) -> e.parallel());
 	}
 
 	default <R> Elements<ParallelElement<E, R>> parallel(Elements<? extends R> elements) {
@@ -1214,7 +1287,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	default Elements<E> peek(Consumer<? super E> action) {
 		Assert.requiredArgument(action != null, "action");
-		return convert((e) -> e.peek(action));
+		return convert(false, (e) -> e.peek(action));
 	}
 
 	/**
@@ -1223,24 +1296,24 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * @return
 	 */
 	default Elements<E> reverse() {
-		return convert((stream) -> stream.sorted(Collections.reverseOrder()));
+		return convert(false, (stream) -> stream.sorted(Collections.reverseOrder()));
 	}
 
 	default Elements<E> sequential() {
-		return convert((e) -> e.sequential());
+		return convert(false, (e) -> e.sequential());
 	}
 
 	default Elements<E> skip(long n) {
-		return convert((e) -> e.skip(n));
+		return convert(true, (e) -> e.skip(n));
 	}
 
 	default Elements<E> sorted() {
-		return convert((e) -> e.sorted());
+		return convert(false, (e) -> e.sorted());
 	}
 
 	default Elements<E> sorted(Comparator<? super E> comparator) {
 		Assert.requiredArgument(comparator != null, "comparator");
-		return convert((e) -> e.sorted(comparator));
+		return convert(false, (e) -> e.sorted(comparator));
 	}
 
 	@Override
@@ -1254,6 +1327,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	}
 
 	default Elements<E> unordered() {
-		return convert((e) -> e.unordered());
+		return convert(false, (e) -> e.unordered());
 	}
 }

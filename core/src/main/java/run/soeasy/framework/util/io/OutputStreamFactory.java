@@ -9,9 +9,9 @@ import java.nio.charset.CharsetEncoder;
 
 import lombok.Data;
 import lombok.NonNull;
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.function.Function;
 import run.soeasy.framework.util.function.Pipeline;
-import run.soeasy.framework.util.function.Wrapper;
 
 @FunctionalInterface
 public interface OutputStreamFactory<T extends OutputStream> {

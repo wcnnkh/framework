@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.util.CharSequenceTemplate;
-import run.soeasy.framework.util.ResolvableType;
 import run.soeasy.framework.util.Value;
 import run.soeasy.framework.util.Version;
 import run.soeasy.framework.util.collection.Elements;
@@ -23,6 +22,7 @@ import run.soeasy.framework.util.function.Wrapped;
 import run.soeasy.framework.util.math.BigDecimalValue;
 import run.soeasy.framework.util.math.NumberUtils;
 import run.soeasy.framework.util.math.NumberValue;
+import run.soeasy.framework.util.type.ResolvableType;
 
 @FunctionalInterface
 public interface Source extends SourceDescriptor, Value, Supplier<Object, ConversionException> {

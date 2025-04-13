@@ -7,9 +7,9 @@ import java.util.function.Predicate;
 
 import run.soeasy.framework.util.Assert;
 import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.Members;
 import run.soeasy.framework.util.StringUtils;
 import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.type.Members;
 
 public final class Methods extends ReflectionMembers<Method, Methods> {
 	private final Function<? super ReflectionMembers<Method, Methods>, ? extends Methods> memberDecorator = (

@@ -5,12 +5,12 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.AnnotatedElementWrapper;
 import run.soeasy.framework.core.AnnotationArrayAnnotatedElement;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.param.ParameterDescriptor;
-import run.soeasy.framework.util.ResolvableType;
+import run.soeasy.framework.lang.AnnotatedElementWrapper;
 import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.util.type.ResolvableType;
 
 public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T>
 		implements AnnotatedElementWrapper<T> {

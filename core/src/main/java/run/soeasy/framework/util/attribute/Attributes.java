@@ -1,7 +1,7 @@
 package run.soeasy.framework.util.attribute;
 
+import run.soeasy.framework.lang.Wrapper;
 import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Wrapper;
 
 public interface Attributes<K, V> {
 	public static interface AttributesWrapper<K, V, W extends Attributes<K, V>> extends Attributes<K, V>, Wrapper<W> {
