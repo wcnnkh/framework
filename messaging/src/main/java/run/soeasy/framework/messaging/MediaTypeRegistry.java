@@ -1,6 +1,6 @@
 package run.soeasy.framework.messaging;
 
-import run.soeasy.framework.util.register.container.TreeSetContainer;
+import run.soeasy.framework.core.register.container.TreeSetContainer;
 
 public class MediaTypeRegistry extends TreeSetContainer<MediaType> implements MediaTypes {
 

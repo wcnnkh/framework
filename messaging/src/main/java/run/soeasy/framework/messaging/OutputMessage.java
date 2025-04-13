@@ -6,11 +6,11 @@ import java.io.Writer;
 
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.function.Pipeline;
-import run.soeasy.framework.util.function.Wrapped;
-import run.soeasy.framework.util.io.OutputFactory;
-import run.soeasy.framework.util.io.OutputStreamSource;
+import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Wrapped;
+import run.soeasy.framework.core.io.OutputFactory;
+import run.soeasy.framework.core.io.OutputStreamSource;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
 	@FunctionalInterface

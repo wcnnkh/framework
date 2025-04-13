@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.reflect.ReflectionApi;
-import run.soeasy.framework.util.reflect.ReflectionUtils;
+import run.soeasy.framework.core.reflect.ReflectionApi;
+import run.soeasy.framework.core.reflect.ReflectionUtils;
 
 public class ReflectionApiTest {
 	@Test

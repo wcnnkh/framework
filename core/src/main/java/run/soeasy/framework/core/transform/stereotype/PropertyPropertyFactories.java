@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class PropertyPropertyFactories extends ConfigurableServices<PropertyFactory> implements PropertyFactory {
 

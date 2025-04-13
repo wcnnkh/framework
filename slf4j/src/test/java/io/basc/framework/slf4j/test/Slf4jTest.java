@@ -2,9 +2,9 @@ package io.basc.framework.slf4j.test;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.logging.JdkLoggerFactory;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
+import run.soeasy.framework.logging.JdkLoggerFactory;
+import run.soeasy.framework.logging.LogManager;
+import run.soeasy.framework.logging.Logger;
 
 public class Slf4jTest {
 	private static Logger logger = LogManager.getLogger(Slf4jTest.class);

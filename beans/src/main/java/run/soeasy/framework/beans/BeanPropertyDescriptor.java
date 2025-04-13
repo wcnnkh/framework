@@ -8,20 +8,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.MergedAnnotatedElement;
+import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execution.Getter;
-import run.soeasy.framework.core.execution.Getter.MergedGetter;
 import run.soeasy.framework.core.execution.Setter;
+import run.soeasy.framework.core.execution.Getter.MergedGetter;
 import run.soeasy.framework.core.execution.Setter.MergedSetter;
-import run.soeasy.framework.core.execution.reflect.ReflectionFieldGetter;
-import run.soeasy.framework.core.execution.reflect.ReflectionFieldSetter;
-import run.soeasy.framework.core.execution.reflect.ReflectionMethodGetter;
-import run.soeasy.framework.core.execution.reflect.ReflectionMethodSetter;
+import run.soeasy.framework.core.reflect.ReflectionFieldGetter;
+import run.soeasy.framework.core.reflect.ReflectionFieldSetter;
+import run.soeasy.framework.core.reflect.ReflectionMethodGetter;
+import run.soeasy.framework.core.reflect.ReflectionMethodSetter;
+import run.soeasy.framework.core.reflect.ReflectionUtils;
 import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.reflect.ReflectionUtils;
-import run.soeasy.framework.util.type.ResolvableType;
+import run.soeasy.framework.core.type.ResolvableType;
 
 public class BeanPropertyDescriptor implements FieldDescriptor {
 	@lombok.Getter

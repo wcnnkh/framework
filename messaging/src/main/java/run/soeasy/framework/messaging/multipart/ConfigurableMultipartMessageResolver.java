@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging.multipart;
 import java.io.IOException;
 import java.util.List;
 
+import run.soeasy.framework.core.spi.ConfigurableServices;
 import run.soeasy.framework.messaging.InputMessage;
-import run.soeasy.framework.util.spi.ConfigurableServices;
 
 public class ConfigurableMultipartMessageResolver extends ConfigurableServices<MultipartMessageResolver>
 		implements MultipartMessageResolver {

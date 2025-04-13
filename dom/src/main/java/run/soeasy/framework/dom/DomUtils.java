@@ -10,10 +10,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.function.Function;
+import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public final class DomUtils {
 	private DomUtils() {

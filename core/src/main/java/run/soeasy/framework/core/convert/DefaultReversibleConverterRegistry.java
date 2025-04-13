@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert;
 
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 public class DefaultReversibleConverterRegistry<S, E extends Throwable> extends
 		ServiceMap<ReversibleConverter<? super S, ?, ? extends E>> implements ReversibleConverterRegistry<S, E> {

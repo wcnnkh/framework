@@ -6,10 +6,10 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.Data;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.OutputMessage;
-import run.soeasy.framework.util.io.MimeType;
 
 public abstract class ObjectMessageConverter<T> extends AbstractMessageConverter {
 	private final Class<? extends T> requriedType;

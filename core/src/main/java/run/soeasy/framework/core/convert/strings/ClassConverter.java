@@ -1,12 +1,12 @@
 package run.soeasy.framework.core.convert.strings;
 
+import run.soeasy.framework.core.DefaultClassLoaderAccessor;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.lang.DefaultClassLoaderAccessor;
-import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.type.ClassUtils;
 
 @SuppressWarnings("rawtypes")
 public class ClassConverter extends DefaultClassLoaderAccessor

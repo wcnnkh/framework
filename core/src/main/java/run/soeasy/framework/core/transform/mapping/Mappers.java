@@ -4,7 +4,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class Mappers<S, T, E extends Throwable, M extends Mapper<? super S, T, ? extends E>>
 		extends ConfigurableServices<M> implements Mapper<S, T, E> {

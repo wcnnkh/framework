@@ -14,9 +14,9 @@ import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
-import run.soeasy.framework.util.io.MimeType;
 
 @Getter
 @Setter

@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.stereotype.Properties;
 import run.soeasy.framework.core.transform.stereotype.Property;
-import run.soeasy.framework.util.collection.Elements;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RequiredArgsConstructor

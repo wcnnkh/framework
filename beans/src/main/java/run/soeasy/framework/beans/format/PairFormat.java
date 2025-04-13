@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collection.CollectionUtils;
-import run.soeasy.framework.util.collection.LinkedMultiValueMap;
-import run.soeasy.framework.util.collection.MultiValueMap;
+import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.LinkedMultiValueMap;
+import run.soeasy.framework.core.collection.MultiValueMap;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 键值对格式化

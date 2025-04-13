@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public class BigDecimalConverter implements ReversibleConverter<String, BigDecimal, ConversionException> {
 

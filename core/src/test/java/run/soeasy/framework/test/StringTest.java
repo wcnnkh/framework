@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public class StringTest {
 	@Test

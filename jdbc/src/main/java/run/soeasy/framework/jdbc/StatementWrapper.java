@@ -3,7 +3,7 @@ package run.soeasy.framework.jdbc;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import run.soeasy.framework.util.function.Pipeline;
+import run.soeasy.framework.core.function.Pipeline;
 
 public class StatementWrapper<T extends Statement> extends JdbcWrapper<T> {
 

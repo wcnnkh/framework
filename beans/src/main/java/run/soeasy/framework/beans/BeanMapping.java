@@ -15,10 +15,10 @@ import java.util.Map.Entry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.Reloadable;
 import run.soeasy.framework.core.transform.mapping.MappingDescriptor;
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.collection.Reloadable;
 
 @Getter
 public class BeanMapping implements BeanInfo, MappingDescriptor<BeanPropertyDescriptor>, Reloadable {

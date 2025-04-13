@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.logging.JdkLoggerFactory;
-import run.soeasy.framework.util.logging.Logger;
+import run.soeasy.framework.logging.JdkLoggerFactory;
+import run.soeasy.framework.logging.Logger;
 
 public class JdkLoggerTest {
 	@Test

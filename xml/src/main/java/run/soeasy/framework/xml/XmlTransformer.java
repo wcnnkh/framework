@@ -17,12 +17,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceTransformer;
-import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
+import run.soeasy.framework.logging.LogManager;
+import run.soeasy.framework.logging.Logger;
 
 public class XmlTransformer implements ResourceTransformer {
 	private static Logger logger = LogManager.getLogger(XmlTransformer.class);

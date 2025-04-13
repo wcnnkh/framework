@@ -16,10 +16,10 @@
 
 package run.soeasy.framework.retry.policy;
 
+import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.retry.RetryContext;
 import run.soeasy.framework.retry.RetryPolicy;
 import run.soeasy.framework.retry.context.DefaultRetryContext;
-import run.soeasy.framework.util.ClassUtils;
 
 /**
  *

@@ -5,8 +5,8 @@ import java.util.Properties;
 import java.util.function.Function;
 
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.io.resolver.PropertiesResolver;
+import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.core.io.resolver.PropertiesResolver;
 
 public class ResourceToPropertiesConverter implements Function<Resource, Properties> {
 	private final PropertiesResolver propertiesResolver;

@@ -3,7 +3,7 @@ package run.soeasy.framework.core.convert;
 import java.util.Comparator;
 import java.util.Set;
 
-import run.soeasy.framework.util.comparator.ComparableComparator;
+import run.soeasy.framework.core.comparator.ComparableComparator;
 
 /**
  * Note: this comparator imposes orderings that are inconsistent with equals.

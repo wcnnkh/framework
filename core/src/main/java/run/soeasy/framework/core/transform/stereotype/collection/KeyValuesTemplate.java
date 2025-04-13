@@ -6,12 +6,12 @@ import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.KeyValues;
+import run.soeasy.framework.core.collection.Elements.ElementsWrapper;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.collection.KeyValues;
-import run.soeasy.framework.util.collection.Elements.ElementsWrapper;
 
 @RequiredArgsConstructor
 @Getter

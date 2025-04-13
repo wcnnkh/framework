@@ -11,7 +11,7 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.type.ResolvableType;
+import run.soeasy.framework.core.type.ResolvableType;
 
 @Data
 public class LocalDateTimeConversion implements ConversionService, ConversionServiceAware {

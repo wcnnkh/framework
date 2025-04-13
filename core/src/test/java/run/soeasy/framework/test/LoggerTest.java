@@ -4,8 +4,8 @@ import java.util.logging.Level;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
+import run.soeasy.framework.logging.LogManager;
+import run.soeasy.framework.logging.Logger;
 
 public class LoggerTest {
 	@Test

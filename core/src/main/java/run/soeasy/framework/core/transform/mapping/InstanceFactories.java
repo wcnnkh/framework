@@ -2,7 +2,7 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class InstanceFactories extends ConfigurableServices<InstanceFactory> implements InstanceFactory {
 	private static volatile InstanceFactories instance;

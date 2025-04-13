@@ -11,20 +11,20 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.codec.Codec;
-import run.soeasy.framework.util.codec.Encoder;
-import run.soeasy.framework.util.codec.crypto.AES;
-import run.soeasy.framework.util.codec.crypto.DES;
-import run.soeasy.framework.util.codec.crypto.HmacMD5;
-import run.soeasy.framework.util.codec.crypto.HmacSHA1;
-import run.soeasy.framework.util.codec.crypto.RSA;
-import run.soeasy.framework.util.codec.security.MD5;
-import run.soeasy.framework.util.codec.security.SHA1WithRSASigner;
-import run.soeasy.framework.util.codec.support.Base64;
-import run.soeasy.framework.util.codec.support.CharsetCodec;
-import run.soeasy.framework.util.codec.support.HexCodec;
-import run.soeasy.framework.util.codec.support.URLCodec;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.codec.Codec;
+import run.soeasy.framework.codec.Encoder;
+import run.soeasy.framework.codec.crypto.AES;
+import run.soeasy.framework.codec.crypto.DES;
+import run.soeasy.framework.codec.crypto.HmacMD5;
+import run.soeasy.framework.codec.crypto.HmacSHA1;
+import run.soeasy.framework.codec.crypto.RSA;
+import run.soeasy.framework.codec.security.MD5;
+import run.soeasy.framework.codec.security.SHA1WithRSASigner;
+import run.soeasy.framework.codec.support.Base64;
+import run.soeasy.framework.codec.support.CharsetCodec;
+import run.soeasy.framework.codec.support.HexCodec;
+import run.soeasy.framework.codec.support.URLCodec;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class CodecTest {
 	public static String content = UUIDSequences.global().next() + "这是一段加解密测试内容!";

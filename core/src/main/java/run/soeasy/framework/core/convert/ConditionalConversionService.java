@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.convert;
 
-import run.soeasy.framework.util.ClassUtils;
+import run.soeasy.framework.core.type.ClassUtils;
 
 public interface ConditionalConversionService extends ConversionService, ConvertibleConditional {
 

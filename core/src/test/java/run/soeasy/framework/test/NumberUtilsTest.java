@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.util.math.MoneyFormat;
-import run.soeasy.framework.util.math.NumberReplacer;
-import run.soeasy.framework.util.math.NumberUtils;
+import run.soeasy.framework.core.math.MoneyFormat;
+import run.soeasy.framework.core.math.NumberReplacer;
+import run.soeasy.framework.core.math.NumberUtils;
 
 public class NumberUtilsTest {
 	@Test

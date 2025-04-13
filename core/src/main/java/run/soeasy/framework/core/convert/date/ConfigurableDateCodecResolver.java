@@ -3,9 +3,9 @@ package run.soeasy.framework.core.convert.date;
 import java.util.Date;
 
 import lombok.NonNull;
+import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.util.codec.Codec;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class ConfigurableDateCodecResolver extends ConfigurableServices<DateCodecResolver>
 		implements DateCodecResolver {

@@ -7,12 +7,12 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.exchange.Receipt;
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.io.resolver.ConfigurablePropertiesResolver;
-import run.soeasy.framework.util.spi.ConfigurableServices;
-import run.soeasy.framework.util.spi.ProviderFactory;
+import run.soeasy.framework.core.exchange.Receipt;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.core.io.resolver.ConfigurablePropertiesResolver;
+import run.soeasy.framework.core.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ProviderFactory;
 
 public class ResourceResolvers extends ConfigurableServices<ResourceResolver> implements ResourceResolver {
 	private static final TypeDescriptor PROPERTIES_TYPE = TypeDescriptor.valueOf(Properties.class);

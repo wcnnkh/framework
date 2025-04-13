@@ -5,8 +5,8 @@ import java.util.logging.LogRecord;
 
 import org.slf4j.Logger;
 
-import run.soeasy.framework.util.io.FormatableMessage;
-import run.soeasy.framework.util.logging.CustomLevel;
+import run.soeasy.framework.core.io.FormatableMessage;
+import run.soeasy.framework.logging.CustomLevel;
 
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error
@@ -14,7 +14,7 @@ import run.soeasy.framework.util.logging.CustomLevel;
  * @author wcnnkh
  *
  */
-public class Slf4jLogger implements run.soeasy.framework.util.logging.Logger {
+public class Slf4jLogger implements run.soeasy.framework.logging.Logger {
 	private static final String FORMAT = "{}";
 	private final Logger logger;
 	private final String placeholder;

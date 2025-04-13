@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert;
 
-import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.comparator.TypeComparator;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.comparator.TypeComparator;
 
 public class ConvertiblePair extends TypeComparator implements Comparable<ConvertiblePair> {
 

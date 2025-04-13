@@ -5,7 +5,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class BeanInfoFactories extends ConfigurableServices<BeanInfoFactory> implements BeanInfoProvider {
 	public BeanInfoFactories() {

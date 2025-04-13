@@ -1,6 +1,6 @@
 package run.soeasy.framework.retry;
 
-import run.soeasy.framework.util.attribute.EditableAttributes;
+import run.soeasy.framework.core.attribute.EditableAttributes;
 
 public interface RetryContext extends EditableAttributes<String, Object> {
 	/**

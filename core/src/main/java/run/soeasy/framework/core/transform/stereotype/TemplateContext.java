@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+import run.soeasy.framework.core.attribute.SimpleAttributes;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.util.attribute.SimpleAttributes;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

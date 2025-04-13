@@ -3,9 +3,9 @@ package run.soeasy.framework.core.transform.stereotype;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.collection.KeyValues;
-import run.soeasy.framework.util.collection.Listable;
+import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.collection.KeyValues;
+import run.soeasy.framework.core.collection.Listable;
 
 @FunctionalInterface
 public interface PropertyDescriptors<T extends PropertyDescriptor> extends KeyValues<String, T>, Listable<T> {

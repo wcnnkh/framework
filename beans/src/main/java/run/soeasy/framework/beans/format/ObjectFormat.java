@@ -17,18 +17,18 @@ import lombok.Setter;
 import run.soeasy.framework.beans.BeanMapping;
 import run.soeasy.framework.beans.BeanPropertyDescriptor;
 import run.soeasy.framework.beans.BeanUtils;
+import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.MultiValueMap;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.reflect.ReflectionUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collection.CollectionUtils;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.collection.MultiValueMap;
-import run.soeasy.framework.util.reflect.ReflectionUtils;
 
 @Getter
 @Setter

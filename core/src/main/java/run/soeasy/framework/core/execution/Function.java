@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.execution;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.param.Parameters;
 
 /**
  * 函数的定义

@@ -3,7 +3,7 @@ package run.soeasy.framework.core.convert.strings;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 @SuppressWarnings("rawtypes")
 public class EnumConverter implements ReversibleConverter<String, Enum, ConversionException> {

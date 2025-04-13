@@ -3,12 +3,11 @@ package run.soeasy.framework.core.execution;
 import java.lang.reflect.AnnotatedElement;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.MergedAnnotatedElement;
+import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
+import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
-import run.soeasy.framework.lang.AnnotatedElementWrapper;
-import run.soeasy.framework.util.collection.Elements;
 
 public interface Setter extends Executable, PropertyDescriptor {
 

@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.alias.JoinNamingStrategy;
+import run.soeasy.framework.core.alias.NamingStrategy;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
@@ -14,10 +18,6 @@ import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
 import run.soeasy.framework.core.transform.stereotype.TemplateContext;
 import run.soeasy.framework.core.transform.stereotype.TemplateTransformer;
-import run.soeasy.framework.util.KeyValue;
-import run.soeasy.framework.util.alias.JoinNamingStrategy;
-import run.soeasy.framework.util.alias.NamingStrategy;
-import run.soeasy.framework.util.collection.Elements;
 
 /**
  * 配置属性

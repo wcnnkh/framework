@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.collection.ResponsiveIterator;
-import run.soeasy.framework.util.collection.Streams;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.core.collection.ResponsiveIterator;
+import run.soeasy.framework.core.collection.Streams;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ResponsiveIteratorTest {
 	private static List<Object> pushList = new ArrayList<Object>();

@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 public class DefaultTransformerRegistry<S, E extends Throwable>
 		extends ServiceMap<Transformer<? super S, ?, ? extends E>> implements TransformerRegistry<S, E> {

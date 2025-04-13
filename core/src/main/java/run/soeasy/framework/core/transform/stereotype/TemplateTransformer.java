@@ -3,10 +3,10 @@ package run.soeasy.framework.core.transform.stereotype;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.Transformer;
-import run.soeasy.framework.util.collection.Elements;
 
 @Getter
 @Setter

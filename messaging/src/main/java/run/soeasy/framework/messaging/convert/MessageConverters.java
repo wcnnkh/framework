@@ -8,17 +8,17 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.io.MimeType;
+import run.soeasy.framework.core.spi.ServiceProvider;
 import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
+import run.soeasy.framework.logging.LogManager;
+import run.soeasy.framework.logging.Logger;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.MediaTypes;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.io.MimeType;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
-import run.soeasy.framework.util.spi.ServiceProvider;
 
 public class MessageConverters extends ServiceProvider<MessageConverter, ConversionException> implements MessageConverter {
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {

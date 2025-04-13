@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 
-import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public class StringToNumber implements Function<String, Number> {
 

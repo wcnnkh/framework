@@ -2,7 +2,8 @@ package run.soeasy.framework.util.spi;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.core.spi.ServiceMap;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ServiceMapTest {
 	@Test

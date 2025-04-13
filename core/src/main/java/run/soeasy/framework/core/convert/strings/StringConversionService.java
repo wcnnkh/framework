@@ -1,12 +1,12 @@
 package run.soeasy.framework.core.convert.strings;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.Assert;
 
 public final class StringConversionService implements ConversionService {
 	public static final StringConversionService DEFAULT = new StringConversionService();

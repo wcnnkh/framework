@@ -10,13 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collection.CollectionUtils;
-import run.soeasy.framework.util.comparator.CompoundComparator;
-import run.soeasy.framework.util.io.InvalidMimeTypeException;
-import run.soeasy.framework.util.io.MimeType;
-import run.soeasy.framework.util.io.MimeTypeUtils;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.comparator.CompoundComparator;
+import run.soeasy.framework.core.io.InvalidMimeTypeException;
+import run.soeasy.framework.core.io.MimeType;
+import run.soeasy.framework.core.io.MimeTypeUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public class MediaType extends MimeType implements Serializable {
 

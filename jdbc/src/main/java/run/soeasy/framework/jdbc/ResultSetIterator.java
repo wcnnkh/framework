@@ -6,9 +6,9 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collection.CloseableIterator;
-import run.soeasy.framework.util.function.Function;
-import run.soeasy.framework.util.function.Pipeline;
+import run.soeasy.framework.core.collection.CloseableIterator;
+import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.function.Pipeline;
 
 public class ResultSetIterator<T> extends JdbcWrapper<ResultSet> implements CloseableIterator<T> {
 	private Supplier<ResultSet> next;

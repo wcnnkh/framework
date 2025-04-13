@@ -17,10 +17,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 
-import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collection.LinkedMultiValueMap;
-import run.soeasy.framework.util.collection.MultiValueMap;
+import run.soeasy.framework.core.collection.LinkedMultiValueMap;
+import run.soeasy.framework.core.collection.MultiValueMap;
+import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.type.ClassUtils;
 
 public final class JdbcUtils {
 	public static Object[] getRowValues(ResultSet resultSet, int size) throws SQLException {

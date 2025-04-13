@@ -8,8 +8,8 @@ import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.spi.ServiceProvider;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceProvider;
 
 public class NodeWriters extends ServiceProvider<NodeWriter, DOMException> implements NodeWriter {
 	private ConversionService conversionService = SystemConversionService.getInstance();

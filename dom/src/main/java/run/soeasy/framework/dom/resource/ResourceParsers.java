@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import org.w3c.dom.Node;
 
+import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.core.spi.ServiceProvider;
 import run.soeasy.framework.dom.DomException;
-import run.soeasy.framework.util.function.Function;
-import run.soeasy.framework.util.io.Resource;
-import run.soeasy.framework.util.spi.ServiceProvider;
 
 public class ResourceParsers extends ServiceProvider<ResourceParser, DomException> implements ResourceParser {
 	public ResourceParsers() {

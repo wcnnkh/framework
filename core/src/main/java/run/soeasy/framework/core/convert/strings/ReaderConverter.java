@@ -8,7 +8,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.io.IOUtils;
+import run.soeasy.framework.core.io.IOUtils;
 
 public class ReaderConverter implements ReversibleConverter<String, Reader, ConversionException> {
 

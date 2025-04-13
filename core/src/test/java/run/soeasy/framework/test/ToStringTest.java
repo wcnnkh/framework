@@ -3,7 +3,7 @@ package run.soeasy.framework.test;
 import org.junit.Test;
 
 import lombok.Data;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ToStringTest {
 	@Test

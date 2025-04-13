@@ -1,10 +1,10 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class TemplateReadFilters<K, SV extends Source, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
 		extends ConfigurableServices<TemplateReadFilter<K, SV, S, TV, T, E>>

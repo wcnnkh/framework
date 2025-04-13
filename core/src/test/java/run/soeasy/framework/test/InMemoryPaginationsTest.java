@@ -6,9 +6,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.page.Paginations;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.page.Paginations;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class InMemoryPaginationsTest {
 	@Test

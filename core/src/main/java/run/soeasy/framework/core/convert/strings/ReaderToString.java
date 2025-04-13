@@ -5,7 +5,7 @@ import java.io.Reader;
 
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.io.IOUtils;
+import run.soeasy.framework.core.io.IOUtils;
 
 public class ReaderToString implements Converter<Reader, String, IOException> {
 

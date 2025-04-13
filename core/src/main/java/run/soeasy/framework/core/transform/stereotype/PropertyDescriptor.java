@@ -5,13 +5,13 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.MergedAnnotatedElement;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.alias.Named;
+import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.alias.Named;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.function.Selector;
+import run.soeasy.framework.core.function.Selector;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public interface PropertyDescriptor extends Named, AccessDescriptor {
 	@RequiredArgsConstructor

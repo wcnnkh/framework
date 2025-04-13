@@ -1,6 +1,6 @@
 package run.soeasy.framework.messaging;
 
-import run.soeasy.framework.util.io.InvalidMimeTypeException;
+import run.soeasy.framework.core.io.InvalidMimeTypeException;
 
 public class InvalidMediaTypeException extends IllegalArgumentException {
 	private static final long serialVersionUID = 1L;

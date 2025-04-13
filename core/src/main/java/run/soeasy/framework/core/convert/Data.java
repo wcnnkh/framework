@@ -3,8 +3,8 @@ package run.soeasy.framework.core.convert;
 import java.io.Serializable;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.function.Function;
-import run.soeasy.framework.util.function.Optional;
+import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.function.Optional;
 
 @lombok.Data
 public class Data<T> implements SourceDescriptor, Optional<T, ConversionException>, Serializable {

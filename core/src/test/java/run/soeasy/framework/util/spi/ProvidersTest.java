@@ -2,6 +2,8 @@ package run.soeasy.framework.util.spi;
 
 import org.junit.Test;
 
+import run.soeasy.framework.core.spi.ServiceProvider;
+
 public class ProvidersTest {
 	@Test
 	public void test() {

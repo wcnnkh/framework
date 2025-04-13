@@ -2,8 +2,8 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.Data;
 import lombok.NonNull;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.transform.stereotype.PropertyTemplate;
-import run.soeasy.framework.util.collection.Elements;
 
 @Data
 public class MappingTemplate<S extends FieldDescriptor, SM extends MappingDescriptor<? extends S>>

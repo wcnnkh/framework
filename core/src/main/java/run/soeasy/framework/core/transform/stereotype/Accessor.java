@@ -1,9 +1,9 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.util.Assert;
 
 public interface Accessor extends Source, AccessDescriptor {
 	@FunctionalInterface

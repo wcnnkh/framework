@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import run.soeasy.framework.core.io.FileMimeTypeUitls;
+import run.soeasy.framework.core.io.FileSystemResource;
+import run.soeasy.framework.core.io.MimeType;
+import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.messaging.ContentDisposition;
 import run.soeasy.framework.messaging.MediaType;
-import run.soeasy.framework.util.io.FileMimeTypeUitls;
-import run.soeasy.framework.util.io.FileSystemResource;
-import run.soeasy.framework.util.io.MimeType;
-import run.soeasy.framework.util.io.Resource;
 
 public class ResourceMultipartMessage extends AbstractMultipartMessage {
 	private final Resource resource;

@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.mapping;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 public class DefaultMapperRegistry<S, E extends Throwable> extends ServiceMap<Mapper<S, ?, E>>
 		implements MapperFactory<S, E> {

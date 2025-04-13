@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.collection.CollectionUtils;
-import run.soeasy.framework.util.collection.Elements;
-import run.soeasy.framework.util.collection.Streams;
-import run.soeasy.framework.util.io.MimeType;
-import run.soeasy.framework.util.io.MimeTypeUtils;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.Streams;
+import run.soeasy.framework.core.io.MimeType;
+import run.soeasy.framework.core.io.MimeTypeUtils;
 
 public interface MediaTypes extends Elements<MediaType>, Comparable<MediaTypes> {
 

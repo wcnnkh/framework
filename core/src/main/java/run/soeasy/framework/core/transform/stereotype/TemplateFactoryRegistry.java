@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 @Getter
 @Setter

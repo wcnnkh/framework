@@ -2,8 +2,8 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.Data;
 import lombok.NonNull;
+import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptors;
-import run.soeasy.framework.util.alias.Named;
 
 public interface MappingDescriptor<T extends FieldDescriptor> extends PropertyDescriptors<T>, Named {
 	@FunctionalInterface

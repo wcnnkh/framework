@@ -8,10 +8,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import lombok.ToString;
-import run.soeasy.framework.util.StringUtils;
-import run.soeasy.framework.util.collection.CollectionUtils;
-import run.soeasy.framework.util.reflect.ReflectionUtils;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.reflect.ReflectionUtils;
+import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ReflectionTest {
 	@Test

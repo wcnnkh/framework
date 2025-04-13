@@ -2,7 +2,7 @@ package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class Transformers<S, T, E extends Throwable, R extends Transformer<? super S, ? super T, ? extends E>>
 		extends ConfigurableServices<R> implements Transformer<S, T, E> {

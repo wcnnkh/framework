@@ -1,6 +1,8 @@
 package run.soeasy.framework.retry.support;
 
 import lombok.NonNull;
+import run.soeasy.framework.logging.LogManager;
+import run.soeasy.framework.logging.Logger;
 import run.soeasy.framework.retry.ExhaustedRetryException;
 import run.soeasy.framework.retry.RecoveryCallback;
 import run.soeasy.framework.retry.RetryCallback;
@@ -11,8 +13,6 @@ import run.soeasy.framework.retry.RetryOperations;
 import run.soeasy.framework.retry.RetryPolicy;
 import run.soeasy.framework.retry.TerminatedRetryException;
 import run.soeasy.framework.retry.policy.SimpleRetryPolicy;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
 
 public class RetryTemplate implements RetryOperations {
 	/**

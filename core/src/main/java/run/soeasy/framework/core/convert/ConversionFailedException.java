@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.convert;
 
-import run.soeasy.framework.util.ObjectUtils;
+import run.soeasy.framework.core.ObjectUtils;
 
 public class ConversionFailedException extends ConversionException {
 	private static final long serialVersionUID = 1L;

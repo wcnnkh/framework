@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.RandomUtils;
+import run.soeasy.framework.core.math.RandomUtils;
 
 public class RandomTest {
 	@Test

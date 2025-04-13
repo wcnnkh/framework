@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.lang.AnnotatedElementWrapper;
-import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.ClassUtils;
-import run.soeasy.framework.util.collection.LRULinkedHashMap;
-import run.soeasy.framework.util.type.ResolvableType;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
+import run.soeasy.framework.core.collection.LRULinkedHashMap;
+import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.type.ResolvableType;
 
 public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement> {
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(
@@ -406,12 +406,16 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 		return new TypeDescriptor(ResolvableType.forType(field.getGenericType()), null, field);
 	}
 
-	public static TypeDescriptor forParameterType(Executable executable, int index) {
+	public static TypeDescriptor forParameter(@NonNull Parameter parameter) {
+		return new TypeDescriptor(ResolvableType.forType(parameter.getParameterizedType()), null, parameter);
+	}
+
+	public static TypeDescriptor forExecutableParameter(Executable executable, int index) {
 		if (index >= executable.getParameterCount()) {
 			throw new IndexOutOfBoundsException("index: " + index);
 		}
 		Parameter parameter = executable.getParameters()[index];
-		return new TypeDescriptor(ResolvableType.forType(parameter.getParameterizedType()), null, parameter);
+		return forParameter(parameter);
 	}
 
 	/**

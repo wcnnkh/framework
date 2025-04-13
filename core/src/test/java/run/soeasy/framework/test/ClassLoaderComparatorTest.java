@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.util.comparator.ClassLoaderComparator;
+import run.soeasy.framework.core.comparator.ClassLoaderComparator;
 
 public class ClassLoaderComparatorTest {
 

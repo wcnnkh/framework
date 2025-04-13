@@ -11,7 +11,7 @@ import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.io.Resource;
+import run.soeasy.framework.core.io.Resource;
 
 public class ResourceResolverConversionService implements ConditionalConversionService {
 	private final ResourceResolver resourceResolver;

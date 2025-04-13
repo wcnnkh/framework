@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.io.InputStreamSource;
+import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
-import run.soeasy.framework.util.io.InputStreamSource;
-import run.soeasy.framework.util.io.MimeType;
 
 @RequiredArgsConstructor
 @Getter

@@ -7,9 +7,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.ToString;
-import run.soeasy.framework.util.collection.CollectionUtils;
-import run.soeasy.framework.util.io.serializer.SerializerException;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.io.serializer.SerializerException;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class CollectionFactoryTest {
 	@Test

@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.codec.support.CharsetCodec;
-import run.soeasy.framework.util.io.FileRecords;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.codec.support.CharsetCodec;
+import run.soeasy.framework.core.io.FileRecords;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class FileRecordsTest {
 	@Test

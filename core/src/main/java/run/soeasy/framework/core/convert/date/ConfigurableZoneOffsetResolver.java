@@ -3,7 +3,7 @@ package run.soeasy.framework.core.convert.date;
 import java.time.ZoneOffset;
 
 import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.util.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOffsetResolver>
 		implements ZoneOffsetResolver {

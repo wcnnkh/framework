@@ -3,8 +3,8 @@ package run.soeasy.framework.core.convert;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.spi.ServiceProvider;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceProvider;
 
 public class ConifgurableConversionService extends ServiceProvider<ConversionService, ConversionException>
 		implements ConversionService {

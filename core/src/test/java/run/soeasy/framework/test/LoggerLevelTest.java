@@ -5,9 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.logging.Levels;
-import run.soeasy.framework.util.logging.LogManager;
-import run.soeasy.framework.util.logging.Logger;
+import run.soeasy.framework.logging.Levels;
+import run.soeasy.framework.logging.LogManager;
+import run.soeasy.framework.logging.Logger;
 
 public class LoggerLevelTest {
 	@Test

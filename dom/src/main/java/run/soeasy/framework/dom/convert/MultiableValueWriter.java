@@ -4,9 +4,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.util.collection.Elements;
 
 @RequiredArgsConstructor
 public class MultiableValueWriter extends AbstractNodeWriter {

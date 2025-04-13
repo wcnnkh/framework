@@ -2,7 +2,7 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 public class InstanceFactoryRegistry extends ServiceMap<InstanceFactory> implements InstanceFactory {
 

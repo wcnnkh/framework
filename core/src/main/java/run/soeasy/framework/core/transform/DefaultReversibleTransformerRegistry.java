@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.exchange.Registration;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 public class DefaultReversibleTransformerRegistry<S, E extends Throwable> extends
 		ServiceMap<ReversibleTransformer<? super S, ?, ? extends E>> implements ReversibleTransformerRegistry<S, E> {

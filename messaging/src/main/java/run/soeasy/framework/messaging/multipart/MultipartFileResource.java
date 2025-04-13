@@ -3,13 +3,13 @@ package run.soeasy.framework.messaging.multipart;
 import java.io.IOException;
 import java.io.InputStream;
 
-import run.soeasy.framework.util.Assert;
-import run.soeasy.framework.util.io.AbstractResource;
-import run.soeasy.framework.util.math.LongValue;
-import run.soeasy.framework.util.math.NumberValue;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.io.AbstractResource;
+import run.soeasy.framework.core.math.LongValue;
+import run.soeasy.framework.core.math.NumberValue;
 
 /**
- * Adapt {@link MultipartFile} to {@link run.soeasy.framework.util.io.Resource},
+ * Adapt {@link MultipartFile} to {@link run.soeasy.framework.core.io.Resource},
  * exposing the content as {@code InputStream} and also overriding
  * {@link #contentLength()} as well as {@link #getFilename()}.
  */

@@ -1,7 +1,7 @@
 package run.soeasy.framework.retry.context;
 
+import run.soeasy.framework.core.attribute.SimpleAttributes;
 import run.soeasy.framework.retry.RetryContext;
-import run.soeasy.framework.util.attribute.SimpleAttributes;
 
 public class DefaultRetryContext extends SimpleAttributes<String, Object> implements RetryContext {
 	private RetryContext parent;

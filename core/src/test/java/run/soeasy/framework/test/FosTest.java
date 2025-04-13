@@ -9,8 +9,8 @@ import java.io.OutputStreamWriter;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.io.FileUtils;
-import run.soeasy.framework.util.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.core.io.FileUtils;
+import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class FosTest {
 	@Test

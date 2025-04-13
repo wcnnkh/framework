@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.convert;
 
-import run.soeasy.framework.lang.Wrapper;
+import run.soeasy.framework.core.Wrapper;
 
 @FunctionalInterface
 public interface TargetDescriptor {

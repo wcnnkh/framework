@@ -5,11 +5,11 @@ import java.io.IOException;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Data;
 import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
-import run.soeasy.framework.util.io.MimeType;
 
 public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageConverter<T> {
 	public AbstractBinaryMessageConverter(@NonNull Class<? extends T> requriedType) {

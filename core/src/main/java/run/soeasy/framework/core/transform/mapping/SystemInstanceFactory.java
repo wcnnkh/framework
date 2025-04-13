@@ -5,8 +5,8 @@ import java.util.EnumSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.collection.CollectionUtils;
 
 @Getter
 @Setter

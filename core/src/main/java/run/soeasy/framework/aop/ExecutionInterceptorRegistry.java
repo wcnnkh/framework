@@ -1,0 +1,21 @@
+package run.soeasy.framework.aop;
+
+import lombok.NonNull;
+import run.soeasy.framework.core.execution.Function;
+import run.soeasy.framework.core.spi.ConfigurableServices;
+
+public class ExecutionInterceptorRegistry extends ConfigurableServices<ExecutionInterceptor>
+		implements ExecutionInterceptor {
+	private Function nextChain;
+
+	public ExecutionInterceptorRegistry() {
+		setServiceClass(ExecutionInterceptor.class);
+	}
+
+	@Override
+	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
+		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(iterator(), nextChain);
+		return chain.intercept(function, args);
+	}
+
+}

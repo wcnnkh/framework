@@ -6,13 +6,13 @@ import java.util.Collections;
 import java.util.Set;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.collection.CollectionUtils;
 
 class ArrayToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ArrayToCollectionConversionService(ConversionService conversionService) {

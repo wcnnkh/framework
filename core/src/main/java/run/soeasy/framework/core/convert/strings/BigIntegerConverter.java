@@ -6,7 +6,7 @@ import lombok.Data;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.util.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 @Data
 public class BigIntegerConverter implements ReversibleConverter<String, BigInteger, ConversionException> {

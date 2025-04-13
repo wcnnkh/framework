@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.util.collection.Elements;
+import run.soeasy.framework.core.collection.Elements;
 
 public class ElementsTest {
 	@Test

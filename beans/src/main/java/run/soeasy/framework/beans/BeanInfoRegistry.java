@@ -5,7 +5,7 @@ import java.beans.IntrospectionException;
 import java.util.concurrent.locks.Lock;
 
 import lombok.NonNull;
-import run.soeasy.framework.util.spi.ServiceMap;
+import run.soeasy.framework.core.spi.ServiceMap;
 
 public class BeanInfoRegistry extends ServiceMap<BeanInfo> implements BeanInfoProvider {
 	private BeanInfoFactory beanInfoFactory;
