@@ -2,6 +2,7 @@ package run.soeasy.framework.util.collections;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.junit.Test;
@@ -17,6 +18,6 @@ public class CollectionUtilsTest {
 			String value = UUIDSequences.global().next();
 			map.put(value, value);
 		}
-		assertTrue(CollectionUtils.equals(map.keySet(), map.values()));
+		assertTrue(CollectionUtils.equals(map.keySet(), map.values(), Objects::equals));
 	}
 }

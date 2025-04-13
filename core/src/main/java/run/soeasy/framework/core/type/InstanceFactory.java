@@ -1,9 +1,8 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.type;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Provider;
 import run.soeasy.framework.core.spi.ProviderFactory;
-import run.soeasy.framework.core.type.ResolvableType;
 
 @FunctionalInterface
 public interface InstanceFactory extends ProviderFactory {

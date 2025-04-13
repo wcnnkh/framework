@@ -7,6 +7,7 @@ import java.util.Iterator;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 
 @RequiredArgsConstructor
@@ -82,7 +83,8 @@ public class MergedAnnotatedElement implements AnnotatedElement {
 		}
 
 		if (obj instanceof MergedAnnotatedElement) {
-			return CollectionUtils.equals(annotatedElements, ((MergedAnnotatedElement) obj).annotatedElements);
+			return CollectionUtils.equals(annotatedElements, ((MergedAnnotatedElement) obj).annotatedElements,
+					ObjectUtils::equals);
 		}
 		return false;
 	}

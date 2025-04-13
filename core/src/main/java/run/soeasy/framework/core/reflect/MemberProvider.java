@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.reflect;
 
-import java.lang.reflect.Executable;
+import java.lang.reflect.Member;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.function.Function;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Provider;
 
-public class Executables<T extends Executable> extends ReflectionProvider<T> {
+public class MemberProvider<T extends Member> extends ReflectionProvider<T> {
 	private static final long serialVersionUID = 1L;
 	private volatile transient Map<String, Provider<T>> groupMap;
 
-	public Executables(@NonNull Class<?> declaringClass, @NonNull Function<? super Class<?>, ? extends T[]> loader) {
+	public MemberProvider(@NonNull Class<?> declaringClass, @NonNull Function<? super Class<?>, ? extends T[]> loader) {
 		super(declaringClass, loader);
 	}
 
@@ -39,7 +39,7 @@ public class Executables<T extends Executable> extends ReflectionProvider<T> {
 		return false;
 	}
 
-	public Provider<T> getGroup(String name) {
+	public Provider<T> getProvider(String name) {
 		reload(false);
 		return groupMap.get(name);
 	}

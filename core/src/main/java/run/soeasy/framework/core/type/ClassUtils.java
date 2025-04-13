@@ -774,7 +774,7 @@ public final class ClassUtils {
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Determine if the given type is assignable from the given value, assuming
 	 * setting by reflection. Considers primitive wrapper classes as assignable to

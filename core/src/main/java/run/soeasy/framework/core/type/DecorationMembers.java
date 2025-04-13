@@ -1,11 +1,9 @@
-package run.soeasy.framework.core.reflect;
+package run.soeasy.framework.core.type;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import run.soeasy.framework.core.Members;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.type.ResolvableType;
 
 public abstract class DecorationMembers<E, R extends DecorationMembers<E, R>> extends Members<E> {
 
@@ -13,11 +11,11 @@ public abstract class DecorationMembers<E, R extends DecorationMembers<E, R>> ex
 		super(source, processor);
 	}
 
-	public DecorationMembers(Members<E> structure) {
+	protected DecorationMembers(Members<E> structure) {
 		super(structure);
 	}
 
-	public DecorationMembers(ResolvableType source, Elements<E> elements,
+	protected DecorationMembers(ResolvableType source, Elements<E> elements,
 			Function<? super ResolvableType, ? extends Elements<E>> processor) {
 		super(source, elements, processor);
 	}

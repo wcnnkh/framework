@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Elements.MergedElements;
-import run.soeasy.framework.core.type.ResolvableType;
 
 /**
  * 成员
@@ -37,7 +37,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 		// 默认没有实现
 	}
 
-	public Members(Members<E> members) {
+	protected Members(Members<E> members) {
 		Assert.requiredArgument(members != null, "members");
 		this.source = members.source;
 		this.elements = members.elements;
@@ -58,7 +58,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	 * @param elements  如果为空但processor不为空会自动加载
 	 * @param processor 如果为空不会自动加载
 	 */
-	public Members(ResolvableType source,  Elements<E> elements,
+	protected Members(ResolvableType source,  Elements<E> elements,
 			 final Function<? super ResolvableType, ? extends Elements<E>> processor) {
 		Assert.requiredArgument(source != null, "source");
 		this.source = source;

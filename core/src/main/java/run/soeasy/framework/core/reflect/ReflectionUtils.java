@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ImpossibleException;
 import run.soeasy.framework.core.collection.ConcurrentReferenceHashMap;
@@ -278,8 +279,7 @@ public class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Methods getDeclaredMethods(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
+	public static Methods getDeclaredMethods(@NonNull Class<?> sourceClass) {
 		return new Methods(sourceClass, Class::getDeclaredMethods);
 	}
 

@@ -5,8 +5,9 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.Members;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.type.DecorationMembers;
+import run.soeasy.framework.core.type.Members;
 import run.soeasy.framework.core.type.ResolvableType;
 
 public abstract class ReflectionMembers<E extends Member, R extends ReflectionMembers<E, R>>
@@ -27,11 +28,11 @@ public abstract class ReflectionMembers<E extends Member, R extends ReflectionMe
 		}));
 	}
 
-	public ReflectionMembers(Members<E> members) {
+	protected ReflectionMembers(Members<E> members) {
 		super(members);
 	}
 
-	public ReflectionMembers(ReflectionMembers<E, R> memberStructure) {
+	protected ReflectionMembers(ReflectionMembers<E, R> memberStructure) {
 		super(memberStructure);
 		// 预留扩展
 	}

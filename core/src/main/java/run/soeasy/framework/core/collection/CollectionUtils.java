@@ -46,10 +46,12 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.function.Function;
@@ -824,43 +826,19 @@ public abstract class CollectionUtils {
 		return EMPTY_MULTI_VALUE_MAP;
 	}
 
-	public static <E> boolean equals(Iterable<? extends E> leftIterable, Iterable<? extends E> rightIterable) {
-		return equals(leftIterable, rightIterable, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+	public static <L, R> boolean equals(@NonNull Iterable<? extends L> leftIterable,
+			@NonNull Iterable<? extends R> rightIterable, @NonNull BiPredicate<? super L, ? super R> predicate) {
+		return equals(leftIterable.iterator(), rightIterable.iterator(), predicate);
 	}
 
-	public static <E> boolean equals(Iterable<? extends E> leftIterable, Iterable<? extends E> rightIterable,
-			Comparator<? super E> comparator) {
-		if (isEmpty(leftIterable)) {
-			return isEmpty(rightIterable);
-		}
-
-		if (isEmpty(rightIterable)) {
-			return isEmpty(leftIterable);
-		}
-		return equals(leftIterable.iterator(), rightIterable.iterator(), comparator);
-	}
-
-	public static <E> boolean equals(Iterator<? extends E> leftIterator, Iterator<? extends E> rightIterator) {
-		return equals(leftIterator, rightIterator, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
-	}
-
-	public static <E> boolean equals(Iterator<? extends E> leftIterator, Iterator<? extends E> rightIterator,
-			Comparator<? super E> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		if (isEmpty(leftIterator)) {
-			return isEmpty(rightIterator);
-		}
-
-		if (isEmpty(rightIterator)) {
-			return isEmpty(leftIterator);
-		}
-
+	public static <L, R> boolean equals(@NonNull Iterator<? extends L> leftIterator,
+			@NonNull Iterator<? extends R> rightIterator, @NonNull BiPredicate<? super L, ? super R> predicate) {
 		while (leftIterator.hasNext() && rightIterator.hasNext()) {
-			if (comparator.compare(leftIterator.next(), rightIterator.next()) != 0) {
+			if (!predicate.test(leftIterator.next(), rightIterator.next())) {
 				return false;
 			}
 		}
-		return true;
+		return !leftIterator.hasNext() && !rightIterator.hasNext();
 	}
 
 	/**

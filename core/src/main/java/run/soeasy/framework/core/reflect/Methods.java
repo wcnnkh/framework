@@ -6,10 +6,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.Members;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.type.Members;
 
 public final class Methods extends ReflectionMembers<Method, Methods> {
 	private final Function<? super ReflectionMembers<Method, Methods>, ? extends Methods> memberDecorator = (
