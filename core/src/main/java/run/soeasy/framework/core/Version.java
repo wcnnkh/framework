@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.strings.CharSequenceTemplate;
 
 /**
  * 这是一个抽象的版本，意味的是可以进行比较的

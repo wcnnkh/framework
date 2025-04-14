@@ -13,7 +13,7 @@ import java.net.URLConnection;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 public class UrlResource extends AbstractResource {
 	private class InternalInputStream extends InputStream {
@@ -164,7 +164,7 @@ public class UrlResource extends AbstractResource {
 	 * @param originalUrl  the original URL
 	 * @param originalPath the original URL path
 	 * @return the cleaned URL (possibly the original URL as-is)
-	 * @see run.soeasy.framework.core.strings.StringUtils#cleanPath
+	 * @see run.soeasy.framework.core.StringUtils#cleanPath
 	 */
 	private static URL getCleanedUrl(URL originalUrl, String originalPath) {
 		String cleanedPath = StringUtils.cleanPath(originalPath);

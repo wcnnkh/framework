@@ -17,9 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.math.LongValue;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public class FileSystemResource extends AbstractResource {
 
@@ -288,7 +288,7 @@ public class FileSystemResource extends AbstractResource {
 	 * This implementation creates a FileSystemResource, applying the given path
 	 * relative to the path of the underlying file of this resource descriptor.
 	 * 
-	 * @see run.soeasy.framework.core.strings.StringUtils#applyRelativePath(String, String)
+	 * @see run.soeasy.framework.core.StringUtils#applyRelativePath(String, String)
 	 */
 	@Override
 	public Resource createRelative(String relativePath) {

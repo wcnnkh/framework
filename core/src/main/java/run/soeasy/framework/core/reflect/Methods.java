@@ -6,8 +6,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.Members;
 

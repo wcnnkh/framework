@@ -3,7 +3,6 @@ package run.soeasy.framework.sequences.uuid;
 import java.util.UUID;
 
 import run.soeasy.framework.core.Range;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.sequences.StringSequence;
 
 public interface UUIDSequence extends StringSequence {
@@ -22,7 +21,7 @@ public interface UUIDSequence extends StringSequence {
 	@Override
 	default String next(Range<Integer> lengthRange) throws UnsupportedOperationException {
 		UUID uuid = nextUUID(lengthRange, getVersionRange());
-		return StringUtils.removeChar(uuid.toString(), '-');
+		return uuid.toString().replace("-", "");
 	}
 
 	default UUID nextUUID() {

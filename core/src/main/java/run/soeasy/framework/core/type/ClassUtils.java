@@ -21,13 +21,13 @@ import java.util.Set;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ClassLoaderProvider;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.page.Browseable;
 import run.soeasy.framework.core.page.StandardBrowseable;
 import run.soeasy.framework.core.page.StandardCursor;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */

@@ -4,8 +4,8 @@ import java.util.function.Predicate;
 
 import lombok.Data;
 import lombok.NonNull;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.transform.stereotype.Property;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 

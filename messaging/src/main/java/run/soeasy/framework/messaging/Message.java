@@ -2,9 +2,9 @@ package run.soeasy.framework.messaging;
 
 import java.nio.charset.Charset;
 
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.io.CharsetCapable;
 import run.soeasy.framework.core.io.MimeType;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public interface Message extends CharsetCapable {
 	@FunctionalInterface

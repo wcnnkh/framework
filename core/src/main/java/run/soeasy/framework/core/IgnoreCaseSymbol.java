@@ -2,8 +2,6 @@ package run.soeasy.framework.core;
 
 import java.util.function.Supplier;
 
-import run.soeasy.framework.core.strings.StringUtils;
-
 /**
  * 不区分大小写
  * 

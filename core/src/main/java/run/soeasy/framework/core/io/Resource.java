@@ -13,13 +13,13 @@ import java.net.URL;
 
 import lombok.Data;
 import lombok.NonNull;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Listable;
 import run.soeasy.framework.core.math.LongValue;
 import run.soeasy.framework.core.math.NumberAdder;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 一个资源的定义

@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LinkedMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
 import run.soeasy.framework.core.io.load.SystemResourceLoader;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 

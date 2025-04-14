@@ -5,8 +5,8 @@ import java.io.Serializable;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public final class FormatableMessage implements Printable<Appendable>, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;

@@ -3,8 +3,8 @@ package run.soeasy.framework.core.annotation;
 import java.lang.annotation.Annotation;
 
 import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public abstract class AbstractAnnotationProperties<A extends Annotation> implements AnnotationProperties<A> {
 

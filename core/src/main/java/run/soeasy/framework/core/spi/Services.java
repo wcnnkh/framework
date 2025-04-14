@@ -14,12 +14,12 @@ import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Receipts;
 import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.exchange.container.AtomicElementRegistration;
+import run.soeasy.framework.core.exchange.container.Container;
+import run.soeasy.framework.core.exchange.container.PayloadRegistration;
+import run.soeasy.framework.core.exchange.container.RegistrationException;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
-import run.soeasy.framework.core.register.Container;
-import run.soeasy.framework.core.register.PayloadRegistration;
-import run.soeasy.framework.core.register.RegistrationException;
-import run.soeasy.framework.core.register.container.AtomicElementRegistration;
 
 public class Services<S>
 		implements Container<S, PayloadRegistration<S>>, ReloadableElementsWrapper<S, Elements<S>>, ServiceInjector<S> {

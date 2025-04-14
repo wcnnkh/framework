@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.function.Selector;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public interface PropertyDescriptor extends Named, AccessDescriptor {
 	@RequiredArgsConstructor

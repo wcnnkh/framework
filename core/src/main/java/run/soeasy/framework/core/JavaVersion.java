@@ -6,8 +6,6 @@ import lombok.NonNull;
 import run.soeasy.framework.core.Version.JoinVersion;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.math.IntValue;
-import run.soeasy.framework.core.strings.CharSequenceTemplate;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public final class JavaVersion extends JoinVersion implements Serializable {
 	private static final long serialVersionUID = 1L;

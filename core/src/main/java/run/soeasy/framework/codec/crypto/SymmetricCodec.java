@@ -5,7 +5,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 /**
  * 对称编解码器

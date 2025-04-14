@@ -6,7 +6,7 @@ import java.io.FilenameFilter;
 import java.io.Serializable;
 import java.util.List;
 
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 public class SuffixFileFilter implements FileFilter, FilenameFilter, Serializable {
 

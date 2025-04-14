@@ -6,7 +6,7 @@ import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 public final class NumberReplacer implements Codec<BigDecimal, String> {
 	private static final String[] CHINESE_NUMBERS = new String[] { "零", "一",

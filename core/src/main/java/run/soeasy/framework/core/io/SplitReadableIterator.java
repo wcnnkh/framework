@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import lombok.Data;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 @Data
 class SplitReadableIterator implements Iterator<CharSequence> {

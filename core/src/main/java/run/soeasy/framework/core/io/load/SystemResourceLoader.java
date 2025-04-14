@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.io.load;
 
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.io.Resource;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public final class SystemResourceLoader extends DefaultResourceLoader implements ResourceLoader {
 	private static volatile SystemResourceLoader instance;

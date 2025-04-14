@@ -7,8 +7,8 @@ import java.util.function.Function;
 
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.Members;
 
 public final class Fields extends ReflectionMembers<Field, Fields> {

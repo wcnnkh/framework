@@ -25,8 +25,8 @@ import java.text.ParseException;
 import java.util.function.IntPredicate;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**

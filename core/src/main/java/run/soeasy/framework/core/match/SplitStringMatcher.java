@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.match;
 
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 public class SplitStringMatcher implements StringMatcher {
 	private final StringMatcher stringMatcher;

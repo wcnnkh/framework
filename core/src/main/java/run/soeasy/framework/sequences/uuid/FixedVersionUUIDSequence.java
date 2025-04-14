@@ -3,7 +3,6 @@ package run.soeasy.framework.sequences.uuid;
 import java.util.UUID;
 
 import run.soeasy.framework.core.Range;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.sequences.FixedLengthStringSequence;
 import run.soeasy.framework.sequences.UnsupportedSequenceRangeException;
 
@@ -24,7 +23,7 @@ public abstract class FixedVersionUUIDSequence extends FixedLengthStringSequence
 	@Override
 	public final String next() {
 		UUID uuid = nextUUID();
-		return StringUtils.removeChar(uuid.toString(), '-');
+		return uuid.toString().replace("-", "");
 	}
 
 	@Override

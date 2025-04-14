@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 /**
  * {@link PathMatcher} implementation for Ant-style path patterns.

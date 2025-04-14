@@ -5,10 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import run.soeasy.framework.aop.jdk.JdkProxyFactory;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.execution.Function;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data

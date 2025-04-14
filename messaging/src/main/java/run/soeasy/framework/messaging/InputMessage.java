@@ -7,11 +7,11 @@ import java.io.Reader;
 
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.Wrapped;
 import run.soeasy.framework.core.io.InputFactory;
 import run.soeasy.framework.core.io.InputStreamSource;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public interface InputMessage extends Message, InputStreamSource<InputStream> {
 	@FunctionalInterface

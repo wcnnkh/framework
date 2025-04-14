@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.match;
 
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 /**
  * 常用的匹配方式

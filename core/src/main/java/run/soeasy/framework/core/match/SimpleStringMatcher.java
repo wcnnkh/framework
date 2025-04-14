@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.match;
 
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 /**
  * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个

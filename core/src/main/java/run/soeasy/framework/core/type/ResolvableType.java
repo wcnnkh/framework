@@ -10,7 +10,7 @@ import java.util.Map;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 @FunctionalInterface
 public interface ResolvableType extends ParameterizedType, WildcardType, TypeVariableResolver {

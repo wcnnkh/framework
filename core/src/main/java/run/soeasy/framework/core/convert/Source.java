@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.core.CharSequenceTemplate;
 import run.soeasy.framework.core.Value;
 import run.soeasy.framework.core.Version;
 import run.soeasy.framework.core.collection.Elements;
@@ -21,7 +22,6 @@ import run.soeasy.framework.core.function.Wrapped;
 import run.soeasy.framework.core.math.BigDecimalValue;
 import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.strings.CharSequenceTemplate;
 import run.soeasy.framework.core.type.ResolvableType;
 
 @FunctionalInterface

@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 
 @Data

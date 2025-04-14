@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.function.Function;
 import run.soeasy.framework.core.io.Resource;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceParser;
 

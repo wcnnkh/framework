@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.Test;
 
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.register.container.ElementRegistration;
-import run.soeasy.framework.core.register.container.ListContainer;
+import run.soeasy.framework.core.exchange.container.ElementRegistration;
+import run.soeasy.framework.core.exchange.container.ListContainer;
 import run.soeasy.framework.sequences.uuid.RandomUUIDSequence;
 
 public class ListContainerTest {

@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 
 @Data
 public class SimpleConnectionFactory implements ConnectionFactory {

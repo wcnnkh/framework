@@ -1,10 +1,10 @@
 package run.soeasy.framework.core.convert.strings;
 
 import lombok.Data;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.strings.StringUtils;
 
 @Data
 public class CharacterConverter implements ReversibleConverter<String, Character, ConversionException> {

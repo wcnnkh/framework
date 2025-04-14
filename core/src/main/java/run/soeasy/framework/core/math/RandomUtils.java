@@ -9,8 +9,8 @@ import java.util.function.Predicate;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public final class RandomUtils {
 	private RandomUtils() {

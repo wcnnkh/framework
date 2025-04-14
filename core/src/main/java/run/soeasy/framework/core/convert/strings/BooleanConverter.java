@@ -2,10 +2,10 @@ package run.soeasy.framework.core.convert.strings;
 
 import java.util.HashSet;
 
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public class BooleanConverter extends HashSet<String>
 		implements ReversibleConverter<String, Boolean, ConversionException> {

@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.comparator.CompoundComparator;
 import run.soeasy.framework.core.io.InvalidMimeTypeException;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.io.MimeTypeUtils;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public class MediaType extends MimeType implements Serializable {
 

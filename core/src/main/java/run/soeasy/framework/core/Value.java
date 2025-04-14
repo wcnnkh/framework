@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.strings.CharSequenceTemplate;
 import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {

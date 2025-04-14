@@ -10,10 +10,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.AbstractMultiValueMap;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LinkedCaseInsensitiveMap;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public class Headers extends AbstractMultiValueMap<String, String, Map<String, List<String>>> implements Serializable {
 	/**

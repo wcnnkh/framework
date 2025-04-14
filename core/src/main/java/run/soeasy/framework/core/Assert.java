@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.io.FilenameUtils;
-import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * Assertion utility class that assists in validating arguments. Useful for

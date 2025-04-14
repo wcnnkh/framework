@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Random;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.io.MimeType.SpecificityComparator;
-import run.soeasy.framework.core.strings.StringUtils;
 
 public final class MimeTypeUtils {
 	private static final byte[] BOUNDARY_CHARS = new byte[] { '-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9',

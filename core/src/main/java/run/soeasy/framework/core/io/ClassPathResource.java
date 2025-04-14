@@ -7,7 +7,7 @@ import java.net.URL;
 
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**

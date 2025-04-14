@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ConcurrentReferenceHashMap;
 import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**
