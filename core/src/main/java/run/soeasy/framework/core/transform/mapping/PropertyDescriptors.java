@@ -1,46 +1,57 @@
 package run.soeasy.framework.core.transform.mapping;
 
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
 import run.soeasy.framework.core.KeyValue;
-import run.soeasy.framework.core.collection.KeyValues;
-import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.KeyValueListable;
+import run.soeasy.framework.core.collection.Streams;
 
 @FunctionalInterface
-public interface PropertyDescriptors<T extends PropertyDescriptor> extends KeyValues<String, T>, Listable<T> {
+public interface PropertyDescriptors<T extends PropertyDescriptor>
+		extends KeyValueListable<Object, T, KeyValue<Object, T>>, Elements<T> {
+
+	public static class EmptyPropertyDescriptors<T extends PropertyDescriptor>
+			implements PropertyDescriptors<T>, Serializable {
+		private static final long serialVersionUID = 1L;
+		private static final PropertyDescriptors<?> EMPTY_PROPERTY_DESCRIPTORS = new EmptyPropertyDescriptors<>();
+
+		@Override
+		public Iterator<T> iterator() {
+			return Collections.emptyIterator();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends PropertyDescriptor> PropertyDescriptors<T> empty() {
+		return (PropertyDescriptors<T>) EmptyPropertyDescriptors.EMPTY_PROPERTY_DESCRIPTORS;
+	}
+
 	@FunctionalInterface
 	public static interface PropertyDescriptorsWrapper<T extends PropertyDescriptor, W extends PropertyDescriptors<T>>
-			extends PropertyDescriptors<T>, KeyValuesWrapper<String, T, W>, ListableWrapper<T, W> {
+			extends PropertyDescriptors<T>, KeyValueListableWrapper<Object, T, KeyValue<Object, T>, W>,
+			ElementsWrapper<T, W> {
 		@Override
-		default boolean hasElements() {
-			return getSource().hasElements();
+		default Elements<KeyValue<Object, T>> getElements() {
+			return getSource().getElements();
 		}
 
 		@Override
-		default Iterator<KeyValue<String, T>> iterator() {
-			return getSource().iterator();
-		}
-
-		@Override
-		default Stream<KeyValue<String, T>> stream() {
+		default Stream<T> stream() {
 			return getSource().stream();
 		}
 	}
 
 	@Override
-	default boolean hasElements() {
-		return Listable.super.hasElements();
+	default Elements<KeyValue<Object, T>> getElements() {
+		return map((e) -> KeyValue.of(e.getName(), e));
 	}
 
 	@Override
-	default Iterator<KeyValue<String, T>> iterator() {
-		return getElements().map((e) -> KeyValue.of(e.getName(), e)).iterator();
+	default Stream<T> stream() {
+		return Streams.stream(iterator());
 	}
-
-	@Override
-	default Stream<KeyValue<String, T>> stream() {
-		return getElements().map((e) -> KeyValue.of(e.getName(), e)).stream();
-	}
-
 }

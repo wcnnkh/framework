@@ -11,11 +11,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.transform.mapping.Properties;
+import run.soeasy.framework.core.transform.mapping.PropertySource;
 import run.soeasy.framework.core.transform.mapping.Property;
 
 @AllArgsConstructor
-public class NodeListProperties implements Properties {
+public class NodeListProperties implements PropertySource {
 	@NonNull
 	private final NodeList nodeList;
 

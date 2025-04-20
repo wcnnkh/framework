@@ -1,5 +1,7 @@
 package run.soeasy.framework.core.collection;
 
+import run.soeasy.framework.core.Wrapper;
+
 /**
  * 获取所有的key
  * 
@@ -8,6 +10,18 @@ package run.soeasy.framework.core.collection;
  * @param <K>
  */
 public interface Keys<K> {
+	public static interface KeysWrapper<K, W extends Keys<K>> extends Keys<K>, Wrapper<W> {
+		@Override
+		default Elements<K> keys() {
+			return getSource().keys();
+		}
+
+		@Override
+		default boolean hasKey(K key) {
+			return getSource().hasKey(key);
+		}
+	}
+
 	Elements<K> keys();
 
 	/**

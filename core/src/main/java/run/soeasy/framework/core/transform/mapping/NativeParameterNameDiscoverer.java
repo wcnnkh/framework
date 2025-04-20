@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package run.soeasy.framework.core.param;
+package run.soeasy.framework.core.transform.mapping;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;

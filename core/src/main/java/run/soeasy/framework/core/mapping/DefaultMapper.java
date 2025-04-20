@@ -7,7 +7,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.collection.MapProperties;
+import run.soeasy.framework.core.transform.mapping.collection.MapPropertySource;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
 
@@ -18,7 +18,7 @@ public class DefaultMapper
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public DefaultMapper() {
 		getObjectTemplateProvider().register(Template.class, (s, t) -> (Template) s);
-		getObjectTemplateProvider().register(Map.class, (s, t) -> new MapProperties((Map) s, t));
+		getObjectTemplateProvider().register(Map.class, (s, t) -> new MapPropertySource((Map) s, t));
 		setTemplateTransformer(new ConfigurationProperties());
 	}
 

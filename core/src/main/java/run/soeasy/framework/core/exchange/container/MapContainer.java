@@ -358,26 +358,6 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 		return convertToBatchRegistration(registrations);
 	}
 
-	@Override
-	public Elements<KeyValue<K, V>> getKeyValues(K key) {
-		return read((map) -> {
-			if (map == null) {
-				return Elements.empty();
-			}
-
-			if (!map.containsKey(key)) {
-				return Elements.empty();
-			}
-
-			EntryRegistration<K, V> registration = map.get(key);
-			if (registration == null) {
-				return Elements.empty();
-			}
-
-			return Elements.singleton(registration);
-		});
-	}
-
 	public final V getValue(Function<? super M, ? extends EntryRegistration<K, V>> getter) {
 		return read((map) -> {
 			if (map == null) {

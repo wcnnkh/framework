@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.param;
+package run.soeasy.framework.core.transform.mapping;
 
 import java.lang.reflect.Executable;
 import java.util.Iterator;
@@ -12,7 +12,6 @@ import lombok.ToString;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public interface ParameterDescriptor extends PropertyDescriptor {
 	@Getter

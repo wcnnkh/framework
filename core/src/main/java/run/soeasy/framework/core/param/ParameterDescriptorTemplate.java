@@ -2,6 +2,7 @@ package run.soeasy.framework.core.param;
 
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 
 /**
  * 参数模板

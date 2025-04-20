@@ -7,7 +7,7 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.param.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public interface Setter extends Executable, PropertyDescriptor {

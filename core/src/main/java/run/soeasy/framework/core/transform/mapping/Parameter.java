@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.param;
+package run.soeasy.framework.core.transform.mapping;
 
 import java.util.function.Predicate;
 
@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.transform.mapping.Property;
-import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public interface Parameter extends ParameterDescriptor, Property, Predicate<ParameterDescriptor> {
 

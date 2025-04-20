@@ -1,0 +1,61 @@
+package run.soeasy.framework.core.transform.mapping;
+
+import lombok.NonNull;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.Lookup;
+import run.soeasy.framework.core.transform.stereotype.Accessor;
+import run.soeasy.framework.core.transform.stereotype.Template;
+
+public interface Dictionary<T extends Accessor> extends Template<Object, T>, Lookup<Object, T> {
+
+	public static interface DictionaryWrapper<T extends Accessor, W extends Dictionary<T>>
+			extends Dictionary<T>, TemplateWrapper<Object, T, W>, LookupWrapper<Object, T, W> {
+
+		@Override
+		default T get(Object key) {
+			return getSource().get(key);
+		}
+
+		@Override
+		default Dictionary<T> rename(String name) {
+			return getSource().rename(name);
+		}
+
+		@Override
+		default int size() {
+			return getSource().size();
+		}
+	}
+
+	public static class RenamedDictionary<T extends Accessor, W extends Dictionary<T>>
+			extends RenamedTemplate<Object, T, W> implements DictionaryWrapper<T, W> {
+
+		public RenamedDictionary(@NonNull W source, String name) {
+			super(source, name);
+		}
+
+		@Override
+		public Dictionary<T> rename(String name) {
+			return new RenamedDictionary<>(getSource(), name);
+		}
+	}
+
+	@Override
+	default T get(Object key) {
+		Elements<T> values = getValues(key);
+		if (values == null) {
+			return null;
+		}
+
+		return values.isUnique() ? null : values.getUnique();
+	}
+
+	@Override
+	default Dictionary<T> rename(String name) {
+		return new RenamedDictionary<>(this, name);
+	}
+
+	default int size() {
+		return getElements().count().intValue();
+	}
+}

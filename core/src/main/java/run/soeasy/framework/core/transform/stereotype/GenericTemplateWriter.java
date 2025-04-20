@@ -58,7 +58,7 @@ public class GenericTemplateWriter<K, V extends Accessor, T extends Template<K, 
 			@NonNull TemplateContext<K, V, T> targetContext) {
 		int count = 0;
 		for (KeyValue<K, V> target : targetContext.getTemplate().getElements()) {
-			Elements<V> sourceElements = sourceContext.getTemplate().getAccessors(target.getKey());
+			Elements<V> sourceElements = sourceContext.getTemplate().getValues(target.getKey());
 			for (V value : sourceElements) {
 				if (setValue(sourceContext.current(KeyValue.of(target.getKey(), value)),
 						targetContext.current(target))) {

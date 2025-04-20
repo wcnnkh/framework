@@ -5,9 +5,11 @@ import java.util.stream.IntStream;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.transform.mapping.PropertyTemplate;
+import run.soeasy.framework.core.transform.mapping.Parameter;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.PropertySource;
 
-public interface ParameterTemplate<T extends Parameter> extends PropertyTemplate<T>, ParameterDescriptorTemplate {
+public interface ParameterTemplate<T extends Parameter> extends PropertySource<T>, ParameterDescriptorTemplate {
 	public static interface ParameterMappingWrapper<T extends Parameter, W extends ParameterTemplate<T>>
 			extends ParameterTemplate<T>, PropertyMappingWrapper<T, W>, ParameterDescriptorTemplateWrapper<W> {
 
@@ -80,7 +82,7 @@ public interface ParameterTemplate<T extends Parameter> extends PropertyTemplate
 
 			return Elements.singleton(parameter);
 		}
-		return PropertyTemplate.super.getAccessors(key);
+		return PropertySource.super.getAccessors(key);
 	}
 
 	default Object[] getArgs() {

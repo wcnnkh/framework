@@ -9,7 +9,7 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.param.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 import run.soeasy.framework.core.type.ResolvableType;
 
 public class ReflectionExecutable<T extends Executable> extends AbstractReflectionExecutable<T> 

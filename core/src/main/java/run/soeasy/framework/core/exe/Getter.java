@@ -7,7 +7,8 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.param.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptors;
 import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public interface Getter extends Executable, PropertyDescriptor {
@@ -21,11 +22,6 @@ public interface Getter extends Executable, PropertyDescriptor {
 		}
 
 		@Override
-		default Elements<ParameterDescriptor> getParameterDescriptors() {
-			return getSource().getParameterDescriptors();
-		}
-
-		@Override
 		default TypeDescriptor getReturnTypeDescriptor() {
 			return getSource().getReturnTypeDescriptor();
 		}
@@ -33,6 +29,11 @@ public interface Getter extends Executable, PropertyDescriptor {
 		@Override
 		default Getter rename(String name) {
 			return getSource().rename(name);
+		}
+
+		@Override
+		default ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors() {
+			return getSource().getParameterDescriptors();
 		}
 	}
 
@@ -89,8 +90,8 @@ public interface Getter extends Executable, PropertyDescriptor {
 	Object get(Object target);
 
 	@Override
-	default Elements<ParameterDescriptor> getParameterDescriptors() {
-		return Elements.empty();
+	default ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors() {
+		return ParameterDescriptors.empty();
 	}
 
 	@Override

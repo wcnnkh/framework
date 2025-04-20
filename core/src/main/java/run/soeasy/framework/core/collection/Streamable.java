@@ -230,6 +230,7 @@ public interface Streamable<E> {
 
 	public static class EmptyStreamable<E> implements Streamable<E>, Serializable {
 		private static final long serialVersionUID = 1L;
+		private static final EmptyStreamable<Object> EMPTY_STREAMABLE = new EmptyStreamable<>();
 
 		@Override
 		public Stream<E> stream() {
@@ -237,11 +238,9 @@ public interface Streamable<E> {
 		}
 	}
 
-	public static final EmptyStreamable<Object> EMPTY_STREAMABLE = new EmptyStreamable<>();
-
 	@SuppressWarnings("unchecked")
 	public static <T> Streamable<T> empty() {
-		return (Streamable<T>) EMPTY_STREAMABLE;
+		return (Streamable<T>) EmptyStreamable.EMPTY_STREAMABLE;
 	}
 
 	default boolean allMatch(Predicate<? super E> predicate) {
@@ -319,8 +318,7 @@ public interface Streamable<E> {
 	}
 
 	default <T, X extends Throwable> T export(
-			run.soeasy.framework.core.exe.Function<? super Stream<E>, ? extends T, ? extends X> processor)
-			throws X {
+			run.soeasy.framework.core.exe.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			return processor.apply(stream);

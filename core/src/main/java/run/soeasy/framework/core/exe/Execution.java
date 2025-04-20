@@ -24,11 +24,6 @@ public interface Execution extends Executable, Executor {
 		}
 
 		@Override
-		default Object execute(@NonNull Parameters parameters) throws Throwable {
-			return getSource().execute(parameters);
-		}
-
-		@Override
 		default Execution rename(String name) {
 			return getSource().rename(name);
 		}
@@ -96,12 +91,6 @@ public interface Execution extends Executable, Executor {
 	 * @return
 	 */
 	Object execute(@NonNull Object... args) throws Throwable;
-
-	@Override
-	default Object execute(@NonNull Parameters parameters) throws Throwable {
-		Parameters completed = parameters.isValidated() ? parameters : parameters.reconstruct(this);
-		return Executor.super.execute(completed);
-	}
 
 	@Override
 	default Execution rename(String name) {

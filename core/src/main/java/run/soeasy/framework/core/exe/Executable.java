@@ -9,9 +9,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.param.ParameterDescriptor;
-import run.soeasy.framework.core.param.ParameterDescriptorTemplate;
-import run.soeasy.framework.core.param.Parameters;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptors;
 
 /**
  * 所有执行的基类
@@ -19,13 +18,10 @@ import run.soeasy.framework.core.param.Parameters;
  * @author wcnnkh
  *
  */
-public interface Executable extends Executed, Named, ParameterDescriptorTemplate {
+public interface Executable extends Executed, Named {
 	@FunctionalInterface
 	public static interface ExecutableWrapper<W extends Executable>
-			extends Executable, ExecutedWrapper<W>, NamedWrapper<W>, ParameterDescriptorTemplateWrapper<W> {
-		@Override
-		@NonNull
-		W getSource();
+			extends Executable, ExecutedWrapper<W>, NamedWrapper<W> {
 
 		@Override
 		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
@@ -35,11 +31,6 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 		@Override
 		default TypeDescriptor getDeclaringTypeDescriptor() {
 			return getSource().getDeclaringTypeDescriptor();
-		}
-
-		@Override
-		default boolean canExecuted(@NonNull Parameters parameters) {
-			return getSource().canExecuted(parameters);
 		}
 
 		@Override
@@ -53,13 +44,13 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 		}
 
 		@Override
-		default Elements<ParameterDescriptor> getParameterDescriptors() {
-			return getSource().getParameterDescriptors();
+		default Executable rename(String name) {
+			return getSource().rename(name);
 		}
 
 		@Override
-		default Executable rename(String name) {
-			return getSource().rename(name);
+		default ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors() {
+			return getSource().getParameterDescriptors();
 		}
 	}
 
@@ -78,7 +69,7 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 
 	@Override
 	default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
-		Iterator<ParameterDescriptor> iterator1 = getParameterDescriptors().iterator();
+		Iterator<? extends ParameterDescriptor> iterator1 = getParameterDescriptors().iterator();
 		Iterator<Class<?>> iterator2 = Arrays.asList(parameterTypes).iterator();
 		while (iterator1.hasNext() && iterator2.hasNext()) {
 			ParameterDescriptor parameterDescriptor = iterator1.next();
@@ -105,6 +96,8 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 	 */
 	Elements<TypeDescriptor> getExceptionTypeDescriptors();
 
+	ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors();
+
 	/**
 	 * Returns the Java language modifiers for the member or constructor represented
 	 * by this Member, as an integer. The Modifier class should be used to decode
@@ -120,17 +113,5 @@ public interface Executable extends Executed, Named, ParameterDescriptorTemplate
 	@Override
 	default Executable rename(@NonNull String name) {
 		return new RenamedExecutable<>(name, this);
-	}
-
-	@Override
-	default boolean canExecuted(@NonNull Parameters parameters) {
-		if (parameters.isValidated()) {
-			return Executed.super.canExecuted(parameters);
-		} else {
-			if (parameters.test(this)) {
-				return Executed.super.canExecuted(parameters.reconstruct(this));
-			}
-		}
-		return false;
 	}
 }

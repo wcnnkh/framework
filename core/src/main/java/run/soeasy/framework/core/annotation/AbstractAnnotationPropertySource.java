@@ -3,10 +3,9 @@ package run.soeasy.framework.core.annotation;
 import java.lang.annotation.Annotation;
 
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 
-public abstract class AbstractAnnotationProperties<A extends Annotation> implements AnnotationProperties<A> {
+public abstract class AbstractAnnotationPropertySource<A extends Annotation> implements AnnotationPropertySource<A> {
 
 	@Override
 	public int hashCode() {
@@ -19,10 +18,10 @@ public abstract class AbstractAnnotationProperties<A extends Annotation> impleme
 			return true;
 		}
 
-		if (obj instanceof AnnotationProperties) {
-			AnnotationProperties<?> annotationProperties = (AnnotationProperties<?>) obj;
-			return getType() == annotationProperties.getType()
-					&& equals(annotationProperties, (a, b) -> StringUtils.equals(a.getKey(), b.getKey())
+		if (obj instanceof AnnotationPropertySource) {
+			AnnotationPropertySource<?> annotationProperties = (AnnotationPropertySource<?>) obj;
+			return getType() == annotationProperties.getType() && getElements()
+					.equals(annotationProperties.getElements(), (a, b) -> ObjectUtils.equals(a.getKey(), b.getKey())
 							&& ObjectUtils.equals(a.getValue().get(), b.getValue().get()));
 		}
 		return false;

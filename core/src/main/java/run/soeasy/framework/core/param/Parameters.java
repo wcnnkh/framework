@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.transform.mapping.Parameter;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 import run.soeasy.framework.core.transform.mapping.Property;
 
 /**

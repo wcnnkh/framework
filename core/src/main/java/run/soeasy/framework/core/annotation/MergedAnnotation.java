@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,15 +13,16 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
+import run.soeasy.framework.core.collection.Streams;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
 import run.soeasy.framework.core.transform.mapping.Property;
 
 @RequiredArgsConstructor
 @Getter
-public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationProperties<A> implements Serializable {
+public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPropertySource<A>
+		implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Map<Class<?>, Method[]> methodsMap = new LRULinkedHashMap<>(256);
 
@@ -54,14 +56,14 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
 	private final Iterable<? extends A> annotations;
 
 	@Override
-	public Elements<Property> getElements() {
-		return Elements.forArray(annotations).flatMap((annotation) -> {
+	public Iterator<Property> iterator() {
+		return Streams.stream(annotations).flatMap((annotation) -> {
 			Method[] methods = getMethods(type);
-			return Elements.forArray(methods).map((method) -> {
+			return Arrays.asList(methods).stream().map((method) -> {
 				Object value = ReflectionUtils.invoke(method, annotation);
 				return Property.of(method.getName(), Source.of(value));
 			});
-		});
+		}).iterator();
 	}
 
 	@Override
