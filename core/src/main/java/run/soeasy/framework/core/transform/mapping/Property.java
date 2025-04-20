@@ -1,9 +1,11 @@
 
-package run.soeasy.framework.core.transform.stereotype;
+package run.soeasy.framework.core.transform.mapping;
 
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
+import run.soeasy.framework.core.transform.stereotype.Accessor;
 
 public interface Property extends Accessor, PropertyDescriptor {
 

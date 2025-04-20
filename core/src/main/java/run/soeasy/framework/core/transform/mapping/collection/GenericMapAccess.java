@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.stereotype.collection;
+package run.soeasy.framework.core.transform.mapping.collection;
 
 import java.util.Map;
 

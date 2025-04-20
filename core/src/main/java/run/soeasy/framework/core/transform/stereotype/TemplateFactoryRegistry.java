@@ -3,13 +3,12 @@ package run.soeasy.framework.core.transform.stereotype;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.spi.ServiceMap;
 
 @Getter
 @Setter
-public class TemplateFactoryRegistry<S, K, V extends Source, T extends Template<K, ? extends V>>
+public class TemplateFactoryRegistry<S, K, V extends Accessor, T extends Template<K, V>>
 		extends ServiceMap<TemplateFactory<S, K, V, T>> implements TemplateProvider<S, K, V, T> {
 	private TemplateProvider<? super S, ? extends K, ? extends V, ? extends T> templateProvider;
 

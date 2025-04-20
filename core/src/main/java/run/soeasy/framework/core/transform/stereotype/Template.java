@@ -1,9 +1,10 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.collection.Listable;
 
 /**
  * 模板
@@ -12,8 +13,8 @@ import run.soeasy.framework.core.convert.Source;
  *
  * @param <T>
  */
-public interface Template<K, V extends Source> {
-	public static interface TemplateWrapper<K, V extends Source, W extends Template<K, V>>
+public interface Template<K, V extends Accessor> extends Listable<KeyValue<K, V>> {
+	public static interface TemplateWrapper<K, V extends Accessor, W extends Template<K, V>>
 			extends Template<K, V>, Wrapper<W> {
 		@Override
 		default Elements<K> getAccessorIndexes() {

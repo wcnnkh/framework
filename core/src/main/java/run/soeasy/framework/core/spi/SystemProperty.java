@@ -9,7 +9,7 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 @RequiredArgsConstructor
 @AllArgsConstructor

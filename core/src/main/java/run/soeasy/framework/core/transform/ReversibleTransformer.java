@@ -31,5 +31,5 @@ public interface ReversibleTransformer<S, T, E extends Throwable> extends Transf
 		return true;
 	}
 
-	void reverseTransform(T source, TypeDescriptor sourceType, S target, TypeDescriptor targetType) throws E;
+	boolean reverseTransform(T source, TypeDescriptor sourceType, S target, TypeDescriptor targetType) throws E;
 }

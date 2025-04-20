@@ -4,7 +4,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.exe.Getter;
 import run.soeasy.framework.core.exe.Setter;
-import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public interface FieldDescriptor extends PropertyDescriptor {
 	@FunctionalInterface

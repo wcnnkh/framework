@@ -16,7 +16,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 @RequiredArgsConstructor
 @Getter

@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.mapping.FieldDescriptor.FieldDescriptorWrapper;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 @Data
 public class Field<T extends FieldDescriptor> implements Property, FieldDescriptorWrapper<T> {

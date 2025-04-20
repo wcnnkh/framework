@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.stereotype.Properties;
+import run.soeasy.framework.core.transform.mapping.Properties;
 
 public interface AnnotationProperties<A extends Annotation> extends Properties, InvocationHandler {
 	Class<A> getType();

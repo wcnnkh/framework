@@ -12,13 +12,13 @@ public class Transformers<S, T, E extends Throwable, R extends Transformer<? sup
 	}
 
 	@Override
-	public void transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
+	public boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
 			@NonNull TypeDescriptor targetType) throws E {
 		for (R transform : this) {
 			if (transform.canTransform(sourceType, targetType)) {
-				transform.transform(source, sourceType, target, targetType);
-				return;
+				return transform.transform(source, sourceType, target, targetType);
 			}
 		}
+		return false;
 	}
 }

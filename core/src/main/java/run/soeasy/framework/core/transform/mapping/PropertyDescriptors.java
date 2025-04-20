@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.stereotype;
+package run.soeasy.framework.core.transform.mapping;
 
 import java.util.Iterator;
 import java.util.stream.Stream;

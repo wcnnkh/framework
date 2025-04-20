@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 /**
  * 多个参数的定义

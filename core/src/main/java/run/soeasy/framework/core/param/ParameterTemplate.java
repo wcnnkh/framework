@@ -5,7 +5,7 @@ import java.util.stream.IntStream;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.transform.stereotype.PropertyTemplate;
+import run.soeasy.framework.core.transform.mapping.PropertyTemplate;
 
 public interface ParameterTemplate<T extends Parameter> extends PropertyTemplate<T>, ParameterDescriptorTemplate {
 	public static interface ParameterMappingWrapper<T extends Parameter, W extends ParameterTemplate<T>>

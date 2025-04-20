@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.stereotype;
+package run.soeasy.framework.core.transform.mapping;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -8,7 +8,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Lookup;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.stereotype.collection.MapProperties;
+import run.soeasy.framework.core.transform.mapping.collection.MapProperties;
 
 public interface Properties extends PropertyTemplate<Property>, Lookup<String, Property>, PropertyFactory {
 	public static class EmptyProperties implements Properties, Serializable {

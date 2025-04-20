@@ -8,7 +8,7 @@ import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.param.ParameterDescriptor;
-import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public interface Getter extends Executable, PropertyDescriptor {
 

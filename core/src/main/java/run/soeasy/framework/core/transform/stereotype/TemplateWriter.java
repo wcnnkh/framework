@@ -1,13 +1,9 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.TypeDescriptor;
 
 @FunctionalInterface
-public interface TemplateWriter<K, SV extends Source, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable> {
+public interface TemplateWriter<K, V extends Accessor, T extends Template<K, V>> {
 
-	boolean writeTo(TemplateContext<K, SV, S> sourceContext, @NonNull S source, @NonNull TypeDescriptor sourceType,
-			TemplateContext<K, TV, T> targetContext, @NonNull T target, @NonNull TypeDescriptor targetType, @NonNull K index,
-			@NonNull SV sourceElement, @NonNull TV targetAccessor) throws E;
+	boolean writeTo(@NonNull TemplateContext<K, V, T> sourceContext, @NonNull TemplateContext<K, V, T> targetContext);
 }

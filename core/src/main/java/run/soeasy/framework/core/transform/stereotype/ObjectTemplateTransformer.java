@@ -1,12 +1,10 @@
 package run.soeasy.framework.core.transform.stereotype;
 
-import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
-@Getter
-public class ObjectTransformer<K, V extends Accessor, T extends Template<K, ? extends V>, E extends Throwable>
-		extends DefaultTransformer<Object, Object, K, V, T, V, T, E> {
+public class ObjectTemplateTransformer<K, V extends Accessor, T extends Template<K, V>, E extends Throwable>
+		extends TemplateTransformer<K, V, T, Object, Object, E> {
 	private final TemplateFactoryRegistry<Object, K, V, T> objectTemplateProvider = new TemplateFactoryRegistry<>();
 
 	@Override

@@ -10,12 +10,12 @@ public class ReversibleTransformers<S, T, E extends Throwable, R extends Reversi
 	}
 
 	@Override
-	public void reverseTransform(T source, TypeDescriptor sourceType, S target, TypeDescriptor targetType) throws E {
+	public boolean reverseTransform(T source, TypeDescriptor sourceType, S target, TypeDescriptor targetType) throws E {
 		for (R transform : this) {
 			if (transform.canReverseTransform(sourceType, targetType)) {
-				transform.reverseTransform(source, sourceType, target, targetType);
-				return;
+				return transform.reverseTransform(source, sourceType, target, targetType);
 			}
 		}
+		return false;
 	}
 }

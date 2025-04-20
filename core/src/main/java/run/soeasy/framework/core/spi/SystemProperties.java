@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.spi;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.transform.stereotype.Properties;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Properties;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 public final class SystemProperties implements Properties {
 	private static volatile SystemProperties instance;

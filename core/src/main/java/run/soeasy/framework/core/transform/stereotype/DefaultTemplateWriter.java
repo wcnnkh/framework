@@ -1,17 +1,21 @@
 package run.soeasy.framework.core.transform.stereotype;
 
-import run.soeasy.framework.core.convert.Source;
+import lombok.NonNull;
 
-public class DefaultTemplateWriter<K, SV extends Source, S extends Template<K, ? extends SV>, TV extends Accessor, T extends Template<K, ? extends TV>, E extends Throwable>
-		extends FilterableTemplateWriter<K, SV, S, TV, T, E> {
+public class DefaultTemplateWriter<K, V extends Accessor, T extends Template<K, V>>
+		extends FilterableTemplateWriter<K, V, T> implements TemplateWriter<K, V, T> {
 
 	public DefaultTemplateWriter() {
-		super(new TemplateWriteFilters<>());
+		super(new TemplateWriteFilters<>(), new GenericTemplateWriter<>());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public TemplateWriteFilters<K, SV, S, TV, T, E> getTemplateWriteFilters() {
-		return (TemplateWriteFilters<K, SV, S, TV, T, E>) super.getTemplateWriteFilters();
+	public @NonNull TemplateWriteFilters<K, V, T> getFilters() {
+		return (TemplateWriteFilters<K, V, T>) super.getFilters();
+	}
+
+	@Override
+	public @NonNull GenericTemplateWriter<K, V, T> getTemplateWriter() {
+		return (run.soeasy.framework.core.transform.stereotype.GenericTemplateWriter<K, V, T>) super.getTemplateWriter();
 	}
 }

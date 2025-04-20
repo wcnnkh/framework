@@ -1,11 +1,11 @@
-package run.soeasy.framework.core.transform.stereotype.collection;
+package run.soeasy.framework.core.transform.mapping.collection;
 
 import java.util.Map;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 public class MapProperty extends GenericMapAccess implements Property {
 

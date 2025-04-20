@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
 public interface ReversibleTransformerFactory<S, E extends Throwable>
@@ -23,12 +22,12 @@ public interface ReversibleTransformerFactory<S, E extends Throwable>
 	}
 
 	@Override
-	default void reverseTransform(Object source, TypeDescriptor sourceType, S target, TypeDescriptor targetType)
+	default boolean reverseTransform(Object source, TypeDescriptor sourceType, S target, TypeDescriptor targetType)
 			throws E {
 		ReversibleTransformer<S, Object, E> reversibleTransformer = getReversibleTransformer(sourceType.getType());
 		if (reversibleTransformer == null) {
-			throw new ConverterNotFoundException(sourceType, targetType);
+			return false;
 		}
-		reversibleTransformer.reverseTransform(source, sourceType, target, targetType);
+		return reversibleTransformer.reverseTransform(source, sourceType, target, targetType);
 	}
 }

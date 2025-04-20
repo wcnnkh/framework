@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
 public interface TransformerFactory<S, E extends Throwable> extends Transformer<S, Object, E> {
@@ -17,12 +16,12 @@ public interface TransformerFactory<S, E extends Throwable> extends Transformer<
 	}
 
 	@Override
-	default void transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull Object target,
+	default boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull Object target,
 			@NonNull TypeDescriptor targetType) throws E {
 		Transformer<S, Object, E> transformer = getTransformer(targetType.getType());
 		if (transformer == null) {
-			throw new ConverterNotFoundException(sourceType, targetType);
+			return false;
 		}
-		transformer.transform(source, sourceType, target, targetType);
+		return transformer.transform(source, sourceType, target, targetType);
 	}
 }

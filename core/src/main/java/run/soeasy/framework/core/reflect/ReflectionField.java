@@ -7,7 +7,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
+import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
 
 public abstract class ReflectionField extends AbstractReflectionExecutable<Field>
 		implements PropertyDescriptor, AnnotatedElementWrapper<Field>, Serializable {

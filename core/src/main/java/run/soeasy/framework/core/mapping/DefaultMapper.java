@@ -7,9 +7,9 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.transform.mapping.collection.MapProperties;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
-import run.soeasy.framework.core.transform.stereotype.collection.MapProperties;
 
 public class DefaultMapper
 		extends ObjectMapper<Object, Accessor, Template<Object, ? extends Accessor>, ConversionException>

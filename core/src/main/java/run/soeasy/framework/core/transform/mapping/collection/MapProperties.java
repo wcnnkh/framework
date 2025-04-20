@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.stereotype.collection;
+package run.soeasy.framework.core.transform.mapping.collection;
 
 import java.util.Map;
 
@@ -11,8 +11,8 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.transform.stereotype.Properties;
-import run.soeasy.framework.core.transform.stereotype.Property;
+import run.soeasy.framework.core.transform.mapping.Properties;
+import run.soeasy.framework.core.transform.mapping.Property;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RequiredArgsConstructor

@@ -10,6 +10,16 @@ public interface Transformer<S, T, E extends Throwable> {
 		return true;
 	}
 
-	void transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
+	/**
+	 * 执行传输
+	 * 
+	 * @param source
+	 * @param sourceType
+	 * @param target
+	 * @param targetType
+	 * @return 是否成功
+	 * @throws E
+	 */
+	boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
 			@NonNull TypeDescriptor targetType) throws E;
 }

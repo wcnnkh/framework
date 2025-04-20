@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.stereotype;
+package run.soeasy.framework.core.transform.mapping;
 
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.spi.ConfigurableServices;
