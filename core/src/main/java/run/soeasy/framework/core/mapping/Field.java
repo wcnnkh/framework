@@ -1,9 +1,9 @@
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.mapping;
 
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.FieldDescriptor.FieldDescriptorWrapper;
+import run.soeasy.framework.core.mapping.FieldDescriptor.FieldDescriptorWrapper;
 import run.soeasy.framework.core.transform.stereotype.Property;
 
 @Data

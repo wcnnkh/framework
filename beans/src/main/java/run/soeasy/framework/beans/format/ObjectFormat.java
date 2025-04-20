@@ -27,8 +27,8 @@ import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.mapping.FieldDescriptor;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.mapping.FieldDescriptor;
 
 @Getter
 @Setter

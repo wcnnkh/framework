@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.mapping;
 
 import lombok.Data;
 import lombok.NonNull;

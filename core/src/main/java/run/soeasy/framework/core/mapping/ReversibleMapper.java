@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.mapping;
 
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ReversibleConverter;
