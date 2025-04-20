@@ -1,11 +1,11 @@
 package run.soeasy.framework.core.reflect;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.ImpossibleException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.execution.Getter;
+import run.soeasy.framework.core.exe.Getter;
 
 public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 	private String name;
@@ -30,7 +30,7 @@ public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 			return invoke(target);
 		} catch (Throwable e) {
 			ReflectionUtils.handleThrowable(e);
-			throw new ImpossibleException();
+			throw new UndeclaredThrowableException(e);
 		}
 	}
 

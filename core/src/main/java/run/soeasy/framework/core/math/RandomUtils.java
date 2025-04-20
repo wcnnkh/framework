@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.exe.Function;
 
 public final class RandomUtils {
 	private RandomUtils() {

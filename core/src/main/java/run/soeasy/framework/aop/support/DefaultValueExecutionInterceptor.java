@@ -9,9 +9,9 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.execution.Executor;
-import run.soeasy.framework.core.execution.Function;
-import run.soeasy.framework.core.execution.ParameterDescriptor;
+import run.soeasy.framework.core.exe.Execution;
+import run.soeasy.framework.core.exe.Executor;
+import run.soeasy.framework.core.param.ParameterDescriptor;
 
 /**
  * 对调用参数默认值的处理
@@ -25,7 +25,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 	private ConversionService conversionService;
 
 	@Override
-	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
+	public Object intercept(@NonNull Execution function, @NonNull Object... args) throws Throwable {
 		if (args.length == 0) {
 			return function.execute(args);
 		}
@@ -52,7 +52,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
 	}
 
-	protected Source getDefaultReturnValue(Function function) {
+	protected Source getDefaultReturnValue(Execution function) {
 		return getDefaultValue(function, function.getReturnTypeDescriptor());
 	}
 

@@ -5,7 +5,7 @@ import java.util.Queue;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.function.Supplier;
+import run.soeasy.framework.core.exe.Supplier;
 
 public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends CollectionContainer<E, Q>
 		implements Queue<E> {

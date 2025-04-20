@@ -5,10 +5,11 @@ import java.lang.reflect.Method;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import run.soeasy.framework.core.exe.Invocation;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ReflectionMethod extends ReflectionExecutable<Method> implements run.soeasy.framework.core.execution.Method {
+public class ReflectionMethod extends AbstractReflectionExecution<Method> implements Invocation {
 	private Object target;
 
 	public ReflectionMethod(@NonNull Method method) {
@@ -16,12 +17,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements ru
 	}
 
 	@Override
-	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
+	public Object invoke(Object target, @NonNull Object... args) {
 		return ReflectionUtils.invoke(getSource(), target, args);
-	}
-
-	@Override
-	public final Object execute(@NonNull Object... args) throws Throwable {
-		return invoke(getTarget(), args);
 	}
 }

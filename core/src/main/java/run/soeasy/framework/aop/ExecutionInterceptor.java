@@ -1,7 +1,7 @@
 package run.soeasy.framework.aop;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.execution.Function;
+import run.soeasy.framework.core.exe.Execution;
 
 /**
  * 拦截器
@@ -11,5 +11,5 @@ import run.soeasy.framework.core.execution.Function;
  */
 @FunctionalInterface
 public interface ExecutionInterceptor {
-	Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable;
+	Object intercept(@NonNull Execution function, @NonNull Object... args) throws Throwable;
 }

@@ -7,8 +7,8 @@ import java.io.Writer;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.core.function.Wrapped;
+import run.soeasy.framework.core.Wrapped;
+import run.soeasy.framework.core.exe.Pipeline;
 import run.soeasy.framework.core.io.OutputFactory;
 import run.soeasy.framework.core.io.OutputStreamSource;
 

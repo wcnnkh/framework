@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.execution.Function;
+import run.soeasy.framework.core.exe.Execution;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -14,10 +14,10 @@ import run.soeasy.framework.core.execution.Function;
 public class ExecutionInterceptorChain implements ExecutionInterceptor {
 	@NonNull
 	private final Iterator<? extends ExecutionInterceptor> iterator;
-	private Function nextChain;
+	private Execution nextChain;
 
 	@Override
-	public Object intercept(@NonNull Function function, @NonNull Object... args) throws Throwable {
+	public Object intercept(@NonNull Execution function, @NonNull Object... args) throws Throwable {
 		if (iterator.hasNext()) {
 			return iterator.next().intercept(function, args);
 		}

@@ -6,12 +6,50 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 
 public final class ArrayUtils {
+	/**
+	 * 至少要测试通过一个
+	 * 
+	 * @param <T>
+	 * @param predicate
+	 * @param elements
+	 * @return elements长度为0则返回false
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> boolean anyTest(@NonNull Predicate<? super T> predicate, @NonNull T... elements) {
+		for (T arg : elements) {
+			if (predicate.test(arg)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 要全部通过测试
+	 * 
+	 * @param <T>
+	 * @param predicate
+	 * @param elements
+	 * @return elements长度为0则返回true
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> boolean allTest(@NonNull Predicate<? super T> predicate, @NonNull T... elements) {
+		for (T element : elements) {
+			if (!predicate.test(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * 默认是不进行深拷贝
 	 * 

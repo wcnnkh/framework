@@ -5,7 +5,7 @@ import java.lang.reflect.AnnotatedElement;
 import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
-import run.soeasy.framework.core.execution.Executor;
+import run.soeasy.framework.core.exe.Executor;
 import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Proxy extends Executor, AnnotatedElementWrapper<AnnotatedElement> {

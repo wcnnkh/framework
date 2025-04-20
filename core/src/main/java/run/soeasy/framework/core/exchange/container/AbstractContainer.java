@@ -7,7 +7,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.concurrent.LockableContainer;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
-import run.soeasy.framework.core.function.Supplier;
+import run.soeasy.framework.core.exe.Supplier;
 
 /**
  * 一个懒惰的容器定义

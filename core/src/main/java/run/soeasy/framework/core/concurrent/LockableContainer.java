@@ -16,7 +16,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.concurrent.locks.NoOpLock;
-import run.soeasy.framework.core.function.Supplier;
+import run.soeasy.framework.core.exe.Supplier;
 
 /**
  * 使用复制读来实现线程安全

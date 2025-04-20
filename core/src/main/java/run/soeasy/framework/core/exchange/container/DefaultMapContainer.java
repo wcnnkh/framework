@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Supplier;
+import run.soeasy.framework.core.exe.Supplier;
 
 public class DefaultMapContainer<K, V> extends MapContainer<K, V, Map<K, EntryRegistration<K, V>>> {
 

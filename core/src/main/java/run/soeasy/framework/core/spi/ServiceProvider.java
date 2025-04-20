@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.function.Optional;
-import run.soeasy.framework.core.function.Predicate;
+import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.exe.Optional;
+import run.soeasy.framework.core.exe.Predicate;
 
 @Getter
 @Setter

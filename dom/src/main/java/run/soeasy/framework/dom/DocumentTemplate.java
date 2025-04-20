@@ -17,7 +17,7 @@ import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.exe.Function;
 import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.core.io.StringBufferResource;
 import run.soeasy.framework.core.io.load.ResourceLoader;

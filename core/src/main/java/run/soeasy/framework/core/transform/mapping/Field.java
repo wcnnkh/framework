@@ -34,7 +34,6 @@ public class Field<T extends FieldDescriptor> implements Property, FieldDescript
 
 	@Override
 	public Field<T> rename(String name) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

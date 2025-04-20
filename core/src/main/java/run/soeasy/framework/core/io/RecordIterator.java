@@ -12,7 +12,7 @@ import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.support.RecordCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CloseableIterator;
-import run.soeasy.framework.core.function.Functions;
+import run.soeasy.framework.core.exe.Functions;
 
 /**
  * 线程不安全
@@ -22,7 +22,7 @@ import run.soeasy.framework.core.function.Functions;
  * @param <E>
  */
 public final class RecordIterator<E> implements CloseableIterator<E> {
-	private final run.soeasy.framework.core.function.Supplier<? extends InputStream, ? extends IOException> source;
+	private final run.soeasy.framework.core.exe.Supplier<? extends InputStream, ? extends IOException> source;
 	private final RecordCodec<E> codec;
 	private volatile InputStream inputStream;
 	private volatile Supplier<E> supplier;
@@ -31,7 +31,7 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 		this(() -> new FileInputStream(file), codec);
 	}
 
-	public RecordIterator(run.soeasy.framework.core.function.Supplier<? extends InputStream, ? extends IOException> source, RecordCodec<E> codec) {
+	public RecordIterator(run.soeasy.framework.core.exe.Supplier<? extends InputStream, ? extends IOException> source, RecordCodec<E> codec) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(codec != null, "codec");
 		this.source = source;

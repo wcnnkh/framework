@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.function.Merger;
+import run.soeasy.framework.core.exe.Merger;
 import run.soeasy.framework.core.math.NumberValue;
 
 /**
@@ -739,14 +739,12 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		private final Merger<Elements<E>> merger;
 
 		@SafeVarargs
-		public MergedElements(Elements<? extends E>... members) {
+		public MergedElements(@NonNull Elements<? extends E>... members) {
 			this(Merger.flat(), members);
 		}
 
 		@SafeVarargs
-		public MergedElements(Merger<Elements<E>> merger, Elements<? extends E>... members) {
-			Assert.requiredArgument(merger != null, "merger");
-			Assert.requiredArgument(members != null, "members");
+		public MergedElements(@NonNull Merger<Elements<E>> merger, @NonNull Elements<? extends E>... members) {
 			this.members = members;
 			this.merger = merger;
 		}

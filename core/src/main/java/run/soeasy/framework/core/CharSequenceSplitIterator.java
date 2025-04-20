@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import run.soeasy.framework.core.function.Functions;
+import run.soeasy.framework.core.exe.Functions;
 
 /**
  * 迭代分割字符串

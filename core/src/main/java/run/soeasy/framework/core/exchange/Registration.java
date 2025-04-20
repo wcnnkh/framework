@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.function.Consumer;
-import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.exe.Consumer;
+import run.soeasy.framework.core.exe.Function;
 
 public interface Registration {
 

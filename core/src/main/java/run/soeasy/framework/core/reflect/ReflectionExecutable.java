@@ -9,10 +9,10 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.execution.ParameterDescriptor;
+import run.soeasy.framework.core.param.ParameterDescriptor;
 import run.soeasy.framework.core.type.ResolvableType;
 
-public class ReflectionExecutable<T extends Executable> extends ReflectionMember<T>
+public class ReflectionExecutable<T extends Executable> extends AbstractReflectionExecutable<T> 
 		implements AnnotatedElementWrapper<T> {
 
 	@NonNull

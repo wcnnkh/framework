@@ -26,7 +26,7 @@ import java.util.function.IntPredicate;
 
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.function.Function;
+import run.soeasy.framework.core.exe.Function;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**

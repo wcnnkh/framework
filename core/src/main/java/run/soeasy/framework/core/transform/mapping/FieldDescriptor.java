@@ -2,8 +2,8 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.execution.Getter;
-import run.soeasy.framework.core.execution.Setter;
+import run.soeasy.framework.core.exe.Getter;
+import run.soeasy.framework.core.exe.Setter;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 
 public interface FieldDescriptor extends PropertyDescriptor {

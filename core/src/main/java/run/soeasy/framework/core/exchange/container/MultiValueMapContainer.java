@@ -18,7 +18,7 @@ import run.soeasy.framework.core.concurrent.AtomicEntry;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Receipts;
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.function.Supplier;
+import run.soeasy.framework.core.exe.Supplier;
 
 public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC extends Container<V, R>, M extends Map<K, VC>>
 		extends AbstractContainer<M, KeyValue<K, V>, KeyValueRegistration<K, V>>

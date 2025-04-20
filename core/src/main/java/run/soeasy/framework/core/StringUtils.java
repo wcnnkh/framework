@@ -649,38 +649,6 @@ public final class StringUtils {
 		return -1;
 	}
 
-	public static boolean isAllEmpty(CharSequence... charSequences) {
-		if (charSequences == null || charSequences.length == 0) {
-			return true;
-		}
-
-		for (CharSequence charSequence : charSequences) {
-			if (isNotEmpty(charSequence)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * any is empty
-	 * 
-	 * @param values
-	 * @return
-	 */
-	public static boolean isAnyEmpty(CharSequence... values) {
-		if (values == null || values.length == 0) {
-			return true;
-		}
-
-		for (CharSequence s : values) {
-			if (isEmpty(s)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static boolean isEmpty(CharSequence value) {
 		return value == null || value.length() == 0;
 	}

@@ -8,7 +8,7 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.execution.Function;
+import run.soeasy.framework.core.exe.Execution;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data
@@ -73,11 +73,11 @@ public class Aop extends JdkProxyFactory {
 		return getProxy(sourceClass, null, null);
 	}
 
-	public final Function getProxyFunction(@NonNull Function function) {
+	public final Execution getProxyFunction(@NonNull Execution function) {
 		return getProxyFunction(function, null);
 	}
 
-	public Function getProxyFunction(@NonNull Function function, ExecutionInterceptor executionInterceptor) {
+	public Execution getProxyFunction(@NonNull Execution function, ExecutionInterceptor executionInterceptor) {
 		Assert.requiredArgument(function != null, "function");
 		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
 				this.id);

@@ -2,11 +2,11 @@ package run.soeasy.framework.aop;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.execution.Function;
-import run.soeasy.framework.core.execution.Function.FunctionWrapper;
+import run.soeasy.framework.core.exe.Execution;
+import run.soeasy.framework.core.exe.Execution.FunctionWrapper;
 
 @Data
-public class InterceptableFunction<W extends Function> implements FunctionWrapper<W> {
+public class InterceptableFunction<W extends Execution> implements FunctionWrapper<W> {
 	@NonNull
 	private final W source;
 	@NonNull

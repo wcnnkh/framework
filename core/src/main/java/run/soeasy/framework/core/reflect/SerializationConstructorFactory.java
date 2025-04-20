@@ -3,13 +3,16 @@ package run.soeasy.framework.core.reflect;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import lombok.NonNull;
+import run.soeasy.framework.core.collection.Provider;
+
 /**
  * 使用系列化行为的构造方法，可以绕过必需使用参数构造对象的行为
  * 
  * @author soeasy.run
  *
  */
-public class SerializationConstructorFactory extends ConstructorFactory {
+public class SerializationConstructorFactory implements ReflectionFactory<Constructor<?>> {
 	private static Constructor<Object> objectConstructor;
 	static {
 		try {
@@ -72,14 +75,14 @@ public class SerializationConstructorFactory extends ConstructorFactory {
 	}
 
 	@Override
-	protected Constructor<?>[] loadConstructors(Class<?> declaringClass) {
+	public Provider<Constructor<?>> getReflectionProvider(@NonNull Class<?> declaringClass) {
 		if (getReflectionFactory() != null && getNewConstructorForSerialization() != null) {
 			Constructor<?> constructor = (Constructor<?>) ReflectionUtils.invoke(getNewConstructorForSerialization(),
 					getReflectionFactory(), declaringClass, objectConstructor);
 			if (constructor != null) {
-				return new Constructor<?>[] { constructor };
+				return Provider.forSupplier(() -> constructor);
 			}
 		}
-		return EMPTY_CONSTRUCTOR_ARRAY;
+		return Provider.empty();
 	}
 }

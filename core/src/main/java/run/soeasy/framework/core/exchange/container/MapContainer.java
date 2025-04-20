@@ -28,7 +28,7 @@ import run.soeasy.framework.core.exchange.Registrations;
 import run.soeasy.framework.core.exchange.container.EntryRegistration.StandardEntryRegistrationWrapper;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
-import run.soeasy.framework.core.function.Supplier;
+import run.soeasy.framework.core.exe.Supplier;
 
 @Getter
 public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> extends

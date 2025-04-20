@@ -9,7 +9,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.stereotype.PropertyDescriptor;
 
-public abstract class ReflectionField extends ReflectionMember<Field>
+public abstract class ReflectionField extends AbstractReflectionExecutable<Field>
 		implements PropertyDescriptor, AnnotatedElementWrapper<Field>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String name;
@@ -28,7 +28,7 @@ public abstract class ReflectionField extends ReflectionMember<Field>
 			synchronized (this) {
 				field = super.getSource();
 				if (field == null) {
-					field = ReflectionUtils.getField(declaringClass, name);
+					field = ReflectionUtils.findDeclaredField(declaringClass, name).withSuperclass().first();
 				}
 			}
 		}

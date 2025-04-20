@@ -6,8 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.exe.Pipeline;
 
 public class ConnectionWrapper extends JdbcWrapper<Connection> {
 

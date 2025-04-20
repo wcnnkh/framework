@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.convert;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.function.Supplier.MappedSupplier;
+import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.exe.Supplier.MappedSupplier;
 
 public class MappedSource<T, W extends Source> extends MappedSupplier<Object, T, ConversionException, W> {
 

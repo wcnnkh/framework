@@ -11,7 +11,7 @@ import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.function.Selector;
+import run.soeasy.framework.core.exe.Selector;
 
 public interface PropertyDescriptor extends Named, AccessDescriptor {
 	@RequiredArgsConstructor

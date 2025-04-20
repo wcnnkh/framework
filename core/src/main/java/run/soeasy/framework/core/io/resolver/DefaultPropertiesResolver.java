@@ -17,7 +17,8 @@ import run.soeasy.framework.logging.Logger;
 
 public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 	private static Logger logger = LogManager.getLogger(DefaultPropertiesResolver.class.getName());
-	private static final Method LOAD_METHOD = ReflectionUtils.getDeclaredMethod(Properties.class, "load", Reader.class);
+	private static final Method LOAD_METHOD = ReflectionUtils.findDeclaredMethod(Properties.class, "load", Reader.class)
+			.first();
 
 	private static volatile DefaultPropertiesResolver instance;
 

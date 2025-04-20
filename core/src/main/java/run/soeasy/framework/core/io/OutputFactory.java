@@ -7,8 +7,8 @@ import java.io.Writer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.Function;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.exe.Pipeline;
 
 public interface OutputFactory<O extends OutputStream, W extends Writer>
 		extends OutputStreamFactory<O>, WriterFactory<W> {
