@@ -1,5 +1,7 @@
 package run.soeasy.framework.core.convert;
 
+import run.soeasy.framework.core.convert.value.ValueAccessor;
+
 public class IdentityConversionService implements ConversionService {
 
 	@Override
@@ -14,8 +16,8 @@ public class IdentityConversionService implements ConversionService {
 	}
 
 	@Override
-	public Object convert(Source value, TypeDescriptor requiredTypeDescriptor) throws ConversionException {
-		return value.get();
+	public Object convert(ValueAccessor accessor, TypeDescriptor requiredTypeDescriptor) throws ConversionException {
+		return accessor.get();
 	}
 
 }

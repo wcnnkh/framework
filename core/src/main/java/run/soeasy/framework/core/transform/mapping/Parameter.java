@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 public interface Parameter extends ParameterDescriptor, Property, Predicate<ParameterDescriptor> {
 
@@ -52,7 +52,7 @@ public interface Parameter extends ParameterDescriptor, Property, Predicate<Para
 		return of(ParameterDescriptor.of(index, propertyDescriptor));
 	}
 
-	public static Parameter of(int index, String name, @NonNull Source value) {
+	public static Parameter of(int index, String name, @NonNull ValueAccessor value) {
 		Property property = Property.of(name, value);
 		return of(index, property);
 	}

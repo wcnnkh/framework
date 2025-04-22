@@ -13,7 +13,7 @@ import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.support.URLCodec;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.IOUtils;
 
 @Data
@@ -43,10 +43,10 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public void format(Stream<KeyValue<String, Source>> source, Appendable target) throws IOException {
-		Iterator<KeyValue<String, Source>> iterator = source.iterator();
+	public void format(Stream<KeyValue<String, ValueAccessor>> source, Appendable target) throws IOException {
+		Iterator<KeyValue<String, ValueAccessor>> iterator = source.iterator();
 		while (iterator.hasNext()) {
-			KeyValue<String, Source> pair = iterator.next();
+			KeyValue<String, ValueAccessor> pair = iterator.next();
 			String key = pair.getKey();
 			String value = pair.getValue().getAsString();
 			if (codec != null) {
@@ -68,7 +68,7 @@ public class QueryStringFormat extends ObjectFormat {
 	}
 
 	@Override
-	public Stream<KeyValue<String, Source>> parse(Readable source) throws IOException {
+	public Stream<KeyValue<String, ValueAccessor>> parse(Readable source) throws IOException {
 		return IOUtils.split(source, connector).map((e) -> {
 			String[] kv = StringUtils.splitToArray(e, keyValueConnector);
 			if (kv.length == 0) {
@@ -82,7 +82,7 @@ public class QueryStringFormat extends ObjectFormat {
 				value = codec.decode(value);
 			}
 
-			return KeyValue.of(key, Source.of(value));
+			return KeyValue.of(key, ValueAccessor.of(value));
 		});
 	}
 }

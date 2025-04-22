@@ -10,8 +10,8 @@ import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 class ObjectToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ObjectToCollectionConversionService(ConversionService conversionService) {
@@ -23,7 +23,7 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 	}
 
 	@Override
-	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;

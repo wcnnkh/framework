@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.Data;
+import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -41,7 +41,7 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 	}
 
 	@Override
-	protected T parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+	protected T parseObject(byte[] body, @NonNull Writeable targetDescriptor, @NonNull Message message,
 			MimeType contentType) throws IOException {
 		Charset charset = getCharset(contentType, message);
 		String text = new String(body, charset);
@@ -72,7 +72,7 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 		super.writeObject(data, message, contentTypeToUse);
 	}
 
-	protected abstract T parseObject(String body, TargetDescriptor targetDescriptor) throws IOException;
+	protected abstract T parseObject(String body, Writeable targetDescriptor) throws IOException;
 
 	protected abstract String toString(Data<T> body, MediaType contentType, Charset charset) throws IOException;
 }

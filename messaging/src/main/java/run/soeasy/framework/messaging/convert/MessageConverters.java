@@ -5,13 +5,13 @@ import java.util.Comparator;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.Accessible;
+import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.spi.ServiceProvider;
-import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 import run.soeasy.framework.messaging.InputMessage;
@@ -58,18 +58,18 @@ public class MessageConverters extends ServiceProvider<MessageConverter, Convers
 	}
 
 	@Override
-	public MediaTypes getSupportedMediaTypes(@NonNull AccessDescriptor requiredDescriptor, @NonNull Message message) {
+	public MediaTypes getSupportedMediaTypes(@NonNull Accessible requiredDescriptor, @NonNull Message message) {
 		return MediaTypes.forElements(flatMap((e) -> e.getSupportedMediaTypes(requiredDescriptor, message)));
 	}
 
 	@Override
-	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return optional().filter((e) -> e.isReadable(targetDescriptor, message, contentType)).isPresent();
 	}
 
 	@Override
-	public Object readFrom(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+	public Object readFrom(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		return optional().filter((e) -> e.isReadable(targetDescriptor, message, contentType)).apply((converter) -> {
 			if (converter == null) {
@@ -87,13 +87,13 @@ public class MessageConverters extends ServiceProvider<MessageConverter, Convers
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
+	public boolean isWriteable(@NonNull Readable sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return optional().filter((e) -> e.isWriteable(sourceDescriptor, message, contentType)).isPresent();
 	}
 
 	@Override
-	public void writeTo(@NonNull Source source, @NonNull OutputMessage message, MediaType contentType)
+	public void writeTo(@NonNull ValueAccessor source, @NonNull OutputMessage message, MediaType contentType)
 			throws IOException {
 		optional().filter((e) -> e.isWriteable(source, message, contentType)).map((e) -> {
 			if (e == null) {

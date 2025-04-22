@@ -13,10 +13,10 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.exe.Function;
 import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.core.io.StringBufferResource;
@@ -62,22 +62,22 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	}
 
 	@Override
-	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
+	public boolean isWriteable(Readable sourceDescriptor) {
 		return writers.isWriteable(sourceDescriptor);
 	}
 
 	@Override
-	public void writeTo(Source source, Node node) throws DOMException {
+	public void writeTo(ValueAccessor source, Node node) throws DOMException {
 		writers.writeTo(source, node);
 	}
 
 	@Override
-	public boolean isReadable(TargetDescriptor targetDescriptor) {
+	public boolean isReadable(Writeable targetDescriptor) {
 		return readers.isReadable(targetDescriptor);
 	}
 
 	@Override
-	public Object readFrom(TargetDescriptor targetDescriptor, Node node) throws DOMException {
+	public Object readFrom(Writeable targetDescriptor, Node node) throws DOMException {
 		return readers.readFrom(targetDescriptor, node);
 	}
 

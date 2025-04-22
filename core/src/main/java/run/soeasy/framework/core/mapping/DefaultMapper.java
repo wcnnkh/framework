@@ -5,8 +5,8 @@ import java.util.Map;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.transform.mapping.collection.MapPropertySource;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
@@ -23,7 +23,7 @@ public class DefaultMapper
 	}
 
 	@Override
-	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		return value.map(targetType, this).orElse(null);
 	}
 

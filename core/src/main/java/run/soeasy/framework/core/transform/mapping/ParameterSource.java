@@ -51,6 +51,19 @@ public interface ParameterSource extends Dictionary<Parameter>, ParameterDescrip
 		return map((e) -> e.getTypeDescriptor().getType()).toArray(Class<?>[]::new);
 	}
 
+	default boolean isValidated() {
+		return getElements().allMatch((e) -> {
+			if (!e.getValue().isReadable()) {
+				return false;
+			}
+
+			if (e.getValue().isRequired() && e.getValue().get() == null) {
+				return false;
+			}
+			return true;
+		});
+	}
+
 	@Override
 	default ParameterSource rename(String name) {
 		return new RenamedParameterSource<>(this, name);

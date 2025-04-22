@@ -7,8 +7,8 @@ import run.soeasy.framework.aop.ExecutionInterceptor;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exe.Execution;
 import run.soeasy.framework.core.exe.Executor;
 import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
@@ -40,7 +40,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 				});
 		Object returnValue = function.execute(newArgs);
 		if (returnValue == null) {
-			Source defaultValue = getDefaultReturnValue(function);
+			ValueAccessor defaultValue = getDefaultReturnValue(function);
 			if (defaultValue != null) {
 				returnValue = conversionService.convert(defaultValue, function.getReturnTypeDescriptor());
 			}
@@ -48,13 +48,13 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 		return returnValue;
 	}
 
-	protected Source getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
+	protected ValueAccessor getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
 		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
 	}
 
-	protected Source getDefaultReturnValue(Execution function) {
+	protected ValueAccessor getDefaultReturnValue(Execution function) {
 		return getDefaultValue(function, function.getReturnTypeDescriptor());
 	}
 
-	protected abstract Source getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
+	protected abstract ValueAccessor getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
 }

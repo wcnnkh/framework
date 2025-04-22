@@ -1,8 +1,9 @@
 package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
-public class DefaultTemplateWriter<K, V extends Accessor, T extends Template<K, V>>
+public class DefaultTemplateWriter<K, V extends ValueAccessor, T extends Template<K, V>>
 		extends FilterableTemplateWriter<K, V, T> implements TemplateWriter<K, V, T> {
 
 	public DefaultTemplateWriter() {

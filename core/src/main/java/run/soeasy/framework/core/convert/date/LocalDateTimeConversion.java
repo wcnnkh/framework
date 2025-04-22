@@ -9,8 +9,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.type.ResolvableType;
 
 @Data
@@ -31,7 +31,7 @@ public class LocalDateTimeConversion implements ConversionService, ConversionSer
 	}
 
 	@Override
-	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getTypeDescriptor();
 		java.time.ZoneOffset zoneOffset = zoneOffsetResolver.resolveZoneOffset(() -> targetType);

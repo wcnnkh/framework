@@ -1,16 +1,16 @@
-package run.soeasy.framework.core.exe;
+package run.soeasy.framework.core.function;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
+public interface Reactor<S, T, E extends Throwable> extends ThrowingFunction<S, T, E> {
 	@RequiredArgsConstructor
 	public static class MappedReactor<S, T, E extends Throwable, V> implements Reactor<S, V, E> {
 		@NonNull
 		protected final Reactor<S, T, E> source;
 		@NonNull
-		protected final Function<? super T, ? extends V, ? extends E> pipeline;
-		protected final Consumer<? super V, ? extends E> endpoint;
+		protected final ThrowingFunction<? super T, ? extends V, ? extends E> pipeline;
+		protected final ThrowingConsumer<? super V, ? extends E> endpoint;
 
 		@Override
 		public V apply(S source) throws E {
@@ -31,10 +31,10 @@ public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
 	}
 
 	public static class ReactorPipeline<S, T, E extends Throwable, P extends Reactor<? super S, T, ? extends E>>
-			extends FunctionPipeline<S, T, E, Supplier<? extends S, ? extends E>, P> {
+			extends ThrowingFunctionPipeline<S, T, E, ThrowingSupplier<? extends S, ? extends E>, P> {
 
-		public ReactorPipeline(@NonNull Supplier<? extends S, ? extends E> source, @NonNull P pipeline,
-				Runnable<? extends E> processor) {
+		public ReactorPipeline(@NonNull ThrowingSupplier<? extends S, ? extends E> source, @NonNull P pipeline,
+				ThrowingRunnable<? extends E> processor) {
 			super(source, pipeline, processor);
 		}
 
@@ -55,11 +55,11 @@ public interface Reactor<S, T, E extends Throwable> extends Function<S, T, E> {
 	void close(T target) throws E;
 
 	@Override
-	default <R> Reactor<S, R, E> andThen(@NonNull Function<? super T, ? extends R, ? extends E> pipeline) {
+	default <R> Reactor<S, R, E> andThen(@NonNull ThrowingFunction<? super T, ? extends R, ? extends E> pipeline) {
 		return new MappedReactor<>(this, pipeline, null);
 	}
 
-	default Pipeline<T, E> newPipeline(Supplier<? extends S, ? extends E> source) {
-		return new ReactorPipeline<>(source, this, null);
+	default Pipeline<T, E> newPipeline(ThrowingSupplier<? extends S, ? extends E> supplier) {
+		return new ReactorPipeline<>(supplier, this, null);
 	}
 }

@@ -10,8 +10,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 /**
  * 递归转换
@@ -22,7 +22,7 @@ public class RecursiveConversionService implements ConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(@NonNull Source value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();

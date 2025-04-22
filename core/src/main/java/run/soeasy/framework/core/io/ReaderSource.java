@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Pipeline;
+import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface ReaderSource<T extends Reader> extends ReaderFactory<T> {

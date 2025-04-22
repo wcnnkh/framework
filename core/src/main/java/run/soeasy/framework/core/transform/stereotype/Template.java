@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.collection.KeyValueListable;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 /**
  * 模板
@@ -14,8 +15,8 @@ import run.soeasy.framework.core.collection.KeyValueListable;
  *
  * @param <T>
  */
-public interface Template<K, V extends Accessor> extends KeyValueListable<K, V, KeyValue<K, V>>, Named {
-	public static interface TemplateWrapper<K, V extends Accessor, W extends Template<K, V>>
+public interface Template<K, V extends ValueAccessor> extends KeyValueListable<K, V, KeyValue<K, V>>, Named {
+	public static interface TemplateWrapper<K, V extends ValueAccessor, W extends Template<K, V>>
 			extends Template<K, V>, KeyValueListableWrapper<K, V, KeyValue<K, V>, W>, NamedWrapper<W> {
 
 		@Override
@@ -31,7 +32,7 @@ public interface Template<K, V extends Accessor> extends KeyValueListable<K, V, 
 
 	@RequiredArgsConstructor
 	@Getter
-	public static class RenamedTemplate<K, V extends Accessor, W extends Template<K, V>>
+	public static class RenamedTemplate<K, V extends ValueAccessor, W extends Template<K, V>>
 			implements TemplateWrapper<K, V, W> {
 		@NonNull
 		private final W source;

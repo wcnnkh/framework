@@ -1,10 +1,11 @@
-package run.soeasy.framework.core.convert;
+package run.soeasy.framework.core.convert.value;
 
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.convert.TypeDescriptor;
 
 @FunctionalInterface
-public interface TargetDescriptor {
-	public static interface TargetDescriptorWrapper<W extends TargetDescriptor> extends TargetDescriptor, Wrapper<W> {
+public interface Writeable {
+	public static interface WriteableWrapper<W extends Writeable> extends Writeable, Wrapper<W> {
 		@Override
 		default TypeDescriptor getRequiredTypeDescriptor() {
 			return getSource().getRequiredTypeDescriptor();

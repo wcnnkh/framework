@@ -5,21 +5,21 @@ import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 @RequiredArgsConstructor
 public class MultiableValueWriter extends AbstractNodeWriter {
 
 	@Override
-	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
+	public boolean isWriteable(Readable sourceDescriptor) {
 		return sourceDescriptor.getTypeDescriptor().isArray() || sourceDescriptor.getTypeDescriptor().isCollection();
 	}
 
 	@Override
-	public void writeTo(Source source, Node node) throws DOMException {
-		Elements<? extends Source> elements = source.getAsElements();
-		for (Source element : elements) {
+	public void writeTo(ValueAccessor source, Node node) throws DOMException {
+		Elements<? extends ValueAccessor> elements = source.getAsElements();
+		for (ValueAccessor element : elements) {
 			if (getNodeWriter().isWriteable(element)) {
 				getNodeWriter().writeTo(element, node);
 			}

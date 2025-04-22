@@ -12,9 +12,9 @@ import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.AbstractConversionService;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.time.TimeUtils;
 
@@ -47,7 +47,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;
@@ -86,7 +86,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return Source.of(source).getAsObject(targetType);
+				return ValueAccessor.of(source).getAsObject(targetType);
 			}
 		}
 
@@ -139,11 +139,11 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return Source.of(source.getTime()).getAsObject(targetType);
+		return ValueAccessor.of(source.getTime()).getAsObject(targetType);
 	}
 
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		long time = Source.of(source).getAsLong();
+		long time = ValueAccessor.of(source).getAsLong();
 		return new Date(time);
 	}
 

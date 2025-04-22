@@ -11,10 +11,10 @@ import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.Accessible;
 import run.soeasy.framework.core.exe.Selector;
-import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
 
-public interface PropertyDescriptor extends Named, AccessDescriptor {
+public interface PropertyDescriptor extends Named, Accessible {
 	@RequiredArgsConstructor
 	public static class MergedPropertyDescriptor<E extends PropertyDescriptor> implements PropertyDescriptor {
 		@NonNull
@@ -122,7 +122,7 @@ public interface PropertyDescriptor extends Named, AccessDescriptor {
 	}
 
 	@Data
-	public static class SharedPropertyDescriptor<W extends AccessDescriptor>
+	public static class SharedPropertyDescriptor<W extends Accessible>
 			implements PropertyDescriptor, AccessDescriptorWrapper<W>, Serializable {
 		private static final long serialVersionUID = 1L;
 		private String name;
@@ -134,7 +134,7 @@ public interface PropertyDescriptor extends Named, AccessDescriptor {
 		}
 	}
 
-	public static PropertyDescriptor of(String name, @NonNull AccessDescriptor accessDescriptor) {
+	public static PropertyDescriptor of(String name, @NonNull Accessible accessDescriptor) {
 		if (accessDescriptor instanceof PropertyDescriptor) {
 			PropertyDescriptor propertyDescriptor = (PropertyDescriptor) accessDescriptor;
 			if (StringUtils.equals(name, propertyDescriptor.getName())) {
@@ -143,7 +143,7 @@ public interface PropertyDescriptor extends Named, AccessDescriptor {
 			return propertyDescriptor.rename(name);
 		}
 
-		SharedPropertyDescriptor<AccessDescriptor> shared = new SharedPropertyDescriptor<>(accessDescriptor);
+		SharedPropertyDescriptor<Accessible> shared = new SharedPropertyDescriptor<>(accessDescriptor);
 		shared.setName(name);
 		return shared;
 	}

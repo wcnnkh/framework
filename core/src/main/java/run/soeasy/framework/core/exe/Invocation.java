@@ -3,6 +3,7 @@ package run.soeasy.framework.core.exe;
 import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.param.Parameters;
+import run.soeasy.framework.core.transform.mapping.ParameterSource;
 import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Invocation extends Execution, Invoker {
@@ -84,9 +85,8 @@ public interface Invocation extends Execution, Invoker {
 
 	Object invoke(Object target, @NonNull Object... args) throws Throwable;
 
-	default Object invoke(Object target, @NonNull Parameters parameters) throws Throwable {
-		Parameters completed = parameters.isValidated() ? parameters : parameters.reconstruct(this);
-		return invoke(target, completed.getTypes(), completed.getArgs());
+	default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
+		return invoke(target, parameters.getTypes(), parameters.getArgs());
 	}
 
 	@Override

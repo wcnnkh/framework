@@ -2,8 +2,9 @@ package run.soeasy.framework.core.transform.stereotype;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
-public class ObjectTemplateTransformer<K, V extends Accessor, T extends Template<K, V>, E extends Throwable>
+public class ObjectTemplateTransformer<K, V extends ValueAccessor, T extends Template<K, V>, E extends Throwable>
 		extends TemplateTransformer<K, V, T, Object, Object, E> {
 	private final TemplateFactoryRegistry<Object, K, V, T> objectTemplateProvider = new TemplateFactoryRegistry<>();
 

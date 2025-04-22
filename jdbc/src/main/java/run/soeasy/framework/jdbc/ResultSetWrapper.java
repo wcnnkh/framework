@@ -8,7 +8,7 @@ import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Streams;
 import run.soeasy.framework.core.exe.Function;
-import run.soeasy.framework.core.exe.Pipeline;
+import run.soeasy.framework.core.function.Pipeline;
 
 @Getter
 @Setter

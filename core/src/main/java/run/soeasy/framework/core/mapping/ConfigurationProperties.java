@@ -12,8 +12,8 @@ import run.soeasy.framework.core.alias.JoinNamingStrategy;
 import run.soeasy.framework.core.alias.NamingStrategy;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
 import run.soeasy.framework.core.transform.stereotype.TemplateContext;
@@ -53,7 +53,7 @@ public class ConfigurationProperties extends
 									e, targetAccessor).map((v) -> KeyValue.of(namingStrategy.display(e, prefix), v)));
 					if (targetAccessor.getRequiredTypeDescriptor().isCollection()) {
 						List<Accessor> list = keyValues.map((e) -> e.getValue()).toList();
-						Accessor value = Accessor.of(Source.of(list));
+						Accessor value = Accessor.of(ValueAccessor.of(list));
 						elements = Elements.singleton(value);
 					} else if (targetAccessor.getRequiredTypeDescriptor().isMap()) {
 						Map<String, List<Accessor>> map = new LinkedHashMap<>();
@@ -74,7 +74,7 @@ public class ConfigurationProperties extends
 								result.put(entry.getKey(), entry.getValue());
 							}
 						}
-						Accessor value = Accessor.of(Source.of(result));
+						Accessor value = Accessor.of(ValueAccessor.of(result));
 						return Elements.singleton(value);
 					}
 				}

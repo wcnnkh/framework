@@ -3,8 +3,8 @@ package run.soeasy.framework.core.transform.mapping;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
+import run.soeasy.framework.core.convert.value.Accessible;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.transform.stereotype.Accessor;
 
 public interface Property extends Accessor, PropertyDescriptor {
@@ -38,11 +38,11 @@ public interface Property extends Accessor, PropertyDescriptor {
 		private final W source;
 	}
 
-	public static Property of(String name, @NonNull AccessDescriptor accessDescriptor) {
+	public static Property of(String name, @NonNull Accessible accessDescriptor) {
 		return new StandardProperty<>(PropertyDescriptor.of(name, accessDescriptor));
 	}
 
-	public static Property of(String name, @NonNull Source value) {
+	public static Property of(String name, @NonNull ValueAccessor value) {
 		Accessor access = Accessor.of(value);
 		return new PropertyAccessor<>(name, access);
 	}

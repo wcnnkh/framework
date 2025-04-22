@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.exe.Function;
-import run.soeasy.framework.core.exe.Pipeline;
+import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface OutputStreamFactory<T extends OutputStream> {

@@ -1,6 +1,5 @@
-package run.soeasy.framework.core.convert;
+package run.soeasy.framework.core.convert.value;
 
-import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -8,224 +7,30 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.stream.IntStream;
 
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import run.soeasy.framework.core.CharSequenceTemplate;
 import run.soeasy.framework.core.Value;
 import run.soeasy.framework.core.Version;
-import run.soeasy.framework.core.Wrapped;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Enumerable;
-import run.soeasy.framework.core.exe.Function;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.math.BigDecimalValue;
 import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.math.NumberValue;
 import run.soeasy.framework.core.type.ResolvableType;
 
-@FunctionalInterface
-public interface Source extends SourceDescriptor, Value, Supplier<Object, ConversionException> {
-
-	public static class EmptyValue implements Source, Serializable {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Object get() throws ConversionException {
-			return null;
-		}
-	}
-
-	@Getter
-	@Setter
-	public static class StandardSource<W extends SourceDescriptor> extends Wrapped<W>
-			implements Source, SourceDescriptorWrapper<W>, Serializable {
-		private static final long serialVersionUID = 1L;
-		private Object value;
-
-		public StandardSource(W source) {
-			super(source);
-		}
-
-		@Override
-		public Object get() throws ConversionException {
-			return value;
-		}
-
-		@Override
-		public TypeDescriptor getTypeDescriptor() {
-			TypeDescriptor typeDescriptor = SourceDescriptorWrapper.super.getTypeDescriptor();
-			return typeDescriptor == null ? Source.super.getTypeDescriptor() : typeDescriptor;
-		}
-	}
-
-	@FunctionalInterface
-	public static interface SourceWrapper<W extends Source> extends Source, SourceDescriptorWrapper<W>, ValueWrapper<W>,
-			SupplierWrapper<Object, ConversionException, W> {
-
-		@Override
-		default Object get() throws ConversionException {
-			return getSource().get();
-		}
-
-		@Override
-		default <T> T getAsArray(Class<? extends T> arrayType) {
-			return getSource().getAsArray(arrayType);
-		}
-
-		@Override
-		default BigDecimal getAsBigDecimal() {
-			return getSource().getAsBigDecimal();
-		}
-
-		@Override
-		default BigInteger getAsBigInteger() {
-			return getSource().getAsBigInteger();
-		}
-
-		@Override
-		default boolean getAsBoolean() {
-			return getSource().getAsBoolean();
-		}
-
-		@Override
-		default byte getAsByte() {
-			return getSource().getAsByte();
-		}
-
-		@Override
-		default char getAsChar() {
-			return getSource().getAsChar();
-		}
-
-		@Override
-		default <T> Data<T> getAsData(Class<? extends T> requriedType) {
-			return getSource().getAsData(requriedType);
-		}
-
-		@Override
-		default double getAsDouble() {
-			return getSource().getAsDouble();
-		}
-
-		@Override
-		default Elements<? extends Source> getAsElements() {
-			return getSource().getAsElements();
-		}
-
-		@Override
-		default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
-			return getSource().getAsEnum(enumType);
-		}
-
-		@Override
-		default float getAsFloat() {
-			return getSource().getAsFloat();
-		}
-
-		@Override
-		default int getAsInt() {
-			return getSource().getAsInt();
-		}
-
-		@Override
-		default long getAsLong() {
-			return getSource().getAsLong();
-		}
-
-		@Override
-		default NumberValue getAsNumber() {
-			return getSource().getAsNumber();
-		}
-
-		@Override
-		default <T> T getAsObject(Class<? extends T> type) {
-			return getSource().getAsObject(type);
-		}
-
-		@Override
-		default <T> T getAsObject(Class<? extends T> requiredType,
-				java.util.function.Supplier<? extends T> defaultSupplier) {
-			return getSource().getAsObject(requiredType, defaultSupplier);
-		}
-
-		@Override
-		default Object getAsObject(ResolvableType type) {
-			return getSource().getAsObject(type);
-		}
-
-		@Override
-		default Object getAsObject(Type type) {
-			return getSource().getAsObject(type);
-		}
-
-		@Override
-		default Object getAsObject(TypeDescriptor type) {
-			return getSource().getAsObject(type);
-		}
-
-		@Override
-		default short getAsShort() {
-			return getSource().getAsShort();
-		}
-
-		@Override
-		default String getAsString() {
-			return getSource().getAsString();
-		}
-
-		@Override
-		default Version getAsVersion() {
-			return getSource().getAsVersion();
-		}
-
-		@Override
-		default TypeDescriptor getTypeDescriptor() {
-			return getSource().getTypeDescriptor();
-		}
-
-		@Override
-		default boolean isMultiple() {
-			return getSource().isMultiple();
-		}
-
-		@Override
-		default boolean isNumber() {
-			return getSource().isNumber();
-		}
-
-		@Override
-		default <R> Data<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
-			return getSource().map(mapper);
-		}
-
-		@Override
-		default <T> Data<T> map(@NonNull TypeDescriptor requriedTypeDescriptor,
-				@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
-			return getSource().map(requriedTypeDescriptor, converter);
-		}
-
-		@Override
-		default Any any(@NonNull TypeDescriptor typeDescriptor) {
-			return getSource().any(typeDescriptor);
-		}
-	}
-
-	static final Source EMPTY = new EmptyValue();
-
-	static final Source[] EMPTY_ARRAY = new Source[0];
-
-	static Source of(Object value) {
+public interface ValueAccessor extends Accessor<Object>, Value {
+	
+	public static ValueAccessor of(Object value) {
 		return of(value, null);
 	}
 
-	static Source of(Object value, TypeDescriptor type) {
-		if (value == null && type == null) {
-			return EMPTY;
-		}
-
-		if (type == null && value instanceof Source) {
-			return (Source) value;
+	public static ValueAccessor of(Object value, TypeDescriptor type) {
+		if (type == null && value instanceof ValueAccessor) {
+			return (ValueAccessor) value;
 		}
 
 		Any any = new Any();
@@ -255,6 +60,7 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 		if (value instanceof Number) {
 			return new BigDecimal(((Number) value).doubleValue());
 		}
+		
 		return getAsData(BigDecimal.class).orElse(null);
 	}
 
@@ -364,28 +170,28 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 	}
 
 	@Override
-	default Elements<? extends Source> getAsElements() {
+	default Elements<? extends ValueAccessor> getAsElements() {
 		Object value = get();
 		TypeDescriptor typeDescriptor = getTypeDescriptor();
 		if (value instanceof Collection) {
 			Collection<?> collection = (Collection<?>) value;
 			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
-			return Elements.of(collection).map((v) -> Source.of(v, elementTypeDescriptor));
+			return Elements.of(collection).map((v) -> ValueAccessor.of(v, elementTypeDescriptor));
 		} else if (value instanceof Iterable) {
 			Iterable<?> iterable = (Iterable<?>) value;
 			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
-			return Elements.of(iterable).map((v) -> Source.of(v, elementTypeDescriptor));
+			return Elements.of(iterable).map((v) -> ValueAccessor.of(v, elementTypeDescriptor));
 		} else if (value instanceof Enumerable) {
 			Enumerable<?> enumerable = (Enumerable<?>) value;
 			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
-			return Elements.of(enumerable).map((v) -> Source.of(v, elementTypeDescriptor));
+			return Elements.of(enumerable).map((v) -> ValueAccessor.of(v, elementTypeDescriptor));
 		} else if (value.getClass().isArray()) {
 			int len = Array.getLength(value);
 			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
 			return Elements.of(() -> IntStream.range(0, len)
-					.mapToObj((index) -> Source.of(Array.get(value, index), elementTypeDescriptor)));
+					.mapToObj((index) -> ValueAccessor.of(Array.get(value, index), elementTypeDescriptor)));
 		}
-		return Elements.singleton(Source.of(value, typeDescriptor));
+		return Elements.singleton(ValueAccessor.of(value, typeDescriptor));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -421,8 +227,8 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 			return ((Number) value).floatValue();
 		}
 
-		if (value instanceof Source) {
-			return ((Source) value).getAsFloat();
+		if (value instanceof ValueAccessor) {
+			return ((ValueAccessor) value).getAsFloat();
 		}
 
 		return getAsData(float.class).orElse(0f);
@@ -618,7 +424,7 @@ public interface Source extends SourceDescriptor, Value, Supplier<Object, Conver
 	}
 
 	@Override
-	default <R> Data<R> map(@NonNull Function<? super Object, ? extends R, ? extends ConversionException> mapper) {
+	default <R> Data<R> map(@NonNull ThrowingFunction<? super Object, ? extends R, ConversionException> mapper) {
 		Data<R> value = new Data<>();
 		value.setObject(this);
 		value.setMapper(mapper);

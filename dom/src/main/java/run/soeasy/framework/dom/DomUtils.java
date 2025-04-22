@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exe.Function;
 
 public final class DomUtils {
@@ -103,18 +103,18 @@ public final class DomUtils {
 		return map.isEmpty() ? null : map;
 	}
 
-	public static Source getNodeAttributeValue(Node node, String name) {
+	public static ValueAccessor getNodeAttributeValue(Node node, String name) {
 		if (node == null) {
-			return Source.EMPTY;
+			return ValueAccessor.EMPTY;
 		}
 
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
-			return Source.EMPTY;
+			return ValueAccessor.EMPTY;
 		}
 
 		Node n = namedNodeMap.getNamedItem(name);
-		return n == null ? null : Source.of(n.getNodeValue());
+		return n == null ? null : ValueAccessor.of(n.getNodeValue());
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
@@ -127,8 +127,8 @@ public final class DomUtils {
 		return n == null ? node.getTextContent() : n.getNodeValue();
 	}
 
-	public static Source getRequireNodeAttributeValue(Node node, String name) {
-		Source value = getNodeAttributeValue(node, name);
+	public static ValueAccessor getRequireNodeAttributeValue(Node node, String name) {
+		ValueAccessor value = getNodeAttributeValue(node, name);
 		if (value == null) {
 			throw new DomException("not found attribute [" + name + "]");
 		}
@@ -143,13 +143,13 @@ public final class DomUtils {
 		}
 	}
 
-	public static Source getParentAttributeValue(Node node, String name) {
+	public static ValueAccessor getParentAttributeValue(Node node, String name) {
 		Node parent = node.getParentNode();
 		if (parent == null) {
-			return Source.EMPTY;
+			return ValueAccessor.EMPTY;
 		}
 
-		Source value = getNodeAttributeValue(node, name);
+		ValueAccessor value = getNodeAttributeValue(node, name);
 		if (value == null) {
 			return getParentAttributeValue(parent, name);
 		}

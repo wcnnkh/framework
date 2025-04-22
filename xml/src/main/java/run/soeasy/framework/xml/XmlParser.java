@@ -24,8 +24,8 @@ import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exe.Function;
 import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.dom.DomException;
@@ -159,7 +159,7 @@ public class XmlParser implements ResourceParser, ConversionService {
 	}
 
 	@Override
-	public Object convert(@NonNull Source source, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull ValueAccessor source, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object input = source.any(targetType).orElse(null);
 		if (input instanceof InputStream) {
 			return parse((InputStream) source.get());

@@ -6,6 +6,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.param.Parameters;
+import run.soeasy.framework.core.transform.mapping.ParameterSource;
 import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Executed extends AnnotatedElement {
@@ -23,7 +24,7 @@ public interface Executed extends AnnotatedElement {
 		}
 
 		@Override
-		default boolean canExecuted(@NonNull Parameters parameters) {
+		default boolean canExecuted(@NonNull ParameterSource parameters) {
 			return getSource().canExecuted(parameters);
 		}
 
@@ -39,7 +40,7 @@ public interface Executed extends AnnotatedElement {
 
 	boolean canExecuted(@NonNull Class<?>... parameterTypes);
 
-	default boolean canExecuted(@NonNull Parameters parameters) {
+	default boolean canExecuted(@NonNull ParameterSource parameters) {
 		return parameters.isValidated() && canExecuted(parameters.getTypes());
 	}
 

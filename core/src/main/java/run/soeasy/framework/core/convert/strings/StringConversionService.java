@@ -5,8 +5,8 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.Source;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 public final class StringConversionService implements ConversionService {
 	public static final StringConversionService DEFAULT = new StringConversionService();
@@ -23,7 +23,7 @@ public final class StringConversionService implements ConversionService {
 	}
 
 	@Override
-	public Object convert(@NonNull Source value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getTypeDescriptor();
 		if (sourceType.getType() == String.class) {

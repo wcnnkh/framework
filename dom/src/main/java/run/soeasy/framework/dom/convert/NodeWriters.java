@@ -5,9 +5,9 @@ import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.spi.ServiceProvider;
 
@@ -26,12 +26,12 @@ public class NodeWriters extends ServiceProvider<NodeWriter, DOMException> imple
 	}
 
 	@Override
-	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
+	public boolean isWriteable(Readable sourceDescriptor) {
 		return optional().filter((e) -> e.isWriteable(sourceDescriptor)).isPresent();
 	}
 
 	@Override
-	public void writeTo(Source source, Node node) throws DOMException {
+	public void writeTo(ValueAccessor source, Node node) throws DOMException {
 		NodeWriter documentWriter = optional().filter((e) -> e.isWriteable(source)).orElse(null);
 		if (documentWriter == null) {
 			throw new UnsupportedOperationException(source.toString());

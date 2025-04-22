@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.attribute.SimpleAttributes;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 @Getter
 @AllArgsConstructor
-public class TemplateContext<K, V extends Accessor, T extends Template<K, V>> extends SimpleAttributes<String, Object> {
+public class TemplateContext<K, V extends ValueAccessor, T extends Template<K, V>> extends SimpleAttributes<String, Object> {
 	private final TemplateContext<K, V, T> parent;
 	private final T template;
 	private final KeyValue<K, V> keyValue;

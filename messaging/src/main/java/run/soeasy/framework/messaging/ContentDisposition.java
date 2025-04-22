@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 public final class ContentDisposition {
 	private static final String INVALID_HEADER_FIELD_PARAMETER_FORMAT = "Invalid header field parameter format (as defined in RFC 5987)";
@@ -25,10 +25,10 @@ public final class ContentDisposition {
 
 	private final Charset charset;
 
-	private final Map<String, Source> attributes;
+	private final Map<String, ValueAccessor> attributes;
 
 	private ContentDisposition(String type, String name, String filename, Charset charset,
-			Map<String, Source> attributes) {
+			Map<String, ValueAccessor> attributes) {
 		this.type = type;
 		this.name = name;
 		this.filename = filename;
@@ -52,14 +52,14 @@ public final class ContentDisposition {
 		return this.charset;
 	}
 
-	public Map<String, Source> getAttributes() {
+	public Map<String, ValueAccessor> getAttributes() {
 		if (attributes == null) {
 			return Collections.emptyMap();
 		}
 		return attributes;
 	}
 
-	public Source getAttribute(String name) {
+	public ValueAccessor getAttribute(String name) {
 		return getAttributes().get(name);
 	}
 
@@ -107,7 +107,7 @@ public final class ContentDisposition {
 		}
 
 		if (!CollectionUtils.isEmpty(attributes)) {
-			for (Entry<String, Source> entry : attributes.entrySet()) {
+			for (Entry<String, ValueAccessor> entry : attributes.entrySet()) {
 				sb.append("; ").append(entry.getKey()).append("=");
 				if (entry.getValue().isNumber()) {
 					sb.append(entry.getValue().getAsNumber());
@@ -147,7 +147,7 @@ public final class ContentDisposition {
 		String name = null;
 		String filename = null;
 		Charset charset = null;
-		Map<String, Source> attributes = new LinkedHashMap<String, Source>(8);
+		Map<String, ValueAccessor> attributes = new LinkedHashMap<String, ValueAccessor>(8);
 		for (int i = 1; i < parts.size(); i++) {
 			String part = parts.get(i);
 			int eqIndex = part.indexOf('=');
@@ -172,7 +172,7 @@ public final class ContentDisposition {
 				} else if (attribute.equals("filename") && (filename == null)) {
 					filename = value;
 				} else {
-					attributes.put(attribute, Source.of(value));
+					attributes.put(attribute, ValueAccessor.of(value));
 				}
 			} else {
 				throw new IllegalArgumentException("Invalid content disposition format");
@@ -320,7 +320,7 @@ public final class ContentDisposition {
 
 		Builder filename(String filename, Charset charset);
 
-		Builder attributes(Map<String, Source> attributes);
+		Builder attributes(Map<String, ValueAccessor> attributes);
 
 		ContentDisposition build();
 	}
@@ -335,7 +335,7 @@ public final class ContentDisposition {
 
 		private Charset charset;
 
-		private Map<String, Source> attributes;
+		private Map<String, ValueAccessor> attributes;
 
 		public BuilderImpl(String type) {
 			Assert.hasText(type, "'type' must not be not empty");
@@ -360,7 +360,7 @@ public final class ContentDisposition {
 			return this;
 		}
 
-		public Builder attributes(Map<String, Source> attributes) {
+		public Builder attributes(Map<String, ValueAccessor> attributes) {
 			this.attributes = attributes;
 			return this;
 		}

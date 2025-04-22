@@ -3,10 +3,11 @@ package run.soeasy.framework.core.transform.stereotype;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 @RequiredArgsConstructor
 @Getter
-public class FilterableTemplateWriter<K, V extends Accessor, T extends Template<K, V>>
+public class FilterableTemplateWriter<K, V extends ValueAccessor, T extends Template<K, V>>
 		implements TemplateWriter<K, V, T> {
 	@NonNull
 	private final Iterable<TemplateWriteFilter<K, V, T>> filters;

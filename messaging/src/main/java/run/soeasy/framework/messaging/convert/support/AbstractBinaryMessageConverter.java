@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging.convert.support;
 import java.io.IOException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.Data;
+import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
@@ -16,14 +16,14 @@ public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageCon
 		super(requriedType);
 	}
 
-	protected abstract T parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+	protected abstract T parseObject(byte[] body, @NonNull Writeable targetDescriptor, @NonNull Message message,
 			MimeType contentType) throws IOException;
 
 	protected abstract byte[] toBinary(@NonNull Data<T> body, @NonNull Message message, MediaType mediaType)
 			throws IOException;
 
 	@Override
-	protected T readObject(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+	protected T readObject(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		byte[] body = message.readAllBytes();
 		return parseObject(body, targetDescriptor, message, contentType);

@@ -11,6 +11,7 @@ import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.IdentityConversionService;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 /**
  * 基础的模板写入实现
@@ -23,7 +24,7 @@ import run.soeasy.framework.core.convert.IdentityConversionService;
  */
 @Getter
 @Setter
-public class GenericTemplateWriter<K, V extends Accessor, T extends Template<K, V>> implements TemplateWriter<K, V, T> {
+public class GenericTemplateWriter<K, V extends ValueAccessor, T extends Template<K, V>> implements TemplateWriter<K, V, T> {
 	public static enum Mode {
 		ITERATIVE, MAP
 	}

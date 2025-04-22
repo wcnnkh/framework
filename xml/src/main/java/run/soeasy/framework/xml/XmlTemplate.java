@@ -4,7 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import lombok.Getter;
-import run.soeasy.framework.core.convert.Source;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.dom.DocumentTemplate;
 
 @Getter
@@ -17,7 +17,7 @@ public class XmlTemplate extends DocumentTemplate {
 		getTransformers().register(transformer);
 	}
 
-	public Document newDocument(Source source, String rootTagName) {
+	public Document newDocument(ValueAccessor source, String rootTagName) {
 		Document document = getParser().getDocumentBuilder().newDocument();
 		Element rootElement = document.createElement(rootTagName);
 		writeTo(source, rootElement);

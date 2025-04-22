@@ -22,10 +22,10 @@ import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.io.IOUtils;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.io.Resource;
@@ -57,7 +57,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 		getMediaTypeRegistry().add(MediaType.MULTIPART_FORM_DATA);
 	}
 
-	protected boolean canReadType(TargetDescriptor targetDescriptor) {
+	protected boolean canReadType(Writeable targetDescriptor) {
 		if (targetDescriptor.getRequiredTypeDescriptor().isArray()
 				|| targetDescriptor.getRequiredTypeDescriptor().isCollection()) {
 			return targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor()
@@ -68,14 +68,14 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return multipartMessageResolver != null && canReadType(targetDescriptor)
 				&& super.isReadable(targetDescriptor, message, contentType);
 	}
 
 	@Override
-	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
+	protected Object doRead(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		List<MultipartMessage> fileItems;
 		if (multipartMessageResolver.isMultipart(message)) {
@@ -110,7 +110,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	protected void doWrite(@NonNull Source source, @NonNull OutputMessage message, MediaType contentType)
+	protected void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message, MediaType contentType)
 			throws IOException {
 		String boundary;
 		MediaType mimeType = contentType;
@@ -167,7 +167,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 		outputStream.flush();
 	}
 
-	protected void writeItem(String boundary, String fieldName, Source source, OutputMessage target,
+	protected void writeItem(String boundary, String fieldName, ValueAccessor source, OutputMessage target,
 			MimeType targetContentType) throws IOException {
 		if (source instanceof File) {
 			File file = (File) source;
@@ -187,8 +187,8 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 			MultipartMessage multipartMessage = new ResourceMultipartMessage(fieldName, resource);
 			writeMultipartMessage(boundary, multipartMessage, target, targetContentType);
 		} else if (source.isMultiple()) {
-			Elements<? extends Source> elements = source.getAsElements();
-			for (Source item : elements) {
+			Elements<? extends ValueAccessor> elements = source.getAsElements();
+			for (ValueAccessor item : elements) {
 				writeItem(boundary, fieldName, item, target, targetContentType);
 			}
 		} else {
@@ -200,7 +200,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private void write(String boundary, Source source, OutputMessage target, MimeType targetContentType)
+	private void write(String boundary, ValueAccessor source, OutputMessage target, MimeType targetContentType)
 			throws IOException {
 		if (source instanceof MultipartMessage) {
 			writeMultipartMessage(boundary, (MultipartMessage) source, target, targetContentType);
@@ -223,11 +223,11 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 					continue;
 				}
 
-				String fieldName = toString(Source.of(key, keyTypeDescriptor));
-				writeItem(boundary, fieldName, Source.of(value, valueTypeDescriptor), target, targetContentType);
+				String fieldName = toString(ValueAccessor.of(key, keyTypeDescriptor));
+				writeItem(boundary, fieldName, ValueAccessor.of(value, valueTypeDescriptor), target, targetContentType);
 			}
 		} else if (source.isMultiple()) {
-			for (Source item : source.getAsElements()) {
+			for (ValueAccessor item : source.getAsElements()) {
 				write(boundary, item, target, targetContentType);
 			}
 		} else {
@@ -235,16 +235,16 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 			if (conversionService.canConvert(source.getTypeDescriptor(), mapTypeDescriptor)) {
 				Map<String, Object> map = (Map<String, Object>) conversionService.convert(source, mapTypeDescriptor);
 				for (Entry<String, Object> entry : map.entrySet()) {
-					writeItem(boundary, entry.getKey(), Source.of(entry.getValue()), target, targetContentType);
+					writeItem(boundary, entry.getKey(), ValueAccessor.of(entry.getValue()), target, targetContentType);
 				}
 			} else {
 				String body = toString(source);
-				writeItem(boundary, "body", Source.of(body), target, targetContentType);
+				writeItem(boundary, "body", ValueAccessor.of(body), target, targetContentType);
 			}
 		}
 	}
 
-	private String toString(Source source) {
+	private String toString(ValueAccessor source) {
 		return conversionService.canConvert(source.getTypeDescriptor(), TypeDescriptor.valueOf(String.class))
 				? (String) conversionService.convert(source, TypeDescriptor.valueOf(String.class))
 				: ObjectUtils.toString(source);

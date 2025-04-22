@@ -1,7 +1,7 @@
 package run.soeasy.framework.messaging.convert;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.transform.stereotype.AccessDescriptor;
+import run.soeasy.framework.core.convert.value.Accessible;
 import run.soeasy.framework.messaging.MediaTypes;
 import run.soeasy.framework.messaging.Message;
 
@@ -23,7 +23,7 @@ public interface MessageConverter extends MessageReader, MessageWriter {
 	 * @param message
 	 * @return
 	 */
-	default MediaTypes getSupportedMediaTypes(@NonNull AccessDescriptor requiredDescriptor, @NonNull Message message) {
+	default MediaTypes getSupportedMediaTypes(@NonNull Accessible requiredDescriptor, @NonNull Message message) {
 		return (isReadable(requiredDescriptor, message, null) || isWriteable(requiredDescriptor, message, null))
 				? getSupportedMediaTypes()
 				: MediaTypes.EMPTY;

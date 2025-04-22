@@ -2,7 +2,7 @@ package run.soeasy.framework.core.convert.date;
 
 import java.time.ZoneOffset;
 
-import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.value.Readable;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOffsetResolver>
@@ -26,7 +26,7 @@ public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOff
 	}
 
 	@Override
-	public ZoneOffset resolveZoneOffset(SourceDescriptor valueDescriptor) {
+	public ZoneOffset resolveZoneOffset(Readable valueDescriptor) {
 		for (ZoneOffsetResolver resolver : this) {
 			ZoneOffset zoneOffset = resolver.resolveZoneOffset(valueDescriptor);
 			if (zoneOffset != null) {

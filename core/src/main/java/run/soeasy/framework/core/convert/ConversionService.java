@@ -1,6 +1,7 @@
 package run.soeasy.framework.core.convert;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 /**
  * A service interface for type conversion. This is the entry point into the
@@ -16,8 +17,8 @@ public interface ConversionService extends Converter<Object, Object, ConversionE
 	@Override
 	default Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		return convert(Source.of(source, sourceType), targetType);
+		return convert(ValueAccessor.of(source, sourceType), targetType);
 	}
 
-	Object convert(@NonNull Source source, @NonNull TypeDescriptor targetType) throws ConversionException;
+	Object convert(@NonNull ValueAccessor accessor, @NonNull TypeDescriptor targetType) throws ConversionException;
 }

@@ -1,15 +1,16 @@
 package run.soeasy.framework.core.convert;
 
 import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 public class ConversionFailedException extends ConversionException {
 	private static final long serialVersionUID = 1L;
 
 	private final TypeDescriptor targetType;
 
-	private final Source value;
+	private final ValueAccessor value;
 
-	public ConversionFailedException(Source value, TypeDescriptor targetType, Throwable cause) {
+	public ConversionFailedException(ValueAccessor value, TypeDescriptor targetType, Throwable cause) {
 		super("Failed to convert from type [" + value.getTypeDescriptor() + "] to type [" + targetType + "] for value '"
 				+ ObjectUtils.toString(value) + "'", cause);
 		this.targetType = targetType;
@@ -21,14 +22,14 @@ public class ConversionFailedException extends ConversionException {
 		super("Failed to convert from type [" + sourceType + "] to type [" + targetType + "] for value '"
 				+ ObjectUtils.toString(value) + "'", cause);
 		this.targetType = targetType;
-		this.value = Source.of(value, sourceType);
+		this.value = ValueAccessor.of(value, sourceType);
 	}
 
 	public TypeDescriptor getTargetType() {
 		return this.targetType;
 	}
 
-	public Source getValue() {
+	public ValueAccessor getValue() {
 		return this.value;
 	}
 

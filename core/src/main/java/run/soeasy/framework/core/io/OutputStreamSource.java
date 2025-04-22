@@ -6,7 +6,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Pipeline;
+import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface OutputStreamSource<T extends OutputStream> extends OutputStreamFactory<T> {

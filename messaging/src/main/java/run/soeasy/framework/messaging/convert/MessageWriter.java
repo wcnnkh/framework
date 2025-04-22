@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging.convert;
 import java.io.IOException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Source;
-import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -19,7 +19,7 @@ public interface MessageWriter {
 	 * @param contentType      为空表示任意类型
 	 * @return
 	 */
-	boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message, MimeType contentType);
+	boolean isWriteable(@NonNull Readable sourceDescriptor, @NonNull Message message, MimeType contentType);
 
 	/**
 	 * 写入
@@ -29,5 +29,5 @@ public interface MessageWriter {
 	 * @param contentType 为空表示任意类型
 	 * @throws IOException
 	 */
-	void writeTo(@NonNull Source source, @NonNull OutputMessage message, MediaType contentType) throws IOException;
+	void writeTo(@NonNull ValueAccessor source, @NonNull OutputMessage message, MediaType contentType) throws IOException;
 }
