@@ -26,7 +26,7 @@ import java.util.function.IntPredicate;
 
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**
@@ -359,8 +359,9 @@ public abstract class NumberUtils {
 	 * @param units
 	 * @return
 	 */
-	public static <E extends Throwable> String format(BigDecimal number, Function<BigDecimal, String, E> toString,
-			NumberUnit... units) throws E {
+	public static <E extends Throwable> String format(BigDecimal number,
+			ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, NumberUnit... units)
+			throws E {
 		Assert.requiredArgument(number != null, "number");
 		Assert.requiredArgument(toString != null, "toString");
 		if (units == null || units.length == 0 || number.compareTo(BigDecimal.ZERO) == 0) {
@@ -373,8 +374,8 @@ public abstract class NumberUtils {
 	}
 
 	protected static <E extends Throwable> void format(StringBuilder sb, BigDecimal number,
-			Function<BigDecimal, String, E> toString, int startUnitsIndex, int endUnitsIndex, NumberUnit... units)
-			throws E {
+			ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, int startUnitsIndex,
+			int endUnitsIndex, NumberUnit... units) throws E {
 		BigDecimal surplus = number;
 		for (int i = startUnitsIndex; i < Math.min(endUnitsIndex, units.length); i++) {
 			NumberUnit unit = units[i];
@@ -420,8 +421,9 @@ public abstract class NumberUtils {
 		}
 	}
 
-	public static <E extends Throwable> BigDecimal parse(String source, Function<String, BigDecimal, E> converter,
-			NumberUnit... units) throws E {
+	public static <E extends Throwable> BigDecimal parse(String source,
+			ThrowingFunction<? super String, ? extends BigDecimal, ? extends E> converter, NumberUnit... units)
+			throws E {
 		for (NumberUnit unit : units) {
 			int index = source.indexOf(unit.getName());
 			if (index == -1) {

@@ -22,7 +22,7 @@ public class RecursiveConversionService implements ConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();
@@ -71,7 +71,7 @@ public class RecursiveConversionService implements ConversionService {
 			}
 			return target;
 		}
-		return objectConversionService.convert(value, requiredTypeDescriptor);
+		return objectConversionService.apply(value, requiredTypeDescriptor);
 	}
 
 	@Override

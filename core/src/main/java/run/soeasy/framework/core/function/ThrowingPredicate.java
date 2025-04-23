@@ -1,11 +1,11 @@
 package run.soeasy.framework.core.function;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.function.RuntimeThrowingPredicate.DefaultRuntimeThrowingPredicate;
 
 public interface ThrowingPredicate<S, E extends Throwable> {
 	@RequiredArgsConstructor
@@ -58,25 +58,6 @@ public interface ThrowingPredicate<S, E extends Throwable> {
 		}
 	}
 
-	public static class RuntimeThrowingPredicate<S, E extends Throwable, R extends RuntimeException>
-			extends MergedThrowingPredicate<S, E, S, R> implements Predicate<S> {
-
-		public RuntimeThrowingPredicate(@NonNull ThrowingPredicate<? super S, ? extends E> compose,
-				@NonNull Function<? super E, ? extends R> throwingMapper) {
-			super(ThrowingFunction.identity(), compose, throwingMapper, ThrowingConsumer.ignore());
-		}
-
-		@Override
-		public RuntimeThrowingPredicate<S, R, R> negate() {
-			return new RuntimeThrowingPredicate<>(this.negate(), Function.identity());
-		}
-
-		@Override
-		public String toString() {
-			return getPredicate().toString();
-		}
-	}
-
 	default <R> ThrowingPredicate<R, E> map(@NonNull ThrowingFunction<? super R, ? extends S, ? extends E> mapper) {
 		return new MergedThrowingPredicate<>(mapper, this, Function.identity(), ThrowingConsumer.ignore());
 	}
@@ -99,12 +80,12 @@ public interface ThrowingPredicate<S, E extends Throwable> {
 				ThrowingConsumer.ignore());
 	}
 
-	default <R extends RuntimeException> RuntimeThrowingPredicate<S, E, R> runtime(
+	default <R extends RuntimeException> RuntimeThrowingPredicate<S, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimeThrowingPredicate<>(this, throwingMapper);
+		return new DefaultRuntimeThrowingPredicate<>(this, throwingMapper);
 	}
 
-	default Predicate<S> runtime() {
+	default RuntimeThrowingPredicate<S, RuntimeException> runtime() {
 		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 

@@ -6,9 +6,9 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.exe.Optional.SharedOptional;
+import run.soeasy.framework.core.function.ThrowingOptional.ValueThrowingOptional;
 
-public final class Bound<T> extends SharedOptional<T, RuntimeException> {
+public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" }) //

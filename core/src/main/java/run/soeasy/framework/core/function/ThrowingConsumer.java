@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.function;
 
-import java.util.function.Consumer;
+import java.util.Iterator;
 import java.util.function.Function;
 
 import lombok.Getter;
@@ -19,6 +19,17 @@ public interface ThrowingConsumer<S, E extends Throwable> {
 	@SuppressWarnings("unchecked")
 	public static <S, E extends Throwable> ThrowingConsumer<S, E> ignore() {
 		return (ThrowingConsumer<S, E>) IgnoreThrowingConsumer.INSTANCE;
+	}
+
+	public static <S, E extends Throwable> void acceptAll(@NonNull Iterator<? extends S> sourceIterator,
+			@NonNull ThrowingConsumer<? super S, ? extends E> consumer) throws E {
+		if (sourceIterator.hasNext()) {
+			try {
+				consumer.accept(sourceIterator.next());
+			} finally {
+				acceptAll(sourceIterator, consumer);
+			}
+		}
 	}
 
 	@RequiredArgsConstructor
@@ -51,10 +62,10 @@ public interface ThrowingConsumer<S, E extends Throwable> {
 		}
 	}
 
-	public static class RuntimeThrowingConsumer<S, E extends Throwable, R extends RuntimeException>
-			extends MappingThrowingConsumer<S, E, S, R> implements Consumer<S> {
+	public static class DefaultRuntimeThrowingConsumer<S, E extends Throwable, R extends RuntimeException>
+			extends MappingThrowingConsumer<S, E, S, R> implements RuntimeThrowingConsumer<S, R> {
 
-		public RuntimeThrowingConsumer(@NonNull ThrowingConsumer<? super S, ? extends E> compose,
+		public DefaultRuntimeThrowingConsumer(@NonNull ThrowingConsumer<? super S, ? extends E> compose,
 				@NonNull Function<? super E, ? extends R> throwingMapper) {
 			super(ThrowingFunction.identity(), compose, ignore(), throwingMapper, ignore());
 		}
@@ -82,12 +93,12 @@ public interface ThrowingConsumer<S, E extends Throwable> {
 		return new MappingThrowingConsumer<>(ThrowingFunction.identity(), this, ignore(), throwingMapper, ignore());
 	}
 
-	default <R extends RuntimeException> RuntimeThrowingConsumer<S, E, R> runtime(
+	default <R extends RuntimeException> RuntimeThrowingConsumer<S, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimeThrowingConsumer<>(this, throwingMapper);
+		return new DefaultRuntimeThrowingConsumer<>(this, throwingMapper);
 	}
 
-	default Consumer<S> runtime() {
+	default RuntimeThrowingConsumer<S, RuntimeException> runtime() {
 		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 

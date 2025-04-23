@@ -40,7 +40,7 @@ class ByteBufferConversionService extends AbstractConversionService implements C
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getTypeDescriptor();
 		boolean byteBufferTarget = targetType.isAssignableTo(BYTE_BUFFER_TYPE);

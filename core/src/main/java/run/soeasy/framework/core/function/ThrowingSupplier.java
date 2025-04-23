@@ -1,15 +1,73 @@
 package run.soeasy.framework.core.function;
 
 import java.io.Serializable;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionPipeline;
 
 public interface ThrowingSupplier<T, E extends Throwable> {
+	public static interface ThrowingSupplierWrapper<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
+			extends ThrowingSupplier<T, E>, Wrapper<W> {
+		@Override
+		default Pipeline<T, E> newPipeline() {
+			return getSource().newPipeline();
+		}
+
+		@Override
+		default Pool<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
+			return getSource().onClose(consumer);
+		}
+
+		@Override
+		default Pipeline<T, E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
+			return getSource().onClose(endpoint);
+		}
+
+		@Override
+		default <R> ThrowingSupplier<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
+			return getSource().map(mapper);
+		}
+
+		@Override
+		default <R extends Throwable> ThrowingSupplier<T, R> throwing(
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().throwing(throwingMapper);
+		}
+
+		@Override
+		default <R extends RuntimeException> RuntimeThrowingSupplier<T, R> runtime(
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().runtime(throwingMapper);
+		}
+
+		@Override
+		default RuntimeThrowingSupplier<T, RuntimeException> runtime() {
+			return getSource().runtime();
+		}
+
+		@Override
+		default T get() throws E {
+			return getSource().get();
+		}
+
+		@Override
+		default ThrowingOptional<T, E> optional() {
+			return getSource().optional();
+		}
+
+		@Override
+		default Optional<T> offline() throws E {
+			return getSource().offline();
+		}
+	}
+
 	@RequiredArgsConstructor
+	@Getter
 	public static class ValueThrowingSupplier<T, E extends Throwable> implements ThrowingSupplier<T, E>, Serializable {
 		private static final long serialVersionUID = 1L;
 		protected final T value;
@@ -53,19 +111,6 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		@Override
 		public <R> ThrowingSupplier<R, T> map(@NonNull ThrowingFunction<? super V, ? extends R, T> mapper) {
 			return new MappingThrowingSupplier<>(this.source, this.mapper.andThen(mapper), endpoint, throwingMapper);
-		}
-	}
-
-	public static class RuntimeThrowingSupplier<V, E extends Throwable, T extends RuntimeException, W extends ThrowingSupplier<? extends V, ? extends E>>
-			extends MappingThrowingSupplier<V, V, E, T, W> implements Supplier<V> {
-
-		public RuntimeThrowingSupplier(@NonNull W source, @NonNull Function<? super E, ? extends T> throwingMapper) {
-			super(source, ThrowingFunction.identity(), ThrowingConsumer.ignore(), throwingMapper);
-		}
-
-		@Override
-		public String toString() {
-			return source.toString();
 		}
 	}
 
@@ -119,12 +164,26 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 				throwingMapper);
 	}
 
-	default <R extends RuntimeException> RuntimeThrowingSupplier<T, E, R, ? extends ThrowingSupplier<T, E>> runtime(
-			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimeThrowingSupplier<>(this, throwingMapper);
+	public static class DefaultRuntimeThrowingSupplier<V, E extends Throwable, T extends RuntimeException, W extends ThrowingSupplier<? extends V, ? extends E>>
+			extends MappingThrowingSupplier<V, V, E, T, W> implements RuntimeThrowingSupplier<V, T> {
+
+		public DefaultRuntimeThrowingSupplier(@NonNull W source,
+				@NonNull Function<? super E, ? extends T> throwingMapper) {
+			super(source, ThrowingFunction.identity(), ThrowingConsumer.ignore(), throwingMapper);
+		}
+
+		@Override
+		public String toString() {
+			return source.toString();
+		}
 	}
 
-	default Supplier<T> runtime() {
+	default <R extends RuntimeException> RuntimeThrowingSupplier<T, R> runtime(
+			@NonNull Function<? super E, ? extends R> throwingMapper) {
+		return new DefaultRuntimeThrowingSupplier<>(this, throwingMapper);
+	}
+
+	default RuntimeThrowingSupplier<T, RuntimeException> runtime() {
 		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 
@@ -143,6 +202,10 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 
 	default ThrowingOptional<T, E> optional() {
 		return new ThrowingSupplierOptional<>(this);
+	}
+
+	default Optional<T> offline() throws E {
+		return Optional.ofNullable(get());
 	}
 
 	T get() throws E;

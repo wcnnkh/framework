@@ -3,12 +3,12 @@ package run.soeasy.framework.core.transform.mapping;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Lookup;
-import run.soeasy.framework.core.transform.stereotype.Accessor;
+import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.transform.stereotype.Template;
 
-public interface Dictionary<T extends Accessor> extends Template<Object, T>, Lookup<Object, T> {
+public interface Dictionary<T extends ValueAccessor> extends Template<Object, T>, Lookup<Object, T> {
 
-	public static interface DictionaryWrapper<T extends Accessor, W extends Dictionary<T>>
+	public static interface DictionaryWrapper<T extends ValueAccessor, W extends Dictionary<T>>
 			extends Dictionary<T>, TemplateWrapper<Object, T, W>, LookupWrapper<Object, T, W> {
 
 		@Override
@@ -27,7 +27,7 @@ public interface Dictionary<T extends Accessor> extends Template<Object, T>, Loo
 		}
 	}
 
-	public static class RenamedDictionary<T extends Accessor, W extends Dictionary<T>>
+	public static class RenamedDictionary<T extends ValueAccessor, W extends Dictionary<T>>
 			extends RenamedTemplate<Object, T, W> implements DictionaryWrapper<T, W> {
 
 		public RenamedDictionary(@NonNull W source, String name) {

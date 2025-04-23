@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import lombok.NonNull;
@@ -23,7 +24,227 @@ import run.soeasy.framework.core.math.NumberValue;
 import run.soeasy.framework.core.type.ResolvableType;
 
 public interface ValueAccessor extends Accessor<Object>, Value {
-	
+	public static interface ValueAccessorWrapper<W extends ValueAccessor>
+			extends ValueAccessor, AccessorWrapper<Object, W>, ValueWrapper<W> {
+		@Override
+		default <T> T getAsArray(Class<? extends T> arrayType) {
+			return getSource().getAsArray(arrayType);
+		}
+
+		@Override
+		default BigDecimal getAsBigDecimal() {
+			return getSource().getAsBigDecimal();
+		}
+
+		@Override
+		default BigInteger getAsBigInteger() {
+			return getSource().getAsBigInteger();
+		}
+
+		@Override
+		default boolean getAsBoolean() {
+			return getSource().getAsBoolean();
+		}
+
+		@Override
+		default byte getAsByte() {
+			return getSource().getAsByte();
+		}
+
+		@Override
+		default char getAsChar() {
+			return getSource().getAsChar();
+		}
+
+		@Override
+		default double getAsDouble() {
+			return getSource().getAsDouble();
+		}
+
+		@Override
+		default Elements<? extends ValueAccessor> getAsElements() {
+			return getSource().getAsElements();
+		}
+
+		@Override
+		default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
+			return getSource().getAsEnum(enumType);
+		}
+
+		@Override
+		default float getAsFloat() {
+			return getSource().getAsFloat();
+		}
+
+		@Override
+		default int getAsInt() {
+			return getSource().getAsInt();
+		}
+
+		@Override
+		default long getAsLong() {
+			return getSource().getAsLong();
+		}
+
+		@Override
+		default NumberValue getAsNumber() {
+			return getSource().getAsNumber();
+		}
+
+		@Override
+		default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
+			return getSource().getAsObject(requiredType, defaultSupplier);
+		}
+
+		@Override
+		default short getAsShort() {
+			return getSource().getAsShort();
+		}
+
+		@Override
+		default String getAsString() {
+			return getSource().getAsString();
+		}
+
+		@Override
+		default Version getAsVersion() {
+			return getSource().getAsVersion();
+		}
+
+		@Override
+		default boolean isMultiple() {
+			return getSource().isMultiple();
+		}
+
+		@Override
+		default boolean isNumber() {
+			return getSource().isNumber();
+		}
+
+		default Any any() {
+			return getSource().any();
+		}
+
+		@Override
+		default Any any(@NonNull TypeDescriptor typeDescriptor) {
+			return getSource().any(typeDescriptor);
+		}
+
+		@Override
+		default TypeDescriptor getTypeDescriptor() {
+			return getSource().getTypeDescriptor();
+		}
+
+		@Override
+		default <R> Data<R> map(@NonNull ThrowingFunction<? super Object, ? extends R, ConversionException> mapper) {
+			return getSource().map(mapper);
+		}
+
+		@Override
+		default <T> Data<T> map(@NonNull TypeDescriptor typeDescriptor,
+				@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
+			return getSource().map(typeDescriptor, converter);
+		}
+
+		@Override
+		default Object getAsObject(TypeDescriptor type) {
+			return getSource().getAsObject(type);
+		}
+
+		@Override
+		default Object getAsObject(ResolvableType type) {
+			return getSource().getAsObject(type);
+		}
+	}
+
+	public static class DefaultValue implements Value {
+
+		@Override
+		public BigDecimal getAsBigDecimal() {
+			return null;
+		}
+
+		@Override
+		public BigInteger getAsBigInteger() {
+			return null;
+		}
+
+		@Override
+		public boolean getAsBoolean() {
+			return false;
+		}
+
+		@Override
+		public byte getAsByte() {
+			return 0;
+		}
+
+		@Override
+		public char getAsChar() {
+			return 0;
+		}
+
+		@Override
+		public double getAsDouble() {
+			return 0;
+		}
+
+		@Override
+		public Elements<? extends Value> getAsElements() {
+			return Elements.empty();
+		}
+
+		@Override
+		public <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
+			return null;
+		}
+
+		@Override
+		public float getAsFloat() {
+			return 0;
+		}
+
+		@Override
+		public int getAsInt() {
+			return 0;
+		}
+
+		@Override
+		public long getAsLong() {
+			return 0;
+		}
+
+		@Override
+		public NumberValue getAsNumber() {
+			return null;
+		}
+
+		@Override
+		public short getAsShort() {
+			return 0;
+		}
+
+		@Override
+		public String getAsString() {
+			return null;
+		}
+
+		@Override
+		public Version getAsVersion() {
+			return null;
+		}
+
+		@Override
+		public boolean isMultiple() {
+			return false;
+		}
+
+		@Override
+		public boolean isNumber() {
+			return false;
+		}
+	}
+
 	public static ValueAccessor of(Object value) {
 		return of(value, null);
 	}
@@ -60,7 +281,7 @@ public interface ValueAccessor extends Accessor<Object>, Value {
 		if (value instanceof Number) {
 			return new BigDecimal(((Number) value).doubleValue());
 		}
-		
+
 		return getAsData(BigDecimal.class).orElse(null);
 	}
 
@@ -379,11 +600,7 @@ public interface ValueAccessor extends Accessor<Object>, Value {
 	}
 
 	default TypeDescriptor getTypeDescriptor() {
-		Object value = get();
-		if (value == null) {
-			return TypeDescriptor.valueOf(Object.class);
-		}
-		return TypeDescriptor.forObject(value);
+		return isPresent() ? TypeDescriptor.forObject(get()) : TypeDescriptor.valueOf(Object.class);
 	}
 
 	@Override

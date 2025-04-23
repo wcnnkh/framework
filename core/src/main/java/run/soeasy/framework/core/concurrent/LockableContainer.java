@@ -16,7 +16,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.concurrent.locks.NoOpLock;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 /**
  * 使用复制读来实现线程安全
@@ -28,13 +28,13 @@ import run.soeasy.framework.core.exe.Supplier;
 public class LockableContainer<C, X extends Throwable> implements ReadWriteLock {
 	private volatile C container;
 	@NonNull
-	private final Supplier<? extends C, ? extends X> containerSource;
+	private final ThrowingSupplier<? extends C, ? extends X> containerSource;
 	/**
 	 * 读写锁的实现
 	 */
 	private volatile ReadWriteLock readWriteLock;
 
-	public LockableContainer(@NonNull Supplier<? extends C, ? extends X> containerSource) {
+	public LockableContainer(@NonNull ThrowingSupplier<? extends C, ? extends X> containerSource) {
 		this.containerSource = containerSource;
 	}
 

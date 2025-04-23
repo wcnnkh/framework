@@ -4,13 +4,13 @@ package run.soeasy.framework.core.transform.mapping;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.Accessible;
+import run.soeasy.framework.core.convert.value.Accessor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.transform.stereotype.Accessor;
 
-public interface Property extends Accessor, PropertyDescriptor {
+public interface Property extends ValueAccessor, PropertyDescriptor {
 
 	public static interface PropertyWrapper<W extends Property>
-			extends Property, AccessWrapper<W>, PropertyDescriptorWrapper<W> {
+			extends Property, ValueAccessorWrapper<W>, PropertyDescriptorWrapper<W> {
 		@Override
 		default Property rename(String name) {
 			return Property.super.rename(name);

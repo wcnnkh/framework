@@ -2,7 +2,9 @@ package run.soeasy.framework.core.function;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -105,7 +107,7 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 
 		@Override
 		public <R> PipelineOptional<T, R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> pipeline) {
-			return new PipelineOptional<>(() -> super.get(), pipeline, this::close);
+			return new PipelineOptional<>(super::get, pipeline, this::close);
 		}
 	}
 
@@ -186,6 +188,46 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 	@Override
 	default <R extends Throwable> Pipeline<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return new MappingPipeline<>(this, ThrowingFunction.identity(), throwingMapper);
+	}
+
+	public static class PipelineRuntimeThrowingSupplier<T, E extends Throwable, R extends RuntimeException, W extends Pipeline<T, E>>
+			extends DefaultRuntimeThrowingSupplier<T, E, R, W> {
+		private volatile Supplier<?> supplier;
+
+		public PipelineRuntimeThrowingSupplier(@NonNull W source,
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			super(source, throwingMapper);
+		}
+
+		@Override
+		public T get() throws R {
+			if(supplier == null) {
+				synchronized (this) {
+					if(supplier == null) {
+						
+					}
+				}
+			}
+			// TODO Auto-generated method stub
+			return super.get();
+		}
+	}
+
+	@Override
+	default <R extends RuntimeException> RuntimeThrowingSupplier<T, E, R, ? extends ThrowingSupplier<T, E>> runtime(
+			@NonNull Function<? super E, ? extends R> throwingMapper) {
+		// TODO Auto-generated method stub
+		return ThrowingSupplier.super.runtime(throwingMapper);
+	}
+
+	@Override
+	default Optional<T> offline() throws E {
+		T value = get();
+		try {
+			return Optional.ofNullable(value);
+		} finally {
+			close();
+		}
 	}
 
 	void close() throws E;

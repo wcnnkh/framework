@@ -7,15 +7,16 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.Readable;
 import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 import run.soeasy.framework.core.transform.mapping.ParameterDescriptors;
-import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.transform.mapping.PropertyDescriptor.MergedPropertyDescriptor;
 
-public interface Getter extends Executable, PropertyDescriptor {
+public interface Getter extends Executable, Readable {
 
 	@FunctionalInterface
 	public static interface GetterWrapper<W extends Getter>
-			extends Getter, ExecutableWrapper<W>, PropertyDescriptorWrapper<W> {
+			extends Getter, ExecutableWrapper<W>, ReadableWrapper<W> {
 		@Override
 		default Object get(Object target) {
 			return getSource().get(target);

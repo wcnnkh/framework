@@ -31,13 +31,13 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 		}
 
 		@Override
-		default <R extends RuntimeException> RuntimeThrowingFunction<S, T, E, R> runtime(
+		default <R extends RuntimeException> RuntimeThrowingFunction<S, T, R> runtime(
 				@NonNull Function<? super E, ? extends R> throwingMapper) {
 			return getSource().runtime(throwingMapper);
 		}
 
 		@Override
-		default Function<S, T> runtime() {
+		default RuntimeThrowingFunction<S, T, RuntimeException> runtime() {
 			return getSource().runtime();
 		}
 
@@ -83,10 +83,10 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 		}
 	}
 
-	public static class RuntimeThrowingFunction<S, T, E extends Throwable, R extends RuntimeException>
-			extends MappingThrowingFunction<S, T, E, T, R> implements Function<S, T> {
+	public static class DefaultRuntimeThrowingFunction<S, T, E extends Throwable, R extends RuntimeException>
+			extends MappingThrowingFunction<S, T, E, T, R> implements RuntimeThrowingFunction<S, T, R> {
 
-		public RuntimeThrowingFunction(@NonNull ThrowingFunction<? super S, ? extends T, ? extends E> compose,
+		public DefaultRuntimeThrowingFunction(@NonNull ThrowingFunction<? super S, ? extends T, ? extends E> compose,
 				@NonNull Function<? super E, ? extends R> throwingMapper) {
 			super(compose, identity(), throwingMapper);
 		}
@@ -191,12 +191,12 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 		return new MappingThrowingFunction<>(this, identity(), throwingMapper);
 	}
 
-	default <R extends RuntimeException> RuntimeThrowingFunction<S, T, E, R> runtime(
+	default <R extends RuntimeException> RuntimeThrowingFunction<S, T, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimeThrowingFunction<>(this, throwingMapper);
+		return new DefaultRuntimeThrowingFunction<>(this, throwingMapper);
 	}
 
-	default Function<S, T> runtime() {
+	default RuntimeThrowingFunction<S, T, RuntimeException> runtime() {
 		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 

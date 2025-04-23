@@ -6,12 +6,12 @@ import java.util.ListIterator;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public class ListContainer<E, C extends List<ElementRegistration<E>>> extends CollectionContainer<E, C>
 		implements List<E> {
 
-	public ListContainer(@NonNull Supplier<? extends C, ? extends RuntimeException> containerSource) {
+	public ListContainer(@NonNull ThrowingSupplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

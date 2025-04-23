@@ -7,10 +7,11 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
-import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.transform.mapping.PropertyDescriptor.MergedPropertyDescriptor;
 
-public interface Setter extends Executable, PropertyDescriptor {
+public interface Setter extends Executable, Writeable {
 
 	public class MergedSetter<E extends Setter> extends MergedPropertyDescriptor<E>
 			implements Setter, AnnotatedElementWrapper<AnnotatedElement> {
@@ -64,7 +65,7 @@ public interface Setter extends Executable, PropertyDescriptor {
 
 	@FunctionalInterface
 	public static interface SetterWrapper<W extends Setter>
-			extends Setter, ExecutableWrapper<W>, PropertyDescriptorWrapper<W> {
+			extends Setter, ExecutableWrapper<W>, WriteableWrapper<W> {
 		@Override
 		default Elements<ParameterDescriptor> getParameterDescriptors() {
 			return getSource().getParameterDescriptors();

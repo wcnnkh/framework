@@ -26,7 +26,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source instanceof Time) {
 			return sqlTimeToObject((Time) source, targetType.getType());

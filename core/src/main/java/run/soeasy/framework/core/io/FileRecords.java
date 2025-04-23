@@ -11,8 +11,8 @@ import run.soeasy.framework.codec.support.RecordCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Streams;
-import run.soeasy.framework.core.exe.Consumer;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 /**
  * 线程不安全的
@@ -22,7 +22,7 @@ import run.soeasy.framework.core.exe.Supplier;
  * @param <T>
  */
 public final class FileRecords<T> implements Elements<T> {
-	private final Supplier<? extends File, ? extends IOException> fileSource;
+	private final ThrowingSupplier<? extends File, ? extends IOException> fileSource;
 	private volatile File file;
 	private final RecordCodec<T> codec;
 
@@ -30,7 +30,7 @@ public final class FileRecords<T> implements Elements<T> {
 		this(() -> file, codec);
 	}
 
-	public FileRecords(Supplier<? extends File, ? extends IOException> fileSource, Codec<T, byte[]> codec) {
+	public FileRecords(ThrowingSupplier<? extends File, ? extends IOException> fileSource, Codec<T, byte[]> codec) {
 		Assert.requiredArgument(fileSource != null, "fileSource");
 		Assert.requiredArgument(codec != null, "codec");
 		this.fileSource = fileSource;
@@ -88,7 +88,7 @@ public final class FileRecords<T> implements Elements<T> {
 	 * @param consumer
 	 * @throws E
 	 */
-	public <E extends Throwable> void consume(Consumer<? super T, ? extends E> consumer) throws E {
+	public <E extends Throwable> void consume(ThrowingConsumer<? super T, ? extends E> consumer) throws E {
 		Assert.requiredArgument(consumer != null, "consumer");
 		if (file != null) {
 			synchronized (this) {

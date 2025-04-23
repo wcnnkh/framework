@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.RandomAccess;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public class ArrayListContainer<E> extends ListContainer<E, ArrayList<ElementRegistration<E>>> implements RandomAccess {
 	public ArrayListContainer() {
@@ -16,7 +16,7 @@ public class ArrayListContainer<E> extends ListContainer<E, ArrayList<ElementReg
 	}
 
 	public ArrayListContainer(
-			@NonNull Supplier<? extends ArrayList<ElementRegistration<E>>, ? extends RuntimeException> containerSource) {
+			@NonNull ThrowingSupplier<? extends ArrayList<ElementRegistration<E>>, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 }

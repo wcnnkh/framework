@@ -25,7 +25,7 @@ public class ResourceResolverConversionService implements ConditionalConversionS
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		try {
 			return resourceResolver.resolveResource((Resource) value.get(), targetType);
 		} catch (IOException e) {

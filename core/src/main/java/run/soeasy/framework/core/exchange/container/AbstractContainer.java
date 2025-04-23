@@ -7,7 +7,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.concurrent.LockableContainer;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 /**
  * 一个懒惰的容器定义
@@ -20,7 +20,7 @@ public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>>
 		extends LockableContainer<C, RuntimeException> implements Container<E, P> {
 	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
-	public AbstractContainer(@NonNull Supplier<? extends C, ? extends RuntimeException> containerSource) {
+	public AbstractContainer(@NonNull ThrowingSupplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

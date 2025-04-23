@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 public final class RandomUtils {
 	private RandomUtils() {
@@ -484,7 +484,8 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Number totalWeight, @NonNull Number weight,
-			@NonNull Iterator<? extends T> iterator, @NonNull Function<T, Number, E> weightProcessor,
+			@NonNull Iterator<? extends T> iterator,
+			@NonNull ThrowingFunction<? super T, ? extends Number, ? extends E> weightProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
@@ -542,7 +543,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> Number getWeight(Iterator<? extends T> iterator,
-			Function<T, Number, E> weightProcessor) throws E {
+			ThrowingFunction<? super T, ? extends Number, ? extends E> weightProcessor) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
 		Number totalWegith = 0;
@@ -585,7 +586,8 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Number totalWeight,
-			@NonNull Iterator<? extends T> iterator, @NonNull Function<T, Number, E> weightProcessor,
+			@NonNull Iterator<? extends T> iterator,
+			@NonNull ThrowingFunction<? super T, ? extends Number, ? extends E> weightProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		return random(totalWeight, random(1, Addition.INSTANCE.eval(totalWeight, 1)), iterator, weightProcessor,
 				removePredicate);
@@ -604,7 +606,8 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
-			@NonNull Function<T, Number, E> weightProcessor, @NonNull Function<Number, Number, E> randomProcessor,
+			@NonNull ThrowingFunction<? super T, ? extends Number, ? extends E> weightProcessor,
+			@NonNull ThrowingFunction<? super Number, ? extends Number, ? extends E> randomProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		if (iterable == null) {
 			return null;
@@ -630,7 +633,8 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Iterable<? extends T> iterable,
-			@NonNull Function<T, Number, E> weightProcessor, Predicate<? super T> removePredicate) throws E {
+			@NonNull ThrowingFunction<? extends T, ? extends Number, ? extends E> weightProcessor,
+			Predicate<? super T> removePredicate) throws E {
 		return random(iterable, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}
 }

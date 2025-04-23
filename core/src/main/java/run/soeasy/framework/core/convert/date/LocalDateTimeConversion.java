@@ -31,7 +31,7 @@ public class LocalDateTimeConversion implements ConversionService, ConversionSer
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getTypeDescriptor();
 		java.time.ZoneOffset zoneOffset = zoneOffsetResolver.resolveZoneOffset(() -> targetType);

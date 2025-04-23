@@ -19,7 +19,7 @@ import run.soeasy.framework.core.exchange.Registrations;
 import run.soeasy.framework.core.exchange.container.ElementRegistration.StandardElementRegistrationWrappe;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>>
 		extends AbstractContainer<C, E, ElementRegistration<E>> implements Collection<E> {
@@ -76,7 +76,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 
 	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
 
-	public CollectionContainer(@NonNull Supplier<? extends C, ? extends RuntimeException> containerSource) {
+	public CollectionContainer(@NonNull ThrowingSupplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

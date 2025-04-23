@@ -76,4 +76,9 @@ public class Data<T> implements Accessor<T>, Serializable {
 	public boolean isWriteable() {
 		return true;
 	}
+
+	@Override
+	public boolean isRequired() {
+		return false;
+	}
 }

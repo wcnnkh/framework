@@ -23,7 +23,7 @@ class ArrayToArrayConversionService extends AbstractConversionService implements
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();

@@ -100,7 +100,7 @@ public interface PropertyDescriptor extends Named, Accessible {
 
 	@FunctionalInterface
 	public static interface PropertyDescriptorWrapper<W extends PropertyDescriptor>
-			extends PropertyDescriptor, NamedWrapper<W>, AccessDescriptorWrapper<W> {
+			extends PropertyDescriptor, NamedWrapper<W>, AccessibleWrapper<W> {
 
 		@Override
 		default PropertyDescriptor rename(String name) {
@@ -123,7 +123,7 @@ public interface PropertyDescriptor extends Named, Accessible {
 
 	@Data
 	public static class SharedPropertyDescriptor<W extends Accessible>
-			implements PropertyDescriptor, AccessDescriptorWrapper<W>, Serializable {
+			implements PropertyDescriptor, AccessibleWrapper<W>, Serializable {
 		private static final long serialVersionUID = 1L;
 		private String name;
 		@NonNull

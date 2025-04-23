@@ -5,12 +5,12 @@ import java.util.Queue;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public class QueueContainer<E, Q extends Queue<ElementRegistration<E>>> extends CollectionContainer<E, Q>
 		implements Queue<E> {
 
-	public QueueContainer(@NonNull Supplier<? extends Q, ? extends RuntimeException> containerSource) {
+	public QueueContainer(@NonNull ThrowingSupplier<? extends Q, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

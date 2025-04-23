@@ -10,15 +10,15 @@ import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 public class ConverterConversionService implements ConditionalConversionService {
 	@SuppressWarnings("rawtypes")
-	private final Function converter;
+	private final ThrowingFunction converter;
 	private final Set<ConvertiblePair> convertibleTypes;
 
 	public <S, T> ConverterConversionService(Class<S> sourceType, Class<T> targetType,
-			Function<? super S, ? extends T, ? extends Throwable> converter) {
+			ThrowingFunction<? super S, ? extends T, ? extends Throwable> converter) {
 		this.convertibleTypes = Collections.singleton(new ConvertiblePair(sourceType, targetType));
 		this.converter = converter;
 	}
@@ -29,7 +29,7 @@ public class ConverterConversionService implements ConditionalConversionService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		try {
 			return converter.apply(value.get());
 		} catch (Throwable e) {

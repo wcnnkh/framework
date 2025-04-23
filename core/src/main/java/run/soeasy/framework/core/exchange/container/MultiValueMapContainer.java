@@ -18,14 +18,14 @@ import run.soeasy.framework.core.concurrent.AtomicEntry;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Receipts;
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public class MultiValueMapContainer<K, V, R extends PayloadRegistration<V>, VC extends Container<V, R>, M extends Map<K, VC>>
 		extends AbstractContainer<M, KeyValue<K, V>, KeyValueRegistration<K, V>>
 		implements MultiValueMap<K, V>, KeyValueRegistry<K, V> {
 	private final Function<? super K, ? extends VC> valuesCreator;
 
-	public MultiValueMapContainer(@NonNull Supplier<? extends M, ? extends RuntimeException> containerSource,
+	public MultiValueMapContainer(@NonNull ThrowingSupplier<? extends M, ? extends RuntimeException> containerSource,
 			@NonNull Function<? super K, ? extends VC> valuesCreator) {
 		super(containerSource);
 		this.valuesCreator = valuesCreator;

@@ -28,7 +28,7 @@ import run.soeasy.framework.core.exchange.Registrations;
 import run.soeasy.framework.core.exchange.container.EntryRegistration.StandardEntryRegistrationWrapper;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
-import run.soeasy.framework.core.exe.Supplier;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 @Getter
 public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> extends
@@ -168,7 +168,7 @@ public class MapContainer<K, V, M extends Map<K, EntryRegistration<K, V>>> exten
 		}
 	}
 
-	public MapContainer(@NonNull Supplier<? extends M, ? extends RuntimeException> containerSource) {
+	public MapContainer(@NonNull ThrowingSupplier<? extends M, ? extends RuntimeException> containerSource) {
 		super(containerSource);
 	}
 

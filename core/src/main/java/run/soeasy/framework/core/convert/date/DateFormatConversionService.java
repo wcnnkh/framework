@@ -47,7 +47,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;

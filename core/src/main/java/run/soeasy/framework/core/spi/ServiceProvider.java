@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import run.soeasy.framework.core.exe.Function;
-import run.soeasy.framework.core.exe.Optional;
-import run.soeasy.framework.core.exe.Predicate;
+import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.ThrowingOptional;
+import run.soeasy.framework.core.function.ThrowingPredicate;
 
 @Getter
 @Setter
@@ -17,21 +17,21 @@ public class ServiceProvider<T, E extends Throwable> extends ConfigurableService
 	@NonNull
 	private ThreadLocal<Set<T>> nestingChecker = new ThreadLocal<Set<T>>();
 
-	public Optional<T, E> optional() {
-		return optional(Predicate.alwaysTruePredicate());
+	public ThrowingOptional<T, E> optional() {
+		return optional(ThrowingPredicate.alwaysTrue());
 	}
 
-	public Optional<T, E> optional(Predicate<? super T, ? extends E> predicate) {
+	public ThrowingOptional<T, E> optional(ThrowingPredicate<? super T, ? extends E> predicate) {
 		return new SingleProvider(predicate);
 	}
 
 	@RequiredArgsConstructor
-	private class SingleProvider implements Optional<T, E> {
+	private class SingleProvider implements ThrowingOptional<T, E> {
 		@NonNull
-		private final Predicate<? super T, ? extends E> predicate;
+		private final ThrowingPredicate<? super T, ? extends E> predicate;
 
 		@Override
-		public <R, X extends Throwable> R apply(@NonNull Function<? super T, ? extends R, ? extends X> mapper)
+		public <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
 				throws E, X {
 			Set<T> nestingSet = nestingChecker.get();
 			if (nestingSet == null) {

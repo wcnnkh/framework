@@ -47,10 +47,10 @@ public interface ThrowingRunnable<E extends Throwable> {
 		}
 	}
 
-	public static class RuntimeThrowingRunnable<E extends Throwable, R extends RuntimeException>
-			extends MappingThrowingRunnable<E, R> implements Runnable {
+	public static class DefaultRuntimeThrowingRunnable<E extends Throwable, R extends RuntimeException>
+			extends MappingThrowingRunnable<E, R> implements RuntimeThrowingRunnable<R> {
 
-		public RuntimeThrowingRunnable(@NonNull ThrowingRunnable<? extends E> compose,
+		public DefaultRuntimeThrowingRunnable(@NonNull ThrowingRunnable<? extends E> compose,
 				@NonNull Function<? super E, ? extends R> throwingMapper) {
 			super(compose, ThrowingRunnable.ignore(), throwingMapper, ThrowingRunnable.ignore());
 		}
@@ -74,12 +74,12 @@ public interface ThrowingRunnable<E extends Throwable> {
 		return new MappingThrowingRunnable<>(this, ignore(), throwingMapper, ignore());
 	}
 
-	default <R extends RuntimeException> RuntimeThrowingRunnable<E, R> runtime(
+	default <R extends RuntimeException> RuntimeThrowingRunnable<R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimeThrowingRunnable<>(this, throwingMapper);
+		return new DefaultRuntimeThrowingRunnable<>(this, throwingMapper);
 	}
 
-	default Runnable runtime() {
+	default RuntimeThrowingRunnable<RuntimeException> runtime() {
 		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 

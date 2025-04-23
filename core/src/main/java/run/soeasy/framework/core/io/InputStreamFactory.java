@@ -15,15 +15,15 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.exe.Function;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 @FunctionalInterface
 public interface InputStreamFactory<T extends InputStream> {
 	public static interface CharsetInputStreamFactory<T extends InputStream, W extends InputStreamFactory<T>>
 			extends DecodedInputStreamFactory<T, Reader, W>, CharsetCapable {
 		@Override
-		default Function<? super T, ? extends Reader, ? extends IOException> getDecoder() {
+		default ThrowingFunction<? super T, ? extends Reader, IOException> getDecoder() {
 			return (e) -> new InputStreamReader(e, getCharset());
 		}
 	}
@@ -31,7 +31,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	public static interface DecodedInputStreamFactory<T extends InputStream, R extends Reader, W extends InputStreamFactory<T>>
 			extends InputFactory<T, R>, InputStreamFactoryWrapper<T, W> {
 
-		Function<? super T, ? extends R, ? extends IOException> getDecoder();
+		ThrowingFunction<? super T, ? extends R, IOException> getDecoder();
 
 		@Override
 		default @NonNull Pipeline<R, IOException> getReaderPipeline() {
@@ -66,7 +66,7 @@ public interface InputStreamFactory<T extends InputStream> {
 
 		@Override
 		default <R extends Reader> InputFactory<T, R> decode(
-				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
+				@NonNull ThrowingFunction<? super T, ? extends R, IOException> pipeline) {
 			return getSource().decode(pipeline);
 		}
 
@@ -156,7 +156,7 @@ public interface InputStreamFactory<T extends InputStream> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Function<? super T, ? extends R, ? extends IOException> decoder;
+		private final ThrowingFunction<? super T, ? extends R, IOException> decoder;
 	}
 
 	@NonNull
@@ -167,7 +167,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	}
 
 	default <R extends Reader> InputFactory<T, R> decode(
-			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
+			@NonNull ThrowingFunction<? super T, ? extends R, IOException> pipeline) {
 		return new StandardDecodedInputStreamFactory<>(this, pipeline);
 	}
 

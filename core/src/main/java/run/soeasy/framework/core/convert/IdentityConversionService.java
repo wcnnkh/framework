@@ -16,7 +16,7 @@ public class IdentityConversionService implements ConversionService {
 	}
 
 	@Override
-	public Object convert(ValueAccessor accessor, TypeDescriptor requiredTypeDescriptor) throws ConversionException {
+	public Object apply(ValueAccessor accessor, TypeDescriptor requiredTypeDescriptor) throws ConversionException {
 		return accessor.get();
 	}
 

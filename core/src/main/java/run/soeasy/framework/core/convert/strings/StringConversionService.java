@@ -23,7 +23,7 @@ public final class StringConversionService implements ConversionService {
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getTypeDescriptor();
 		if (sourceType.getType() == String.class) {

@@ -10,8 +10,8 @@ import java.nio.charset.CharsetEncoder;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.exe.Function;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 @FunctionalInterface
 public interface OutputStreamFactory<T extends OutputStream> {
@@ -19,7 +19,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	public static interface CharsetOutputStreamFactory<T extends OutputStream, W extends OutputStreamFactory<T>>
 			extends EncodedOutputStreamFactory<T, Writer, W>, CharsetCapable {
 		@Override
-		default Function<? super T, ? extends Writer, ? extends IOException> getEncoder() {
+		default ThrowingFunction<? super T, ? extends Writer, IOException> getEncoder() {
 			return (e) -> new OutputStreamWriter(e, getCharset());
 		}
 	}
@@ -38,7 +38,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 	public static interface EncodedOutputStreamFactory<T extends OutputStream, R extends Writer, W extends OutputStreamFactory<T>>
 			extends OutputStreamFactoryWrapper<T, W>, OutputFactory<T, R> {
-		Function<? super T, ? extends R, ? extends IOException> getEncoder();
+		ThrowingFunction<? super T, ? extends R, IOException> getEncoder();
 
 		@Override
 		default @NonNull Pipeline<R, IOException> getWriterPipeline() {
@@ -61,7 +61,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 
 		@Override
 		default <R extends Writer> OutputFactory<T, R> encode(
-				@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
+				@NonNull ThrowingFunction<? super T, ? extends R, IOException> pipeline) {
 			return getSource().encode(pipeline);
 		}
 
@@ -130,7 +130,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Function<? super T, ? extends R, ? extends IOException> encoder;
+		private final ThrowingFunction<? super T, ? extends R, IOException> encoder;
 	}
 
 	@NonNull
@@ -141,7 +141,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	}
 
 	default <R extends Writer> OutputFactory<T, R> encode(
-			@NonNull Function<? super T, ? extends R, ? extends IOException> pipeline) {
+			@NonNull ThrowingFunction<? super T, ? extends R, IOException> pipeline) {
 		return new StandardEncodedOutputStreamFactory<>(this, pipeline);
 	}
 

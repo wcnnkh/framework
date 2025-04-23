@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.exe.Consumer;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 public interface Registration {
 
@@ -86,15 +86,14 @@ public interface Registration {
 	boolean isCancelled();
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
-			Iterable<? extends S> iterable, Function<? super S, ? extends E, ? extends X> register) throws X {
-		Assert.requiredArgument(iterable != null, "iterable");
+			@NonNull Iterable<? extends S> iterable, ThrowingFunction<? super S, ? extends E, ? extends X> register)
+			throws X {
 		return registers(iterable.iterator(), register);
 	}
 
 	public static <E extends Registration, S, X extends Throwable> Registrations<E> registers(
-			Iterator<? extends S> iterator, Function<? super S, ? extends E, ? extends X> register) throws X {
-		Assert.requiredArgument(iterator != null, "iterator");
-		Assert.requiredArgument(register != null, "registry");
+			@NonNull Iterator<? extends S> iterator,
+			@NonNull ThrowingFunction<? super S, ? extends E, ? extends X> register) throws X {
 		List<E> registrations = null;
 		while (iterator.hasNext()) {
 			S service = iterator.next();
@@ -109,7 +108,7 @@ public interface Registration {
 				if (registrations != null) {
 					try {
 						Collections.reverse(registrations);
-						Consumer.acceptAll(registrations.iterator(), (reg) -> reg.cancel());
+						ThrowingConsumer.acceptAll(registrations.iterator(), (reg) -> reg.cancel());
 					} catch (Throwable e2) {
 						e.addSuppressed(e2);
 					}
