@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.Comparator;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.Accessor;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.value.Accessible;
-import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.Writeable;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.spi.ServiceProvider;
@@ -58,7 +58,7 @@ public class MessageConverters extends ServiceProvider<MessageConverter, Convers
 	}
 
 	@Override
-	public MediaTypes getSupportedMediaTypes(@NonNull Accessible requiredDescriptor, @NonNull Message message) {
+	public MediaTypes getSupportedMediaTypes(@NonNull Accessor requiredDescriptor, @NonNull Message message) {
 		return MediaTypes.forElements(flatMap((e) -> e.getSupportedMediaTypes(requiredDescriptor, message)));
 	}
 

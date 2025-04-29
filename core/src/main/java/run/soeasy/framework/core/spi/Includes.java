@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import run.soeasy.framework.core.collection.Reloadable;
 import run.soeasy.framework.core.exchange.Registrations;
+import run.soeasy.framework.core.function.Reloadable;
 
 @FunctionalInterface
 public interface Includes<S, I extends Include<S>> extends Registrations<I>, Include<S> {

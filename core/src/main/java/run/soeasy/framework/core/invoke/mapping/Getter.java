@@ -1,0 +1,97 @@
+package run.soeasy.framework.core.invoke.mapping;
+
+import java.lang.reflect.AnnotatedElement;
+
+import lombok.NonNull;
+import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
+import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
+import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.invoke.ExecutableDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
+import run.soeasy.framework.core.transform.mapping.ParameterDescriptors;
+
+public interface Getter extends ExecutableDescriptor, PropertyDescriptor {
+
+	@FunctionalInterface
+	public static interface GetterWrapper<W extends Getter>
+			extends Getter, ExecutableDescriptorWrapper<W>, PropertyDescriptorWrapper<W> {
+		@Override
+		default Object get(Object target) {
+			return getSource().get(target);
+		}
+
+		@Override
+		default Getter rename(String name) {
+			return getSource().rename(name);
+		}
+
+		@Override
+		default ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors() {
+			return getSource().getParameterDescriptors();
+		}
+	}
+
+	public class MergedGetter<E extends Getter> extends MergedPropertyDescriptor<E>
+			implements Getter, AnnotatedElementWrapper<AnnotatedElement> {
+
+		public MergedGetter(Elements<? extends E> elements) {
+			super(elements);
+		}
+
+		public MergedGetter(MergedPropertyDescriptor<E> mergedPropertyDescriptor) {
+			super(mergedPropertyDescriptor);
+		}
+
+		@Override
+		public Object get(Object source) {
+			return getMaster().get(source);
+		}
+
+		@Override
+		public TypeDescriptor getDeclaringTypeDescriptor() {
+			return getMaster().getDeclaringTypeDescriptor();
+		}
+
+		@Override
+		public Elements<TypeDescriptor> getExceptionTypeDescriptors() {
+			return getMaster().getExceptionTypeDescriptors();
+		}
+
+		@Override
+		public MergedGetter<E> rename(String name) {
+			MergedPropertyDescriptor<E> mergedPropertyDescriptor = super.rename(name);
+			return new MergedGetter<>(mergedPropertyDescriptor);
+		}
+
+		@Override
+		public AnnotatedElement getSource() {
+			return new MergedAnnotatedElement(getElements());
+		}
+	}
+
+	public static class RenamedGetter<W extends Getter> extends RenamedExecutable<W> implements GetterWrapper<W> {
+
+		public RenamedGetter(@NonNull String name, @NonNull W source) {
+			super(name, source);
+		}
+
+		@Override
+		public Getter rename(String name) {
+			return new RenamedGetter<>(name, getSource());
+		}
+	}
+
+	Object get(Object target);
+
+	@Override
+	default ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors() {
+		return ParameterDescriptors.empty();
+	}
+
+	@Override
+	default Getter rename(String name) {
+		return new RenamedGetter<>(name, this);
+	}
+}

@@ -11,23 +11,23 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.transform.mapping.PropertySource;
-import run.soeasy.framework.core.transform.mapping.Property;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
+import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
 
 @AllArgsConstructor
-public class NodeListProperties implements PropertySource {
+public class NodeListProperties implements PropertyTemplate {
 	@NonNull
 	private final NodeList nodeList;
 
 	@Override
-	public Elements<Property> getElements() {
+	public Elements<PropertyAccessor> getElements() {
 		return Elements
 				.of(() -> IntStream.range(1, nodeList.getLength() + 1).mapToObj((row) -> new NodeListProperty(row)));
 	}
 
 	@RequiredArgsConstructor
 	@Getter
-	private class NodeListProperty implements Property {
+	private class NodeListProperty implements PropertyAccessor {
 		private final int row;
 
 		@Override

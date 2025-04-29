@@ -7,7 +7,7 @@ import java.io.Writer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 public interface OutputFactory<O extends OutputStream, W extends Writer>
@@ -31,14 +31,14 @@ public interface OutputFactory<O extends OutputStream, W extends Writer>
 		protected final T writerFactory;
 
 		@Override
-		public @NonNull Pipeline<O, IOException> getOutputStreamPipeline() {
-			return outputStreamFactory == null ? Pipeline.empty()
+		public @NonNull Source<O, IOException> getOutputStreamPipeline() {
+			return outputStreamFactory == null ? Source.empty()
 					: outputStreamFactory.getOutputStreamPipeline().map(ThrowingFunction.identity());
 		}
 
 		@Override
-		public @NonNull Pipeline<W, IOException> getWriterPipeline() {
-			return writerFactory == null ? Pipeline.empty()
+		public @NonNull Source<W, IOException> getWriterPipeline() {
+			return writerFactory == null ? Source.empty()
 					: writerFactory.getWriterPipeline().map(ThrowingFunction.identity());
 		}
 

@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.invoke.Function;
 import run.soeasy.framework.core.reflect.Fields;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
 

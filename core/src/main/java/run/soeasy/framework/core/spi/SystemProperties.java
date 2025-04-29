@@ -1,10 +1,10 @@
 package run.soeasy.framework.core.spi;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.transform.mapping.PropertySource;
-import run.soeasy.framework.core.transform.mapping.Property;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
+import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
 
-public final class SystemProperties implements PropertySource {
+public final class SystemProperties implements PropertyTemplate {
 	private static volatile SystemProperties instance;
 
 	public static SystemProperties getInstance() {
@@ -22,12 +22,12 @@ public final class SystemProperties implements PropertySource {
 	}
 
 	@Override
-	public Property get(String key) {
+	public PropertyAccessor get(String key) {
 		return new SystemProperty(key);
 	}
 
 	@Override
-	public Elements<Property> getElements() {
+	public Elements<PropertyAccessor> getElements() {
 		return keys().map((key) -> get(key));
 	}
 

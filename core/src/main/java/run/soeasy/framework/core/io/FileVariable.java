@@ -3,6 +3,8 @@ package run.soeasy.framework.core.io;
 import java.io.File;
 import java.io.IOException;
 
+import run.soeasy.framework.core.function.Variable;
+
 public interface FileVariable extends Variable {
 	File getFile() throws IOException;
 

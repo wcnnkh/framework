@@ -1,21 +1,25 @@
 package run.soeasy.framework.core.function;
 
 import java.io.Serializable;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionPipeline;
+import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionToSource;
 
 public interface ThrowingSupplier<T, E extends Throwable> {
 	public static interface ThrowingSupplierWrapper<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
 			extends ThrowingSupplier<T, E>, Wrapper<W> {
 		@Override
-		default Pipeline<T, E> newPipeline() {
-			return getSource().newPipeline();
+		default Source<T, E> closeable() {
+			return getSource().closeable();
 		}
 
 		@Override
@@ -24,7 +28,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		}
 
 		@Override
-		default Pipeline<T, E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
+		default Source<T, E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
 			return getSource().onClose(endpoint);
 		}
 
@@ -64,6 +68,16 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		default Optional<T> offline() throws E {
 			return getSource().offline();
 		}
+
+		@Override
+		default <R extends Exception> Callable<T> asCallable(@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().asCallable(throwingMapper);
+		}
+
+		@Override
+		default Singleton<T, E> singleton() {
+			return getSource().singleton();
+		}
 	}
 
 	@RequiredArgsConstructor
@@ -93,11 +107,15 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		@NonNull
 		protected final Function<? super E, ? extends T> throwingMapper;
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public V get() throws T {
+			return run(this.source);
+		}
+
+		@SuppressWarnings("unchecked")
+		public V run(ThrowingSupplier<? extends S, ? extends E> supplier) throws T {
 			try {
-				S source = this.source.get();
+				S source = supplier.get();
 				try {
 					return mapper.apply(source);
 				} finally {
@@ -114,17 +132,18 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		}
 	}
 
-	public static class ThrowingSupplierPipeline<T, E extends Throwable, W extends ThrowingSupplier<? extends T, ? extends E>>
-			extends ThrowingFunctionPipeline<T, T, E, W, ThrowingFunction<? super T, ? extends T, ? extends E>> {
+	public static class CloseableSupplier<T, E extends Throwable, W extends ThrowingSupplier<? extends T, ? extends E>>
+			extends
+			ThrowingFunctionToSource<T, T, E, W, ThrowingFunction<? super T, ? extends T, ? extends E>> {
 
-		public ThrowingSupplierPipeline(@NonNull W source, ThrowingRunnable<? extends E> processor) {
+		public CloseableSupplier(@NonNull W source, ThrowingRunnable<? extends E> processor) {
 			super(source, ThrowingFunction.identity(), processor);
 		}
 
 	}
 
-	default Pipeline<T, E> newPipeline() {
-		return new ThrowingSupplierPipeline<>(this, null);
+	default Source<T, E> closeable() {
+		return new CloseableSupplier<>(this, null);
 	}
 
 	@RequiredArgsConstructor
@@ -150,8 +169,8 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		return new ThrowingSupplierPool<>(this, consumer);
 	}
 
-	default Pipeline<T, E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
-		return new ThrowingSupplierPipeline<>(this, endpoint);
+	default Source<T, E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
+		return new CloseableSupplier<>(this, endpoint);
 	}
 
 	default <R> ThrowingSupplier<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
@@ -164,11 +183,10 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 				throwingMapper);
 	}
 
-	public static class DefaultRuntimeThrowingSupplier<V, E extends Throwable, T extends RuntimeException, W extends ThrowingSupplier<? extends V, ? extends E>>
+	public static class RuntimeSupplier<V, E extends Throwable, T extends RuntimeException, W extends ThrowingSupplier<? extends V, ? extends E>>
 			extends MappingThrowingSupplier<V, V, E, T, W> implements RuntimeThrowingSupplier<V, T> {
 
-		public DefaultRuntimeThrowingSupplier(@NonNull W source,
-				@NonNull Function<? super E, ? extends T> throwingMapper) {
+		public RuntimeSupplier(@NonNull W source, @NonNull Function<? super E, ? extends T> throwingMapper) {
 			super(source, ThrowingFunction.identity(), ThrowingConsumer.ignore(), throwingMapper);
 		}
 
@@ -180,11 +198,29 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 
 	default <R extends RuntimeException> RuntimeThrowingSupplier<T, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new DefaultRuntimeThrowingSupplier<>(this, throwingMapper);
+		return new RuntimeSupplier<>(this, throwingMapper);
 	}
 
 	default RuntimeThrowingSupplier<T, RuntimeException> runtime() {
-		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
+		return runtime(
+				(e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new UndeclaredThrowableException(e));
+	}
+
+	public static class SupplierAsCallable<V, E extends Throwable, T extends Exception, W extends ThrowingSupplier<? extends V, ? extends E>>
+			extends MappingThrowingSupplier<V, V, E, T, W> implements Callable<V> {
+
+		public SupplierAsCallable(@NonNull W source, @NonNull Function<? super E, ? extends T> throwingMapper) {
+			super(source, ThrowingFunction.identity(), ThrowingConsumer.ignore(), throwingMapper);
+		}
+
+		@Override
+		public final V call() throws T {
+			return get();
+		}
+	}
+
+	default <R extends Exception> Callable<T> asCallable(@NonNull Function<? super E, ? extends R> throwingMapper) {
+		return new SupplierAsCallable<>(this, throwingMapper);
 	}
 
 	@RequiredArgsConstructor
@@ -206,6 +242,50 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 
 	default Optional<T> offline() throws E {
 		return Optional.ofNullable(get());
+	}
+
+	@RequiredArgsConstructor
+	@ToString
+	public static class SingletonSupplier<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
+			implements Singleton<T, E> {
+		@NonNull
+		protected final W source;
+		private volatile Supplier<? extends T> supplier;
+		private volatile long lastModified = 0;
+
+		@Override
+		public final T get() throws E {
+			if (supplier == null) {
+				synchronized (this) {
+					if (supplier == null) {
+						T value = newValue();
+						lastModified++;
+						supplier = () -> value;
+					}
+				}
+			}
+			return supplier.get();
+		}
+
+		protected T newValue() throws E {
+			return source.get();
+		}
+
+		@Override
+		public void reload() {
+			synchronized (this) {
+				supplier = null;
+			}
+		}
+
+		@Override
+		public long lastModified() {
+			return lastModified;
+		}
+	}
+
+	default Singleton<T, E> singleton() {
+		return new SingletonSupplier<>(this);
 	}
 
 	T get() throws E;

@@ -83,10 +83,10 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 		}
 	}
 
-	public static class DefaultRuntimeThrowingFunction<S, T, E extends Throwable, R extends RuntimeException>
+	public static class RuntimeFunction<S, T, E extends Throwable, R extends RuntimeException>
 			extends MappingThrowingFunction<S, T, E, T, R> implements RuntimeThrowingFunction<S, T, R> {
 
-		public DefaultRuntimeThrowingFunction(@NonNull ThrowingFunction<? super S, ? extends T, ? extends E> compose,
+		public RuntimeFunction(@NonNull ThrowingFunction<? super S, ? extends T, ? extends E> compose,
 				@NonNull Function<? super E, ? extends R> throwingMapper) {
 			super(compose, identity(), throwingMapper);
 		}
@@ -99,8 +99,8 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 
 	@RequiredArgsConstructor
 	@Getter
-	public static class PipelineReactor<S, T, E extends Throwable, W extends ThrowingFunction<S, T, E>>
-			implements Reactor<S, T, E> {
+	public static class ThrowingFunctionToPipeline<S, T, E extends Throwable, W extends ThrowingFunction<S, T, E>>
+			implements Pipeline<S, T, E> {
 		@NonNull
 		private final W source;
 		@NonNull
@@ -122,20 +122,19 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 		}
 
 		@Override
-		public Reactor<S, T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
-			return new PipelineReactor<>(this.source, (target) -> {
+		public Pipeline<S, T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
+			return new ThrowingFunctionToPipeline<>(this.source, (target) -> {
 				try {
 					endpoint.accept(target);
 				} finally {
-					ThrowingFunction.PipelineReactor.this.close(target);
+					ThrowingFunction.ThrowingFunctionToPipeline.this.close(target);
 				}
 			});
 		}
 	}
-
 	@RequiredArgsConstructor
-	public static class ThrowingFunctionPipeline<S, T, E extends Throwable, W extends ThrowingSupplier<? extends S, ? extends E>, P extends ThrowingFunction<? super S, ? extends T, ? extends E>>
-			implements Pipeline<T, E> {
+	public static class ThrowingFunctionToSource<S, T, E extends Throwable, W extends ThrowingSupplier<? extends S, ? extends E>, P extends ThrowingFunction<? super S, ? extends T, ? extends E>>
+			implements Source<T, E> {
 		@NonNull
 		protected final W source;
 		@NonNull
@@ -193,19 +192,19 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
 
 	default <R extends RuntimeException> RuntimeThrowingFunction<S, T, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new DefaultRuntimeThrowingFunction<>(this, throwingMapper);
+		return new RuntimeFunction<>(this, throwingMapper);
 	}
 
 	default RuntimeThrowingFunction<S, T, RuntimeException> runtime() {
 		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 
-	default Pipeline<T, E> newPipeline(@NonNull ThrowingSupplier<? extends S, ? extends E> supplier) {
-		return new ThrowingFunctionPipeline<>(supplier, this, null);
+	default Source<T, E> newSupplier(@NonNull ThrowingSupplier<? extends S, ? extends E> supplier) {
+		return new ThrowingFunctionToSource<>(supplier, this, null);
 	}
 
-	default Reactor<S, T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
-		return new PipelineReactor<>(this, endpoint);
+	default Pipeline<S, T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
+		return new ThrowingFunctionToPipeline<>(this, endpoint);
 	}
 
 	T apply(S source) throws E;

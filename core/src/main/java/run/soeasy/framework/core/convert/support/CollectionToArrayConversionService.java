@@ -12,7 +12,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 
 class CollectionToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -25,12 +25,12 @@ class CollectionToArrayConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
-		TypeDescriptor sourceType = value.getTypeDescriptor();
+		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		Collection<?> sourceCollection = (Collection<?>) source;
 		TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
 		Assert.state(targetElementType != null, "No target element type");

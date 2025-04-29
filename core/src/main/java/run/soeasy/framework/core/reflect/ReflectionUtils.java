@@ -10,7 +10,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.invoke.Function;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 import run.soeasy.framework.core.type.ClassUtils;
 

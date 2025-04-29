@@ -12,7 +12,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 
 class ByteBufferConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -40,9 +40,9 @@ class ByteBufferConversionService extends AbstractConversionService implements C
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
-		TypeDescriptor sourceType = value.getTypeDescriptor();
+		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		boolean byteBufferTarget = targetType.isAssignableTo(BYTE_BUFFER_TYPE);
 		if (source instanceof ByteBuffer) {
 			ByteBuffer buffer = (ByteBuffer) source;

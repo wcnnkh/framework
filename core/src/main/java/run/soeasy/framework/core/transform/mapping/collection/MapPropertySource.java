@@ -11,16 +11,16 @@ import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
+import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.transform.mapping.Property;
-import run.soeasy.framework.core.transform.mapping.PropertySource;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class MapPropertySource implements PropertySource {
+public class MapPropertySource implements PropertyTemplate {
 	@NonNull
 	private final Map map;
 	@NonNull
@@ -29,12 +29,12 @@ public class MapPropertySource implements PropertySource {
 	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	@Override
-	public Iterator<Property> iterator() {
+	public Iterator<PropertyAccessor> iterator() {
 		return map.keySet().stream().map((key) -> createProperty(key)).iterator();
 	}
 
 	@Override
-	public Property get(Object key) {
+	public PropertyAccessor get(Object key) {
 		return map.containsKey(key) ? createProperty(key) : null;
 	}
 
@@ -44,12 +44,12 @@ public class MapPropertySource implements PropertySource {
 	}
 
 	@Override
-	public Elements<Property> getValues(Object key) {
-		Property property = get(key);
+	public Elements<PropertyAccessor> getValues(Object key) {
+		PropertyAccessor property = get(key);
 		return property == null ? Elements.empty() : Elements.singleton(property);
 	}
 
-	private Property createProperty(Object key) {
+	private PropertyAccessor createProperty(Object key) {
 		return new MapProperty(map, key, typeDescriptor.getMapValueTypeDescriptor(), conversionService);
 	}
 

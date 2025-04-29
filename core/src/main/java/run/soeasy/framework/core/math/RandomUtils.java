@@ -633,7 +633,7 @@ public final class RandomUtils {
 	 * @throws E
 	 */
 	public static <T, E extends Throwable> T random(@NonNull Iterable<? extends T> iterable,
-			@NonNull ThrowingFunction<? extends T, ? extends Number, ? extends E> weightProcessor,
+			@NonNull ThrowingFunction<? super T, ? extends Number, ? extends E> weightProcessor,
 			Predicate<? super T> removePredicate) throws E {
 		return random(iterable, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}

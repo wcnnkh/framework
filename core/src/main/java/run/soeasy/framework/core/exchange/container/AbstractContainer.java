@@ -18,7 +18,7 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  */
 public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>>
 		extends LockableContainer<C, RuntimeException> implements Container<E, P> {
-	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
+	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.ignore();
 
 	public AbstractContainer(@NonNull ThrowingSupplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
@@ -34,11 +34,11 @@ public abstract class AbstractContainer<C, E, P extends PayloadRegistration<E>>
 		}
 	}
 
-	public void setPublisher(Publisher<? super Elements<ChangeEvent<E>>> publisher) {
+	public void setPublisher(@NonNull Publisher<? super Elements<ChangeEvent<E>>> publisher) {
 		Lock lock = writeLock();
 		lock.lock();
 		try {
-			this.publisher = publisher == null ? Publisher.empty() : publisher;
+			this.publisher = publisher;
 		} finally {
 			lock.unlock();
 		}

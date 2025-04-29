@@ -10,7 +10,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 
 class ArrayToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -23,10 +23,10 @@ class ArrayToArrayConversionService extends AbstractConversionService implements
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
-		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();
+		TypeDescriptor sourceTypeDescriptor = value.getReturnTypeDescriptor();
 		int len = Array.getLength(source);
 		TypeDescriptor targetElementType = requiredTypeDescriptor.getElementTypeDescriptor();
 		Object targetArray = Array.newInstance(targetElementType.getType(), len);

@@ -7,7 +7,7 @@ import java.io.Reader;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 public interface InputFactory<I extends InputStream, R extends Reader> extends InputStreamFactory<I>, ReaderFactory<R> {
@@ -34,17 +34,17 @@ public interface InputFactory<I extends InputStream, R extends Reader> extends I
 		}
 
 		@Override
-		public @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
+		public @NonNull Source<I, IOException> getInputStreamPipeline() {
 			if (inputStreamFactory == null) {
-				return Pipeline.empty();
+				return Source.empty();
 			}
 			return inputStreamFactory.getInputStreamPipeline().map(ThrowingFunction.identity());
 		}
 
 		@Override
-		public @NonNull Pipeline<R, IOException> getReaderPipeline() {
+		public @NonNull Source<R, IOException> getReaderPipeline() {
 			if (readerFactory == null) {
-				return Pipeline.empty();
+				return Source.empty();
 			}
 			return readerFactory.getReaderPipeline().map(ThrowingFunction.identity());
 		}

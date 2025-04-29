@@ -3,11 +3,11 @@ package run.soeasy.framework.core.mapping;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
 import run.soeasy.framework.core.mapping.FieldDescriptor.FieldDescriptorWrapper;
-import run.soeasy.framework.core.transform.mapping.Property;
 
 @Data
-public class Field<T extends FieldDescriptor> implements Property, FieldDescriptorWrapper<T> {
+public class Field<T extends FieldDescriptor> implements PropertyAccessor, FieldDescriptorWrapper<T> {
 	@NonNull
 	private final T source;
 	private final Object target;

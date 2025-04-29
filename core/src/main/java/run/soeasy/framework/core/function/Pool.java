@@ -4,10 +4,34 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
-	public static class PoolPipeline<T, E extends Throwable, W extends Pool<T, E>>
-			extends ThrowingSupplierPipeline<T, E, W> {
+	public static interface PoolWrapper<T, E extends Throwable, W extends Pool<T, E>>
+			extends Pool<T, E>, ThrowingSupplierWrapper<T, E, W> {
 
-		public PoolPipeline(@NonNull W source, ThrowingRunnable<? extends E> processor) {
+		@Override
+		default Source<T, E> onClose(@NonNull ThrowingRunnable<? extends E> processor) {
+			return getSource().onClose(processor);
+		}
+
+		@Override
+		default Source<T, E> newSupplier() {
+			return getSource().newSupplier();
+		}
+
+		@Override
+		default <R> Pool<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
+			return getSource().map(mapper);
+		}
+
+		@Override
+		default void close(T target) throws E {
+			getSource().close(target);
+		}
+	}
+
+	public static class PoolSource<T, E extends Throwable, W extends Pool<T, E>>
+			extends CloseableSupplier<T, E, W> {
+
+		public PoolSource(@NonNull W source, ThrowingRunnable<? extends E> processor) {
 			super(source, processor);
 		}
 
@@ -59,11 +83,11 @@ public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 	void close(T target) throws E;
 
 	@Override
-	default Pipeline<T, E> onClose(@NonNull ThrowingRunnable<? extends E> processor) {
-		return new PoolPipeline<>(this, processor);
+	default Source<T, E> onClose(@NonNull ThrowingRunnable<? extends E> processor) {
+		return new PoolSource<>(this, processor);
 	}
 
-	default Pipeline<T, E> newPipeline() {
-		return new PoolPipeline<>(this, null);
+	default Source<T, E> newSupplier() {
+		return new PoolSource<>(this, null);
 	}
 }

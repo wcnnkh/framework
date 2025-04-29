@@ -10,7 +10,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.io.Resource;
 
 public class ResourceResolverConversionService implements ConditionalConversionService {
@@ -25,7 +25,7 @@ public class ResourceResolverConversionService implements ConditionalConversionS
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		try {
 			return resourceResolver.resolveResource((Resource) value.get(), targetType);
 		} catch (IOException e) {

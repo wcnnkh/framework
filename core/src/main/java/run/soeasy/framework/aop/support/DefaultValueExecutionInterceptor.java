@@ -9,8 +9,8 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.exe.Execution;
-import run.soeasy.framework.core.exe.Executor;
+import run.soeasy.framework.core.invoke.Execution;
+import run.soeasy.framework.core.invoke.Executor;
 import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 
 /**

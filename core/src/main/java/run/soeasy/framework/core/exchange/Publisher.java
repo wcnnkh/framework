@@ -19,13 +19,13 @@ public interface Publisher<T> {
 		}
 	}
 
-	public static class EmptyPublisher<T> implements Publisher<T> {
+	public static class IgnorePublisher<T> implements Publisher<T> {
+		public static final Publisher<?> INSTANCE = new IgnorePublisher<>();
 
 		@Override
 		public Receipt publish(T resource) {
 			return Receipt.SUCCESS;
 		}
-
 	}
 
 	@FunctionalInterface
@@ -44,13 +44,12 @@ public interface Publisher<T> {
 		default Receipt publish(T resource) {
 			return getSource().publish(Elements.singleton(resource));
 		}
+
 	}
 
-	public static Publisher<?> EMPTY_PUBLISHER = new EmptyPublisher<>();
-
 	@SuppressWarnings("unchecked")
-	public static <E> Publisher<E> empty() {
-		return (Publisher<E>) EMPTY_PUBLISHER;
+	public static <E> Publisher<E> ignore() {
+		return (Publisher<E>) IgnorePublisher.INSTANCE;
 	}
 
 	default BatchPublisher<T> batch() {

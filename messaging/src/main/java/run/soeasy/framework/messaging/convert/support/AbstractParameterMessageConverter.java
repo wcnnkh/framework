@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.Writeable;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.convert.value.Readable;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.convert.value.Writeable;
 import run.soeasy.framework.core.io.MimeType;
-import run.soeasy.framework.core.transform.mapping.Parameter;
+import run.soeasy.framework.core.transform.mapping.ParameterAccessor;
 import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
@@ -39,13 +39,13 @@ public abstract class AbstractParameterMessageConverter extends AbstractMessageC
 		return null;
 	}
 
-	protected abstract void doWrite(@NonNull Parameter parameter, @NonNull OutputMessage message) throws IOException;
+	protected abstract void doWrite(@NonNull ParameterAccessor parameter, @NonNull OutputMessage message) throws IOException;
 
 	@Override
 	protected void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
-		if (source instanceof Parameter) {
-			doWrite((Parameter) source, message);
+		if (source instanceof ParameterAccessor) {
+			doWrite((ParameterAccessor) source, message);
 		}
 	}
 

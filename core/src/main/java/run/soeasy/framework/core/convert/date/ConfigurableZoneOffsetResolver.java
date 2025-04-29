@@ -2,7 +2,7 @@ package run.soeasy.framework.core.convert.date;
 
 import java.time.ZoneOffset;
 
-import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.Readable;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class ConfigurableZoneOffsetResolver extends ConfigurableServices<ZoneOffsetResolver>

@@ -5,7 +5,7 @@ import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.value.Readable;
+import run.soeasy.framework.core.convert.Readable;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 @RequiredArgsConstructor

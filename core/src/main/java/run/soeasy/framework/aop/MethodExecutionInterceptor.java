@@ -1,8 +1,8 @@
 package run.soeasy.framework.aop;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Execution;
-import run.soeasy.framework.core.exe.Invocation;
+import run.soeasy.framework.core.invoke.Execution;
+import run.soeasy.framework.core.invoke.Invocation;
 
 /**
  * 对方法的执行的拦截

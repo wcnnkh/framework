@@ -3,7 +3,7 @@ package run.soeasy.framework.messaging.convert;
 import java.io.IOException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.value.Writeable;
+import run.soeasy.framework.core.convert.Writeable;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.Message;

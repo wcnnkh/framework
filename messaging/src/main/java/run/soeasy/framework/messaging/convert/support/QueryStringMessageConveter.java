@@ -5,8 +5,8 @@ import java.nio.charset.Charset;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.value.Data;
-import run.soeasy.framework.core.convert.value.Writeable;
+import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.Writeable;
 import run.soeasy.framework.messaging.MediaType;
 
 @Getter

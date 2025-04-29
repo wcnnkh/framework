@@ -2,7 +2,7 @@ package run.soeasy.framework.core.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.stereotype.TemplateProvider;
+import run.soeasy.framework.core.convert.transform.TemplateProvider;
 
 public interface MappingTemplateProvider<SD extends FieldDescriptor, SM extends MappingDescriptor<? extends SD>>
 		extends MappingDescriptorFactory<SD, SM>,

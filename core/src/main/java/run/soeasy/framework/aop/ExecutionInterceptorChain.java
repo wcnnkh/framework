@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.exe.Execution;
+import run.soeasy.framework.core.invoke.Execution;
 
 @RequiredArgsConstructor
 @AllArgsConstructor

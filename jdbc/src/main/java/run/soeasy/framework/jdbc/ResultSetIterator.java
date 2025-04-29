@@ -7,8 +7,8 @@ import java.util.function.Supplier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CloseableIterator;
-import run.soeasy.framework.core.exe.Function;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.invoke.Function;
 
 public class ResultSetIterator<T> extends JdbcWrapper<ResultSet> implements CloseableIterator<T> {
 	private Supplier<ResultSet> next;
@@ -16,7 +16,7 @@ public class ResultSetIterator<T> extends JdbcWrapper<ResultSet> implements Clos
 	private ResultSet resultSet;
 	private final Function<? super ResultSet, ? extends T, ? extends Throwable> mapper;
 
-	public ResultSetIterator(Pipeline<ResultSet, SQLException> source,
+	public ResultSetIterator(Source<ResultSet, SQLException> source,
 			@NonNull Function<? super ResultSet, ? extends T, ? extends Throwable> mapper) {
 		super(source);
 		this.mapper = mapper;

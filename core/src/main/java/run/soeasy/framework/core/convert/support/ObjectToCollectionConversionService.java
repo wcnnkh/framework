@@ -11,7 +11,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 
 class ObjectToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ObjectToCollectionConversionService(ConversionService conversionService) {
@@ -23,7 +23,7 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;
@@ -36,7 +36,7 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 		if (elementDesc == null || elementDesc.isCollection()) {
 			target.add(source);
 		} else {
-			TypeDescriptor sourceType = value.getTypeDescriptor();
+			TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 			Object singleElement = getConversionService().convert(source, sourceType, elementDesc);
 			target.add(singleElement);
 		}

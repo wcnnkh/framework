@@ -6,12 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import run.soeasy.framework.core.exe.Function;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.invoke.Function;
 
 public class ConnectionWrapper extends JdbcWrapper<Connection> {
 
-	public ConnectionWrapper(Pipeline<Connection, SQLException> source) {
+	public ConnectionWrapper(Source<Connection, SQLException> source) {
 		super(source);
 	}
 

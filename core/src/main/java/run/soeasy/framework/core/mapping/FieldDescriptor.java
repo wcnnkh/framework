@@ -2,9 +2,9 @@ package run.soeasy.framework.core.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exe.Getter;
-import run.soeasy.framework.core.exe.Setter;
-import run.soeasy.framework.core.transform.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.convert.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.invoke.mapping.Getter;
+import run.soeasy.framework.core.invoke.mapping.Setter;
 
 public interface FieldDescriptor extends PropertyDescriptor {
 	@FunctionalInterface

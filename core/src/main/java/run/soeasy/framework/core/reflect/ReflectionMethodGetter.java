@@ -5,7 +5,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exe.Getter;
+import run.soeasy.framework.core.invoke.mapping.Getter;
 
 public class ReflectionMethodGetter extends ReflectionMethod implements Getter {
 	private String name;

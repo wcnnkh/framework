@@ -30,8 +30,7 @@ public class Wrapped<T> implements Wrapper<T> {
 		}
 
 		if (obj instanceof Wrapped) {
-			Wrapped<?> other = (Wrapped<?>) obj;
-			return other.equals(this.source);
+			return ObjectUtils.equals(this.source, ((Wrapped<?>) obj).source);
 		}
 		return ObjectUtils.equals(this.source, obj);
 	}

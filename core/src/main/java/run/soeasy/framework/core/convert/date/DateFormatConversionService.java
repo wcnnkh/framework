@@ -13,8 +13,8 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.convert.support.AbstractConversionService;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.time.TimeUtils;
 
@@ -47,7 +47,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;
@@ -55,7 +55,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 
 		Codec<Date, String> sourceCodec = dateCodecResolver.resolveDateCodec(value);
 		Codec<Date, String> targetCodec = dateCodecResolver.resolveDateCodec(() -> targetType);
-		TypeDescriptor sourceType = value.getTypeDescriptor();
+		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		if (sourceType.getType() == String.class) {
 			if (targetType.getType() == Date.class) {
 				return stringToDate((String) source, sourceType, targetType, sourceCodec, targetCodec);
@@ -86,7 +86,7 @@ public class DateFormatConversionService extends AbstractConversionService imple
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return ValueAccessor.of(source).getAsObject(targetType);
+				return TypedValue.of(source).getAsObject(targetType);
 			}
 		}
 
@@ -139,11 +139,11 @@ public class DateFormatConversionService extends AbstractConversionService imple
 	}
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return ValueAccessor.of(source.getTime()).getAsObject(targetType);
+		return TypedValue.of(source.getTime()).getAsObject(targetType);
 	}
 
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		long time = ValueAccessor.of(source).getAsLong();
+		long time = TypedValue.of(source).getAsLong();
 		return new Date(time);
 	}
 

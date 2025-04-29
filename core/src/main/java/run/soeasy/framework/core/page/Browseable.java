@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.exe.Functions;
+import run.soeasy.framework.core.invoke.Functions;
 
 public interface Browseable<K, T> extends Cursor<K, T> {
 

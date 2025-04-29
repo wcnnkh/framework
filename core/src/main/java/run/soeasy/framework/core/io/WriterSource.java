@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 
 @FunctionalInterface
 public interface WriterSource<T extends Writer> extends WriterFactory<T> {
@@ -16,7 +16,7 @@ public interface WriterSource<T extends Writer> extends WriterFactory<T> {
 		}
 
 		@Override
-		default @NonNull Pipeline<T, IOException> getWriterPipeline() {
+		default @NonNull Source<T, IOException> getWriterPipeline() {
 			return getSource().getWriterPipeline();
 		}
 	}
@@ -24,8 +24,8 @@ public interface WriterSource<T extends Writer> extends WriterFactory<T> {
 	T getWriter() throws IOException;
 
 	@Override
-	default @NonNull Pipeline<T, IOException> getWriterPipeline() {
-		return Pipeline.forCloseable(this::getWriter);
+	default @NonNull Source<T, IOException> getWriterPipeline() {
+		return Source.forCloseable(this::getWriter);
 	}
 
 }

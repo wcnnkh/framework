@@ -8,7 +8,7 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.exe.Execution;
+import run.soeasy.framework.core.invoke.Execution;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data

@@ -5,9 +5,9 @@ import java.util.Map;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.Property;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
 
-public class MapProperty extends GenericMapAccess implements Property {
+public class MapProperty extends GenericMapAccess implements PropertyAccessor {
 
 	@SuppressWarnings("rawtypes")
 	public MapProperty(@NonNull Map map, @NonNull Object key, @NonNull TypeDescriptor typeDescriptor,

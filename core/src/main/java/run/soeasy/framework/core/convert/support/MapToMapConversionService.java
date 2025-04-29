@@ -14,7 +14,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -24,7 +24,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source == null) {
 			return null;
@@ -40,7 +40,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 		TypeDescriptor keyDesc = targetType.getMapKeyTypeDescriptor();
 		TypeDescriptor valueDesc = targetType.getMapValueTypeDescriptor();
 		List<KeyValue<?, ?>> targetEntries = new ArrayList<>(sourceMap.size());
-		TypeDescriptor sourceType = value.getTypeDescriptor();
+		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		for (Map.Entry<Object, Object> entry : sourceMap.entrySet()) {
 			Object sourceKey = entry.getKey();
 			Object sourceValue = entry.getValue();

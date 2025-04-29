@@ -10,7 +10,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.type.ResolvableType;
 
 @Data
@@ -31,9 +31,9 @@ public class LocalDateTimeConversion implements ConversionService, ConversionSer
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
-		TypeDescriptor sourceType = value.getTypeDescriptor();
+		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		java.time.ZoneOffset zoneOffset = zoneOffsetResolver.resolveZoneOffset(() -> targetType);
 		if (zoneOffset == null) {
 			zoneOffset = OffsetDateTime.now().getOffset();

@@ -2,6 +2,7 @@ package run.soeasy.framework.core.transform.mapping;
 
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.convert.mapping.PropertyDescriptors;
 
 @FunctionalInterface
 public interface ParameterDescriptors<T extends ParameterDescriptor> extends PropertyDescriptors<T> {

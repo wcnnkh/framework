@@ -84,7 +84,7 @@ public interface Streamable<E> {
 
 		@Override
 		default <T, X extends Throwable> T export(
-				run.soeasy.framework.core.exe.Function<? super Stream<E>, ? extends T, ? extends X> processor)
+				run.soeasy.framework.core.invoke.Function<? super Stream<E>, ? extends T, ? extends X> processor)
 				throws X {
 			return getSource().export(processor);
 		}
@@ -218,7 +218,7 @@ public interface Streamable<E> {
 
 		@Override
 		default <X extends Throwable> void transfer(
-				run.soeasy.framework.core.exe.Consumer<? super Stream<E>, ? extends X> processor) throws X {
+				run.soeasy.framework.core.invoke.Consumer<? super Stream<E>, ? extends X> processor) throws X {
 			getSource().transfer(processor);
 		}
 
@@ -318,7 +318,7 @@ public interface Streamable<E> {
 	}
 
 	default <T, X extends Throwable> T export(
-			run.soeasy.framework.core.exe.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
+			run.soeasy.framework.core.invoke.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			return processor.apply(stream);
@@ -580,7 +580,7 @@ public interface Streamable<E> {
 	}
 
 	default <X extends Throwable> void transfer(
-			run.soeasy.framework.core.exe.Consumer<? super Stream<E>, ? extends X> processor) throws X {
+			run.soeasy.framework.core.invoke.Consumer<? super Stream<E>, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			processor.accept(stream);

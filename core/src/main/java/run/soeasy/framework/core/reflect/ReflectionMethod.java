@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Invocation;
+import run.soeasy.framework.core.invoke.Invocation;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

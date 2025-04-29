@@ -56,7 +56,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 		public UpdateableElementRegistration and(@NonNull Registration registration) {
 			return new UpdateableElementRegistration(super.and(registration));
 		}
-		
+
 		@Override
 		public boolean cancel(BooleanSupplier cancel) {
 			return super.cancel(() -> {
@@ -74,7 +74,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 		}
 	}
 
-	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.empty();
+	private volatile Publisher<? super Elements<ChangeEvent<E>>> publisher = Publisher.ignore();
 
 	public CollectionContainer(@NonNull ThrowingSupplier<? extends C, ? extends RuntimeException> containerSource) {
 		super(containerSource);
@@ -305,7 +305,7 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 	public Object[] toArray() {
 		return toList().toArray();
 	}
-	
+
 	@Override
 	public <T> T[] toArray(T[] array) {
 		return super.toArray(array);

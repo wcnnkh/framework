@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.transform.mapping.PropertySource.EmptyPropertySource;
+import run.soeasy.framework.core.convert.mapping.PropertyTemplate.EmptyPropertySource;
 
 @RequiredArgsConstructor
 @Getter

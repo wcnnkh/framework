@@ -6,13 +6,13 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.transform.Template;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.transform.mapping.collection.MapPropertySource;
-import run.soeasy.framework.core.transform.stereotype.Accessor;
-import run.soeasy.framework.core.transform.stereotype.Template;
 
 public class DefaultMapper
-		extends ObjectMapper<Object, Accessor, Template<Object, ? extends Accessor>, ConversionException>
+		extends ObjectMapper<Object, TypedValueAccessor, Template<Object, TypedValueAccessor>, ConversionException>
 		implements ConversionService {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

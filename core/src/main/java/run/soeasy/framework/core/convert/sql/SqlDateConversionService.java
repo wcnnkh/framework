@@ -12,8 +12,8 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.convert.support.AbstractConversionService;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
@@ -26,7 +26,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		Object source = value.get();
 		if (source instanceof Time) {
 			return sqlTimeToObject((Time) source, targetType.getType());

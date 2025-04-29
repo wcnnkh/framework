@@ -3,7 +3,7 @@ package run.soeasy.framework.core.reflect;
 import java.lang.reflect.Field;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Setter;
+import run.soeasy.framework.core.invoke.mapping.Setter;
 
 public class ReflectionFieldSetter extends ReflectionField implements Setter {
 	private static final long serialVersionUID = 1L;

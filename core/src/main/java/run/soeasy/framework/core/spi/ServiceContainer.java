@@ -18,7 +18,6 @@ import run.soeasy.framework.core.Lifecycle;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Provider;
-import run.soeasy.framework.core.collection.Reloadable;
 import run.soeasy.framework.core.exchange.Listenable;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;
@@ -30,6 +29,7 @@ import run.soeasy.framework.core.exchange.container.RegistrationException;
 import run.soeasy.framework.core.exchange.container.TreeSetContainer;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
+import run.soeasy.framework.core.function.Reloadable;
 
 public class ServiceContainer<E> extends TreeSetContainer<E> implements Provider<E> {
 

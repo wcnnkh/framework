@@ -5,12 +5,14 @@ import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.Converters;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.stereotype.Accessor;
-import run.soeasy.framework.core.transform.stereotype.ObjectTransformer;
-import run.soeasy.framework.core.transform.stereotype.Template;
+import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.transform.ConfigurableInstanceFactory;
+import run.soeasy.framework.core.convert.transform.Mapper;
+import run.soeasy.framework.core.convert.transform.ObjectTemplateTransformer;
+import run.soeasy.framework.core.convert.transform.Template;
 
-public class ObjectMapper<K, V extends Accessor, T extends Template<K, ? extends V>, E extends Throwable>
-		extends ObjectTransformer<K, V, T, E> implements Mapper<Object, Object, E> {
+public class ObjectMapper<K, V extends TypedValueAccessor, T extends Template<K, V>, E extends Throwable>
+		extends ObjectTemplateTransformer<K, V, T, E> implements Mapper<Object, Object, E> {
 	private final ConfigurableInstanceFactory instanceFactory = new ConfigurableInstanceFactory();
 	private final Converters<Object, Object, E, Converter<? super Object, ? extends Object, ? extends E>> converters = new Converters<>();
 

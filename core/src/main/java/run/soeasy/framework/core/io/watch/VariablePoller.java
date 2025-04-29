@@ -9,7 +9,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
-import run.soeasy.framework.core.io.Variable;
+import run.soeasy.framework.core.function.Variable;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 

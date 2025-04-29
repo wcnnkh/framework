@@ -3,11 +3,11 @@ package run.soeasy.framework.core.mapping;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.transform.mapping.PropertySource;
+import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
 
 @Data
 public class MappingTemplate<S extends FieldDescriptor, SM extends MappingDescriptor<? extends S>>
-		implements PropertySource<Field<S>>, MappingDescriptor<Field<S>> {
+		implements PropertyTemplate<Field<S>>, MappingDescriptor<Field<S>> {
 	@NonNull
 	private final SM source;
 	private final Object target;

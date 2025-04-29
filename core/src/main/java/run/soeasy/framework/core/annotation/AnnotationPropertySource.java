@@ -5,10 +5,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.mapping.PropertySource;
 
-public interface AnnotationPropertySource<A extends Annotation> extends PropertySource, InvocationHandler {
+public interface AnnotationPropertySource<A extends Annotation> extends PropertyTemplate, InvocationHandler {
 	Class<A> getType();
 
 	@Override

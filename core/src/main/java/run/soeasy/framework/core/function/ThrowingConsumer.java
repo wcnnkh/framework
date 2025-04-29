@@ -6,8 +6,54 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.Wrapper;
 
 public interface ThrowingConsumer<S, E extends Throwable> {
+	public static interface ThrowingConsumerWrapper<S, E extends Throwable, W extends ThrowingConsumer<S, E>>
+			extends ThrowingConsumer<S, E>, Wrapper<W> {
+		@Override
+		default <R> ThrowingConsumer<R, E> map(ThrowingFunction<? super R, ? extends S, ? extends E> mapper) {
+			return getSource().map(mapper);
+		}
+
+		@Override
+		default ThrowingConsumer<S, E> compose(@NonNull ThrowingConsumer<? super S, ? extends E> before) {
+			return getSource().compose(before);
+		}
+
+		@Override
+		default ThrowingConsumer<S, E> andThen(@NonNull ThrowingConsumer<? super S, ? extends E> after) {
+			return getSource().andThen(after);
+		}
+
+		@Override
+		default <R extends Throwable> ThrowingConsumer<S, R> throwing(
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().throwing(throwingMapper);
+		}
+
+		@Override
+		default RuntimeThrowingConsumer<S, RuntimeException> runtime() {
+			return getSource().runtime();
+		}
+
+		@Override
+		default <R extends RuntimeException> RuntimeThrowingConsumer<S, R> runtime(
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().runtime(throwingMapper);
+		}
+
+		@Override
+		default ThrowingConsumer<S, E> onClose(@NonNull ThrowingConsumer<? super S, ? extends E> endpoint) {
+			return getSource().onClose(endpoint);
+		}
+
+		@Override
+		default void accept(S source) throws E {
+			getSource().accept(source);
+		}
+	}
+
 	public static class IgnoreThrowingConsumer<S, E extends Throwable> implements ThrowingConsumer<S, E> {
 		private static final IgnoreThrowingConsumer<?, ?> INSTANCE = new IgnoreThrowingConsumer<>();
 
@@ -62,10 +108,10 @@ public interface ThrowingConsumer<S, E extends Throwable> {
 		}
 	}
 
-	public static class DefaultRuntimeThrowingConsumer<S, E extends Throwable, R extends RuntimeException>
+	public static class RuntimeConsumer<S, E extends Throwable, R extends RuntimeException>
 			extends MappingThrowingConsumer<S, E, S, R> implements RuntimeThrowingConsumer<S, R> {
 
-		public DefaultRuntimeThrowingConsumer(@NonNull ThrowingConsumer<? super S, ? extends E> compose,
+		public RuntimeConsumer(@NonNull ThrowingConsumer<? super S, ? extends E> compose,
 				@NonNull Function<? super E, ? extends R> throwingMapper) {
 			super(ThrowingFunction.identity(), compose, ignore(), throwingMapper, ignore());
 		}
@@ -95,7 +141,7 @@ public interface ThrowingConsumer<S, E extends Throwable> {
 
 	default <R extends RuntimeException> RuntimeThrowingConsumer<S, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new DefaultRuntimeThrowingConsumer<>(this, throwingMapper);
+		return new RuntimeConsumer<>(this, throwingMapper);
 	}
 
 	default RuntimeThrowingConsumer<S, RuntimeException> runtime() {

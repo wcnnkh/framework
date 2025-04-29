@@ -161,8 +161,8 @@ public interface Inheriter<A, B> {
 		}
 	}
 
-	public static class WrappedCallable<A, B, I extends Inheriter<A, B>, T, E extends Throwable, W extends run.soeasy.framework.core.exe.Callable<? extends T, ? extends E>>
-			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.exe.Callable<T, E> {
+	public static class WrappedCallable<A, B, I extends Inheriter<A, B>, T, E extends Throwable, W extends run.soeasy.framework.core.invoke.Callable<? extends T, ? extends E>>
+			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.invoke.Callable<T, E> {
 
 		public WrappedCallable(W source, I inheriter) {
 			super(source, inheriter);
@@ -178,8 +178,8 @@ public interface Inheriter<A, B> {
 		};
 	}
 
-	public static class WrappedConsumer<A, B, I extends Inheriter<A, B>, S, E extends Throwable, W extends run.soeasy.framework.core.exe.Consumer<? super S, ? extends E>>
-			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.exe.Consumer<S, E> {
+	public static class WrappedConsumer<A, B, I extends Inheriter<A, B>, S, E extends Throwable, W extends run.soeasy.framework.core.invoke.Consumer<? super S, ? extends E>>
+			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.invoke.Consumer<S, E> {
 
 		public WrappedConsumer(W source, I inheriter) {
 			super(source, inheriter);
@@ -195,8 +195,8 @@ public interface Inheriter<A, B> {
 		}
 	}
 
-	public static class WrappedFunction<A, B, I extends Inheriter<A, B>, S, T, E extends Throwable, W extends run.soeasy.framework.core.exe.Function<? super S, ? extends T, ? extends E>>
-			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.exe.Function<S, T, E> {
+	public static class WrappedFunction<A, B, I extends Inheriter<A, B>, S, T, E extends Throwable, W extends run.soeasy.framework.core.invoke.Function<? super S, ? extends T, ? extends E>>
+			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.invoke.Function<S, T, E> {
 
 		public WrappedFunction(W source, I inheriter) {
 			super(source, inheriter);
@@ -284,8 +284,8 @@ public interface Inheriter<A, B> {
 
 	}
 
-	public static class WrappedRunnable<A, B, I extends Inheriter<A, B>, E extends Throwable, W extends run.soeasy.framework.core.exe.Runnable<? extends E>>
-			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.exe.Runnable<E> {
+	public static class WrappedRunnable<A, B, I extends Inheriter<A, B>, E extends Throwable, W extends run.soeasy.framework.core.invoke.Runnable<? extends E>>
+			extends Wrapper<A, B, I, W> implements run.soeasy.framework.core.invoke.Runnable<E> {
 
 		public WrappedRunnable(W source, I inheriter) {
 			super(source, inheriter);
@@ -336,8 +336,8 @@ public interface Inheriter<A, B> {
 		return new WrappedNativeCallable<>(callable, this);
 	}
 
-	default <T, E extends Throwable> run.soeasy.framework.core.exe.Callable<T, E> wrapCallable(
-			@NonNull run.soeasy.framework.core.exe.Callable<? extends T, ? extends E> callable) {
+	default <T, E extends Throwable> run.soeasy.framework.core.invoke.Callable<T, E> wrapCallable(
+			@NonNull run.soeasy.framework.core.invoke.Callable<? extends T, ? extends E> callable) {
 		return new WrappedCallable<>(callable, this);
 	}
 
@@ -345,8 +345,8 @@ public interface Inheriter<A, B> {
 		return new WrappedNativeConsumer<>(consumer, this);
 	}
 
-	default <S, E extends Throwable> run.soeasy.framework.core.exe.Consumer<S, E> wrapConsumer(
-			@NonNull run.soeasy.framework.core.exe.Consumer<? super S, ? extends E> consumer) {
+	default <S, E extends Throwable> run.soeasy.framework.core.invoke.Consumer<S, E> wrapConsumer(
+			@NonNull run.soeasy.framework.core.invoke.Consumer<? super S, ? extends E> consumer) {
 		return new WrappedConsumer<>(consumer, this);
 	}
 
@@ -354,13 +354,13 @@ public interface Inheriter<A, B> {
 		return new WrappedNativeFunction<>(function, this);
 	}
 
-	default <S, T, E extends Throwable> run.soeasy.framework.core.exe.Function<S, T, E> wrapFunction(
-			@NonNull run.soeasy.framework.core.exe.Function<? super S, ? extends T, ? extends E> function) {
+	default <S, T, E extends Throwable> run.soeasy.framework.core.invoke.Function<S, T, E> wrapFunction(
+			@NonNull run.soeasy.framework.core.invoke.Function<? super S, ? extends T, ? extends E> function) {
 		return new WrappedFunction<>(function, this);
 	}
 
-	default <E extends Throwable> run.soeasy.framework.core.exe.Runnable<E> wrapRunnable(
-			run.soeasy.framework.core.exe.Runnable<? extends E> runnable) {
+	default <E extends Throwable> run.soeasy.framework.core.invoke.Runnable<E> wrapRunnable(
+			run.soeasy.framework.core.invoke.Runnable<? extends E> runnable) {
 		return new WrappedRunnable<>(runnable, this);
 	}
 

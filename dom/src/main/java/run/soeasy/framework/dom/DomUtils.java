@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.exe.Function;
+import run.soeasy.framework.core.invoke.Function;
 
 public final class DomUtils {
 	private DomUtils() {

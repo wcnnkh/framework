@@ -5,9 +5,55 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.RuntimeThrowingPredicate.DefaultRuntimeThrowingPredicate;
+import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.RuntimeThrowingPredicate.RuntimePredicate;
 
 public interface ThrowingPredicate<S, E extends Throwable> {
+	public static interface ThrowingPredicateWrapper<S, E extends Throwable, W extends ThrowingPredicate<S, E>>
+			extends ThrowingPredicate<S, E>, Wrapper<W> {
+		@Override
+		default <R> ThrowingPredicate<R, E> map(@NonNull ThrowingFunction<? super R, ? extends S, ? extends E> mapper) {
+			return getSource().map(mapper);
+		}
+
+		@Override
+		default ThrowingPredicate<S, E> and(@NonNull ThrowingPredicate<? super S, ? extends E> other) {
+			return getSource().and(other);
+		}
+
+		@Override
+		default ThrowingPredicate<S, E> negate() {
+			return getSource().negate();
+		}
+
+		@Override
+		default ThrowingPredicate<S, E> or(@NonNull ThrowingPredicate<? super S, ? extends E> other) {
+			return getSource().or(other);
+		}
+
+		@Override
+		default <R extends Throwable> ThrowingPredicate<S, R> throwing(
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().throwing(throwingMapper);
+		}
+
+		@Override
+		default RuntimeThrowingPredicate<S, RuntimeException> runtime() {
+			return getSource().runtime();
+		}
+
+		@Override
+		default <R extends RuntimeException> RuntimeThrowingPredicate<S, R> runtime(
+				@NonNull Function<? super E, ? extends R> throwingMapper) {
+			return getSource().runtime(throwingMapper);
+		}
+
+		@Override
+		default boolean test(S source) throws E {
+			return getSource().test(source);
+		}
+	}
+
 	@RequiredArgsConstructor
 	public static class AlwaysBooleanPredicat<S, E extends Throwable> implements ThrowingPredicate<S, E> {
 		private static final AlwaysBooleanPredicat<?, ?> TRUE = new AlwaysBooleanPredicat<>(true);
@@ -82,7 +128,7 @@ public interface ThrowingPredicate<S, E extends Throwable> {
 
 	default <R extends RuntimeException> RuntimeThrowingPredicate<S, R> runtime(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new DefaultRuntimeThrowingPredicate<>(this, throwingMapper);
+		return new RuntimePredicate<>(this, throwingMapper);
 	}
 
 	default RuntimeThrowingPredicate<S, RuntimeException> runtime() {

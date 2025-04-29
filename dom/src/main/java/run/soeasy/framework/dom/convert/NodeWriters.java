@@ -5,8 +5,8 @@ import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
+import run.soeasy.framework.core.convert.Readable;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.convert.value.Readable;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.spi.ServiceProvider;

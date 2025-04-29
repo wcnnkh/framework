@@ -3,6 +3,7 @@ package run.soeasy.framework.core.transform.mapping;
 import lombok.NonNull;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.convert.mapping.Dictionary;
 
 /**
  * 多个参数的定义
@@ -10,12 +11,12 @@ import run.soeasy.framework.core.collection.Elements;
  * @author shuchaowen
  *
  */
-public interface ParameterSource extends Dictionary<Parameter>, ParameterDescriptors<Parameter> {
+public interface ParameterSource extends Dictionary<ParameterAccessor>, ParameterDescriptors<ParameterAccessor> {
 	public static interface ParameterSourceWrapper<W extends ParameterSource>
-			extends ParameterSource, DictionaryWrapper<Parameter, W>, ParameterDescriptorsWrapper<Parameter, W> {
+			extends ParameterSource, DictionaryWrapper<ParameterAccessor, W>, ParameterDescriptorsWrapper<ParameterAccessor, W> {
 
 		@Override
-		default Elements<KeyValue<Object, Parameter>> getElements() {
+		default Elements<KeyValue<Object, ParameterAccessor>> getElements() {
 			return getSource().getElements();
 		}
 
@@ -25,7 +26,7 @@ public interface ParameterSource extends Dictionary<Parameter>, ParameterDescrip
 		}
 	}
 
-	public static class RenamedParameterSource<W extends ParameterSource> extends RenamedTemplate<Object, Parameter, W>
+	public static class RenamedParameterSource<W extends ParameterSource> extends RenamedTemplate<Object, ParameterAccessor, W>
 			implements ParameterSourceWrapper<W> {
 
 		public RenamedParameterSource(@NonNull W source, String name) {
@@ -43,7 +44,7 @@ public interface ParameterSource extends Dictionary<Parameter>, ParameterDescrip
 	}
 
 	@Override
-	default Elements<KeyValue<Object, Parameter>> getElements() {
+	default Elements<KeyValue<Object, ParameterAccessor>> getElements() {
 		return ParameterDescriptors.super.getElements();
 	}
 

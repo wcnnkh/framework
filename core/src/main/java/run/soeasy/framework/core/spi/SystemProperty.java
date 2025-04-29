@@ -5,17 +5,19 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.transform.mapping.Property;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class SystemProperty implements Property {
+public class SystemProperty implements PropertyAccessor {
 	@NonNull
 	private final String name;
 	@NonNull
@@ -23,7 +25,7 @@ public class SystemProperty implements Property {
 
 	@Override
 	public void set(Object source) throws UnsupportedOperationException {
-		String value = (String) conversionService.convert(ValueAccessor.of(source), TypeDescriptor.valueOf(String.class));
+		String value = (String) conversionService.apply(ValueAccessor.of(source), TypeDescriptor.valueOf(String.class));
 		System.setProperty(name, value);
 	}
 
@@ -39,5 +41,20 @@ public class SystemProperty implements Property {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public boolean isWriteable() {
+		return true;
+	}
+
+	@Override
+	public <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super Object, ? extends R, ? extends X> mapper)
+			throws ConversionException, X {
+		String value = System.getProperty(name);
+		if (value == null) {
+			value = System.getenv(value);
+		}
+		return mapper.apply(value);
 	}
 }

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 
 @FunctionalInterface
 public interface ReaderSource<T extends Reader> extends ReaderFactory<T> {
@@ -16,7 +16,7 @@ public interface ReaderSource<T extends Reader> extends ReaderFactory<T> {
 		}
 
 		@Override
-		default @NonNull Pipeline<T, IOException> getReaderPipeline() {
+		default @NonNull Source<T, IOException> getReaderPipeline() {
 			return getSource().getReaderPipeline();
 		}
 	}
@@ -24,7 +24,7 @@ public interface ReaderSource<T extends Reader> extends ReaderFactory<T> {
 	T getReader() throws IOException;
 
 	@Override
-	default @NonNull Pipeline<T, IOException> getReaderPipeline() {
-		return Pipeline.forCloseable(this::getReader);
+	default @NonNull Source<T, IOException> getReaderPipeline() {
+		return Source.forCloseable(this::getReader);
 	}
 }

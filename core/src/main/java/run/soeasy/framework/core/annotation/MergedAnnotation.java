@@ -15,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
 import run.soeasy.framework.core.collection.Streams;
+import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.mapping.Property;
 
 @RequiredArgsConstructor
 @Getter
@@ -56,12 +56,12 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
 	private final Iterable<? extends A> annotations;
 
 	@Override
-	public Iterator<Property> iterator() {
+	public Iterator<PropertyAccessor> iterator() {
 		return Streams.stream(annotations).flatMap((annotation) -> {
 			Method[] methods = getMethods(type);
 			return Arrays.asList(methods).stream().map((method) -> {
 				Object value = ReflectionUtils.invoke(method, annotation);
-				return Property.of(method.getName(), ValueAccessor.of(value));
+				return PropertyAccessor.of(method.getName(), ValueAccessor.of(value));
 			});
 		}).iterator();
 	}

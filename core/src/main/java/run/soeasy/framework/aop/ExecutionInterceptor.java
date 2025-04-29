@@ -1,7 +1,7 @@
 package run.soeasy.framework.aop;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Execution;
+import run.soeasy.framework.core.invoke.Execution;
 
 /**
  * 拦截器

@@ -2,8 +2,8 @@ package run.soeasy.framework.util;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.exe.Supplier;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.invoke.Supplier;
 import run.soeasy.framework.core.function.Pool;
 
 public class SourceTest {
@@ -21,7 +21,7 @@ public class SourceTest {
 		}).optional().isPresent();
 
 		Pool<Object, Throwable> pool = source.onClose((e) -> System.out.println("close1:" + e));
-		Pipeline<?, ?> channel = pool.newPipeline().map((t) -> "-" + t)
+		Source<?, ?> channel = pool.newPipeline().map((t) -> "-" + t)
 				.onClose((e) -> System.out.println("close2:" + e)).map((e) -> "-" + e).newPipeline().newPipeline()
 				.map((e) -> "-" + e).onClose((e) -> System.out.println("close3:" + e))
 				.onClose(() -> System.out.println("end"));

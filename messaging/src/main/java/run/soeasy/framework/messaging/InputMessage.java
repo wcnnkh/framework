@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.Wrapped;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.io.InputFactory;
 import run.soeasy.framework.core.io.InputStreamSource;
 
@@ -56,8 +56,8 @@ public interface InputMessage extends Message, InputStreamSource<InputStream> {
 		}
 
 		@Override
-		public @NonNull Pipeline<InputStream, IOException> getInputStreamPipeline() {
-			return Pipeline.of(() -> getInputStream());
+		public @NonNull Source<InputStream, IOException> getInputStreamPipeline() {
+			return Source.of(() -> getInputStream());
 		}
 
 		@Override

@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exe.Executable;
+import run.soeasy.framework.core.invoke.ExecutableDescriptor;
 
 @Data
-public abstract class AbstractReflectionExecutable<T extends Member> implements Executable, Wrapper<T> {
+public abstract class AbstractReflectionExecutable<T extends Member> implements ExecutableDescriptor, Wrapper<T> {
 	@NonNull
 	private final T source;
 

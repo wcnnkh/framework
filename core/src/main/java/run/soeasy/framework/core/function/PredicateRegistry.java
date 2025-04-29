@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Functions;
+import run.soeasy.framework.core.invoke.Functions;
 
 public class PredicateRegistry<T> implements Predicate<T> {
 	private Predicate<T> predicate;

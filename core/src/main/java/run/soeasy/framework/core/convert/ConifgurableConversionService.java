@@ -3,7 +3,6 @@ package run.soeasy.framework.core.convert;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.spi.ServiceProvider;
 
@@ -32,17 +31,17 @@ public class ConifgurableConversionService extends ServiceProvider<ConversionSer
 	}
 
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
-		TypeDescriptor sourceType = value.getTypeDescriptor();
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		ConversionService conversionService = optional().filter((e) -> e.canConvert(sourceType, targetType))
 				.orElse(null);
 		if (conversionService == null) {
 			if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
 				return parentConversionService.apply(value, targetType);
 			}
-			throw new ConverterNotFoundException(value.getTypeDescriptor(), targetType);
+			throw new ConverterNotFoundException(value.getReturnTypeDescriptor(), targetType);
 		}
-		return conversionService.convert(value, targetType);
+		return conversionService.apply(value, targetType);
 	}
 
 }

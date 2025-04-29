@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.exe.Merger;
+import run.soeasy.framework.core.function.select.Merger;
 import run.soeasy.framework.core.math.NumberValue;
 
 /**

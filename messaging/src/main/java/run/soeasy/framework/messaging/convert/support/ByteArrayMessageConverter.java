@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.value.Data;
-import run.soeasy.framework.core.convert.value.Writeable;
+import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.Writeable;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;

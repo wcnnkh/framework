@@ -11,7 +11,7 @@ import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 
 /**
  * 递归转换
@@ -22,10 +22,10 @@ public class RecursiveConversionService implements ConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor requiredTypeDescriptor)
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor requiredTypeDescriptor)
 			throws ConversionException {
 		Object source = value.get();
-		TypeDescriptor sourceTypeDescriptor = value.getTypeDescriptor();
+		TypeDescriptor sourceTypeDescriptor = value.getReturnTypeDescriptor();
 		if (requiredTypeDescriptor.isMap()) {
 			Map<Object, Object> sourceMap = (Map<Object, Object>) source;
 			TypeDescriptor targetKeyTypeDescriptor = requiredTypeDescriptor.getMapKeyTypeDescriptor();

@@ -5,7 +5,7 @@ import java.lang.reflect.Executable;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.exe.Execution;
+import run.soeasy.framework.core.invoke.Execution;
 import run.soeasy.framework.core.param.Parameters;
 
 @Getter

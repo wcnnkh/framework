@@ -9,7 +9,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 public class ConverterConversionService implements ConditionalConversionService {
@@ -29,14 +29,14 @@ public class ConverterConversionService implements ConditionalConversionService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object apply(@NonNull ValueAccessor value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
 		try {
 			return converter.apply(value.get());
 		} catch (Throwable e) {
 			if (e instanceof ConversionException) {
 				throw (ConversionException) e;
 			}
-			throw new ConversionFailedException(value.getTypeDescriptor(), targetType, value.get(), e);
+			throw new ConversionFailedException(value.getReturnTypeDescriptor(), targetType, value.get(), e);
 		}
 	}
 

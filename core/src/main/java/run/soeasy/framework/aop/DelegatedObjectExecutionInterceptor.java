@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.exe.Invocation;
+import run.soeasy.framework.core.invoke.Invocation;
 
 @Data
 class DelegatedObjectExecutionInterceptor implements MethodExecutionInterceptor, Serializable {

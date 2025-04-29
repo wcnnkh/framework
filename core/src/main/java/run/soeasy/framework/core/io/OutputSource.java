@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 
 public interface OutputSource<O extends OutputStream, W extends Writer>
 		extends OutputFactory<O, W>, OutputStreamSource<O>, WriterSource<W> {
@@ -18,12 +18,12 @@ public interface OutputSource<O extends OutputStream, W extends Writer>
 		}
 
 		@Override
-		default @NonNull Pipeline<O, IOException> getOutputStreamPipeline() {
+		default @NonNull Source<O, IOException> getOutputStreamPipeline() {
 			return getSource().getOutputStreamPipeline();
 		}
 
 		@Override
-		default @NonNull Pipeline<E, IOException> getWriterPipeline() {
+		default @NonNull Source<E, IOException> getWriterPipeline() {
 			return getSource().getWriterPipeline();
 		}
 	}
@@ -31,12 +31,12 @@ public interface OutputSource<O extends OutputStream, W extends Writer>
 	boolean isWritable();
 
 	@Override
-	default @NonNull Pipeline<O, IOException> getOutputStreamPipeline() {
-		return isWritable() ? OutputStreamSource.super.getOutputStreamPipeline() : Pipeline.empty();
+	default @NonNull Source<O, IOException> getOutputStreamPipeline() {
+		return isWritable() ? OutputStreamSource.super.getOutputStreamPipeline() : Source.empty();
 	}
 
 	@Override
-	default @NonNull Pipeline<W, IOException> getWriterPipeline() {
-		return isWritable() ? WriterSource.super.getWriterPipeline() : Pipeline.empty();
+	default @NonNull Source<W, IOException> getWriterPipeline() {
+		return isWritable() ? WriterSource.super.getWriterPipeline() : Source.empty();
 	}
 }

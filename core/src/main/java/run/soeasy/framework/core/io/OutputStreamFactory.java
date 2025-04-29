@@ -10,7 +10,7 @@ import java.nio.charset.CharsetEncoder;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 @FunctionalInterface
@@ -41,7 +41,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 		ThrowingFunction<? super T, ? extends R, IOException> getEncoder();
 
 		@Override
-		default @NonNull Pipeline<R, IOException> getWriterPipeline() {
+		default @NonNull Source<R, IOException> getWriterPipeline() {
 			return getSource().getOutputStreamPipeline().map(getEncoder());
 		}
 
@@ -55,7 +55,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	public static interface OutputStreamFactoryWrapper<T extends OutputStream, W extends OutputStreamFactory<T>>
 			extends OutputStreamFactory<T>, Wrapper<W> {
 		@Override
-		default Pipeline<T, IOException> getOutputStreamPipeline() {
+		default Source<T, IOException> getOutputStreamPipeline() {
 			return getSource().getOutputStreamPipeline();
 		}
 
@@ -134,7 +134,7 @@ public interface OutputStreamFactory<T extends OutputStream> {
 	}
 
 	@NonNull
-	Pipeline<T, IOException> getOutputStreamPipeline();
+	Source<T, IOException> getOutputStreamPipeline();
 
 	default boolean isEncoded() {
 		return false;
