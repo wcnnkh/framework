@@ -2,9 +2,10 @@ package run.soeasy.framework.core.convert;
 
 import run.soeasy.framework.core.Wrapper;
 
-public interface Readable {
+public interface SourceDescriptor {
 	@FunctionalInterface
-	public static interface ReadableWrapper<W extends Readable> extends Readable, Wrapper<W> {
+	public static interface SourceDescriptorWrapper<W extends SourceDescriptor>
+			extends SourceDescriptor, Wrapper<W> {
 		@Override
 		default TypeDescriptor getReturnTypeDescriptor() {
 			return getSource().getReturnTypeDescriptor();
@@ -13,5 +14,5 @@ public interface Readable {
 	}
 
 	TypeDescriptor getReturnTypeDescriptor();
-	
+
 }

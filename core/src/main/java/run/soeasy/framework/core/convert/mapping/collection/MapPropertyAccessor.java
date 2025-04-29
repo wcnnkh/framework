@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping.collection;
+package run.soeasy.framework.core.convert.mapping.collection;
 
 import java.util.Map;
 
@@ -7,10 +7,10 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
 
-public class MapProperty extends GenericMapAccess implements PropertyAccessor {
+public class MapPropertyAccessor extends GenericMapValueAccessor implements PropertyAccessor {
 
 	@SuppressWarnings("rawtypes")
-	public MapProperty(@NonNull Map map, @NonNull Object key, @NonNull TypeDescriptor typeDescriptor,
+	public MapPropertyAccessor(@NonNull Map map, @NonNull Object key, @NonNull TypeDescriptor typeDescriptor,
 			@NonNull ConversionService conversionService) {
 		super(map, key, typeDescriptor, conversionService);
 	}
@@ -24,5 +24,4 @@ public class MapProperty extends GenericMapAccess implements PropertyAccessor {
 		return (String) getConversionService().convert(getKey(), getMapTypeDescriptor().getMapKeyTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class));
 	}
-
 }

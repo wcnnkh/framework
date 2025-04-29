@@ -6,9 +6,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.Entity;
@@ -24,21 +24,21 @@ public abstract class AbstractEntityMessageConverter<T extends Entity<?>> extend
 	private final Class<? extends T> entityClass;
 
 	@Override
-	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return targetDescriptor.getRequiredTypeDescriptor().getType().isAssignableFrom(entityClass)
 				&& super.isReadable(targetDescriptor, message, contentType);
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull Readable sourceDescriptor, @NonNull Message message,
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return Entity.class.isAssignableFrom(sourceDescriptor.getTypeDescriptor().getType())
 				&& !message.getHeaders().isReadyOnly() && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
 	@Override
-	protected Object doRead(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
+	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		TypeDescriptor typeDescriptor = targetDescriptor.getRequiredTypeDescriptor();
 		if (typeDescriptor.isGeneric()) {

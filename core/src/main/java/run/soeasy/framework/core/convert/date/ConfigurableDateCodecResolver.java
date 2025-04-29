@@ -4,7 +4,7 @@ import java.util.Date;
 
 import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class ConfigurableDateCodecResolver extends ConfigurableServices<DateCodecResolver>
@@ -28,7 +28,7 @@ public class ConfigurableDateCodecResolver extends ConfigurableServices<DateCode
 	}
 
 	@Override
-	public Codec<Date, String> resolveDateCodec(@NonNull Readable valueDescriptor) {
+	public Codec<Date, String> resolveDateCodec(@NonNull SourceDescriptor valueDescriptor) {
 		for (DateCodecResolver resolver : this) {
 			Codec<Date, String> codec = resolver.resolveDateCodec(valueDescriptor);
 			if (codec != null) {

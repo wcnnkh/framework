@@ -3,7 +3,7 @@ package run.soeasy.framework.core.convert.date;
 import java.time.ZoneOffset;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 
 /**
  * 解析ZoneOffset
@@ -12,5 +12,5 @@ import run.soeasy.framework.core.convert.Readable;
  *
  */
 public interface ZoneOffsetResolver {
-	ZoneOffset resolveZoneOffset(@NonNull Readable valueDescriptor);
+	ZoneOffset resolveZoneOffset(@NonNull SourceDescriptor valueDescriptor);
 }

@@ -18,7 +18,7 @@ public class DefaultMapper
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public DefaultMapper() {
 		getObjectTemplateProvider().register(Template.class, (s, t) -> (Template) s);
-		getObjectTemplateProvider().register(Map.class, (s, t) -> new MapPropertySource((Map) s, t));
+		getObjectTemplateProvider().register(Map.class, (s, t) -> new MapPropertyTemplate((Map) s, t));
 		setTemplateTransformer(new ConfigurationProperties());
 	}
 

@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.reflect;
 
 public final class SystemParameterNameDiscoverer extends ConfigurableParameterNameDiscoverer {
 	private SystemParameterNameDiscoverer() {

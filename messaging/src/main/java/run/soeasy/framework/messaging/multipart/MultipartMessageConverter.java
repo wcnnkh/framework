@@ -23,7 +23,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.IOUtils;
@@ -57,7 +57,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 		getMediaTypeRegistry().add(MediaType.MULTIPART_FORM_DATA);
 	}
 
-	protected boolean canReadType(Writeable targetDescriptor) {
+	protected boolean canReadType(TargetDescriptor targetDescriptor) {
 		if (targetDescriptor.getRequiredTypeDescriptor().isArray()
 				|| targetDescriptor.getRequiredTypeDescriptor().isCollection()) {
 			return targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor()
@@ -68,14 +68,14 @@ public class MultipartMessageConverter extends AbstractMessageConverter implemen
 	}
 
 	@Override
-	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return multipartMessageResolver != null && canReadType(targetDescriptor)
 				&& super.isReadable(targetDescriptor, message, contentType);
 	}
 
 	@Override
-	protected Object doRead(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
+	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		List<MultipartMessage> fileItems;
 		if (multipartMessageResolver.isMultipart(message)) {

@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping.collection;
+package run.soeasy.framework.core.convert.mapping.collection;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -20,7 +20,7 @@ import run.soeasy.framework.core.convert.support.SystemConversionService;
 @AllArgsConstructor
 @Getter
 @Setter
-public class MapPropertySource implements PropertyTemplate {
+public class MapPropertyTemplate implements PropertyTemplate {
 	@NonNull
 	private final Map map;
 	@NonNull
@@ -50,7 +50,7 @@ public class MapPropertySource implements PropertyTemplate {
 	}
 
 	private PropertyAccessor createProperty(Object key) {
-		return new MapProperty(map, key, typeDescriptor.getMapValueTypeDescriptor(), conversionService);
+		return new MapPropertyAccessor(map, key, typeDescriptor.getMapValueTypeDescriptor(), conversionService);
 	}
 
 	public void put(Object key, Object value) {

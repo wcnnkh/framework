@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.reflect;
 
 import java.lang.reflect.Executable;
-import java.lang.reflect.Parameter;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
-public class NativeParameterNameDiscoverer implements ParameterNameDiscoverer {
+public class ConfigurableParameterNameDiscoverer extends ConfigurableServices<ParameterNameDiscoverer>
+		implements ParameterNameDiscoverer {
+
+	public ConfigurableParameterNameDiscoverer() {
+		setServiceClass(ParameterNameDiscoverer.class);
+	}
 
 	@Override
 	public String[] getParameterNames(@NonNull Executable executable) {
-		Parameter[] parameters = executable.getParameters();
-		String[] parameterNames = new String[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			Parameter param = parameters[i];
-			if (!param.isNamePresent()) {
-				return null;
+		for (ParameterNameDiscoverer pnd : this) {
+			String[] result = pnd.getParameterNames(executable);
+			if (result != null) {
+				return result;
 			}
-			parameterNames[i] = param.getName();
 		}
-		return parameterNames;
+		return null;
 	}
 }

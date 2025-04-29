@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.invoke;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.KeyValue;
@@ -11,9 +11,9 @@ import run.soeasy.framework.core.convert.mapping.Dictionary;
  * @author shuchaowen
  *
  */
-public interface ParameterSource extends Dictionary<ParameterAccessor>, ParameterDescriptors<ParameterAccessor> {
-	public static interface ParameterSourceWrapper<W extends ParameterSource>
-			extends ParameterSource, DictionaryWrapper<ParameterAccessor, W>, ParameterDescriptorsWrapper<ParameterAccessor, W> {
+public interface ParameterTemplate extends Dictionary<ParameterAccessor>, ParameterDescriptors<ParameterAccessor> {
+	public static interface ParameterSourceWrapper<W extends ParameterTemplate> extends ParameterTemplate,
+			DictionaryWrapper<ParameterAccessor, W>, ParameterDescriptorsWrapper<ParameterAccessor, W> {
 
 		@Override
 		default Elements<KeyValue<Object, ParameterAccessor>> getElements() {
@@ -21,20 +21,20 @@ public interface ParameterSource extends Dictionary<ParameterAccessor>, Paramete
 		}
 
 		@Override
-		default ParameterSource rename(String name) {
+		default ParameterTemplate rename(String name) {
 			return getSource().rename(name);
 		}
 	}
 
-	public static class RenamedParameterSource<W extends ParameterSource> extends RenamedTemplate<Object, ParameterAccessor, W>
-			implements ParameterSourceWrapper<W> {
+	public static class RenamedParameterSource<W extends ParameterTemplate>
+			extends RenamedTemplate<Object, ParameterAccessor, W> implements ParameterSourceWrapper<W> {
 
 		public RenamedParameterSource(@NonNull W source, String name) {
 			super(source, name);
 		}
 
 		@Override
-		public ParameterSource rename(String name) {
+		public ParameterTemplate rename(String name) {
 			return new RenamedParameterSource<>(getSource(), name);
 		}
 	}
@@ -49,7 +49,7 @@ public interface ParameterSource extends Dictionary<ParameterAccessor>, Paramete
 	}
 
 	default Class<?>[] getTypes() {
-		return map((e) -> e.getTypeDescriptor().getType()).toArray(Class<?>[]::new);
+		return map((e) -> e.getReturnTypeDescriptor().getType()).toArray(Class<?>[]::new);
 	}
 
 	default boolean isValidated() {
@@ -66,7 +66,7 @@ public interface ParameterSource extends Dictionary<ParameterAccessor>, Paramete
 	}
 
 	@Override
-	default ParameterSource rename(String name) {
+	default ParameterTemplate rename(String name) {
 		return new RenamedParameterSource<>(this, name);
 	}
 }

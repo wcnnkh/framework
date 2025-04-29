@@ -2,7 +2,6 @@ package run.soeasy.framework.core.invoke;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.transform.mapping.ParameterSource;
 import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Executor extends Executable {
@@ -20,7 +19,7 @@ public interface Executor extends Executable {
 		}
 
 		@Override
-		default Object execute(@NonNull ParameterSource parameters) throws Throwable {
+		default Object execute(@NonNull ParameterTemplate parameters) throws Throwable {
 			return getSource().execute(parameters);
 		}
 	}
@@ -31,7 +30,7 @@ public interface Executor extends Executable {
 
 	Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable;
 
-	default Object execute(@NonNull ParameterSource parameters) throws Throwable {
+	default Object execute(@NonNull ParameterTemplate parameters) throws Throwable {
 		if (!parameters.isValidated()) {
 			throw new IllegalArgumentException();
 		}

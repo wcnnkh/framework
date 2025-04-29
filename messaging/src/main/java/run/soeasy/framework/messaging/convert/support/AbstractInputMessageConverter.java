@@ -5,8 +5,8 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.Readable;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.InputStreamSource;
 import run.soeasy.framework.core.io.MimeType;
@@ -22,14 +22,14 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
 	private final Class<? extends T> inputMessageClass;
 
 	@Override
-	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return targetDescriptor.getRequiredTypeDescriptor().getType().isAssignableFrom(inputMessageClass)
 				&& super.isReadable(targetDescriptor, message, contentType);
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull Readable sourceDescriptor, @NonNull Message message,
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return InputMessage.class.isAssignableFrom(sourceDescriptor.getTypeDescriptor().getType())
 				&& !message.getHeaders().isReadyOnly() && super.isWriteable(sourceDescriptor, message, contentType);
@@ -44,12 +44,12 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
 	}
 
 	@Override
-	protected Object doRead(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
+	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		return readToInputMessage(message, message, targetDescriptor);
 	}
 
 	protected abstract T readToInputMessage(@NonNull Message message, InputStreamSource<?> source,
-			@NonNull Writeable targetDescriptor) throws IOException;
+			@NonNull TargetDescriptor targetDescriptor) throws IOException;
 
 }

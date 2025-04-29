@@ -13,8 +13,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.Readable;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.invoke.Function;
@@ -62,7 +62,7 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	}
 
 	@Override
-	public boolean isWriteable(Readable sourceDescriptor) {
+	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
 		return writers.isWriteable(sourceDescriptor);
 	}
 
@@ -72,12 +72,12 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	}
 
 	@Override
-	public boolean isReadable(Writeable targetDescriptor) {
+	public boolean isReadable(TargetDescriptor targetDescriptor) {
 		return readers.isReadable(targetDescriptor);
 	}
 
 	@Override
-	public Object readFrom(Writeable targetDescriptor, Node node) throws DOMException {
+	public Object readFrom(TargetDescriptor targetDescriptor, Node node) throws DOMException {
 		return readers.readFrom(targetDescriptor, node);
 	}
 

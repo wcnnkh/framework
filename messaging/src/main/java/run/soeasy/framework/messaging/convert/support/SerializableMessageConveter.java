@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.io.serializer.Serializer;
 import run.soeasy.framework.messaging.MediaType;
@@ -22,7 +22,7 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
 	}
 
 	@Override
-	protected Object parseObject(byte[] body, @NonNull Writeable targetDescriptor, @NonNull Message message,
+	protected Object parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) throws IOException {
 		try {
 			return serializer.deserialize(body);

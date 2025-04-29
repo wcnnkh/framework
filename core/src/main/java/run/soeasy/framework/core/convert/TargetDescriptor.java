@@ -2,8 +2,8 @@ package run.soeasy.framework.core.convert;
 
 import run.soeasy.framework.core.Wrapper;
 
-public interface Writeable {
-	public static interface WriteableWrapper<W extends Writeable> extends Writeable, Wrapper<W> {
+public interface TargetDescriptor {
+	public static interface TargetDescriptorWrapper<W extends TargetDescriptor> extends TargetDescriptor, Wrapper<W> {
 		@Override
 		default TypeDescriptor getRequiredTypeDescriptor() {
 			return getSource().getRequiredTypeDescriptor();

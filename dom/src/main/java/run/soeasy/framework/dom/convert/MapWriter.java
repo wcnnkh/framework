@@ -9,14 +9,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 @RequiredArgsConstructor
 public class MapWriter extends AbstractNodeWriter {
 	@Override
-	public boolean isWriteable(Readable sourceDescriptor) {
+	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
 		return sourceDescriptor.getTypeDescriptor().isMap();
 	}
 

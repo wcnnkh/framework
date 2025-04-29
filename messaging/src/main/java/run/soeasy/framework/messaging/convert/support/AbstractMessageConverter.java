@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.Readable;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.Headers;
@@ -25,7 +25,7 @@ import run.soeasy.framework.messaging.convert.MessageConverter;
 public abstract class AbstractMessageConverter implements MessageConverter {
 	private final MediaTypeRegistry mediaTypeRegistry = new MediaTypeRegistry();
 
-	protected abstract Object doRead(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
+	protected abstract Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException;
 
 	protected abstract void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message,
@@ -58,7 +58,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		if (contentType == null) {
 			return true;
@@ -73,7 +73,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull Readable sourceDescriptor, @NonNull Message message,
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		if (contentType == null || MediaType.ALL.equalsTypeAndSubtype(contentType)) {
 			return true;
@@ -88,7 +88,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public Object readFrom(@NonNull Writeable targetDescriptor, @NonNull InputMessage message,
+	public Object readFrom(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
 		MimeType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {

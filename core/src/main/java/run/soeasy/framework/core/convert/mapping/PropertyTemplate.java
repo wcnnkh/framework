@@ -7,14 +7,14 @@ import java.util.Map;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.collection.MapPropertySource;
+import run.soeasy.framework.core.convert.mapping.collection.MapPropertyTemplate;
 
 @FunctionalInterface
 public interface PropertyTemplate extends PropertyDescriptors<PropertyAccessor>, Dictionary<PropertyAccessor> {
-	public static final PropertyTemplate EMPTY_PROPERTY_SOURCE = new EmptyPropertySource();
+	public static final PropertyTemplate EMPTY_PROPERTY_TEMPLATE = new EmptyPropertySource();
 
 	public static PropertyTemplate forMap(Map<? extends String, ?> map) {
-		return new MapPropertySource(map, TypeDescriptor.map(map.getClass(), String.class, Object.class));
+		return new MapPropertyTemplate(map, TypeDescriptor.map(map.getClass(), String.class, Object.class));
 	}
 
 	public static class EmptyPropertySource implements PropertyTemplate, Serializable {

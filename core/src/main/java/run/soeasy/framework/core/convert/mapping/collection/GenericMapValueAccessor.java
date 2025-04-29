@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping.collection;
+package run.soeasy.framework.core.convert.mapping.collection;
 
 import java.util.Map;
 
@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.transform.stereotype.Accessor;
+import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.TypedValueAccessor;
 
 @RequiredArgsConstructor
 @Getter
 @SuppressWarnings("rawtypes")
-public class GenericMapAccess implements Accessor {
+public class GenericMapValueAccessor implements TypedValueAccessor {
 	@NonNull
 	private final Map map;
 	@NonNull
@@ -27,13 +27,29 @@ public class GenericMapAccess implements Accessor {
 	@Override
 	public Object get() throws ConversionException {
 		Object value = map.get(key);
-		return conversionService.convert(ValueAccessor.of(value), mapTypeDescriptor);
+		return conversionService.apply(TypedValue.of(value), mapTypeDescriptor.getMapValueTypeDescriptor());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set(Object value) throws UnsupportedOperationException {
-		Object target = conversionService.convert(ValueAccessor.of(value), mapTypeDescriptor);
+		Object target = conversionService.apply(TypedValue.of(value), mapTypeDescriptor.getMapValueTypeDescriptor());
 		map.put(key, target);
 	}
+
+	@Override
+	public boolean isReadable() {
+		return map.containsKey(key);
+	}
+
+	@Override
+	public boolean isWriteable() {
+		return true;
+	}
+
+	@Override
+	public TypeDescriptor getRequiredTypeDescriptor() {
+		return mapTypeDescriptor.getMapValueTypeDescriptor();
+	}
+
 }

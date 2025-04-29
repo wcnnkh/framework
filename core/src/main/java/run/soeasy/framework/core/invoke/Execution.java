@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.invoke;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.transform.mapping.ParameterSource;
 
 /**
  * 函数的定义
@@ -39,12 +38,12 @@ public interface Execution extends ExecutableDescriptor, Executor {
 		}
 
 		@Override
-		default ParameterSource getDefaultParameters() {
+		default ParameterTemplate getDefaultParameters() {
 			return getSource().getDefaultParameters();
 		}
 
 		@Override
-		default void setDefaultParameters(ParameterSource parameters) {
+		default void setDefaultParameters(ParameterTemplate parameters) {
 			getSource().setDefaultParameters(parameters);
 		}
 	}
@@ -62,9 +61,9 @@ public interface Execution extends ExecutableDescriptor, Executor {
 		}
 	}
 
-	ParameterSource getDefaultParameters();
+	ParameterTemplate getDefaultParameters();
 
-	void setDefaultParameters(ParameterSource parameters);
+	void setDefaultParameters(ParameterTemplate parameters);
 
 	@Override
 	default boolean canExecuted() {

@@ -9,8 +9,6 @@ import lombok.NonNull;
 import run.soeasy.framework.core.alias.Named;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.ParameterDescriptor;
-import run.soeasy.framework.core.transform.mapping.ParameterDescriptors;
 
 /**
  * 可执行的描述

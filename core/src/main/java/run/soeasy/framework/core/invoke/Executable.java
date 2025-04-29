@@ -4,15 +4,14 @@ import java.lang.reflect.AnnotatedElement;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.mapping.ParameterSource;
 import run.soeasy.framework.core.type.ClassUtils;
 
-public interface Executable extends Readable, AnnotatedElement {
+public interface Executable extends SourceDescriptor, AnnotatedElement {
 	@FunctionalInterface
 	public static interface ExecutableWrapper<W extends Executable>
-			extends Executable, ReadableWrapper<W>, AnnotatedElementWrapper<W> {
+			extends Executable, SourceDescriptorWrapper<W>, AnnotatedElementWrapper<W> {
 
 		@Override
 		default boolean canExecuted() {
@@ -25,7 +24,7 @@ public interface Executable extends Readable, AnnotatedElement {
 		}
 
 		@Override
-		default boolean canExecuted(@NonNull ParameterSource parameters) {
+		default boolean canExecuted(@NonNull ParameterTemplate parameters) {
 			return getSource().canExecuted(parameters);
 		}
 
@@ -41,7 +40,7 @@ public interface Executable extends Readable, AnnotatedElement {
 
 	boolean canExecuted(@NonNull Class<?>... parameterTypes);
 
-	default boolean canExecuted(@NonNull ParameterSource parameters) {
+	default boolean canExecuted(@NonNull ParameterTemplate parameters) {
 		return parameters.isValidated() && canExecuted(parameters.getTypes());
 	}
 }

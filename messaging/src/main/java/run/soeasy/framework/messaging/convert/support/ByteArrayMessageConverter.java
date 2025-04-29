@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -18,7 +18,7 @@ public class ByteArrayMessageConverter extends AbstractBinaryMessageConverter<by
 	}
 
 	@Override
-	protected byte[] parseObject(byte[] body, @NonNull Writeable targetDescriptor, @NonNull Message message,
+	protected byte[] parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) throws IOException {
 		return body;
 	}

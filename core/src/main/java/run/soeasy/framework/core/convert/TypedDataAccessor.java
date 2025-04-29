@@ -3,18 +3,9 @@ package run.soeasy.framework.core.convert;
 import lombok.NonNull;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
-public interface TypedDataAccessor<T> extends TypedData<T>, Accessor {
+public interface TypedDataAccessor<T> extends TypedData<T>, AccessibleDescriptor {
 	public static interface TypedDataAccessorWrapper<T, W extends TypedDataAccessor<T>>
-			extends TypedDataAccessor<T>, TypedDataWrapper<T, W>, AccessibleWrapper<W> {
-		@Override
-		default boolean isReadable() {
-			return getSource().isReadable();
-		}
-
-		@Override
-		default boolean isWriteable() {
-			return getSource().isWriteable();
-		}
+			extends TypedDataAccessor<T>, TypedDataWrapper<T, W>, AccessibleDescriptorWrapper<W> {
 
 		@Override
 		default void set(T value) {
@@ -27,22 +18,6 @@ public interface TypedDataAccessor<T> extends TypedData<T>, Accessor {
 			return getSource().map(mapper);
 		}
 	}
-
-	/**
-	 * 是否可读
-	 * 
-	 * @return
-	 */
-	default boolean isReadable() {
-		return true;
-	}
-
-	/**
-	 * 是否可写
-	 * 
-	 * @return
-	 */
-	boolean isWriteable();
 
 	void set(T value);
 

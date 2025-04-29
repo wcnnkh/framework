@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.mapping;
+package run.soeasy.framework.core.invoke;
 
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;

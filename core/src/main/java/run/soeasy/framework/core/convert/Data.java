@@ -13,7 +13,11 @@ public class Data<T> implements TypedDataAccessor<T>, Serializable {
 	private TypeDescriptor typeDescriptor;
 	private Object object;
 
-	public TypeDescriptor getReturnTypeDescriptor() {
+	public final TypeDescriptor getReturnTypeDescriptor() {
+		return getTypeDescriptor();
+	}
+
+	public TypeDescriptor getTypeDescriptor() {
 		return typeDescriptor == null ? TypeDescriptor.forObject(object) : typeDescriptor;
 	}
 
@@ -61,6 +65,16 @@ public class Data<T> implements TypedDataAccessor<T>, Serializable {
 	@Override
 	public void set(T value) {
 		this.object = value;
+	}
+
+	@Override
+	public final TypeDescriptor getRequiredTypeDescriptor() {
+		return getTypeDescriptor();
+	}
+
+	@Override
+	public boolean isReadable() {
+		return true;
 	}
 
 	@Override

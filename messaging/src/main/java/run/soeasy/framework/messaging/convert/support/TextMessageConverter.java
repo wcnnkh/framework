@@ -10,9 +10,9 @@ import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
@@ -31,7 +31,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	public boolean isReadable(@NonNull Writeable targetDescriptor, @NonNull Message message,
+	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return getConversionService().canConvert(TypeDescriptor.valueOf(String.class),
 				targetDescriptor.getRequiredTypeDescriptor())
@@ -39,14 +39,14 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	public boolean isWriteable(@NonNull Readable sourceDescriptor, @NonNull Message message,
+	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
 		return getConversionService().canConvert(sourceDescriptor.getTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
 	@Override
-	protected Object parseObject(String body, Writeable targetDescriptor) throws IOException {
+	protected Object parseObject(String body, TargetDescriptor targetDescriptor) throws IOException {
 		return getConversionService().convert(body, TypeDescriptor.forObject(body),
 				targetDescriptor.getRequiredTypeDescriptor());
 	}

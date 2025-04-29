@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import lombok.Getter;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.Data;
-import run.soeasy.framework.core.convert.Writeable;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.messaging.MediaType;
 
 @Getter
@@ -18,7 +18,7 @@ public class QueryStringMessageConveter extends TextMessageConverter {
 	}
 
 	@Override
-	protected Object parseObject(String body, Writeable targetDescriptor) {
+	protected Object parseObject(String body, TargetDescriptor targetDescriptor) {
 		QueryStringFormat queryStringFormat = new QueryStringFormat();
 		queryStringFormat.setConversionService(getConversionService());
 		return queryStringFormat.parseObject(body, targetDescriptor.getRequiredTypeDescriptor());

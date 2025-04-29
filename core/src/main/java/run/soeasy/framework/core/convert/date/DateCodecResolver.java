@@ -4,8 +4,8 @@ import java.util.Date;
 
 import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.core.convert.Readable;
+import run.soeasy.framework.core.convert.SourceDescriptor;
 
 public interface DateCodecResolver {
-	Codec<Date, String> resolveDateCodec(@NonNull Readable valueDescriptor);
+	Codec<Date, String> resolveDateCodec(@NonNull SourceDescriptor valueDescriptor);
 }
