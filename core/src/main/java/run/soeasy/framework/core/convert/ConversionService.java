@@ -10,7 +10,30 @@ import lombok.NonNull;
  * type conversion using this system.
  */
 public interface ConversionService
-		extends Converter<Object, Object, ConversionException>, BiFunction<TypedValue, TypeDescriptor, Object> {
+		extends Converter<Object, Object, ConversionException>, BiFunction<TypedValue, TargetDescriptor, Object> {
+	public static class IdentityConversionService implements ConversionService {
+		private static final ConversionService INSTANCE = new IdentityConversionService();
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+				throws ConversionException {
+			return source;
+		}
+
+		@Override
+		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+			return sourceType.isAssignableTo(targetType);
+		}
+
+		@Override
+		public Object apply(TypedValue value, TargetDescriptor targetDescriptor) {
+			return value.get();
+		}
+	}
+
+	public static ConversionService identity() {
+		return IdentityConversionService.INSTANCE;
+	}
 
 	@Override
 	boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType);
@@ -18,9 +41,9 @@ public interface ConversionService
 	@Override
 	default Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		return apply(TypedValue.of(source, sourceType), targetType);
+		return apply(TypedValue.of(source, sourceType), AccessibleDescriptor.forTypeDescriptor(targetType));
 	}
 
 	@Override
-	Object apply(TypedValue value, TypeDescriptor targetType);
+	Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor);
 }

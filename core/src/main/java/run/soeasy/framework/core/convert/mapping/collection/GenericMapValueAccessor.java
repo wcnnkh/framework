@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.convert.AccessibleDescriptor;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
@@ -27,13 +28,15 @@ public class GenericMapValueAccessor implements TypedValueAccessor {
 	@Override
 	public Object get() throws ConversionException {
 		Object value = map.get(key);
-		return conversionService.apply(TypedValue.of(value), mapTypeDescriptor.getMapValueTypeDescriptor());
+		return conversionService.apply(TypedValue.of(value),
+				AccessibleDescriptor.forTypeDescriptor(mapTypeDescriptor.getMapValueTypeDescriptor()));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set(Object value) throws UnsupportedOperationException {
-		Object target = conversionService.apply(TypedValue.of(value), mapTypeDescriptor.getMapValueTypeDescriptor());
+		Object target = conversionService.apply(TypedValue.of(value),
+				AccessibleDescriptor.forTypeDescriptor(mapTypeDescriptor.getMapValueTypeDescriptor()));
 		map.put(key, target);
 	}
 
@@ -49,6 +52,11 @@ public class GenericMapValueAccessor implements TypedValueAccessor {
 
 	@Override
 	public TypeDescriptor getRequiredTypeDescriptor() {
+		return mapTypeDescriptor.getMapValueTypeDescriptor();
+	}
+
+	@Override
+	public TypeDescriptor getReturnTypeDescriptor() {
 		return mapTypeDescriptor.getMapValueTypeDescriptor();
 	}
 

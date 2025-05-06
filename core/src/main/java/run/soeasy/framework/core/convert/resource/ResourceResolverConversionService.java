@@ -6,10 +6,9 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
-import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.io.Resource;
 
@@ -25,11 +24,12 @@ public class ResourceResolverConversionService implements ConditionalConversionS
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		try {
-			return resourceResolver.resolveResource((Resource) value.get(), targetType);
+			return resourceResolver.resolveResource((Resource) value.get(),
+					targetDescriptor.getRequiredTypeDescriptor());
 		} catch (IOException e) {
-			throw new ConversionFailedException(value, targetType, e);
+			throw new ConversionFailedException(value, targetDescriptor.getRequiredTypeDescriptor(), e);
 		}
 	}
 

@@ -10,9 +10,9 @@ import lombok.NonNull;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -24,12 +24,13 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
 
+		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
 		Map<Object, Object> sourceMap = (Map<Object, Object>) source;
 
 		// Shortcut if possible...

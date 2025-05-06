@@ -31,17 +31,20 @@ public class ConifgurableConversionService extends ServiceProvider<ConversionSer
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor)
+			throws ConversionException {
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
-		ConversionService conversionService = optional().filter((e) -> e.canConvert(sourceType, targetType))
-				.orElse(null);
+		ConversionService conversionService = optional()
+				.filter((e) -> e.canConvert(sourceType, targetDescriptor.getRequiredTypeDescriptor())).orElse(null);
 		if (conversionService == null) {
-			if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
-				return parentConversionService.apply(value, targetType);
+			if (parentConversionService != null
+					&& parentConversionService.canConvert(sourceType, targetDescriptor.getRequiredTypeDescriptor())) {
+				return parentConversionService.apply(value, targetDescriptor);
 			}
-			throw new ConverterNotFoundException(value.getReturnTypeDescriptor(), targetType);
+			throw new ConverterNotFoundException(value.getReturnTypeDescriptor(),
+					targetDescriptor.getRequiredTypeDescriptor());
 		}
-		return conversionService.apply(value, targetType);
+		return conversionService.apply(value, targetDescriptor);
 	}
 
 }

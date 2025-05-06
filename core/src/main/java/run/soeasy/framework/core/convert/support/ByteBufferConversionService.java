@@ -8,9 +8,9 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -40,13 +40,14 @@ class ByteBufferConversionService extends AbstractConversionService implements C
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
-		boolean byteBufferTarget = targetType.isAssignableTo(BYTE_BUFFER_TYPE);
+		boolean byteBufferTarget = targetDescriptor.getRequiredTypeDescriptor().isAssignableTo(BYTE_BUFFER_TYPE);
 		if (source instanceof ByteBuffer) {
 			ByteBuffer buffer = (ByteBuffer) source;
-			return (byteBufferTarget ? buffer.duplicate() : convertFromByteBuffer(buffer, targetType));
+			return (byteBufferTarget ? buffer.duplicate()
+					: convertFromByteBuffer(buffer, targetDescriptor.getRequiredTypeDescriptor()));
 		}
 		if (byteBufferTarget) {
 			return convertToByteBuffer(source, sourceType);

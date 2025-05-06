@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.ConvertingData;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.io.serializer.Serializer;
@@ -32,7 +32,7 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
 	}
 
 	@Override
-	protected byte[] toBinary(@NonNull Data<Object> body, @NonNull Message message, MediaType mediaType)
+	protected byte[] toBinary(@NonNull ConvertingData<Object> body, @NonNull Message message, MediaType mediaType)
 			throws IOException {
 		return serializer.serialize(body.get());
 	}

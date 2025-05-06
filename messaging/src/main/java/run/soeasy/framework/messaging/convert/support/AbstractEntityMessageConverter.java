@@ -5,7 +5,7 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.ConvertingData;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
@@ -59,7 +59,7 @@ public abstract class AbstractEntityMessageConverter<T extends Entity<?>> extend
 			throws IOException {
 		Entity<?> entity = (Entity<?>) source;
 		writeHeader(entity, message);
-		Data<?> entityBody = entity.getBody();
+		ConvertingData<?> entityBody = entity.getBody();
 		if (entityBody != null) {
 			getMessageConverter().writeTo(entityBody.any(), message, contentType);
 		}

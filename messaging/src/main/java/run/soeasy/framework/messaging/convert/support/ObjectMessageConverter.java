@@ -3,7 +3,7 @@ package run.soeasy.framework.messaging.convert.support;
 import java.io.IOException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.ConvertingData;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.io.MimeType;
@@ -30,10 +30,10 @@ public abstract class ObjectMessageConverter<T> extends AbstractMessageConverter
 	@Override
 	protected void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
-		Data<T> data = source.getAsData(requriedType);
+		ConvertingData<T> data = source.getAsData(requriedType);
 		writeObject(data, message, contentType);
 	}
 
-	protected abstract void writeObject(@NonNull Data<T> data, @NonNull OutputMessage message,
+	protected abstract void writeObject(@NonNull ConvertingData<T> data, @NonNull OutputMessage message,
 			@NonNull MediaType contentType) throws IOException;
 }

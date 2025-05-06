@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
-import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.ConvertingData;
 import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TargetDescriptor;
@@ -52,7 +52,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	protected String toString(Data<Object> body, MediaType contentType, Charset charset) throws IOException {
+	protected String toString(ConvertingData<Object> body, MediaType contentType, Charset charset) throws IOException {
 		return (String) getConversionService().convert(body.any(), TypeDescriptor.valueOf(String.class));
 	}
 }

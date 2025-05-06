@@ -2,9 +2,9 @@ package run.soeasy.framework.core.convert.strings;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -23,7 +23,8 @@ public final class StringConversionService implements ConversionService {
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
+		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		if (sourceType.getType() == String.class) {

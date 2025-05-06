@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -22,8 +22,8 @@ public class RecursiveConversionService implements ConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor requiredTypeDescriptor)
-			throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
+		TypeDescriptor requiredTypeDescriptor = targetDescriptor.getRequiredTypeDescriptor();
 		Object source = value.get();
 		TypeDescriptor sourceTypeDescriptor = value.getReturnTypeDescriptor();
 		if (requiredTypeDescriptor.isMap()) {
@@ -71,7 +71,7 @@ public class RecursiveConversionService implements ConversionService {
 			}
 			return target;
 		}
-		return objectConversionService.apply(value, requiredTypeDescriptor);
+		return objectConversionService.apply(value, targetDescriptor);
 	}
 
 	@Override

@@ -21,6 +21,13 @@ public interface TypedDataAccessor<T> extends TypedData<T>, AccessibleDescriptor
 
 	void set(T value);
 
+	@SuppressWarnings("unchecked")
 	@Override
-	<R> TypedDataAccessor<R> map(@NonNull ThrowingFunction<? super T, ? extends R, ConversionException> mapper);
+	default <R> TypedDataAccessor<R> map(
+			@NonNull ThrowingFunction<? super T, ? extends R, ConversionException> mapper) {
+		ConvertingData<R, AccessibleDescriptor> value = new ConvertingData<>(this);
+		value.setValue(this);
+		value.setMapper((a, b) -> mapper.apply((T) a.get()));
+		return value;
+	}
 }

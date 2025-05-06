@@ -9,9 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.ConvertiblePair;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.convert.support.AbstractConversionService;
@@ -45,15 +45,16 @@ public class DateFormatConversionService extends AbstractConversionService imple
 				|| dateCodecResolver.resolveDateCodec(() -> sourceType) != null) && canConvert(sourceType.getType())
 				&& canConvert(targetType.getType());
 	}
-
+	
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
 
 		Codec<Date, String> sourceCodec = dateCodecResolver.resolveDateCodec(value);
+		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
 		Codec<Date, String> targetCodec = dateCodecResolver.resolveDateCodec(() -> targetType);
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		if (sourceType.getType() == String.class) {

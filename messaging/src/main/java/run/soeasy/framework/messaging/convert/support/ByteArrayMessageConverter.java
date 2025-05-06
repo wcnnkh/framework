@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.Data;
+import run.soeasy.framework.core.convert.ConvertingData;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
@@ -24,7 +24,7 @@ public class ByteArrayMessageConverter extends AbstractBinaryMessageConverter<by
 	}
 
 	@Override
-	protected byte[] toBinary(@NonNull Data<byte[]> body, @NonNull Message message, MediaType mediaType)
+	protected byte[] toBinary(@NonNull ConvertingData<byte[]> body, @NonNull Message message, MediaType mediaType)
 			throws IOException {
 		return body.orElse(null);
 	}

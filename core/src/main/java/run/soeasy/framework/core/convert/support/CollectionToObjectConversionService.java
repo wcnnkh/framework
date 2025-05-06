@@ -6,9 +6,9 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -23,12 +23,13 @@ class CollectionToObjectConversionService extends AbstractConversionService impl
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor targetType) throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		Object source = value.get();
 		if (source == null) {
 			return null;
 		}
 
+		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		if (sourceType.isAssignableTo(targetType)) {
 			return source;

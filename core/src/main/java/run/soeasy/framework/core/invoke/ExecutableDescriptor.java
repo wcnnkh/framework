@@ -47,7 +47,7 @@ public interface ExecutableDescriptor extends Executable, Named {
 		}
 
 		@Override
-		default ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors() {
+		default ParameterDescriptors<?> getParameterDescriptors() {
 			return getSource().getParameterDescriptors();
 		}
 	}
@@ -94,7 +94,7 @@ public interface ExecutableDescriptor extends Executable, Named {
 	 */
 	Elements<TypeDescriptor> getExceptionTypeDescriptors();
 
-	ParameterDescriptors<? extends ParameterDescriptor> getParameterDescriptors();
+	ParameterDescriptors<?> getParameterDescriptors();
 
 	/**
 	 * Returns the Java language modifiers for the member or constructor represented

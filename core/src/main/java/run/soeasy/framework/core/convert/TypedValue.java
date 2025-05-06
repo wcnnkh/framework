@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -14,11 +15,9 @@ import run.soeasy.framework.core.Value;
 import run.soeasy.framework.core.Version;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Enumerable;
-import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.math.BigDecimalValue;
 import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.type.ResolvableType;
 
 public interface TypedValue extends TypedData<Object>, Value {
 	public static interface TypedValueWrapper<W extends TypedValue>
@@ -123,25 +122,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		}
 
 		@Override
-		default TypedValue as(@NonNull TypeDescriptor typeDescriptor) {
-			return getSource().as(typeDescriptor);
-		}
-
-		@Override
 		default TypeDescriptor getReturnTypeDescriptor() {
 			return getSource().getReturnTypeDescriptor();
-		}
-
-		@Override
-		default <R> TypedData<R> map(
-				@NonNull ThrowingFunction<? super Object, ? extends R, ConversionException> mapper) {
-			return getSource().map(mapper);
-		}
-
-		@Override
-		default <T> TypedData<T> map(@NonNull TypeDescriptor typeDescriptor,
-				@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
-			return getSource().map(typeDescriptor, converter);
 		}
 
 		@Override
@@ -150,8 +132,24 @@ public interface TypedValue extends TypedData<Object>, Value {
 		}
 
 		@Override
-		default Object getAsObject(ResolvableType type) {
-			return getSource().getAsObject(type);
+		default <T> TypedData<T> getAsData(Class<? extends T> requriedType) {
+			return getSource().getAsData(requriedType);
+		}
+
+		@Override
+		default <T> TypedData<T> getAsData(@NonNull TypeDescriptor typeDescriptor) {
+			return getSource().getAsData(typeDescriptor);
+		}
+
+		@Override
+		default TypedValue getAsValue(@NonNull AccessibleDescriptor typeDescriptor) {
+			return getSource().getAsValue(typeDescriptor);
+		}
+
+		@Override
+		default TypedValue getAsValue(
+				@NonNull BiFunction<? super TypedValue, ? super TargetDescriptor, ? extends Object> mapper) {
+			return getSource().getAsValue(mapper);
 		}
 	}
 
@@ -252,9 +250,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return (TypedValue) value;
 		}
 
-		Any any = new Any();
-		any.setObject(value);
-		any.setTypeDescriptor(type);
+		ConvertingValue<AccessibleDescriptor> any = new ConvertingValue<>(AccessibleDescriptor.forTypeDescriptor(type));
+		any.setValue(value);
 		return any;
 	}
 
@@ -360,10 +357,6 @@ public interface TypedValue extends TypedData<Object>, Value {
 		}
 
 		return getAsData(char.class).offline().orElse((char) 0);
-	}
-
-	default <T> TypedData<T> getAsData(Class<? extends T> requriedType) {
-		return map(TypeDescriptor.valueOf(requriedType), Converter.unsupported());
 	}
 
 	@Override
@@ -522,10 +515,6 @@ public interface TypedValue extends TypedData<Object>, Value {
 		return getAsObject(type, () -> getAsData(type).get());
 	}
 
-	default Object getAsObject(ResolvableType type) {
-		return getAsObject(TypeDescriptor.valueOf(type));
-	}
-
 	default Object getAsObject(Type type) {
 		if (type instanceof Class) {
 			return getAsObject((Class<?>) type);
@@ -534,7 +523,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 	}
 
 	default Object getAsObject(TypeDescriptor type) {
-		return getAsObject(type.getType(), () -> as(type).get());
+		return getAsObject(type.getType(), () -> getAsData(type).get());
 	}
 
 	default short getAsShort() {
@@ -597,11 +586,6 @@ public interface TypedValue extends TypedData<Object>, Value {
 		return getAsData(Version.class).get();
 	}
 
-	default TypeDescriptor getReturnTypeDescriptor() {
-		Object value = get();
-		return value == null ? TypeDescriptor.valueOf(Object.class) : TypeDescriptor.forObject(value);
-	}
-
 	@Override
 	default boolean isMultiple() {
 		TypeDescriptor typeDescriptor = getReturnTypeDescriptor();
@@ -639,31 +623,31 @@ public interface TypedValue extends TypedData<Object>, Value {
 		return true;
 	}
 
-	@Override
-	default <R> TypedData<R> map(@NonNull ThrowingFunction<? super Object, ? extends R, ConversionException> mapper) {
-		Data<R> value = new Data<>();
-		value.setObject(this);
-		value.setMapper(mapper);
-		return value;
+	default <T> TypedData<T> getAsData(Class<? extends T> requriedType) {
+		return getAsData(TypeDescriptor.valueOf(requriedType));
 	}
 
-	default TypedValue as(@NonNull TypeDescriptor typeDescriptor) {
-		Any any = new Any();
-		any.setObject(this);
-		any.setTypeDescriptor(typeDescriptor);
+	@SuppressWarnings("unchecked")
+	default <T> TypedData<T> getAsData(@NonNull TypeDescriptor typeDescriptor) {
+		return getAsValue(AccessibleDescriptor.forTypeDescriptor(typeDescriptor)).map((e) -> (T) e);
+	}
+
+	default TypedValue getAsValue(@NonNull AccessibleDescriptor typeDescriptor) {
+		ConvertingValue<AccessibleDescriptor> any = new ConvertingValue<>(typeDescriptor);
+		any.setValue(this);
 		return any;
+	}
+
+	default TypedValue getAsValue(
+			@NonNull BiFunction<? super TypedValue, ? super TargetDescriptor, ? extends Object> mapper) {
+		ConvertingValue<AccessibleDescriptor> converting = new ConvertingValue<AccessibleDescriptor>(
+				AccessibleDescriptor.forTypeDescriptor(getReturnTypeDescriptor()));
+		converting.setValue(this);
+		converting.setMapper(mapper);
+		return converting;
 	}
 
 	default TypedValue value() {
 		return this;
-	}
-
-	default <T> TypedData<T> map(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull Converter<? super Object, ? extends T, ? extends ConversionException> converter) {
-		Data<T> value = new Data<>();
-		value.setObject(this);
-		value.setTypeDescriptor(typeDescriptor);
-		value.setConverter(converter);
-		return value;
 	}
 }

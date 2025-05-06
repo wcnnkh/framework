@@ -10,7 +10,6 @@ import lombok.Setter;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.IdentityConversionService;
 import run.soeasy.framework.core.convert.TypedValueAccessor;
 
 /**
@@ -31,7 +30,7 @@ public class GenericTemplateWriter<K, V extends TypedValueAccessor, T extends Te
 	}
 
 	@NonNull
-	private ConversionService conversionService = new IdentityConversionService();
+	private ConversionService conversionService = ConversionService.identity();
 	@NonNull
 	private Mode mode = Mode.MAP;
 
@@ -78,7 +77,7 @@ public class GenericTemplateWriter<K, V extends TypedValueAccessor, T extends Te
 		}
 
 		Object value = conversionService.apply(sourceContext.getKeyValue().getValue(),
-				targetContext.getKeyValue().getValue().getRequiredTypeDescriptor());
+				targetContext.getKeyValue().getValue());
 		if (value == null && targetContext.getKeyValue().getValue().isRequired()) {
 			return false;
 		}

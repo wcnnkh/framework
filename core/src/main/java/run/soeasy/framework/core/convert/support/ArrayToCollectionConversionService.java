@@ -8,9 +8,9 @@ import java.util.Set;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -24,13 +24,13 @@ class ArrayToCollectionConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor requiredTypeDescriptor)
-			throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		Object source = value.get();
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		int length = Array.getLength(source);
-		TypeDescriptor elementDesc = requiredTypeDescriptor.getElementTypeDescriptor();
-		Collection<Object> target = CollectionUtils.createCollection(requiredTypeDescriptor.getType(),
+		TypeDescriptor elementDesc = targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor();
+		Collection<Object> target = CollectionUtils.createCollection(
+				targetDescriptor.getRequiredTypeDescriptor().getType(),
 				(elementDesc != null ? elementDesc.getType() : null), length);
 
 		if (elementDesc == null) {

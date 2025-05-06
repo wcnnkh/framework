@@ -6,9 +6,9 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
+import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
 
@@ -21,14 +21,13 @@ class ArrayToArrayConversionService extends AbstractConversionService implements
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Object[].class, Object[].class));
 	}
-
+	
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TypeDescriptor requiredTypeDescriptor)
-			throws ConversionException {
+	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
 		Object source = value.get();
 		TypeDescriptor sourceTypeDescriptor = value.getReturnTypeDescriptor();
 		int len = Array.getLength(source);
-		TypeDescriptor targetElementType = requiredTypeDescriptor.getElementTypeDescriptor();
+		TypeDescriptor targetElementType = targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor();
 		Object targetArray = Array.newInstance(targetElementType.getType(), len);
 		for (int i = 0; i < len; i++) {
 			Object sourceElement = Array.get(source, i);
