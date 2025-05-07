@@ -1,6 +1,7 @@
 package run.soeasy.framework.aop;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.invoke.ExecutionInterceptor;
 
 /**
  * 代理

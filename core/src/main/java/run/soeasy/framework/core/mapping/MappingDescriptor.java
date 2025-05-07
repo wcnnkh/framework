@@ -3,9 +3,9 @@ package run.soeasy.framework.core.mapping;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.alias.Named;
-import run.soeasy.framework.core.convert.mapping.PropertyDescriptors;
+import run.soeasy.framework.core.convert.property.PropertyTemplate;
 
-public interface MappingDescriptor<T extends FieldDescriptor> extends PropertyDescriptors<T>, Named {
+public interface MappingDescriptor<T extends FieldDescriptor> extends PropertyTemplate<T>, Named {
 	@FunctionalInterface
 	public static interface MappingDescriptorWrapper<T extends FieldDescriptor, W extends MappingDescriptor<T>>
 			extends MappingDescriptor<T>, PropertyDescriptorsWrapper<T, W> {

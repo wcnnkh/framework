@@ -16,12 +16,11 @@ public interface Named {
 		}
 	}
 
-	@RequiredArgsConstructor
+	@Data
 	public static class Renamed<W extends Named> implements NamedWrapper<W> {
 		@NonNull
-		private final String name;
-		@NonNull
 		private final W source;
+		private final String name;
 
 		@Override
 		public String getName() {
@@ -35,7 +34,7 @@ public interface Named {
 
 		@Override
 		public Named rename(String name) {
-			return new Renamed<>(name, source);
+			return new Renamed<>(source, name);
 		}
 	}
 
@@ -54,6 +53,6 @@ public interface Named {
 	String getName();
 
 	default Named rename(String name) {
-		return new Renamed<Named>(name, this);
+		return new Renamed<Named>(this, name);
 	}
 }

@@ -5,9 +5,10 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.invoke.Invocation;
+import run.soeasy.framework.core.invoke.InvocationInterceptor;
 
 @Data
-class DelegatedObjectExecutionInterceptor implements MethodExecutionInterceptor, Serializable {
+class DelegatedObjectExecutionInterceptor implements InvocationInterceptor, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String id;
 

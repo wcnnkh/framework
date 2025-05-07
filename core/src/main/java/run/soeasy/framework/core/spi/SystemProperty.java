@@ -8,7 +8,7 @@ import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
+import run.soeasy.framework.core.convert.property.PropertyAccessor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.function.ThrowingFunction;

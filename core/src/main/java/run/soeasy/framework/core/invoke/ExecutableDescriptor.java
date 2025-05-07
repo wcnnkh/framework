@@ -47,8 +47,8 @@ public interface ExecutableDescriptor extends Executable, Named {
 		}
 
 		@Override
-		default ParameterDescriptors<?> getParameterDescriptors() {
-			return getSource().getParameterDescriptors();
+		default ParameterTemplate<?> getParameterTemplate() {
+			return getSource().getParameterTemplate();
 		}
 	}
 
@@ -67,7 +67,7 @@ public interface ExecutableDescriptor extends Executable, Named {
 
 	@Override
 	default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
-		Iterator<? extends ParameterDescriptor> iterator1 = getParameterDescriptors().iterator();
+		Iterator<? extends ParameterDescriptor> iterator1 = getParameterTemplate().iterator();
 		Iterator<Class<?>> iterator2 = Arrays.asList(parameterTypes).iterator();
 		while (iterator1.hasNext() && iterator2.hasNext()) {
 			ParameterDescriptor parameterDescriptor = iterator1.next();
@@ -94,7 +94,7 @@ public interface ExecutableDescriptor extends Executable, Named {
 	 */
 	Elements<TypeDescriptor> getExceptionTypeDescriptors();
 
-	ParameterDescriptors<?> getParameterDescriptors();
+	ParameterTemplate<?> getParameterTemplate();
 
 	/**
 	 * Returns the Java language modifiers for the member or constructor represented

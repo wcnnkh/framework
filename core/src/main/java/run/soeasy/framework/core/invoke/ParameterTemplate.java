@@ -1,72 +1,33 @@
 package run.soeasy.framework.core.invoke;
 
-import lombok.NonNull;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.mapping.Dictionary;
+import run.soeasy.framework.core.convert.property.PropertyTemplate;
 
-/**
- * 多个参数的定义
- * 
- * @author shuchaowen
- *
- */
-public interface ParameterTemplate extends Dictionary<ParameterAccessor>, ParameterDescriptors<ParameterAccessor> {
-	public static interface ParameterSourceWrapper<W extends ParameterTemplate> extends ParameterTemplate,
-			DictionaryWrapper<ParameterAccessor, W>, ParameterDescriptorsWrapper<ParameterAccessor, W> {
+@FunctionalInterface
+public interface ParameterTemplate<T extends ParameterDescriptor> extends PropertyTemplate<T> {
+	public static class EmptyParameterTemplate<T extends ParameterDescriptor> extends EmptyPropertyTemplate<T>
+			implements ParameterTemplate<T> {
+		private static final long serialVersionUID = 1L;
+		private static final ParameterTemplate<?> EMPTY_PARAMETER_TEMPLATE = new EmptyParameterTemplate<>();
+	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends ParameterDescriptor> ParameterTemplate<T> empty() {
+		return (ParameterTemplate<T>) EmptyParameterTemplate.EMPTY_PARAMETER_TEMPLATE;
+	}
+
+	@FunctionalInterface
+	public static interface ParameterDescriptorsWrapper<T extends ParameterDescriptor, W extends ParameterTemplate<T>>
+			extends PropertyTemplate<T>, PropertyTemplateWrapper<T, W> {
 		@Override
-		default Elements<KeyValue<Object, ParameterAccessor>> getElements() {
+		default Elements<KeyValue<Object, T>> getElements() {
 			return getSource().getElements();
 		}
-
-		@Override
-		default ParameterTemplate rename(String name) {
-			return getSource().rename(name);
-		}
-	}
-
-	public static class RenamedParameterSource<W extends ParameterTemplate>
-			extends RenamedTemplate<Object, ParameterAccessor, W> implements ParameterSourceWrapper<W> {
-
-		public RenamedParameterSource(@NonNull W source, String name) {
-			super(source, name);
-		}
-
-		@Override
-		public ParameterTemplate rename(String name) {
-			return new RenamedParameterSource<>(getSource(), name);
-		}
-	}
-
-	default Object[] getArgs() {
-		return map((e) -> e.get()).toArray(Object[]::new);
 	}
 
 	@Override
-	default Elements<KeyValue<Object, ParameterAccessor>> getElements() {
-		return ParameterDescriptors.super.getElements();
-	}
-
-	default Class<?>[] getTypes() {
-		return map((e) -> e.getReturnTypeDescriptor().getType()).toArray(Class<?>[]::new);
-	}
-
-	default boolean isValidated() {
-		return getElements().allMatch((e) -> {
-			if (!e.getValue().isReadable()) {
-				return false;
-			}
-
-			if (e.getValue().isRequired() && e.getValue().get() == null) {
-				return false;
-			}
-			return true;
-		});
-	}
-
-	@Override
-	default ParameterTemplate rename(String name) {
-		return new RenamedParameterSource<>(this, name);
+	default Elements<KeyValue<Object, T>> getElements() {
+		return indexed().map((e) -> KeyValue.of((int) e.getIndex(), e.getElement()));
 	}
 }

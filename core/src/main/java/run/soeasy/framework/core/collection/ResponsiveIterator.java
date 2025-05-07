@@ -7,8 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import run.soeasy.framework.core.invoke.Functions;
-
 /**
  * 响应式迭代
  * 
@@ -129,7 +127,7 @@ public class ResponsiveIterator<E> implements CloseableIterator<E> {
 							}
 							return false;
 						}
-						this.valueSupplier = Functions.forValue(message.value);
+						this.valueSupplier = () -> message.value;
 						return true;
 					} catch (InterruptedException e) {
 						// 线程中断返回false
@@ -179,7 +177,7 @@ public class ResponsiveIterator<E> implements CloseableIterator<E> {
 							}
 							return false;
 						}
-						this.valueSupplier = Functions.forValue(message.value);
+						this.valueSupplier = () -> message.value;
 						return true;
 					} catch (InterruptedException e) {
 						// 线程中断返回false

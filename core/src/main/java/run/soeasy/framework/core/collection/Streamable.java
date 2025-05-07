@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.math.LongValue;
 import run.soeasy.framework.core.math.NumberValue;
 
@@ -84,8 +86,7 @@ public interface Streamable<E> {
 
 		@Override
 		default <T, X extends Throwable> T export(
-				run.soeasy.framework.core.invoke.Function<? super Stream<E>, ? extends T, ? extends X> processor)
-				throws X {
+				ThrowingFunction<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
 			return getSource().export(processor);
 		}
 
@@ -217,8 +218,8 @@ public interface Streamable<E> {
 		}
 
 		@Override
-		default <X extends Throwable> void transfer(
-				run.soeasy.framework.core.invoke.Consumer<? super Stream<E>, ? extends X> processor) throws X {
+		default <X extends Throwable> void transfer(ThrowingConsumer<? super Stream<E>, ? extends X> processor)
+				throws X {
 			getSource().transfer(processor);
 		}
 
@@ -317,8 +318,8 @@ public interface Streamable<E> {
 		}
 	}
 
-	default <T, X extends Throwable> T export(
-			run.soeasy.framework.core.invoke.Function<? super Stream<E>, ? extends T, ? extends X> processor) throws X {
+	default <T, X extends Throwable> T export(ThrowingFunction<? super Stream<E>, ? extends T, ? extends X> processor)
+			throws X {
 		Stream<E> stream = stream();
 		try {
 			return processor.apply(stream);
@@ -579,8 +580,7 @@ public interface Streamable<E> {
 		return collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 	}
 
-	default <X extends Throwable> void transfer(
-			run.soeasy.framework.core.invoke.Consumer<? super Stream<E>, ? extends X> processor) throws X {
+	default <X extends Throwable> void transfer(ThrowingConsumer<? super Stream<E>, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			processor.accept(stream);

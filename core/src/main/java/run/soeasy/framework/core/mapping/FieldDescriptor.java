@@ -2,7 +2,7 @@ package run.soeasy.framework.core.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.convert.property.PropertyDescriptor;
 import run.soeasy.framework.core.invoke.mapping.Getter;
 import run.soeasy.framework.core.invoke.mapping.Setter;
 

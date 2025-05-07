@@ -9,6 +9,11 @@ import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.invoke.Execution;
+import run.soeasy.framework.core.invoke.ExecutionInterceptor;
+import run.soeasy.framework.core.invoke.ExecutionInterceptorRegistry;
+import run.soeasy.framework.core.invoke.ExecutionInterceptors;
+import run.soeasy.framework.core.invoke.InterceptableExecution;
+import run.soeasy.framework.core.invoke.SwitchableTargetInvocationInterceptor;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data
@@ -90,7 +95,7 @@ public class Aop extends JdkProxyFactory {
 					getExecutionInterceptorRegistry(), executionInterceptor);
 		}
 		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
-		return new InterceptableFunction<>(function, useExecutionInterceptor);
+		return new InterceptableExecution<>(function, useExecutionInterceptor);
 	}
 
 	public final <T> Proxy getProxy(Class<? extends T> sourceClass, T source) {
@@ -99,7 +104,7 @@ public class Aop extends JdkProxyFactory {
 
 	public <T> Proxy getProxy(@NonNull Class<? extends T> sourceClass, T source, Class<?>[] interfaces,
 			ExecutionInterceptor executionInterceptor) {
-		SwitchableTargetExecutionInterceptor switchableTargetExecutionInterceptor = new SwitchableTargetExecutionInterceptor(
+		SwitchableTargetInvocationInterceptor switchableTargetExecutionInterceptor = new SwitchableTargetInvocationInterceptor(
 				source);
 		Elements<? extends ExecutionInterceptor> executionInterceptors;
 		if (executionInterceptor == null) {

@@ -35,7 +35,7 @@ public interface Invocation extends Execution, Invoker {
 		}
 
 		@Override
-		default Object invoke(Object target, @NonNull ParameterTemplate parameters) throws Throwable {
+		default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
 			return getSource().invoke(target, parameters);
 		}
 
@@ -83,7 +83,7 @@ public interface Invocation extends Execution, Invoker {
 
 	Object invoke(Object target, @NonNull Object... args) throws Throwable;
 
-	default Object invoke(Object target, @NonNull ParameterTemplate parameters) throws Throwable {
+	default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
 		return invoke(target, parameters.getTypes(), parameters.getArgs());
 	}
 

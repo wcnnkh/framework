@@ -3,7 +3,7 @@ package run.soeasy.framework.core.mapping;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
+import run.soeasy.framework.core.convert.property.PropertyAccessor;
 import run.soeasy.framework.core.mapping.FieldDescriptor.FieldDescriptorWrapper;
 
 @Data

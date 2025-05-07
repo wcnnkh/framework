@@ -1,10 +1,10 @@
 package run.soeasy.framework.core.spi;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
-import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
+import run.soeasy.framework.core.convert.property.PropertyAccessor;
+import run.soeasy.framework.core.convert.property.PropertySource;
 
-public final class SystemProperties implements PropertyTemplate {
+public final class SystemProperties implements PropertySource {
 	private static volatile SystemProperties instance;
 
 	public static SystemProperties getInstance() {

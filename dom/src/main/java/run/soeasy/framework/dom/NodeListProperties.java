@@ -11,11 +11,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.mapping.PropertyAccessor;
-import run.soeasy.framework.core.convert.mapping.PropertyTemplate;
+import run.soeasy.framework.core.convert.property.PropertyAccessor;
+import run.soeasy.framework.core.convert.property.PropertySource;
 
 @AllArgsConstructor
-public class NodeListProperties implements PropertyTemplate {
+public class NodeListProperties implements PropertySource {
 	@NonNull
 	private final NodeList nodeList;
 

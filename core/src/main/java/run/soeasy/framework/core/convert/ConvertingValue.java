@@ -2,11 +2,11 @@ package run.soeasy.framework.core.convert;
 
 import lombok.NonNull;
 
-public final class ConvertingValue<W extends AccessibleDescriptor> extends ConvertingData<Object, AccessibleDescriptor>
+public class ConvertingValue<W extends AccessibleDescriptor> extends ConvertingData<Object, W>
 		implements TypedValueAccessor {
 	private static final long serialVersionUID = 1L;
 
-	public ConvertingValue(@NonNull AccessibleDescriptor source) {
+	public ConvertingValue(@NonNull W source) {
 		super(source);
 	}
 

@@ -1,9 +1,11 @@
 package run.soeasy.framework.core.invoke;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.mapping.PropertyDescriptor;
+import run.soeasy.framework.core.convert.property.PropertyDescriptor;
 
 public interface ParameterDescriptor extends PropertyDescriptor {
 	@FunctionalInterface
@@ -20,30 +22,33 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 		}
 	}
 
-	public static class RenamedParameterDescriptor<W extends ParameterDescriptor> extends RenamedPropertyDescriptor<W>
+	public static class RenamedParameterDescriptor<W extends ParameterDescriptor> extends NamedPropertyDescriptor<W>
 			implements ParameterDescriptorWrapper<W> {
 
-		public RenamedParameterDescriptor(@NonNull String name, @NonNull W source) {
-			super(name, source);
+		private static final long serialVersionUID = 1L;
+
+		public RenamedParameterDescriptor(@NonNull W source, String name) {
+			super(source, name);
 		}
 
 		@Override
 		public ParameterDescriptor rename(String name) {
-			return new RenamedParameterDescriptor<>(name, getSource());
+			return new RenamedParameterDescriptor<>(getSource(), name);
 		}
 	}
 
 	@RequiredArgsConstructor
 	@Getter
 	public static class ReindexParameterDescriptor<W extends ParameterDescriptor>
-			implements ParameterDescriptorWrapper<W> {
-		private final int index;
+			implements ParameterDescriptorWrapper<W>, Serializable {
+		private static final long serialVersionUID = 1L;
 		@NonNull
 		private final W source;
+		private final int index;
 
 		@Override
 		public ParameterDescriptor reindex(int index) {
-			return new ReindexParameterDescriptor<>(index, source);
+			return new ReindexParameterDescriptor<>(source, index);
 		}
 	}
 
@@ -52,10 +57,10 @@ public interface ParameterDescriptor extends PropertyDescriptor {
 	int getIndex();
 
 	default ParameterDescriptor rename(String name) {
-		return new RenamedParameterDescriptor<>(name, this);
+		return new RenamedParameterDescriptor<>(this, name);
 	}
 
 	default ParameterDescriptor reindex(int index) {
-		return new ReindexParameterDescriptor<>(index, this);
+		return new ReindexParameterDescriptor<>(this, index);
 	}
 }

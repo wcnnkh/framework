@@ -38,13 +38,13 @@ public interface Execution extends ExecutableDescriptor, Executor {
 		}
 
 		@Override
-		default ParameterTemplate getDefaultParameters() {
-			return getSource().getDefaultParameters();
+		default ParameterSource getDefaultParameterSource() {
+			return getSource().getDefaultParameterSource();
 		}
 
 		@Override
-		default void setDefaultParameters(ParameterTemplate parameters) {
-			getSource().setDefaultParameters(parameters);
+		default void setDefaultParameterSource(ParameterSource parameters) {
+			getSource().setDefaultParameterSource(parameters);
 		}
 	}
 
@@ -61,18 +61,18 @@ public interface Execution extends ExecutableDescriptor, Executor {
 		}
 	}
 
-	ParameterTemplate getDefaultParameters();
+	ParameterSource getDefaultParameterSource();
 
-	void setDefaultParameters(ParameterTemplate parameters);
+	void setDefaultParameterSource(ParameterSource parameterSource);
 
 	@Override
 	default boolean canExecuted() {
-		return canExecuted(getDefaultParameters());
+		return canExecuted(getDefaultParameterSource());
 	}
 
 	@Override
 	default Object execute() throws Throwable {
-		return execute(getDefaultParameters());
+		return execute(getDefaultParameterSource());
 	}
 
 	default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {

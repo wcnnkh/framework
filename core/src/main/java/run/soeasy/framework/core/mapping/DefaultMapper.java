@@ -7,18 +7,18 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValueAccessor;
-import run.soeasy.framework.core.convert.transform.Template;
+import run.soeasy.framework.core.convert.transform.Mapping;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.transform.mapping.collection.MapPropertySource;
 
 public class DefaultMapper
-		extends ObjectMapper<Object, TypedValueAccessor, Template<Object, TypedValueAccessor>, ConversionException>
+		extends ObjectMapper<Object, TypedValueAccessor, Mapping<Object, TypedValueAccessor>, ConversionException>
 		implements ConversionService {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public DefaultMapper() {
-		getObjectTemplateProvider().register(Template.class, (s, t) -> (Template) s);
-		getObjectTemplateProvider().register(Map.class, (s, t) -> new MapPropertyTemplate((Map) s, t));
+		getObjectTemplateProvider().register(Mapping.class, (s, t) -> (Mapping) s);
+		getObjectTemplateProvider().register(Map.class, (s, t) -> new MapPropertySource((Map) s, t));
 		setTemplateTransformer(new ConfigurationProperties());
 	}
 

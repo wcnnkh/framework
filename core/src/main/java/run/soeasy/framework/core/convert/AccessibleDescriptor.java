@@ -1,6 +1,5 @@
 package run.soeasy.framework.core.convert;
 
-import lombok.Data;
 import lombok.NonNull;
 
 public interface AccessibleDescriptor extends SourceDescriptor, TargetDescriptor {
@@ -18,24 +17,8 @@ public interface AccessibleDescriptor extends SourceDescriptor, TargetDescriptor
 		}
 	}
 
-	@Data
-	public static class DefaultAccessibleDescriptor implements AccessibleDescriptor {
-		@NonNull
-		private TypeDescriptor returnTypeDescriptor;
-		@NonNull
-		private TypeDescriptor requiredTypeDescriptor;
-		private boolean requried = false;
-		private boolean readable = true;
-		private boolean writeable = true;
-
-		public DefaultAccessibleDescriptor(@NonNull TypeDescriptor typeDescriptor) {
-			this.requiredTypeDescriptor = typeDescriptor;
-			this.returnTypeDescriptor = typeDescriptor;
-		}
-	}
-
 	public static AccessibleDescriptor forTypeDescriptor(@NonNull TypeDescriptor typeDescriptor) {
-		return new DefaultAccessibleDescriptor(typeDescriptor);
+		return new SimpleAccessibleDescriptor(typeDescriptor);
 	}
 
 	/**
