@@ -19,25 +19,26 @@ import run.soeasy.framework.beans.BeanPropertyDescriptor;
 import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MultiValueMap;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.mapping.FieldDescriptor;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
 
 @Getter
 @Setter
-public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>, ConversionServiceAware {
+public abstract class ObjectFormat implements PairFormat<String, TypedValue>, ConversionServiceAware {
 	@NonNull
 	private ConversionService conversionService = SystemConversionService.getInstance();
 
 	@Override
-	public final String format(Stream<KeyValue<String, ValueAccessor>> source) {
+	public final String format(Stream<KeyValue<String, TypedValue>> source) {
 		return PairFormat.super.format(source);
 	}
 
@@ -61,7 +62,7 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 	}
 
 	@Override
-	public final String formatMap(Map<? extends String, ? extends ValueAccessor> sourceMap) {
+	public final String formatMap(Map<? extends String, ? extends TypedValue> sourceMap) {
 		return PairFormat.super.formatMap(sourceMap);
 	}
 
@@ -82,7 +83,7 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 	}
 
 	@Override
-	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends ValueAccessor>> sourceMap) {
+	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends TypedValue>> sourceMap) {
 		return PairFormat.super.formatMultiValueMap(sourceMap);
 	}
 
@@ -139,9 +140,9 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 		} else if (sourceType.isArray()) {
 			formatArray(sourceKey, source, sourceType, target);
 		} else {
-			ValueAccessor value = ValueAccessor.of(source, sourceType);
-			KeyValue<String, ValueAccessor> pair = KeyValue.of(sourceKey, value);
-			Stream<KeyValue<String, ValueAccessor>> stream = Stream.of(pair);
+			TypedValue value = TypedValue.of(source, sourceType);
+			KeyValue<String, TypedValue> pair = KeyValue.of(sourceKey, value);
+			Stream<KeyValue<String, TypedValue>> stream = Stream.of(pair);
 			// 开始format
 			format(stream, target);
 		}
@@ -152,27 +153,27 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 	}
 
 	@Override
-	public final Stream<KeyValue<String, ValueAccessor>> parse(String source) {
+	public final Stream<KeyValue<String, TypedValue>> parse(String source) {
 		return PairFormat.super.parse(source);
 	}
 
 	@Override
-	public final Map<String, ValueAccessor> parseMap(Readable source) throws IOException {
+	public final Map<String, TypedValue> parseMap(Readable source) throws IOException {
 		return PairFormat.super.parseMap(source);
 	}
 
 	@Override
-	public final Map<String, ValueAccessor> parseMap(String source) {
+	public final Map<String, TypedValue> parseMap(String source) {
 		return PairFormat.super.parseMap(source);
 	}
 
 	@Override
-	public final MultiValueMap<String, ValueAccessor> parseMultiValueMap(Readable source) throws IOException {
+	public final MultiValueMap<String, TypedValue> parseMultiValueMap(Readable source) throws IOException {
 		return PairFormat.super.parseMultiValueMap(source);
 	}
 
 	@Override
-	public final MultiValueMap<String, ValueAccessor> parseMultiValueMap(String source) {
+	public final MultiValueMap<String, TypedValue> parseMultiValueMap(String source) {
 		return PairFormat.super.parseMultiValueMap(source);
 	}
 
@@ -183,7 +184,7 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object parseObject(Readable source, TypeDescriptor targetType) throws IOException {
-		MultiValueMap<String, ValueAccessor> sourceMap = parseMultiValueMap(source);
+		MultiValueMap<String, TypedValue> sourceMap = parseMultiValueMap(source);
 		TypeDescriptor sourceType = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class),
 				TypeDescriptor.collection(List.class, String.class));
 		if (conversionService.canConvert(sourceType, targetType)) {
@@ -195,9 +196,9 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 				return Collections.emptyMap();
 			}
 
-			Map targetMap = CollectionUtils.createMap(targetType.getType(),
+			Map targetMap = CollectionFactory.createMap(targetType.getType(),
 					targetType.getMapKeyTypeDescriptor().getType(), sourceMap.size());
-			for (Entry<String, List<ValueAccessor>> entry : sourceMap.entrySet()) {
+			for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 				Object key = entry.getKey();
 				key = conversionService.convert(key, TypeDescriptor.forObject(key),
 						targetType.getMapKeyTypeDescriptor());
@@ -215,7 +216,7 @@ public abstract class ObjectFormat implements PairFormat<String, ValueAccessor>,
 		// 兜底处理
 		Object target = ReflectionUtils.newInstance(targetType.getType());
 		BeanMapping mapping = BeanUtils.getMapping(targetType.getType());
-		for (Entry<String, List<ValueAccessor>> entry : sourceMap.entrySet()) {
+		for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 			Elements<BeanPropertyDescriptor> elements = mapping.getValues(entry.getKey());
 			for (BeanPropertyDescriptor element : elements) {
 				Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)

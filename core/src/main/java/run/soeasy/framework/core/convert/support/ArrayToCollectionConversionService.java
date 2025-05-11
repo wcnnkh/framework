@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
@@ -29,7 +29,7 @@ class ArrayToCollectionConversionService extends AbstractConversionService imple
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		int length = Array.getLength(source);
 		TypeDescriptor elementDesc = targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor();
-		Collection<Object> target = CollectionUtils.createCollection(
+		Collection<Object> target = CollectionFactory.createCollection(
 				targetDescriptor.getRequiredTypeDescriptor().getType(),
 				(elementDesc != null ? elementDesc.getType() : null), length);
 

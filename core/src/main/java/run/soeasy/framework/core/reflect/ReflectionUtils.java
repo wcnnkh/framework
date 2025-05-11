@@ -10,7 +10,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.invoke.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 import run.soeasy.framework.core.type.ClassUtils;
 
@@ -20,7 +20,7 @@ public final class ReflectionUtils {
 	public static final Method[] EMPTY_METHOD_ARRAY = new Method[0];
 
 	public static <T> ClassMembersLoader<T> find(@NonNull Class<?> clazz,
-			@NonNull Function<? super Class<?>, ? extends T, ? extends ReflectiveOperationException> finder) {
+			@NonNull ThrowingFunction<? super Class<?>, ? extends T, ? extends ReflectiveOperationException> finder) {
 		return search(clazz, (e) -> {
 			T element = finder.apply(e);
 			return element == null ? Elements.empty() : Elements.singleton(element);
@@ -141,7 +141,7 @@ public final class ReflectionUtils {
 	}
 
 	public static <T> ClassMembersLoader<T> getMembers(@NonNull Class<?> clazz,
-			@NonNull Function<? super Class<?>, ? extends T[], ? extends ReflectiveOperationException> loader) {
+			@NonNull ThrowingFunction<? super Class<?>, ? extends T[], ? extends ReflectiveOperationException> loader) {
 		return search(clazz, (e) -> {
 			T[] array = loader.apply(e);
 			return ArrayUtils.isEmpty(array) ? Elements.empty() : Elements.forArray(array);
@@ -413,7 +413,7 @@ public final class ReflectionUtils {
 	}
 
 	public static <T> ClassMembersLoader<T> search(@NonNull Class<?> clazz,
-			@NonNull Function<? super Class<?>, ? extends Elements<T>, ? extends ReflectiveOperationException> searcher) {
+			@NonNull ThrowingFunction<? super Class<?>, ? extends Elements<T>, ? extends ReflectiveOperationException> searcher) {
 		return new ClassMembersLoader<>(clazz, (c) -> {
 			try {
 				return searcher.apply(c);

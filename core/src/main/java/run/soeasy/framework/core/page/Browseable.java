@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.invoke.Functions;
 
 public interface Browseable<K, T> extends Cursor<K, T> {
 
@@ -20,7 +19,7 @@ public interface Browseable<K, T> extends Cursor<K, T> {
 
 		public BrowseableIterator(E pageables, Function<? super E, ? extends E> next) {
 			this.pageables = pageables;
-			this.current = Functions.forValue(pageables);
+			this.current = () -> pageables;
 			this.next = next;
 		}
 

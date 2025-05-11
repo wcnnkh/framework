@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.collection.Elements;
 
 /**
@@ -38,7 +38,7 @@ public interface Merger<E> extends Selector<E> {
 				}
 
 				if (target == null) {
-					target = CollectionUtils.createApproximateMap(map, 16);
+					target = CollectionFactory.createApproximateMap(map, 16);
 				}
 
 				target.putAll(map);

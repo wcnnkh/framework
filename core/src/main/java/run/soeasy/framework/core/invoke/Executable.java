@@ -24,11 +24,6 @@ public interface Executable extends SourceDescriptor, AnnotatedElement {
 		}
 
 		@Override
-		default boolean canExecuted(@NonNull ParameterSource parameters) {
-			return getSource().canExecuted(parameters);
-		}
-
-		@Override
 		default TypeDescriptor getReturnTypeDescriptor() {
 			return getSource().getReturnTypeDescriptor();
 		}
@@ -39,8 +34,4 @@ public interface Executable extends SourceDescriptor, AnnotatedElement {
 	}
 
 	boolean canExecuted(@NonNull Class<?>... parameterTypes);
-
-	default boolean canExecuted(@NonNull ParameterSource parameters) {
-		return parameters.isValidated() && canExecuted(parameters.getTypes());
-	}
 }

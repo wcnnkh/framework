@@ -10,8 +10,6 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.ObjectUtils;
 
 public final class ArrayUtils {
 	/**
@@ -58,11 +56,11 @@ public final class ArrayUtils {
 	 * @return
 	 */
 	public static <T> T clone(T array) {
-		return clone(array, false);
+		return clone(array, false, UnaryOperator.identity());
 	};
 
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T array, boolean deep) {
+	public static <T> T clone(T array, boolean deep, @NonNull UnaryOperator<? super Object> cloner) {
 		if (array == null) {
 			return null;
 		}
@@ -72,7 +70,7 @@ public final class ArrayUtils {
 				int len = Array.getLength(array);
 				Object clone = Array.newInstance(array.getClass().getComponentType(), len);
 				for (int i = 0; i < len; i++) {
-					Array.set(clone, i, ObjectUtils.clone(Array.get(array, i), deep));
+					Array.set(clone, i, cloner.apply(Array.get(array, i)));
 				}
 				return (T) clone;
 			} else {
@@ -181,19 +179,17 @@ public final class ArrayUtils {
 		return array1.length - array2.length;
 	}
 
-	public static <T> void copy(T src, int srcPos, T dest, int destPos, int length, boolean deep) {
+	public static <T> void copy(@NonNull T src, int srcPos, T dest, int destPos, int length, boolean deep,
+			@NonNull UnaryOperator<? super Object> copyer) {
 		if (deep) {
-			copy(src, srcPos, dest, destPos, length, (e) -> ObjectUtils.clone(e, deep));
+			copy(src, srcPos, dest, destPos, length, copyer);
 		} else {
 			System.arraycopy(src, srcPos, dest, destPos, length);
 		}
 	}
 
-	public static <T> void copy(T src, int srcPos, T dest, int destPos, int length,
-			UnaryOperator<? super Object> copyer) {
-		Assert.requiredArgument(src != null, "src");
-		Assert.requiredArgument(dest != null, "dest");
-		Assert.requiredArgument(copyer != null, "copyer");
+	public static <T> void copy(@NonNull T src, int srcPos, @NonNull T dest, int destPos, int length,
+			@NonNull UnaryOperator<? super Object> copyer) {
 		for (int i = 0; i < length; i++) {
 			Object item = Array.get(src, srcPos + i);
 			item = copyer.apply(item);
@@ -202,8 +198,7 @@ public final class ArrayUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T empty(Class<?> componentType) {
-		Assert.requiredArgument(componentType != null, "componentType");
+	public static <T> T empty(@NonNull Class<?> componentType) {
 		if (componentType == int.class) {
 			return (T) new int[0];
 		} else if (componentType == byte.class) {
@@ -336,7 +331,7 @@ public final class ArrayUtils {
 	 * @return
 	 */
 	public static <T> T merge(T leftArray, T rightArray) {
-		return merge(leftArray, rightArray, false);
+		return merge(leftArray, rightArray, false, UnaryOperator.identity());
 	}
 
 	/**
@@ -349,28 +344,28 @@ public final class ArrayUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T merge(T leftArray, T rightArray, boolean deep) {
+	public static <T> T merge(T leftArray, T rightArray, boolean deep, @NonNull UnaryOperator<? super Object> copyer) {
 		if (leftArray == null) {
-			return clone(rightArray, deep);
+			return clone(rightArray, deep, copyer);
 		}
 
 		if (rightArray == null) {
-			return clone(leftArray, deep);
+			return clone(leftArray, deep, copyer);
 		}
 
 		int leftLength = Array.getLength(leftArray);
 		if (leftLength == 0) {
-			return clone(rightArray, deep);
+			return clone(rightArray, deep, copyer);
 		}
 
 		int rightLength = Array.getLength(rightArray);
 		if (rightLength == 0) {
-			return clone(leftArray, deep);
+			return clone(leftArray, deep, copyer);
 		}
 
 		Object target = Array.newInstance(leftArray.getClass().getComponentType(), leftLength + rightLength);
-		copy(leftArray, 0, target, 0, leftLength, deep);
-		copy(rightArray, 0, target, leftLength, rightLength, deep);
+		copy(leftArray, 0, target, 0, leftLength, deep, copyer);
+		copy(rightArray, 0, target, leftLength, rightLength, deep, copyer);
 		return (T) target;
 	}
 
@@ -434,6 +429,39 @@ public final class ArrayUtils {
 			return Arrays.toString((boolean[]) array);
 		}
 		throw new IllegalArgumentException("Must be array type");
+	}
+
+	/**
+	 * Convert the given array (which may be a primitive array) to an object array
+	 * (if necessary of primitive wrapper objects).
+	 * <p>
+	 * A {@code null} source value will be converted to an empty Object array.
+	 * 
+	 * @param source the (potentially primitive) array
+	 * @return the corresponding object array (never {@code null})
+	 * @throws IllegalArgumentException if the parameter is not an array
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Object[] toObjectArray(Object source) {
+		if (source instanceof Object[]) {
+			return (Object[]) source;
+		}
+		if (source == null) {
+			return new Object[0];
+		}
+		if (!source.getClass().isArray()) {
+			throw new IllegalArgumentException("Source is not an array: " + source);
+		}
+		int length = Array.getLength(source);
+		if (length == 0) {
+			return new Object[0];
+		}
+		Class wrapperType = Array.get(source, 0).getClass();
+		Object[] newArray = (Object[]) Array.newInstance(wrapperType, length);
+		for (int i = 0; i < length; i++) {
+			newArray[i] = Array.get(source, i);
+		}
+		return newArray;
 	}
 
 	private ArrayUtils() {

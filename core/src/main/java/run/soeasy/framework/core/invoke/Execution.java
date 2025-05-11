@@ -26,26 +26,6 @@ public interface Execution extends ExecutableDescriptor, Executor {
 		default Execution rename(String name) {
 			return getSource().rename(name);
 		}
-
-		@Override
-		default boolean canExecuted() {
-			return getSource().canExecuted();
-		}
-
-		@Override
-		default Object execute() throws Throwable {
-			return getSource().execute();
-		}
-
-		@Override
-		default ParameterSource getDefaultParameterSource() {
-			return getSource().getDefaultParameterSource();
-		}
-
-		@Override
-		default void setDefaultParameterSource(ParameterSource parameters) {
-			getSource().setDefaultParameterSource(parameters);
-		}
 	}
 
 	public static class RenamedExecution<W extends Execution> extends RenamedExecutable<W>
@@ -59,20 +39,6 @@ public interface Execution extends ExecutableDescriptor, Executor {
 		public Execution rename(String name) {
 			return new RenamedExecution<>(name, getSource());
 		}
-	}
-
-	ParameterSource getDefaultParameterSource();
-
-	void setDefaultParameterSource(ParameterSource parameterSource);
-
-	@Override
-	default boolean canExecuted() {
-		return canExecuted(getDefaultParameterSource());
-	}
-
-	@Override
-	default Object execute() throws Throwable {
-		return execute(getDefaultParameterSource());
 	}
 
 	default Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {

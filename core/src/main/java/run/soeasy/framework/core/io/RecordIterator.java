@@ -13,7 +13,6 @@ import run.soeasy.framework.codec.support.RecordCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CloseableIterator;
 import run.soeasy.framework.core.function.ThrowingSupplier;
-import run.soeasy.framework.core.invoke.Functions;
 
 /**
  * 线程不安全
@@ -69,7 +68,8 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 	public boolean hasNext() {
 		if (supplier == null) {
 			try {
-				supplier = Functions.forValue(codec.decode(getInputStream()));
+				E value = codec.decode(getInputStream());
+				supplier = () -> value;
 			} catch (EOFException e) {
 				close();
 				return false;

@@ -15,13 +15,13 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
 import run.soeasy.framework.core.collection.Streams;
-import run.soeasy.framework.core.convert.property.PropertyAccessor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.invoke.reflect.ReflectionMethodAccessor;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
+import run.soeasy.framework.core.transform.indexed.IndexedAccessor;
 
 @RequiredArgsConstructor
 @Getter
-public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPropertySource<A>
+public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPropertyMapping<A>
 		implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Map<Class<?>, Method[]> methodsMap = new LRULinkedHashMap<>(256);
@@ -56,12 +56,13 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
 	private final Iterable<? extends A> annotations;
 
 	@Override
-	public Iterator<PropertyAccessor> iterator() {
+	public Iterator<IndexedAccessor> iterator() {
 		return Streams.stream(annotations).flatMap((annotation) -> {
 			Method[] methods = getMethods(type);
 			return Arrays.asList(methods).stream().map((method) -> {
-				Object value = ReflectionUtils.invoke(method, annotation);
-				return PropertyAccessor.of(method.getName(), ValueAccessor.of(value));
+				ReflectionMethodAccessor accessor = new ReflectionMethodAccessor(method);
+				accessor.setTarget(annotation);
+				return (IndexedAccessor) accessor;
 			});
 		}).iterator();
 	}

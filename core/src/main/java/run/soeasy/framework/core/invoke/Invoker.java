@@ -18,11 +18,6 @@ public interface Invoker extends Executable {
 			return getSource().invoke(target, parameterTypes, args);
 		}
 
-		@Override
-		default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
-			return getSource().invoke(target, parameters);
-		}
-
 	}
 
 	default Object invoke(Object target) throws Throwable {
@@ -31,10 +26,4 @@ public interface Invoker extends Executable {
 
 	Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable;
 
-	default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
-		if (!parameters.isValidated()) {
-			throw new IllegalArgumentException();
-		}
-		return invoke(target, parameters.getTypes(), parameters.getArgs());
-	}
 }

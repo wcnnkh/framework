@@ -18,10 +18,6 @@ public interface Executor extends Executable {
 			return getSource().execute(parameterTypes, args);
 		}
 
-		@Override
-		default Object execute(@NonNull ParameterSource parameters) throws Throwable {
-			return getSource().execute(parameters);
-		}
 	}
 
 	default Object execute() throws Throwable {
@@ -29,11 +25,4 @@ public interface Executor extends Executable {
 	}
 
 	Object execute(@NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable;
-
-	default Object execute(@NonNull ParameterSource parameters) throws Throwable {
-		if (!parameters.isValidated()) {
-			throw new IllegalArgumentException();
-		}
-		return execute(parameters.getTypes(), parameters.getArgs());
-	}
 }

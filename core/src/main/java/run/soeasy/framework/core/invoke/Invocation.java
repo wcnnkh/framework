@@ -35,11 +35,6 @@ public interface Invocation extends Execution, Invoker {
 		}
 
 		@Override
-		default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
-			return getSource().invoke(target, parameters);
-		}
-
-		@Override
 		default Invocation rename(String name) {
 			return getSource().rename(name);
 		}
@@ -50,7 +45,8 @@ public interface Invocation extends Execution, Invoker {
 		}
 	}
 
-	public static class RenamedMethod<W extends Invocation> extends RenamedExecution<W> implements InvocationWrapper<W> {
+	public static class RenamedMethod<W extends Invocation> extends RenamedExecution<W>
+			implements InvocationWrapper<W> {
 
 		public RenamedMethod(@NonNull String name, @NonNull W source) {
 			super(name, source);
@@ -82,10 +78,6 @@ public interface Invocation extends Execution, Invoker {
 	}
 
 	Object invoke(Object target, @NonNull Object... args) throws Throwable;
-
-	default Object invoke(Object target, @NonNull ParameterSource parameters) throws Throwable {
-		return invoke(target, parameters.getTypes(), parameters.getArgs());
-	}
 
 	@Override
 	default Invocation rename(String name) {

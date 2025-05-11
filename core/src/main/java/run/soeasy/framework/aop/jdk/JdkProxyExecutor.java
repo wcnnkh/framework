@@ -5,17 +5,19 @@ import java.lang.reflect.Method;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.aop.ProxyUtils;
-import run.soeasy.framework.core.reflect.ReflectionMethod;
+import run.soeasy.framework.core.invoke.reflect.ReflectionMethod;
 
 @Getter
 public class JdkProxyExecutor extends ReflectionMethod {
+	private static final long serialVersionUID = 1L;
 
 	public JdkProxyExecutor(Method method) {
 		super(method);
 	}
 
 	@Override
-	public Object invoke(Object target, @NonNull Object... args) throws Throwable {
+	public Object invoke(Object target, @NonNull Class<?>[] parameterTypes, @NonNull Object... args) throws Throwable {
 		return ProxyUtils.invokeIgnoreMethod(target, getSource(), args);
 	}
+
 }

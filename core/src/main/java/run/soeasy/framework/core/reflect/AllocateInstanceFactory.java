@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Provider;
-import run.soeasy.framework.core.spi.ProviderFactory;
 import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.type.InstanceFactory;
+import run.soeasy.framework.core.type.ResolvableType;
 
-public class AllocateInstanceFactory implements ProviderFactory {
+public class AllocateInstanceFactory implements InstanceFactory {
 	private volatile Class<?> unsafeClass;
 
 	public Class<?> getUnsafeClass() {
@@ -56,16 +56,20 @@ public class AllocateInstanceFactory implements ProviderFactory {
 		return allocateInstanceMethod;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <S> Provider<S> getProvider(@NonNull Class<S> type) {
+	public boolean canInstantiated(@NonNull ResolvableType requiredType) {
+		Class<?> type = requiredType.getRawType();
 		if (type == null || type.isPrimitive() || type.isArray() || type.isAnnotation() || type.isInterface()
 				|| Modifier.isAbstract(type.getModifiers()) || getAllocateInstanceMethod() == null
 				|| getUnsafe() == null) {
-			return Provider.empty();
+			return false;
 		}
+		return true;
+	}
 
-		return Provider.forSupplier(() -> (S) ReflectionUtils.invoke(getAllocateInstanceMethod(), getUnsafe(), type));
+	@Override
+	public Object newInstance(@NonNull ResolvableType requiredType) {
+		return ReflectionUtils.invoke(getAllocateInstanceMethod(), getUnsafe(), requiredType.getType());
 	}
 
 }

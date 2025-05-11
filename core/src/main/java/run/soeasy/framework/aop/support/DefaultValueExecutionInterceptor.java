@@ -7,11 +7,11 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.invoke.Execution;
 import run.soeasy.framework.core.invoke.ExecutionInterceptor;
 import run.soeasy.framework.core.invoke.Executor;
-import run.soeasy.framework.core.invoke.ParameterDescriptor;
+import run.soeasy.framework.core.transform.indexed.IndexedDescriptor;
 
 /**
  * 对调用参数默认值的处理
@@ -30,7 +30,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 			return function.execute(args);
 		}
 
-		Elements<Object> newArgs = function.getParameterDescriptors().parallel(Elements.forArray(args))
+		Elements<Object> newArgs = function.getParameterTemplate().parallel(Elements.forArray(args))
 				.filter((e) -> e.isPresent()).map((e) -> {
 					if (e.getRightValue() != null) {
 						return e.getRightValue();
@@ -40,21 +40,21 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 				});
 		Object returnValue = function.execute(newArgs);
 		if (returnValue == null) {
-			ValueAccessor defaultValue = getDefaultReturnValue(function);
+			TypedValue defaultValue = getDefaultReturnValue(function);
 			if (defaultValue != null) {
-				returnValue = conversionService.convert(defaultValue, function.getReturnTypeDescriptor());
+				returnValue = conversionService.apply(defaultValue, () -> function.getReturnTypeDescriptor());
 			}
 		}
 		return returnValue;
 	}
 
-	protected ValueAccessor getDefaultParameterValue(Executor executor, ParameterDescriptor parameterDescriptor) {
-		return getDefaultValue(executor, parameterDescriptor.getTypeDescriptor());
+	protected TypedValue getDefaultParameterValue(Executor executor, IndexedDescriptor parameterDescriptor) {
+		return getDefaultValue(executor, parameterDescriptor.getReturnTypeDescriptor());
 	}
 
-	protected ValueAccessor getDefaultReturnValue(Execution function) {
+	protected TypedValue getDefaultReturnValue(Execution function) {
 		return getDefaultValue(function, function.getReturnTypeDescriptor());
 	}
 
-	protected abstract ValueAccessor getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
+	protected abstract TypedValue getDefaultValue(Executor executor, TypeDescriptor typeDescriptor);
 }

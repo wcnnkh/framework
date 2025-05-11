@@ -7,10 +7,10 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConvertingData;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.io.MimeType;
-import run.soeasy.framework.core.io.serializer.Serializer;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.convert.MessageConvertException;
+import run.soeasy.framework.serializer.Serializer;
 
 public class SerializableMessageConveter extends AbstractBinaryMessageConverter<Object> {
 	private final Serializer serializer;

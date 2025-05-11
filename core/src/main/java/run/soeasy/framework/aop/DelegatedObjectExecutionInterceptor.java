@@ -14,7 +14,7 @@ class DelegatedObjectExecutionInterceptor implements InvocationInterceptor, Seri
 
 	@Override
 	public Object intercept(@NonNull Invocation executor, @NonNull Object... args) throws Throwable {
-		if (executor.getParameterDescriptors().isEmpty()
+		if (executor.getParameterTemplate().isEmpty()
 				&& executor.getName().equals(DelegatedObject.PROXY_CONTAINER_ID_METHOD_NAME)) {
 			return id;
 		}

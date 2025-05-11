@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import lombok.ToString;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.io.serializer.SerializerException;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
+import run.soeasy.framework.serializer.SerializerException;
 
 public class CollectionFactoryTest {
 	@Test

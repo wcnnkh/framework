@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.TypedValue;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -29,5 +29,5 @@ public interface MessageWriter {
 	 * @param contentType 为空表示任意类型
 	 * @throws IOException
 	 */
-	void writeTo(@NonNull ValueAccessor source, @NonNull OutputMessage message, MediaType contentType) throws IOException;
+	void writeTo(@NonNull TypedValue source, @NonNull OutputMessage message, MediaType contentType) throws IOException;
 }

@@ -18,7 +18,7 @@ public interface AccessibleDescriptor extends SourceDescriptor, TargetDescriptor
 	}
 
 	public static AccessibleDescriptor forTypeDescriptor(@NonNull TypeDescriptor typeDescriptor) {
-		return new SimpleAccessibleDescriptor(typeDescriptor);
+		return new CustomizeAccessibleDescriptor(typeDescriptor);
 	}
 
 	/**
@@ -26,12 +26,16 @@ public interface AccessibleDescriptor extends SourceDescriptor, TargetDescriptor
 	 * 
 	 * @return
 	 */
-	boolean isReadable();
+	default boolean isReadable() {
+		return true;
+	}
 
 	/**
 	 * 是否可写
 	 * 
 	 * @return
 	 */
-	boolean isWriteable();
+	default boolean isWriteable() {
+		return true;
+	}
 }

@@ -5,14 +5,13 @@ import java.util.Collections;
 import java.util.Set;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConvertiblePair;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypedValue;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
 
 class CollectionToCollectionConversionService extends AbstractConversionService
 		implements ConditionalConversionService {
@@ -23,12 +22,6 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Collection.class, Collection.class));
-	}
-
-	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return ConditionalConversionService.super.canConvert(sourceType, targetType)
-				&& ReflectionUtils.isInstance(targetType.getType());
 	}
 
 	@Override
@@ -51,7 +44,7 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 
 		// At this point, we need a collection copy in any case, even if just for
 		// finding out about element copies...
-		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
+		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
 		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		if (elementDesc == null) {

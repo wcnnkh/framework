@@ -1,15 +1,9 @@
 package run.soeasy.framework.core.type;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Provider;
-import run.soeasy.framework.core.spi.ProviderFactory;
 
-@FunctionalInterface
-public interface InstanceFactory extends ProviderFactory {
-	@Override
-	default <S> Provider<S> getProvider(@NonNull Class<S> requiredType) {
-		return getProvider(ResolvableType.forType(requiredType));
-	}
-	
-	<T> Provider<T> getProvider(@NonNull ResolvableType requiredType);
+public interface InstanceFactory {
+	boolean canInstantiated(@NonNull ResolvableType requiredType);
+
+	Object newInstance(@NonNull ResolvableType requiredType);
 }

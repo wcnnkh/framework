@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.collection.ArrayUtils;
 
 /**
  * {@link Comparator} implementation for {@link Ordered} objects, sorting by
@@ -91,7 +91,7 @@ public class OrderComparator implements Comparator<Object> {
 		if (sourceProvider != null) {
 			Object orderSource = sourceProvider.getOrderSource(obj);
 			if (orderSource != null && orderSource.getClass().isArray()) {
-				Object[] sources = ObjectUtils.toObjectArray(orderSource);
+				Object[] sources = ArrayUtils.toObjectArray(orderSource);
 				for (Object source : sources) {
 					order = findOrder(source);
 					if (order != null) {

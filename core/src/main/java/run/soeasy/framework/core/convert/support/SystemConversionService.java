@@ -1,14 +1,11 @@
 package run.soeasy.framework.core.convert.support;
 
 import run.soeasy.framework.core.convert.ConifgurableConversionService;
-import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.date.ConfigurableDateCodecResolver;
 import run.soeasy.framework.core.convert.date.ConfigurableZoneOffsetResolver;
 import run.soeasy.framework.core.convert.date.DateFormatConversionService;
 import run.soeasy.framework.core.convert.date.LocalDateTimeConversion;
 import run.soeasy.framework.core.convert.strings.StringConversionService;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.type.ClassUtils;
 
 /**
  * 全局的ConversionService
@@ -51,11 +48,5 @@ public class SystemConversionService extends ConifgurableConversionService {
 
 		register(new ObjectToArrayConversionService(this));
 		register(new ObjectToCollectionConversionService(this));
-
-		// 并非所有的环境都支持sql类型
-		if (ClassUtils.isPresent("io.basc.framework.convert.lang.SqlDateConversionService", null)) {
-			register((ConversionService) ReflectionUtils
-					.newInstance(ClassUtils.getClass("io.basc.framework.convert.lang.SqlDateConversionService", null)));
-		}
 	}
 }

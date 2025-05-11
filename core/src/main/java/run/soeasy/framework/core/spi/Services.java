@@ -56,7 +56,7 @@ public class Services<S>
 	private final ServiceInjectors<S> injectors = new ServiceInjectors<>();
 	private volatile S last;
 
-	private volatile Publisher<? super Elements<ChangeEvent<S>>> publisher = Publisher.empty();
+	private volatile Publisher<? super Elements<ChangeEvent<S>>> publisher = Publisher.ignore();
 
 	public Services() {
 		container = new ServiceContainer<ServiceHolder<S>>() {
@@ -223,7 +223,7 @@ public class Services<S>
 		Lock lock = container.writeLock();
 		lock.lock();
 		try {
-			this.publisher = publisher == null ? Publisher.empty() : publisher;
+			this.publisher = publisher == null ? Publisher.ignore() : publisher;
 		} finally {
 			lock.unlock();
 		}

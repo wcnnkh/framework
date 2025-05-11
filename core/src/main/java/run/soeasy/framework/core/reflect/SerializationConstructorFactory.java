@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Provider;
+import run.soeasy.framework.core.type.ClassMemberFactory;
 
 /**
  * 使用系列化行为的构造方法，可以绕过必需使用参数构造对象的行为
@@ -12,7 +13,7 @@ import run.soeasy.framework.core.collection.Provider;
  * @author soeasy.run
  *
  */
-public class SerializationConstructorFactory implements ReflectionFactory<Constructor<?>> {
+public class SerializationConstructorFactory implements ClassMemberFactory<Constructor<?>> {
 	private static Constructor<Object> objectConstructor;
 	static {
 		try {
@@ -75,7 +76,7 @@ public class SerializationConstructorFactory implements ReflectionFactory<Constr
 	}
 
 	@Override
-	public Provider<Constructor<?>> getReflectionProvider(@NonNull Class<?> declaringClass) {
+	public Provider<Constructor<?>> getClassMemberProvider(@NonNull Class<?> declaringClass) {
 		if (getReflectionFactory() != null && getNewConstructorForSerialization() != null) {
 			Constructor<?> constructor = (Constructor<?>) ReflectionUtils.invoke(getNewConstructorForSerialization(),
 					getReflectionFactory(), declaringClass, objectConstructor);

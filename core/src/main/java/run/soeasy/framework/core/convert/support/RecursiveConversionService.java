@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
@@ -29,7 +29,7 @@ public class RecursiveConversionService implements ConversionService {
 		if (requiredTypeDescriptor.isMap()) {
 			Map<Object, Object> sourceMap = (Map<Object, Object>) source;
 			TypeDescriptor targetKeyTypeDescriptor = requiredTypeDescriptor.getMapKeyTypeDescriptor();
-			Map<Object, Object> map = CollectionUtils.createMap(requiredTypeDescriptor.getType(),
+			Map<Object, Object> map = CollectionFactory.createMap(requiredTypeDescriptor.getType(),
 					targetKeyTypeDescriptor == null ? null : targetKeyTypeDescriptor.getType(), sourceMap.size());
 			TypeDescriptor sourceKeyTypeDescriptor = sourceTypeDescriptor.getMapKeyTypeDescriptor();
 			TypeDescriptor sourceValueTypeDescriptor = sourceTypeDescriptor.getMapValueTypeDescriptor();
@@ -61,7 +61,7 @@ public class RecursiveConversionService implements ConversionService {
 
 			Collection<Object> sourceCollection = (Collection<Object>) source;
 			TypeDescriptor targetElementTypeDescriptor = requiredTypeDescriptor.getElementTypeDescriptor();
-			Collection<Object> target = CollectionUtils.createCollection(requiredTypeDescriptor.getType(),
+			Collection<Object> target = CollectionFactory.createCollection(requiredTypeDescriptor.getType(),
 					targetElementTypeDescriptor == null ? null : targetElementTypeDescriptor.getType(),
 					sourceCollection.size());
 			TypeDescriptor sourceElementTypeDescriptor = sourceTypeDescriptor.getElementTypeDescriptor();

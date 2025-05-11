@@ -15,11 +15,11 @@ import run.soeasy.framework.core.invoke.mapping.Getter;
 import run.soeasy.framework.core.invoke.mapping.Setter;
 import run.soeasy.framework.core.invoke.mapping.Getter.MergedGetter;
 import run.soeasy.framework.core.invoke.mapping.Setter.MergedSetter;
+import run.soeasy.framework.core.invoke.reflect.ReflectionFieldGetter;
+import run.soeasy.framework.core.invoke.reflect.ReflectionFieldSetter;
+import run.soeasy.framework.core.invoke.reflect.ReflectionMethodGetter;
+import run.soeasy.framework.core.invoke.reflect.ReflectionMethodSetter;
 import run.soeasy.framework.core.mapping.FieldDescriptor;
-import run.soeasy.framework.core.reflect.ReflectionFieldGetter;
-import run.soeasy.framework.core.reflect.ReflectionFieldSetter;
-import run.soeasy.framework.core.reflect.ReflectionMethodGetter;
-import run.soeasy.framework.core.reflect.ReflectionMethodSetter;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
 import run.soeasy.framework.core.type.ResolvableType;
 

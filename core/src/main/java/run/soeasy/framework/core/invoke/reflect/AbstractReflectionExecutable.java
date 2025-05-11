@@ -1,0 +1,42 @@
+package run.soeasy.framework.core.invoke.reflect;
+
+import java.lang.reflect.Member;
+
+import lombok.Data;
+import lombok.NonNull;
+import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.invoke.ExecutableDescriptor;
+
+@Data
+public abstract class AbstractReflectionExecutable<T extends Member> implements ExecutableDescriptor, Wrapper<T> {
+	@NonNull
+	protected transient T source;
+
+	public AbstractReflectionExecutable(T source) {
+		setSource(source);
+	}
+
+	@Override
+	public String getName() {
+		return getSource().getName();
+	}
+
+	@Override
+	public int getModifiers() {
+		return getSource().getModifiers();
+	}
+
+	public Class<?> getDeclaringClass() {
+		return getSource().getDeclaringClass();
+	}
+
+	@Override
+	public TypeDescriptor getDeclaringTypeDescriptor() {
+		return TypeDescriptor.valueOf(getDeclaringClass());
+	}
+
+	public void setSource(@NonNull T source) {
+		this.source = source;
+	}
+}
