@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface OutputSource<O extends OutputStream, W extends Writer>
 		extends OutputFactory<O, W>, OutputStreamSource<O>, WriterSource<W> {

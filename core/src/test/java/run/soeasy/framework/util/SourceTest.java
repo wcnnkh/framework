@@ -2,9 +2,9 @@ package run.soeasy.framework.util;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Pool;
+import run.soeasy.framework.core.function.stream.Source;
 import run.soeasy.framework.core.invoke.Supplier;
-import run.soeasy.framework.core.function.Pool;
 
 public class SourceTest {
 	@Test

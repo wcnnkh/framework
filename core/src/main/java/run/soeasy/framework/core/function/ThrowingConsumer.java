@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.runtime.RuntimeThrowingConsumer;
 
 public interface ThrowingConsumer<S, E extends Throwable> {
 	public static interface ThrowingConsumerWrapper<S, E extends Throwable, W extends ThrowingConsumer<S, E>>

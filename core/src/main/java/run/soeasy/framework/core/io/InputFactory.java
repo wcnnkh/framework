@@ -7,8 +7,8 @@ import java.io.Reader;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface InputFactory<I extends InputStream, R extends Reader> extends InputStreamFactory<I>, ReaderFactory<R> {
 	public static interface InputFactoryWrapper<I extends InputStream, R extends Reader, W extends InputFactory<I, R>>

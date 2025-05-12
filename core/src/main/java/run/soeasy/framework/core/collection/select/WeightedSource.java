@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.function.select;
+package run.soeasy.framework.core.collection.select;
 
 import lombok.Getter;
 import lombok.NonNull;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 
 @FunctionalInterface
 public interface WriterSource<T extends Writer> extends WriterFactory<T> {

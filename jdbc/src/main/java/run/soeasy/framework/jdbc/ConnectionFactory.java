@@ -3,7 +3,7 @@ package run.soeasy.framework.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface ConnectionFactory {
 	Connection getConnection() throws SQLException;

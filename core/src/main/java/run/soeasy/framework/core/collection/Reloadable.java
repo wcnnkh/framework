@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.collection;
 
 /**
  * 标识是可以重新加载的

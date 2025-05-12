@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.function.select.Merger;
+import run.soeasy.framework.core.collection.merge.Merger;
 import run.soeasy.framework.core.math.NumberValue;
 
 /**
@@ -765,7 +765,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		@Override
 		public Elements<E> getSource() {
 			Elements<Elements<? extends E>> members = Elements.forArray(this.members);
-			return merger.apply(members.map((elements) -> elements.map(Function.identity())));
+			return merger.select(members.map((elements) -> elements.map(Function.identity())));
 		}
 	}
 

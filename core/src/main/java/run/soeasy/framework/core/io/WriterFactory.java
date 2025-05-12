@@ -5,7 +5,7 @@ import java.io.Writer;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 
 @FunctionalInterface
 public interface WriterFactory<T extends Writer> {

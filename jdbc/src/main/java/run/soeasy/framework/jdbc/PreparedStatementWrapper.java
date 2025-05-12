@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 import run.soeasy.framework.core.invoke.Consumer;
 
 @Getter

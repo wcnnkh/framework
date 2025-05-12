@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 
 @FunctionalInterface
 public interface ReaderFactory<T extends Reader> {

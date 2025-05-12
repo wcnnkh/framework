@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.Source;
-import run.soeasy.framework.core.function.Source.PipelineWrapper;
+import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.stream.Source.PipelineWrapper;
 
 @Getter
 @RequiredArgsConstructor

@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.stream.Source;
 
 @FunctionalInterface
 public interface InputStreamFactory<T extends InputStream> {

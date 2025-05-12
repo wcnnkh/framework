@@ -1,9 +1,12 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.function.runtime;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.ThrowingPredicate;
 
 public interface RuntimeThrowingPredicate<S, E extends RuntimeException> extends ThrowingPredicate<S, E>, Predicate<S> {
 	public static interface RuntimeThrowingPredicateWrapper<S, E extends RuntimeException, W extends RuntimeThrowingPredicate<S, E>>

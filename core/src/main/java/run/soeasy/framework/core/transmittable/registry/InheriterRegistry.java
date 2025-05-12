@@ -1,6 +1,9 @@
-package run.soeasy.framework.core.transmittable;
+package run.soeasy.framework.core.transmittable.registry;
 
 import run.soeasy.framework.core.spi.Services;
+import run.soeasy.framework.core.transmittable.Inheriter;
+import run.soeasy.framework.core.transmittable.InheriterBackup;
+import run.soeasy.framework.core.transmittable.InheriterCapture;
 
 public class InheriterRegistry<A, B> extends Services<Inheriter<A, B>>
 		implements Inheriter<InheriterCapture<A, B>, InheriterBackup<A, B>> {

@@ -5,14 +5,15 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionToSource;
+import run.soeasy.framework.core.function.runtime.RuntimeThrowingSupplier;
+import run.soeasy.framework.core.function.stream.Pool;
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface ThrowingSupplier<T, E extends Throwable> {
 	public static interface ThrowingSupplierWrapper<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
@@ -73,11 +74,6 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		default <R extends Exception> Callable<T> asCallable(@NonNull Function<? super E, ? extends R> throwingMapper) {
 			return getSource().asCallable(throwingMapper);
 		}
-
-		@Override
-		default Singleton<T, E> singleton() {
-			return getSource().singleton();
-		}
 	}
 
 	@RequiredArgsConstructor
@@ -133,8 +129,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 	}
 
 	public static class CloseableSupplier<T, E extends Throwable, W extends ThrowingSupplier<? extends T, ? extends E>>
-			extends
-			ThrowingFunctionToSource<T, T, E, W, ThrowingFunction<? super T, ? extends T, ? extends E>> {
+			extends ThrowingFunctionToSource<T, T, E, W, ThrowingFunction<? super T, ? extends T, ? extends E>> {
 
 		public CloseableSupplier(@NonNull W source, ThrowingRunnable<? extends E> processor) {
 			super(source, ThrowingFunction.identity(), processor);
@@ -242,50 +237,6 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 
 	default Optional<T> offline() throws E {
 		return Optional.ofNullable(get());
-	}
-
-	@RequiredArgsConstructor
-	@ToString
-	public static class SingletonSupplier<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
-			implements Singleton<T, E> {
-		@NonNull
-		protected final W source;
-		private volatile Supplier<? extends T> supplier;
-		private volatile long lastModified = 0;
-
-		@Override
-		public final T get() throws E {
-			if (supplier == null) {
-				synchronized (this) {
-					if (supplier == null) {
-						T value = newValue();
-						lastModified++;
-						supplier = () -> value;
-					}
-				}
-			}
-			return supplier.get();
-		}
-
-		protected T newValue() throws E {
-			return source.get();
-		}
-
-		@Override
-		public void reload() {
-			synchronized (this) {
-				supplier = null;
-			}
-		}
-
-		@Override
-		public long lastModified() {
-			return lastModified;
-		}
-	}
-
-	default Singleton<T, E> singleton() {
-		return new SingletonSupplier<>(this);
 	}
 
 	T get() throws E;

@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
+import run.soeasy.framework.core.transmittable.registry.AnyInheriterRegistry;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class InheriterTest {

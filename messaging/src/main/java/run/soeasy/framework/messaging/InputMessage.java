@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.Wrapped;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 import run.soeasy.framework.core.io.InputFactory;
 import run.soeasy.framework.core.io.InputStreamSource;
 

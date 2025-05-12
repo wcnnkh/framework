@@ -1,4 +1,6 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.function.runtime;
+
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface RuntimeCloseableSupplier<T, E extends RuntimeException>
 		extends Source<T, E>, RuntimeThrowingSupplier<T, E> {

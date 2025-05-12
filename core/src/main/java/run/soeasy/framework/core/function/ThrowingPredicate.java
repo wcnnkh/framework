@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.RuntimeThrowingPredicate.RuntimePredicate;
+import run.soeasy.framework.core.function.runtime.RuntimeThrowingPredicate;
+import run.soeasy.framework.core.function.runtime.RuntimeThrowingPredicate.RuntimePredicate;
 
 public interface ThrowingPredicate<S, E extends Throwable> {
 	public static interface ThrowingPredicateWrapper<S, E extends Throwable, W extends ThrowingPredicate<S, E>>

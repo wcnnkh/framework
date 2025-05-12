@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Streams;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 import run.soeasy.framework.core.invoke.Function;
 
 @Getter

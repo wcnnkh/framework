@@ -1,6 +1,8 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.function.runtime;
 
 import java.util.function.Supplier;
+
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public interface RuntimeThrowingSupplier<T, E extends RuntimeException> extends ThrowingSupplier<T, E>, Supplier<T> {
 	@FunctionalInterface

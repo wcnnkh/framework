@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.runtime.RuntimeThrowingFunction;
+import run.soeasy.framework.core.function.stream.Pipeline;
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface ThrowingFunction<S, T, E extends Throwable> {
 	public static interface ThrowingFunctionWrapper<S, T, E extends Throwable, W extends ThrowingFunction<S, T, E>>

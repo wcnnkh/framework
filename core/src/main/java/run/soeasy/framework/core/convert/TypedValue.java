@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -356,7 +357,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Value) value).getAsChar();
 		}
 
-		return getAsData(char.class).offline().orElse((char) 0);
+		return Optional.ofNullable(getAsData(char.class).get()).orElse((char) 0);
 	}
 
 	@Override
@@ -378,7 +379,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).doubleValue();
 		}
 
-		return getAsData(double.class).offline().orElse(0d);
+		return Optional.ofNullable(getAsData(double.class).get()).orElse(0d);
 	}
 
 	@Override
@@ -443,7 +444,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((TypedValue) value).getAsFloat();
 		}
 
-		return getAsData(float.class).offline().orElse(0f);
+		return Optional.ofNullable(getAsData(float.class).get()).orElse(0f);
 	}
 
 	@Override
@@ -465,7 +466,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).intValue();
 		}
 
-		return getAsData(int.class).offline().orElse(0);
+		return Optional.ofNullable(getAsData(int.class).get()).orElse(0);
 	}
 
 	@Override
@@ -487,7 +488,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).longValue();
 		}
 
-		return getAsData(long.class).offline().orElse(0L);
+		return Optional.ofNullable(getAsData(long.class).get()).orElse(0L);
 	}
 
 	default NumberValue getAsNumber() {
@@ -544,7 +545,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).shortValue();
 		}
 
-		return getAsData(short.class).offline().orElse((short) 0);
+		return Optional.ofNullable(getAsData(short.class).get()).orElse((short) 0);
 	}
 
 	default String getAsString() {
@@ -629,7 +630,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 
 	@SuppressWarnings("unchecked")
 	default <T> TypedData<T> getAsData(@NonNull TypeDescriptor typeDescriptor) {
-		return getAsValue(AccessibleDescriptor.forTypeDescriptor(typeDescriptor)).map((e) -> (T) e);
+		return (TypedData<T>) getAsValue(AccessibleDescriptor.forTypeDescriptor(typeDescriptor));
 	}
 
 	default TypedValue getAsValue(@NonNull AccessibleDescriptor typeDescriptor) {

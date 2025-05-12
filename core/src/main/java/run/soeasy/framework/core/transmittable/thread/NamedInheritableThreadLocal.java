@@ -1,6 +1,7 @@
-package run.soeasy.framework.core.transmittable;
+package run.soeasy.framework.core.transmittable.thread;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.transmittable.registry.AnyInheriterRegistry;
 
 /**
  * {@link InheritableThreadLocal} subclass that exposes a specified name as

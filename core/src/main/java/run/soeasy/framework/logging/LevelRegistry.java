@@ -13,7 +13,7 @@ import lombok.Setter;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.function.Reloadable;
+import run.soeasy.framework.core.collection.Reloadable;
 import run.soeasy.framework.core.match.StringMatcher;
 import run.soeasy.framework.core.match.StringMatchers;
 

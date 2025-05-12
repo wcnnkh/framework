@@ -1,7 +1,11 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.function.stream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.ThrowingRunnable;
+import run.soeasy.framework.core.function.ThrowingSupplier;
 
 public interface Pipeline<S, T, E extends Throwable> extends ThrowingFunction<S, T, E> {
 	public static interface PipelineWrapper<S, T, E extends Throwable, W extends Pipeline<S, T, E>>

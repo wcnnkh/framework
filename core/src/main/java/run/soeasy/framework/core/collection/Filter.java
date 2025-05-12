@@ -1,21 +1,21 @@
-package run.soeasy.framework.core.function.select;
+package run.soeasy.framework.core.collection;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.collection.Elements;
 
 /**
- * 多对多
+ * 过滤器
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
- * @param <E>
+ * @param <S>
+ * @param <T>
  */
 @FunctionalInterface
-public interface Filter<E> extends UnaryOperator<Elements<E>> {
+public interface Filter<T> extends Function<Elements<T>, Elements<T>> {
 	@RequiredArgsConstructor
 	public static class PredicateFilter<T> implements Filter<T> {
 		private static final Filter<?> IGNORE_NULL = new PredicateFilter<>((e) -> e != null);
@@ -33,13 +33,6 @@ public interface Filter<E> extends UnaryOperator<Elements<E>> {
 		return new PredicateFilter<>(predicate);
 	}
 
-	public static <T> Filter<T> forSelector(@NonNull Selector<T> selector) {
-		return (elements) -> {
-			T target = selector.apply(elements);
-			return target == null ? Elements.empty() : Elements.singleton(target);
-		};
-	}
-
 	static <T> Filter<T> identity() {
 		return t -> t;
 	}
@@ -48,7 +41,7 @@ public interface Filter<E> extends UnaryOperator<Elements<E>> {
 	public static <T> Filter<T> ignoreNull() {
 		return (Filter<T>) PredicateFilter.IGNORE_NULL;
 	}
-
+	
 	@Override
-	Elements<E> apply(@NonNull Elements<E> elements);
+	Elements<T> apply(Elements<T> elements);
 }

@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.util.NoSuchElementException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.Source;
+import run.soeasy.framework.core.function.stream.Source;
 
 public interface InputSource<I extends InputStream, R extends Reader>
 		extends InputFactory<I, R>, InputStreamSource<I>, ReaderSource<R> {

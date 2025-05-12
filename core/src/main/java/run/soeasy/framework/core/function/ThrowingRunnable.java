@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.runtime.RuntimeThrowingRunnable;
 
 public interface ThrowingRunnable<E extends Throwable> {
 	public static interface ThrowingRunnableWrapper<E extends Throwable, W extends ThrowingRunnable<E>>

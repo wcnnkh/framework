@@ -1,6 +1,7 @@
-package run.soeasy.framework.core.transmittable;
+package run.soeasy.framework.core.transmittable.thread;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.transmittable.Inheriter;
 
 public final class ThreadLocalInheriter<T> implements Inheriter<T, T> {
 	private final ThreadLocal<T> threadLocal;

@@ -10,8 +10,8 @@ import java.nio.charset.CharsetEncoder;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.Source;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.stream.Source;
 
 @FunctionalInterface
 public interface OutputStreamFactory<T extends OutputStream> {

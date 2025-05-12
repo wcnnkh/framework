@@ -2,12 +2,12 @@ package run.soeasy.framework.core.exchange.event;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.Filter;
 import run.soeasy.framework.core.exchange.ListenableChannel;
-import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.ListenableChannel.BatchListenableChannel;
+import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.container.ArrayListContainer;
 import run.soeasy.framework.core.exchange.container.Registry;
-import run.soeasy.framework.core.function.select.Filter;
 
 public class BatchEventDispatcher<T> extends EventDispatcher<Elements<T>> implements BatchListenableChannel<T> {
 	private final FakeSingleListenableChannel<T, ListenableChannel<Elements<T>>> single = () -> this;

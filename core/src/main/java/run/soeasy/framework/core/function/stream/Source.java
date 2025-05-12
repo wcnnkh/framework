@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.function.stream;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -8,7 +8,13 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionToSource;
+import run.soeasy.framework.core.function.ThrowingOptional;
+import run.soeasy.framework.core.function.ThrowingRunnable;
+import run.soeasy.framework.core.function.ThrowingSupplier;
+import run.soeasy.framework.core.function.runtime.RuntimeCloseableSupplier;
 
 /**
  * 一个流水线的定义
@@ -48,8 +54,7 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 		}
 
 		@Override
-		default <R extends Throwable> Source<T, R> throwing(
-				@NonNull Function<? super E, ? extends R> throwingMapper) {
+		default <R extends Throwable> Source<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
 			return getSource().throwing(throwingMapper);
 		}
 
@@ -68,8 +73,7 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 		}
 	}
 
-	static class ValueSource<T, E extends Throwable> extends ValueThrowingSupplier<T, E>
-			implements Source<T, E> {
+	static class ValueSource<T, E extends Throwable> extends ValueThrowingSupplier<T, E> implements Source<T, E> {
 		private static final long serialVersionUID = 1L;
 		private static final ValueSource<?, ?> EMPTY = new ValueSource<>(null);
 
@@ -99,8 +103,7 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 	public static class MappingSource<S, V, E extends Throwable, T extends Throwable, W extends Source<S, E>>
 			extends MappingThrowingSupplier<S, V, E, T, W> implements Source<V, T> {
 
-		public MappingSource(@NonNull W source,
-				@NonNull ThrowingFunction<? super S, ? extends V, T> mapper,
+		public MappingSource(@NonNull W source, @NonNull ThrowingFunction<? super S, ? extends V, T> mapper,
 				@NonNull Function<? super E, ? extends T> throwingMapper) {
 			super(source, mapper, ThrowingConsumer.ignore(), throwingMapper);
 		}
@@ -157,7 +160,8 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 		};
 
 		@Override
-		public <R> CloseableThrowingOptional<T, R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> pipeline) {
+		public <R> CloseableThrowingOptional<T, R, E> map(
+				@NonNull ThrowingFunction<? super T, ? extends R, E> pipeline) {
 			return new CloseableThrowingOptional<>(super::get, pipeline, this::close);
 		}
 
@@ -167,11 +171,10 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 		}
 	}
 
-	public static class SourcePool<T, E extends Throwable, W extends Source<T, E>>
-			extends ThrowingSupplierPool<T, E, W> implements Pool<T, E> {
+	public static class SourcePool<T, E extends Throwable, W extends Source<T, E>> extends ThrowingSupplierPool<T, E, W>
+			implements Pool<T, E> {
 
-		public SourcePool(@NonNull W source,
-				@NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
+		public SourcePool(@NonNull W source, @NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
 			super(source, endpoint);
 		}
 
@@ -225,8 +228,7 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 		}
 	}
 
-	public static class NewSource<T, E extends Throwable, W extends Source<T, E>>
-			extends CloseableSupplier<T, E, W> {
+	public static class NewSource<T, E extends Throwable, W extends Source<T, E>> extends CloseableSupplier<T, E, W> {
 
 		public NewSource(@NonNull W source, ThrowingRunnable<? extends E> processor) {
 			super(source, processor);
@@ -243,16 +245,14 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 	}
 
 	@Override
-	default <R extends Throwable> Source<T, R> throwing(
-			@NonNull Function<? super E, ? extends R> throwingMapper) {
+	default <R extends Throwable> Source<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return new MappingSource<>(this, ThrowingFunction.identity(), throwingMapper);
 	}
 
 	public static class RuntimeSource<T, E extends Throwable, R extends RuntimeException, W extends Source<T, E>>
 			extends MappingSource<T, T, E, R, W> implements RuntimeCloseableSupplier<T, R> {
 
-		public RuntimeSource(@NonNull W source,
-				@NonNull Function<? super E, ? extends R> throwingMapper) {
+		public RuntimeSource(@NonNull W source, @NonNull Function<? super E, ? extends R> throwingMapper) {
 			super(source, ThrowingFunction.identity(), throwingMapper);
 		}
 	}
@@ -269,8 +269,7 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 	}
 
 	@RequiredArgsConstructor
-	public static class SourceAsCallable<T, E extends Exception, W extends Source<T, E>>
-			implements Callable<T> {
+	public static class SourceAsCallable<T, E extends Exception, W extends Source<T, E>> implements Callable<T> {
 		@NonNull
 		private final W source;
 
