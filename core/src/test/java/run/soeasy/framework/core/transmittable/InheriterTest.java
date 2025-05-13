@@ -15,7 +15,7 @@ import run.soeasy.framework.sequences.uuid.UUIDSequences;
 public class InheriterTest {
 	private ThreadLocal<Object> threadLocal = new ThreadLocal<>();
 	private ExecutorService executorService = Executors.newCachedThreadPool();
-	private Executor executor = AnyInheriterRegistry.global().wrapExecutor(executorService);
+	private Executor executor = AnyInheriterRegistry.global().inheritable(executorService);
 
 	@Test
 	public void test() {

@@ -23,11 +23,11 @@ import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MultiValueMap;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.service.ConversionServiceAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.mapping.FieldDescriptor;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
 

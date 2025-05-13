@@ -28,4 +28,5 @@ public final class AnyInheriterRegistry extends InheriterRegistry<Object, Object
 	public static AnyInheriterRegistry global() {
 		return GLOBAL;
 	}
+
 }

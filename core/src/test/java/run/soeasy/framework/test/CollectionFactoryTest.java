@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import lombok.ToString;
 import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.invoke.reflect.ReflectionCloner;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 import run.soeasy.framework.serializer.SerializerException;
 

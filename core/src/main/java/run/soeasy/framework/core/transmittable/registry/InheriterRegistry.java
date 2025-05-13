@@ -1,9 +1,16 @@
 package run.soeasy.framework.core.transmittable.registry;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+
 import run.soeasy.framework.core.spi.Services;
 import run.soeasy.framework.core.transmittable.Inheriter;
 import run.soeasy.framework.core.transmittable.InheriterBackup;
 import run.soeasy.framework.core.transmittable.InheriterCapture;
+import run.soeasy.framework.core.transmittable.wrapped.InheritableExecutor;
+import run.soeasy.framework.core.transmittable.wrapped.InheritableExecutorService;
+import run.soeasy.framework.core.transmittable.wrapped.InheritableScheduledExecutorService;
 
 public class InheriterRegistry<A, B> extends Services<Inheriter<A, B>>
 		implements Inheriter<InheriterCapture<A, B>, InheriterBackup<A, B>> {
@@ -34,5 +41,17 @@ public class InheriterRegistry<A, B> extends Services<Inheriter<A, B>>
 			backup.put(inheriter, inheriter.clear());
 		}
 		return backup;
+	}
+
+	public Executor inheritable(Executor executor) {
+		return new InheritableExecutor<>(executor, this);
+	}
+
+	public ExecutorService inheritable(ExecutorService executorService) {
+		return new InheritableExecutorService<>(executorService, this);
+	}
+
+	public ScheduledExecutorService inheritable(ScheduledExecutorService scheduledExecutorService) {
+		return new InheritableScheduledExecutorService<>(scheduledExecutorService, this);
 	}
 }

@@ -5,11 +5,9 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.AccessibleDescriptor;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.transform.indexed.IndexedAccessor;
 
 @RequiredArgsConstructor
@@ -28,15 +26,13 @@ public class MapIndexedAccessor implements IndexedAccessor {
 	@Override
 	public Object get() throws ConversionException {
 		Object value = map.get(index);
-		return conversionService.apply(TypedValue.of(value),
-				AccessibleDescriptor.forTypeDescriptor(mapTypeDescriptor.getMapValueTypeDescriptor()));
+		return conversionService.convert(value, mapTypeDescriptor.getMapValueTypeDescriptor());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set(Object value) throws UnsupportedOperationException {
-		Object target = conversionService.apply(TypedValue.of(value),
-				AccessibleDescriptor.forTypeDescriptor(mapTypeDescriptor.getMapValueTypeDescriptor()));
+		Object target = conversionService.convert(value, mapTypeDescriptor.getMapValueTypeDescriptor());
 		map.put(index, target);
 	}
 

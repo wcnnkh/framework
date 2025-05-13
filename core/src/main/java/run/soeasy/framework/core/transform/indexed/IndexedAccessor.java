@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.indexed;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 public interface IndexedAccessor extends TypedValueAccessor, IndexedDescriptor {
 

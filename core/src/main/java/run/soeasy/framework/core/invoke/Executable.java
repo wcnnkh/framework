@@ -4,8 +4,8 @@ import java.lang.reflect.AnnotatedElement;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
-import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Executable extends SourceDescriptor, AnnotatedElement {

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Comparator;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.AccessibleDescriptor;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
+import run.soeasy.framework.core.convert.value.SourceDescriptor;
+import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.io.MimeType;

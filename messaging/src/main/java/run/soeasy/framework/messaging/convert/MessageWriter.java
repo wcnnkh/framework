@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging.convert;
 import java.io.IOException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.SourceDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.value.SourceDescriptor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;

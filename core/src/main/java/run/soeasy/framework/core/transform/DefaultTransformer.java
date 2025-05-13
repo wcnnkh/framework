@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 @Getter
 public class DefaultTransformer<K, V extends TypedValueAccessor, R extends Mapping<K, V>, S, T>

@@ -5,14 +5,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionFactory;
-import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConvertiblePair;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConditionalConversionService;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.service.ConvertiblePair;
 
 class ArrayToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ArrayToCollectionConversionService(ConversionService conversionService) {
@@ -24,13 +22,11 @@ class ArrayToCollectionConversionService extends AbstractConversionService imple
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
-		Object source = value.get();
-		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		int length = Array.getLength(source);
-		TypeDescriptor elementDesc = targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor();
-		Collection<Object> target = CollectionFactory.createCollection(
-				targetDescriptor.getRequiredTypeDescriptor().getType(),
+		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
+		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), length);
 
 		if (elementDesc == null) {

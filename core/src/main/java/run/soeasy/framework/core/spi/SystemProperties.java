@@ -8,10 +8,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.AccessibleDescriptor;
-import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.indexed.IndexedAccessor;
 import run.soeasy.framework.core.transform.indexed.PropertyMapping;
@@ -64,8 +62,7 @@ public final class SystemProperties implements PropertyMapping {
 
 		@Override
 		public void set(Object source) throws UnsupportedOperationException {
-			String value = (String) conversionService.apply(TypedValue.of(source),
-					AccessibleDescriptor.forTypeDescriptor(STRING_TYPE_DESCRIPTOR));
+			String value = (String) conversionService.convert(source, STRING_TYPE_DESCRIPTOR);
 			System.setProperty(index, value);
 		}
 

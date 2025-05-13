@@ -6,15 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.NonNull;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.CollectionFactory;
-import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConvertiblePair;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConditionalConversionService;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.service.ConvertiblePair;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -24,15 +22,13 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
-		Object source = value.get();
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		if (source == null) {
 			return null;
 		}
 
-		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
 		Map<Object, Object> sourceMap = (Map<Object, Object>) source;
-
 		// Shortcut if possible...
 		boolean copyRequired = !targetType.getType().isInstance(source);
 		if (!copyRequired && sourceMap.isEmpty()) {
@@ -41,7 +37,6 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 		TypeDescriptor keyDesc = targetType.getMapKeyTypeDescriptor();
 		TypeDescriptor valueDesc = targetType.getMapValueTypeDescriptor();
 		List<KeyValue<?, ?>> targetEntries = new ArrayList<>(sourceMap.size());
-		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 		for (Map.Entry<Object, Object> entry : sourceMap.entrySet()) {
 			Object sourceKey = entry.getKey();
 			Object sourceValue = entry.getValue();

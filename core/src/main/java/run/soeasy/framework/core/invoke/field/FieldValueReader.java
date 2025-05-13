@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.invoke.field;
 
-import run.soeasy.framework.core.convert.SourceDescriptor;
+import run.soeasy.framework.core.convert.value.SourceDescriptor;
 
 public interface FieldValueReader extends SourceDescriptor {
 	public static interface FieldValueReaderWrapper<W extends FieldValueReader>

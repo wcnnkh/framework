@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.indexed;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.ConvertingValue;
+import run.soeasy.framework.core.convert.value.ConvertingValue;
 import run.soeasy.framework.core.transform.indexed.IndexedDescriptor.IndexedDescriptorWrapper;
 
 public class ConvertingIndexedAccessor<W extends IndexedDescriptor> extends ConvertingValue<W>

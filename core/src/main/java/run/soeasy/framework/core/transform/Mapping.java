@@ -2,7 +2,7 @@ package run.soeasy.framework.core.transform;
 
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.KeyValueListable;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 /**
  * 映射

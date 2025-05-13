@@ -9,8 +9,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.SourceDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.ValueAccessor;
 
 @RequiredArgsConstructor

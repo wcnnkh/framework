@@ -1,5 +1,6 @@
 package run.soeasy.framework.core.transform;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
@@ -27,9 +28,63 @@ public interface ReversibleTransformer<S, T, E extends Throwable> extends Transf
 	 *         target types, {@code false} if not
 	 * @throws IllegalArgumentException if {@code targetType} is {@code null}
 	 */
-	default boolean canReverseTransform(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	default boolean canReverseTransform(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
 		return true;
 	}
 
-	boolean reverseTransform(T source, TypeDescriptor sourceType, S target, TypeDescriptor targetType) throws E;
+	default boolean canReverseTransform(@NonNull Class<? extends T> sourceClass, @NonNull TypeDescriptor targetType) {
+		return canReverseTransform(TypeDescriptor.valueOf(sourceClass), targetType);
+	}
+
+	default boolean canReverseTransform(@NonNull TypeDescriptor sourceType, @NonNull Class<? extends S> targetClass) {
+		return canReverseTransform(sourceType, TypeDescriptor.valueOf(targetClass));
+	}
+
+	default boolean canReverseTransform(@NonNull Class<? extends T> sourceClass,
+			@NonNull Class<? extends S> targetClass) {
+		return canReverseTransform(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
+	}
+
+	boolean reverseTransform(@NonNull T source, @NonNull TypeDescriptor sourceType, S target,
+			@NonNull TypeDescriptor targetType) throws E;
+
+	default boolean reverseTransform(@NonNull T source, @NonNull Class<? extends T> sourceClass, @NonNull S target,
+			@NonNull TypeDescriptor targetType) throws E {
+		return reverseTransform(source, TypeDescriptor.valueOf(sourceClass), target, targetType);
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull TypeDescriptor sourceType, @NonNull S target,
+			@NonNull Class<? extends S> targetClass) throws E {
+		return reverseTransform(source, sourceType, target, TypeDescriptor.valueOf(targetClass));
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull Class<? extends T> sourceClass, @NonNull S target,
+			@NonNull Class<? extends S> targetClass) throws E {
+		return reverseTransform(source, TypeDescriptor.valueOf(sourceClass), target,
+				TypeDescriptor.valueOf(targetClass));
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull S target, @NonNull TypeDescriptor targetType)
+			throws E {
+		return reverseTransform(source, TypeDescriptor.forObject(source), target, targetType);
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull S target, @NonNull Class<? extends S> targetClass)
+			throws E {
+		return reverseTransform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.valueOf(targetClass));
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull TypeDescriptor sourceType, @NonNull S target)
+			throws E {
+		return reverseTransform(source, sourceType, target, TypeDescriptor.forObject(target));
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull Class<? extends T> sourceClass, @NonNull S target)
+			throws E {
+		return reverseTransform(source, TypeDescriptor.valueOf(sourceClass), target, TypeDescriptor.forObject(target));
+	}
+
+	default boolean reverseTransform(@NonNull T source, @NonNull S target) throws E {
+		return reverseTransform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
+	}
 }

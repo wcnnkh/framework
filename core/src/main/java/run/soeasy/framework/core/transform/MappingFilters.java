@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class MappingFilters<K, V extends TypedValueAccessor, T extends Mapping<K, V>>

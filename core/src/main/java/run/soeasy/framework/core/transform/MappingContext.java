@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.attribute.SimpleAttributes;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 @Getter
 @AllArgsConstructor

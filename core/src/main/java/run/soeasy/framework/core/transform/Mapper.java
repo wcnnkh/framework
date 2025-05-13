@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 /**
  * 映射器

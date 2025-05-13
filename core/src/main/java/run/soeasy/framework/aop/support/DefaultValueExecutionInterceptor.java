@@ -4,13 +4,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.service.ConversionServiceAware;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.invoke.Execution;
-import run.soeasy.framework.core.invoke.ExecutionInterceptor;
 import run.soeasy.framework.core.invoke.Executor;
+import run.soeasy.framework.core.invoke.intercept.ExecutionInterceptor;
 import run.soeasy.framework.core.transform.indexed.IndexedDescriptor;
 
 /**
@@ -42,7 +42,7 @@ public abstract class DefaultValueExecutionInterceptor implements ExecutionInter
 		if (returnValue == null) {
 			TypedValue defaultValue = getDefaultReturnValue(function);
 			if (defaultValue != null) {
-				returnValue = conversionService.apply(defaultValue, () -> function.getReturnTypeDescriptor());
+				returnValue = conversionService.convert(defaultValue, function.getReturnTypeDescriptor());
 			}
 		}
 		return returnValue;

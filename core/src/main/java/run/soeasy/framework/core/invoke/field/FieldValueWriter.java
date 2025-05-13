@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.invoke.field;
 
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.TargetDescriptor;
 
 public interface FieldValueWriter extends TargetDescriptor {
 	public static interface FieldValueWriterWrapper<W extends FieldValueWriter>

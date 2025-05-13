@@ -9,11 +9,11 @@ import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.invoke.Execution;
-import run.soeasy.framework.core.invoke.ExecutionInterceptor;
-import run.soeasy.framework.core.invoke.ExecutionInterceptorRegistry;
-import run.soeasy.framework.core.invoke.ExecutionInterceptors;
-import run.soeasy.framework.core.invoke.InterceptableExecution;
-import run.soeasy.framework.core.invoke.SwitchableTargetInvocationInterceptor;
+import run.soeasy.framework.core.invoke.intercept.ExecutionInterceptor;
+import run.soeasy.framework.core.invoke.intercept.ExecutionInterceptorRegistry;
+import run.soeasy.framework.core.invoke.intercept.ExecutionInterceptors;
+import run.soeasy.framework.core.invoke.intercept.InterceptableExecution;
+import run.soeasy.framework.core.invoke.intercept.SwitchableTargetInvocationInterceptor;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data

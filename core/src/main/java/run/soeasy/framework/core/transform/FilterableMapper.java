@@ -3,7 +3,7 @@ package run.soeasy.framework.core.transform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 @RequiredArgsConstructor
 @Getter

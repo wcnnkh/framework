@@ -4,24 +4,6 @@ import lombok.NonNull;
 
 @FunctionalInterface
 public interface Converter<S, T, E extends Throwable> {
-	/**
-	 * 是否能直接转换，无需重写此方法
-	 * 
-	 * @param sourceType
-	 * @param targetType
-	 * @return
-	 */
-	default boolean canDirectlyConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
-		if (sourceType.isAssignableTo(targetType)) {
-			return true;
-		}
-
-		if (targetType.getType() == Object.class) {
-			return true;
-		}
-		return false;
-	}
-
 	static class UnsupportedConverter<S, T, E extends Throwable> implements Converter<S, T, E> {
 		static final UnsupportedConverter<?, ?, ?> INSTANCE = new UnsupportedConverter<>();
 
@@ -39,6 +21,18 @@ public interface Converter<S, T, E extends Throwable> {
 	@SuppressWarnings("unchecked")
 	public static <S, T, E extends Throwable> Converter<S, T, E> unsupported() {
 		return (Converter<S, T, E>) UnsupportedConverter.INSTANCE;
+	}
+
+	default boolean canConvert(@NonNull Class<? extends S> sourceClass, @NonNull Class<? extends T> targetClass) {
+		return canConvert(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
+	}
+
+	default boolean canConvert(@NonNull Class<? extends S> sourceClass, @NonNull TypeDescriptor targetType) {
+		return canConvert(TypeDescriptor.valueOf(sourceClass), targetType);
+	}
+
+	default boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull Class<? extends T> targetClass) {
+		return canConvert(sourceType, TypeDescriptor.valueOf(targetClass));
 	}
 
 	/**
@@ -64,9 +58,43 @@ public interface Converter<S, T, E extends Throwable> {
 	 *         target types, {@code false} if not
 	 * @throws IllegalArgumentException if {@code targetType} is {@code null}
 	 */
-	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	default boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
 		return true;
 	}
 
-	T convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E;
+	/**
+	 * 是否能直接转换，无需重写此方法
+	 * 
+	 * @param sourceType
+	 * @param targetType
+	 * @return
+	 */
+	default boolean canDirectlyConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+		if (sourceType.isAssignableTo(targetType)) {
+			return true;
+		}
+
+		if (targetType.getType() == Object.class) {
+			return true;
+		}
+		return false;
+	}
+
+	default T convert(S source, @NonNull Class<? extends S> sourceClass, @NonNull TypeDescriptor targetType) throws E {
+		return convert(source, TypeDescriptor.valueOf(sourceClass), targetType);
+	}
+
+	default T convert(@NonNull S source, @NonNull Class<? extends T> targetClass) throws E {
+		return convert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(targetClass));
+	}
+
+	default T convert(S source, @NonNull TypeDescriptor targetType) throws E {
+		return convert(source, TypeDescriptor.forObject(source), targetType);
+	}
+
+	default T convert(S source, @NonNull TypeDescriptor sourceType, @NonNull Class<? extends T> targetClass) throws E {
+		return convert(source, sourceType, TypeDescriptor.valueOf(targetClass));
+	}
+
+	T convert(S source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) throws E;
 }

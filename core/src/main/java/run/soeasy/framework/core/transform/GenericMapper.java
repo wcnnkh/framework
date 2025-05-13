@@ -9,8 +9,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.TypedValueAccessor;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 /**
  * 基础的模板写入实现
@@ -75,13 +75,15 @@ public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 			return false;
 		}
 
-		Object value = conversionService.apply(sourceContext.getKeyValue().getValue(),
-				targetContext.getKeyValue().getValue());
-		if (value == null && targetContext.getKeyValue().getValue().isRequired()) {
+		TypedValueAccessor sourceAccessor = sourceContext.getKeyValue().getValue();
+		TypedValueAccessor targetAccessor = targetContext.getKeyValue().getValue();
+		Object value = conversionService.convert(sourceAccessor.get(), sourceAccessor.getReturnTypeDescriptor(),
+				targetAccessor.getRequiredTypeDescriptor());
+		if (value == null && targetAccessor.isRequired()) {
 			return false;
 		}
 
-		targetContext.getKeyValue().getValue().set(value);
+		targetAccessor.set(value);
 		return true;
 	}
 

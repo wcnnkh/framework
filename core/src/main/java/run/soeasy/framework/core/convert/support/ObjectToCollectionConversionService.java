@@ -4,14 +4,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionFactory;
-import run.soeasy.framework.core.convert.ConditionalConversionService;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConvertiblePair;
-import run.soeasy.framework.core.convert.TargetDescriptor;
+import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConditionalConversionService;
+import run.soeasy.framework.core.convert.service.ConversionService;
+import run.soeasy.framework.core.convert.service.ConvertiblePair;
 
 class ObjectToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ObjectToCollectionConversionService(ConversionService conversionService) {
@@ -23,21 +21,19 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
-		Object source = value.get();
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		if (source == null) {
 			return null;
 		}
 
-		TypeDescriptor elementDesc = targetDescriptor.getRequiredTypeDescriptor().getElementTypeDescriptor();
-		Collection<Object> target = CollectionFactory.createCollection(
-				targetDescriptor.getRequiredTypeDescriptor().getType(),
+		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
+		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), 1);
 
 		if (elementDesc == null || elementDesc.isCollection()) {
 			target.add(source);
 		} else {
-			TypeDescriptor sourceType = value.getReturnTypeDescriptor();
 			Object singleElement = getConversionService().convert(source, sourceType, elementDesc);
 			target.add(singleElement);
 		}

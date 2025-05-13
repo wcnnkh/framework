@@ -15,7 +15,7 @@ import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.transmittable.Inheriter;
 
 public class InheritableExecutorService<A, B, I extends Inheriter<A, B>, W extends ExecutorService>
-		extends InhertableExecutor<A, B, I, W> implements ExecutorService {
+		extends InheritableExecutor<A, B, I, W> implements ExecutorService {
 
 	public InheritableExecutorService(W source, I inheriter) {
 		super(source, inheriter);

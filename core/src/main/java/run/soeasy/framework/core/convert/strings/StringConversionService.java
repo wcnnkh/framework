@@ -1,12 +1,10 @@
 package run.soeasy.framework.core.convert.strings;
 
-import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.TargetDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.TypedValue;
+import run.soeasy.framework.core.convert.service.ConversionService;
 
 public final class StringConversionService implements ConversionService {
 	public static final StringConversionService DEFAULT = new StringConversionService();
@@ -23,10 +21,8 @@ public final class StringConversionService implements ConversionService {
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
-		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
-		Object source = value.get();
-		TypeDescriptor sourceType = value.getReturnTypeDescriptor();
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		if (sourceType.getType() == String.class) {
 			return stringConverter.convert((String) source, sourceType, targetType);
 		} else if (targetType.getType() == String.class) {

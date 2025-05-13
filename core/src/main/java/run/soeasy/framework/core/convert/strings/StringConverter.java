@@ -12,8 +12,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.DefaultReversibleConverterRegistry;
-import run.soeasy.framework.core.convert.resource.ResourceToString;
+import run.soeasy.framework.core.convert.registry.DefaultReversibleConverterRegistry;
 
 @Setter
 @Getter
@@ -67,8 +66,6 @@ public class StringConverter extends DefaultReversibleConverterRegistry<String, 
 	private IntegerConverter integerConverter = new IntegerConverter();
 	@NonNull
 	private LongConverter longConverter = new LongConverter();
-	@NonNull
-	private ResourceToString resourceToString = ResourceToString.DEFAULT;
 
 	public StringConverter() {
 		registerReversibleConverter(Reader.class, readerConverter);

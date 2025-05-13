@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.AccessibleDescriptor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
 
 public interface IndexedDescriptor extends AccessibleDescriptor {
 	public static final IndexedDescriptor[] EMPTY_INDEXED_DESCRIPTORS = new IndexedDescriptor[0];

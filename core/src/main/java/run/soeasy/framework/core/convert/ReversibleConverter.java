@@ -1,6 +1,18 @@
 package run.soeasy.framework.core.convert;
 
 public interface ReversibleConverter<S, T, E extends Throwable> extends Converter<S, T, E> {
+	default boolean canReverseConvert(Class<? extends T> sourceClass, TypeDescriptor targetType) {
+		return canReverseConvert(TypeDescriptor.valueOf(sourceClass), targetType);
+	}
+
+	default boolean canReverseConvert(TypeDescriptor sourceType, Class<? extends S> targetClass) {
+		return canReverseConvert(sourceType, TypeDescriptor.valueOf(targetClass));
+	}
+
+	default boolean canReverseConvert(Class<? extends T> sourceClass, Class<? extends S> targetClass) {
+		return canReverseConvert(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
+	}
+
 	/**
 	 * Return {@code true} if objects of {@code sourceType} can be converted to the
 	 * {@code targetType}. The TypeDescriptors provide additional context about the
@@ -26,6 +38,22 @@ public interface ReversibleConverter<S, T, E extends Throwable> extends Converte
 	 */
 	default boolean canReverseConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return true;
+	}
+
+	default S reverseConvert(T source, Class<? extends S> targetClass) throws E {
+		return reverseConvert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(targetClass));
+	}
+
+	default S reverseConvert(T source, TypeDescriptor targetType) throws E {
+		return reverseConvert(source, TypeDescriptor.forObject(source), targetType);
+	}
+
+	default S reverseConvert(T source, TypeDescriptor sourceType, Class<? extends S> targetClass) throws E {
+		return reverseConvert(source, sourceType, TypeDescriptor.valueOf(targetClass));
+	}
+
+	default S reverseConvert(T source, Class<? extends T> sourceClass, TypeDescriptor targetType) throws E {
+		return reverseConvert(source, TypeDescriptor.valueOf(sourceClass), targetType);
 	}
 
 	S reverseConvert(T source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E;
