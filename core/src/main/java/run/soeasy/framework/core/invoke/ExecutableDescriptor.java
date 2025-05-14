@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.alias.Named;
+import run.soeasy.framework.core.Named;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.indexed.IndexedDescriptor;

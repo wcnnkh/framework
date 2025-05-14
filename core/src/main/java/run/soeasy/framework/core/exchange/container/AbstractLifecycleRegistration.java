@@ -2,8 +2,8 @@ package run.soeasy.framework.core.exchange.container;
 
 import java.util.function.BooleanSupplier;
 
-import run.soeasy.framework.core.Lifecycle;
 import run.soeasy.framework.core.concurrent.limit.DisposableLimiter;
+import run.soeasy.framework.core.exchange.Lifecycle;
 import run.soeasy.framework.core.exchange.Listenable;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;

@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import org.junit.Assert;
 import org.junit.Test;
 
+import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 
@@ -14,12 +15,12 @@ public class MembersTest {
 
 	@Test
 	public void test() {
-		ClassMembersLoader<Field> members = ReflectionUtils.getDeclaredFields(B.class).all();
+		ClassMembersLoader<Field> members = ReflectionUtils.getDeclaredFields(B.class).withAll();
 		assertTrue(members.getElements().count().longValue() == 5);
-		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).getElements().count().longValue() == 2);
-		ClassMembersLoader<Field> concatFields = ReflectionUtils.getDeclaredFields(B.class).all()
-				.concat(ReflectionUtils.getFields(B.class).getElements());
-		assertTrue(concatFields.getElements().count().longValue() == 7);
+		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).count().longValue() == 2);
+		Elements<Field> concatFields = ReflectionUtils.getDeclaredFields(B.class).withAll()
+				.concat(ReflectionUtils.getFields(B.class));
+		assertTrue(concatFields.count().longValue() == 7);
 	}
 
 	public static class A {

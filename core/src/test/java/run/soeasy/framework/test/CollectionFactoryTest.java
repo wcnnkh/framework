@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.ToString;
-import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.invoke.reflect.ReflectionCloner;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 import run.soeasy.framework.serializer.SerializerException;
@@ -19,7 +18,7 @@ public class CollectionFactoryTest {
 		bean.add(UUIDSequences.global().next());
 		bean.setV(UUIDSequences.global().next());
 
-		TestList clone = CollectionUtils.clone(bean);
+		TestList clone = ReflectionCloner.clone(bean, false);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 
@@ -29,7 +28,7 @@ public class CollectionFactoryTest {
 		bean.put(UUIDSequences.global().next(), UUIDSequences.global().next());
 		bean.setV(UUIDSequences.global().next());
 
-		TestMap clone = CollectionUtils.clone(bean);
+		TestMap clone = ReflectionCloner.clone(bean, false);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 

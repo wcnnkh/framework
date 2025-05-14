@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.exchange;
 
 /**
  * Strategy interface for processing Lifecycle beans within the

@@ -3,7 +3,7 @@ package run.soeasy.framework.core.exchange.container;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lombok.Getter;
-import run.soeasy.framework.core.Lifecycle;
+import run.soeasy.framework.core.exchange.Lifecycle;
 
 @Getter
 public class AtomicElementRegistration<E> extends AbstractPayloadRegistration<E> implements ElementRegistration<E> {

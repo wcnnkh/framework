@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -12,6 +11,17 @@ import java.util.function.UnaryOperator;
 import lombok.NonNull;
 
 public final class ArrayUtils {
+	public static final int[] EMPTY_INT_ARRAY = new int[0];
+	public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+	public static final short[] EMPTY_SHORT_ARRAY = new short[0];
+	public static final char[] EMPTY_CHAR_ARRAY = new char[0];
+	public static final long[] EMPTY_LONG_ARRAY = new long[0];
+	public static final float[] EMPTY_FLOAT_ARRAY = new float[0];
+	public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
+	public static final boolean[] EMPTY_BOOLEAN_ARRAY = new boolean[0];
+	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+	private static ConcurrentReferenceHashMap<Class<?>, Object> EMPTY_ARRAY_CACHE_MAP = new ConcurrentReferenceHashMap<>();
+
 	/**
 	 * 至少要测试通过一个
 	 * 
@@ -110,75 +120,6 @@ public final class ArrayUtils {
 		return 0;
 	}
 
-	public static int compare(int[] array1, int[] array2, int defaultValue) {
-		int size1 = array1 == null ? 0 : array1.length;
-		int size2 = array2 == null ? 0 : array2.length;
-		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
-			int v1 = i < size1 ? array1[i] : defaultValue;
-			int v2 = i < size2 ? array2[i] : defaultValue;
-			int v = Integer.compare(v1, v2);
-			if (v != 0) {
-				return v;
-			}
-		}
-		return 0;
-	}
-
-	public static int compare(long[] array1, long[] array2, long defaultValue) {
-		int size1 = array1 == null ? 0 : array1.length;
-		int size2 = array2 == null ? 0 : array2.length;
-		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
-			long v1 = i < size1 ? array1[i] : defaultValue;
-			long v2 = i < size2 ? array2[i] : defaultValue;
-			int v = Long.compare(v1, v2);
-			if (v != 0) {
-				return v;
-			}
-		}
-		return 0;
-	}
-
-	public static int compare(Number[] array1, Number[] array2, Number defaultValue, Comparator<Number> comparator) {
-		int size1 = array1 == null ? 0 : array1.length;
-		int size2 = array2 == null ? 0 : array2.length;
-		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
-			Number v1 = i < size1 ? array1[i] : defaultValue;
-			Number v2 = i < size2 ? array2[i] : defaultValue;
-			int v = comparator.compare(v1, v2);
-			if (v != 0) {
-				return v;
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * 比较两个数组
-	 * 
-	 * @param <T>
-	 * @param array1
-	 * @param array2
-	 * @param comparator
-	 * @return
-	 */
-	public static <T> int compare(T[] array1, T[] array2, Comparator<T> comparator) {
-		if (ArrayUtils.isEmpty(array1)) {
-			return ArrayUtils.isEmpty(array2) ? 0 : -1;
-		}
-
-		if (ArrayUtils.isEmpty(array2)) {
-			return ArrayUtils.isEmpty(array1) ? 0 : 1;
-		}
-
-		for (int i = 0; i < Math.min(array1.length, array2.length); i++) {
-			int v = comparator.compare(array1[i], array2[i]);
-			if (v != 0) {
-				return v;
-			}
-		}
-		return array1.length - array2.length;
-	}
-
 	public static <T> void copy(@NonNull T src, int srcPos, T dest, int destPos, int length, boolean deep,
 			@NonNull UnaryOperator<? super Object> copyer) {
 		if (deep) {
@@ -200,23 +141,34 @@ public final class ArrayUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T empty(@NonNull Class<?> componentType) {
 		if (componentType == int.class) {
-			return (T) new int[0];
+			return (T) EMPTY_INT_ARRAY;
 		} else if (componentType == byte.class) {
-			return (T) new byte[0];
+			return (T) EMPTY_BYTE_ARRAY;
 		} else if (componentType == short.class) {
-			return (T) new short[0];
+			return (T) EMPTY_SHORT_ARRAY;
 		} else if (componentType == char.class) {
-			return (T) new char[0];
+			return (T) EMPTY_CHAR_ARRAY;
 		} else if (componentType == long.class) {
-			return (T) new long[0];
+			return (T) EMPTY_LONG_ARRAY;
 		} else if (componentType == float.class) {
-			return (T) new float[0];
+			return (T) EMPTY_FLOAT_ARRAY;
 		} else if (componentType == double.class) {
-			return (T) new double[0];
+			return (T) EMPTY_DOUBLE_ARRAY;
 		} else if (componentType == boolean.class) {
-			return (T) new boolean[0];
+			return (T) EMPTY_BOOLEAN_ARRAY;
+		} else if (componentType == Object.class) {
+			return (T) EMPTY_OBJECT_ARRAY;
 		} else {
-			return (T) Array.newInstance(componentType, 0);
+			Object array = EMPTY_ARRAY_CACHE_MAP.get(componentType);
+			if (array == null) {
+				Object newArray = (T) Array.newInstance(componentType, 0);
+				Object oldArray = EMPTY_ARRAY_CACHE_MAP.putIfAbsent(componentType, newArray);
+				if (oldArray == null) {
+					array = newArray;
+					EMPTY_ARRAY_CACHE_MAP.purgeUnreferencedEntries();
+				}
+			}
+			return (T) array;
 		}
 	}
 

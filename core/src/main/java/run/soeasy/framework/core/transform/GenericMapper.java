@@ -24,14 +24,8 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 @Getter
 @Setter
 public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
-	public static enum Mode {
-		ITERATIVE, MAP
-	}
-
 	@NonNull
 	private ConversionService conversionService = ConversionService.identity();
-	@NonNull
-	private Mode mode = Mode.MAP;
 
 	protected int iterativeMode(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {
@@ -87,16 +81,15 @@ public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 		return true;
 	}
 
-	@Override
 	public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {
 		if (sourceContext.hasKeyValue() && targetContext.hasKeyValue()) {
 			return setValue(sourceContext, targetContext);
 		} else if (sourceContext.hasMapping() && targetContext.hasMapping()) {
-			if (mode == Mode.ITERATIVE) {
-				return iterativeMode(sourceContext, targetContext) > 0;
-			} else if (mode == Mode.MAP) {
+			if (sourceContext.getMapping().isRandomAccess()) {
 				return mapMode(sourceContext, targetContext) > 0;
+			} else {
+				return iterativeMode(sourceContext, targetContext) > 0;
 			}
 		}
 		return false;

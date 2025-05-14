@@ -1,11 +1,10 @@
-package run.soeasy.framework.core.alias;
+package run.soeasy.framework.core;
 
 import java.io.Serializable;
 
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.Wrapper;
 
 public interface Named {
 

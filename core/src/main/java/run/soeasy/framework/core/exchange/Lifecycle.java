@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.exchange;
 
 public interface Lifecycle {
 	/**

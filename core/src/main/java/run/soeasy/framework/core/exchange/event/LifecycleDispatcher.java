@@ -2,8 +2,8 @@ package run.soeasy.framework.core.exchange.event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import run.soeasy.framework.core.Lifecycle;
-import run.soeasy.framework.core.LifecycleProcessor;
+import run.soeasy.framework.core.exchange.Lifecycle;
+import run.soeasy.framework.core.exchange.LifecycleProcessor;
 
 public class LifecycleDispatcher extends EventDispatcher<Lifecycle> implements LifecycleProcessor {
 	private AtomicBoolean started = new AtomicBoolean();

@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.exchange.container;
 
-import run.soeasy.framework.core.Lifecycle;
+import run.soeasy.framework.core.exchange.Lifecycle;
 import run.soeasy.framework.core.exchange.Registration;
 
 /**
