@@ -11,11 +11,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionToSource;
+import run.soeasy.framework.core.function.lang.ThrowingConsumer;
+import run.soeasy.framework.core.function.lang.ThrowingRunnable;
 import run.soeasy.framework.core.function.runtime.RuntimeThrowingSupplier;
 import run.soeasy.framework.core.function.stream.Pool;
 import run.soeasy.framework.core.function.stream.Source;
 
 public interface ThrowingSupplier<T, E extends Throwable> {
+
 	public static interface ThrowingSupplierWrapper<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
 			extends ThrowingSupplier<T, E>, Wrapper<W> {
 		@Override

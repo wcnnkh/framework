@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.function.ThrowingOptional;
-import run.soeasy.framework.core.function.ThrowingPredicate;
+import run.soeasy.framework.core.function.lang.ThrowingPredicate;
 
 @Getter
 @Setter

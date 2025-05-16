@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.lang.ThrowingConsumer;
+import run.soeasy.framework.core.function.lang.ThrowingRunnable;
 import run.soeasy.framework.core.function.runtime.RuntimeThrowingFunction;
 import run.soeasy.framework.core.function.stream.Pipeline;
 import run.soeasy.framework.core.function.stream.Source;

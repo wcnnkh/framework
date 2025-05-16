@@ -10,8 +10,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.function.lang.ThrowingConsumer;
 
 public interface Registration {
 

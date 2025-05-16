@@ -8,11 +8,11 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.function.ThrowingFunction.ThrowingFunctionToSource;
+import run.soeasy.framework.core.function.lang.ThrowingConsumer;
+import run.soeasy.framework.core.function.lang.ThrowingRunnable;
 import run.soeasy.framework.core.function.ThrowingOptional;
-import run.soeasy.framework.core.function.ThrowingRunnable;
 import run.soeasy.framework.core.function.ThrowingSupplier;
 import run.soeasy.framework.core.function.runtime.RuntimeCloseableSupplier;
 

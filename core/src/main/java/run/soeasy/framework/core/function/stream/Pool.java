@@ -2,10 +2,10 @@ package run.soeasy.framework.core.function.stream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.function.ThrowingRunnable;
 import run.soeasy.framework.core.function.ThrowingSupplier;
+import run.soeasy.framework.core.function.lang.ThrowingConsumer;
+import run.soeasy.framework.core.function.lang.ThrowingRunnable;
 
 public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 	public static interface PoolWrapper<T, E extends Throwable, W extends Pool<T, E>>

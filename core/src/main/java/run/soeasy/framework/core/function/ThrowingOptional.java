@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.function.lang.ThrowingConsumer;
+import run.soeasy.framework.core.function.lang.ThrowingPredicate;
 
 public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 	public static interface ThrowingOptionalWrapper<T, E extends Throwable, W extends ThrowingOptional<T, E>>
