@@ -13,7 +13,7 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor.AccessibleDe
 public class ConvertingData<T, W extends AccessibleDescriptor>
 		implements TypedDataAccessor<T>, AccessibleDescriptorWrapper<W>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
+	private Converter<? super Object, ? extends Object> converter;
 	@NonNull
 	private final W source;
 	private Object value;

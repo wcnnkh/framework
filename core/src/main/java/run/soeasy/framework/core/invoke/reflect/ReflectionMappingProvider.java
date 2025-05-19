@@ -9,8 +9,8 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.invoke.field.FieldAccessor;
 import run.soeasy.framework.core.invoke.field.FieldDescriptor;
 import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.MappingProvider;
 import run.soeasy.framework.core.transform.indexed.IndexedMapping;
+import run.soeasy.framework.core.transform.service.MappingProvider;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 import run.soeasy.framework.core.type.ClassUtils;
 

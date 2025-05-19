@@ -150,7 +150,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 
 		@Override
 		default TypedValue getAsValue(
-				@NonNull Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+				@NonNull Converter<? super Object, ? extends Object> converter) {
 			return getSource().getAsValue(converter);
 		}
 	}
@@ -641,7 +641,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 	}
 
 	default TypedValue getAsValue(
-			@NonNull Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+			@NonNull Converter<? super Object, ? extends Object> converter) {
 		ConvertingValue<AccessibleDescriptor> converting = new ConvertingValue<AccessibleDescriptor>(
 				AccessibleDescriptor.forTypeDescriptor(getReturnTypeDescriptor()));
 		converting.setValue(this);

@@ -5,11 +5,11 @@ import java.math.BigInteger;
 import lombok.Data;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
 @Data
-public class BigIntegerConverter implements ReversibleConverter<String, BigInteger, ConversionException> {
+public class BigIntegerConverter implements ReversibleConverter<String, BigInteger> {
 	private int radix = 10;
 
 	@Override

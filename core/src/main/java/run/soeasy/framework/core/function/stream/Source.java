@@ -149,7 +149,7 @@ public interface Source<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 			return this;
 		}
 
-		public <R, X extends Throwable> R apply(ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
+		public <R, X extends Throwable> R flatMap(ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
 				throws E, X {
 			try {
 				T value = super.get();

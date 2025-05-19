@@ -10,7 +10,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * convert system. Call {@link #convert(Object, Class)} to perform a thread-safe
  * type conversion using this system.
  */
-public interface ConversionService extends Converter<Object, Object, ConversionException> {
+public interface ConversionService extends Convertible, Converter<Object, Object> {
 	public static class IdentityConversionService implements ConversionService {
 		private static final ConversionService INSTANCE = new IdentityConversionService();
 
@@ -31,9 +31,53 @@ public interface ConversionService extends Converter<Object, Object, ConversionE
 		return IdentityConversionService.INSTANCE;
 	}
 
-	@Override
-	boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType);
+	default boolean canConvert(@NonNull Class<?> sourceClass, @NonNull Class<?> targetClass) {
+		return canConvert(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
+	}
 
-	@Override
-	Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException;
+	default boolean canConvert(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetType) {
+		return canConvert(TypeDescriptor.valueOf(sourceClass), targetType);
+	}
+
+	default boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull Class<?> targetClass) {
+		return canConvert(sourceType, TypeDescriptor.valueOf(targetClass));
+	}
+
+	/**
+	 * 是否能直接转换，无需重写此方法
+	 * 
+	 * @param sourceType
+	 * @param targetType
+	 * @return
+	 */
+	default boolean canDirectlyConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+		if (sourceType.isAssignableTo(targetType)) {
+			return true;
+		}
+
+		if (targetType.getType() == Object.class) {
+			return true;
+		}
+		return false;
+	}
+
+	default Object convert(Object source, @NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetType)
+			throws ConversionException {
+		return convert(source, TypeDescriptor.valueOf(sourceClass), targetType);
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T convert(@NonNull Object source, @NonNull Class<? extends T> targetClass) throws ConversionException {
+		return (T) convert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(targetClass));
+	}
+
+	default Object convert(Object source, @NonNull TypeDescriptor targetType) throws ConversionException {
+		return convert(source, TypeDescriptor.forObject(source), targetType);
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull Class<? extends T> targetClass)
+			throws ConversionException {
+		return (T) convert(source, sourceType, TypeDescriptor.valueOf(targetClass));
+	}
 }

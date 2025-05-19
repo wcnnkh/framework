@@ -4,10 +4,10 @@ import java.nio.charset.Charset;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
-public class CharsetConverter implements ReversibleConverter<String, Charset, ConversionException> {
+public class CharsetConverter implements ReversibleConverter<String, Charset> {
 
 	@Override
 	public Charset convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)

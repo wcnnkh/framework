@@ -7,13 +7,13 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.invoke.field.FieldAccessor;
 import run.soeasy.framework.core.invoke.field.FieldDescriptor;
-import run.soeasy.framework.core.transform.service.MappingService;
+import run.soeasy.framework.core.transform.indexed.IndexedMappingService;
 import run.soeasy.framework.core.transform.service.SupportedInstanceFactory;
 
-public class ReflectionCloner extends MappingService<FieldAccessor<FieldDescriptor>> {
+public class ReflectionCloner extends IndexedMappingService<FieldAccessor<FieldDescriptor>> {
 
 	public ReflectionCloner() {
-		getObjectMappingRegistry().setMappingProvider(new ReflectionMappingProvider());
+		getMappingRegistry().setMappingProvider(new ReflectionMappingProvider());
 		getConfigurableInstanceFactory().setExtendFactoryTypes(EnumSet.of(SupportedInstanceFactory.ALLOCATE));
 	}
 
@@ -34,7 +34,7 @@ public class ReflectionCloner extends MappingService<FieldAccessor<FieldDescript
 			Object clone = Array.newInstance(targetElementTypeDescriptor.getType(), len);
 			for (int i = 0; i < len; i++) {
 				Object value = Array.get(array, i);
-				value = getMapper().getConversionService().convert(value, sourceElementTypeDescriptor,
+				value = getMapper().getValueMapper().getConversionService().convert(value, sourceElementTypeDescriptor,
 						targetElementTypeDescriptor);
 				Array.set(clone, i, value);
 			}
@@ -63,7 +63,7 @@ public class ReflectionCloner extends MappingService<FieldAccessor<FieldDescript
 	public static <T> T clone(T source, boolean deep) {
 		ReflectionCloner cloner = new ReflectionCloner();
 		if (deep) {
-			cloner.getMapper().setConversionService(cloner);
+			cloner.getMapper().getValueMapper().setConversionService(cloner);
 		}
 		return (T) cloner.convert(source, TypeDescriptor.forObject(source));
 	}

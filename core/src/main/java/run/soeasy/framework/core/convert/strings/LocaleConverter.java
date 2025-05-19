@@ -4,10 +4,10 @@ import java.util.Locale;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
-public class LocaleConverter implements ReversibleConverter<String, Locale, ConversionException> {
+public class LocaleConverter implements ReversibleConverter<String, Locale> {
 
 	@Override
 	public Locale convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)

@@ -1,10 +1,12 @@
 package run.soeasy.framework.core.convert.service;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.comparator.TypeComparator;
+import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.type.ClassUtils;
 
-public class ConvertiblePair extends TypeComparator implements Comparable<ConvertiblePair> {
-
+public class ConvertiblePair implements Comparable<ConvertiblePair>, Convertible {
 	private final Class<?> sourceType;
 
 	private final Class<?> targetType;
@@ -28,6 +30,10 @@ public class ConvertiblePair extends TypeComparator implements Comparable<Conver
 
 	public Class<?> getTargetType() {
 		return this.targetType;
+	}
+
+	public ConvertiblePair reversed() {
+		return new ConvertiblePair(targetType, sourceType);
 	}
 
 	@Override
@@ -54,8 +60,8 @@ public class ConvertiblePair extends TypeComparator implements Comparable<Conver
 
 	public int compareTo(ConvertiblePair o) {
 		// 目的是为了让小类型排在前
-		int v = compare(sourceType, o.sourceType);
-		int ov = compare(targetType, o.targetType);
+		int v = TypeComparator.DEFAULT.compare(sourceType, o.sourceType);
+		int ov = TypeComparator.DEFAULT.compare(targetType, o.targetType);
 		if (v == 0) {
 			return ov;
 		} else if (ov == 0) {
@@ -66,5 +72,11 @@ public class ConvertiblePair extends TypeComparator implements Comparable<Conver
 			}
 			return 0;
 		}
+	}
+
+	@Override
+	public boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+		return ClassUtils.isAssignable(this.sourceType, sourceType.getType())
+				&& ClassUtils.isAssignable(this.targetType, targetType.getType());
 	}
 }

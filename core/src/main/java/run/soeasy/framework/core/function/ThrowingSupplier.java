@@ -228,7 +228,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 		protected final W source;
 
 		@Override
-		public <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
+		public <R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
 				throws E, X {
 			return mapper.apply(source.get());
 		}

@@ -2,11 +2,11 @@ package run.soeasy.framework.core.convert.strings;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
 @SuppressWarnings("rawtypes")
-public class EnumConverter implements ReversibleConverter<String, Enum, ConversionException> {
+public class EnumConverter implements ReversibleConverter<String, Enum> {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
@@ -16,7 +16,8 @@ public class EnumConverter implements ReversibleConverter<String, Enum, Conversi
 	}
 
 	@Override
-	public String reverseConvert(Enum source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
+	public String reverseConvert(Enum source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		return source == null ? null : source.name();
 	}
 

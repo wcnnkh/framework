@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert.support;
 
 import run.soeasy.framework.core.convert.service.ConifgurableConversionService;
-import run.soeasy.framework.core.convert.strings.StringConversionService;
+import run.soeasy.framework.core.convert.strings.StringConverter;
 
 /**
  * 全局的ConversionService
@@ -35,7 +35,7 @@ public class SystemConversionService extends ConifgurableConversionService {
 
 		register(new MapToMapConversionService(this));
 
-		register(StringConversionService.DEFAULT);
+		register(StringConverter.getInstance());
 
 		register(new ObjectToArrayConversionService(this));
 		register(new ObjectToCollectionConversionService(this));

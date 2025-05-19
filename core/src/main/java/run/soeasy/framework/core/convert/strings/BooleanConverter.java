@@ -4,11 +4,10 @@ import java.util.HashSet;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
-public class BooleanConverter extends HashSet<String>
-		implements ReversibleConverter<String, Boolean, ConversionException> {
+public class BooleanConverter extends HashSet<String> implements ReversibleConverter<String, Boolean> {
 	private static final long serialVersionUID = 1L;
 
 	public Boolean convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)

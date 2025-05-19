@@ -17,9 +17,9 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 		}
 
 		@Override
-		default <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
-				throws E, X {
-			return getSource().apply(mapper);
+		default <R, X extends Throwable> R flatMap(
+				@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper) throws E, X {
+			return getSource().flatMap(mapper);
 		}
 
 		@Override
@@ -80,7 +80,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 		}
 
 		@Override
-		public <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
+		public <R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
 				throws E, X {
 			return mapper.apply(getValue());
 		}
@@ -107,9 +107,12 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 		}
 
 		@Override
-		public <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super V, ? extends R, ? extends X> mapper)
+		public <R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super V, ? extends R, ? extends X> mapper)
 				throws T, X {
 			V target = super.get();
+			if (target == null) {
+				return null;
+			}
 			return mapper.apply(target);
 		}
 
@@ -132,10 +135,11 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 		return value;
 	}
 
-	<R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper) throws E, X;
+	<R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
+			throws E, X;
 
 	default <X extends Throwable> void ifPresent(ThrowingConsumer<? super T, ? extends X> consumer) throws E, X {
-		apply((e) -> {
+		flatMap((e) -> {
 			if (e == null) {
 				return e;
 			}
@@ -154,16 +158,16 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	}
 
 	default T orElse(T other) throws E {
-		return apply((e) -> e == null ? other : e);
+		return flatMap((e) -> e == null ? other : e);
 	}
 
 	default <X extends Throwable> T orElseGet(@NonNull ThrowingSupplier<? extends T, ? extends X> suppler) throws E, X {
-		return apply((e) -> e == null ? suppler.get() : e);
+		return flatMap((e) -> e == null ? suppler.get() : e);
 	}
 
 	default <X extends Throwable> T orElseThrow(ThrowingSupplier<? extends X, ? extends X> exceptionSupplier)
 			throws E, X {
-		return apply((e) -> {
+		return flatMap((e) -> {
 			if (e == null) {
 				throw exceptionSupplier.get();
 			}
@@ -173,6 +177,6 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 
 	@Override
 	default Optional<T> offline() throws E {
-		return apply(Optional::ofNullable);
+		return flatMap(Optional::ofNullable);
 	}
 }

@@ -3,11 +3,11 @@ package run.soeasy.framework.core.convert.strings;
 import lombok.Data;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
 @Data
-public class CharacterConverter implements ReversibleConverter<String, Character, ConversionException> {
+public class CharacterConverter implements ReversibleConverter<String, Character> {
 	private int index = 0;
 	private char defaultValue = (char) 0;
 

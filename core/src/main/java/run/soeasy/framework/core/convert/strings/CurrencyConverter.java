@@ -4,10 +4,10 @@ import java.util.Currency;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
-public class CurrencyConverter implements ReversibleConverter<String, Currency, ConversionException> {
+public class CurrencyConverter implements ReversibleConverter<String, Currency> {
 
 	@Override
 	public Currency convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)

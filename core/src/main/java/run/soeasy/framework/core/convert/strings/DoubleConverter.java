@@ -1,11 +1,10 @@
 package run.soeasy.framework.core.convert.strings;
 
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
-public class DoubleConverter implements ReversibleConverter<String, Double, ConversionException> {
+public class DoubleConverter implements ReversibleConverter<String, Double> {
 
 	@Override
 	public Double convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType)

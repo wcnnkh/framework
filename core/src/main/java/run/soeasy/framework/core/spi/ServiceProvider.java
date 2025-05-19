@@ -31,7 +31,7 @@ public class ServiceProvider<T, E extends Throwable> extends ConfigurableService
 		private final ThrowingPredicate<? super T, ? extends E> predicate;
 
 		@Override
-		public <R, X extends Throwable> R apply(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
+		public <R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super T, ? extends R, ? extends X> mapper)
 				throws E, X {
 			Set<T> nestingSet = nestingChecker.get();
 			if (nestingSet == null) {

@@ -1,8 +1,9 @@
-package run.soeasy.framework.core.transform;
+package run.soeasy.framework.core.transform.service;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.transform.Mapping;
 
 public interface MappingProvider<S, K, V extends TypedValueAccessor, T extends Mapping<K, V>>
 		extends MappingFactory<S, K, V, T> {

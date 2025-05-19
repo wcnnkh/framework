@@ -2,10 +2,10 @@ package run.soeasy.framework.core.convert.strings;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
-public class ByteConverter implements ReversibleConverter<String, Byte, ConversionException> {
+public class ByteConverter implements ReversibleConverter<String, Byte> {
 	private int radix = 10;
 
 	@Override
@@ -18,7 +18,8 @@ public class ByteConverter implements ReversibleConverter<String, Byte, Conversi
 	}
 
 	@Override
-	public String reverseConvert(Byte source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
+	public String reverseConvert(Byte source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		return source == null ? null : source.toString();
 	}
 

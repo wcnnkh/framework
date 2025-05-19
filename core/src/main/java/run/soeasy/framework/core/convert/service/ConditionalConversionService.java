@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.convert.service;
 
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.type.ClassUtils;
 
 public interface ConditionalConversionService extends ConversionService, ConvertibleConditional {
 
@@ -12,8 +11,7 @@ public interface ConditionalConversionService extends ConversionService, Convert
 		}
 
 		for (ConvertiblePair pair : getConvertibleTypes()) {
-			if (ClassUtils.isAssignable(pair.getSourceType(), sourceType.getType())
-					&& ClassUtils.isAssignable(pair.getTargetType(), targetType.getType())) {
+			if (pair.canConvert(sourceType, targetType)) {
 				return true;
 			}
 		}
