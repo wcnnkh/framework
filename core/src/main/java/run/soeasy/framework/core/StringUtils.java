@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Range;
 
 public final class StringUtils {
 	private static final String CURRENT_PATH = ".";

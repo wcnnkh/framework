@@ -7,8 +7,8 @@ import java.io.Reader;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.function.stream.Source;
 
 public interface InputFactory<I extends InputStream, R extends Reader> extends InputStreamFactory<I>, ReaderFactory<R> {
 	public static interface InputFactoryWrapper<I extends InputStream, R extends Reader, W extends InputFactory<I, R>>
@@ -34,17 +34,17 @@ public interface InputFactory<I extends InputStream, R extends Reader> extends I
 		}
 
 		@Override
-		public @NonNull Source<I, IOException> getInputStreamPipeline() {
+		public @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
 			if (inputStreamFactory == null) {
-				return Source.empty();
+				return Pipeline.empty();
 			}
 			return inputStreamFactory.getInputStreamPipeline().map(ThrowingFunction.identity());
 		}
 
 		@Override
-		public @NonNull Source<R, IOException> getReaderPipeline() {
+		public @NonNull Pipeline<R, IOException> getReaderPipeline() {
 			if (readerFactory == null) {
-				return Source.empty();
+				return Pipeline.empty();
 			}
 			return readerFactory.getReaderPipeline().map(ThrowingFunction.identity());
 		}

@@ -1,15 +1,14 @@
-package run.soeasy.framework.core.function.lang;
+package run.soeasy.framework.core.function;
 
 import java.util.function.Function;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.ThrowingFunction;
 
 @RequiredArgsConstructor
 @Getter
-public class MappingThrowingConsumer<S, E extends Throwable, T, R extends Throwable> implements ThrowingConsumer<T, R> {
+class MappingThrowingConsumer<S, E extends Throwable, T, R extends Throwable> implements ThrowingConsumer<T, R> {
 	@NonNull
 	private final ThrowingFunction<? super T, ? extends S, ? extends R> mapper;
 	@NonNull

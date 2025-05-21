@@ -3,11 +3,11 @@ package run.soeasy.framework.jdbc;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 
 public class StatementWrapper<T extends Statement> extends JdbcWrapper<T> {
 
-	public StatementWrapper(Source<T, SQLException> source) {
+	public StatementWrapper(Pipeline<T, SQLException> source) {
 		super(source);
 	}
 

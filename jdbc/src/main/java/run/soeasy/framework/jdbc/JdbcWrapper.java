@@ -5,12 +5,12 @@ import java.sql.SQLException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.function.stream.Source;
-import run.soeasy.framework.core.function.stream.Source.PipelineWrapper;
+import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.Pipeline.PipelineWrapper;
 
 @Getter
 @RequiredArgsConstructor
-public class JdbcWrapper<T> implements PipelineWrapper<T, SQLException, Source<T, SQLException>> {
+public class JdbcWrapper<T> implements PipelineWrapper<T, SQLException, Pipeline<T, SQLException>> {
 	@NonNull
-	private final Source<T, SQLException> source;
+	private final Pipeline<T, SQLException> source;
 }

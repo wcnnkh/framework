@@ -2,7 +2,7 @@ package run.soeasy.framework.sequences.uuid;
 
 import java.util.UUID;
 
-import run.soeasy.framework.core.Range;
+import run.soeasy.framework.core.domain.Range;
 
 /**
  * Static factory to retrieve a type 4 (pseudo randomly generated) UUID.

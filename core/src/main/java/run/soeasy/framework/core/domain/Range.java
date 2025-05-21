@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 
 public final class Range<T> implements Serializable {

@@ -1,12 +1,13 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.domain;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.function.ThrowingOptional.ValueThrowingOptional;
+import run.soeasy.framework.core.function.ValueThrowingOptional;
 
 public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
 	private static final long serialVersionUID = 1L;

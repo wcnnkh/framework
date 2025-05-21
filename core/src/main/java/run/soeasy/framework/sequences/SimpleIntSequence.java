@@ -2,7 +2,7 @@ package run.soeasy.framework.sequences;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import run.soeasy.framework.core.Range;
+import run.soeasy.framework.core.domain.Range;
 import run.soeasy.framework.core.math.IntValue;
 import run.soeasy.framework.core.math.NumberValue;
 

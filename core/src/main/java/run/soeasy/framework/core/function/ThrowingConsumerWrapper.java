@@ -1,10 +1,9 @@
-package run.soeasy.framework.core.function.lang;
+package run.soeasy.framework.core.function;
 
 import java.util.function.Function;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.ThrowingFunction;
 
 public interface ThrowingConsumerWrapper<S, E extends Throwable, W extends ThrowingConsumer<S, E>>
 		extends ThrowingConsumer<S, E>, Wrapper<W> {
@@ -27,17 +26,6 @@ public interface ThrowingConsumerWrapper<S, E extends Throwable, W extends Throw
 	default <R extends Throwable> ThrowingConsumer<S, R> throwing(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return getSource().throwing(throwingMapper);
-	}
-
-	@Override
-	default RuntimeThrowingConsumer<S, RuntimeException> runtime() {
-		return getSource().runtime();
-	}
-
-	@Override
-	default <R extends RuntimeException> RuntimeThrowingConsumer<S, R> runtime(
-			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return getSource().runtime(throwingMapper);
 	}
 
 	@Override

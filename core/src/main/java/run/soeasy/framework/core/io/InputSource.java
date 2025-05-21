@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.util.NoSuchElementException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 
 public interface InputSource<I extends InputStream, R extends Reader>
 		extends InputFactory<I, R>, InputStreamSource<I>, ReaderSource<R> {
@@ -24,12 +24,12 @@ public interface InputSource<I extends InputStream, R extends Reader>
 		}
 
 		@Override
-		default @NonNull Source<I, IOException> getInputStreamPipeline() {
+		default @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
 			return getSource().getInputStreamPipeline();
 		}
 
 		@Override
-		default @NonNull Source<R, IOException> getReaderPipeline() {
+		default @NonNull Pipeline<R, IOException> getReaderPipeline() {
 			return getSource().getReaderPipeline();
 		}
 	}
@@ -37,13 +37,13 @@ public interface InputSource<I extends InputStream, R extends Reader>
 	boolean isReadable();
 
 	@Override
-	default @NonNull Source<I, IOException> getInputStreamPipeline() {
-		return isReadable() ? InputStreamSource.super.getInputStreamPipeline() : Source.empty();
+	default @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
+		return isReadable() ? InputStreamSource.super.getInputStreamPipeline() : Pipeline.empty();
 	}
 
 	@Override
-	default @NonNull Source<R, IOException> getReaderPipeline() {
-		return isReadable() ? ReaderSource.super.getReaderPipeline() : Source.empty();
+	default @NonNull Pipeline<R, IOException> getReaderPipeline() {
+		return isReadable() ? ReaderSource.super.getReaderPipeline() : Pipeline.empty();
 	}
 
 	@Override

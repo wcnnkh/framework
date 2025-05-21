@@ -26,8 +26,8 @@ import java.util.stream.Stream;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.function.lang.ThrowingConsumer;
 import run.soeasy.framework.core.math.LongValue;
 import run.soeasy.framework.core.math.NumberValue;
 

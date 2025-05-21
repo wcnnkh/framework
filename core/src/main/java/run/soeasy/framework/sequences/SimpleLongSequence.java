@@ -2,7 +2,7 @@ package run.soeasy.framework.sequences;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import run.soeasy.framework.core.Range;
+import run.soeasy.framework.core.domain.Range;
 import run.soeasy.framework.core.math.LongValue;
 import run.soeasy.framework.core.math.NumberValue;
 

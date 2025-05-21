@@ -11,8 +11,8 @@ import run.soeasy.framework.codec.support.RecordCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Streams;
+import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingSupplier;
-import run.soeasy.framework.core.function.lang.ThrowingConsumer;
 
 /**
  * 线程不安全的

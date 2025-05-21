@@ -1,9 +1,9 @@
-package run.soeasy.framework.core.function.lang;
+package run.soeasy.framework.core.function;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AlwaysBooleanPredicat<S, E extends Throwable> implements ThrowingPredicate<S, E> {
+class AlwaysBooleanPredicat<S, E extends Throwable> implements ThrowingPredicate<S, E> {
 	static final AlwaysBooleanPredicat<?, ?> TRUE = new AlwaysBooleanPredicat<>(true);
 	static final AlwaysBooleanPredicat<?, ?> FALSE = new AlwaysBooleanPredicat<>(false);
 

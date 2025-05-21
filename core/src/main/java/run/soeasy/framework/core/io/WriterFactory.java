@@ -5,7 +5,7 @@ import java.io.Writer;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface WriterFactory<T extends Writer> {
@@ -13,11 +13,11 @@ public interface WriterFactory<T extends Writer> {
 	public static interface WriterFactoryWrapper<T extends Writer, W extends WriterFactory<T>>
 			extends WriterFactory<T>, Wrapper<W> {
 		@Override
-		default Source<T, IOException> getWriterPipeline() {
+		default Pipeline<T, IOException> getWriterPipeline() {
 			return getSource().getWriterPipeline();
 		}
 	}
 
 	@NonNull
-	Source<T, IOException> getWriterPipeline();
+	Pipeline<T, IOException> getWriterPipeline();
 }

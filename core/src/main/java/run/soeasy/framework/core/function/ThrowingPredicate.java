@@ -1,9 +1,8 @@
-package run.soeasy.framework.core.function.lang;
+package run.soeasy.framework.core.function;
 
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.ThrowingFunction;
 
 public interface ThrowingPredicate<S, E extends Throwable> {
 
@@ -16,7 +15,6 @@ public interface ThrowingPredicate<S, E extends Throwable> {
 	public static <S, E extends Throwable> ThrowingPredicate<S, E> alwaysTrue() {
 		return (ThrowingPredicate<S, E>) AlwaysBooleanPredicat.TRUE;
 	}
-
 
 	default <R> ThrowingPredicate<R, E> map(@NonNull ThrowingFunction<? super R, ? extends S, ? extends E> mapper) {
 		return new MergedThrowingPredicate<>(mapper, this, Function.identity(), ThrowingConsumer.ignore());
@@ -38,15 +36,6 @@ public interface ThrowingPredicate<S, E extends Throwable> {
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return new MergedThrowingPredicate<>(ThrowingFunction.identity(), this, throwingMapper,
 				ThrowingConsumer.ignore());
-	}
-
-	default <R extends RuntimeException> RuntimeThrowingPredicate<S, R> runtime(
-			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimePredicate<>(this, throwingMapper);
-	}
-
-	default RuntimeThrowingPredicate<S, RuntimeException> runtime() {
-		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 
 	boolean test(S source) throws E;

@@ -1,6 +1,6 @@
 package run.soeasy.framework.sequences;
 
-import run.soeasy.framework.core.Range;
+import run.soeasy.framework.core.domain.Range;
 import run.soeasy.framework.core.math.IntValue;
 import run.soeasy.framework.core.math.NumberValue;
 

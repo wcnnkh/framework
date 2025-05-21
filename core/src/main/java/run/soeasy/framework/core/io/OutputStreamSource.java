@@ -6,7 +6,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface OutputStreamSource<T extends OutputStream> extends OutputStreamFactory<T> {
@@ -19,7 +19,7 @@ public interface OutputStreamSource<T extends OutputStream> extends OutputStream
 		}
 
 		@Override
-		default @NonNull Source<T, IOException> getOutputStreamPipeline() {
+		default @NonNull Pipeline<T, IOException> getOutputStreamPipeline() {
 			return getSource().getOutputStreamPipeline();
 		}
 
@@ -32,8 +32,8 @@ public interface OutputStreamSource<T extends OutputStream> extends OutputStream
 	T getOutputStream() throws IOException;
 
 	@Override
-	default @NonNull Source<T, IOException> getOutputStreamPipeline() {
-		return Source.forCloseable(this::getOutputStream);
+	default @NonNull Pipeline<T, IOException> getOutputStreamPipeline() {
+		return Pipeline.forCloseable(this::getOutputStream);
 	}
 
 	default WritableByteChannel writableChannel() throws IOException {

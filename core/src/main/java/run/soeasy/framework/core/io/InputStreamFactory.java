@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.function.stream.Source;
 
 @FunctionalInterface
 public interface InputStreamFactory<T extends InputStream> {
@@ -34,7 +34,7 @@ public interface InputStreamFactory<T extends InputStream> {
 		ThrowingFunction<? super T, ? extends R, IOException> getDecoder();
 
 		@Override
-		default @NonNull Source<R, IOException> getReaderPipeline() {
+		default @NonNull Pipeline<R, IOException> getReaderPipeline() {
 			return getSource().getInputStreamPipeline().map(getDecoder());
 		}
 
@@ -60,7 +60,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	public static interface InputStreamFactoryWrapper<T extends InputStream, W extends InputStreamFactory<T>>
 			extends InputStreamFactory<T>, Wrapper<W> {
 		@Override
-		default Source<T, IOException> getInputStreamPipeline() {
+		default Pipeline<T, IOException> getInputStreamPipeline() {
 			return getSource().getInputStreamPipeline();
 		}
 
@@ -160,7 +160,7 @@ public interface InputStreamFactory<T extends InputStream> {
 	}
 
 	@NonNull
-	Source<T, IOException> getInputStreamPipeline();
+	Pipeline<T, IOException> getInputStreamPipeline();
 
 	default boolean isDecoded() {
 		return false;

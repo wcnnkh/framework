@@ -7,14 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Streams;
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.invoke.Function;
 
 @Getter
 @Setter
 public class ResultSetWrapper extends JdbcWrapper<ResultSet> {
 
-	public ResultSetWrapper(Source<ResultSet, SQLException> source) {
+	public ResultSetWrapper(Pipeline<ResultSet, SQLException> source) {
 		super(source);
 	}
 

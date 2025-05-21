@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.function.lang;
+package run.soeasy.framework.core.function;
 
 import java.util.function.Function;
 
@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class MappingThrowingRunnable<E extends Throwable, R extends Throwable>
-		implements ThrowingRunnable<R> {
+class MappingThrowingRunnable<E extends Throwable, R extends Throwable> implements ThrowingRunnable<R> {
 	@NonNull
 	private final ThrowingRunnable<? extends E> compose;
 	@NonNull

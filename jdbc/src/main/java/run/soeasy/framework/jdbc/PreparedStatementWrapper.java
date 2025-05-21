@@ -5,14 +5,14 @@ import java.sql.SQLException;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.invoke.Consumer;
 
 @Getter
 @Setter
 public class PreparedStatementWrapper<T extends PreparedStatement> extends StatementWrapper<T> {
 
-	public PreparedStatementWrapper(Source<T, SQLException> source) {
+	public PreparedStatementWrapper(Pipeline<T, SQLException> source) {
 		super(source);
 	}
 

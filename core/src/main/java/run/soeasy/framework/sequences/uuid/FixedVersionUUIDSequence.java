@@ -2,7 +2,7 @@ package run.soeasy.framework.sequences.uuid;
 
 import java.util.UUID;
 
-import run.soeasy.framework.core.Range;
+import run.soeasy.framework.core.domain.Range;
 import run.soeasy.framework.sequences.FixedLengthStringSequence;
 import run.soeasy.framework.sequences.UnsupportedSequenceRangeException;
 

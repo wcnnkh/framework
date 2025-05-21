@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.function.stream.Source;
+import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface ReaderFactory<T extends Reader> {
@@ -17,7 +17,7 @@ public interface ReaderFactory<T extends Reader> {
 	public static interface ReaderFactoryWrapper<T extends Reader, W extends ReaderFactory<T>>
 			extends ReaderFactory<T>, Wrapper<W> {
 		@Override
-		default Source<T, IOException> getReaderPipeline() {
+		default Pipeline<T, IOException> getReaderPipeline() {
 			return getSource().getReaderPipeline();
 		}
 
@@ -38,7 +38,7 @@ public interface ReaderFactory<T extends Reader> {
 	}
 
 	@NonNull
-	Source<T, IOException> getReaderPipeline();
+	Pipeline<T, IOException> getReaderPipeline();
 
 	default String readAllCharacters() throws NoSuchElementException, IOException {
 		return getReaderPipeline().optional().map(IOUtils::read).get();
@@ -47,7 +47,7 @@ public interface ReaderFactory<T extends Reader> {
 	default Elements<String> readAllLines() {
 		return Elements.of(() -> {
 			try {
-				Source<T, IOException> channel = getReaderPipeline();
+				Pipeline<T, IOException> channel = getReaderPipeline();
 				return IOUtils.readLines(channel.get()).onClose(() -> {
 					try {
 						channel.close();

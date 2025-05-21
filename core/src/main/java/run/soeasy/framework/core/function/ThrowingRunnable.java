@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.function.lang;
+package run.soeasy.framework.core.function;
 
 import java.util.function.Function;
 
@@ -21,15 +21,6 @@ public interface ThrowingRunnable<E extends Throwable> {
 	default <R extends Throwable> ThrowingRunnable<R> throwing(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return new MappingThrowingRunnable<>(this, ignore(), throwingMapper, ignore());
-	}
-
-	default <R extends RuntimeException> RuntimeThrowingRunnable<R> runtime(
-			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new RuntimeRunnable<>(this, throwingMapper);
-	}
-
-	default RuntimeThrowingRunnable<RuntimeException> runtime() {
-		return runtime((e) -> e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e));
 	}
 
 	default ThrowingRunnable<E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
