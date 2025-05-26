@@ -16,8 +16,8 @@ import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
 import run.soeasy.framework.core.invoke.reflect.ReflectionPropertyMethod;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.core.transform.property.PropertyAccessor;
-import run.soeasy.framework.core.type.ReflectionUtils;
 
 @RequiredArgsConstructor
 @Getter

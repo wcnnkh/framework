@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import lombok.ToString;
 import run.soeasy.framework.beans.BeanUtils;
-import run.soeasy.framework.core.type.ResolvableType;
+import run.soeasy.framework.core.lang.ResolvableType;
 
 public class BeanUtilsTest {
 	@Test

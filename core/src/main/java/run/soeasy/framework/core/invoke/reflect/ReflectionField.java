@@ -6,8 +6,8 @@ import java.lang.reflect.Field;
 import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.core.transform.property.Property;
-import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class ReflectionField implements AnnotatedElementWrapper<Field>, Property, Serializable {
 	private static final long serialVersionUID = 1L;

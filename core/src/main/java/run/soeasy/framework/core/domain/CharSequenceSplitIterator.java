@@ -1,11 +1,11 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.domain;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.StringUtils;
 
 /**
  * 迭代分割字符串

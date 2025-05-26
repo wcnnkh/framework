@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.core.transform.property.PropertyMapping;
-import run.soeasy.framework.core.type.ReflectionUtils;
 
 public interface AnnotationPropertyMapping<A extends Annotation> extends PropertyMapping, InvocationHandler {
 	Class<A> getType();

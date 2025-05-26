@@ -20,7 +20,7 @@ import java.util.Enumeration;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.LinkedMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 public final class JdbcUtils {
 	public static Object[] getRowValues(ResultSet resultSet, int size) throws SQLException {

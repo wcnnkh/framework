@@ -10,13 +10,13 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.CharSequenceTemplate;
-import run.soeasy.framework.core.Value;
-import run.soeasy.framework.core.Version;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Enumerable;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.domain.CharSequenceTemplate;
+import run.soeasy.framework.core.domain.Value;
+import run.soeasy.framework.core.domain.Version;
 import run.soeasy.framework.core.math.BigDecimalValue;
 import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.math.NumberValue;

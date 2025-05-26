@@ -1,6 +1,4 @@
-package run.soeasy.framework.core;
-
-import run.soeasy.framework.core.type.ClassUtils;
+package run.soeasy.framework.core.lang;
 
 public class DefaultClassLoaderAccessor implements ClassLoaderAccessor {
 	private ClassLoaderProvider classLoaderProvider;

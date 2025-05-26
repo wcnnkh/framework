@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.Value;
+import run.soeasy.framework.core.domain.Value;
 
 @RequiredArgsConstructor
 public class IntValue extends RationalNumber {

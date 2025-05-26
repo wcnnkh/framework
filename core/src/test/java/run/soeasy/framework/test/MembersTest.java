@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.type.ClassMembersLoader;
-import run.soeasy.framework.core.type.ReflectionUtils;
+import run.soeasy.framework.core.lang.ClassMembersLoader;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 
 public class MembersTest {
 

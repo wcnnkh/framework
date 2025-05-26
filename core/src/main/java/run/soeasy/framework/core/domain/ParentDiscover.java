@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.domain;
 
 import run.soeasy.framework.core.collection.Elements;
 

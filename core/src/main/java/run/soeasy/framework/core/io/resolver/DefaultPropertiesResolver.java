@@ -11,7 +11,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.io.CharsetCapable;
 import run.soeasy.framework.core.io.Resource;
-import run.soeasy.framework.core.type.ReflectionUtils;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 

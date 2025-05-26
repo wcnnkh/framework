@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.type.InstanceFactory;
-import run.soeasy.framework.core.type.ResolvableType;
+import run.soeasy.framework.core.lang.InstanceFactory;
+import run.soeasy.framework.core.lang.ResolvableType;
 
 @Getter
 @Setter

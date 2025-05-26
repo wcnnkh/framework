@@ -5,9 +5,9 @@ import java.util.EnumSet;
 
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.lang.SupportedInstanceFactory;
 import run.soeasy.framework.core.transform.property.ObjectProperty;
 import run.soeasy.framework.core.transform.property.PropertyMappingService;
-import run.soeasy.framework.core.type.SupportedInstanceFactory;
 
 public class ReflectionCloner extends PropertyMappingService<ObjectProperty<ReflectionField>> {
 

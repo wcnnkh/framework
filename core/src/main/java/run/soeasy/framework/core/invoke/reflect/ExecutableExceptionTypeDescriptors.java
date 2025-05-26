@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import run.soeasy.framework.core.collection.Provider;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.type.ResolvableType;
+import run.soeasy.framework.core.lang.ResolvableType;
 
 @RequiredArgsConstructor
 @ToString(of = "executable")

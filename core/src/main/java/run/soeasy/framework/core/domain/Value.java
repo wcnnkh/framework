@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.domain;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -10,9 +10,8 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.lang.ClassUtils;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
 	@FunctionalInterface

@@ -1,10 +1,10 @@
 package run.soeasy.framework.core.io.load;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.DefaultClassLoaderAccessor;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.io.ClassPathResource;
 import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.core.lang.DefaultClassLoaderAccessor;
 
 /**
  * {@link ResourceLoader} implementation that interprets plain resource paths as

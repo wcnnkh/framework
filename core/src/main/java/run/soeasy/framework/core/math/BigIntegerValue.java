@@ -3,7 +3,7 @@ package run.soeasy.framework.core.math;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import run.soeasy.framework.core.Value;
+import run.soeasy.framework.core.domain.Value;
 
 public class BigIntegerValue extends RationalNumber {
 	private static final long serialVersionUID = 1L;

@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.invoke.InvodableElement;
-import run.soeasy.framework.core.type.ReflectionUtils;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 
 public class ReflectionMethod extends ReflectionExecutable<Method> implements InvodableElement, Serializable {
 	private static final long serialVersionUID = 1L;

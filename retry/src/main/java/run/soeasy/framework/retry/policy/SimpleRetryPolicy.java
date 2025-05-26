@@ -16,7 +16,7 @@
 
 package run.soeasy.framework.retry.policy;
 
-import run.soeasy.framework.core.type.ClassUtils;
+import lombok.ToString;
 import run.soeasy.framework.retry.RetryContext;
 import run.soeasy.framework.retry.RetryPolicy;
 import run.soeasy.framework.retry.context.DefaultRetryContext;
@@ -37,6 +37,7 @@ import run.soeasy.framework.retry.context.DefaultRetryContext;
  * @author wcnnkh
  *
  */
+@ToString
 public class SimpleRetryPolicy implements RetryPolicy {
 
 	/**
@@ -97,10 +98,5 @@ public class SimpleRetryPolicy implements RetryPolicy {
 		public SimpleRetryContext(RetryContext parent) {
 			super(parent);
 		}
-	}
-
-	@Override
-	public String toString() {
-		return ClassUtils.getShortName(getClass()) + "[maxAttempts=" + maxAttempts + "]";
 	}
 }

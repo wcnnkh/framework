@@ -2,7 +2,7 @@ package run.soeasy.framework.core.invoke;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 public interface InvokableTemplate extends ExecutableDescriptor {
 	default Object invoke(Object target) throws Throwable {

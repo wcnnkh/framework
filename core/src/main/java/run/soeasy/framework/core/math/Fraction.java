@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Value;
+import run.soeasy.framework.core.domain.Value;
 import run.soeasy.framework.core.math.gcd.GreatestCommonDivisor;
 
 /**

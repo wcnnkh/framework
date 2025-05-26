@@ -2,7 +2,7 @@ package run.soeasy.framework.core.comparator;
 
 import java.util.Comparator;
 
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 public class TypeComparator implements Comparator<Class<?>> {
 

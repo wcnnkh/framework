@@ -6,7 +6,7 @@ import java.util.Arrays;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 @Data
 public class Sql implements Serializable {

@@ -1,18 +1,13 @@
-package run.soeasy.framework.core.type;
+package run.soeasy.framework.core.lang;
 
-import java.beans.Introspector;
 import java.lang.reflect.Array;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,10 +15,7 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.ClassLoaderProvider;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.page.Browseable;
 import run.soeasy.framework.core.page.StandardBrowseable;
@@ -46,17 +38,11 @@ public final class ClassUtils {
 
 	public static final String GENERIC_PREFIX = "<";
 
-	/** The inner class separator character: '$' */
-	private static final char INNER_CLASS_SEPARATOR = '$';
-
 	/** Prefix for internal array class names: "[" */
 	private static final String INTERNAL_ARRAY_PREFIX = "[";
 
 	/** Prefix for internal non-primitive array class names: "[L" */
 	private static final String NON_PRIMITIVE_ARRAY_PREFIX = "[L";
-
-	/** The package separator character: '.' */
-	private static final char PACKAGE_SEPARATOR = '.';
 
 	/**
 	 * Map with primitive type name as key and corresponding primitive type as
@@ -110,71 +96,6 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return a path suitable for use with {@code ClassLoader.getResource} (also
-	 * suitable for use with {@code Class.getResource} by prepending a slash ('/')
-	 * to the return value). Built by taking the package of the specified class
-	 * file, converting all dots ('.') to slashes ('/'), adding a trailing slash if
-	 * necessary, and concatenating the specified resource name to this.
-	 * 
-	 * @param clazz        the Class whose package will be used as the base
-	 * @param resourceName the resource name to append. A leading slash is optional.
-	 * @return the built-up resource path
-	 * @see ClassLoader#getResource
-	 * @see Class#getResource
-	 */
-	public static String addResourcePathToPackagePath(Class<?> clazz, String resourceName) {
-		Assert.notNull(resourceName, "Resource name must not be null");
-		if (!resourceName.startsWith("/")) {
-			return classPackageAsResourcePath(clazz) + "/" + resourceName;
-		}
-		return classPackageAsResourcePath(clazz) + resourceName;
-	};
-
-	/**
-	 * Build a String that consists of the names of the classes/interfaces in the
-	 * given array.
-	 * <p>
-	 * Basically like {@code AbstractCollection.toString()}, but stripping the
-	 * "class "/"interface " prefix before every class name.
-	 * 
-	 * @param classes a Collection of Class objects (may be {@code null})
-	 * @return a String of form "[com.foo.Bar, com.foo.Baz]"
-	 * @see java.util.AbstractCollection#toString()
-	 */
-	@SuppressWarnings("rawtypes")
-	public static String classNamesToString(Class... classes) {
-		return classNamesToString(Arrays.asList(classes));
-	}
-
-	/**
-	 * Build a String that consists of the names of the classes/interfaces in the
-	 * given collection.
-	 * <p>
-	 * Basically like {@code AbstractCollection.toString()}, but stripping the
-	 * "class "/"interface " prefix before every class name.
-	 * 
-	 * @param classes a Collection of Class objects (may be {@code null})
-	 * @return a String of form "[com.foo.Bar, com.foo.Baz]"
-	 * @see java.util.AbstractCollection#toString()
-	 */
-	@SuppressWarnings("rawtypes")
-	public static String classNamesToString(Collection<Class> classes) {
-		if (CollectionUtils.isEmpty(classes)) {
-			return "[]";
-		}
-		StringBuilder sb = new StringBuilder("[");
-		for (Iterator<Class> it = classes.iterator(); it.hasNext();) {
-			Class clazz = it.next();
-			sb.append(clazz.getName());
-			if (it.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		sb.append("]");
-		return sb.toString();
-	}
-
-	/**
 	 * Given an input class object, return a string which consists of the class's
 	 * package name as a pathname, i.e., all dots ('.') are replaced by slashes
 	 * ('/'). Neither a leading nor trailing slash is added. The result could be
@@ -200,60 +121,6 @@ public final class ClassUtils {
 		}
 		String packageName = className.substring(0, packageEndIndex);
 		return packageName.replace('.', '/');
-	}
-
-	/**
-	 * Convert a "."-based fully qualified class name to a "/"-based resource path.
-	 * 
-	 * @param className the fully qualified class name
-	 * @return the corresponding resource path, pointing to the class
-	 */
-	public static String convertClassNameToResourcePath(String className) {
-		Assert.notNull(className, "Class name must not be null");
-		return className.replace('.', '/');
-	}
-
-	/**
-	 * Convert a "/"-based resource path to a "."-based fully qualified class name.
-	 * 
-	 * @param resourcePath the resource path pointing to a class
-	 * @return the corresponding fully qualified class name
-	 */
-	public static String convertResourcePathToClassName(String resourcePath) {
-		Assert.notNull(resourcePath, "Resource path must not be null");
-		return resourcePath.replace('/', '.');
-	}
-
-	/**
-	 * Determine the common ancestor of the given classes, if any.
-	 * 
-	 * @param clazz1 the class to introspect
-	 * @param clazz2 the other class to introspect
-	 * @return the common ancestor (i.e. common superclass, one interface extending
-	 *         the other), or {@code null} if none found. If any of the given
-	 *         classes is {@code null}, the other class will be returned.
-	 */
-	public static Class<?> determineCommonAncestor(Class<?> clazz1, Class<?> clazz2) {
-		if (clazz1 == null) {
-			return clazz2;
-		}
-		if (clazz2 == null) {
-			return clazz1;
-		}
-		if (clazz1.isAssignableFrom(clazz2)) {
-			return clazz1;
-		}
-		if (clazz2.isAssignableFrom(clazz1)) {
-			return clazz2;
-		}
-		Class<?> ancestor = clazz1;
-		do {
-			ancestor = ancestor.getSuperclass();
-			if (ancestor == null || Object.class == ancestor) {
-				return null;
-			}
-		} while (!ancestor.isAssignableFrom(clazz2));
-		return ancestor;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -339,118 +206,6 @@ public final class ClassUtils {
 		return Class.forName(name, false, classLoader);
 	}
 
-	public static Class<?>[] forNames(ClassLoader classLoader, String... className) throws ClassNotFoundException {
-		if (ArrayUtils.isEmpty(className)) {
-			return new Class<?>[0];
-		}
-
-		Class<?>[] types = new Class<?>[className.length];
-		for (int i = 0; i < types.length; i++) {
-			types[i] = forName(className[i], classLoader);
-		}
-		return types;
-	}
-
-	/**
-	 * Return all interfaces that the given instance implements as array, including
-	 * ones implemented by superclasses.
-	 * 
-	 * @param instance the instance to analyze for interfaces
-	 * @return all interfaces that the given instance implements as array
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Class[] getAllInterfaces(Object instance) {
-		Assert.notNull(instance, "Instance must not be null");
-		return getAllInterfacesForClass(instance.getClass());
-	}
-
-	/**
-	 * Return all interfaces that the given instance implements as Set, including
-	 * ones implemented by superclasses.
-	 * 
-	 * @param instance the instance to analyze for interfaces
-	 * @return all interfaces that the given instance implements as Set
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Set<Class> getAllInterfacesAsSet(Object instance) {
-		Assert.notNull(instance, "Instance must not be null");
-		return getAllInterfacesForClassAsSet(instance.getClass());
-	}
-
-	/**
-	 * Return all interfaces that the given class implements as array, including
-	 * ones implemented by superclasses.
-	 * <p>
-	 * If the class itself is an interface, it gets returned as sole interface.
-	 * 
-	 * @param clazz the class to analyze for interfaces
-	 * @return all interfaces that the given object implements as array
-	 */
-	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz) {
-		return getAllInterfacesForClass(clazz, null);
-	}
-
-	/**
-	 * Return all interfaces that the given class implements as array, including
-	 * ones implemented by superclasses.
-	 * <p>
-	 * If the class itself is an interface, it gets returned as sole interface.
-	 * 
-	 * @param clazz       the class to analyze for interfaces
-	 * @param classLoader the ClassLoader that the interfaces need to be visible in
-	 *                    (may be {@code null} when accepting all declared
-	 *                    interfaces)
-	 * @return all interfaces that the given object implements as array
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz, ClassLoader classLoader) {
-		Set<Class> ifcs = getAllInterfacesForClassAsSet(clazz, classLoader);
-		return ifcs.toArray(new Class[ifcs.size()]);
-	}
-
-	/**
-	 * 获取一个类的所有接口 Return all interfaces that the given class implements as Set,
-	 * including ones implemented by superclasses.
-	 * <p>
-	 * If the class itself is an interface, it gets returned as sole interface.
-	 * 
-	 * @param clazz the class to analyze for interfaces
-	 * @return all interfaces that the given object implements as Set
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz) {
-		return getAllInterfacesForClassAsSet(clazz, null);
-	}
-
-	/**
-	 * 获取一个类的所有接口 Return all interfaces that the given class implements as Set,
-	 * including ones implemented by superclasses.
-	 * <p>
-	 * If the class itself is an interface, it gets returned as sole interface.
-	 * 
-	 * @param clazz       the class to analyze for interfaces
-	 * @param classLoader the ClassLoader that the interfaces need to be visible in
-	 *                    (may be {@code null} when accepting all declared
-	 *                    interfaces)
-	 * @return all interfaces that the given object implements as Set
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz, ClassLoader classLoader) {
-		Assert.notNull(clazz, "Class must not be null");
-		if (clazz.isInterface() && isVisible(clazz, classLoader)) {
-			return Collections.singleton(clazz);
-		}
-		Set<Class> interfaces = new LinkedHashSet<Class>();
-		while (clazz != null) {
-			Class<?>[] ifcs = clazz.getInterfaces();
-			for (Class<?> ifc : ifcs) {
-				interfaces.addAll(getAllInterfacesForClassAsSet(ifc, classLoader));
-			}
-			clazz = clazz.getSuperclass();
-		}
-		return interfaces;
-	}
-
 	/**
 	 * 如果类不存在将返回空
 	 * 
@@ -473,32 +228,16 @@ public final class ClassUtils {
 	}
 
 	public static Optional<Class<?>> findClass(@NonNull String className, ClassLoader classLoader) {
-		Class<?> clazz = getClass(className, classLoader);
-		return clazz == null ? Optional.empty() : Optional.of(clazz);
-	}
-
-	/**
-	 * Determine the name of the class file, relative to the containing package:
-	 * e.g. "String.class"
-	 * 
-	 * @param clazz the class
-	 * @return the file name of the ".class" file
-	 */
-	public static String getClassFileName(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
-		String className = clazz.getName();
-		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
-		return className.substring(lastDotIndex + 1) + CLASS_FILE_SUFFIX;
-	}
-
-	/**
-	 * @see #getDefaultClassLoader()
-	 * @param classLoaderProvider
-	 * @return
-	 */
-	public static ClassLoader getClassLoader(ClassLoaderProvider classLoaderProvider) {
-		ClassLoader classLoader = classLoaderProvider == null ? null : classLoaderProvider.getClassLoader();
-		return classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
+		try {
+			return Optional.ofNullable(forName(className, classLoader));
+		} catch (IllegalAccessError err) {
+			throw new IllegalStateException(
+					"Readability mismatch in inheritance hierarchy of class [" + className + "]: " + err.getMessage(),
+					err);
+		} catch (Throwable ex) {
+			// Typically ClassNotFoundException or NoClassDefFoundError...
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -530,37 +269,6 @@ public final class ClassUtils {
 		return cl;
 	}
 
-	/**
-	 * Return a descriptive name for the given object's type: usually simply the
-	 * class name, but component type class name + "[]" for arrays, and an appended
-	 * list of implemented interfaces for JDK proxies.
-	 * 
-	 * @param value the value to introspect
-	 * @return the qualified name of the class
-	 */
-	public static String getDescriptiveType(Object value) {
-		if (value == null) {
-			return null;
-		}
-		Class<?> clazz = value.getClass();
-		if (Proxy.isProxyClass(clazz)) {
-			StringBuilder result = new StringBuilder(clazz.getName());
-			result.append(" implementing ");
-			Class<?>[] ifcs = clazz.getInterfaces();
-			for (int i = 0; i < ifcs.length; i++) {
-				result.append(ifcs[i].getName());
-				if (i < ifcs.length - 1) {
-					result.append(',');
-				}
-			}
-			return result.toString();
-		} else if (clazz.isArray()) {
-			return getQualifiedNameForArray(clazz);
-		} else {
-			return clazz.getName();
-		}
-	}
-
 	public static Browseable<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StandardBrowseable<Class<?>, Class<?>>(sourceClass, (c) -> {
@@ -568,62 +276,6 @@ public final class ClassUtils {
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
 			return new StandardCursor<>(c, Elements.of(list), c.getSuperclass());
 		});
-	}
-
-	/**
-	 * Determine the name of the package of the given class, e.g. "java.lang" for
-	 * the {@code java.lang.String} class.
-	 * 
-	 * @param clazz the class
-	 * @return the package name, or the empty String if the class is defined in the
-	 *         default package
-	 */
-	public static String getPackageName(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
-		return getPackageName(clazz.getName());
-	}
-
-	/**
-	 * Determine the name of the package of the given fully-qualified class name,
-	 * e.g. "java.lang" for the {@code java.lang.String} class name.
-	 * 
-	 * @param fqClassName the fully-qualified class name
-	 * @return the package name, or the empty String if the class is defined in the
-	 *         default package
-	 */
-	public static String getPackageName(String fqClassName) {
-		Assert.notNull(fqClassName, "Class name must not be null");
-		int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
-		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
-	}
-
-	/**
-	 * 获取所有父包名
-	 * 
-	 * @param packageName
-	 * @return
-	 */
-	public static String[] getParentPackageNames(String packageName) {
-		if (!StringUtils.hasText(packageName)) {
-			return new String[0];
-		}
-
-		String[] packageNameArray = StringUtils.splitToArray(packageName, ".");
-		String[] array = new String[packageNameArray.length - 1];
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0, len = packageNameArray.length; i < len; i++) {
-			if (i != 0) {
-				sb.append(".");
-			}
-
-			if (i == len - 1) {
-				break;
-			}
-
-			sb.append(packageNameArray[i]);
-			array[i] = sb.toString();
-		}
-		return array;
 	}
 
 	/**
@@ -656,76 +308,6 @@ public final class ClassUtils {
 		}
 		result.insert(0, clazz.getName());
 		return result.toString();
-	}
-
-	/**
-	 * Get the class name without the qualified package name.
-	 * 
-	 * @param clazz the class to get the short name for
-	 * @return the class name of the class without the package name
-	 */
-	public static String getShortName(Class<?> clazz) {
-		return getShortName(getQualifiedName(clazz));
-	}
-
-	/**
-	 * Get the class name without the qualified package name.
-	 * 
-	 * @param className the className to get the short name for
-	 * @return the class name of the class without the package name
-	 * @throws IllegalArgumentException if the className is empty
-	 */
-	public static String getShortName(String className) {
-		Assert.hasLength(className, "Class name must not be empty");
-		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
-		String shortName = className.substring(lastDotIndex + 1, className.length());
-		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
-		return shortName;
-	}
-
-	/**
-	 * Return the short string name of a Java class in uncapitalized JavaBeans
-	 * property format. Strips the outer class name in case of an inner class.
-	 * 
-	 * @param clazz the class
-	 * @return the short name rendered in a standard JavaBeans property format
-	 * @see java.beans.Introspector#decapitalize(String)
-	 */
-	public static String getShortNameAsProperty(Class<?> clazz) {
-		String shortName = ClassUtils.getShortName(clazz);
-		int dotIndex = shortName.lastIndexOf('.');
-		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1) : shortName);
-		return Introspector.decapitalize(shortName);
-	}
-
-	/**
-	 * 获取父类 不包含java.lang.Object
-	 * 
-	 * @param clz
-	 * @return
-	 */
-	public static Class<?> getSuperClass(Class<?> clz) {
-		Class<?> superClz = clz.getSuperclass();
-		if (superClz == null || Object.class.getName().equals(superClz.getName())) {
-			return null;
-		}
-		return superClz;
-	}
-
-	/**
-	 * 获取所有父类 不包含java.lang.Object
-	 * 
-	 * @param clz
-	 * @return
-	 */
-	public static List<Class<?>> getSuperClassList(Class<?> clz) {
-		List<Class<?>> clzList = new ArrayList<Class<?>>();
-		Class<?> superClz = getSuperClass(clz);
-		while (superClz != null) {
-			clzList.add(superClz);
-			superClz = getSuperClass(superClz);
-		}
-		return clzList;
 	}
 
 	/**
@@ -774,7 +356,7 @@ public final class ClassUtils {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Determine if the given type is assignable from the given value, assuming
 	 * setting by reflection. Considers primitive wrapper classes as assignable to
@@ -795,32 +377,6 @@ public final class ClassUtils {
 
 	public static boolean isByte(Type type) {
 		return type == byte.class || type == Byte.class;
-	}
-
-	/**
-	 * Check whether the given class is cache-safe in the given context, i.e.
-	 * whether it is loaded by the given ClassLoader or a parent of it.
-	 * 
-	 * @param clazz       the class to analyze
-	 * @param classLoader the ClassLoader to potentially cache metadata in
-	 */
-	public static boolean isCacheSafe(Class<?> clazz, ClassLoader classLoader) {
-		Assert.notNull(clazz, "Class must not be null");
-		ClassLoader target = clazz.getClassLoader();
-		if (target == null) {
-			return false;
-		}
-		ClassLoader cur = classLoader;
-		if (cur == target) {
-			return true;
-		}
-		while (cur != null) {
-			cur = cur.getParent();
-			if (cur == target) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static boolean isChar(Type type) {
@@ -854,38 +410,7 @@ public final class ClassUtils {
 	public static boolean isMultipleValues(Class<?> type) {
 		return type != null && (type.isArray() || Collection.class.isAssignableFrom(type));
 	}
-
-	/**
-	 * Determine whether the {@link Class} identified by the supplied name is
-	 * present and can be loaded. Will return {@code false} if either the class or
-	 * one of its dependencies is not present or cannot be loaded.
-	 * 
-	 * @param className   the name of the class to check
-	 * @param classLoader the class loader to use (may be {@code null} which
-	 *                    indicates the default class loader)
-	 * @return whether the specified class is present (including all of its
-	 *         superclasses and interfaces)
-	 * @throws IllegalStateException if the corresponding class is resolvable but
-	 *                               there was a readability mismatch in the
-	 *                               inheritance hierarchy of the class (typically a
-	 *                               missing dependency declaration in a Jigsaw
-	 *                               module definition for a superclass or interface
-	 *                               implemented by the class to be checked here)
-	 */
-	public static boolean isPresent(@NonNull String className, ClassLoader classLoader) {
-		try {
-			forName(className, classLoader);
-			return true;
-		} catch (IllegalAccessError err) {
-			throw new IllegalStateException(
-					"Readability mismatch in inheritance hierarchy of class [" + className + "]: " + err.getMessage(),
-					err);
-		} catch (Throwable ex) {
-			// Typically ClassNotFoundException or NoClassDefFoundError...
-			return false;
-		}
-	}
-
+	
 	public static boolean isPrimitive(Type type) {
 		return type instanceof Class && ((Class<?>) type).isPrimitive();
 	}
@@ -945,74 +470,6 @@ public final class ClassUtils {
 
 	public static boolean isString(Type type) {
 		return type == String.class;
-	}
-
-	/**
-	 * Check whether the given class is visible in the given ClassLoader.
-	 * 
-	 * @param clazz       the class to check (typically an interface)
-	 * @param classLoader the ClassLoader to check against (may be {@code null}, in
-	 *                    which case this method will always return {@code true})
-	 */
-	public static boolean isVisible(Class<?> clazz, ClassLoader classLoader) {
-		if (classLoader == null) {
-			return true;
-		}
-		try {
-			Class<?> actualClass = classLoader.loadClass(clazz.getName());
-			return (clazz == actualClass);
-			// Else: different interface class found...
-		} catch (ClassNotFoundException ex) {
-			// No interface class found...
-			return false;
-		}
-	}
-
-	/**
-	 * Check whether the given class matches the user-specified type name.
-	 * 
-	 * @param clazz    the class to check
-	 * @param typeName the type name to match
-	 */
-	public static boolean matchesTypeName(Class<?> clazz, String typeName) {
-		return (typeName != null && (typeName.equals(clazz.getName()) || typeName.equals(clazz.getSimpleName())
-				|| (clazz.isArray() && typeName.equals(getQualifiedNameForArray(clazz)))));
-	}
-
-	/**
-	 * Override the thread context ClassLoader with the environment's bean
-	 * ClassLoader if necessary, i.e. if the bean ClassLoader is not equivalent to
-	 * the thread context ClassLoader already.
-	 * 
-	 * @param classLoaderToUse the actual ClassLoader to use for the thread context
-	 * @return the original thread context ClassLoader, or {@code null} if not
-	 *         overridden
-	 */
-	public static ClassLoader overrideThreadContextClassLoader(ClassLoader classLoaderToUse) {
-		Thread currentThread = Thread.currentThread();
-		ClassLoader threadContextClassLoader = currentThread.getContextClassLoader();
-		if (classLoaderToUse != null && !classLoaderToUse.equals(threadContextClassLoader)) {
-			currentThread.setContextClassLoader(classLoaderToUse);
-			return threadContextClassLoader;
-		} else {
-			return null;
-		}
-	}
-
-	public static boolean sameName(Class<?> left, Class<?> right) {
-		if (left == right) {
-			return true;
-		}
-
-		if (left == null) {
-			return right == null;
-		}
-
-		if (right == null) {
-			return left == null;
-		}
-
-		return StringUtils.equals(left.getName(), right.getName());
 	}
 
 	/**
@@ -1098,21 +555,6 @@ public final class ClassUtils {
 	public static Class<?> resolvePrimitiveIfNecessary(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
 		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap.get(clazz) : clazz);
-	}
-
-	/**
-	 * Copy the given Collection into a Class array. The Collection must contain
-	 * Class elements only.
-	 * 
-	 * @param collection the Collection to copy
-	 * @return the Class array ({@code null} if the passed-in Collection was
-	 *         {@code null})
-	 */
-	public static Class<?>[] toClassArray(Collection<Class<?>> collection) {
-		if (collection == null) {
-			return null;
-		}
-		return collection.toArray(new Class<?>[collection.size()]);
 	}
 
 	/**

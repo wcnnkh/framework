@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 public class LambdaTest {
 	@Test

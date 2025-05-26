@@ -1,4 +1,4 @@
-package run.soeasy.framework.core;
+package run.soeasy.framework.core.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -8,6 +8,7 @@ import java.util.function.Function;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.math.BigDecimalValue;
 import run.soeasy.framework.core.math.NumberValue;

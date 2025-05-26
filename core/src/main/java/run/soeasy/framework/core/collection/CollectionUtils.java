@@ -50,7 +50,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.io.IOUtils;
-import run.soeasy.framework.core.type.ReflectionUtils;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 
 public abstract class CollectionUtils {
 	private static final class PreviousIterator<E> implements Iterator<E> {

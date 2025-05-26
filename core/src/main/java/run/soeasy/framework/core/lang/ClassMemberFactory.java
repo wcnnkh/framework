@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.type;
+package run.soeasy.framework.core.lang;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Provider;

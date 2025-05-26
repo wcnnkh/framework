@@ -6,9 +6,9 @@ import java.util.EnumSet;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import run.soeasy.framework.core.Value;
-import run.soeasy.framework.core.Version;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Value;
+import run.soeasy.framework.core.domain.Version;
 
 public abstract class NumberValue extends Number implements Version {
 	private static final long serialVersionUID = 1L;

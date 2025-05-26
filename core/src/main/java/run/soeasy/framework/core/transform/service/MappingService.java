@@ -6,10 +6,10 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.lang.ConfigurableInstanceFactory;
 import run.soeasy.framework.core.transform.DefaultMapper;
 import run.soeasy.framework.core.transform.Mapping;
 import run.soeasy.framework.core.transform.MappingContext;
-import run.soeasy.framework.core.type.ConfigurableInstanceFactory;
 
 @Getter
 public class MappingService<K, V extends TypedValueAccessor, R extends Mapping<K, V>> extends DefaultMapper<K, V, R>

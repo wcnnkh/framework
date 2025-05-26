@@ -7,12 +7,12 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.lang.ClassMembersLoader;
+import run.soeasy.framework.core.lang.ClassUtils;
+import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.core.transform.TemplateMapping;
 import run.soeasy.framework.core.transform.property.ObjectProperty;
 import run.soeasy.framework.core.transform.service.MappingProvider;
-import run.soeasy.framework.core.type.ClassMembersLoader;
-import run.soeasy.framework.core.type.ClassUtils;
-import run.soeasy.framework.core.type.ReflectionUtils;
 
 class ReflectionCloneMappingProvider implements
 		MappingProvider<Object, Object, ObjectProperty<ReflectionField>, TemplateMapping<ObjectProperty<ReflectionField>>> {

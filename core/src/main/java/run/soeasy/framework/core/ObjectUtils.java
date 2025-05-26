@@ -13,7 +13,7 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * @author wcnnkh
  *
  */
-public abstract class ObjectUtils {
+public class ObjectUtils {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 
 	/**

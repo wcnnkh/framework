@@ -5,7 +5,7 @@ import java.util.logging.LogRecord;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 @Getter
 @Setter
@@ -83,7 +83,7 @@ public abstract class AbstractLogger implements Logger {
 		if (isNameToClass == null) {
 			synchronized (this) {
 				if (isNameToClass == null) {
-					isNameToClass = ClassUtils.isPresent(getName(), null);
+					isNameToClass = ClassUtils.findClass(getName(), null).isPresent();
 				}
 			}
 		}

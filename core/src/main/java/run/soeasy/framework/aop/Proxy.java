@@ -6,7 +6,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.invoke.ExecutableTemplate;
-import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.lang.ClassUtils;
 
 public interface Proxy extends ExecutableTemplate, AnnotatedElementWrapper<AnnotatedElement> {
 	@Override

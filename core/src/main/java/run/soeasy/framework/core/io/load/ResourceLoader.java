@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.io.load;
 
-import run.soeasy.framework.core.ClassLoaderProvider;
 import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.core.lang.ClassLoaderProvider;
 
 public interface ResourceLoader extends ClassLoaderProvider {
 	/**
