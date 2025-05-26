@@ -7,7 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.io.InputStreamSource;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
@@ -31,12 +31,12 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
 	@Override
 	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
-		return InputMessage.class.isAssignableFrom(sourceDescriptor.getTypeDescriptor().getType())
+		return InputMessage.class.isAssignableFrom(sourceDescriptor.getReturnTypeDescriptor().getType())
 				&& !message.getHeaders().isReadyOnly() && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
 	@Override
-	protected void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message, @NonNull MediaType contentType)
+	protected void doWrite(@NonNull TypedValue source, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
 		InputMessage input = source.getAsObject(InputMessage.class);
 		writeHeader(input, message);

@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Wrapper;
 
 /**
  * 发布者

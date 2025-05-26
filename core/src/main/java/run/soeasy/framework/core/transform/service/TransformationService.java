@@ -11,23 +11,23 @@ public interface TransformationService extends Transformer<Object, Object> {
 		return canTransform(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
 	}
 
-	default boolean canTransform(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetType) {
-		return canTransform(TypeDescriptor.valueOf(sourceClass), targetType);
+	default boolean canTransform(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetTypeDescriptor) {
+		return canTransform(TypeDescriptor.valueOf(sourceClass), targetTypeDescriptor);
 	}
 
-	default boolean canTransform(@NonNull TypeDescriptor sourceType, @NonNull Class<?> targetClass) {
-		return canTransform(sourceType, TypeDescriptor.valueOf(targetClass));
+	default boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull Class<?> targetClass) {
+		return canTransform(sourceTypeDescriptor, TypeDescriptor.valueOf(targetClass));
 	}
 
 	/**
-	 * Return {@code true} if objects of {@code sourceType} can be converted to the
-	 * {@code targetType}. The TypeDescriptors provide additional context about the
+	 * Return {@code true} if objects of {@code sourceTypeDescriptor} can be converted to the
+	 * {@code targetTypeDescriptor}. The TypeDescriptors provide additional context about the
 	 * source and target locations where conversion would occur, often object fields
 	 * or property locations.
 	 * <p>
 	 * If this method returns {@code true}, it means
 	 * {@link #convert(Object, TypeDescriptor, TypeDescriptor)} is capable of
-	 * converting an instance of {@code sourceType} to {@code targetType}.
+	 * converting an instance of {@code sourceTypeDescriptor} to {@code targetTypeDescriptor}.
 	 * <p>
 	 * Special note on collections, arrays, and maps types: For conversion between
 	 * collection, array, and map types, this method will return {@code true} even
@@ -35,22 +35,22 @@ public interface TransformationService extends Transformer<Object, Object> {
 	 * if the underlying elements are not convertible. Callers are expected to
 	 * handle this exceptional case when working with collections and maps.
 	 * 
-	 * @param sourceType context about the source type to convert from (may be
+	 * @param sourceTypeDescriptor context about the source type to convert from (may be
 	 *                   {@code null} if source is {@code null})
-	 * @param targetType context about the target type to convert to (required)
+	 * @param targetTypeDescriptor context about the target type to convert to (required)
 	 * @return {@code true} if a conversion can be performed between the source and
 	 *         target types, {@code false} if not
-	 * @throws IllegalArgumentException if {@code targetType} is {@code null}
+	 * @throws IllegalArgumentException if {@code targetTypeDescriptor} is {@code null}
 	 */
-	boolean canTransform(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType);
+	boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull TypeDescriptor targetTypeDescriptor);
 
 	default boolean transform(@NonNull Object source, @NonNull Object target) throws ConversionException {
 		return transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
 	}
 
-	default boolean transform(@NonNull Object source, @NonNull Object target, @NonNull TypeDescriptor targetType)
+	default boolean transform(@NonNull Object source, @NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor)
 			throws ConversionException {
-		return transform(source, TypeDescriptor.forObject(source), target, targetType);
+		return transform(source, TypeDescriptor.forObject(source), target, targetTypeDescriptor);
 	}
 
 	default <T> boolean transform(@NonNull Object source, @NonNull T target, @NonNull Class<? extends T> targetClass)
@@ -58,14 +58,14 @@ public interface TransformationService extends Transformer<Object, Object> {
 		return transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.valueOf(targetClass));
 	}
 
-	default boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceType, @NonNull Object target)
+	default boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor, @NonNull Object target)
 			throws ConversionException {
-		return transform(source, sourceType, target, TypeDescriptor.forObject(target));
+		return transform(source, sourceTypeDescriptor, target, TypeDescriptor.forObject(target));
 	}
 
-	default <T> boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceType, @NonNull T target,
+	default <T> boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor, @NonNull T target,
 			@NonNull Class<? extends T> targetClass) throws ConversionException {
-		return transform(source, sourceType, target, TypeDescriptor.valueOf(targetClass));
+		return transform(source, sourceTypeDescriptor, target, TypeDescriptor.valueOf(targetClass));
 	}
 
 	default <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass, @NonNull Object target)
@@ -74,8 +74,8 @@ public interface TransformationService extends Transformer<Object, Object> {
 	}
 
 	default <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass, @NonNull Object target,
-			@NonNull TypeDescriptor targetType) throws ConversionException {
-		return transform(source, TypeDescriptor.valueOf(sourceClass), target, targetType);
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+		return transform(source, TypeDescriptor.valueOf(sourceClass), target, targetTypeDescriptor);
 	}
 
 	default <S, T> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass, @NonNull T target,

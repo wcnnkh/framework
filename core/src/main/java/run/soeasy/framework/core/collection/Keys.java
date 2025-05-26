@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.collection;
 
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 
 /**
  * 获取所有的key

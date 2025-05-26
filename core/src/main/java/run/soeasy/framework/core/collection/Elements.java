@@ -13,18 +13,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +36,8 @@ import lombok.ToString;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.merge.Merger;
-import run.soeasy.framework.core.math.NumberValue;
+import run.soeasy.framework.core.domain.Sequential;
+import run.soeasy.framework.core.math.Counter;
 
 /**
  * 和{@link Streamable}类似，但此接口可以返回无需关闭的{@link Iterator}
@@ -214,7 +215,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 
 		@Override
-		public NumberValue count() {
+		public long count() {
 			return resize ? ElementsWrapper.super.count() : target.count();
 		}
 
@@ -227,132 +228,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		public boolean isUnique() {
 			return resize ? ElementsWrapper.super.isUnique() : target.isUnique();
 		}
-	}
-
-	public static interface ConvertStrategy {
-
-	}
-
-	public static interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, StreamableWrapper<E, W> {
-		@Override
-		default Provider<E> cacheable() {
-			return getSource().cacheable();
-		}
-
-		@Override
-		default Elements<E> concat(Elements<? extends E> elements) {
-			return getSource().concat(elements);
-		}
-
-		@Override
-		default <U> Elements<U> convert(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
-			return getSource().convert(resize, converter);
-		}
-
-		@Override
-		default Elements<E> distinct() {
-			return getSource().distinct();
-		}
-
-		@Override
-		default Enumeration<E> enumeration() {
-			return getSource().enumeration();
-		}
-
-		@Override
-		default Elements<E> exclude(Predicate<? super E> predicate) {
-			return getSource().exclude(predicate);
-		}
-
-		@Override
-		default Elements<E> filter(Predicate<? super E> predicate) {
-			return getSource().filter(predicate);
-		}
-
-		@Override
-		default <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
-			return getSource().flatMap(mapper);
-		}
-
-		@Override
-		default void forEach(Consumer<? super E> action) {
-			getSource().forEach(action);
-		}
-
-		@Override
-		default Optional<Indexed<E>> index(long index) {
-			return getSource().index(index);
-		}
-
-		@Override
-		default Elements<Indexed<E>> indexed() {
-			return getSource().indexed();
-		}
-
-		@Override
-		default Elements<IterativeElement<E>> iterative() {
-			return getSource().iterative();
-		}
-
-		@Override
-		default Iterator<E> iterator() {
-			return getSource().iterator();
-		}
-
-		@Override
-		default Elements<E> limit(long maxSize) {
-			return getSource().limit(maxSize);
-		}
-
-		@Override
-		default <U> Elements<U> map(Function<? super E, ? extends U> mapper) {
-			return getSource().map(mapper);
-		}
-
-		@Override
-		default Elements<E> reverse() {
-			return getSource().reverse();
-		}
-
-		@Override
-		default Elements<E> skip(long n) {
-			return getSource().skip(n);
-		}
-
-		@Override
-		default Elements<E> sorted() {
-			return getSource().sorted();
-		}
-
-		@Override
-		default Elements<E> sorted(Comparator<? super E> comparator) {
-			return getSource().sorted(comparator);
-		}
-
-		@Override
-		default Spliterator<E> spliterator() {
-			return getSource().spliterator();
-		}
-
-		@Override
-		default ListElementsWrapper<E, ? extends List<E>> toList() {
-			return getSource().toList();
-		}
-
-		@Override
-		default SetElementsWrapper<E, ? extends Set<E>> toSet() {
-			return getSource().toSet();
-		}
-
-		@Override
-		default Elements<E> unordered() {
-			return getSource().unordered();
-		}
-
-		default run.soeasy.framework.core.collection.Elements<E> knownSize(
-				Function<? super Elements<E>, ? extends NumberValue> statisticsSize) {
-			return getSource().knownSize(statisticsSize);
-		};
 	}
 
 	public static class EmptyElements<E> extends EmptyStreamable<E> implements Elements<E> {
@@ -411,21 +286,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		}
 	}
 
-	@Data
-	@EqualsAndHashCode(of = "element")
-	@AllArgsConstructor
-	public static final class Indexed<E> implements Serializable {
-		private static final long serialVersionUID = 1L;
-		/**
-		 * 索引，从0开始
-		 */
-		private final long index;
-		/**
-		 * 对应的元素
-		 */
-		private final E element;
-	}
-
 	public static interface IterableElementsWrapper<E, W extends Iterable<E>>
 			extends Elements<E>, IterableWrapper<E, W> {
 
@@ -441,7 +301,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 		@Override
 		default Stream<E> stream() {
-			return Streams.stream(spliterator());
+			return StreamSupport.stream(spliterator(), false);
 		}
 	}
 
@@ -487,7 +347,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 		@Override
 		public Stream<IterativeElement<E>> stream() {
-			return Streams.stream(iterator());
+			return CollectionUtils.unknownSizeStream(iterator());
 		}
 	}
 
@@ -530,16 +390,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 				throw new NoUniqueElementException();
 			}
 			return list.get(0);
-		}
-
-		@Override
-		default Optional<Indexed<E>> index(long index) {
-			if (index > Integer.MAX_VALUE) {
-				return Optional.empty();
-			}
-
-			E value = get((int) index);
-			return Optional.of(new Indexed<>(index, value));
 		}
 
 		@Override
@@ -834,7 +684,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 		@Override
 		public Stream<ParallelElement<L, R>> stream() {
-			return Streams.stream(iterator());
+			return CollectionUtils.unknownSizeStream(iterator());
 		}
 	}
 
@@ -1076,21 +926,21 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		@NonNull
 		private final W source;
 		@NonNull
-		private final Function<? super W, ? extends NumberValue> statisticsSize;
+		private final ToLongFunction<? super W> statisticsSize;
 
 		@Override
-		public NumberValue count() {
-			return statisticsSize.apply(source);
+		public long count() {
+			return statisticsSize.applyAsLong(source);
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return count().compareTo(NumberValue.ZERO) == 0;
+			return count() == 0;
 		}
 
 		@Override
 		public boolean isUnique() {
-			return count().compareTo(NumberValue.ONE) == 0;
+			return count() == 1;
 		}
 	}
 
@@ -1100,7 +950,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * @param statisticsSize
 	 * @return
 	 */
-	default Elements<E> knownSize(@NonNull Function<? super Elements<E>, ? extends NumberValue> statisticsSize) {
+	default Elements<E> knownSize(@NonNull ToLongFunction<? super Elements<E>> statisticsSize) {
 		return new KnownSizeElements<>(this, statisticsSize);
 	}
 
@@ -1243,18 +1093,15 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		Streamable.super.forEach(action);
 	}
 
-	default Optional<Indexed<E>> index(long index) {
-		Indexed<E> indexed = index == 0 ? indexed().first() : indexed().filter((e) -> e.getIndex() == index).first();
-		if (indexed == null) {
-			return Optional.empty();
-		}
-		return Optional.of(indexed);
+	default E get(int index) throws IndexOutOfBoundsException {
+		return sequential().filter((e) -> e.getIndex().intValueExact() == index).findFirst()
+				.orElseThrow(() -> new IndexOutOfBoundsException(String.valueOf(index))).getElement();
 	}
 
-	default Elements<Indexed<E>> indexed() {
+	default Elements<Sequential<E>> sequential() {
 		return Elements.of(() -> {
-			AtomicLong lineNumber = new AtomicLong();
-			return stream().sequential().map((e) -> new Indexed<>(lineNumber.getAndIncrement(), e));
+			Counter counter = new Counter();
+			return stream().sequential().map((e) -> new Sequential<>(counter.getAndIncrement(), e));
 		});
 	}
 
@@ -1295,10 +1142,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 */
 	default Elements<E> reverse() {
 		return convert(false, (stream) -> stream.sorted(Collections.reverseOrder()));
-	}
-
-	default Elements<E> sequential() {
-		return convert(false, (e) -> e.sequential());
 	}
 
 	default Elements<E> skip(long n) {

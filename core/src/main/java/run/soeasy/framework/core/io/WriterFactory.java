@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface

@@ -9,6 +9,6 @@ public interface ConnectionFactory {
 	Connection getConnection() throws SQLException;
 
 	default ConnectionWrapper createConnection() {
-		return new ConnectionWrapper(Pipeline.of(this::getConnection).onClose((e) -> e.close()).newPipeline());
+		return new ConnectionWrapper(Pipeline.forSupplier(this::getConnection).onClose((e) -> e.close()));
 	}
 }

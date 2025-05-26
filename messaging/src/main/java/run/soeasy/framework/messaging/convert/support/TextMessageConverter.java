@@ -11,9 +11,9 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.convert.value.ConvertingData;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.TypedData;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -41,7 +41,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	@Override
 	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
-		return getConversionService().canConvert(sourceDescriptor.getTypeDescriptor(),
+		return getConversionService().canConvert(sourceDescriptor.getReturnTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
@@ -52,7 +52,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	protected String toString(ConvertingData<Object> body, MediaType contentType, Charset charset) throws IOException {
-		return (String) getConversionService().convert(body.any(), TypeDescriptor.valueOf(String.class));
+	protected String toString(TypedData<Object> body, MediaType contentType, Charset charset) throws IOException {
+		return (String) getConversionService().convert(body.value(), TypeDescriptor.valueOf(String.class));
 	}
 }

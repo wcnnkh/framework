@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.ResponsiveIterator;
-import run.soeasy.framework.core.collection.Streams;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ResponsiveIteratorTest {
@@ -19,7 +19,7 @@ public class ResponsiveIteratorTest {
 	public void test() throws InterruptedException {
 		ResponsiveIterator<Object> iterator = new ResponsiveIterator<>();
 		new PushThread(iterator).start();
-		assertTrue(pushList.equals(Streams.stream(iterator).collect(Collectors.toList())));
+		assertTrue(pushList.equals(CollectionUtils.unknownSizeStream(iterator).collect(Collectors.toList())));
 	}
 
 	private static class PushThread extends Thread {

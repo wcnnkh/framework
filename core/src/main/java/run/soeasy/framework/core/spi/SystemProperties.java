@@ -11,8 +11,8 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
-import run.soeasy.framework.core.transform.indexed.IndexedAccessor;
-import run.soeasy.framework.core.transform.indexed.PropertyMapping;
+import run.soeasy.framework.core.transform.property.PropertyAccessor;
+import run.soeasy.framework.core.transform.property.PropertyMapping;
 
 public final class SystemProperties implements PropertyMapping {
 	private static final TypeDescriptor STRING_TYPE_DESCRIPTOR = TypeDescriptor.valueOf(String.class);
@@ -33,12 +33,12 @@ public final class SystemProperties implements PropertyMapping {
 	}
 
 	@Override
-	public Iterator<IndexedAccessor> iterator() {
+	public Iterator<PropertyAccessor> iterator() {
 		return keys().map((key) -> get(key)).iterator();
 	}
 
 	@Override
-	public IndexedAccessor get(Object key) {
+	public PropertyAccessor get(Object key) {
 		String keyToUse = String.valueOf(key);
 		return new SystemProperty(keyToUse);
 	}
@@ -54,21 +54,21 @@ public final class SystemProperties implements PropertyMapping {
 	@AllArgsConstructor
 	@Getter
 	@Setter
-	private static class SystemProperty implements IndexedAccessor {
+	private static class SystemProperty implements PropertyAccessor {
 		@NonNull
-		private final String index;
+		private final String name;
 		@NonNull
 		private ConversionService conversionService = SystemConversionService.getInstance();
 
 		@Override
 		public void set(Object source) throws UnsupportedOperationException {
 			String value = (String) conversionService.convert(source, STRING_TYPE_DESCRIPTOR);
-			System.setProperty(index, value);
+			System.setProperty(name, value);
 		}
 
 		@Override
 		public Object get() {
-			String value = System.getProperty(index);
+			String value = System.getProperty(name);
 			if (value == null) {
 				value = System.getenv(value);
 			}

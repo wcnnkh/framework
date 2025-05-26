@@ -2,17 +2,18 @@ package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
 public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends FilterableMapper<K, V, T>
 		implements Mapper<K, V, T> {
 
 	public DefaultMapper() {
-		super(new MappingFilters<>(), new GenericMapper<>());
+		super(new ConfigurableServices<>(), new GenericMapper<>());
 	}
 
 	@Override
-	public @NonNull MappingFilters<K, V, T> getFilters() {
-		return (MappingFilters<K, V, T>) super.getFilters();
+	public @NonNull ConfigurableServices<MappingFilter<K, V, T>> getFilters() {
+		return (ConfigurableServices<MappingFilter<K, V, T>>) super.getFilters();
 	}
 
 	@Override

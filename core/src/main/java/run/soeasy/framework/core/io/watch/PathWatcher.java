@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Elements.ElementsWrapper;
+import run.soeasy.framework.core.collection.ElementsWrapper;
 import run.soeasy.framework.core.exchange.Lifecycle;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.Registration;

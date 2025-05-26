@@ -5,8 +5,8 @@ import java.util.function.BooleanSupplier;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.Registration;
 
 public interface KeyValueRegistration<K, V> extends PayloadRegistration<KeyValue<K, V>>, KeyValue<K, V> {

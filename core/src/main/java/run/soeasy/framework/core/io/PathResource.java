@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
@@ -17,8 +18,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.math.LongValue;
-import run.soeasy.framework.core.math.NumberValue;
 
 public class PathResource implements Resource, PathVariable {
 	private final Path path;
@@ -211,8 +210,8 @@ public class PathResource implements Resource, PathVariable {
 	 * This implementation returns the underlying file's length.
 	 */
 	@Override
-	public NumberValue contentLength() throws IOException {
-		return new LongValue(Files.size(this.path));
+	public BigInteger contentLength() throws IOException {
+		return BigInteger.valueOf(Files.size(this.path));
 	}
 
 	/**

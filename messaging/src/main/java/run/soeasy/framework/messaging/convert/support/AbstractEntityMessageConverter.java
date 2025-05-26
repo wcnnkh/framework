@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.ConvertingData;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedData;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.Entity;
 import run.soeasy.framework.messaging.InputMessage;
@@ -33,7 +33,7 @@ public abstract class AbstractEntityMessageConverter<T extends Entity<?>> extend
 	@Override
 	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
-		return Entity.class.isAssignableFrom(sourceDescriptor.getTypeDescriptor().getType())
+		return Entity.class.isAssignableFrom(sourceDescriptor.getReturnTypeDescriptor().getType())
 				&& !message.getHeaders().isReadyOnly() && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
@@ -49,19 +49,19 @@ public abstract class AbstractEntityMessageConverter<T extends Entity<?>> extend
 
 		Object value = getMessageConverter().readFrom(() -> targetDescriptor.getRequiredTypeDescriptor(), message,
 				contentType);
-		return readToEntity(ValueAccessor.of(value, typeDescriptor), message);
+		return readToEntity(TypedValue.of(value, typeDescriptor), message);
 	}
 
-	protected abstract T readToEntity(@NonNull ValueAccessor body, @NonNull InputMessage message);
+	protected abstract T readToEntity(@NonNull TypedValue body, @NonNull InputMessage message);
 
 	@Override
-	protected void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message, @NonNull MediaType contentType)
+	protected void doWrite(@NonNull TypedValue source, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
 		Entity<?> entity = (Entity<?>) source;
 		writeHeader(entity, message);
-		ConvertingData<?> entityBody = entity.getBody();
+		TypedData<?> entityBody = entity.getBody();
 		if (entityBody != null) {
-			getMessageConverter().writeTo(entityBody.any(), message, contentType);
+			getMessageConverter().writeTo(entityBody.value(), message, contentType);
 		}
 	}
 }

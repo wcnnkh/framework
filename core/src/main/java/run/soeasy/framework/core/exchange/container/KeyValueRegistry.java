@@ -2,10 +2,10 @@ package run.soeasy.framework.core.exchange.container;
 
 import java.util.Arrays;
 
-import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.KeyValues;
+import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Registration;
 

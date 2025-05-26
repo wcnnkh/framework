@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map.Entry;
 
 import lombok.Data;
-import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.domain.KeyValue;
 
 @Data
 public class ReadOnlyEntry<K, V> implements Entry<K, V>, KeyValue<K, V>, Serializable {

@@ -7,7 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.aop.Proxy;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.invoke.intercept.ExecutionInterceptor;
+import run.soeasy.framework.core.invoke.ExecutionInterceptor;
 
 /**
  * 可执行的代理

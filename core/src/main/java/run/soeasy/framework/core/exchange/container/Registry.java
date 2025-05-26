@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.collection.ElementsWrapper;
 import run.soeasy.framework.core.exchange.Registration;
 
 /**

@@ -7,19 +7,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.Named;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Listable;
-import run.soeasy.framework.core.math.LongValue;
-import run.soeasy.framework.core.math.NumberAdder;
-import run.soeasy.framework.core.math.NumberValue;
+import run.soeasy.framework.core.math.Counter;
 
 /**
  * 一个资源的定义
@@ -27,8 +25,8 @@ import run.soeasy.framework.core.math.NumberValue;
  * @author shuchaowen
  *
  */
-public interface Resource extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable,
-		Named, Listable<Resource> {
+public interface Resource
+		extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable, Listable<Resource> {
 
 	@Data
 	public static class RenamedResource<W extends Resource> implements ResourceWrapper<W> {
@@ -41,7 +39,7 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 	@FunctionalInterface
 	public static interface ResourceWrapper<W extends Resource>
 			extends Resource, InputSourceWrapper<InputStream, Reader, W>, OutputSourceWrapper<OutputStream, Writer, W>,
-			NamedWrapper<W>, ListableWrapper<Resource, W> {
+			ListableWrapper<Resource, W> {
 		@Override
 		default String getName() {
 			return getSource().getName();
@@ -88,12 +86,7 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 		}
 
 		@Override
-		default Resource rename(String name) {
-			return getSource().rename(name);
-		}
-
-		@Override
-		default NumberValue contentLength() throws IOException {
+		default BigInteger contentLength() throws IOException {
 			return getSource().contentLength();
 		}
 
@@ -213,7 +206,6 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 		return new URI(StringUtils.replace(location, " ", "%20"));
 	}
 
-	@Override
 	default String getName() {
 		if (isFile()) {
 			try {
@@ -244,20 +236,20 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 		return false;
 	}
 
-	default NumberValue contentLength() throws IOException {
+	default BigInteger contentLength() throws IOException {
 		if (isFile()) {
-			return new LongValue(getFile().length());
+			return BigInteger.valueOf(getFile().length());
 		}
 
 		InputStream is = getInputStream();
 		try {
-			NumberAdder size = new NumberAdder();
+			Counter size = new Counter();
 			byte[] buf = new byte[256];
 			int read;
 			while ((read = is.read(buf)) != -1) {
-				size.increment(read);
+				size.getAndAdd(BigInteger.valueOf(read));
 			}
-			return size;
+			return size.get();
 		} finally {
 			is.close();
 		}
@@ -360,11 +352,6 @@ public interface Resource extends InputSource<InputStream, Reader>, OutputSource
 	 */
 	default URL getURL() throws IOException {
 		throw new IOException("Cannot be resolved as URL");
-	}
-
-	@Override
-	default Resource rename(String name) {
-		return new RenamedResource<>(name, this);
 	}
 
 	@Override

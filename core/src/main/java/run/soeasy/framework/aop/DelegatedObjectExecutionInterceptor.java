@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.invoke.Invocation;
-import run.soeasy.framework.core.invoke.intercept.InvocationInterceptor;
+import run.soeasy.framework.core.invoke.InvocationInterceptor;
 
 @Data
 class DelegatedObjectExecutionInterceptor implements InvocationInterceptor, Serializable {
@@ -13,12 +13,12 @@ class DelegatedObjectExecutionInterceptor implements InvocationInterceptor, Seri
 	private final String id;
 
 	@Override
-	public Object intercept(@NonNull Invocation executor, @NonNull Object... args) throws Throwable {
-		if (executor.getParameterTemplate().isEmpty()
-				&& executor.getName().equals(DelegatedObject.PROXY_CONTAINER_ID_METHOD_NAME)) {
+	public Object intercept(@NonNull Invocation executor) throws Throwable {
+		if (executor.getMetadata().getParameterTemplate().isEmpty()
+				&& executor.getMetadata().getName().equals(DelegatedObject.PROXY_CONTAINER_ID_METHOD_NAME)) {
 			return id;
 		}
-		return executor.execute(args);
+		return executor.execute();
 	}
 
 }

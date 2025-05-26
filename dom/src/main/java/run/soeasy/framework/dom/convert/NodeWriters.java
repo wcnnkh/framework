@@ -7,7 +7,7 @@ import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConversionServiceAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.spi.ServiceProvider;
 
@@ -31,7 +31,7 @@ public class NodeWriters extends ServiceProvider<NodeWriter, DOMException> imple
 	}
 
 	@Override
-	public void writeTo(ValueAccessor source, Node node) throws DOMException {
+	public void writeTo(TypedValue source, Node node) throws DOMException {
 		NodeWriter documentWriter = optional().filter((e) -> e.isWriteable(source)).orElse(null);
 		if (documentWriter == null) {
 			throw new UnsupportedOperationException(source.toString());

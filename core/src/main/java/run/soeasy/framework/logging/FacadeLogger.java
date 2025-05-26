@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public class FacadeLogger extends AbstractLogger implements Wrapper<Logger> {
 	private volatile Logger source;

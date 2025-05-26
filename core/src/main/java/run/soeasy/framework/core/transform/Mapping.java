@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.transform;
 
-import run.soeasy.framework.core.KeyValue;
-import run.soeasy.framework.core.collection.KeyValueListable;
+import run.soeasy.framework.core.collection.Dictionary;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.domain.KeyValue;
 
 /**
  * 映射
@@ -13,17 +13,15 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * @param <V>
  */
 @FunctionalInterface
-public interface Mapping<K, V extends TypedValueAccessor> extends KeyValueListable<K, V, KeyValue<K, V>> {
-	public static interface MappingWrapper<K, V extends TypedValueAccessor, W extends Mapping<K, V>>
-			extends Mapping<K, V>, KeyValueListableWrapper<K, V, KeyValue<K, V>, W> {
-		@Override
-		default Mapping<K, V> randomAccess() {
-			return getSource().randomAccess();
-		}
+public interface Mapping<K, V extends TypedValueAccessor> extends Dictionary<K, V, KeyValue<K, V>> {
+
+	@Override
+	default Mapping<K, V> asArray() {
+		return this;
 	}
 
 	@Override
-	default Mapping<K, V> randomAccess() {
-		return new RandomAccessMapping<>(this);
+	default Mapping<K, V> asMap() {
+		return new MapMapping<>(this);
 	}
 }

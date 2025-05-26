@@ -6,8 +6,8 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
-import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
 

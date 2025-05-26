@@ -9,7 +9,7 @@ import java.nio.charset.CharsetEncoder;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
 

@@ -8,7 +8,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.spi.ServiceProvider;
@@ -71,7 +71,7 @@ public class MessageConverters extends ServiceProvider<MessageConverter, Convers
 	@Override
 	public Object readFrom(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
-		return optional().filter((e) -> e.isReadable(targetDescriptor, message, contentType)).apply((converter) -> {
+		return optional().filter((e) -> e.isReadable(targetDescriptor, message, contentType)).flatMap((converter) -> {
 			if (converter == null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("not support read descriptor={}, contentType={}", targetDescriptor, contentType);
@@ -93,7 +93,7 @@ public class MessageConverters extends ServiceProvider<MessageConverter, Convers
 	}
 
 	@Override
-	public void writeTo(@NonNull ValueAccessor source, @NonNull OutputMessage message, MediaType contentType)
+	public void writeTo(@NonNull TypedValue source, @NonNull OutputMessage message, MediaType contentType)
 			throws IOException {
 		optional().filter((e) -> e.isWriteable(source, message, contentType)).map((e) -> {
 			if (e == null) {

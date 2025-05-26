@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public interface IterableWrapper<E, W extends Iterable<E>> extends Iterable<E>, Wrapper<W> {
 	@Override

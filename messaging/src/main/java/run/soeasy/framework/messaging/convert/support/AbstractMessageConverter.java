@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.Headers;
 import run.soeasy.framework.messaging.InputMessage;
@@ -28,7 +28,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	protected abstract Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException;
 
-	protected abstract void doWrite(@NonNull ValueAccessor source, @NonNull OutputMessage message,
+	protected abstract void doWrite(@NonNull TypedValue source, @NonNull OutputMessage message,
 			@NonNull MediaType contentType) throws IOException;
 
 	@Override
@@ -99,7 +99,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public void writeTo(@NonNull ValueAccessor source, @NonNull OutputMessage message, MediaType contentType)
+	public void writeTo(@NonNull TypedValue source, @NonNull OutputMessage message, MediaType contentType)
 			throws IOException {
 		MediaType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {

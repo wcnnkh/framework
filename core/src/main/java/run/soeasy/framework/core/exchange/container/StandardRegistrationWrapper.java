@@ -3,8 +3,8 @@ package run.soeasy.framework.core.exchange.container;
 import java.util.function.BooleanSupplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.exchange.Registration;
 
 public class StandardRegistrationWrapper<W extends Registration>

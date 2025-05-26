@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Streams;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.core.io.MimeTypeUtils;
 
@@ -27,7 +26,7 @@ public interface MediaTypes extends Elements<MediaType>, Comparable<MediaTypes> 
 
 		@Override
 		public Stream<MediaType> stream() {
-			return Streams.empty();
+			return Stream.empty();
 		}
 
 	}

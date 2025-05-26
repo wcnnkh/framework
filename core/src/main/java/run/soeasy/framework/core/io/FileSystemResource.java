@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileChannel;
@@ -18,8 +19,6 @@ import java.nio.file.StandardOpenOption;
 
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.math.LongValue;
-import run.soeasy.framework.core.math.NumberValue;
 
 public class FileSystemResource extends AbstractResource {
 
@@ -251,17 +250,17 @@ public class FileSystemResource extends AbstractResource {
 	 * This implementation returns the underlying File/Path length.
 	 */
 	@Override
-	public NumberValue contentLength() throws IOException {
+	public BigInteger contentLength() throws IOException {
 		if (this.file != null) {
 			long length = this.file.length();
 			if (length == 0L && !this.file.exists()) {
 				throw new FileNotFoundException(
 						getDescription() + " cannot be resolved in the file system for checking its content length");
 			}
-			return new LongValue(length);
+			return BigInteger.valueOf(length);
 		} else {
 			try {
-				return new LongValue(Files.size(this.filePath));
+				return BigInteger.valueOf(Files.size(this.filePath));
 			} catch (NoSuchFileException ex) {
 				throw new FileNotFoundException(ex.getMessage());
 			}

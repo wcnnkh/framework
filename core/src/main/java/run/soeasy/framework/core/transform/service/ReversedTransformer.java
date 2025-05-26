@@ -14,14 +14,14 @@ class ReversedTransformer<S, T, W extends ReversibleTransformer<T, S>> implement
 
 	@Override
 	public boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
-			@NonNull TypeDescriptor targetType) throws ConversionException {
-		return this.source.reverseTransform(source, sourceType, target, targetType);
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+		return this.source.reverseTransform(source, sourceType, target, targetTypeDescriptor);
 	}
 
 	@Override
 	public boolean reverseTransform(@NonNull T source, @NonNull TypeDescriptor sourceType, S target,
-			@NonNull TypeDescriptor targetType) throws ConversionException {
-		return this.source.transform(source, sourceType, target, targetType);
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+		return this.source.transform(source, sourceType, target, targetTypeDescriptor);
 	}
 
 	@Override

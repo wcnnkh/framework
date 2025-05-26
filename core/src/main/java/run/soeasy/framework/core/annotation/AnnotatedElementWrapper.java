@@ -3,7 +3,7 @@ package run.soeasy.framework.core.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 
 @FunctionalInterface
 public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends AnnotatedElement, Wrapper<W> {

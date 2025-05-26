@@ -4,12 +4,12 @@ import java.lang.reflect.Member;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.invoke.ExecutableDescriptor;
+import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.invoke.ExecutableMetadata;
 
 @Data
-public abstract class AbstractReflectionExecutable<T extends Member> implements ExecutableDescriptor, Wrapper<T> {
+public abstract class AbstractReflectionExecutable<T extends Member> implements ExecutableMetadata, Wrapper<T> {
 	@NonNull
 	protected transient T source;
 
@@ -20,11 +20,6 @@ public abstract class AbstractReflectionExecutable<T extends Member> implements 
 	@Override
 	public String getName() {
 		return getSource().getName();
-	}
-
-	@Override
-	public int getModifiers() {
-		return getSource().getModifiers();
 	}
 
 	public Class<?> getDeclaringClass() {

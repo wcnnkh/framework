@@ -13,11 +13,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.ArrayUtils;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
-import run.soeasy.framework.core.collection.Streams;
-import run.soeasy.framework.core.invoke.reflect.ReflectionMethodAccessor;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.indexed.IndexedAccessor;
+import run.soeasy.framework.core.invoke.reflect.ReflectionPropertyMethod;
+import run.soeasy.framework.core.transform.property.PropertyAccessor;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 @RequiredArgsConstructor
 @Getter
@@ -56,14 +56,11 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
 	private final Iterable<? extends A> annotations;
 
 	@Override
-	public Iterator<IndexedAccessor> iterator() {
-		return Streams.stream(annotations).flatMap((annotation) -> {
+	public Iterator<PropertyAccessor> iterator() {
+		return CollectionUtils.unknownSizeStream(annotations.iterator()).flatMap((annotation) -> {
 			Method[] methods = getMethods(type);
-			return Arrays.asList(methods).stream().map((method) -> {
-				ReflectionMethodAccessor accessor = new ReflectionMethodAccessor(method);
-				accessor.setTarget(annotation);
-				return (IndexedAccessor) accessor;
-			});
+			return Arrays.asList(methods).stream()
+					.map((method) -> new ReflectionPropertyMethod(method).accessor(annotation));
 		}).iterator();
 	}
 

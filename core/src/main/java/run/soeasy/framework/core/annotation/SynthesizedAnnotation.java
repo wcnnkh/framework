@@ -2,7 +2,7 @@ package run.soeasy.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
 
-import run.soeasy.framework.core.transform.indexed.PropertyMapping;
+import run.soeasy.framework.core.transform.property.PropertyMapping;
 
 public interface SynthesizedAnnotation extends Annotation {
 	public static <A extends Annotation> A synthesize(Class<A> annotationType, Iterable<? extends A> annotations) {

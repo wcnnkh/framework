@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConditionalConversionService;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.service.ConvertiblePair;
+import run.soeasy.framework.core.domain.KeyValue;
 
 class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 

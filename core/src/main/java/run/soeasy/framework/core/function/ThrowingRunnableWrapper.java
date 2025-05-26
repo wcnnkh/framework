@@ -3,7 +3,7 @@ package run.soeasy.framework.core.function;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public interface ThrowingRunnableWrapper<E extends Throwable, W extends ThrowingRunnable<E>>
 		extends ThrowingRunnable<E>, Wrapper<W> {

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.w3c.dom.Node;
 
-import run.soeasy.framework.core.invoke.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.core.spi.ServiceProvider;
 import run.soeasy.framework.dom.DomException;
@@ -21,7 +21,7 @@ public class ResourceParsers extends ServiceProvider<ResourceParser, DomExceptio
 
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource,
-			Function<? super Node, ? extends T, ? extends E> processor) throws IOException, E {
+			ThrowingFunction<? super Node, ? extends T, ? extends E> processor) throws IOException, E {
 		ResourceParser resourceParser = optional().filter((e) -> e.canParse(resource)).orElse(null);
 		if (resourceParser == null) {
 			throw new UnsupportedOperationException(resource.toString());

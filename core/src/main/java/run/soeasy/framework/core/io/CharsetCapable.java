@@ -3,7 +3,7 @@ package run.soeasy.framework.core.io;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public interface CharsetCapable {
 	@FunctionalInterface

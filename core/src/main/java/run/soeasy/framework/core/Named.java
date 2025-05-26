@@ -5,6 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public interface Named {
 

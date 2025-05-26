@@ -5,10 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.NoSuchElementException;
-
-import run.soeasy.framework.core.math.IntValue;
-import run.soeasy.framework.core.math.NumberValue;
 
 public final class ByteArrayResource extends ByteArrayOutputStream implements Resource {
 	private int lastModified = 0;
@@ -37,8 +35,8 @@ public final class ByteArrayResource extends ByteArrayOutputStream implements Re
 	}
 
 	@Override
-	public NumberValue contentLength() throws IOException {
-		return new IntValue(count);
+	public BigInteger contentLength() throws IOException {
+		return BigInteger.valueOf(count);
 	}
 
 	@Override

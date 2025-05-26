@@ -11,18 +11,18 @@ import org.w3c.dom.Node;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 
 @RequiredArgsConstructor
 public class MapWriter extends AbstractNodeWriter {
 	@Override
 	public boolean isWriteable(SourceDescriptor sourceDescriptor) {
-		return sourceDescriptor.getTypeDescriptor().isMap();
+		return sourceDescriptor.getReturnTypeDescriptor().isMap();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void writeTo(ValueAccessor source, Node node) throws DOMException {
+	public void writeTo(TypedValue source, Node node) throws DOMException {
 		for (Entry entry : (Set<Entry>) ((Map) source.get()).entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -30,8 +30,8 @@ public class MapWriter extends AbstractNodeWriter {
 			}
 
 			String name = (String) getConversionService().convert(entry.getKey(),
-					source.getTypeDescriptor().getMapKeyTypeDescriptor(), TypeDescriptor.valueOf(String.class));
-			ValueAccessor value = ValueAccessor.of(entry.getValue(), source.getTypeDescriptor().getMapValueTypeDescriptor());
+					source.getReturnTypeDescriptor().getMapKeyTypeDescriptor(), TypeDescriptor.valueOf(String.class));
+			TypedValue value = TypedValue.of(entry.getValue(), source.getReturnTypeDescriptor().getMapValueTypeDescriptor());
 			if (getNodeWriter().isWriteable(value)) {
 				Element element = node.getOwnerDocument().createElement(name);
 				getNodeWriter().writeTo(value, element);

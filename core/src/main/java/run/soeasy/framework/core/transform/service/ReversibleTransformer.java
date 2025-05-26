@@ -7,7 +7,7 @@ import run.soeasy.framework.core.transform.Transformer;
 
 public interface ReversibleTransformer<S, T> extends Transformer<S, T> {
 	boolean reverseTransform(@NonNull T source, @NonNull TypeDescriptor sourceType, S target,
-			@NonNull TypeDescriptor targetType) throws ConversionException;
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException;
 
 	default ReversibleTransformer<T, S> reversed() {
 		return new ReversedTransformer<>(this);

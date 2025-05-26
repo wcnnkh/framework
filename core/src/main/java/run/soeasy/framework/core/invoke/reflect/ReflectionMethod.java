@@ -3,17 +3,12 @@ package run.soeasy.framework.core.invoke.reflect;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
-import run.soeasy.framework.core.invoke.Invocation;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
+import run.soeasy.framework.core.invoke.InvodableElement;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
-public class ReflectionMethod extends AbstractReflectionExecution<Method> implements Invocation, Serializable {
+public class ReflectionMethod extends ReflectionExecutable<Method> implements InvodableElement, Serializable {
 	private static final long serialVersionUID = 1L;
-	@Getter
-	@Setter
-	private Object target;
 	private String name;
 	private Class<?> declaringClass;
 	private Class<?>[] parameterTypes;

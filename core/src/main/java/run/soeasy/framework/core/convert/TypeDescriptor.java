@@ -6,18 +6,20 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
+import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
 import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.ResolvableType;
 
-public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement> {
+public class TypeDescriptor extends MergedAnnotatedElement {
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(
 			256);
 
@@ -35,28 +37,22 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 
 	private final ResolvableType resolvableType;
 
-	private final AnnotatedElement source;
-
 	/**
 	 * Create a new type descriptor from a {@link ResolvableType}.
 	 * <p>
 	 * This constructor is used internally and may also be used by subclasses that
 	 * support non-Java languages with extended type systems.
 	 * 
-	 * @param resolvableType   the resolvable type
-	 * @param type             the backing type (or {@code null} if it should get
-	 *                         resolved)
-	 * @param annotatedElement the type annotations
+	 * @param resolvableType    the resolvable type
+	 * @param type              the backing type (or {@code null} if it should get
+	 *                          resolved)
+	 * @param annotatedElements the type annotatedElements
 	 */
-	public TypeDescriptor(ResolvableType resolvableType, Class<?> type, AnnotatedElement source) {
+	public TypeDescriptor(@NonNull ResolvableType resolvableType, Class<?> type,
+			@NonNull AnnotatedElement... annotatedElements) {
+		super(annotatedElements.length == 0 ? Collections.emptyList() : Arrays.asList(annotatedElements));
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.getRawType());
-		this.source = source;
-	}
-
-	@Override
-	public AnnotatedElement getSource() {
-		return source;
 	}
 
 	/**
@@ -444,14 +440,14 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 			type = Object.class;
 		}
 
-		return new TypeDescriptor(ResolvableType.forType(type), null, null);
+		return new TypeDescriptor(ResolvableType.forType(type), null);
 	}
 
 	public static TypeDescriptor valueOf(ResolvableType type) {
 		if (type == null) {
 			type = ResolvableType.forType(Object.class);
 		}
-		return new TypeDescriptor(type, null, null);
+		return new TypeDescriptor(type, null);
 	}
 
 	/**
@@ -477,7 +473,7 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
 		}
 		ResolvableType element = (elementTypeDescriptor != null ? elementTypeDescriptor.resolvableType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null, null);
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null);
 	}
 
 	public static TypeDescriptor collection(@NonNull Class<?> collectionType, ResolvableType elementType) {
@@ -486,7 +482,7 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
 		}
 		ResolvableType element = (elementType != null ? elementType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null, null);
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null);
 	}
 
 	public static TypeDescriptor collection(Class<?> collectionType, Class<?> elementType) {
@@ -520,7 +516,7 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 		}
 		ResolvableType key = (keyTypeDescriptor != null ? keyTypeDescriptor.resolvableType : null);
 		ResolvableType value = (valueTypeDescriptor != null ? valueTypeDescriptor.resolvableType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null, null);
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null);
 	}
 
 	public static TypeDescriptor map(@NonNull Class<?> mapType, ResolvableType keyType, ResolvableType valueType) {
@@ -530,7 +526,7 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 		}
 		ResolvableType key = (keyType != null ? keyType : null);
 		ResolvableType value = (valueType != null ? valueType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null, null);
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null);
 	}
 
 	public static TypeDescriptor map(@NonNull Class<?> mapType, Class<?> keyType, Class<?> valueType) {
@@ -564,7 +560,7 @@ public class TypeDescriptor implements AnnotatedElementWrapper<AnnotatedElement>
 		if (elementType == null) {
 			return null;
 		}
-		return new TypeDescriptor(elementType, null, null);
+		return new TypeDescriptor(elementType, null);
 	}
 
 	public static TypeDescriptor array(Class<?> elementType) {

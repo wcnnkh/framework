@@ -4,8 +4,8 @@ import java.util.function.BiPredicate;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Wrapper;
 
 @FunctionalInterface
 public interface Encoder<D, E> extends BiPredicate<D, E> {

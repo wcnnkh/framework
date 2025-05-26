@@ -11,14 +11,14 @@ class ReversedConverter<S, T, W extends ReversibleConverter<T, S>> implements Re
 	private final W source;
 
 	@Override
-	public T convert(S source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType)
+	public T convert(S source, @NonNull TypeDescriptor sourceTypeDescriptor, @NonNull TypeDescriptor targetTypeDescriptor)
 			throws ConversionException {
-		return this.source.reverseConvert(source, sourceType, targetType);
+		return this.source.reverseConvert(source, sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
 	@Override
-	public S reverseConvert(T source, TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException {
-		return this.source.convert(source, sourceType, targetType);
+	public S reverseConvert(T source, TypeDescriptor sourceTypeDescriptor, TypeDescriptor targetTypeDescriptor) throws ConversionException {
+		return this.source.convert(source, sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
 	@Override

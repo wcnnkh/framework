@@ -5,8 +5,8 @@ import java.lang.annotation.Annotation;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.transform.indexed.PropertyMapping;
-import run.soeasy.framework.core.transform.indexed.PropertyMapping.PropertyMappingWrapper;
+import run.soeasy.framework.core.transform.property.PropertyMapping;
+import run.soeasy.framework.core.transform.property.PropertyMappingWrapper;
 
 @Getter
 @RequiredArgsConstructor

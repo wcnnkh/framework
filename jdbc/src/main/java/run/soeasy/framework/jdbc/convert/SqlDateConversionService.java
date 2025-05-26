@@ -7,13 +7,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConditionalConversionService;
 import run.soeasy.framework.core.convert.service.ConvertiblePair;
 import run.soeasy.framework.core.convert.support.AbstractConversionService;
-import run.soeasy.framework.core.convert.value.TargetDescriptor;
-import run.soeasy.framework.core.convert.value.TypedValue;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
@@ -26,9 +25,8 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 	}
 
 	@Override
-	public Object apply(@NonNull TypedValue value, @NonNull TargetDescriptor targetDescriptor) {
-		TypeDescriptor targetType = targetDescriptor.getRequiredTypeDescriptor();
-		Object source = value.get();
+	public Object convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType)
+			throws ConversionException {
 		if (source instanceof Time) {
 			return sqlTimeToObject((Time) source, targetType.getType());
 		}
@@ -45,7 +43,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 			return javaDateToObject((Date) source, targetType.getType());
 		}
 
-		throw new ConversionFailedException(value, targetType, null);
+		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
 
 	private Object javaDateToObject(Date source, Class<?> targetType) {

@@ -10,6 +10,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.math.NumberValue;
 import run.soeasy.framework.core.type.ClassUtils;
 

@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
 

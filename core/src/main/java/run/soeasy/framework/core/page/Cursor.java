@@ -4,8 +4,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public interface Cursor<K, T> {
 

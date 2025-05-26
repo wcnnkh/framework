@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.KeyValue;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MultiValueMap;
 import run.soeasy.framework.core.concurrent.AtomicEntry;
+import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Receipts;
 import run.soeasy.framework.core.exchange.Registration;

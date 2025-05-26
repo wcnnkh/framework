@@ -1,117 +1,21 @@
 package run.soeasy.framework.core.invoke;
 
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.lang.reflect.AnnotatedElement;
 
-import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.Named;
-import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.indexed.IndexedDescriptor;
-import run.soeasy.framework.core.transform.indexed.PropertyTemplate;
+import run.soeasy.framework.core.convert.value.SourceDescriptor;
+import run.soeasy.framework.core.type.ClassUtils;
 
 /**
- * 可执行的描述
+ * 可执行器的描述
  * 
  * @author wcnnkh
  *
  */
-public interface ExecutableDescriptor extends Executable, Named {
-	@FunctionalInterface
-	public static interface ExecutableDescriptorWrapper<W extends ExecutableDescriptor>
-			extends ExecutableDescriptor, ExecutableWrapper<W>, NamedWrapper<W> {
-
-		@Override
-		default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
-			return getSource().canExecuted(parameterTypes);
-		}
-
-		@Override
-		default TypeDescriptor getDeclaringTypeDescriptor() {
-			return getSource().getDeclaringTypeDescriptor();
-		}
-
-		@Override
-		default Elements<TypeDescriptor> getExceptionTypeDescriptors() {
-			return getSource().getExceptionTypeDescriptors();
-		}
-
-		@Override
-		default int getModifiers() {
-			return getSource().getModifiers();
-		}
-
-		@Override
-		default ExecutableDescriptor rename(String name) {
-			return getSource().rename(name);
-		}
-
-		@Override
-		default PropertyTemplate getParameterTemplate() {
-			return getSource().getParameterTemplate();
-		}
+public interface ExecutableDescriptor extends SourceDescriptor, AnnotatedElement {
+	default boolean canExecuted() {
+		return canExecuted(ClassUtils.emptyArray());
 	}
 
-	@Data
-	public static class RenamedExecutable<W extends ExecutableDescriptor> implements ExecutableDescriptorWrapper<W> {
-		@NonNull
-		private final String name;
-		@NonNull
-		private final W source;
-
-		@Override
-		public ExecutableDescriptor rename(String name) {
-			return new RenamedExecutable<>(name, source);
-		}
-	}
-
-	@Override
-	default boolean canExecuted(@NonNull Class<?>... parameterTypes) {
-		Iterator<IndexedDescriptor> iterator1 = getParameterTemplate().iterator();
-		Iterator<Class<?>> iterator2 = Arrays.asList(parameterTypes).iterator();
-		while (iterator1.hasNext() && iterator2.hasNext()) {
-			IndexedDescriptor parameterDescriptor = iterator1.next();
-			Class<?> type = iterator2.next();
-			if (!type.isAssignableFrom(parameterDescriptor.getReturnTypeDescriptor().getType())) {
-				return false;
-			}
-		}
-		return !iterator1.hasNext() && !iterator2.hasNext();
-	}
-
-	/**
-	 * 声明的类型描述
-	 * 
-	 * @return
-	 */
-	TypeDescriptor getDeclaringTypeDescriptor();
-
-	/**
-	 * 
-	 * 异常类型
-	 * 
-	 * @return
-	 */
-	Elements<TypeDescriptor> getExceptionTypeDescriptors();
-
-	PropertyTemplate getParameterTemplate();
-
-	/**
-	 * Returns the Java language modifiers for the member or constructor represented
-	 * by this Member, as an integer. The Modifier class should be used to decode
-	 * the modifiers in the integer.
-	 *
-	 * @return the Java language modifiers for the underlying member
-	 * @see Modifier
-	 */
-	default int getModifiers() {
-		return Modifier.PUBLIC;
-	}
-
-	@Override
-	default ExecutableDescriptor rename(@NonNull String name) {
-		return new RenamedExecutable<>(name, this);
-	}
+	boolean canExecuted(@NonNull Class<?>... parameterTypes);
 }

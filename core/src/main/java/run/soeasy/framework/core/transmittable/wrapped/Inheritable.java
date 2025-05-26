@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transmittable.wrapped;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapped;
+import run.soeasy.framework.core.domain.Wrapped;
 import run.soeasy.framework.core.transmittable.Inheriter;
 
 public class Inheritable<A, B, I extends Inheriter<A, B>, W> extends Wrapped<W> {

@@ -7,9 +7,7 @@ import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.reflect.ExecutableExceptionTypeDescriptors;
-import run.soeasy.framework.core.reflect.ExecutableParameterTemplate;
-import run.soeasy.framework.core.transform.indexed.PropertyTemplate;
+import run.soeasy.framework.core.invoke.ParameterTemplate;
 import run.soeasy.framework.core.type.ResolvableType;
 
 public class ReflectionExecutable<T extends Executable> extends AbstractReflectionExecutable<T>
@@ -20,7 +18,7 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
 
 	@NonNull
 	private transient volatile Elements<TypeDescriptor> exceptionTypeDescriptors;
-	private transient volatile PropertyTemplate parameterTemplate;
+	private transient volatile ParameterTemplate parameterTemplate;
 	@NonNull
 	private transient volatile TypeDescriptor returnTypeDescriptor;
 
@@ -64,7 +62,7 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
 	}
 
 	@Override
-	public PropertyTemplate getParameterTemplate() {
+	public ParameterTemplate getParameterTemplate() {
 		if (parameterTemplate == null) {
 			synchronized (this) {
 				if (parameterTemplate == null) {

@@ -7,7 +7,7 @@ import java.io.Writer;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.Wrapped;
+import run.soeasy.framework.core.domain.Wrapped;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.io.OutputFactory;
 import run.soeasy.framework.core.io.OutputStreamSource;
@@ -99,7 +99,7 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 
 		@Override
 		public @NonNull Pipeline<OutputStream, IOException> getOutputStreamPipeline() {
-			return Pipeline.of(() -> getOutputStream());
+			return Pipeline.forSupplier(() -> getOutputStream());
 		}
 
 		@Override

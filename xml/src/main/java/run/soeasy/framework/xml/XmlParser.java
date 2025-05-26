@@ -23,10 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.value.ValueAccessor;
-import run.soeasy.framework.core.invoke.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceParser;
@@ -70,8 +70,8 @@ public class XmlParser implements ResourceParser, ConversionService {
 
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource,
-			Function<? super Node, ? extends T, ? extends E> processor) throws IOException, E {
-		return resource.getInputStreamPipeline().optional().apply((is) -> {
+			ThrowingFunction<? super Node, ? extends T, ? extends E> processor) throws IOException, E {
+		return resource.getInputStreamPipeline().optional().flatMap((is) -> {
 			Document document = parse(is);
 			if (document == null) {
 				return null;
@@ -159,19 +159,19 @@ public class XmlParser implements ResourceParser, ConversionService {
 	}
 
 	@Override
-	public Object convert(@NonNull ValueAccessor source, @NonNull TypeDescriptor targetType) throws ConversionException {
-		Object input = source.any(targetType).orElse(null);
-		if (input instanceof InputStream) {
-			return parse((InputStream) source.get());
-		} else if (Reader.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
+	public Object convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType)
+			throws ConversionException {
+		if (source instanceof InputStream) {
+			return parse((InputStream) source);
+		} else if (Reader.class.isAssignableFrom(sourceType.getType())) {
 			return parse((Reader) source);
-		} else if (String.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
-			return parse((String) source.get());
-		} else if (InputSource.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
+		} else if (String.class.isAssignableFrom(sourceType.getType())) {
+			return parse((String) source);
+		} else if (InputSource.class.isAssignableFrom(sourceType.getType())) {
 			return parse((InputSource) source);
-		} else if (File.class.isAssignableFrom(source.getTypeDescriptor().getType())) {
+		} else if (File.class.isAssignableFrom(sourceType.getType())) {
 			return parse((File) source);
 		}
-		throw new ConversionException(source.getTypeDescriptor().toString());
+		throw new ConverterNotFoundException(sourceType, targetType);
 	}
 }

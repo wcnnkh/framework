@@ -2,47 +2,39 @@ package run.soeasy.framework.core.invoke.reflect;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Collections;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.invoke.field.FieldDescriptor;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
-import run.soeasy.framework.core.transform.indexed.IndexedDescriptor;
-import run.soeasy.framework.core.transform.indexed.PropertyTemplate;
+import run.soeasy.framework.core.transform.property.Property;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
-public class ReflectionField extends AbstractReflectionExecutable<Field>
-		implements AnnotatedElementWrapper<Field>, FieldDescriptor, Serializable {
+public class ReflectionField implements AnnotatedElementWrapper<Field>, Property, Serializable {
 	private static final long serialVersionUID = 1L;
+	private volatile Field source;
 	private String name;
 	private Class<?> declaringClass;
 
-	public ReflectionField(@NonNull Field member) {
-		super(member);
+	public ReflectionField(Field source) {
+		setSource(source);
 	}
 
-	@Override
-	public synchronized void setSource(Field source) {
+	public synchronized void setSource(@NonNull Field source) {
+		this.source = source;
 		this.name = source.getName();
 		this.declaringClass = source.getDeclaringClass();
-		super.setSource(source);
 	}
 
 	@Override
 	public Field getSource() {
-		Field field = super.getSource();
-		if (field == null) {
+		if (source == null) {
 			synchronized (this) {
-				field = super.getSource();
-				if (field == null) {
-					field = ReflectionUtils.findDeclaredField(declaringClass, name).withSuperclass().first();
-					super.setSource(field);
+				if (source == null) {
+					setSource(ReflectionUtils.findDeclaredField(declaringClass, name).withSuperclass().first());
 				}
 			}
 		}
-		return field;
+		return source;
 	}
 
 	@Override
@@ -50,14 +42,8 @@ public class ReflectionField extends AbstractReflectionExecutable<Field>
 		return name;
 	}
 
-	@Override
 	public Class<?> getDeclaringClass() {
 		return declaringClass;
-	}
-
-	@Override
-	public Elements<TypeDescriptor> getExceptionTypeDescriptors() {
-		return Elements.empty();
 	}
 
 	private volatile TypeDescriptor typeDescriptor;
@@ -84,8 +70,13 @@ public class ReflectionField extends AbstractReflectionExecutable<Field>
 	}
 
 	@Override
-	public final PropertyTemplate getParameterTemplate() {
-		return () -> Collections.singleton((IndexedDescriptor) this).iterator();
+	public boolean isReadable() {
+		return true;
+	}
+
+	@Override
+	public boolean isWriteable() {
+		return true;
 	}
 
 	@Override
@@ -96,10 +87,5 @@ public class ReflectionField extends AbstractReflectionExecutable<Field>
 	@Override
 	public Object readFrom(Object target) {
 		return ReflectionUtils.get(getSource(), target);
-	}
-
-	@Override
-	public Object getIndex() {
-		return name;
 	}
 }

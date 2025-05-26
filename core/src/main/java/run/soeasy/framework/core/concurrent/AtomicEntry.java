@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import run.soeasy.framework.core.KeyValue;
+import run.soeasy.framework.core.domain.KeyValue;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.support.RecordCodec;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Streams;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingSupplier;
 
@@ -70,7 +70,7 @@ public final class FileRecords<T> implements Elements<T> {
 			synchronized (this) {
 				if (file != null) {
 					RecordIterator<T> iterator = new RecordIterator<T>(file, codec);
-					return Streams.stream(iterator);
+					return CollectionUtils.unknownSizeStream(iterator);
 				}
 			}
 		}

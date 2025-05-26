@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.AbstractMultiValueMap;
-import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LinkedCaseInsensitiveMap;
 
 public class Headers extends AbstractMultiValueMap<String, String, Map<String, List<String>>> implements Serializable {
@@ -70,8 +70,11 @@ public class Headers extends AbstractMultiValueMap<String, String, Map<String, L
 	 * 
 	 * @param headers
 	 */
-	public Headers(Headers headers) {
-		this.source = headers.readyOnly ? headers.source : CollectionUtils.clone(headers.source);
+	public Headers(@NonNull Headers headers) {
+		this(headers.isCaseSensitiveKey());
+		for (Entry<String, List<String>> entry : headers.source.entrySet()) {
+			this.source.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+		}
 		this.readyOnly = headers.readyOnly;
 	}
 
@@ -154,34 +157,6 @@ public class Headers extends AbstractMultiValueMap<String, String, Map<String, L
 			builder.append(filename).append('\"');
 		}
 		set(CONTENT_DISPOSITION, builder.toString());
-	}
-
-	/**
-	 * Set the {@literal Content-Disposition} header.
-	 * <p>
-	 * This could be used on a response to indicate if the content is expected to be
-	 * displayed inline in the browser or as an attachment to be saved locally.
-	 * <p>
-	 * It can also be used for a {@code "multipart/form-data"} request. For more
-	 * details see notes on {@link #setContentDispositionFormData}.
-	 * 
-	 * @see #getContentDisposition()
-	 */
-	public void setContentDisposition(ContentDisposition contentDisposition) {
-		set(CONTENT_DISPOSITION, contentDisposition.toString());
-	}
-
-	/**
-	 * Return a parsed representation of the {@literal Content-Disposition} header.
-	 * 
-	 * @see #setContentDisposition(ContentDisposition)
-	 */
-	public ContentDisposition getContentDisposition() {
-		String contentDisposition = getFirst(CONTENT_DISPOSITION);
-		if (contentDisposition != null) {
-			return ContentDisposition.parse(contentDisposition);
-		}
-		return ContentDisposition.empty();
 	}
 
 	/**

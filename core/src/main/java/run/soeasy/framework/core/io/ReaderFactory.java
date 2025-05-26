@@ -7,8 +7,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface

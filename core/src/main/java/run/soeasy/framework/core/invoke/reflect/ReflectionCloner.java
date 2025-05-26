@@ -5,15 +5,14 @@ import java.util.EnumSet;
 
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.invoke.field.FieldAccessor;
-import run.soeasy.framework.core.invoke.field.FieldDescriptor;
-import run.soeasy.framework.core.transform.indexed.IndexedMappingService;
-import run.soeasy.framework.core.transform.service.SupportedInstanceFactory;
+import run.soeasy.framework.core.transform.property.ObjectProperty;
+import run.soeasy.framework.core.transform.property.PropertyMappingService;
+import run.soeasy.framework.core.type.SupportedInstanceFactory;
 
-public class ReflectionCloner extends IndexedMappingService<FieldAccessor<FieldDescriptor>> {
+public class ReflectionCloner extends PropertyMappingService<ObjectProperty<ReflectionField>> {
 
 	public ReflectionCloner() {
-		getMappingRegistry().setMappingProvider(new ReflectionMappingProvider());
+		getMappingRegistry().setMappingProvider(new ReflectionCloneMappingProvider());
 		getConfigurableInstanceFactory().setExtendFactoryTypes(EnumSet.of(SupportedInstanceFactory.ALLOCATE));
 	}
 

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.core.invoke.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 public class ConnectionWrapper extends JdbcWrapper<Connection> {
 
@@ -16,8 +16,8 @@ public class ConnectionWrapper extends JdbcWrapper<Connection> {
 	}
 
 	public <P extends Statement> StatementWrapper<P> createStatement(
-			Function<? super Connection, P, ? extends SQLException> function) {
-		return new StatementWrapper<P>(map(function).onClose((e) -> e.close()).newPipeline());
+			ThrowingFunction<? super Connection, P, SQLException> function) {
+		return new StatementWrapper<P>(map(function).onClose((e) -> e.close()));
 	}
 
 	public PreparedStatementWrapper<PreparedStatement> prepareStatement(String sql) {

@@ -3,7 +3,7 @@ package run.soeasy.framework.aop;
 import java.lang.reflect.Method;
 
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class ProxyUtils {
 	public static boolean isIgnoreMethod(Method method) {

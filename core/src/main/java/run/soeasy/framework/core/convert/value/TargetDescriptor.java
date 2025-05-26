@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert.value;
 
-import run.soeasy.framework.core.Wrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.domain.Wrapper;
 
 public interface TargetDescriptor {
 	public static interface TargetDescriptorWrapper<W extends TargetDescriptor> extends TargetDescriptor, Wrapper<W> {

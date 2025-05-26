@@ -5,10 +5,10 @@ import java.sql.SQLException;
 
 import lombok.Getter;
 import lombok.Setter;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Streams;
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.core.invoke.Function;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 @Getter
 @Setter
@@ -18,8 +18,8 @@ public class ResultSetWrapper extends JdbcWrapper<ResultSet> {
 		super(source);
 	}
 
-	public <T> Elements<T> rows(Function<? super ResultSet, ? extends T, ? extends SQLException> mapper) {
+	public <T> Elements<T> rows(ThrowingFunction<? super ResultSet, ? extends T, ? extends SQLException> mapper) {
 		ResultSetIterator<T> iterator = new ResultSetIterator<>(this, mapper);
-		return Elements.of(() -> Streams.stream(iterator));
+		return Elements.of(() -> CollectionUtils.unknownSizeStream(iterator));
 	}
 }

@@ -25,11 +25,9 @@ import java.util.stream.Stream;
 
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.Wrapper;
+import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.math.LongValue;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * 就像{@link Iterable}可以返回{@link Iterator}一样，{@link Streamable}可以返回{@link Stream}
@@ -75,7 +73,7 @@ public interface Streamable<E> {
 		}
 
 		@Override
-		default NumberValue count() {
+		default long count() {
 			return getSource().count();
 		}
 
@@ -272,10 +270,10 @@ public interface Streamable<E> {
 		return anyMatch((e) -> e == element || ObjectUtils.equals(e, element));
 	}
 
-	default NumberValue count() {
+	default long count() {
 		Stream<E> stream = stream();
 		try {
-			return new LongValue(stream.count());
+			return stream.count();
 		} finally {
 			stream.close();
 		}

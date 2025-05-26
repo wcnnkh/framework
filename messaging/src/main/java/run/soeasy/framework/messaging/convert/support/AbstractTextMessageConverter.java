@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.value.ConvertingData;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
+import run.soeasy.framework.core.convert.value.TypedData;
 import run.soeasy.framework.core.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -49,14 +49,14 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 	}
 
 	@Override
-	protected byte[] toBinary(@NonNull ConvertingData<T> body, @NonNull Message message, MediaType mediaType) throws IOException {
+	protected byte[] toBinary(@NonNull TypedData<T> body, @NonNull Message message, MediaType mediaType) throws IOException {
 		Charset charset = getCharset(mediaType, message);
 		String text = toString(body, mediaType, charset);
 		return text.getBytes(charset);
 	}
 
 	@Override
-	protected void writeObject(@NonNull ConvertingData<T> data, @NonNull OutputMessage message, @NonNull MediaType contentType)
+	protected void writeObject(@NonNull TypedData<T> data, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
 		MediaType contentTypeToUse = contentType;
 		Charset charset = getCharset(contentType, message);
@@ -74,5 +74,5 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 
 	protected abstract T parseObject(String body, TargetDescriptor targetDescriptor) throws IOException;
 
-	protected abstract String toString(ConvertingData<T> body, MediaType contentType, Charset charset) throws IOException;
+	protected abstract String toString(TypedData<T> body, MediaType contentType, Charset charset) throws IOException;
 }

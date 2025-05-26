@@ -8,7 +8,7 @@ import java.util.Iterator;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.transform.indexed.IndexedAccessor;
+import run.soeasy.framework.core.transform.property.PropertyAccessor;
 
 @RequiredArgsConstructor
 @Getter
@@ -18,7 +18,7 @@ public class EmptyAnnotationPropertySource<A extends Annotation> implements Anno
 	private final Class<A> type;
 
 	@Override
-	public Iterator<IndexedAccessor> iterator() {
+	public Iterator<PropertyAccessor> iterator() {
 		return Collections.emptyIterator();
 	}
 }

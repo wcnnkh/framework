@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.collection.Streams;
+import run.soeasy.framework.core.collection.CollectionUtils;
 
 public final class IOUtils {
 	// NOTE: This class is focussed on InputStream, OutputStream, Reader and
@@ -747,7 +747,7 @@ public final class IOUtils {
 
 	public static Stream<String> readLines(BufferedReader bufferedReader) {
 		LineIterator iterator = new LineIterator(bufferedReader);
-		return Streams.stream(iterator);
+		return CollectionUtils.unknownSizeStream(iterator);
 	}
 
 	// -----------------------------------------------------------------------
@@ -2172,7 +2172,7 @@ public final class IOUtils {
 	 */
 	public static Stream<CharSequence> split(Readable source, CharBuffer buffer, CharSequence separator) {
 		SplitReadableIterator iterator = new SplitReadableIterator(source, buffer, separator);
-		return Streams.stream(iterator);
+		return CollectionUtils.unknownSizeStream(iterator);
 	}
 
 	private static class NonClosingInputStream extends FilterInputStream {

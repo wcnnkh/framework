@@ -10,12 +10,12 @@ public interface Transformer<S, T> {
 	 * 传输
 	 * 
 	 * @param source
-	 * @param sourceType
+	 * @param sourceTypeDescriptor
 	 * @param target
-	 * @param targetType
+	 * @param targetTypeDescriptor
 	 * @return
 	 * @throws ConversionException
 	 */
-	boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceType, @NonNull T target,
-			@NonNull TypeDescriptor targetType) throws ConversionException;
+	boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceTypeDescriptor, @NonNull T target,
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException;
 }

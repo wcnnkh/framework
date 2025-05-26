@@ -8,19 +8,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
 import run.soeasy.framework.core.type.ClassMembersLoader;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class MembersTest {
 
 	@Test
 	public void test() {
 		ClassMembersLoader<Field> members = ReflectionUtils.getDeclaredFields(B.class).withAll();
-		assertTrue(members.getElements().count().longValue() == 5);
-		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).count().longValue() == 2);
+		assertTrue(members.getElements().count() == 5);
+		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).count() == 2);
 		Elements<Field> concatFields = ReflectionUtils.getDeclaredFields(B.class).withAll()
 				.concat(ReflectionUtils.getFields(B.class));
-		assertTrue(concatFields.count().longValue() == 7);
+		assertTrue(concatFields.count() == 7);
 	}
 
 	public static class A {

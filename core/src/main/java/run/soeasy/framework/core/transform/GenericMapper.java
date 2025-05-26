@@ -16,18 +16,18 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 @Getter
 public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
 	private final ValueMapper<K, V, T> valueMapper = new ValueMapper<>();
-	private final IterativeMapper<K, V, T> iterativeMapper = new IterativeMapper<>(valueMapper);
-	private final RandomAccessMapper<K, V, T> randomAccessMapper = new RandomAccessMapper<>(valueMapper);
+	private final ArrayMapper<K, V, T> arrayMapper = new ArrayMapper<>(valueMapper);
+	private final MapMapper<K, V, T> mapMapper = new MapMapper<>(valueMapper);
 
 	public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {
 		if (sourceContext.hasKeyValue() && targetContext.hasKeyValue()) {
 			return valueMapper.doMapping(sourceContext, targetContext);
 		} else if (sourceContext.hasMapping() && targetContext.hasMapping()) {
-			if (sourceContext.getMapping().isRandomAccess()) {
-				return randomAccessMapper.doMapping(sourceContext, targetContext);
+			if (sourceContext.getMapping().isMap()) {
+				return mapMapper.doMapping(sourceContext, targetContext);
 			} else {
-				return iterativeMapper.doMapping(sourceContext, targetContext);
+				return arrayMapper.doMapping(sourceContext, targetContext);
 			}
 		}
 		return false;

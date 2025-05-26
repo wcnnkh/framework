@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import lombok.Getter;
 import lombok.Setter;
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.core.invoke.Consumer;
+import run.soeasy.framework.core.function.ThrowingConsumer;
 
 @Getter
 @Setter
@@ -25,10 +25,10 @@ public class PreparedStatementWrapper<T extends PreparedStatement> extends State
 	}
 
 	public ResultSetWrapper query() {
-		return new ResultSetWrapper(map((e) -> e.executeQuery()).newPipeline());
+		return new ResultSetWrapper(map((e) -> e.executeQuery()));
 	}
 
-	public PreparedStatementWrapper<T> after(Consumer<? super T, ? extends SQLException> after) {
+	public PreparedStatementWrapper<T> after(ThrowingConsumer<? super T, ? extends SQLException> after) {
 		return new PreparedStatementWrapper<>(map((e) -> {
 			after.accept(e);
 			return e;

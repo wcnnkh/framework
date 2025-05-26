@@ -3,11 +3,11 @@ package run.soeasy.framework.core.collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.math.NumberValue;
 
 public interface Provider<S> extends Elements<S>, Reloadable {
 
@@ -39,7 +39,7 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		}
 
 		@Override
-		default Provider<S> knownSize(@NonNull Function<? super Elements<S>, ? extends NumberValue> statisticsSize) {
+		default Provider<S> knownSize(@NonNull ToLongFunction<? super Elements<S>> statisticsSize) {
 			return getSource().knownSize(statisticsSize);
 		}
 
@@ -119,7 +119,7 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		}
 
 		@Override
-		public Provider<T> knownSize(@NonNull Function<? super Elements<T>, ? extends NumberValue> statisticsSize) {
+		public Provider<T> knownSize(@NonNull ToLongFunction<? super Elements<T>> statisticsSize) {
 			return Provider.super.knownSize(statisticsSize);
 		}
 
@@ -153,7 +153,7 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 		}
 
 		@Override
-		default Provider<S> knownSize(@NonNull Function<? super Elements<S>, ? extends NumberValue> statisticsSize) {
+		default Provider<S> knownSize(@NonNull ToLongFunction<? super Elements<S>> statisticsSize) {
 			return Provider.super.knownSize(statisticsSize);
 		}
 
@@ -234,7 +234,7 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 			implements ReloadableElementsWrapper<S, W> {
 
 		public KnownSizeProvider(@NonNull W source,
-				@NonNull Function<? super W, ? extends NumberValue> statisticsSize) {
+				@NonNull ToLongFunction<? super W> statisticsSize) {
 			super(source, statisticsSize);
 		}
 
@@ -255,12 +255,12 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 	}
 
 	@Override
-	default Provider<S> knownSize(@NonNull Function<? super Elements<S>, ? extends NumberValue> statisticsSize) {
+	default Provider<S> knownSize(@NonNull ToLongFunction<? super Elements<S>> statisticsSize) {
 		return new KnownSizeProvider<>(this, statisticsSize);
 	}
 
 	@Override
 	default Stream<S> stream() {
-		return Streams.stream(iterator());
+		return CollectionUtils.unknownSizeStream(iterator());
 	}
 }

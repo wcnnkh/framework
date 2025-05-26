@@ -36,16 +36,21 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.reflect.ReflectionUtils;
+import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public abstract class CollectionUtils {
 	private static final class PreviousIterator<E> implements Iterator<E> {
@@ -143,7 +148,7 @@ public abstract class CollectionUtils {
 		}
 
 		if (CollectionUtils.isEmpty(subaggregate)) {
-			return Streams.stream(universal.iterator()).collect(Collectors.toList());
+			return unknownSizeStream(universal.iterator()).collect(Collectors.toList());
 		}
 
 		if (universal instanceof Set) {
@@ -793,4 +798,24 @@ public abstract class CollectionUtils {
 		List<T> target = new ArrayList<>(collection);
 		return Collections.unmodifiableList(target);
 	}
+
+	/**
+	 * 构造一个未知数量的流
+	 * 
+	 * @param <T>
+	 * @param iterator
+	 * @return
+	 */
+	public static <T> Stream<T> unknownSizeStream(Iterator<? extends T> iterator) {
+		if (iterator == null) {
+			return Stream.empty();
+		}
+		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+		Stream<T> stream = StreamSupport.stream(spliterator, false);
+		if (iterator instanceof AutoCloseable) {
+			stream = stream.onClose(IOUtils::closeQuietly);
+		}
+		return stream;
+	}
+
 }
