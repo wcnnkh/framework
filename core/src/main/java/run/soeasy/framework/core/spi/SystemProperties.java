@@ -12,9 +12,9 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.transform.property.PropertyAccessor;
-import run.soeasy.framework.core.transform.property.PropertyMapping;
+import run.soeasy.framework.core.transform.property.TypedProperties;
 
-public final class SystemProperties implements PropertyMapping {
+public final class SystemProperties implements TypedProperties {
 	private static final TypeDescriptor STRING_TYPE_DESCRIPTOR = TypeDescriptor.valueOf(String.class);
 	private static volatile SystemProperties instance;
 

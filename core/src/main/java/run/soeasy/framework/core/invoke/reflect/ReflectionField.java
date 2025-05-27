@@ -4,55 +4,64 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.core.transform.property.Property;
 
-public class ReflectionField implements AnnotatedElementWrapper<Field>, Property, Serializable {
+public class ReflectionField implements Property, Serializable {
 	private static final long serialVersionUID = 1L;
-	private volatile Field source;
-	private String name;
-	private Class<?> declaringClass;
+	private final Class<?> declaringClass;
+	private volatile String name;
+	private transient volatile Field field;
 
-	public ReflectionField(Field source) {
-		setSource(source);
+	public ReflectionField(@NonNull Class<?> declaringClass, @NonNull String name) {
+		this.declaringClass = declaringClass;
+		this.name = name;
 	}
 
-	public synchronized void setSource(@NonNull Field source) {
-		this.source = source;
-		this.name = source.getName();
-		this.declaringClass = source.getDeclaringClass();
+	public ReflectionField(@NonNull Field field) {
+		this(field.getDeclaringClass(), field.getName());
+		this.field = field;
 	}
 
-	@Override
-	public Field getSource() {
-		if (source == null) {
+	public synchronized void setField(@NonNull Field field) {
+		this.field = field;
+		this.name = field.getName();
+	}
+
+	public synchronized void setName(@NonNull String name) {
+		this.name = name;
+		this.field = null;
+	}
+
+	public Field getField() {
+		if (field == null) {
 			synchronized (this) {
-				if (source == null) {
-					setSource(ReflectionUtils.findDeclaredField(declaringClass, name).withSuperclass().first());
+				if (field == null) {
+					field = name == null ? null
+							: ReflectionUtils.findDeclaredField(declaringClass, name).withAll().first();
 				}
 			}
 		}
-		return source;
+		return field;
 	}
 
 	@Override
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public Class<?> getDeclaringClass() {
+	public final Class<?> getDeclaringClass() {
 		return declaringClass;
 	}
 
-	private volatile TypeDescriptor typeDescriptor;
+	private transient volatile TypeDescriptor typeDescriptor;
 
 	public TypeDescriptor getTypeDescriptor() {
 		if (typeDescriptor == null) {
 			synchronized (this) {
 				if (typeDescriptor == null) {
-					typeDescriptor = TypeDescriptor.forFieldType(getSource());
+					typeDescriptor = TypeDescriptor.forFieldType(getField());
 				}
 			}
 		}
@@ -60,32 +69,32 @@ public class ReflectionField implements AnnotatedElementWrapper<Field>, Property
 	}
 
 	@Override
-	public final TypeDescriptor getReturnTypeDescriptor() {
+	public TypeDescriptor getReturnTypeDescriptor() {
 		return getTypeDescriptor();
 	}
 
 	@Override
-	public final TypeDescriptor getRequiredTypeDescriptor() {
+	public TypeDescriptor getRequiredTypeDescriptor() {
 		return getTypeDescriptor();
 	}
 
 	@Override
 	public boolean isReadable() {
-		return true;
+		return getField() != null;
 	}
 
 	@Override
 	public boolean isWriteable() {
-		return true;
+		return getField() != null;
 	}
 
 	@Override
 	public void writeTo(Object value, Object target) {
-		ReflectionUtils.set(getSource(), target, value);
+		ReflectionUtils.set(getField(), target, value);
 	}
 
 	@Override
 	public Object readFrom(Object target) {
-		return ReflectionUtils.get(getSource(), target);
+		return ReflectionUtils.get(getField(), target);
 	}
 }

@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.collection.ArrayUtils;
+import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.invoke.InvodableElement;
 import run.soeasy.framework.core.lang.ReflectionUtils;
+import run.soeasy.framework.core.transform.property.Property;
 
-public class ReflectionMethod extends ReflectionExecutable<Method> implements InvodableElement, Serializable {
+public class ReflectionMethod extends ReflectionExecutable<Method> implements InvodableElement, Property, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private Class<?> declaringClass;
@@ -49,5 +52,39 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
 	@Override
 	public Object invoke(Object target, @NonNull Object... args) {
 		return ReflectionUtils.invoke(getSource(), target, args);
+	}
+
+	@Override
+	public TypeDescriptor getRequiredTypeDescriptor() throws UnsupportedOperationException {
+		if (!isWriteable()) {
+			throw new UnsupportedOperationException(getSource().toString());
+		}
+		return getParameterTemplate().first().getReturnTypeDescriptor();
+	}
+
+	@Override
+	public boolean isReadable() {
+		return getParameterTemplate().isEmpty();
+	}
+
+	@Override
+	public boolean isWriteable() {
+		return getParameterTemplate().count() == 1;
+	}
+
+	@Override
+	public Object readFrom(Object target) throws UnsupportedOperationException {
+		if (!isReadable()) {
+			throw new UnsupportedOperationException(getSource().toString());
+		}
+		return invoke(target, ArrayUtils.EMPTY_OBJECT_ARRAY);
+	}
+
+	@Override
+	public void writeTo(Object value, Object target) throws UnsupportedOperationException {
+		if (!isWriteable()) {
+			throw new UnsupportedOperationException(getSource().toString());
+		}
+		invoke(target, value);
 	}
 }

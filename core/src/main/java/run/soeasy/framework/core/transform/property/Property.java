@@ -13,6 +13,6 @@ public interface Property extends PropertyDescriptor {
 	void writeTo(Object value, Object target);
 
 	default PropertyAccessor accessor(Object target) {
-		return new ObjectProperty<>(this, target);
+		return new ObjectPropertyAccessor<>(this, target);
 	}
 }

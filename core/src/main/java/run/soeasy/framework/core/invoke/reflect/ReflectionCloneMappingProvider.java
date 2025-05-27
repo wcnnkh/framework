@@ -11,19 +11,19 @@ import run.soeasy.framework.core.lang.ClassMembersLoader;
 import run.soeasy.framework.core.lang.ClassUtils;
 import run.soeasy.framework.core.lang.ReflectionUtils;
 import run.soeasy.framework.core.transform.TemplateMapping;
-import run.soeasy.framework.core.transform.property.ObjectProperty;
+import run.soeasy.framework.core.transform.property.ObjectPropertyAccessor;
 import run.soeasy.framework.core.transform.service.MappingProvider;
 
 class ReflectionCloneMappingProvider implements
-		MappingProvider<Object, Object, ObjectProperty<ReflectionField>, TemplateMapping<ObjectProperty<ReflectionField>>> {
+		MappingProvider<Object, Object, ObjectPropertyAccessor<ReflectionField>, TemplateMapping<ObjectPropertyAccessor<ReflectionField>>> {
 
 	@Override
-	public TemplateMapping<ObjectProperty<ReflectionField>> getMapping(@NonNull Object source,
+	public TemplateMapping<ObjectPropertyAccessor<ReflectionField>> getMapping(@NonNull Object source,
 			@NonNull TypeDescriptor requiredType) {
 		Elements<ReflectionField> fields = getFields(requiredType.getType())
 				.filter((e) -> !Modifier.isStatic(e.getModifiers())).map((field) -> new ReflectionField(field));
-		TemplateMapping<ObjectProperty<ReflectionField>> mapping = () -> fields
-				.map((field) -> new ObjectProperty<>(field, source)).map((e) -> KeyValue.of(e.getName(), e));
+		TemplateMapping<ObjectPropertyAccessor<ReflectionField>> mapping = () -> fields
+				.map((field) -> new ObjectPropertyAccessor<>(field, source)).map((e) -> KeyValue.of(e.getName(), e));
 		return mapping.asMap();
 
 	}

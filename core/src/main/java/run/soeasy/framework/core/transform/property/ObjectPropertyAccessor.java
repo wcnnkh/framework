@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ObjectProperty<T extends Property> implements PropertyAccessor, PropertyWrapper<T> {
+public class ObjectPropertyAccessor<T extends Property> implements PropertyAccessor, PropertyWrapper<T> {
 	@NonNull
 	private final T source;
 	private final Object target;

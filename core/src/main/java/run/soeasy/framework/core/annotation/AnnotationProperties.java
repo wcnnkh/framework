@@ -6,9 +6,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import run.soeasy.framework.core.lang.ReflectionUtils;
-import run.soeasy.framework.core.transform.property.PropertyMapping;
+import run.soeasy.framework.core.transform.property.TypedProperties;
 
-public interface AnnotationPropertyMapping<A extends Annotation> extends PropertyMapping, InvocationHandler {
+public interface AnnotationProperties<A extends Annotation>
+		extends TypedProperties, InvocationHandler {
 	Class<A> getType();
 
 	@Override

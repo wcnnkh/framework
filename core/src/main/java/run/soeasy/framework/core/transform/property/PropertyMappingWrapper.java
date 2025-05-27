@@ -3,20 +3,20 @@ package run.soeasy.framework.core.transform.property;
 import run.soeasy.framework.core.collection.NoUniqueElementException;
 import run.soeasy.framework.core.transform.TemplateMappingWrapper;
 
-public interface PropertyMappingWrapper<W extends PropertyMapping> extends PropertyMapping,
-		TemplateMappingWrapper<PropertyAccessor, W>, PropertyTemplateWrapper<PropertyAccessor, W> {
+public interface PropertyMappingWrapper<V extends PropertyAccessor, W extends PropertyMapping<V>>
+		extends PropertyMapping<V>, TemplateMappingWrapper<V, W>, PropertyTemplateWrapper<V, W> {
 	@Override
-	default PropertyMapping asMap() {
+	default PropertyMapping<V> asMap() {
 		return getSource().asMap();
 	}
 
 	@Override
-	default PropertyMapping asArray() {
+	default PropertyMapping<V> asArray() {
 		return getSource().asArray();
 	}
 
 	@Override
-	default PropertyAccessor get(Object key) throws NoUniqueElementException {
+	default V get(Object key) throws NoUniqueElementException {
 		return getSource().get(key);
 	}
 }

@@ -12,7 +12,7 @@ import run.soeasy.framework.core.transform.property.PropertyAccessor;
 
 @RequiredArgsConstructor
 @Getter
-public class EmptyAnnotationPropertySource<A extends Annotation> implements AnnotationPropertyMapping<A>, Serializable {
+public class EmptyAnnotationPropertySource<A extends Annotation> implements AnnotationProperties<A>, Serializable {
 	private static final long serialVersionUID = 1L;
 	@NonNull
 	private final Class<A> type;

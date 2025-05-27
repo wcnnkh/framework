@@ -4,19 +4,19 @@ import run.soeasy.framework.core.collection.NoUniqueElementException;
 import run.soeasy.framework.core.transform.TemplateMapping;
 
 @FunctionalInterface
-public interface PropertyMapping extends PropertyTemplate<PropertyAccessor>, TemplateMapping<PropertyAccessor> {
+public interface PropertyMapping<V extends PropertyAccessor> extends PropertyTemplate<V>, TemplateMapping<V> {
 	@Override
-	default PropertyMapping asMap() {
+	default PropertyMapping<V> asMap() {
 		return new MapPropertyMapping<>(this);
 	}
 
 	@Override
-	default PropertyMapping asArray() {
+	default PropertyMapping<V> asArray() {
 		return this;
 	}
 
 	@Override
-	default PropertyAccessor get(Object key) throws NoUniqueElementException {
+	default V get(Object key) throws NoUniqueElementException {
 		return PropertyTemplate.super.get(key);
 	}
 }
