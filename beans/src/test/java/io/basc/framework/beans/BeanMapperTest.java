@@ -10,7 +10,8 @@ import org.junit.Test;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import run.soeasy.framework.beans.BeanMapper;
+import run.soeasy.framework.beans.BeanUtils;
+import run.soeasy.framework.core.transform.property.PropertyMappingService;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class BeanMapperTest {
@@ -22,7 +23,7 @@ public class BeanMapperTest {
 		map.put("bk", "bk");
 		map.put("s.a", UUIDSequences.global().next());
 		map.put("s.b", UUIDSequences.global().next());
-		BeanMapper mapper = new BeanMapper();
+		PropertyMappingService mapper = BeanUtils.createMapper();
 		A a = mapper.convert(map, A.class);
 		System.out.println(map);
 		System.out.println(a);

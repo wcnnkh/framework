@@ -7,8 +7,8 @@ import java.beans.Introspector;
 import lombok.NonNull;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
-public class BeanInfoFactories extends ConfigurableServices<BeanInfoFactory> implements BeanInfoProvider {
-	public BeanInfoFactories() {
+class ConfigurableBeanInfoFactory extends ConfigurableServices<BeanInfoFactory> implements BeanInfoFactory {
+	ConfigurableBeanInfoFactory() {
 		setServiceClass(BeanInfoFactory.class);
 	}
 

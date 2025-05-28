@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.beans.BeanMapping;
-import run.soeasy.framework.beans.BeanPropertyDescriptor;
+import run.soeasy.framework.beans.BeanProperty;
+import run.soeasy.framework.beans.BeanTemplate;
 import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionFactory;
@@ -28,8 +28,7 @@ import run.soeasy.framework.core.convert.service.ConversionServiceAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.lang.ReflectionUtils;
-import run.soeasy.framework.core.mapping.FieldDescriptor;
+import run.soeasy.framework.core.lang.SupportedInstanceFactory;
 
 @Getter
 @Setter
@@ -83,7 +82,8 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 	}
 
 	@Override
-	public final String formatMultiValueMap(Map<? extends String, ? extends Collection<? extends TypedValue>> sourceMap) {
+	public final String formatMultiValueMap(
+			Map<? extends String, ? extends Collection<? extends TypedValue>> sourceMap) {
 		return PairFormat.super.formatMultiValueMap(sourceMap);
 	}
 
@@ -117,12 +117,12 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		}
 
 		// 兜底
-		BeanMapping mapping = BeanUtils.getMapping(sourceType.getType());
-		for (FieldDescriptor element : mapping.getElements()) {
-			String key = element.getName();
+		BeanTemplate template = BeanUtils.getTemplateFactory().getTemplate(sourceType.getType());
+		for (BeanProperty property : template) {
+			String key = property.getName();
 			Object value;
 			try {
-				value = element.readFrom(source);
+				value = property.readFrom(source);
 			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
@@ -214,11 +214,11 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		}
 
 		// 兜底处理
-		Object target = ReflectionUtils.newInstance(targetType.getType());
-		BeanMapping mapping = BeanUtils.getMapping(targetType.getType());
+		Object target = SupportedInstanceFactory.REFLECTION.newInstance(targetType.getResolvableType());
+		BeanTemplate template = BeanUtils.getTemplateFactory().getTemplate(targetType.getType());
 		for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
-			Elements<BeanPropertyDescriptor> elements = mapping.getValues(entry.getKey());
-			for (BeanPropertyDescriptor element : elements) {
+			Elements<BeanProperty> elements = template.getValues(entry.getKey());
+			for (BeanProperty element : elements) {
 				Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
 						: entry.getValue();
 				value = conversionService.convert(value, TypeDescriptor.forObject(value),

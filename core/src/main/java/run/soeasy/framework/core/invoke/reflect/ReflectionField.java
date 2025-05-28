@@ -2,6 +2,7 @@ package run.soeasy.framework.core.invoke.reflect;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.function.Supplier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
@@ -12,7 +13,7 @@ public class ReflectionField implements Property, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Class<?> declaringClass;
 	private volatile String name;
-	private transient volatile Field field;
+	private transient volatile Supplier<Field> fieldSupplier;
 
 	public ReflectionField(@NonNull Class<?> declaringClass, @NonNull String name) {
 		this.declaringClass = declaringClass;
@@ -21,29 +22,30 @@ public class ReflectionField implements Property, Serializable {
 
 	public ReflectionField(@NonNull Field field) {
 		this(field.getDeclaringClass(), field.getName());
-		this.field = field;
+		this.fieldSupplier = () -> field;
 	}
 
 	public synchronized void setField(@NonNull Field field) {
-		this.field = field;
+		this.fieldSupplier = () -> field;
 		this.name = field.getName();
 	}
 
 	public synchronized void setName(@NonNull String name) {
 		this.name = name;
-		this.field = null;
+		this.fieldSupplier = null;
 	}
 
 	public Field getField() {
-		if (field == null) {
+		if (fieldSupplier == null) {
 			synchronized (this) {
-				if (field == null) {
-					field = name == null ? null
+				if (fieldSupplier == null) {
+					Field field = name == null ? null
 							: ReflectionUtils.findDeclaredField(declaringClass, name).withAll().first();
+					fieldSupplier = () -> field;
 				}
 			}
 		}
-		return field;
+		return fieldSupplier.get();
 	}
 
 	@Override

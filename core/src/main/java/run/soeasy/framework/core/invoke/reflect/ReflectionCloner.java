@@ -6,10 +6,12 @@ import java.util.EnumSet;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.lang.SupportedInstanceFactory;
+import run.soeasy.framework.core.transform.TemplateMapping;
 import run.soeasy.framework.core.transform.property.ObjectPropertyAccessor;
-import run.soeasy.framework.core.transform.property.PropertyMappingService;
+import run.soeasy.framework.core.transform.service.MappingService;
 
-public class ReflectionCloner extends PropertyMappingService<ObjectPropertyAccessor<ReflectionField>> {
+public class ReflectionCloner extends
+		MappingService<Object, ObjectPropertyAccessor<ReflectionField>, TemplateMapping<ObjectPropertyAccessor<ReflectionField>>> {
 
 	public ReflectionCloner() {
 		getMappingRegistry().setMappingProvider(new ReflectionCloneMappingProvider());
