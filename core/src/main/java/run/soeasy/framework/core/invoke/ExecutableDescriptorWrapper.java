@@ -3,7 +3,7 @@ package run.soeasy.framework.core.invoke;
 import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.value.SourceDescriptor.SourceDescriptorWrapper;
+import run.soeasy.framework.core.convert.value.SourceDescriptorWrapper;
 
 @FunctionalInterface
 public interface ExecutableDescriptorWrapper<W extends ExecutableDescriptor>

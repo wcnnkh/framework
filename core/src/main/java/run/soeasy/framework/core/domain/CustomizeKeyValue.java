@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.Map.Entry;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class CustomizeKeyValue<K, V> implements KeyValue<K, V>, Entry<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final K key;
+	private K key;
 	private V value;
 
 	@Override

@@ -6,8 +6,8 @@ import java.util.List;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Elements.ListElementsWrapper;
-import run.soeasy.framework.core.collection.Elements.StandardListElements;
+import run.soeasy.framework.core.collection.ListElementsWrapper;
+import run.soeasy.framework.core.collection.StandardListElements;
 
 public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {
 	private static final long serialVersionUID = 1L;

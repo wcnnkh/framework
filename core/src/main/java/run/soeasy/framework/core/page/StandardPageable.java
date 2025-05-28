@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.page.Page.PageWrapper;
 
 public class StandardPageable<K, T> implements PageWrapper<K, T, Page<K, T>>, Pageable<K, T> {
 	private final Page<K, T> source;

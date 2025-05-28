@@ -3,114 +3,11 @@ package run.soeasy.framework.core.spi;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Provider;
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.exchange.Receipt.Receipted;
 
 public interface Include<S> extends Registration, Provider<S> {
-
-	public static class Included<S> extends Receipted implements Configured<S>, ProviderWrapper<S, Provider<S>> {
-		private static final long serialVersionUID = 1L;
-		private final Provider<S> source;
-
-		public Included(boolean done, boolean success, Throwable cause) {
-			this(done, success, cause, Provider.empty());
-		}
-
-		public Included(boolean done, boolean success, Throwable cause, Provider<S> source) {
-			super(done, success, cause);
-			this.source = source;
-		}
-
-		@Override
-		public Provider<S> getSource() {
-			return source;
-		}
-
-		@Override
-		public <U> Configured<U> convert(boolean resize,
-				@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return Configured.super.convert(resize, converter);
-		}
-	}
-
-	@FunctionalInterface
-	public static interface IncludeWrapper<S, W extends Include<S>>
-			extends Include<S>, RegistrationWrapper<W>, ProviderWrapper<S, W> {
-
-		@Override
-		default <U> Include<U> convert(boolean resize,
-				@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-			return getSource().convert(resize, converter);
-		}
-
-		@Override
-		default Include<S> and(Registration registration) {
-			return getSource().and(registration);
-		}
-	}
-
-	@Getter
-	@RequiredArgsConstructor
-	public static class And<S, W extends Include<S>> implements IncludeWrapper<S, W> {
-		@NonNull
-		private final W source;
-		@NonNull
-		private final Registration registration;
-
-		@Override
-		public Include<S> and(Registration registration) {
-			return new And<>(source, this.registration.and(registration));
-		}
-
-		@Override
-		public boolean cancel() {
-			return IncludeWrapper.super.cancel() && registration.cancel();
-		}
-
-		@Override
-		public boolean isCancellable() {
-			return IncludeWrapper.super.isCancellable() || registration.isCancellable();
-		}
-
-		@Override
-		public boolean isCancelled() {
-			return IncludeWrapper.super.isCancelled() && registration.isCancelled();
-		}
-	}
-
-	public static class ConvertedInclude<S, T, W extends Include<S>> extends ConvertedProvider<S, T, W>
-			implements Include<T> {
-
-		public ConvertedInclude(@NonNull W target, boolean resize,
-				@NonNull Function<? super Stream<S>, ? extends Stream<T>> converter) {
-			super(target, resize, converter);
-		}
-
-		@Override
-		public boolean cancel() {
-			return getTarget().cancel();
-		}
-
-		@Override
-		public boolean isCancellable() {
-			return getTarget().isCancellable();
-		}
-
-		@Override
-		public boolean isCancelled() {
-			return getTarget().isCancelled();
-		}
-
-		@Override
-		public <U> Include<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
-			return Include.super.convert(resize, converter);
-		}
-
-	}
 
 	@Override
 	default <U> Include<U> convert(boolean resize,
@@ -120,6 +17,6 @@ public interface Include<S> extends Registration, Provider<S> {
 
 	@Override
 	default Include<S> and(Registration registration) {
-		return new And<>(this, registration);
+		return new AndInclude<>(this, registration);
 	}
 }

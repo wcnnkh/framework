@@ -23,11 +23,11 @@ import run.soeasy.framework.core.exchange.Listenable;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.exchange.container.AtomicElementRegistration;
-import run.soeasy.framework.core.exchange.container.CollectionContainer;
 import run.soeasy.framework.core.exchange.container.ElementRegistration;
 import run.soeasy.framework.core.exchange.container.LimitableRegistration;
 import run.soeasy.framework.core.exchange.container.RegistrationException;
-import run.soeasy.framework.core.exchange.container.TreeSetContainer;
+import run.soeasy.framework.core.exchange.container.collection.CollectionContainer;
+import run.soeasy.framework.core.exchange.container.map.TreeSetContainer;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
 

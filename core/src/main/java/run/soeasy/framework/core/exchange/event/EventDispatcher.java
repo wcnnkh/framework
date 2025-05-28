@@ -7,11 +7,13 @@ import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Filter;
 import run.soeasy.framework.core.exchange.AbstractChannel;
+import run.soeasy.framework.core.exchange.BatchListenableChannel;
+import run.soeasy.framework.core.exchange.FakeBatchListenableChannel;
 import run.soeasy.framework.core.exchange.ListenableChannel;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.exchange.container.ArrayListContainer;
 import run.soeasy.framework.core.exchange.container.Registry;
+import run.soeasy.framework.core.exchange.container.collection.ArrayListContainer;
 
 @RequiredArgsConstructor
 @Getter

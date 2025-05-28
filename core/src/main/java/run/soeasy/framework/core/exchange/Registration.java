@@ -1,58 +1,16 @@
 package run.soeasy.framework.core.exchange;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 public interface Registration {
-
-	public static interface RegistrationWrapper<W extends Registration> extends Registration, Wrapper<W> {
-		@Override
-		default boolean isCancellable() {
-			return getSource().isCancellable();
-		}
-
-		@Override
-		default boolean cancel() {
-			return getSource().cancel();
-		}
-
-		@Override
-		default boolean isCancelled() {
-			return getSource().isCancelled();
-		}
-	}
-
-	@RequiredArgsConstructor
-	public static class Registed implements Registration, Serializable {
-		private static final long serialVersionUID = 1L;
-		private final boolean cancelled;
-
-		@Override
-		public boolean cancel() {
-			return false;
-		}
-
-		@Override
-		public boolean isCancellable() {
-			return false;
-		}
-
-		@Override
-		public boolean isCancelled() {
-			return cancelled;
-		}
-	}
-
 	static final Registration FAILURE = new Registed(true);
 	static final Registration SUCCESS = new Registed(false);
 

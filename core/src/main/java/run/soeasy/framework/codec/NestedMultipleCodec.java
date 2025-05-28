@@ -3,7 +3,6 @@ package run.soeasy.framework.codec;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.codec.MultipleCodec.MultipleCodecWrapper;
 
 @RequiredArgsConstructor
 @Getter

@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.page.Cursor.CursorWrapper;
 
 public class StandardBrowseable<K, T> implements CursorWrapper<K, T, Cursor<K, T>>, Browseable<K, T> {
 	private final Cursor<K, T> source;

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.collection.MergedElements;
 import run.soeasy.framework.core.collection.Provider;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

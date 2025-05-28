@@ -4,6 +4,7 @@ import run.soeasy.framework.core.exchange.Listenable;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.exchange.RegistrationWrapper;
 
 /**
  * 可监听的

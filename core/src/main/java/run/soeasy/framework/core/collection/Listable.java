@@ -1,7 +1,5 @@
 package run.soeasy.framework.core.collection;
 
-import run.soeasy.framework.core.domain.Wrapper;
-
 /**
  * 可列出的
  * 
@@ -10,18 +8,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  * @param <E>
  */
 public interface Listable<E> {
-	public static interface ListableWrapper<E, W extends Listable<E>> extends Listable<E>, Wrapper<W> {
-		@Override
-		default Elements<E> getElements() {
-			return getSource().getElements();
-		}
-
-		@Override
-		default boolean hasElements() {
-			return getSource().hasElements();
-		}
-	}
-
 	/**
 	 * 列出所有元素
 	 * 

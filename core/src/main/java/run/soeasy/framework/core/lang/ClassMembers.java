@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Provider.ReloadableElementsWrapper;
+import run.soeasy.framework.core.collection.ReloadableElementsWrapper;
 
 @RequiredArgsConstructor
 public class ClassMembers<E> implements ReloadableElementsWrapper<E, Elements<E>>, Serializable {

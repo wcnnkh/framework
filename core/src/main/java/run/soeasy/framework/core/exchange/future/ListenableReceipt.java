@@ -3,6 +3,7 @@ package run.soeasy.framework.core.exchange.future;
 import java.util.concurrent.TimeUnit;
 
 import run.soeasy.framework.core.exchange.Receipt;
+import run.soeasy.framework.core.exchange.ReceiptWrapper;
 
 public interface ListenableReceipt<T extends Receipt> extends ListenableRegistration<T>, Receipt {
 

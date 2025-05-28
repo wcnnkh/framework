@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Provider;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.spi.Include.IncludeWrapper;
 
 public class ConfigurableServices<S> extends Services<S> implements Configurable {
 	@RequiredArgsConstructor

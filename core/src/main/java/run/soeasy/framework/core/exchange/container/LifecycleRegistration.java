@@ -2,6 +2,7 @@ package run.soeasy.framework.core.exchange.container;
 
 import run.soeasy.framework.core.exchange.Lifecycle;
 import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.exchange.RegistrationWrapper;
 
 /**
  * 容器中的注册都存在生命周期

@@ -17,6 +17,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.collection.ListableWrapper;
 import run.soeasy.framework.core.math.Counter;
 
 /**

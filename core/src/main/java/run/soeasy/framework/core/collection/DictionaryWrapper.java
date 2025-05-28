@@ -1,6 +1,5 @@
 package run.soeasy.framework.core.collection;
 
-import run.soeasy.framework.core.collection.Listable.ListableWrapper;
 import run.soeasy.framework.core.domain.KeyValue;
 
 public interface DictionaryWrapper<K, V, E extends KeyValue<K, V>, W extends Dictionary<K, V, E>>
