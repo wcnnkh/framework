@@ -18,12 +18,12 @@ import run.soeasy.framework.codec.crypto.DES;
 import run.soeasy.framework.codec.crypto.HmacMD5;
 import run.soeasy.framework.codec.crypto.HmacSHA1;
 import run.soeasy.framework.codec.crypto.RSA;
+import run.soeasy.framework.codec.lang.Base64;
+import run.soeasy.framework.codec.lang.CharsetCodec;
+import run.soeasy.framework.codec.lang.HexCodec;
+import run.soeasy.framework.codec.lang.URLCodec;
 import run.soeasy.framework.codec.security.MD5;
 import run.soeasy.framework.codec.security.SHA1WithRSASigner;
-import run.soeasy.framework.codec.support.Base64;
-import run.soeasy.framework.codec.support.CharsetCodec;
-import run.soeasy.framework.codec.support.HexCodec;
-import run.soeasy.framework.codec.support.URLCodec;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class CodecTest {

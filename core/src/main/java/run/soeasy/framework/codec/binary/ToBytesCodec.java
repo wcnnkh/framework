@@ -1,8 +1,8 @@
 package run.soeasy.framework.codec.binary;
 
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.support.Base64;
-import run.soeasy.framework.codec.support.HexCodec;
+import run.soeasy.framework.codec.lang.Base64;
+import run.soeasy.framework.codec.lang.HexCodec;
 
 public interface ToBytesCodec<D> extends Codec<D, byte[]>, ToBytesEncoder<D>, FromBytesDecoder<D> {
 

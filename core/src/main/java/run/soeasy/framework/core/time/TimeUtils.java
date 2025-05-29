@@ -14,7 +14,7 @@ import java.util.TimeZone;
 
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.Decoder;
-import run.soeasy.framework.codec.support.DateCodec;
+import run.soeasy.framework.codec.lang.DateCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;

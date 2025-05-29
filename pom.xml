@@ -171,10 +171,6 @@
 		<module>dom</module>
 		<module>xml</module>
 		<module>testing</module>
-		<module>jdbc</module>
-		<module>beans</module>
-		<module>retry</module>
-		<module>messaging</module>
 	</modules>
 	<profiles>
 		<profile>

@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.support.RecordCodec;
+import run.soeasy.framework.codec.lang.RecordCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CloseableIterator;
 import run.soeasy.framework.core.function.ThrowingSupplier;

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.support.RecordCodec;
+import run.soeasy.framework.codec.lang.RecordCodec;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;

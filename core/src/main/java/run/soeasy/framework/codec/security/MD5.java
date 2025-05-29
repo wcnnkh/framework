@@ -1,7 +1,7 @@
 package run.soeasy.framework.codec.security;
 
 import run.soeasy.framework.codec.Encoder;
-import run.soeasy.framework.codec.support.HexCodec;
+import run.soeasy.framework.codec.lang.HexCodec;
 
 public class MD5 extends MessageDigestEncoder {
 	public static final String ALGORITHM = "MD5";

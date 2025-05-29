@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import run.soeasy.framework.codec.support.CharsetCodec;
+import run.soeasy.framework.codec.lang.CharsetCodec;
 import run.soeasy.framework.core.io.FileRecords;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
