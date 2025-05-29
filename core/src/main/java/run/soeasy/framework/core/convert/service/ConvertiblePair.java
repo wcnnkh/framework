@@ -2,9 +2,9 @@ package run.soeasy.framework.core.convert.service;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.ClassUtils;
 import run.soeasy.framework.core.comparator.TypeComparator;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.lang.ClassUtils;
 
 public class ConvertiblePair implements Comparable<ConvertiblePair>, Convertible {
 	private final Class<?> sourceType;

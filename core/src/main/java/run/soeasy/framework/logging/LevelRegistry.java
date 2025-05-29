@@ -15,11 +15,10 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Reloadable;
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.match.StringMatcher;
-import run.soeasy.framework.core.match.StringMatchers;
 
 public class LevelRegistry implements LevelFactory, Reloadable {
 	@NonNull
-	private volatile StringMatcher nameMatcher = StringMatchers.PREFIX;
+	private volatile StringMatcher nameMatcher = StringMatcher.prefix();
 	private volatile Map<String, Level> levelMap;
 	@Getter
 	@Setter

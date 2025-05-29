@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.ClassUtils;
+import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
 import run.soeasy.framework.core.collection.LRULinkedHashMap;
-import run.soeasy.framework.core.lang.ClassUtils;
-import run.soeasy.framework.core.lang.ResolvableType;
 
 public class TypeDescriptor extends MergedAnnotatedElement {
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(

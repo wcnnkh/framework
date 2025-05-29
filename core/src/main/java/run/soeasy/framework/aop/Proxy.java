@@ -3,10 +3,10 @@ package run.soeasy.framework.aop;
 import java.lang.reflect.AnnotatedElement;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.ClassUtils;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.invoke.ExecutableTemplate;
-import run.soeasy.framework.core.lang.ClassUtils;
 
 public interface Proxy extends ExecutableTemplate, AnnotatedElementWrapper<AnnotatedElement> {
 	@Override

@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.net.URL;
 
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.ClassUtils;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.lang.ClassUtils;
 
 /**
  * {@link Resource} implementation for class path resources. Uses either a given

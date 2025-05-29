@@ -2,22 +2,21 @@ package run.soeasy.framework.core.match;
 
 import run.soeasy.framework.core.ObjectUtils;
 
-public class IdentityMatcher<T> implements Matcher<T> {
-	private static final IdentityMatcher<?> INSTANCE = new IdentityMatcher<>();
-
-	@SuppressWarnings("unchecked")
-	public static <E> IdentityMatcher<E> getInstance() {
-		return (IdentityMatcher<E>) INSTANCE;
-	}
+class IdentityMatcher implements StringMatcher {
+	static final IdentityMatcher INSTANCE = new IdentityMatcher();
 
 	@Override
-	public boolean isPattern(T source) {
+	public boolean isPattern(String source) {
 		return false;
 	}
 
 	@Override
-	public boolean match(T pattern, T source) {
+	public boolean match(String pattern, String source) {
 		return ObjectUtils.equals(pattern, source);
 	}
 
+	@Override
+	public String extractWithinPattern(String pattern, String text) {
+		return text;
+	}
 }

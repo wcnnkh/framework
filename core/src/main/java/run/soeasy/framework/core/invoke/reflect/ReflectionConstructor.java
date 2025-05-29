@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.ReflectionUtils;
 import run.soeasy.framework.core.invoke.ExecutableElement;
-import run.soeasy.framework.core.lang.ReflectionUtils;
 
 public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>>
 		implements ExecutableElement, Serializable {

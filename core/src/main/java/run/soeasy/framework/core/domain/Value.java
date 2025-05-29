@@ -9,8 +9,8 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import run.soeasy.framework.core.ClassUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.lang.ClassUtils;
 import run.soeasy.framework.core.math.NumberValue;
 
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
