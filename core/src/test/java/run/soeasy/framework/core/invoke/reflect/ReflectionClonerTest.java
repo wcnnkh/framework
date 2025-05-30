@@ -16,8 +16,9 @@ public class ReflectionClonerTest {
 		TestList bean = new TestList();
 		bean.add(UUIDSequences.global().next());
 		bean.setV(UUIDSequences.global().next());
-
+		System.out.println(bean);
 		TestList clone = ReflectionCloner.clone(bean, false);
+		System.out.println(clone);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 
@@ -26,8 +27,9 @@ public class ReflectionClonerTest {
 		TestMap bean = new TestMap();
 		bean.put(UUIDSequences.global().next(), UUIDSequences.global().next());
 		bean.setV(UUIDSequences.global().next());
-
+		System.out.println(bean);
 		TestMap clone = ReflectionCloner.clone(bean, false);
+		System.out.println(clone);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 

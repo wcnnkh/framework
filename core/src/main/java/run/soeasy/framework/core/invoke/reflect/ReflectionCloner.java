@@ -3,18 +3,15 @@ package run.soeasy.framework.core.invoke.reflect;
 import java.lang.reflect.Array;
 import java.util.EnumSet;
 
+import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.core.SupportedInstanceFactory;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.TemplateMapping;
-import run.soeasy.framework.core.transform.property.ObjectPropertyAccessor;
-import run.soeasy.framework.core.transform.service.MappingService;
+import run.soeasy.framework.core.transform.property.PropertyMappingService;
 
-public class ReflectionCloner extends
-		MappingService<Object, ObjectPropertyAccessor<ReflectionField>, TemplateMapping<ObjectPropertyAccessor<ReflectionField>>> {
-
-	public ReflectionCloner() {
-		getMappingRegistry().setMappingProvider(new ReflectionCloneMappingProvider());
+public class ReflectionCloner extends PropertyMappingService {
+	private ReflectionCloner() {
+		getMappingRegistry().setMappingProvider(new ReflectionFieldTemplateFactory());
 		getConfigurableInstanceFactory().setExtendFactoryTypes(EnumSet.of(SupportedInstanceFactory.ALLOCATE));
 	}
 
@@ -66,6 +63,24 @@ public class ReflectionCloner extends
 		if (deep) {
 			cloner.getMapper().getValueMapper().setConversionService(cloner);
 		}
-		return (T) cloner.convert(source, TypeDescriptor.forObject(source));
+
+		Class<?> requiredClass = source.getClass();
+		Object target = cloner.newInstance(ResolvableType.forType(requiredClass));
+		clone(source, target, requiredClass, cloner);
+		return (T) target;
+	}
+
+	private static void clone(Object source, Object target, Class<?> requiredClass, ReflectionCloner cloner) {
+		if (requiredClass == null || requiredClass == Object.class) {
+			return;
+		}
+		cloner.transform(source, requiredClass, target, requiredClass);
+		// java新版本已经支持在接口中定义私有变量
+		for (Class<?> interfaceClass : requiredClass.getInterfaces()) {
+			clone(source, target, interfaceClass, cloner);
+		}
+
+		// 递归
+		clone(source, target, requiredClass.getSuperclass(), cloner);
 	}
 }

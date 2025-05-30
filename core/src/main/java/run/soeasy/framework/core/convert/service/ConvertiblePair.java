@@ -77,6 +77,6 @@ public class ConvertiblePair implements Comparable<ConvertiblePair>, Convertible
 	@Override
 	public boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
 		return ClassUtils.isAssignable(this.sourceType, sourceType.getType())
-				&& ClassUtils.isAssignable(this.targetType, targetType.getType());
+				&& ClassUtils.isAssignable(targetType.getType(), this.targetType);
 	}
 }

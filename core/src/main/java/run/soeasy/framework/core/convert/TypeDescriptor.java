@@ -1,5 +1,6 @@
 package run.soeasy.framework.core.convert;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -575,5 +576,15 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 			return null;
 		}
 		return new TypeDescriptor(type, null, source);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Annotation ann : getAnnotations()) {
+			builder.append("@").append(ann.annotationType().getName()).append(' ');
+		}
+		builder.append(getResolvableType().toString());
+		return builder.toString();
 	}
 }

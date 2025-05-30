@@ -16,7 +16,7 @@ public class MembersTest {
 	@Test
 	public void test() {
 		ClassMembersLoader<Field> members = ReflectionUtils.getDeclaredFields(B.class).withAll();
-		assertTrue(members.getElements().count() == 5);
+		assertTrue(members.count() == 5);
 		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).count() == 2);
 		Elements<Field> concatFields = ReflectionUtils.getDeclaredFields(B.class).withAll()
 				.concat(ReflectionUtils.getFields(B.class));

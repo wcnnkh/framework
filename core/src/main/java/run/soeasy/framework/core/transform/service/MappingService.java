@@ -3,6 +3,8 @@ package run.soeasy.framework.core.transform.service;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.ConfigurableInstanceFactory;
+import run.soeasy.framework.core.InstanceFactory;
+import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.service.ConversionService;
@@ -13,20 +15,29 @@ import run.soeasy.framework.core.transform.MappingContext;
 
 @Getter
 public class MappingService<K, V extends TypedValueAccessor, R extends Mapping<K, V>> extends DefaultMapper<K, V, R>
-		implements TransformationService, ConversionService {
+		implements TransformationService, ConversionService, InstanceFactory {
 	private final MappingRegistry<K, V, R> mappingRegistry = new MappingRegistry<>();
 	private final ConfigurableInstanceFactory configurableInstanceFactory = new ConfigurableInstanceFactory();
 
 	@Override
+	public boolean canInstantiated(@NonNull ResolvableType requiredType) {
+		return configurableInstanceFactory.canInstantiated(requiredType);
+	}
+
+	@Override
+	public Object newInstance(@NonNull ResolvableType requiredType) {
+		return configurableInstanceFactory.newInstance(requiredType);
+	}
+
+	@Override
 	public boolean canConvert(@NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
-		return configurableInstanceFactory.canInstantiated(targetType.getResolvableType())
-				&& canTransform(sourceType, targetType);
+		return canInstantiated(targetType.getResolvableType()) && canTransform(sourceType, targetType);
 	}
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		Object target = configurableInstanceFactory.newInstance(targetType.getResolvableType());
+		Object target = newInstance(targetType.getResolvableType());
 		transform(source, sourceType, target, targetType);
 		return target;
 	}
