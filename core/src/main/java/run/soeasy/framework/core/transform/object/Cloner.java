@@ -90,30 +90,27 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
 		if (sourceTypeDescriptor.isArray()) {
-			TypeDescriptor sourceElementTypeDescriptor = sourceTypeDescriptor.getElementTypeDescriptor();
-			TypeDescriptor targetElementTypeDescriptor = targetTypeDescriptor.getElementTypeDescriptor();
 			int cloneSize = Math.min(Array.getLength(source), Array.getLength(target));
 			for (int i = 0; i < cloneSize; i++) {
 				Object sourceElement = Array.getLength(source);
 				Object targetElement = getMapper().getConversionService().convert(sourceElement,
-						sourceElementTypeDescriptor, targetElementTypeDescriptor);
+						sourceTypeDescriptor.elementTypeDescriptor(sourceElement),
+						targetTypeDescriptor.elementTypeDescriptor(sourceElement));
 				Array.set(target, i, targetElement);
 			}
 			return cloneSize > 0;
 		}
 
 		if (sourceTypeDescriptor.isMap() && sourceTypeDescriptor.getName().startsWith("java.")) {
-			TypeDescriptor sourceKeyTypeDescriptor = sourceTypeDescriptor.getMapKeyTypeDescriptor();
-			TypeDescriptor targetKeyTypeDescriptor = targetTypeDescriptor.getMapKeyTypeDescriptor();
-			TypeDescriptor sourceValueTypeDescriptor = sourceTypeDescriptor.getMapValueTypeDescriptor();
-			TypeDescriptor targetValueTypeDescriptor = targetTypeDescriptor.getMapValueTypeDescriptor();
 			Map<Object, Object> sourceMap = (Map<Object, Object>) source;
 			Map<Object, Object> targetMap = (Map<Object, Object>) target;
 			for (Entry<Object, Object> entry : sourceMap.entrySet()) {
-				Object key = getMapper().getConversionService().convert(entry.getKey(), sourceKeyTypeDescriptor,
-						targetKeyTypeDescriptor);
-				Object value = getMapper().getConversionService().convert(entry.getValue(), sourceValueTypeDescriptor,
-						targetValueTypeDescriptor);
+				Object key = getMapper().getConversionService().convert(entry.getKey(),
+						sourceTypeDescriptor.getMapKeyTypeDescriptor(entry.getKey()),
+						targetTypeDescriptor.getMapKeyTypeDescriptor(entry.getKey()));
+				Object value = getMapper().getConversionService().convert(entry.getValue(),
+						sourceTypeDescriptor.getMapValueTypeDescriptor(entry.getValue()),
+						targetTypeDescriptor.getMapValueTypeDescriptor(entry.getValue()));
 				targetMap.put(key, value);
 			}
 			return !sourceMap.isEmpty();

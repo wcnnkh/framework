@@ -17,18 +17,15 @@ public class ReflectionTest {
 	public void test() {
 		Map<String, Object> map = new HashMap<>();
 		map.put(UUIDSequences.global().next(), UUIDSequences.global().next());
-//		Map<String, Object> map = Collections.singletonMap(UUIDSequences.global().next(),
-//				UUIDSequences.global().next());
 		Map<String, Object> cloneMap = Cloner.clone(map, true);
 		System.out.println(cloneMap);
 		assertTrue(map.equals(cloneMap));
 	}
 
-	//@Test
+	@Test
 	public void cloneA() {
 		CloneA cloneA = new CloneA();
 		cloneA.a = UUIDSequences.global().next();
-
 		CloneA c = cloneA.clone();
 		assertTrue(StringUtils.equals(cloneA.a, c.a));
 	}
