@@ -3,26 +3,35 @@ package run.soeasy.framework.core.transform.object;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.invoke.reflect.ReflectionField;
 import run.soeasy.framework.core.type.ClassMembersLoader;
+import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.ReflectionUtils;
+import run.soeasy.framework.core.type.ResolvableType;
 
 public class Cloner extends ObjectMapper<ReflectionField> {
+	private static final Set<Class<?>> CANNOT_CLONE_TYPES = new HashSet<>();
+	static {
+		CANNOT_CLONE_TYPES.add(String.class);
+	}
 
-	public boolean canClone(TypeDescriptor typeDescriptor) {
-		return canInstantiated(typeDescriptor.getResolvableType()) || String.class == typeDescriptor.getType();
+	public boolean canClone(Class<?> type) {
+		return !ClassUtils.isPrimitiveOrWrapper(type) && !CANNOT_CLONE_TYPES.contains(type)
+				&& canInstantiated(ResolvableType.forType(type));
 	}
 
 	@Override
 	public ClassMembersLoader<ReflectionField> getClassPropertyTemplate(Class<?> requiredClass) {
 		ClassMembersLoader<ReflectionField> classMembersLoader = super.getClassPropertyTemplate(requiredClass);
-		if (classMembersLoader == null && canClone(TypeDescriptor.valueOf(requiredClass))) {
+		if (classMembersLoader == null && canClone(requiredClass)) {
 			return new ClassMembersLoader<>(requiredClass, (clazz) -> {
 				return ReflectionUtils.getDeclaredFields(clazz).filter((e) -> !Modifier.isStatic(e.getModifiers()))
 						.map((field) -> new ReflectionField(field));
@@ -66,8 +75,7 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 			return target;
 		}
 
-		return canClone(targetTypeDescriptor) ? super.convert(source, sourceTypeDescriptor, targetTypeDescriptor)
-				: source;
+		return canClone(source.getClass()) ? super.convert(source, sourceTypeDescriptor, targetTypeDescriptor) : source;
 	}
 
 	@Override

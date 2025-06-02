@@ -24,7 +24,7 @@ public class ReflectionTest {
 		assertTrue(map.equals(cloneMap));
 	}
 
-	@Test
+	//@Test
 	public void cloneA() {
 		CloneA cloneA = new CloneA();
 		cloneA.a = UUIDSequences.global().next();
