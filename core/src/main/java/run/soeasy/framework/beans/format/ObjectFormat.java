@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.beans.BeanProperty;
-import run.soeasy.framework.beans.BeanTemplate;
 import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
@@ -27,6 +26,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.transform.property.PropertyTemplate;
 import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 
 @Getter
@@ -116,7 +116,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		}
 
 		// 兜底
-		BeanTemplate template = BeanUtils.getTemplateFactory().getTemplate(sourceType.getType());
+		PropertyTemplate<BeanProperty> template = BeanUtils.getMapper().getObjectTemplate(sourceType.getType());
 		for (BeanProperty property : template) {
 			String key = property.getName();
 			Object value;
@@ -214,7 +214,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 
 		// 兜底处理
 		Object target = InstanceFactorySupporteds.REFLECTION.newInstance(targetType.getResolvableType());
-		BeanTemplate template = BeanUtils.getTemplateFactory().getTemplate(targetType.getType());
+		PropertyTemplate<BeanProperty> template = BeanUtils.getMapper().getObjectTemplate(targetType.getType());
 		for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 			Elements<BeanProperty> elements = template.getValues(entry.getKey());
 			for (BeanProperty element : elements) {

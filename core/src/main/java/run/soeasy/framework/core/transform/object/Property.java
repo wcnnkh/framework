@@ -1,4 +1,7 @@
-package run.soeasy.framework.core.transform.property;
+package run.soeasy.framework.core.transform.object;
+
+import run.soeasy.framework.core.transform.property.PropertyAccessor;
+import run.soeasy.framework.core.transform.property.PropertyDescriptor;
 
 public interface Property extends PropertyDescriptor {
 

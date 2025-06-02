@@ -30,6 +30,12 @@ public class ClassMembersLoader<E> implements Provider<E>, Listable<ClassMembers
 		this(provider, null, null);
 	}
 
+	protected ClassMembersLoader(@NonNull ClassMembersLoader<E> classMembersLoader) {
+		this.classMembers = classMembersLoader.classMembers;
+		this.superclass = classMembersLoader.superclass;
+		this.interfaces = classMembersLoader.interfaces;
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return classMembers.isEmpty() && (interfaces == null || interfaces.allMatch((ClassMembersLoader::isEmpty)))

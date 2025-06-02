@@ -1,5 +1,7 @@
 package run.soeasy.framework.core.transform.templates;
 
+import java.util.Collections;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -19,7 +21,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 		implements TransformationService, ConversionService, InstanceFactory, MappingProvider<Object, K, V, T> {
 	@NonNull
 	private InstanceFactory instanceFactory = InstanceFactorySupporteds.REFLECTION;
-	private final MappingRegistry<K, V, T> mappingRegistry = new MappingRegistry<>();
+	private final MappingLoader<K, V, T> mappingLoader = new MappingLoader<>();
 
 	public DefaultMapper() {
 		super(new ConfigurableServices<>(), new ValueMapper<>());
@@ -63,12 +65,12 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 
 	@Override
 	public T getMapping(@NonNull Object source, @NonNull TypeDescriptor requiredType) {
-		return mappingRegistry.getMapping(source, requiredType);
+		return mappingLoader.getMapping(source, requiredType);
 	}
 
 	@Override
 	public boolean hasMapping(@NonNull TypeDescriptor requiredType) {
-		return mappingRegistry.hasMapping(requiredType);
+		return mappingLoader.hasMapping(requiredType);
 	}
 
 	@Override
@@ -79,8 +81,21 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	@Override
 	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
-		T sourceMapping = getMapping(source, sourceTypeDescriptor);
-		T targetMapping = getMapping(target, targetTypeDescriptor);
-		return doMapping(new MappingContext<>(sourceMapping), new MappingContext<>(targetMapping));
+		return transform(source, sourceTypeDescriptor, target, targetTypeDescriptor, Collections.emptyList());
+	}
+
+	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor,
+			@NonNull Iterable<MappingFilter<K, V, T>> filters) throws ConversionException {
+		if (hasMapping(sourceTypeDescriptor) && hasMapping(targetTypeDescriptor)) {
+			return doMapping(getMapping(source, sourceTypeDescriptor), getMapping(target, targetTypeDescriptor),
+					filters);
+		}
+		return false;
+	}
+
+	public boolean doMapping(@NonNull T sourceMapping, @NonNull T targetMapping,
+			@NonNull Iterable<MappingFilter<K, V, T>> filters) throws ConversionException {
+		return doMapping(new MappingContext<>(sourceMapping), new MappingContext<>(targetMapping), filters);
 	}
 }

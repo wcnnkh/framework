@@ -1,9 +1,8 @@
-package run.soeasy.framework.core.lang;
+package run.soeasy.framework.core.type;
 
 import org.junit.Test;
 
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class GetDeclaredMethodsTest {
 	@Test

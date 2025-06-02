@@ -9,24 +9,23 @@ import run.soeasy.framework.core.spi.ServiceMap;
 
 @Getter
 @Setter
-public class MappingRegistry<K, V extends TypedValueAccessor, T extends Mapping<K, V>>
+public class MappingLoader<K, V extends TypedValueAccessor, T extends Mapping<K, V>>
 		implements MappingProvider<Object, K, V, T> {
 	private final ServiceMap<MappingFactory<Object, K, V, T>> registry = new ServiceMap<>();
-	private MappingProvider<? super Object, ? extends K, ? extends V, ? extends T> mappingProvider;
 
 	@Override
 	public T getMapping(@NonNull Object source, @NonNull TypeDescriptor requiredType) {
 		MappingFactory<? super Object, ? extends K, ? extends V, ? extends T> factory = registry
 				.search(requiredType.getType()).first();
 		if (factory == null) {
-			return mappingProvider.getMapping(source, requiredType);
+			return null;
 		}
 		return factory.getMapping(source, requiredType);
 	}
 
 	@Override
 	public boolean hasMapping(@NonNull TypeDescriptor requiredType) {
-		return !registry.search(requiredType.getType()).isEmpty() || mappingProvider.hasMapping(requiredType);
+		return !registry.search(requiredType.getType()).isEmpty();
 	}
 
 	@SuppressWarnings("unchecked")

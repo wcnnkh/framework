@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.property.Property;
+import run.soeasy.framework.core.transform.object.Property;
 
 @Getter
 public class ReflectionProperty extends ReflectionField implements Property, Serializable {

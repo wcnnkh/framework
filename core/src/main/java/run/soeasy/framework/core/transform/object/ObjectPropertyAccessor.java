@@ -1,8 +1,9 @@
-package run.soeasy.framework.core.transform.property;
+package run.soeasy.framework.core.transform.object;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.transform.property.PropertyAccessor;
 
 @Getter
 @RequiredArgsConstructor

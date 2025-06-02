@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import lombok.ToString;
 import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.transform.object.Cloner;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ReflectionTest {
@@ -18,7 +19,7 @@ public class ReflectionTest {
 		map.put(UUIDSequences.global().next(), UUIDSequences.global().next());
 //		Map<String, Object> map = Collections.singletonMap(UUIDSequences.global().next(),
 //				UUIDSequences.global().next());
-		Map<String, Object> cloneMap = ReflectionCloner.clone(map, true);
+		Map<String, Object> cloneMap = Cloner.clone(map, true);
 		System.out.println(cloneMap);
 		assertTrue(map.equals(cloneMap));
 	}
@@ -44,7 +45,7 @@ public class ReflectionTest {
 
 		@Override
 		public CloneA clone() {
-			return ReflectionCloner.clone(this, false);
+			return Cloner.clone(this, false);
 		}
 	}
 }

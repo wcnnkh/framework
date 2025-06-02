@@ -1,12 +1,10 @@
-package run.soeasy.framework.core.lang;
+package run.soeasy.framework.core.type;
 
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 
 import org.junit.Test;
-
-import run.soeasy.framework.core.type.ClassUtils;
 
 public class LambdaTest {
 	@Test

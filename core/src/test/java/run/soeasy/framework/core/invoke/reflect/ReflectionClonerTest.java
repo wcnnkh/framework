@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.ToString;
+import run.soeasy.framework.core.transform.object.Cloner;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 import run.soeasy.framework.serializer.SerializerException;
 
@@ -17,7 +18,7 @@ public class ReflectionClonerTest {
 		bean.add(UUIDSequences.global().next());
 		bean.setV(UUIDSequences.global().next());
 		System.out.println(bean);
-		TestList clone = ReflectionCloner.clone(bean, false);
+		TestList clone = Cloner.clone(bean, false);
 		System.out.println(clone);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
@@ -28,7 +29,7 @@ public class ReflectionClonerTest {
 		bean.put(UUIDSequences.global().next(), UUIDSequences.global().next());
 		bean.setV(UUIDSequences.global().next());
 		System.out.println(bean);
-		TestMap clone = ReflectionCloner.clone(bean, false);
+		TestMap clone = Cloner.clone(bean, false);
 		System.out.println(clone);
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}

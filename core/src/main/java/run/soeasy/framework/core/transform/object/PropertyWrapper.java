@@ -1,4 +1,7 @@
-package run.soeasy.framework.core.transform.property;
+package run.soeasy.framework.core.transform.object;
+
+import run.soeasy.framework.core.transform.property.PropertyAccessor;
+import run.soeasy.framework.core.transform.property.PropertyDescriptorWrapper;
 
 public interface PropertyWrapper<W extends Property> extends Property, PropertyDescriptorWrapper<W> {
 	@Override

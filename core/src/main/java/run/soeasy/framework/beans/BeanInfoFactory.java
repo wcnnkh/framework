@@ -4,7 +4,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.transform.object.ObjectTemplateFactory;
 
-public interface BeanInfoFactory {
+public interface BeanInfoFactory extends ObjectTemplateFactory<BeanProperty> {
 	BeanInfo getBeanInfo(@NonNull Class<?> beanClass) throws IntrospectionException;
+
+	@Override
+	default BeanTemplate getObjectTemplate(Class<?> objectClass) {
+		return new BeanTemplate(objectClass, this);
+	}
 }
