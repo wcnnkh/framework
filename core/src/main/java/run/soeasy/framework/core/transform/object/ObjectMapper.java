@@ -67,7 +67,6 @@ public class ObjectMapper<E extends Property> extends PropertyMapper
 		sourcePropertyTemplate = sourcePropertyTemplate.asMap(false);
 		ObjectProperties<E, PropertyTemplate<E>> objectProperties = new ObjectProperties<>(sourcePropertyTemplate,
 				object);
-		System.out.println(classMembers.getDeclaringClass() + "," + classMembers.count());
 		return objectProperties;
 	}
 
