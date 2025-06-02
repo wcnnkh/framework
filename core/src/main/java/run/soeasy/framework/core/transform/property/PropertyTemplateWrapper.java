@@ -8,7 +8,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.ElementsWrapper;
 import run.soeasy.framework.core.collection.NoUniqueElementException;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.transform.TemplateWrapper;
+import run.soeasy.framework.core.transform.templates.TemplateWrapper;
 
 public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends PropertyTemplate<T>>
 		extends PropertyTemplate<T>, TemplateWrapper<T, W>, ElementsWrapper<T, W> {

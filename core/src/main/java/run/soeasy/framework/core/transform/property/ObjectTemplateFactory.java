@@ -2,7 +2,7 @@ package run.soeasy.framework.core.transform.property;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.service.MappingProvider;
+import run.soeasy.framework.core.transform.MappingProvider;
 
 public interface ObjectTemplateFactory<E extends Property>
 		extends MappingProvider<Object, Object, PropertyAccessor, TypedProperties> {

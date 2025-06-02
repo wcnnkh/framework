@@ -10,7 +10,7 @@ import java.util.TimeZone;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.service.ConverterRegistry;
+import run.soeasy.framework.core.convert.ConverterRegistry;
 
 @Setter
 @Getter
@@ -64,30 +64,30 @@ public class StringConverter extends ConverterRegistry {
 	private LongConverter longConverter = new LongConverter();
 
 	public StringConverter() {
-		registerConverter(String.class, Enum.class, enumConverter);
-		registerConverter(String.class, Charset.class, charsetConverter);
-		registerConverter(String.class, Class.class, classConverter);
-		registerConverter(String.class, TimeZone.class, timeZoneConverter);
-		registerConverter(String.class, Currency.class, currencyConverter);
-		registerConverter(String.class, Locale.class, localeConverter);
-		registerConverter(String.class, BigDecimal.class, bigDecimalConverter);
-		registerConverter(String.class, BigInteger.class, bigIntegerConverter);
+		registerReversibleConverter(String.class, Enum.class, enumConverter);
+		registerReversibleConverter(String.class, Charset.class, charsetConverter);
+		registerReversibleConverter(String.class, Class.class, classConverter);
+		registerReversibleConverter(String.class, TimeZone.class, timeZoneConverter);
+		registerReversibleConverter(String.class, Currency.class, currencyConverter);
+		registerReversibleConverter(String.class, Locale.class, localeConverter);
+		registerReversibleConverter(String.class, BigDecimal.class, bigDecimalConverter);
+		registerReversibleConverter(String.class, BigInteger.class, bigIntegerConverter);
 
-		registerConverter(String.class, char.class, characterConverter);
-		registerConverter(String.class, Character.class, characterConverter);
-		registerConverter(String.class, boolean.class, booleanConverter);
-		registerConverter(String.class, Boolean.class, booleanConverter);
-		registerConverter(String.class, double.class, doubleConverter);
-		registerConverter(String.class, Double.class, doubleConverter);
-		registerConverter(String.class, byte.class, byteConverter);
-		registerConverter(String.class, Byte.class, byteConverter);
-		registerConverter(String.class, float.class, floatConverter);
-		registerConverter(String.class, Float.class, floatConverter);
-		registerConverter(String.class, short.class, shortConverter);
-		registerConverter(String.class, Short.class, shortConverter);
-		registerConverter(String.class, int.class, integerConverter);
-		registerConverter(String.class, Integer.class, integerConverter);
-		registerConverter(String.class, long.class, longConverter);
-		registerConverter(String.class, Long.class, longConverter);
+		registerReversibleConverter(String.class, char.class, characterConverter);
+		registerReversibleConverter(String.class, Character.class, characterConverter);
+		registerReversibleConverter(String.class, boolean.class, booleanConverter);
+		registerReversibleConverter(String.class, Boolean.class, booleanConverter);
+		registerReversibleConverter(String.class, double.class, doubleConverter);
+		registerReversibleConverter(String.class, Double.class, doubleConverter);
+		registerReversibleConverter(String.class, byte.class, byteConverter);
+		registerReversibleConverter(String.class, Byte.class, byteConverter);
+		registerReversibleConverter(String.class, float.class, floatConverter);
+		registerReversibleConverter(String.class, Float.class, floatConverter);
+		registerReversibleConverter(String.class, short.class, shortConverter);
+		registerReversibleConverter(String.class, Short.class, shortConverter);
+		registerReversibleConverter(String.class, int.class, integerConverter);
+		registerReversibleConverter(String.class, Integer.class, integerConverter);
+		registerReversibleConverter(String.class, long.class, longConverter);
+		registerReversibleConverter(String.class, Long.class, longConverter);
 	}
 }

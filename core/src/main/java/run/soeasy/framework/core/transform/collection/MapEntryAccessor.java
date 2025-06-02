@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 @RequiredArgsConstructor

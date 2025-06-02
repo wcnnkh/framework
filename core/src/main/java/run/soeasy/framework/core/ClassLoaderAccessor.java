@@ -1,5 +1,7 @@
 package run.soeasy.framework.core;
 
+import run.soeasy.framework.core.type.ClassUtils;
+
 public interface ClassLoaderAccessor extends ClassLoaderProvider {
 
 	ClassLoaderProvider getClassLoaderProvider();

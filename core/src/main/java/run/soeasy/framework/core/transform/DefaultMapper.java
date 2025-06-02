@@ -4,11 +4,11 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
-public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends FilterableMapper<K, V, T>
+public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends GenericMapper<K, V, T>
 		implements Mapper<K, V, T> {
 
 	public DefaultMapper() {
-		super(new ConfigurableServices<>(), new GenericMapper<>());
+		super(new ConfigurableServices<>(), new ValueMapper<>());
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	}
 
 	@Override
-	public @NonNull GenericMapper<K, V, T> getMapper() {
-		return (GenericMapper<K, V, T>) super.getMapper();
+	public @NonNull ValueMapper<K, V, T> getMapper() {
+		return (ValueMapper<K, V, T>) super.getMapper();
 	}
 }

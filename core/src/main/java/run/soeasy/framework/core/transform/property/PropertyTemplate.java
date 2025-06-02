@@ -8,7 +8,7 @@ import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.NoUniqueElementException;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.transform.Template;
+import run.soeasy.framework.core.transform.templates.Template;
 
 @FunctionalInterface
 public interface PropertyTemplate<T extends PropertyDescriptor> extends Template<T>, Elements<T> {

@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert.support;
 
-import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.service.ConversionServiceAware;
+import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.ConversionServiceAware;
 
 public abstract class AbstractConversionService implements ConversionService, ConversionServiceAware {
 	private ConversionService conversionService;

@@ -1,18 +1,15 @@
 package run.soeasy.framework.core.invoke.reflect;
 
 import java.lang.reflect.Array;
-import java.util.EnumSet;
 
-import run.soeasy.framework.core.ResolvableType;
-import run.soeasy.framework.core.SupportedInstanceFactory;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.property.PropertyMappingService;
+import run.soeasy.framework.core.type.ResolvableType;
 
 public class ReflectionCloner extends PropertyMappingService {
 	private ReflectionCloner() {
 		getMappingRegistry().setMappingProvider(new ReflectionFieldTemplateFactory());
-		getConfigurableInstanceFactory().setExtendFactoryTypes(EnumSet.of(SupportedInstanceFactory.ALLOCATE));
 	}
 
 	@Override
@@ -24,6 +21,7 @@ public class ReflectionCloner extends PropertyMappingService {
 		return super.convert(source, sourceType, targetType);
 	}
 
+
 	public Object cloneArray(Object array, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (array instanceof Object[]) {
 			TypeDescriptor sourceElementTypeDescriptor = sourceType.getElementTypeDescriptor();
@@ -32,7 +30,7 @@ public class ReflectionCloner extends PropertyMappingService {
 			Object clone = Array.newInstance(targetElementTypeDescriptor.getType(), len);
 			for (int i = 0; i < len; i++) {
 				Object value = Array.get(array, i);
-				value = getMapper().getValueMapper().getConversionService().convert(value, sourceElementTypeDescriptor,
+				value = getMapper().getConversionService().convert(value, sourceElementTypeDescriptor,
 						targetElementTypeDescriptor);
 				Array.set(clone, i, value);
 			}
@@ -56,12 +54,12 @@ public class ReflectionCloner extends PropertyMappingService {
 		}
 		throw new IllegalArgumentException("Must be array type");
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T source, boolean deep) {
 		ReflectionCloner cloner = new ReflectionCloner();
 		if (deep) {
-			cloner.getMapper().getValueMapper().setConversionService(cloner);
+			cloner.getMapper().setConversionService(cloner);
 		}
 
 		Class<?> requiredClass = source.getClass();

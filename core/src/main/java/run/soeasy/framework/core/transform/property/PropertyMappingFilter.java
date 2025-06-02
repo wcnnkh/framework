@@ -5,8 +5,9 @@ import java.util.function.BiPredicate;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.transform.MappingFilter;
+import run.soeasy.framework.core.transform.templates.TemplateMapping;
 
-public interface PropertyMappingFilter extends MappingFilter<Object, PropertyAccessor, TypedProperties> {
+public interface PropertyMappingFilter extends MappingFilter<Object, PropertyAccessor, TemplateMapping<PropertyAccessor>> {
 	public static final PropertyMappingFilter IGNORE_NULL = predicate((s, t) -> s.isReadable() && s.get() == null);
 
 	public static PropertyMappingFilter ignorePropertyNames(@NonNull Collection<String> names) {

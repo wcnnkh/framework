@@ -3,7 +3,7 @@ package run.soeasy.framework.core.lang;
 import org.junit.Test;
 
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.ReflectionUtils;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class GetDeclaredMethodsTest {
 	@Test

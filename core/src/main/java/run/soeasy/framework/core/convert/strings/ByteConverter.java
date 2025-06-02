@@ -2,8 +2,8 @@ package run.soeasy.framework.core.convert.strings;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ReversibleConverter;
 
 public class ByteConverter implements ReversibleConverter<String, Byte> {
 	private int radix = 10;

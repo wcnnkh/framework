@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ConditionalConversionService;
-import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.service.ConvertiblePair;
+import run.soeasy.framework.core.type.TypeMapping;
 
 class CollectionToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -16,8 +16,8 @@ class CollectionToObjectConversionService extends AbstractConversionService impl
 		setConversionService(conversionService);
 	}
 
-	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(Collection.class, Object.class));
+	public Set<TypeMapping> getConvertibleTypeMappings() {
+		return Collections.singleton(new TypeMapping(Collection.class, Object.class));
 	}
 
 	@Override

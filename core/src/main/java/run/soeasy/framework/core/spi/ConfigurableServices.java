@@ -82,7 +82,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	}
 
 	private volatile Map<ProviderFactory, Include<ServiceHolder<S>>> discoveryMap;
-	private volatile Class<S> serviceClass;
+	private volatile Class<? extends S> serviceClass;
 
 	@Override
 	public Receipt configure(ProviderFactory discovery) {
@@ -97,7 +97,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				return Configured.failure();
 			}
 
-			Provider<S> serviceLoader = discovery.getProvider(serviceClass);
+			Provider<? extends S> serviceLoader = discovery.getProvider(serviceClass);
 			if (serviceLoader == null) {
 				return Configured.failure();
 			}
@@ -108,7 +108,8 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		}
 	}
 
-	private Configuration configure(ProviderFactory discovery, Provider<S> serviceLoader, boolean reloadable) {
+	private Configuration configure(ProviderFactory discovery, Provider<? extends S> serviceLoader,
+			boolean reloadable) {
 		if (discoveryMap == null) {
 			discoveryMap = new HashMap<>(2, 1);
 		}
@@ -123,7 +124,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		return new Configuration(Receipt.SUCCESS, discovery, include);
 	}
 
-	public Class<S> getServiceClass() {
+	public Class<? extends S> getServiceClass() {
 		Lock lock = getContainer().readLock();
 		lock.lock();
 		try {
@@ -133,7 +134,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		}
 	}
 
-	public void setServiceClass(Class<S> serviceClass) {
+	public void setServiceClass(Class<? extends S> serviceClass) {
 		Lock lock = getContainer().writeLock();
 		lock.lock();
 		try {

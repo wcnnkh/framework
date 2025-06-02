@@ -3,8 +3,8 @@ package run.soeasy.framework.core.convert.strings;
 import java.util.TimeZone;
 
 import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.ReversibleConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ReversibleConverter;
 import run.soeasy.framework.core.time.TimeUtils;
 
 public class TimeZoneConverter implements ReversibleConverter<String, TimeZone> {

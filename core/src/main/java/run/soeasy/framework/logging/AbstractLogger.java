@@ -5,7 +5,7 @@ import java.util.logging.LogRecord;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.ClassUtils;
+import run.soeasy.framework.core.type.ClassUtils;
 
 @Getter
 @Setter

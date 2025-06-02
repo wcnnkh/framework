@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.property;
 
 import run.soeasy.framework.core.collection.NoUniqueElementException;
-import run.soeasy.framework.core.transform.TemplateMapping;
+import run.soeasy.framework.core.transform.templates.TemplateMapping;
 
 @FunctionalInterface
 public interface PropertyMapping<V extends PropertyAccessor> extends PropertyTemplate<V>, TemplateMapping<V> {

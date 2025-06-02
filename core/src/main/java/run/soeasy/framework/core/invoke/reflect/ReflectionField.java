@@ -5,9 +5,9 @@ import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.ReflectionUtils;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.property.Property;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class ReflectionField implements Property, Serializable {
 	private static final long serialVersionUID = 1L;

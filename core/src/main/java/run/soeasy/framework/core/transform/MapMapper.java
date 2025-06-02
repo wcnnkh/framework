@@ -3,6 +3,7 @@ package run.soeasy.framework.core.transform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
@@ -18,9 +19,10 @@ import run.soeasy.framework.core.domain.KeyValue;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public class MapMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
 	@NonNull
-	private final Mapper<K, V, T> valueMapper;
+	private Mapper<K, V, T> valueMapper;
 
 	public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {

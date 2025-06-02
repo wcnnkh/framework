@@ -12,7 +12,7 @@ import run.soeasy.framework.core.domain.Wrapper;
  */
 @Data
 @RequiredArgsConstructor
-public class ServiceHolder<T> implements Wrapper<T>, Ordered {
+class ServiceHolder<T> implements Wrapper<T>, Ordered {
 	private final int order;
 	private final T source;
 

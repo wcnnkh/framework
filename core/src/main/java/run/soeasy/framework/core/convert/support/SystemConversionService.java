@@ -1,6 +1,7 @@
 package run.soeasy.framework.core.convert.support;
 
-import run.soeasy.framework.core.convert.service.ConifgurableConversionService;
+import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.ConverterRegistry;
 import run.soeasy.framework.core.convert.strings.StringConverter;
 
 /**
@@ -9,7 +10,7 @@ import run.soeasy.framework.core.convert.strings.StringConverter;
  * @author shuchaowen
  *
  */
-public class SystemConversionService extends ConifgurableConversionService {
+public class SystemConversionService extends ConverterRegistry {
 
 	private static volatile SystemConversionService instance;
 
@@ -18,7 +19,8 @@ public class SystemConversionService extends ConifgurableConversionService {
 			synchronized (SystemConversionService.class) {
 				if (instance == null) {
 					instance = new SystemConversionService();
-					instance.configure();
+					instance.getConverters().setServiceClass(ConversionService.class);
+					instance.getConverters().configure();
 				}
 			}
 		}
@@ -26,18 +28,18 @@ public class SystemConversionService extends ConifgurableConversionService {
 	}
 
 	public SystemConversionService() {
-		register(new ArrayToArrayConversionService(this));
-		register(new ArrayToCollectionConversionService(this));
+		getConverters().register(new ArrayToArrayConversionService(this));
+		getConverters().register(new ArrayToCollectionConversionService(this));
 
-		register(new CollectionToArrayConversionService(this));
-		register(new CollectionToCollectionConversionService(this));
-		register(new CollectionToObjectConversionService(this));
+		getConverters().register(new CollectionToArrayConversionService(this));
+		getConverters().register(new CollectionToCollectionConversionService(this));
+		getConverters().register(new CollectionToObjectConversionService(this));
 
-		register(new MapToMapConversionService(this));
+		getConverters().register(new MapToMapConversionService(this));
 
-		register(StringConverter.getInstance());
+		getConverters().register(StringConverter.getInstance());
 
-		register(new ObjectToArrayConversionService(this));
-		register(new ObjectToCollectionConversionService(this));
+		getConverters().register(new ObjectToArrayConversionService(this));
+		getConverters().register(new ObjectToCollectionConversionService(this));
 	}
 }

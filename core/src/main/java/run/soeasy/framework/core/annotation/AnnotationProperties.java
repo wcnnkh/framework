@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import run.soeasy.framework.core.ReflectionUtils;
 import run.soeasy.framework.core.transform.property.TypedProperties;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public interface AnnotationProperties<A extends Annotation>
 		extends TypedProperties, InvocationHandler {

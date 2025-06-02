@@ -4,11 +4,11 @@ import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Set;
 
+import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ConditionalConversionService;
-import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.service.ConvertiblePair;
+import run.soeasy.framework.core.type.TypeMapping;
 
 class ArrayToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 
@@ -16,8 +16,8 @@ class ArrayToArrayConversionService extends AbstractConversionService implements
 		setConversionService(conversionService);
 	}
 
-	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(Object[].class, Object[].class));
+	public Set<TypeMapping> getConvertibleTypeMappings() {
+		return Collections.singleton(new TypeMapping(Object[].class, Object[].class));
 	}
 
 	@Override

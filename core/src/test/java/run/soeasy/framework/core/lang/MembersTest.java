@@ -7,9 +7,9 @@ import java.lang.reflect.Field;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.core.ClassMembersLoader;
-import run.soeasy.framework.core.ReflectionUtils;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.type.ClassMembersLoader;
+import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class MembersTest {
 

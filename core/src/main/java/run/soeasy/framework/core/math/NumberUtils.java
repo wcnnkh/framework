@@ -25,9 +25,9 @@ import java.text.ParseException;
 import java.util.function.IntPredicate;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.ClassUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.type.ClassUtils;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for

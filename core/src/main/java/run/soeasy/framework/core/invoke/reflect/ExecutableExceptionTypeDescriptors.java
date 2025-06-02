@@ -11,9 +11,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import run.soeasy.framework.core.ResolvableType;
 import run.soeasy.framework.core.collection.Provider;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.type.ResolvableType;
 
 @RequiredArgsConstructor
 @ToString(of = "executable")

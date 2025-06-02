@@ -8,12 +8,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ConversionService;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.transform.TemplateMapping;
+import run.soeasy.framework.core.transform.templates.TemplateMapping;
 
 @RequiredArgsConstructor
 @AllArgsConstructor

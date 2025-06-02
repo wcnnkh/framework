@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.NoUniqueElementException;
-import run.soeasy.framework.core.transform.TemplateProperties;
+import run.soeasy.framework.core.transform.templates.TemplateProperties;
 
 public class PropertyTemplateProperties<S extends PropertyDescriptor, T extends PropertyTemplate<S>, V extends PropertyAccessor>
 		extends TemplateProperties<S, T, V> implements PropertyMapping<V> {

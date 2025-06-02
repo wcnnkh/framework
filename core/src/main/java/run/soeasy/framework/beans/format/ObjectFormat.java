@@ -18,17 +18,17 @@ import run.soeasy.framework.beans.BeanProperty;
 import run.soeasy.framework.beans.BeanTemplate;
 import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.SupportedInstanceFactory;
 import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MultiValueMap;
+import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.ConversionServiceAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ConversionService;
-import run.soeasy.framework.core.convert.service.ConversionServiceAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 
 @Getter
 @Setter
@@ -214,7 +214,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		}
 
 		// 兜底处理
-		Object target = SupportedInstanceFactory.REFLECTION.newInstance(targetType.getResolvableType());
+		Object target = InstanceFactorySupporteds.REFLECTION.newInstance(targetType.getResolvableType());
 		BeanTemplate template = BeanUtils.getTemplateFactory().getTemplate(targetType.getType());
 		for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 			Elements<BeanProperty> elements = template.getValues(entry.getKey());

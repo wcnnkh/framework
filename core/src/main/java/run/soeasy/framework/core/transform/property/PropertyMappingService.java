@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.transform.property;
 
-import run.soeasy.framework.core.transform.service.MappingService;
+import run.soeasy.framework.core.transform.templates.TemplateMappingService;
 
-public class PropertyMappingService extends MappingService<Object, PropertyAccessor, TypedProperties> {
+public class PropertyMappingService extends TemplateMappingService<PropertyAccessor> {
 }
