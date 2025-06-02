@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import run.soeasy.framework.core.collection.CollectionFactory;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
@@ -41,7 +41,7 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 
 		// At this point, we need a collection copy in any case, even if just for
 		// finding out about element copies...
-		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
+		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
 		if (elementDesc == null) {
 			target.addAll(sourceCollection);

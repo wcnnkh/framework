@@ -36,12 +36,12 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
 	}
 
 	@Override
-	default PropertyTemplate<T> asMap() {
-		return getSource().asMap();
+	default PropertyTemplate<T> asMap(boolean uniqueness) {
+		return getSource().asMap(uniqueness);
 	}
 
 	@Override
-	default PropertyTemplate<T> asArray() {
-		return getSource().asArray();
+	default PropertyTemplate<T> asArray(boolean uniqueness) {
+		return getSource().asArray(uniqueness);
 	}
 }

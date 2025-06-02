@@ -3,7 +3,7 @@ package run.soeasy.framework.core.collection.merge;
 import java.util.Collections;
 import java.util.Map;
 
-import run.soeasy.framework.core.collection.CollectionFactory;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 
 public class MapMerger<K, V> implements Merger<Map<K, V>> {
@@ -18,7 +18,7 @@ public class MapMerger<K, V> implements Merger<Map<K, V>> {
 			}
 
 			if (target == null) {
-				target = CollectionFactory.createApproximateMap(map, 16);
+				target = CollectionUtils.createApproximateMap(map, 16);
 			}
 
 			target.putAll(map);

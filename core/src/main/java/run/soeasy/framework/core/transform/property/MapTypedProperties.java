@@ -1,21 +1,14 @@
 package run.soeasy.framework.core.transform.property;
 
-import lombok.NonNull;
-
 public class MapTypedProperties<W extends TypedProperties> extends MapPropertyMapping<PropertyAccessor, W>
 		implements TypedPropertiesWrapper<W> {
 
-	public MapTypedProperties(@NonNull W source) {
-		super(source);
+	public MapTypedProperties(W source, boolean uniqueness) {
+		super(source, uniqueness);
 	}
 
 	@Override
-	public TypedProperties asMap() {
-		return this;
-	}
-
-	@Override
-	public TypedProperties asArray() {
-		return getSource();
+	public TypedProperties asMap(boolean uniqueness) {
+		return isUniqueness() == uniqueness ? this : getSource().asMap(uniqueness);
 	}
 }

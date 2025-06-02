@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import run.soeasy.framework.core.collection.CollectionFactory;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
@@ -28,7 +28,7 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 		}
 
 		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
-		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
+		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), 1);
 
 		if (elementDesc == null || elementDesc.isCollection()) {

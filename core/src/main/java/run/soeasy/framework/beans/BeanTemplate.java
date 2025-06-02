@@ -21,6 +21,6 @@ public class BeanTemplate extends MapPropertyTemplate<BeanProperty, PropertyTemp
 			}
 
 			return Stream.of(beanInfo.getPropertyDescriptors()).map((e) -> new BeanProperty(beanClass, e)).iterator();
-		});
+		}, false);
 	}
 }

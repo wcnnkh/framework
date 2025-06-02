@@ -5,12 +5,28 @@ import run.soeasy.framework.core.domain.KeyValue;
 
 @FunctionalInterface
 public interface Dictionary<K, V, E extends KeyValue<K, V>> extends KeyValues<K, V>, Listable<E> {
-	default Dictionary<K, V, E> asArray() {
-		return this;
+	/**
+	 * 化为Array结构
+	 * 
+	 * @param uniqueness 是否有唯一性
+	 * @return
+	 */
+	default Dictionary<K, V, E> asArray(boolean uniqueness) {
+		return new ArrayDictionary<>(this, uniqueness);
 	}
 
-	default Dictionary<K, V, E> asMap() {
-		return new MapDictionary<>(this);
+	default boolean isMap() {
+		return false;
+	}
+
+	/**
+	 * 化为Map结构
+	 * 
+	 * @param uniqueness 是否有唯一性
+	 * @return
+	 */
+	default Dictionary<K, V, E> asMap(boolean uniqueness) {
+		return new MapDictionary<>(this, true, uniqueness);
 	}
 
 	default E getElement(int index) {
@@ -23,10 +39,6 @@ public interface Dictionary<K, V, E extends KeyValue<K, V>> extends KeyValues<K,
 	}
 
 	default boolean isArray() {
-		return true;
-	}
-
-	default boolean isMap() {
 		return false;
 	}
 

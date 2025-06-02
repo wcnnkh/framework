@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.lang;
+package run.soeasy.framework.core.transform.collection;
 
 import java.util.Collection;
 
@@ -9,13 +9,20 @@ import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.transform.IdentityTransformer;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class CollectionTransformer extends IdentityTransformer<Collection<Object>> {
+public class CollectionTransformer implements IdentityTransformer<Collection<Object>> {
 	@NonNull
 	private ConversionService elementConversionService;
+
+	@Override
+	public boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull TypeDescriptor targetTypeDescriptor) {
+		return sourceTypeDescriptor.isCollection() && targetTypeDescriptor.isCollection();
+	}
 
 	@Override
 	public boolean transform(@NonNull Collection<Object> source, @NonNull TypeDescriptor sourceTypeDescriptor,
@@ -29,12 +36,5 @@ public class CollectionTransformer extends IdentityTransformer<Collection<Object
 			target.add(value);
 		}
 		return true;
-	}
-
-	@Override
-	public boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor,
-			@NonNull TypeDescriptor targetTypeDescriptor) {
-		return super.canTransform(sourceTypeDescriptor, targetTypeDescriptor) && sourceTypeDescriptor.isCollection()
-				&& targetTypeDescriptor.isCollection() && sourceTypeDescriptor.getName().startsWith("java.");
 	}
 }

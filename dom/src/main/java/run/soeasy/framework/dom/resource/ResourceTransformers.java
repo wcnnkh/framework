@@ -5,10 +5,9 @@ import java.io.IOException;
 import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.io.Resource;
-import run.soeasy.framework.core.spi.ServiceProvider;
-import run.soeasy.framework.dom.DomException;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
-public class ResourceTransformers extends ServiceProvider<ResourceTransformer, DomException> implements ResourceTransformer {
+public class ResourceTransformers extends ConfigurableServices<ResourceTransformer> implements ResourceTransformer {
 
 	public ResourceTransformers() {
 		setServiceClass(ResourceTransformer.class);
@@ -16,15 +15,17 @@ public class ResourceTransformers extends ServiceProvider<ResourceTransformer, D
 
 	@Override
 	public boolean canTransform(Node node) {
-		return optional().filter((e) -> e.canTransform(node)).isPresent();
+		return anyMatch((e) -> e.canTransform(node));
 	}
 
 	@Override
 	public void transform(Node source, Resource resource) throws IOException {
-		ResourceTransformer resourceTransformer = optional().filter((e) -> e.canTransform(source)).orElse(null);
-		if (resourceTransformer == null) {
-			throw new UnsupportedOperationException(source.toString());
+		for (ResourceTransformer resourceTransformer : this) {
+			if (resourceTransformer.canTransform(source)) {
+				resourceTransformer.transform(source, resource);
+				return;
+			}
 		}
-		resourceTransformer.transform(source, resource);
+		throw new UnsupportedOperationException(source.toString());
 	}
 }

@@ -3,7 +3,7 @@ package run.soeasy.framework.beans;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
-import run.soeasy.framework.core.transform.property.PropertyMappingService;
+import run.soeasy.framework.core.transform.property.PropertyMapper;
 
 public class BeanUtils {
 	private static final BeanTemplateFactory TEMPLATE_FACTORY = new BeanTemplateFactory();
@@ -12,8 +12,8 @@ public class BeanUtils {
 		return TEMPLATE_FACTORY;
 	}
 
-	public static PropertyMappingService createMapper() {
-		PropertyMappingService mappingService = new PropertyMappingService();
+	public static PropertyMapper createMapper() {
+		PropertyMapper mappingService = new PropertyMapper();
 		mappingService.getMappingRegistry().setMappingProvider(TEMPLATE_FACTORY);
 		return mappingService;
 	}
@@ -25,7 +25,7 @@ public class BeanUtils {
 
 	public static <S, T> boolean copyProperties(S source, @NonNull Class<? extends S> sourceClass, T target,
 			@NonNull Class<? extends T> targetClass, @NonNull PropertyMappingFilter... filters) {
-		PropertyMappingService mappingService = createMapper();
+		PropertyMapper mappingService = createMapper();
 		mappingService.getFilters().registers(Elements.forArray(filters));
 		return mappingService.transform(source, sourceClass, target, targetClass);
 	}

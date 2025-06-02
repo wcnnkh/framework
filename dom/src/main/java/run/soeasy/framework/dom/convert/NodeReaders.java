@@ -4,9 +4,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
-import run.soeasy.framework.core.spi.ServiceProvider;
+import run.soeasy.framework.core.spi.ConfigurableServices;
 
-public class NodeReaders extends ServiceProvider<NodeReader, DOMException> implements NodeReader {
+public class NodeReaders extends ConfigurableServices<NodeReader> implements NodeReader {
 
 	public NodeReaders() {
 		setServiceClass(NodeReader.class);
@@ -14,16 +14,17 @@ public class NodeReaders extends ServiceProvider<NodeReader, DOMException> imple
 
 	@Override
 	public boolean isReadable(TargetDescriptor targetDescriptor) {
-		return optional().filter((e) -> e.isReadable(targetDescriptor)).isPresent();
+		return anyMatch((e) -> e.isReadable(targetDescriptor));
 	}
 
 	@Override
 	public Object readFrom(TargetDescriptor targetDescriptor, Node node) throws DOMException {
-		NodeReader documentReader = optional().filter((e) -> e.isReadable(targetDescriptor)).orElse(null);
-		if (documentReader == null) {
-			throw new UnsupportedOperationException(targetDescriptor.toString());
+		for (NodeReader reader : this) {
+			if (reader.isReadable(targetDescriptor)) {
+				return reader.readFrom(targetDescriptor, node);
+			}
 		}
-		return documentReader.readFrom(targetDescriptor, node);
+		throw new UnsupportedOperationException(targetDescriptor.toString());
 	}
 
 }

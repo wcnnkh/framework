@@ -2,7 +2,6 @@ package run.soeasy.framework.core.transform.templates;
 
 import run.soeasy.framework.core.collection.LookupWrapper;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
-import run.soeasy.framework.core.transform.MappingWrapper;
 
 public interface TemplateMappingWrapper<E extends TypedValueAccessor, W extends TemplateMapping<E>>
 		extends TemplateMapping<E>, MappingWrapper<Object, E, W>, LookupWrapper<Object, E, W>, TemplateWrapper<E, W> {
@@ -13,13 +12,12 @@ public interface TemplateMappingWrapper<E extends TypedValueAccessor, W extends 
 	}
 
 	@Override
-	default TemplateMapping<E> asMap() {
-		return getSource().asMap();
+	default TemplateMapping<E> asMap(boolean uniqueness) {
+		return getSource().asMap(uniqueness);
 	}
 
 	@Override
-	default TemplateMapping<E> asArray() {
-		return getSource().asArray();
+	default TemplateMapping<E> asArray(boolean uniqueness) {
+		return getSource().asArray(uniqueness);
 	}
-
 }

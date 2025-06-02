@@ -29,6 +29,6 @@ public class ReflectionFieldTemplateFactory implements ObjectTemplateFactory<Ref
 		Elements<ReflectionField> fields = getFields(objectClass).filter((e) -> !Modifier.isStatic(e.getModifiers()))
 				.map((field) -> new ReflectionField(field));
 		PropertyTemplate<ReflectionField> template = () -> fields.iterator();
-		return template.asMap();
+		return template.asMap(true);
 	}
 }

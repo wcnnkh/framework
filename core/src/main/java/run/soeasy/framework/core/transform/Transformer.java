@@ -48,5 +48,5 @@ public interface Transformer<S, T> {
 	 * @throws ConversionException
 	 */
 	boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceTypeDescriptor, @NonNull T target,
-			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException;
+			@NonNull TypeDescriptor targetTypeDescriptor);
 }

@@ -9,13 +9,13 @@ import run.soeasy.framework.core.domain.KeyValue;
 @FunctionalInterface
 public interface Template<E extends AccessibleDescriptor> extends Dictionary<Object, E, KeyValue<Object, E>> {
 	@Override
-	default Template<E> asArray() {
-		return this;
+	default Template<E> asArray(boolean uniqueness) {
+		return new ArrayTemplate<>(this, uniqueness);
 	}
 
 	@Override
-	default Template<E> asMap() {
-		return new MapTemplate<>(this);
+	default Template<E> asMap(boolean uniqueness) {
+		return new MapTemplate<>(this, uniqueness);
 	}
 
 	default E get(Object key) throws NoUniqueElementException {

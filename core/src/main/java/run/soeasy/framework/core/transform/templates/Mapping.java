@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform;
+package run.soeasy.framework.core.transform.templates;
 
 import run.soeasy.framework.core.collection.Dictionary;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
@@ -16,12 +16,13 @@ import run.soeasy.framework.core.domain.KeyValue;
 public interface Mapping<K, V extends TypedValueAccessor> extends Dictionary<K, V, KeyValue<K, V>> {
 
 	@Override
-	default Mapping<K, V> asArray() {
-		return this;
+	default Mapping<K, V> asMap(boolean uniqueness) {
+		return new MapMapping<>(this, true, uniqueness);
 	}
 
 	@Override
-	default Mapping<K, V> asMap() {
-		return new MapMapping<>(this);
+	default Mapping<K, V> asArray(boolean uniqueness) {
+		return new ArrayMapping<>(this, uniqueness);
 	}
+
 }

@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
@@ -75,7 +74,7 @@ public class TransformerRegistry implements ConditionalTransformationService {
 
 	@Override
 	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
-			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
 		TransformationService transformationService = getTransformationService(sourceTypeDescriptor,
 				targetTypeDescriptor);
 		if (transformationService != null) {

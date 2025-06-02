@@ -4,10 +4,10 @@ import java.lang.reflect.Array;
 
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.property.PropertyMappingService;
+import run.soeasy.framework.core.transform.property.PropertyMapper;
 import run.soeasy.framework.core.type.ResolvableType;
 
-public class ReflectionCloner extends PropertyMappingService {
+public class ReflectionCloner extends PropertyMapper {
 	private ReflectionCloner() {
 		getMappingRegistry().setMappingProvider(new ReflectionFieldTemplateFactory());
 	}

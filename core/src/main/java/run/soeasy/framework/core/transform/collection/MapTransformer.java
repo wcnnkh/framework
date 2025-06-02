@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform.lang;
+package run.soeasy.framework.core.transform.collection;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,11 +10,12 @@ import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.transform.IdentityTransformer;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class MapTransformer extends IdentityTransformer<Map<Object, Object>> {
+public class MapTransformer implements IdentityTransformer<Map<Object, Object>> {
 	@NonNull
 	private ConversionService keyConversionService;
 	@NonNull
@@ -23,8 +24,7 @@ public class MapTransformer extends IdentityTransformer<Map<Object, Object>> {
 	@Override
 	public boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
-		return super.canTransform(sourceTypeDescriptor, targetTypeDescriptor) && sourceTypeDescriptor.isMap()
-				&& targetTypeDescriptor.isMap() && sourceTypeDescriptor.getName().startsWith("java.");
+		return sourceTypeDescriptor.isMap() && targetTypeDescriptor.isMap();
 	}
 
 	@Override

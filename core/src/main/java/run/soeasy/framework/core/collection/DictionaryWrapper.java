@@ -30,13 +30,13 @@ public interface DictionaryWrapper<K, V, E extends KeyValue<K, V>, W extends Dic
 	}
 
 	@Override
-	default Dictionary<K, V, E> asMap() {
-		return getSource().asMap();
+	default Dictionary<K, V, E> asMap(boolean uniqueness) {
+		return getSource().asMap(uniqueness);
 	}
 
 	@Override
-	default Dictionary<K, V, E> asArray() {
-		return getSource().asArray();
+	default Dictionary<K, V, E> asArray(boolean uniqueness) {
+		return getSource().asArray(uniqueness);
 	}
 
 	@Override

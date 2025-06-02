@@ -4,12 +4,11 @@ package run.soeasy.framework.core.transform.property;
 public interface TypedPropertiesWrapper<W extends TypedProperties>
 		extends TypedProperties, PropertyMappingWrapper<PropertyAccessor, W> {
 	@Override
-	default TypedProperties asMap() {
-		return getSource().asMap();
+	default TypedProperties asMap(boolean uniqueness) {
+		return getSource().asMap(uniqueness);
 	}
-
 	@Override
-	default TypedProperties asArray() {
-		return getSource().asArray();
+	default TypedProperties asArray(boolean uniqueness) {
+		return getSource().asArray(uniqueness);
 	}
 }

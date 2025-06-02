@@ -7,21 +7,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.service.ConditionalConversionService;
-import run.soeasy.framework.core.convert.service.ConvertiblePair;
 import run.soeasy.framework.core.convert.support.AbstractConversionService;
+import run.soeasy.framework.core.type.TypeMapping;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
-	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
+	private static final Set<TypeMapping> CONVERIBLE_PAIRS = new HashSet<TypeMapping>(8);
 
 	static {
-		CONVERIBLE_PAIRS.add(new ConvertiblePair(Date.class, Object.class));
-		CONVERIBLE_PAIRS.add(new ConvertiblePair(Time.class, Object.class));
-		CONVERIBLE_PAIRS.add(new ConvertiblePair(Timestamp.class, Object.class));
-		CONVERIBLE_PAIRS.add(new ConvertiblePair(java.sql.Date.class, Object.class));
+		CONVERIBLE_PAIRS.add(new TypeMapping(Date.class, Object.class));
+		CONVERIBLE_PAIRS.add(new TypeMapping(Time.class, Object.class));
+		CONVERIBLE_PAIRS.add(new TypeMapping(Timestamp.class, Object.class));
+		CONVERIBLE_PAIRS.add(new TypeMapping(java.sql.Date.class, Object.class));
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 	}
 
 	@Override
-	public Set<ConvertiblePair> getConvertibleTypes() {
+	public Set<TypeMapping> getConvertibleTypeMappings() {
 		return CONVERIBLE_PAIRS;
 	}
 

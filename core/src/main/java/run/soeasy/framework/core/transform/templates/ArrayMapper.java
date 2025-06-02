@@ -1,15 +1,18 @@
-package run.soeasy.framework.core.transform;
+package run.soeasy.framework.core.transform.templates;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
 
 /**
- * 随机读写映射的实现
+ * 迭代的方式映射
  * 
  * @author soeasy.run
  *
@@ -20,7 +23,7 @@ import run.soeasy.framework.core.domain.KeyValue;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class MapMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
+public class ArrayMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
 	@NonNull
 	private Mapper<K, V, T> valueMapper;
 
@@ -31,12 +34,18 @@ public class MapMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>>
 			return false;
 		}
 
+		List<KeyValue<K, V>> sourceList = sourceContext.getMapping().getElements().collect(Collectors.toList());
+		if (sourceList.isEmpty()) {
+			return false;
+		}
+
 		int count = 0;
 		for (KeyValue<K, V> target : targetContext.getMapping().getElements()) {
-			Elements<V> sourceElements = sourceContext.getMapping().getValues(target.getKey());
-			for (V value : sourceElements) {
-				if (valueMapper.doMapping(sourceContext.current(KeyValue.of(target.getKey(), value)),
-						targetContext.current(target))) {
+			Iterator<KeyValue<K, V>> sourceIterator = sourceList.iterator();
+			while (sourceIterator.hasNext()) {
+				KeyValue<K, V> source = sourceIterator.next();
+				if (valueMapper.doMapping(sourceContext.current(source), targetContext.nested(target))) {
+					sourceIterator.remove();
 					count++;
 				}
 			}

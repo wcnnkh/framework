@@ -45,12 +45,12 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
 	}
 
 	@Override
-	default PropertyTemplate<T> asMap() {
-		return new MapPropertyTemplate<>(this);
+	default PropertyTemplate<T> asMap(boolean uniqueness) {
+		return new MapPropertyTemplate<>(this, uniqueness);
 	}
 
 	@Override
-	default PropertyTemplate<T> asArray() {
-		return this;
+	default PropertyTemplate<T> asArray(boolean uniqueness) {
+		return new ArrayPropertyTemplate<>(this, uniqueness);
 	}
 }

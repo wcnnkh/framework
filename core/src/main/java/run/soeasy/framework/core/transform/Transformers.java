@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import run.soeasy.framework.core.comparator.ComparableComparator;
 import run.soeasy.framework.core.convert.ConditionalConverter;
-import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 import run.soeasy.framework.core.type.TypeMapping;
@@ -59,7 +58,7 @@ public class Transformers extends ConfigurableServices<Transformer<? super Objec
 
 	@Override
 	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
-			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
 		for (Transformer<? super Object, ? super Object> transformer : this) {
 			if (transformer.canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
 				return transformer.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);

@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transform;
+package run.soeasy.framework.core.transform.templates;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -7,17 +7,33 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.spi.ConfigurableServices;
+import run.soeasy.framework.core.transform.TransformationService;
 import run.soeasy.framework.core.type.InstanceFactory;
 import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 import run.soeasy.framework.core.type.ResolvableType;
 
 @Getter
 @Setter
-public class ObjectMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends DefaultMapper<K, V, T>
+public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends GenericMapper<K, V, T>
 		implements TransformationService, ConversionService, InstanceFactory, MappingProvider<Object, K, V, T> {
 	@NonNull
 	private InstanceFactory instanceFactory = InstanceFactorySupporteds.REFLECTION;
 	private final MappingRegistry<K, V, T> mappingRegistry = new MappingRegistry<>();
+
+	public DefaultMapper() {
+		super(new ConfigurableServices<>(), new ValueMapper<>());
+	}
+
+	@Override
+	public @NonNull ConfigurableServices<MappingFilter<K, V, T>> getFilters() {
+		return (ConfigurableServices<MappingFilter<K, V, T>>) super.getFilters();
+	}
+
+	@Override
+	public @NonNull ValueMapper<K, V, T> getMapper() {
+		return (ValueMapper<K, V, T>) super.getMapper();
+	}
 
 	@Override
 	public boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor,

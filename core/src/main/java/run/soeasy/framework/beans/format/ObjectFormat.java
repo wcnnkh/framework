@@ -18,7 +18,6 @@ import run.soeasy.framework.beans.BeanProperty;
 import run.soeasy.framework.beans.BeanTemplate;
 import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.collection.CollectionFactory;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MultiValueMap;
@@ -196,7 +195,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 				return Collections.emptyMap();
 			}
 
-			Map targetMap = CollectionFactory.createMap(targetType.getType(),
+			Map targetMap = CollectionUtils.createMap(targetType.getType(),
 					targetType.getMapKeyTypeDescriptor().getType(), sourceMap.size());
 			for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 				Object key = entry.getKey();

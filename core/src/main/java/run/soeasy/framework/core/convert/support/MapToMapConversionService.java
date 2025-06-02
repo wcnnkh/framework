@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import run.soeasy.framework.core.collection.CollectionFactory;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
@@ -51,7 +51,7 @@ class MapToMapConversionService extends AbstractConversionService implements Con
 			return sourceMap;
 		}
 
-		Map<Object, Object> targetMap = CollectionFactory.createMap(targetType.getType(),
+		Map<Object, Object> targetMap = CollectionUtils.createMap(targetType.getType(),
 				(keyDesc != null ? keyDesc.getType() : null), sourceMap.size());
 		for (KeyValue<?, ?> entry : targetEntries) {
 			targetMap.put(entry.getKey(), entry.getValue());
