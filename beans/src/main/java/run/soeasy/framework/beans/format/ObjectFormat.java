@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.beans.BeanMapper;
 import run.soeasy.framework.beans.BeanProperty;
-import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
@@ -116,7 +116,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		}
 
 		// 兜底
-		PropertyTemplate<BeanProperty> template = BeanUtils.getMapper().getObjectTemplate(sourceType.getType());
+		PropertyTemplate<BeanProperty> template = BeanMapper.getInstane().getObjectTemplate(sourceType.getType());
 		for (BeanProperty property : template) {
 			String key = property.getName();
 			Object value;
@@ -214,7 +214,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 
 		// 兜底处理
 		Object target = InstanceFactorySupporteds.REFLECTION.newInstance(targetType.getResolvableType());
-		PropertyTemplate<BeanProperty> template = BeanUtils.getMapper().getObjectTemplate(targetType.getType());
+		PropertyTemplate<BeanProperty> template = BeanMapper.getInstane().getObjectTemplate(targetType.getType());
 		for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 			Elements<BeanProperty> elements = template.getValues(entry.getKey());
 			for (BeanProperty element : elements) {

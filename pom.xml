@@ -76,12 +76,27 @@
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
+				<artifactId>json</artifactId>
+				<version>1.8.0</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>messaging</artifactId>
+				<version>1.8.0</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>slf4j</artifactId>
 				<version>1.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>dom</artifactId>
+				<version>1.8.0</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>aop</artifactId>
 				<version>1.8.0</version>
 			</dependency>
 			<dependency>
@@ -171,6 +186,11 @@
 		<module>dom</module>
 		<module>xml</module>
 		<module>testing</module>
+		<module>messaging</module>
+		<module>jdbc</module>
+		<module>json</module>
+		<module>beans</module>
+		<module>aop</module>
 	</modules>
 	<profiles>
 		<profile>

@@ -8,10 +8,10 @@ import lombok.NonNull;
 import run.soeasy.framework.core.transform.property.MapPropertyTemplate;
 import run.soeasy.framework.core.transform.property.PropertyTemplate;
 
-public class BeanTemplate extends MapPropertyTemplate<BeanProperty, PropertyTemplate<BeanProperty>>
+public class BeanPropertyTemplate extends MapPropertyTemplate<BeanProperty, PropertyTemplate<BeanProperty>>
 		implements PropertyTemplate<BeanProperty> {
 
-	public BeanTemplate(@NonNull Class<?> beanClass, BeanInfoFactory beanInfoFactory) {
+	public BeanPropertyTemplate(@NonNull Class<?> beanClass, BeanInfoFactory beanInfoFactory) {
 		super(() -> {
 			BeanInfo beanInfo;
 			try {
