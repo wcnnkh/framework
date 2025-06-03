@@ -186,7 +186,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	}
 
 	default E get(int index) throws IndexOutOfBoundsException {
-		return sequential().filter((e) -> e.getIndex().intValueExact() == index).findFirst()
+		return sequential().filter((e) -> e.getIndex() == index).findFirst()
 				.orElseThrow(() -> new IndexOutOfBoundsException(String.valueOf(index))).getElement();
 	}
 

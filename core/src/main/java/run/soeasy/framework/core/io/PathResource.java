@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
@@ -210,8 +209,8 @@ public class PathResource implements Resource, PathVariable {
 	 * This implementation returns the underlying file's length.
 	 */
 	@Override
-	public BigInteger contentLength() throws IOException {
-		return BigInteger.valueOf(Files.size(this.path));
+	public long contentLength() throws IOException {
+		return Files.size(this.path);
 	}
 
 	/**

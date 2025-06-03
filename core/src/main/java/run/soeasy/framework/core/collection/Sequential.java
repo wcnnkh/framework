@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.collection;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +14,7 @@ public final class Sequential<E> implements Serializable {
 	/**
 	 * 索引
 	 */
-	private final BigInteger index;
+	private final long index;
 	/**
 	 * 对应的元素
 	 */

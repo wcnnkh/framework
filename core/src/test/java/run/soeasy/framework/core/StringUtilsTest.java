@@ -2,21 +2,36 @@ package run.soeasy.framework.core;
 
 import static org.junit.Assert.assertTrue;
 
-import java.math.BigDecimal;
+import java.util.Arrays;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.core.convert.strings.StringConverter;
-
 public class StringUtilsTest {
+	@Test
+	public void indexOf() {
+		String text = "abcdeft";
+		String index = "de";
+		assertTrue(text.indexOf(index) == StringUtils.indexOf(text, index));
+		assertTrue(text.lastIndexOf(index) == StringUtils.lastIndexOf(text, index));
+		assertTrue(text.indexOf(index, 2) == StringUtils.indexOf(text, index, 2));
+		assertTrue(text.lastIndexOf(index, 1) == StringUtils.lastIndexOf(text, index, 1));
+	}
+
+	@Test
+	public void split() {
+		String text = "a,b, c;d e";
+		assertTrue(Arrays.equals(text.split(","), StringUtils.splitToArray(text, false, false, ",")));
+	}
 
 	@Test
 	public void test() {
-		Number value = StringConverter.getInstance().convert("-111", Number.class);
-		System.out.println(value.getClass());
-		System.out.println(value);
-		assertTrue(BigDecimal.class.isAssignableFrom(value.getClass()));
-		Assert.assertTrue(-111 == StringConverter.getInstance().convert("-111", int.class));
+		assertTrue("/".equals(StringUtils.cleanPath("//")));
+		String path = "/a";
+		assertTrue(path.equals(StringUtils.cleanPath(path)));
+		assertTrue("/../a/b".equals(StringUtils.mergePaths("/", "/", "/", "../a", "/b")));
+		assertTrue("/a/b/".equals(StringUtils.mergePaths("/", "/", "/", "/a", "b/")));
+		assertTrue("a/b".equals(StringUtils.cleanPath("a//b")));
+		assertTrue("".equals(StringUtils.mergePaths("", "")));
+		assertTrue("/a".equals(StringUtils.mergePaths("", "/a")));
 	}
 }

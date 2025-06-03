@@ -5,13 +5,12 @@ import java.util.NoSuchElementException;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.math.Counter;
 
 @RequiredArgsConstructor
 class SequentialIterator<E> implements Iterator<Sequential<E>> {
 	@NonNull
 	private final Iterator<? extends E> iterator;
-	private final Counter index = new Counter();
+	private long index = 0;
 
 	@Override
 	public boolean hasNext() {
@@ -25,6 +24,6 @@ class SequentialIterator<E> implements Iterator<Sequential<E>> {
 		}
 
 		E value = iterator.next();
-		return new Sequential<>(index.getAndIncrement(), value, !iterator.hasNext());
+		return new Sequential<>(index++, value, !iterator.hasNext());
 	}
 }

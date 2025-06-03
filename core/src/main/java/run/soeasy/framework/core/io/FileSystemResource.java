@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileChannel;
@@ -250,17 +249,17 @@ public class FileSystemResource extends AbstractResource {
 	 * This implementation returns the underlying File/Path length.
 	 */
 	@Override
-	public BigInteger contentLength() throws IOException {
+	public long contentLength() throws IOException {
 		if (this.file != null) {
 			long length = this.file.length();
 			if (length == 0L && !this.file.exists()) {
 				throw new FileNotFoundException(
 						getDescription() + " cannot be resolved in the file system for checking its content length");
 			}
-			return BigInteger.valueOf(length);
+			return length;
 		} else {
 			try {
-				return BigInteger.valueOf(Files.size(this.filePath));
+				return Files.size(this.filePath);
 			} catch (NoSuchFileException ex) {
 				throw new FileNotFoundException(ex.getMessage());
 			}

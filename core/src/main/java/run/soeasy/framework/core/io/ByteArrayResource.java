@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.NoSuchElementException;
 
 public final class ByteArrayResource extends ByteArrayOutputStream implements Resource {
@@ -35,8 +34,8 @@ public final class ByteArrayResource extends ByteArrayOutputStream implements Re
 	}
 
 	@Override
-	public BigInteger contentLength() throws IOException {
-		return BigInteger.valueOf(count);
+	public long contentLength() throws IOException {
+		return count;
 	}
 
 	@Override

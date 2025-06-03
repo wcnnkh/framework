@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -18,7 +17,6 @@ import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Listable;
 import run.soeasy.framework.core.collection.ListableWrapper;
-import run.soeasy.framework.core.math.Counter;
 
 /**
  * 一个资源的定义
@@ -87,7 +85,7 @@ public interface Resource
 		}
 
 		@Override
-		default BigInteger contentLength() throws IOException {
+		default long contentLength() throws IOException {
 			return getSource().contentLength();
 		}
 
@@ -237,20 +235,20 @@ public interface Resource
 		return false;
 	}
 
-	default BigInteger contentLength() throws IOException {
+	default long contentLength() throws IOException {
 		if (isFile()) {
-			return BigInteger.valueOf(getFile().length());
+			return getFile().length();
 		}
 
 		InputStream is = getInputStream();
 		try {
-			Counter size = new Counter();
+			long size = 0;
 			byte[] buf = new byte[256];
 			int read;
 			while ((read = is.read(buf)) != -1) {
-				size.getAndAdd(BigInteger.valueOf(read));
+				size += read;
 			}
-			return size.get();
+			return size;
 		} finally {
 			is.close();
 		}
