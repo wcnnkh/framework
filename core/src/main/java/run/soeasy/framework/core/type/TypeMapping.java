@@ -5,11 +5,13 @@ import java.util.function.BiPredicate;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import run.soeasy.framework.core.comparator.TypeComparator;
 import run.soeasy.framework.core.domain.KeyValue;
 
 @RequiredArgsConstructor
 @Getter
+@ToString
 public class TypeMapping
 		implements KeyValue<Class<?>, Class<?>>, Comparable<TypeMapping>, BiPredicate<Class<?>, Class<?>> {
 	@NonNull

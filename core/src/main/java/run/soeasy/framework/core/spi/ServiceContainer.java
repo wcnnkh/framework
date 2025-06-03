@@ -18,6 +18,7 @@ import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Provider;
 import run.soeasy.framework.core.collection.Reloadable;
+import run.soeasy.framework.core.comparator.OrderComparator;
 import run.soeasy.framework.core.exchange.Lifecycle;
 import run.soeasy.framework.core.exchange.Listenable;
 import run.soeasy.framework.core.exchange.Listener;
@@ -32,6 +33,10 @@ import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.exchange.event.ChangeType;
 
 public class ServiceContainer<E> extends TreeSetContainer<E> implements Provider<E> {
+
+	public ServiceContainer() {
+		setComparator(OrderComparator.INSTANCE);
+	}
 
 	@RequiredArgsConstructor
 	@Getter

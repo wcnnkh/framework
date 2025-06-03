@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
 import run.soeasy.framework.core.spi.ServiceInjectors;
@@ -66,9 +65,8 @@ public class ConverterRegistry implements ConditionalConversionService {
 
 	private ConversionService getConversionServiceByHash(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
-		KeyValue<Class<?>, Class<?>> keyValue = KeyValue.of(sourceTypeDescriptor.getType(),
-				targetTypeDescriptor.getType());
-		CustomizeConditionalConversionService converter = registry.get(keyValue);
+		TypeMapping typeMapping = new TypeMapping(sourceTypeDescriptor.getType(), targetTypeDescriptor.getType());
+		CustomizeConditionalConversionService converter = registry.get(typeMapping);
 		if (converter != null) {
 			if (converter.canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
 				return converter;

@@ -27,7 +27,7 @@ public class CustomizeConditionalConversionService implements ConditionalConvers
 	@Override
 	public Object convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
-		if (canConvert(sourceTypeDescriptor, sourceTypeDescriptor)) {
+		if (canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
 			return reversibleConverter.convert(source, sourceTypeDescriptor, targetTypeDescriptor);
 		}
 

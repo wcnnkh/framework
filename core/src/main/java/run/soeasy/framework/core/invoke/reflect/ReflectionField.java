@@ -99,4 +99,9 @@ public class ReflectionField implements Property, Serializable {
 	public Object readFrom(Object target) {
 		return ReflectionUtils.get(getField(), target);
 	}
+
+	@Override
+	public String toString() {
+		return getField().toString();
+	}
 }

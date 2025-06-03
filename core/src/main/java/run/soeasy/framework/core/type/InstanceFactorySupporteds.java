@@ -27,8 +27,4 @@ public enum InstanceFactorySupporteds implements InstanceFactory {
 	public Object newInstance(@NonNull ResolvableType requiredType) {
 		return instanceFactory.newInstance(requiredType);
 	}
-
-	public static InstanceFactory all() {
-		return new MultiableInstanceFactory(values());
-	}
 }

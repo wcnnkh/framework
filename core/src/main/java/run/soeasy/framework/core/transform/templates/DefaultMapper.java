@@ -98,4 +98,103 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 			@NonNull Iterable<MappingFilter<K, V, T>> filters) throws ConversionException {
 		return doMapping(new MappingContext<>(sourceMapping), new MappingContext<>(targetMapping), filters);
 	}
+
+	// ------------------------------------以下都是为了继承时方便重写为final方法----------------------------------------------------//
+
+	@Override
+	public final boolean canConvert(@NonNull Class<?> sourceClass, @NonNull Class<?> targetClass) {
+		return ConversionService.super.canConvert(sourceClass, targetClass);
+	}
+
+	@Override
+	public final boolean canConvert(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetTypeDescriptor) {
+		return ConversionService.super.canConvert(sourceClass, targetTypeDescriptor);
+	}
+
+	@Override
+	public final boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull Class<?> targetClass) {
+		return ConversionService.super.canConvert(sourceTypeDescriptor, targetClass);
+	}
+
+	@Override
+	public final boolean canTransform(@NonNull Class<?> sourceClass, @NonNull Class<?> targetClass) {
+		return TransformationService.super.canTransform(sourceClass, targetClass);
+	}
+
+	@Override
+	public final boolean canTransform(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetTypeDescriptor) {
+		return TransformationService.super.canTransform(sourceClass, targetTypeDescriptor);
+	}
+
+	@Override
+	public final boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull Class<?> targetClass) {
+		return TransformationService.super.canTransform(sourceTypeDescriptor, targetClass);
+	}
+
+	@Override
+	public final <U> U convert(@NonNull Object source, @NonNull Class<? extends U> targetClass)
+			throws ConversionException {
+		return ConversionService.super.convert(source, targetClass);
+	}
+
+	@Override
+	public final Object convert(Object source, @NonNull Class<?> sourceClass,
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+		return ConversionService.super.convert(source, sourceClass, targetTypeDescriptor);
+	}
+
+	@Override
+	public final <U> U convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull Class<? extends U> targetClass) throws ConversionException {
+		return ConversionService.super.convert(source, sourceTypeDescriptor, targetClass);
+	}
+
+	@Override
+	public final Object convert(Object source, @NonNull TypeDescriptor targetTypeDescriptor)
+			throws ConversionException {
+		return ConversionService.super.convert(source, targetTypeDescriptor);
+	}
+
+	@Override
+	public final boolean transform(@NonNull Object source, @NonNull Object target) {
+		return TransformationService.super.transform(source, target);
+	}
+
+	@Override
+	public final boolean transform(@NonNull Object source, @NonNull Object target,
+			@NonNull TypeDescriptor targetTypeDescriptor) {
+		return TransformationService.super.transform(source, target, targetTypeDescriptor);
+	}
+
+	@Override
+	public final boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull Object target) {
+		return TransformationService.super.transform(source, sourceTypeDescriptor, target);
+	}
+
+	public final <U> boolean transform(Object source, TypeDescriptor sourceTypeDescriptor, U target,
+			Class<? extends U> targetClass) {
+		return TransformationService.super.transform(source, sourceTypeDescriptor, target, targetClass);
+	}
+
+	public final <S, U> boolean transform(S source, Class<? extends S> sourceClass, U target,
+			Class<? extends U> targetClass) {
+		return TransformationService.super.transform(source, sourceClass, target, targetClass);
+	};
+
+	public final <U> boolean transform(Object source, U target, Class<? extends U> targetClass) {
+		return TransformationService.super.transform(source, target, targetClass);
+	};
+
+	@Override
+	public final <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass,
+			@NonNull Object target) {
+		return TransformationService.super.transform(source, sourceClass, target);
+	}
+
+	@Override
+	public final <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass,
+			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
+		return TransformationService.super.transform(source, sourceClass, target, targetTypeDescriptor);
+	}
 }

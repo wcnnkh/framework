@@ -8,7 +8,6 @@ import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MergedElements;
 import run.soeasy.framework.core.collection.ReloadableElementsWrapper;
-import run.soeasy.framework.core.comparator.OrderComparator;
 import run.soeasy.framework.core.exchange.Lifecycle;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Publisher;
@@ -68,7 +67,6 @@ public class Services<S>
 				return registration;
 			}
 		};
-		setComparator(OrderComparator.INSTANCE);
 		container.setPublisher((events) -> publisher.publish(events.map((e) -> e.convert((s) -> s.getSource()))));
 		injectors.setPublisher(this::onServiceInjectorEvents);
 	}

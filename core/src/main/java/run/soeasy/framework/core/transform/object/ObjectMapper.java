@@ -79,14 +79,19 @@ public class ObjectMapper<E extends Property> extends PropertyMapper
 			if (targetMembers == null) {
 				continue;
 			}
-			if (doMapping(createTypedProperties(entry.getValue(), source), createTypedProperties(targetMembers, target),
-					filters)) {
+
+			TypedProperties sourceProperties = createTypedProperties(entry.getValue(), source);
+			TypedProperties targetProperties = createTypedProperties(targetMembers, target);
+			if (doMapping(sourceProperties, targetProperties, filters)) {
 				changed = true;
 			}
 		}
 		return changed;
 	}
 
+	/**
+	 * 返回类结构，为了解决子类和父类存在相同字段时不知道如何映射的问题
+	 */
 	@Override
 	public ClassMembersLoader<E> getClassPropertyTemplate(Class<?> requiredClass) {
 		return classPropertyTemplateRegistry.getClassPropertyTemplate(requiredClass);
@@ -124,17 +129,15 @@ public class ObjectMapper<E extends Property> extends PropertyMapper
 				}
 				return changed;
 			}
-		} else {
-			if (targetMembersLoader != null && hasMapping(sourceTypeDescriptor)) {
-				TypedProperties sourceMapping = getMapping(source, sourceTypeDescriptor);
-				boolean changed = false;
-				for (ClassMembers<E> classMembers : targetMembersLoader.getElements()) {
-					if (doMapping(sourceMapping, createTypedProperties(classMembers, target), filters)) {
-						changed = true;
-					}
+		} else if (targetMembersLoader != null && hasMapping(sourceTypeDescriptor)) {
+			TypedProperties sourceMapping = getMapping(source, sourceTypeDescriptor);
+			boolean changed = false;
+			for (ClassMembers<E> classMembers : targetMembersLoader.getElements()) {
+				if (doMapping(sourceMapping, createTypedProperties(classMembers, target), filters)) {
+					changed = true;
 				}
-				return changed;
 			}
+			return changed;
 		}
 		return super.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor, filters);
 	}

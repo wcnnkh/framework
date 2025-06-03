@@ -16,8 +16,15 @@ import run.soeasy.framework.core.exchange.event.ChangeType;
 public class TreeSetContainer<E> extends CollectionContainer<E, TreeSet<ElementRegistration<E>>> {
 	private volatile Comparator<? super E> comparator;
 
+	@SuppressWarnings("unchecked")
 	public TreeSetContainer() {
-		super(TreeSet::new);
+		super(() -> {
+			return new TreeSet<>((a, b) -> {
+				// 见TreeMap内部实现
+				Comparable<Object> comparable = (Comparable<Object>) a.getPayload();
+				return comparable.compareTo(b.getPayload());
+			});
+		});
 	}
 
 	public Comparator<? super E> getComparator() {
