@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.EnumSet;
+import java.util.NoSuchElementException;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
@@ -103,15 +104,16 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		return Elements.empty();
 	}
 
-	@SuppressWarnings("unchecked")
 	default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
 		if (isNumber()) {
-			int index = getAsNumber().getAsInt();
-			Enum<?>[] array = EnumSet.allOf(enumType).toArray(new Enum<?>[0]);
-			if (index >= array.length) {
-				throw new IllegalStateException("The enumeration index[" + index + "] does not exist");
+			int ordinal = getAsNumber().getAsInt();
+			EnumSet<T> enumSet = EnumSet.noneOf(enumType);
+			for (T e : enumSet) {
+				if (e.ordinal() == ordinal) {
+					return e;
+				}
 			}
-			return (T) array[index];
+			throw new NoSuchElementException(enumType + "[" + ordinal + "]");
 		}
 
 		String value = getAsString();

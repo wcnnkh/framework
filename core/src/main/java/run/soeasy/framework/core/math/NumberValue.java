@@ -2,8 +2,6 @@ package run.soeasy.framework.core.math;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.EnumSet;
-import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import run.soeasy.framework.core.collection.Elements;
@@ -84,7 +82,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public byte getAsByte() {
+	public byte getAsByte() throws ArithmeticException {
 		BigInteger number = getAsBigInteger();
 		if (number == null) {
 			return 0;
@@ -97,12 +95,12 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public char getAsChar() {
+	public char getAsChar() throws ArithmeticException {
 		return (char) getAsByte();
 	}
 
 	@Override
-	public double getAsDouble() {
+	public double getAsDouble() throws ArithmeticException {
 		BigDecimal number = getAsBigDecimal();
 		if (number == null) {
 			return 0;
@@ -119,26 +117,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
-		BigInteger value = getAsBigInteger();
-		if (value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
-			// 不可能比int还大
-			throw new ArithmeticException(
-					"The ordinal[" + value + "] of enumeration cannot be greater than " + Integer.MAX_VALUE);
-		}
-
-		int ordinal = value.intValue();
-		EnumSet<T> enumSet = EnumSet.noneOf(enumType);
-		for (T e : enumSet) {
-			if (e.ordinal() == ordinal) {
-				return e;
-			}
-		}
-		throw new NoSuchElementException(enumType + "[" + ordinal + "]");
-	}
-
-	@Override
-	public float getAsFloat() {
+	public float getAsFloat() throws ArithmeticException {
 		BigDecimal number = getAsBigDecimal();
 		if (number == null) {
 			return 0;
@@ -151,7 +130,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public int getAsInt() {
+	public int getAsInt() throws ArithmeticException {
 		BigInteger number = getAsBigInteger();
 		if (number == null) {
 			return 0;
@@ -164,7 +143,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public long getAsLong() {
+	public long getAsLong() throws ArithmeticException {
 		BigInteger number = getAsBigInteger();
 		if (number == null) {
 			return 0;
@@ -191,7 +170,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public short getAsShort() {
+	public short getAsShort() throws ArithmeticException {
 		BigInteger number = getAsBigInteger();
 		if (number == null) {
 			return 0;
