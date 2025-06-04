@@ -14,10 +14,6 @@ import run.soeasy.framework.core.math.NumberValue;
 
 public interface TypedValueWrapper<W extends TypedValue>
 		extends TypedValue, TypedDataWrapper<Object, W>, ValueWrapper<W> {
-	@Override
-	default <T> T getAsArray(Class<? extends T> arrayType) {
-		return getSource().getAsArray(arrayType);
-	}
 
 	@Override
 	default BigDecimal getAsBigDecimal() {

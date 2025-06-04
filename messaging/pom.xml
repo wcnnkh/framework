@@ -11,5 +11,10 @@
 			<groupId>run.soeasy.framework</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>run.soeasy.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
 	</dependencies>
 </project>

@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.io;
+package run.soeasy.framework.logging;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -7,8 +7,9 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
+import run.soeasy.framework.core.io.Exportable;
 
-public final class FormatableMessage implements Printable<Appendable>, Serializable, Supplier<String> {
+public final class FormatableMessage implements Exportable, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;
 	private static final String PLACEHOLDER = "{}";
 
@@ -22,7 +23,6 @@ public final class FormatableMessage implements Printable<Appendable>, Serializa
 		return sb.toString();
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void formatPlaceholder(@NonNull Appendable appendable, Object format, String placeholder,
 			Object... args) throws IOException {
 		String text = format == null ? null : format.toString();
@@ -44,9 +44,9 @@ public final class FormatableMessage implements Printable<Appendable>, Serializa
 			if (v == null) {
 				appendable.append("null");
 			} else {
-				if (v instanceof Printable) {
-					Printable<Appendable> printable = (Printable<Appendable>) v;
-					printable.print(appendable);
+				if (v instanceof Exportable) {
+					Exportable printable = (Exportable) v;
+					printable.export(appendable);
 				} else {
 					appendable.append(v.toString());
 				}
@@ -84,7 +84,7 @@ public final class FormatableMessage implements Printable<Appendable>, Serializa
 	}
 
 	@Override
-	public void print(Appendable target) throws IOException {
+	public void export(Appendable target) throws IOException {
 		formatPlaceholder(target, msg, placeholder, args);
 	}
 
@@ -97,7 +97,7 @@ public final class FormatableMessage implements Printable<Appendable>, Serializa
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		try {
-			print(sb);
+			export(sb);
 		} catch (IOException e) {
 			// ignore
 		}

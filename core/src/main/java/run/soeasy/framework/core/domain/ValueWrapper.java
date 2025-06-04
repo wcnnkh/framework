@@ -10,8 +10,8 @@ import run.soeasy.framework.core.math.NumberValue;
 @FunctionalInterface
 public interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
 	@Override
-	default <T> T getAsArray(Class<? extends T> arrayType) {
-		return getSource().getAsArray(arrayType);
+	default <T> T getAsArray(Class<? extends T> componentType) {
+		return getSource().getAsArray(componentType);
 	}
 
 	@Override

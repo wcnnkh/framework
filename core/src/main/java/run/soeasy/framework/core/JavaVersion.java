@@ -5,8 +5,8 @@ import java.io.Serializable;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.CharSequenceTemplate;
+import run.soeasy.framework.core.domain.JoinVersion;
 import run.soeasy.framework.core.domain.Version;
-import run.soeasy.framework.core.domain.Version.JoinVersion;
 import run.soeasy.framework.core.math.IntValue;
 
 public final class JavaVersion extends JoinVersion implements Serializable {

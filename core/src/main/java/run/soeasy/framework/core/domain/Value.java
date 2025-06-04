@@ -3,12 +3,14 @@ package run.soeasy.framework.core.domain;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.EnumSet;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.math.NumberValue;
 import run.soeasy.framework.core.type.ClassUtils;
@@ -17,8 +19,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	public static final Value DEFAULT = new DefaultValue();
 
 	@SuppressWarnings("unchecked")
-	default <T> T getAsArray(Class<? extends T> arrayType) {
-		Class<?> componentType = arrayType.getComponentType();
+	default <T> T getAsArray(Class<? extends T> componentType) {
 		Value[] values = getAsElements().toArray(new Value[0]);
 		int len = values.length;
 		T array = (T) Array.newInstance(componentType, len);
@@ -28,27 +29,46 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 				continue;
 			}
 
-			Object target = value.getAsObject(arrayType);
+			Object target = value.getAsObject(componentType);
 			Array.set(array, i, target);
 		}
 		return array;
 	}
 
 	default BigDecimal getAsBigDecimal() {
-		throw new UnsupportedOperationException("Not a BigDecimal");
+		if (isNumber()) {
+			return getAsNumber().getAsBigDecimal();
+		}
+		String value = getAsString();
+		return value == null ? null : new BigDecimal(value);
 	}
 
 	default BigInteger getAsBigInteger() {
-		throw new UnsupportedOperationException("Not a BigInteger");
+		if (isNumber()) {
+			return getAsNumber().getAsBigInteger();
+		}
+
+		String value = getAsString();
+		return value == null ? null : new BigInteger(value);
 	}
 
 	@Override
 	default boolean getAsBoolean() {
-		throw new UnsupportedOperationException("Not a boolean");
+		if (isNumber()) {
+			return getAsNumber().compareTo(NumberValue.ONE) == 0;
+		}
+
+		String value = getAsString();
+		return value == null ? false : Boolean.parseBoolean(value);
 	}
 
 	default byte getAsByte() {
-		throw new UnsupportedOperationException("Not a byte");
+		if (isNumber()) {
+			return getAsNumber().getAsByte();
+		}
+
+		String value = getAsString();
+		return value == null ? 0 : Byte.parseByte(value);
 	}
 
 	default char getAsChar() {
@@ -61,32 +81,74 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	@Override
 	default double getAsDouble() {
-		throw new UnsupportedOperationException("Not a double");
+		if (isNumber()) {
+			return getAsNumber().getAsDouble();
+		}
+
+		String value = getAsString();
+		return value == null ? 0 : Double.parseDouble(value);
+	}
+
+	/**
+	 * 是否有多个，例如是一个数组或集合
+	 * 
+	 * @see #getAsElements()
+	 * @return
+	 */
+	default boolean isMultiple() {
+		return false;
 	}
 
 	default Elements<? extends Value> getAsElements() {
-		throw new UnsupportedOperationException("Not a Multiple");
+		return Elements.empty();
 	}
 
+	@SuppressWarnings("unchecked")
 	default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
-		throw new UnsupportedOperationException("Not a enum");
+		if (isNumber()) {
+			int index = getAsNumber().getAsInt();
+			Enum<?>[] array = EnumSet.allOf(enumType).toArray(new Enum<?>[0]);
+			if (index >= array.length) {
+				throw new IllegalStateException("The enumeration index[" + index + "] does not exist");
+			}
+			return (T) array[index];
+		}
+
+		String value = getAsString();
+		if (StringUtils.isEmpty(value)) {
+			return null;
+		}
+		return Enum.valueOf(enumType, value);
 	}
 
 	default float getAsFloat() {
-		throw new UnsupportedOperationException("Not a float");
+		if (isNumber()) {
+			return getAsNumber().getAsFloat();
+		}
+
+		String value = getAsString();
+		return value == null ? 0 : Float.parseFloat(value);
 	}
 
 	@Override
 	default int getAsInt() {
-		throw new UnsupportedOperationException("Not a int");
+		if (isNumber()) {
+			return getAsNumber().getAsInt();
+		}
+
+		String value = getAsString();
+		return value == null ? 0 : Integer.parseInt(value);
 	}
 
 	@Override
 	default long getAsLong() {
-		throw new UnsupportedOperationException("Not a long");
-	}
+		if (isNumber()) {
+			return getAsNumber().getAsLong();
+		}
 
-	NumberValue getAsNumber();
+		String value = getAsString();
+		return value == null ? 0 : Long.parseLong(value);
+	}
 
 	default <R> R getAsObject(Class<? extends R> requiredType) {
 		return getAsObject(requiredType, () -> DEFAULT.getAsObject(requiredType));
@@ -134,22 +196,17 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	}
 
 	default short getAsShort() {
-		throw new UnsupportedOperationException("Not a short");
-	}
+		if (isNumber()) {
+			return getAsNumber().getAsShort();
+		}
 
-	String getAsString();
+		String value = getAsString();
+		return value == null ? 0 : Short.parseShort(value);
+	}
 
 	default Version getAsVersion() {
 		return isNumber() ? getAsNumber() : new CharSequenceTemplate(getAsString(), null);
 	}
-
-	/**
-	 * 是否有多个，例如是一个数组或集合
-	 * 
-	 * @see #getAsElements()
-	 * @return
-	 */
-	boolean isMultiple();
 
 	/**
 	 * 是否是数值
@@ -157,4 +214,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 	 * @return
 	 */
 	boolean isNumber();
+
+	NumberValue getAsNumber();
+
+	String getAsString();
 }

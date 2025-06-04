@@ -19,7 +19,7 @@ public abstract class NumberValue extends Number implements Version {
 	public static final NumberValue TEN = new IntValue(10);
 
 	private static RuntimeException createTooHighException(Number number) {
-		return new IllegalStateException("The value[" + number + "] is too high");
+		return new ArithmeticException("The value[" + number + "] is too high");
 	}
 
 	/**
@@ -36,60 +36,6 @@ public abstract class NumberValue extends Number implements Version {
 	 * @return
 	 */
 	public abstract NumberValue add(NumberValue value);
-
-	public boolean canAsByte() {
-		BigInteger number = getAsBigInteger();
-		if (number == null) {
-			return false;
-		}
-
-		return number.compareTo(BigInteger.valueOf(Byte.MAX_VALUE)) <= 0;
-	}
-
-	public boolean canAsDouble() {
-		BigDecimal number = getAsBigDecimal();
-		if (number == null) {
-			return false;
-		}
-
-		return number.compareTo(BigDecimal.valueOf(Double.MAX_VALUE)) <= 0;
-	}
-
-	public boolean canAsFloat() {
-		BigDecimal number = getAsBigDecimal();
-		if (number == null) {
-			return false;
-		}
-
-		return number.compareTo(BigDecimal.valueOf(Float.MAX_VALUE)) <= 0;
-	}
-
-	public boolean canAsInt() {
-		BigInteger number = getAsBigInteger();
-		if (number == null) {
-			return false;
-		}
-
-		return number.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0;
-	}
-
-	public boolean canAsLong() {
-		BigInteger number = getAsBigInteger();
-		if (number == null) {
-			return false;
-		}
-
-		return number.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) <= 0;
-	}
-
-	public boolean canAsShort() {
-		BigInteger number = getAsBigInteger();
-		if (number == null) {
-			return false;
-		}
-
-		return number.compareTo(BigInteger.valueOf(Short.MAX_VALUE)) <= 0;
-	}
 
 	/**
 	 * 除法
@@ -161,7 +107,6 @@ public abstract class NumberValue extends Number implements Version {
 		if (number == null) {
 			return 0;
 		}
-
 		if (number.compareTo(BigDecimal.valueOf(Double.MAX_VALUE)) > 0) {
 			throw createTooHighException(number);
 		}
@@ -178,7 +123,7 @@ public abstract class NumberValue extends Number implements Version {
 		BigInteger value = getAsBigInteger();
 		if (value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
 			// 不可能比int还大
-			throw new IndexOutOfBoundsException(
+			throw new ArithmeticException(
 					"The ordinal[" + value + "] of enumeration cannot be greater than " + Integer.MAX_VALUE);
 		}
 
@@ -269,7 +214,7 @@ public abstract class NumberValue extends Number implements Version {
 	}
 
 	@Override
-	public boolean isMultiple() {
+	public final boolean isMultiple() {
 		return false;
 	}
 
