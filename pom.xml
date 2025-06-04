@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.basc.framework</groupId>
+	<groupId>run.soeasy.framework</groupId>
 	<artifactId>framework</artifactId>
 	<!-- 批量修改模块系统中的版本号 http://www.mojohaus.org/versions-maven-plugin/set-mojo.html -->
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
 	<!-- mvn versions:set -DnewVersion=1.8.0 -DgenerateBackupPoms=false -->
-	<version>1.8.3</version>
+	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>framework</name>
-	<description>一些常见的实现</description>
+	<description>为自定义框架提供抽象和基础实现</description>
 	<url>https://github.com/wcnnkh/${project.name}</url>
 	<licenses>
 		<license>
@@ -37,22 +37,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
-		<swagger.version>2.2.8</swagger.version>
-		<!-- tomcat7只支持jdk1.6及以上的版本 -->
-		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>9.0.73</tomcat.version>
-		<eureka.version>1.10.17</eureka.version>
-		<xstream.version>1.4.18</xstream.version>
-		<jersey.version>1.19.4</jersey.version>
-		<jackson.version>2.13.5</jackson.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<activemq.version>5.16.6</activemq.version>
 		<lombok.version>1.18.26</lombok.version>
-		<jakarta.validation-api.version>2.0.2</jakarta.validation-api.version>
-		<validation-api.version>2.0.1.Final</validation-api.version>
-		<jms-api.version>2.0.3</jms-api.version>
-		<management.j2ee-api.version>1.1.4</management.j2ee-api.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -62,173 +48,9 @@
 				<version>${lombok.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/jakarta.jms/jakarta.jms-api -->
-			<dependency>
-				<groupId>jakarta.jms</groupId>
-				<artifactId>jakarta.jms-api</artifactId>
-				<version>${jms-api.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-			<dependency>
-				<groupId>jakarta.validation</groupId>
-				<artifactId>jakarta.validation-api</artifactId>
-				<version>${jakarta.validation-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>${validation-api.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/jakarta.management.j2ee/jakarta.management.j2ee-api -->
-			<dependency>
-				<groupId>jakarta.management.j2ee</groupId>
-				<artifactId>jakarta.management.j2ee-api</artifactId>
-				<version>${management.j2ee-api.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-client</artifactId>
-				<version>${activemq.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.apache.geronimo.specs</groupId>
-						<artifactId>geronimo-jms_1.1_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.geronimo.specs</groupId>
-						<artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker -->
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-broker</artifactId>
-				<version>${activemq.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store -->
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-kahadb-store</artifactId>
-				<version>${activemq.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-xml</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.netflix.eureka</groupId>
-				<artifactId>eureka-client</artifactId>
-				<version>${eureka.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.servlet</groupId>
-						<artifactId>servlet-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.ws.rs</groupId>
-						<artifactId>jsr311-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.netflix.archaius</groupId>
-						<artifactId>archaius-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.github.vlsi.compactmap</groupId>
-						<artifactId>compactmap</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.google.code.findbugs</groupId>
-						<artifactId>jsr305</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.google.code.findbugs</groupId>
-						<artifactId>annotations</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.netflix.eureka</groupId>
-				<artifactId>eureka-core</artifactId>
-				<version>${eureka.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.servlet</groupId>
-						<artifactId>servlet-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.netflix.archaius</groupId>
-						<artifactId>archaius-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<artifactId>log4j</artifactId>
-						<groupId>log4j</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>com.netflix.blitz4j</artifactId>
-						<groupId>blitz4j</groupId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.google.code.findbugs</groupId>
-						<artifactId>annotations</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.google.code.findbugs</groupId>
-						<artifactId>jsr305</artifactId>
-					</exclusion>
-					<exclusion>
-						<artifactId>jackson-dataformat-xml</artifactId>
-						<groupId>com.fasterxml.jackson.dataformat</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>*</artifactId>
-						<groupId>com.amazonaws</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-core</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-client</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey.contribs</groupId>
-				<artifactId>jersey-apache-client4</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-servlet</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-nop -->
@@ -237,418 +59,56 @@
 				<artifactId>slf4j-simple</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
 			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>7.3.1</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/cglib/cglib -->
-			<dependency>
-				<groupId>cglib</groupId>
-				<artifactId>cglib</artifactId>
-				<version>3.3.0</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.9.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-annotations</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-jaxrs2 -->
-			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-			<dependency>
-				<groupId>javax.ws.rs</groupId>
-				<artifactId>javax.ws.rs-api</artifactId>
-				<version>2.1.1</version>
-			</dependency>
-			<!-- tomcat -->
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-el</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-websocket</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-core</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-jasper</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-			<!-- tomcat -->
-			<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
-			<dependency>
-				<groupId>javax.websocket</groupId>
-				<artifactId>javax.websocket-api</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>core</artifactId>
-				<version>1.8.3</version>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>context</artifactId>
-				<version>1.8.3</version>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>beans</artifactId>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>transaction</artifactId>
-				<version>1.8.3</version>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>jdbc</artifactId>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>tcc</artifactId>
-				<version>1.8.3</version>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>json</artifactId>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>messageing</artifactId>
-				<version>1.8.3</version>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>messaging</artifactId>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>boot</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>sql</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>log4j2</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>cloud</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>lucene</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>web</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>rpc</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>orm</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>yaml</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>mysql</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>oracle</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>sqlserver</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>sqlite</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>websocket</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>dubbo</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>timer</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>mvc</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>security</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>data</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>memcached</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>xmemcached</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>redis</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>jedis</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>druid</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>hikaricp</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>hibernate</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>ibatis</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>db</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>amqp</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>jms</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>activemq-client</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>microsoft</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>mail</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>rabbitmq</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>upload</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>zookeeper</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>zookeeper-server</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>netflix-eureka-client</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>netflix-eureka-server</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>netflix-hystrix</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>feign</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>tomcat</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>quartz</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>rmi</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>protobuf</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>kryo</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>fastjson</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>hessian</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>slf4j</artifactId>
-				<version>1.8.3</version>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>consistency</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>jackson</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>seata</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>apollo-client</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>dom</artifactId>
-				<version>1.8.3</version>
+				<version>0.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>aop</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>xml</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>swagger</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>jpa</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>validation</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>csv</artifactId>
-				<version>1.8.3</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>console</artifactId>
-				<version>1.8.3</version>
+				<version>0.0.1</version>
 			</dependency>
 			<!-- 测试 -->
 			<dependency>
-				<groupId>io.basc.framework</groupId>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>testing</artifactId>
-				<version>1.8.3</version>
+				<version>0.0.1</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- 测试 -->
@@ -658,17 +118,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
-		<dependency>
-			<groupId>javax.websocket</groupId>
-			<artifactId>javax.websocket-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -716,29 +165,9 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.11.0</version>
 				</plugin>
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>jarjar-maven-plugin</artifactId>
-					<version>1.9</version>
-				</plugin>
-				<!-- 打包成war时使用的插件 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>3.3.2</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<packagingExcludes>
-							WEB-INF/lib/tomcat-*.jar
-						</packagingExcludes>
-				</configuration>
-			</plugin>
 			<plugin>
 				<!-- java编译插件 -->
 				<groupId>org.apache.maven.plugins</groupId>
@@ -753,75 +182,15 @@
 	</build>
 	<modules>
 		<module>core</module>
-		<module>upload</module>
-		<module>freemarker</module>
-		<module>timer</module>
-		<module>db</module>
-		<module>data</module>
-		<module>mvc</module>
-		<module>websocket</module>
-		<module>cloud</module>
-		<module>security</module>
-		<module>microsoft</module>
-		<module>dubbo</module>
-		<module>zookeeper</module>
-		<module>netflix-eureka-client</module>
-		<module>netflix-eureka-server</module>
-		<module>netflix-hystrix</module>
-		<module>feign</module>
-		<module>tomcat</module>
-		<module>web</module>
-		<module>memcached</module>
-		<module>redis</module>
-		<module>hibernate</module>
-		<module>ibatis</module>
-		<module>druid</module>
-		<module>hikaricp</module>
-		<module>sqlite</module>
-		<module>mysql</module>
-		<module>lucene</module>
-		<module>yaml</module>
-		<module>log4j</module>
-		<module>log4j2</module>
-		<module>mail</module>
-		<module>quartz</module>
-		<module>rmi</module>
-		<module>transaction</module>
-		<module>boot</module>
-		<module>sql</module>
-		<module>tcc</module>
-		<module>messageing</module>
-		<module>context</module>
-		<module>jms</module>
-		<module>amqp</module>
-		<module>rabbitmq</module>
-		<module>protobuf</module>
-		<module>kryo</module>
-		<module>fastjson</module>
-		<module>hessian</module>
-		<module>rpc</module>
-		<module>seata</module>
-		<module>nacos-client</module>
 		<module>slf4j</module>
-		<module>consistency</module>
-		<module>jackson</module>
-		<module>orm</module>
-		<module>apollo-client</module>
 		<module>dom</module>
-		<module>swagger</module>
-		<module>jpa</module>
-		<module>validation</module>
-		<module>oracle</module>
-		<module>sqlserver</module>
 		<module>xml</module>
 		<module>testing</module>
-		<module>zookeeper-server</module>
-		<module>jedis</module>
-		<module>xmemcached</module>
-		<module>console</module>
-		<module>csv</module>
-		<module>activemq-broker</module>
-		<module>activemq-client</module>
+		<module>messaging</module>
+		<module>jdbc</module>
+		<module>json</module>
+		<module>beans</module>
+		<module>aop</module>
 	</modules>
 	<profiles>
 		<profile>

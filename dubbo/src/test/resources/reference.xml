@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans>
-	<dubbo:application name="dubbo-hello" enableFileCache="false"></dubbo:application>
-	<dubbo:registry address="zookeeper://localhost:2181"></dubbo:registry>
-	<dubbo:metadata-report address="zookeeper://localhost:2181"></dubbo:metadata-report>
-	<dubbo:reference package="io.basc.framework.dubbo.test.reference" check="false"></dubbo:reference>
-</beans>
