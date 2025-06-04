@@ -4,6 +4,12 @@ import java.io.IOException;
 
 import run.soeasy.framework.core.io.Exportable;
 
+/**
+ * 所有的JSON元素应该都实现此接口
+ * 
+ * @author soeasy.run
+ *
+ */
 public interface JsonElement extends Exportable {
 	default boolean isJsonObject() {
 		return this instanceof JsonObject;

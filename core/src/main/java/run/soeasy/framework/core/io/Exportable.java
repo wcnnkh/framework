@@ -10,5 +10,11 @@ import java.io.IOException;
  */
 @FunctionalInterface
 public interface Exportable {
+	/**
+	 * 导出
+	 * 
+	 * @param target
+	 * @throws IOException
+	 */
 	void export(Appendable target) throws IOException;
 }
