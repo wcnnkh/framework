@@ -68,7 +68,6 @@ public interface CollectionWrapper<E, W extends Collection<E>> extends Collectio
 		getSource().clear();
 	}
 
-
 	@Override
 	default Stream<E> parallelStream() {
 		return getSource().parallelStream();
