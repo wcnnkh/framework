@@ -14,7 +14,7 @@
 
  aop   				面向切面编程，抽象了切面操作，默认实现jdk代理  
  beans 				对java bean的相关操作  
- core 				核心模块(除testing模块其他模块都引用此模块)，提供常见的工具的和种抽象  
+ core 				核心模块(除testing模块其他模块都引用此模块)，提供常见的工具和各种抽象  
  dom     			提供dom读写的抽象和java原生实现  
  jdbc				对jdbc操作进行简化抽象  
  json				对json的简单操作(目前仅实现对象转json字符串)  

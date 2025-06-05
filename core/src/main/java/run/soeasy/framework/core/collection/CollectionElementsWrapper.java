@@ -2,6 +2,7 @@ package run.soeasy.framework.core.collection;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 public interface CollectionElementsWrapper<E, W extends Collection<E>>
@@ -40,6 +41,11 @@ public interface CollectionElementsWrapper<E, W extends Collection<E>>
 	@Override
 	default <T> T[] toArray(T[] array) {
 		return CollectionWrapper.super.toArray(array);
+	}
+	
+	@Override
+	default <A> A[] toArray(IntFunction<A[]> generator) {
+		return IterableElementsWrapper.super.toArray(generator);
 	}
 
 }
