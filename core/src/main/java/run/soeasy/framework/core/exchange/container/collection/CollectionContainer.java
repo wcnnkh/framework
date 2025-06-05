@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
@@ -315,6 +316,11 @@ public class CollectionContainer<E, C extends Collection<ElementRegistration<E>>
 	@Override
 	public <T> T[] toArray(T[] array) {
 		return super.toArray(array);
+	}
+	
+	@Override
+	public <A> A[] toArray(IntFunction<A[]> generator) {
+		return super.toArray(generator);
 	}
 
 	private final Registrations<ElementRegistration<E>> writeRegistrations(
