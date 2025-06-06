@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.io.FilenameUtils;
 
 /**
  * Assertion utility class that assists in validating arguments. Useful for
@@ -536,61 +535,5 @@ public abstract class Assert {
 	 */
 	public static void state(boolean expression) {
 		state(expression, "[Assertion failed] - this state invariant must be true");
-	}
-
-	/**
-	 * 安全路径验证
-	 * 
-	 * @see FilenameUtils#normalize(String)
-	 * @see #secureFilePath(String, Supplier)
-	 * @param path
-	 * @return 返回安全路径
-	 * @throws IllegalStateException
-	 */
-	public static String secureFilePath(String path) throws IllegalStateException {
-		return secureFilePath(path, () -> "Unsafe file path: " + path);
-	}
-
-	/**
-	 * 安全路径验证
-	 * 
-	 * @see FilenameUtils#normalize(String)
-	 * @param path
-	 * @param message
-	 * @return 返回安全路径
-	 * @throws IllegalStateException 不安全的路径
-	 */
-	public static String secureFilePath(String path, Supplier<String> message) throws IllegalStateException {
-		if (StringUtils.isEmpty(path)) {
-			return path;
-		}
-
-		String pathToUse = FilenameUtils.normalize(path);
-		if (pathToUse == null) {
-			throw new IllegalStateException(message.get());
-		}
-
-		if (pathToUse.indexOf("../") != -1 || pathToUse.indexOf("..\\") != -1) {
-			throw new IllegalStateException(message.get());
-		}
-		return pathToUse;
-	}
-
-	/**
-	 * 安全的路径参数验证
-	 * 
-	 * @see FilenameUtils#normalize(String)
-	 * @param path 路径
-	 * @param name 参数名
-	 * @return 返回安全的路径
-	 * @throws IllegalArgumentException 不安全的路径
-	 */
-	public static String secureFilePathArgument(String path, String name) throws IllegalArgumentException {
-		try {
-			return secureFilePath(path);
-		} catch (IllegalStateException e) {
-			throw new IllegalArgumentException("[Assertion failed] - [" + name + "] argument is unsafe path: " + path,
-					e);
-		}
 	}
 }

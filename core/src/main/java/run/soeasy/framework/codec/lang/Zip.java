@@ -35,15 +35,16 @@ public class Zip implements BytesCodec {
 			ZipEntry zipEntry = null;
 			while (ens.hasMoreElements()) {
 				zipEntry = ens.nextElement();
-				File f = new File(target, Assert.secureFilePath(zipEntry.getName()));
+				File entityFile = new File(target, zipEntry.getName());
+				entityFile = entityFile.getCanonicalFile();
 				if (zipEntry.isDirectory()) {
 					// dirName = dirName.substring(0, dirName.length() - 1);
-					f.mkdirs();
+					entityFile.mkdirs();
 				} else {
-					f.createNewFile();
+					entityFile.createNewFile();
 					InputStream is = zipFile.getInputStream(zipEntry);
 					try {
-						FileUtils.copyInputStreamToFile(is, f);
+						FileUtils.copyInputStreamToFile(is, entityFile);
 						// 出现异常应该中止吗？
 					} finally {
 						IOUtils.close(is);
