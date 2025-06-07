@@ -21,8 +21,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -108,118 +106,6 @@ public final class IOUtils {
 
 	public static InputStream limitedInputStream(final InputStream is, final long limit) {
 		return new LimitedInputStream(is, limit);
-	}
-
-	public static InputStream markSupportedInputStream(final InputStream is, final int markBufferSize) {
-		if (is.markSupported()) {
-			return is;
-		}
-
-		return new InputStream() {
-			byte[] mMarkBuffer;
-
-			boolean mInMarked = false;
-			boolean mInReset = false;
-			private int mPosition = 0;
-			private int mCount = 0;
-
-			boolean mDry = false;
-
-			@Override
-			public int read() throws IOException {
-				if (!mInMarked) {
-					return is.read();
-				} else {
-					if (mPosition < mCount) {
-						byte b = mMarkBuffer[mPosition++];
-						return b & 0xFF;
-					}
-
-					if (!mInReset) {
-						if (mDry)
-							return -1;
-
-						if (null == mMarkBuffer) {
-							mMarkBuffer = new byte[markBufferSize];
-						}
-						if (mPosition >= markBufferSize) {
-							throw new IOException("Mark buffer is full!");
-						}
-
-						int read = is.read();
-						if (-1 == read) {
-							mDry = true;
-							return -1;
-						}
-
-						mMarkBuffer[mPosition++] = (byte) read;
-						mCount++;
-
-						return read;
-					} else {
-						// mark buffer is used, exit mark status!
-						mInMarked = false;
-						mInReset = false;
-						mPosition = 0;
-						mCount = 0;
-
-						return is.read();
-					}
-				}
-			}
-
-			/**
-			 * NOTE: the <code>readlimit</code> argument for this class has no meaning.
-			 */
-			@Override
-			public synchronized void mark(int readlimit) {
-				mInMarked = true;
-				mInReset = false;
-
-				// mark buffer is not empty
-				int count = mCount - mPosition;
-				if (count > 0) {
-					System.arraycopy(mMarkBuffer, mPosition, mMarkBuffer, 0, count);
-					mCount = count;
-					mPosition = 0;
-				}
-			}
-
-			@Override
-			public synchronized void reset() throws IOException {
-				if (!mInMarked) {
-					throw new IOException("should mark befor reset!");
-				}
-
-				mInReset = true;
-				mPosition = 0;
-			}
-
-			@Override
-			public boolean markSupported() {
-				return true;
-			}
-
-			@Override
-			public int available() throws IOException {
-				int available = is.available();
-
-				if (mInMarked && mInReset)
-					available += mCount - mPosition;
-
-				return available;
-			}
-		};
-	}
-
-	public static InputStream markSupportedInputStream(final InputStream is) {
-		return markSupportedInputStream(is, 1024);
-	}
-
-	public static void skipUnusedStream(InputStream is) throws IOException {
-		if (is.available() > 0) {
-			is.skip(is.available());
-		}
 	}
 
 	/**
@@ -308,14 +194,6 @@ public final class IOUtils {
 		return read(reader, DEFAULT_READ_BUFFER_SIZE);
 	}
 
-	public static void close(Closeable closeable) throws IOException {
-		if (closeable == null) {
-			return;
-		}
-
-		closeable.close();
-	}
-
 	public static void close(Closeable... closeables) throws IOException {
 		if (closeables == null) {
 			return;
@@ -342,46 +220,6 @@ public final class IOUtils {
 		}
 	}
 
-	/**
-	 * Unconditionally close a <code>Writer</code>.
-	 * <p>
-	 * Equivalent to {@link Writer#close()}, except any exceptions will be ignored.
-	 * This is typically used in finally blocks.
-	 * <p>
-	 * Example code:
-	 * 
-	 * <pre>
-	 * Writer out = null;
-	 * try {
-	 * 	out = new StringWriter();
-	 * 	out.write(&quot;Hello World&quot;);
-	 * 	out.close(); // close errors are handled
-	 * } catch (Exception e) {
-	 * 	// error handling
-	 * } finally {
-	 * 	IOUtils.closeQuietly(out);
-	 * }
-	 * </pre>
-	 *
-	 * @param closeable the Writer to close, may be null or already closed
-	 */
-	public static void closeQuietly(Closeable closeable) {
-		closeQuietly(closeable, null);
-	}
-
-	public static void closeQuietly(final Closeable closeable,
-			final java.util.function.Consumer<? super IOException> consumer) {
-		if (closeable != null) {
-			try {
-				closeable.close();
-			} catch (final IOException e) {
-				if (consumer != null) {
-					consumer.accept(e);
-				}
-			}
-		}
-	}
-
 	public static void closeQuietly(Closeable... closeables) {
 		if (closeables == null) {
 			return;
@@ -392,7 +230,11 @@ public final class IOUtils {
 				continue;
 			}
 
-			closeQuietly(closeable);
+			try {
+				closeable.close();
+			} catch (final IOException e) {
+				// ignore
+			}
 		}
 	}
 
@@ -489,46 +331,6 @@ public final class IOUtils {
 		}
 
 		return data;
-	}
-
-	/**
-	 * Get the contents of a <code>Reader</code> as a <code>byte[]</code> using the
-	 * default character encoding of the platform.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * 
-	 * @param input the <code>Reader</code> to read from
-	 * @return the requested byte array
-	 * @throws NullPointerException if the input is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static byte[] toByteArray(Reader input) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		copy(input, output);
-		return output.toByteArray();
-	}
-
-	/**
-	 * Get the contents of a <code>Reader</code> as a <code>byte[]</code> using the
-	 * specified character encoding.
-	 * <p>
-	 * Character encoding names can be found at
-	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * 
-	 * @param input    the <code>Reader</code> to read from
-	 * @param encoding the encoding to use, null means platform default
-	 * @return the requested byte array
-	 * @throws NullPointerException if the input is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static byte[] toByteArray(Reader input, String encoding) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		copy(input, output, encoding);
-		return output.toByteArray();
 	}
 
 	// read char[]
@@ -630,57 +432,6 @@ public final class IOUtils {
 		return StringUtils.hasText(encoding) ? out.toString(encoding) : out.toString();
 	}
 
-	/**
-	 * Gets the contents at the given URI.
-	 * 
-	 * @param uri The URI source.
-	 * @return The contents of the URL as a String.
-	 * @throws IOException if an I/O exception occurs.
-	 */
-	public static String toString(URI uri) throws IOException {
-		return toString(uri, null);
-	}
-
-	/**
-	 * Gets the contents at the given URI.
-	 * 
-	 * @param uri      The URI source.
-	 * @param encoding The encoding name for the URL contents.
-	 * @return The contents of the URL as a String.
-	 * @throws IOException if an I/O exception occurs.
-	 */
-	public static String toString(URI uri, String encoding) throws IOException {
-		return toString(uri.toURL(), encoding);
-	}
-
-	/**
-	 * Gets the contents at the given URL.
-	 * 
-	 * @param url The URL source.
-	 * @return The contents of the URL as a String.
-	 * @throws IOException if an I/O exception occurs.
-	 */
-	public static String toString(URL url) throws IOException {
-		return toString(url, null);
-	}
-
-	/**
-	 * Gets the contents at the given URL.
-	 * 
-	 * @param url      The URL source.
-	 * @param encoding The encoding name for the URL contents.
-	 * @return The contents of the URL as a String.
-	 * @throws IOException if an I/O exception occurs.
-	 */
-	public static String toString(URL url, String encoding) throws IOException {
-		InputStream inputStream = url.openStream();
-		try {
-			return toString(inputStream, encoding);
-		} finally {
-			inputStream.close();
-		}
-	}
-
 	// readLines
 	// -----------------------------------------------------------------------
 	/**
@@ -748,64 +499,6 @@ public final class IOUtils {
 	public static Stream<String> readLines(BufferedReader bufferedReader) {
 		LineIterator iterator = new LineIterator(bufferedReader);
 		return CollectionUtils.unknownSizeStream(iterator);
-	}
-
-	// -----------------------------------------------------------------------
-	/**
-	 * Convert the specified CharSequence to an input stream, encoded as bytes using
-	 * the default character encoding of the platform.
-	 *
-	 * @param input the CharSequence to convert
-	 * @return an input stream
-	 */
-	public static InputStream toInputStream(CharSequence input) {
-		return toInputStream(input.toString());
-	}
-
-	/**
-	 * Convert the specified CharSequence to an input stream, encoded as bytes using
-	 * the specified character encoding.
-	 * <p>
-	 * Character encoding names can be found at
-	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
-	 *
-	 * @param input    the CharSequence to convert
-	 * @param encoding the encoding to use, null means platform default
-	 * @throws IOException if the encoding is invalid
-	 * @return an input stream
-	 */
-	public static InputStream toInputStream(CharSequence input, String encoding) throws IOException {
-		return toInputStream(input.toString(), encoding);
-	}
-
-	// -----------------------------------------------------------------------
-	/**
-	 * Convert the specified string to an input stream, encoded as bytes using the
-	 * default character encoding of the platform.
-	 *
-	 * @param input the string to convert
-	 * @return an input stream
-	 */
-	public static InputStream toInputStream(String input) {
-		byte[] bytes = input.getBytes();
-		return new ByteArrayInputStream(bytes);
-	}
-
-	/**
-	 * Convert the specified string to an input stream, encoded as bytes using the
-	 * specified character encoding.
-	 * <p>
-	 * Character encoding names can be found at
-	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
-	 *
-	 * @param input    the string to convert
-	 * @param encoding the encoding to use, null means platform default
-	 * @throws IOException if the encoding is invalid
-	 * @return an input stream
-	 */
-	public static InputStream toInputStream(String input, String encoding) throws IOException {
-		byte[] bytes = encoding != null ? input.getBytes(encoding) : input.getBytes();
-		return new ByteArrayInputStream(bytes);
 	}
 
 	// write byte[]
@@ -1420,66 +1113,6 @@ public final class IOUtils {
 		return totalRead;
 	}
 
-	/**
-	 * Copy chars from a <code>Reader</code> to bytes on an
-	 * <code>OutputStream</code> using the default character encoding of the
-	 * platform, and calling flush.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * <p>
-	 * Due to the implementation of OutputStreamWriter, this method performs a
-	 * flush.
-	 * <p>
-	 * This method uses {@link OutputStreamWriter}.
-	 *
-	 * @param input  the <code>Reader</code> to read from
-	 * @param output the <code>OutputStream</code> to write to
-	 * @throws NullPointerException if the input or output is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static void copy(Reader input, OutputStream output) throws IOException {
-		OutputStreamWriter out = new OutputStreamWriter(output);
-		copy(input, out);
-		// XXX Unless anyone is planning on rewriting OutputStreamWriter, we
-		// have to flush here.
-		out.flush();
-	}
-
-	/**
-	 * Copy chars from a <code>Reader</code> to bytes on an
-	 * <code>OutputStream</code> using the specified character encoding, and calling
-	 * flush.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * <p>
-	 * Character encoding names can be found at
-	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
-	 * <p>
-	 * Due to the implementation of OutputStreamWriter, this method performs a
-	 * flush.
-	 * <p>
-	 * This method uses {@link OutputStreamWriter}.
-	 *
-	 * @param input    the <code>Reader</code> to read from
-	 * @param output   the <code>OutputStream</code> to write to
-	 * @param encoding the encoding to use, null means platform default
-	 * @throws NullPointerException if the input or output is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static void copy(Reader input, OutputStream output, String encoding) throws IOException {
-		if (encoding == null) {
-			copy(input, output);
-		} else {
-			OutputStreamWriter out = new OutputStreamWriter(output, encoding);
-			copy(input, out);
-			// XXX Unless anyone is planning on rewriting OutputStreamWriter,
-			// we have to flush here.
-			out.flush();
-		}
-	}
-
 	// content equals
 	// -----------------------------------------------------------------------
 	/**
@@ -2027,40 +1660,6 @@ public final class IOUtils {
 	}
 
 	/**
-	 * Copy the contents of the given byte array to the given OutputStream. Leaves
-	 * the stream open when done.
-	 * 
-	 * @param in  the byte array to copy from
-	 * @param out the OutputStream to copy to
-	 * @throws IOException in case of I/O errors
-	 */
-	public static void copy(byte[] in, OutputStream out) throws IOException {
-		Assert.notNull(in, "No input byte array specified");
-		Assert.notNull(out, "No OutputStream specified");
-
-		out.write(in);
-	}
-
-	/**
-	 * Copy the contents of the given String to the given output OutputStream.
-	 * Leaves the stream open when done.
-	 * 
-	 * @param in      the String to copy from
-	 * @param charset the Charset
-	 * @param out     the OutputStream to copy to
-	 * @throws IOException in case of I/O errors
-	 */
-	public static void copy(String in, Charset charset, OutputStream out) throws IOException {
-		Assert.notNull(in, "No input String specified");
-		Assert.notNull(charset, "No charset specified");
-		Assert.notNull(out, "No OutputStream specified");
-
-		Writer writer = new OutputStreamWriter(out, charset);
-		writer.write(in);
-		writer.flush();
-	}
-
-	/**
 	 * Copy a range of content of the given InputStream to the given OutputStream.
 	 * <p>
 	 * If the specified range exceeds the length of the InputStream, this copies up
@@ -2075,10 +1674,8 @@ public final class IOUtils {
 	 * @return the number of bytes copied
 	 * @throws IOException in case of I/O errors
 	 */
-	public static long copyRange(InputStream in, OutputStream out, long start, long end) throws IOException {
-		Assert.notNull(in, "No InputStream specified");
-		Assert.notNull(out, "No OutputStream specified");
-
+	public static long copyRange(@NonNull InputStream in, @NonNull OutputStream out, long start, long end)
+			throws IOException {
 		long skipped = in.skip(start);
 		if (skipped < start) {
 			throw new IOException("Skipped only " + skipped + " bytes out of " + start + " required");
@@ -2109,8 +1706,7 @@ public final class IOUtils {
 	 * @return the number of bytes read
 	 * @throws IOException in case of I/O errors
 	 */
-	public static long drain(InputStream in) throws IOException {
-		Assert.notNull(in, "No InputStream specified");
+	public static long drain(@NonNull InputStream in) throws IOException {
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 		int bytesRead = -1;
 		long byteCount = 0;
@@ -2135,8 +1731,7 @@ public final class IOUtils {
 	 * @param in 输入
 	 * @return
 	 */
-	public static InputStream nonClosing(InputStream in) {
-		Assert.notNull(in, "No InputStream specified");
+	public static InputStream nonClosing(@NonNull InputStream in) {
 		return new NonClosingInputStream(in);
 	}
 
@@ -2146,8 +1741,7 @@ public final class IOUtils {
 	 * @param out
 	 * @return
 	 */
-	public static OutputStream nonClosing(OutputStream out) {
-		Assert.notNull(out, "No OutputStream specified");
+	public static OutputStream nonClosing(@NonNull OutputStream out) {
 		return new NonClosingOutputStream(out);
 	}
 
@@ -2170,7 +1764,8 @@ public final class IOUtils {
 	 * @param separator
 	 * @return
 	 */
-	public static Stream<CharSequence> split(Readable source, CharBuffer buffer, CharSequence separator) {
+	public static Stream<CharSequence> split(@NonNull Readable source, @NonNull CharBuffer buffer,
+			@NonNull CharSequence separator) {
 		SplitReadableIterator iterator = new SplitReadableIterator(source, buffer, separator);
 		return CollectionUtils.unknownSizeStream(iterator);
 	}

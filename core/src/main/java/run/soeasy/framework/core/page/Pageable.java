@@ -3,8 +3,8 @@ package run.soeasy.framework.core.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 
 public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
@@ -55,8 +55,7 @@ public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
 	 * @param predicate
 	 * @return
 	 */
-	default Pageable<K, T> filter(Predicate<? super T> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	default Pageable<K, T> filter(@NonNull Predicate<? super T> predicate) {
 		return convert((elements) -> elements.filter(predicate));
 	}
 
@@ -80,8 +79,7 @@ public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
 	 * @param elementMapper
 	 * @return
 	 */
-	default <TK, TT> Pageable<TK, TT> map(Codec<K, TK> cursorIdCodec, Function<? super T, ? extends TT> elementMapper) {
-		Assert.requiredArgument(elementMapper != null, "elementMapper");
+	default <TK, TT> Pageable<TK, TT> map(Codec<K, TK> cursorIdCodec, @NonNull Function<? super T, ? extends TT> elementMapper) {
 		return convert(cursorIdCodec, (elements) -> elements.map(elementMapper));
 	}
 
@@ -92,8 +90,7 @@ public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
 	 * @param mapper
 	 * @return
 	 */
-	default <TT> Pageable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		Assert.requiredArgument(mapper != null, "mapper");
+	default <TT> Pageable<K, TT> flatMap(@NonNull Function<? super T, ? extends Elements<TT>> mapper) {
 		return convert((elements) -> elements.flatMap(mapper));
 	}
 

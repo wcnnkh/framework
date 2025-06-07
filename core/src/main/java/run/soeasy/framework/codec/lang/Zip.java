@@ -11,19 +11,17 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesCodec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.io.FileUtils;
 import run.soeasy.framework.core.io.IOUtils;
 
 public class Zip implements BytesCodec {
 	public static final Zip DEFAULT = new Zip();
 
-	public static void unZip(File source, File target) throws ZipException, IOException {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
+	public static void unZip(@NonNull File source, @NonNull File target) throws ZipException, IOException {
 		ZipFile zipFile = null;
 		try {
 			zipFile = new ZipFile(source);
@@ -57,9 +55,8 @@ public class Zip implements BytesCodec {
 	}
 
 	@Override
-	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
+	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
+			throws IOException, EncodeException {
 		if (target instanceof ZipOutputStream) {
 			IOUtils.write(source, target, bufferSize);
 		} else {
@@ -74,9 +71,8 @@ public class Zip implements BytesCodec {
 	}
 
 	@Override
-	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
+	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
+			throws DecodeException, IOException {
 		if (source instanceof ZipInputStream) {
 			IOUtils.write(source, target, bufferSize);
 		} else {

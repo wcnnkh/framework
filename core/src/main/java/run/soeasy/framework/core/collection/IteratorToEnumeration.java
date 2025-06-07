@@ -5,8 +5,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import lombok.Data;
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 迭代转枚举
@@ -15,18 +15,13 @@ import run.soeasy.framework.core.Assert;
  *
  * @param <E>
  */
-@Data
-public class IteratorToEnumeration<S, E> implements Enumeration<E>, Serializable {
+@RequiredArgsConstructor
+class IteratorToEnumeration<S, E> implements Enumeration<E>, Serializable {
 	private static final long serialVersionUID = 1L;
+	@NonNull
 	private final Iterator<? extends S> iterator;
+	@NonNull
 	private final Function<? super S, ? extends E> converter;
-
-	public IteratorToEnumeration(Iterator<? extends S> iterator, Function<? super S, ? extends E> converter) {
-		Assert.requiredArgument(iterator != null, "iterator");
-		Assert.requiredArgument(converter != null, "converter");
-		this.iterator = iterator;
-		this.converter = converter;
-	}
 
 	@Override
 	public boolean hasMoreElements() {

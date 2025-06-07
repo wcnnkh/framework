@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.io.Bits;
 
 public class ListRecordCodec<D> implements ToBytesCodec<List<D>> {
 	private final RecordCodec<D> codec;
 
-	public ListRecordCodec(Codec<D, byte[]> codec) {
-		Assert.requiredArgument(codec != null, "codec");
+	public ListRecordCodec(@NonNull Codec<D, byte[]> codec) {
 		this.codec = new RecordCodec<D>(codec);
 	}
 

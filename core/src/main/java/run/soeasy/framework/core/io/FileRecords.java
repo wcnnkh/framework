@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.lang.RecordCodec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.function.ThrowingConsumer;
@@ -30,9 +30,7 @@ public final class FileRecords<T> implements Elements<T> {
 		this(() -> file, codec);
 	}
 
-	public FileRecords(ThrowingSupplier<? extends File, ? extends IOException> fileSource, Codec<T, byte[]> codec) {
-		Assert.requiredArgument(fileSource != null, "fileSource");
-		Assert.requiredArgument(codec != null, "codec");
+	public FileRecords(@NonNull ThrowingSupplier<? extends File, ? extends IOException> fileSource, @NonNull Codec<T, byte[]> codec) {
 		this.fileSource = fileSource;
 		this.codec = new RecordCodec<T>(codec);
 	}
@@ -88,8 +86,7 @@ public final class FileRecords<T> implements Elements<T> {
 	 * @param consumer
 	 * @throws E
 	 */
-	public <E extends Throwable> void consume(ThrowingConsumer<? super T, ? extends E> consumer) throws E {
-		Assert.requiredArgument(consumer != null, "consumer");
+	public <E extends Throwable> void consume(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) throws E {
 		if (file != null) {
 			synchronized (this) {
 				if (file != null) {

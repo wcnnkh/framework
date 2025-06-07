@@ -43,6 +43,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -187,8 +188,7 @@ public abstract class CollectionUtils {
 	 * @return 返回补集
 	 */
 	public static <E> List<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate,
-			Comparator<? super E> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
+			@NonNull Comparator<? super E> comparator) {
 		if (CollectionUtils.isEmpty(universal)) {
 			// 如果全集不存在那么也就没有补集
 			return Collections.emptyList();
@@ -468,10 +468,8 @@ public abstract class CollectionUtils {
 	 * @return 返回交集列表
 	 */
 	public static <E, T> Collection<T> intersection(Iterator<? extends E> leftIterator,
-			Iterator<? extends E> rightIterator, Comparator<? super E> comparator,
-			BiFunction<? super E, ? super E, ? extends T> combiner) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		Assert.requiredArgument(combiner != null, "combiner");
+			Iterator<? extends E> rightIterator, @NonNull Comparator<? super E> comparator,
+			@NonNull BiFunction<? super E, ? super E, ? extends T> combiner) {
 		if (isEmpty(leftIterator) || isEmpty(rightIterator)) {
 			return Collections.emptyList();
 		}
@@ -507,8 +505,7 @@ public abstract class CollectionUtils {
 		return isAll(iterable.iterator(), predicate);
 	}
 
-	public static <E> boolean isAll(Iterator<? extends E> iterator, Predicate<? super E> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	public static <E> boolean isAll(Iterator<? extends E> iterator, @NonNull Predicate<? super E> predicate) {
 		if (iterator == null) {
 			return true;
 		}
@@ -530,8 +527,7 @@ public abstract class CollectionUtils {
 		return isAny(iterable.iterator(), predicate);
 	}
 
-	public static <E> boolean isAny(Iterator<? extends E> iterator, Predicate<? super E> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	public static <E> boolean isAny(Iterator<? extends E> iterator, @NonNull Predicate<? super E> predicate) {
 		if (iterator == null) {
 			return false;
 		}
@@ -586,8 +582,7 @@ public abstract class CollectionUtils {
 	}
 
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			java.util.function.Function<? super S, ? extends Iterator<? extends T>> converter) {
-		Assert.requiredArgument(converter != null, "converter");
+			@NonNull Function<? super S, ? extends Iterator<? extends T>> converter) {
 		if (iterator == null) {
 			return Collections.emptyIterator();
 		}
@@ -748,8 +743,8 @@ public abstract class CollectionUtils {
 	 * @param map the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map.
 	 */
-	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(Map<? extends K, ? extends List<V>> map) {
-		Assert.notNull(map, "'map' must not be null");
+	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(
+			@NonNull Map<? extends K, ? extends List<V>> map) {
 		Map<K, List<V>> result = new LinkedHashMap<K, List<V>>(map.size());
 		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map.entrySet()) {
 			List<V> values = Collections.unmodifiableList(entry.getValue());
@@ -850,9 +845,8 @@ public abstract class CollectionUtils {
 	 *                                  a subtype of {@link Enum}
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public static <E> Collection<E> createCollection(Class<?> collectionType, Class<?> elementType, int capacity)
-			throws IllegalArgumentException {
-		Assert.notNull(collectionType, "Collection type must not be null");
+	public static <E> Collection<E> createCollection(@NonNull Class<?> collectionType, Class<?> elementType,
+			int capacity) throws IllegalArgumentException {
 		if (collectionType.isInterface()) {
 			if (Set.class == collectionType || Collection.class == collectionType) {
 				if (capacity == 0) {
@@ -928,8 +922,7 @@ public abstract class CollectionUtils {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <K, V> Map<K, V> createMap(Class<?> mapType, Class<?> keyType, int capacity) {
-		Assert.notNull(mapType, "Map type must not be null");
+	public static <K, V> Map<K, V> createMap(@NonNull Class<?> mapType, Class<?> keyType, int capacity) {
 		if (mapType.isInterface()) {
 			if (Map.class == mapType) {
 				if (capacity == 0) {
@@ -978,8 +971,7 @@ public abstract class CollectionUtils {
 	 *                                  {@link Enum}
 	 */
 	@SuppressWarnings("rawtypes")
-	private static Class<? extends Enum> asEnumType(Class<?> enumType) {
-		Assert.notNull(enumType, "Enum type must not be null");
+	private static Class<? extends Enum> asEnumType(@NonNull Class<?> enumType) {
 		if (!Enum.class.isAssignableFrom(enumType)) {
 			throw new IllegalArgumentException("Supplied type is not an enum: " + enumType.getName());
 		}

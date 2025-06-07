@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.page.Browseable;
@@ -144,8 +143,6 @@ public final class ClassUtils {
 	 */
 	public static Class<?> forName(@NonNull String name, ClassLoader classLoader)
 			throws ClassNotFoundException, LinkageError {
-		Assert.notNull(name, "Name must not be null");
-
 		Class<?> clazz = resolvePrimitiveClassName(name);
 		if (clazz == null) {
 			clazz = commonClassCache.get(name);
@@ -269,8 +266,7 @@ public final class ClassUtils {
 		return cl;
 	}
 
-	public static Browseable<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
+	public static Browseable<Class<?>, Class<?>> getInterfaces(@NonNull Class<?> sourceClass) {
 		return new StandardBrowseable<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
@@ -285,8 +281,7 @@ public final class ClassUtils {
 	 * @param clazz the class
 	 * @return the qualified name of the class
 	 */
-	public static String getQualifiedName(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
+	public static String getQualifiedName(@NonNull Class<?> clazz) {
 		if (clazz.isArray()) {
 			return getQualifiedNameForArray(clazz);
 		} else {
@@ -320,9 +315,7 @@ public final class ClassUtils {
 	 * @return if the target type is assignable from the value type
 	 */
 	@SuppressWarnings("rawtypes")
-	public static boolean isAssignable(Class<?> lhsType, Class<?> rhsType) {
-		Assert.notNull(lhsType, "Left-hand side type must not be null");
-		Assert.notNull(rhsType, "Right-hand side type must not be null");
+	public static boolean isAssignable(@NonNull Class<?> lhsType, @NonNull Class<?> rhsType) {
 		if (lhsType.isAssignableFrom(rhsType)) {
 			return true;
 		}
@@ -366,8 +359,7 @@ public final class ClassUtils {
 	 * @param value the value that should be assigned to the type
 	 * @return if the type is assignable from the value
 	 */
-	public static boolean isAssignableValue(Class<?> type, Object value) {
-		Assert.notNull(type, "Type must not be null");
+	public static boolean isAssignableValue(@NonNull Class<?> type, Object value) {
 		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
 	}
 
@@ -422,8 +414,7 @@ public final class ClassUtils {
 	 * @param clazz the class to check
 	 * @return whether the given class is a primitive array class
 	 */
-	public static boolean isPrimitiveArray(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
+	public static boolean isPrimitiveArray(@NonNull Class<?> clazz) {
 		return (clazz.isArray() && clazz.getComponentType().isPrimitive());
 	}
 
@@ -435,8 +426,7 @@ public final class ClassUtils {
 	 * @param type the class to check
 	 * @return whether the given class is a primitive or primitive wrapper class
 	 */
-	public static boolean isPrimitiveOrWrapper(Type type) {
-		Assert.notNull(type, "Class must not be null");
+	public static boolean isPrimitiveOrWrapper(@NonNull Type type) {
 		return isPrimitive(type) || isPrimitiveWrapper(type);
 	}
 
@@ -447,8 +437,7 @@ public final class ClassUtils {
 	 * @param type the class to check
 	 * @return whether the given class is a primitive wrapper class
 	 */
-	public static boolean isPrimitiveWrapper(Type type) {
-		Assert.notNull(type, "Class must not be null");
+	public static boolean isPrimitiveWrapper(@NonNull Type type) {
 		return primitiveWrapperTypeMap.containsKey(type);
 	}
 
@@ -459,8 +448,7 @@ public final class ClassUtils {
 	 * @param clazz the class to check
 	 * @return whether the given class is a primitive wrapper array class
 	 */
-	public static boolean isPrimitiveWrapperArray(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
+	public static boolean isPrimitiveWrapperArray(@NonNull Class<?> clazz) {
 		return (clazz.isArray() && isPrimitiveWrapper(clazz.getComponentType()));
 	}
 
@@ -552,8 +540,7 @@ public final class ClassUtils {
 	 * @return the original class, or a primitive wrapper for the original primitive
 	 *         type
 	 */
-	public static Class<?> resolvePrimitiveIfNecessary(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
+	public static Class<?> resolvePrimitiveIfNecessary(@NonNull Class<?> clazz) {
 		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap.get(clazz) : clazz);
 	}
 

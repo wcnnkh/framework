@@ -1,11 +1,6 @@
 package run.soeasy.framework.core;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Map;
-
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.CollectionUtils;
 
 /**
  * Miscellaneous object utility methods.
@@ -13,7 +8,7 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * @author wcnnkh
  *
  */
-public class ObjectUtils {
+public final class ObjectUtils {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 
 	/**
@@ -24,69 +19,6 @@ public class ObjectUtils {
 	 */
 	public static boolean isArray(Object obj) {
 		return (obj != null && obj.getClass().isArray());
-	}
-
-	/**
-	 * Determine whether the given array is empty: i.e. {@code null} or of zero
-	 * length.
-	 * 
-	 * @param array the array to check
-	 */
-	/*
-	 * public static boolean isEmpty(Object[] array) { return (array == null ||
-	 * array.length == 0); }
-	 */
-
-	/**
-	 * 判断是否为空的，自动识别类型
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Object obj) {
-		if (obj == null) {
-			return true;
-		} else if (obj instanceof CharSequence) {
-			return StringUtils.isEmpty((CharSequence) obj);
-		} else if (obj instanceof Collection) {
-			return CollectionUtils.isEmpty((Collection) obj);
-		} else if (obj instanceof Map) {
-			return CollectionUtils.isEmpty((Map) obj);
-		} else if (obj.getClass().isArray()) {
-			return Array.getLength(obj) == 0;
-		}
-		return false;
-	}
-
-	public static boolean isNotEmpty(Object value) {
-		return !isEmpty(value);
-	}
-
-	public static boolean isAllEmpty(Object... values) {
-		if (values == null || values.length == 0) {
-			return true;
-		}
-
-		for (Object value : values) {
-			if (isNotEmpty(value)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public static boolean isAnyEmpty(Object... values) {
-		if (values == null || values.length == 0) {
-			return true;
-		}
-
-		for (Object s : values) {
-			if (isEmpty(s)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static String toString(Object source, boolean deep) {
@@ -138,5 +70,49 @@ public class ObjectUtils {
 
 	public static boolean equals(Object left, Object right) {
 		return equals(left, right, true);
+	}
+
+	public static void close(AutoCloseable... autoCloseables) throws Exception {
+		if (autoCloseables == null) {
+			return;
+		}
+
+		Exception exception = null;
+		for (AutoCloseable autoCloseable : autoCloseables) {
+			if (autoCloseable == null) {
+				continue;
+			}
+
+			try {
+				autoCloseable.close();
+			} catch (Exception e) {
+				if (exception == null) {
+					exception = e;
+				} else {
+					exception.addSuppressed(e);
+				}
+			}
+		}
+		if (exception != null) {
+			throw exception;
+		}
+	}
+
+	public static void closeQuietly(AutoCloseable... autoCloseables) {
+		if (autoCloseables == null) {
+			return;
+		}
+
+		for (AutoCloseable autoCloseable : autoCloseables) {
+			if (autoCloseable == null) {
+				continue;
+			}
+
+			try {
+				autoCloseable.close();
+			} catch (final Exception e) {
+				// ignore
+			}
+		}
 	}
 }

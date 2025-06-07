@@ -2,6 +2,7 @@ package run.soeasy.framework.core.math;
 
 import java.math.BigDecimal;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
@@ -9,10 +10,9 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 
 public final class NumberReplacer implements Codec<BigDecimal, String> {
-	private static final String[] CHINESE_NUMBERS = new String[] { "零", "一",
-			"二", "三", "四", "五", "六", "七", "八", "九" };
-	private static final String[] CAPITALIZE_CHINESE_NUMBERS = new String[] {
-			"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾" };
+	private static final String[] CHINESE_NUMBERS = new String[] { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+	private static final String[] CAPITALIZE_CHINESE_NUMBERS = new String[] { "零", "壹", "贰", "叁", "肆", "伍", "陆", "柒",
+			"捌", "玖", "拾" };
 
 	private final String[] mapping;
 	private final boolean stripTrailingZeros;
@@ -20,21 +20,17 @@ public final class NumberReplacer implements Codec<BigDecimal, String> {
 	/**
 	 * 小写
 	 */
-	public static final NumberReplacer LOWERCASE = new NumberReplacer(false,
-			true);
+	public static final NumberReplacer LOWERCASE = new NumberReplacer(false, true);
 	/**
 	 * 大写
 	 */
-	public static final NumberReplacer CAPITALIZE = new NumberReplacer(true,
-			true);
+	public static final NumberReplacer CAPITALIZE = new NumberReplacer(true, true);
 
 	public NumberReplacer(boolean capitalize, boolean stripTrailingZeros) {
-		this(capitalize ? CAPITALIZE_CHINESE_NUMBERS : CHINESE_NUMBERS,
-				stripTrailingZeros);
+		this(capitalize ? CAPITALIZE_CHINESE_NUMBERS : CHINESE_NUMBERS, stripTrailingZeros);
 	}
 
-	public NumberReplacer(String[] mapping, boolean stripTrailingZeros) {
-		Assert.requiredArgument(mapping != null, "mapping");
+	public NumberReplacer(@NonNull String[] mapping, boolean stripTrailingZeros) {
 		this.mapping = mapping;
 		this.stripTrailingZeros = stripTrailingZeros;
 	}
@@ -53,8 +49,7 @@ public final class NumberReplacer implements Codec<BigDecimal, String> {
 			return null;
 		}
 
-		String value = (stripTrailingZeros ? NumberUtils
-				.stripTrailingZeros(source) : source).toPlainString();
+		String value = (stripTrailingZeros ? NumberUtils.stripTrailingZeros(source) : source).toPlainString();
 		return encode(value);
 	}
 
@@ -83,13 +78,11 @@ public final class NumberReplacer implements Codec<BigDecimal, String> {
 		}
 
 		BigDecimal number = new BigDecimal(value);
-		return stripTrailingZeros ? NumberUtils.stripTrailingZeros(number)
-				: number;
+		return stripTrailingZeros ? NumberUtils.stripTrailingZeros(number) : number;
 	}
 
 	public String format(char source) {
-		Assert.requiredArgument(Character.isDigit(source),
-				"Source must be a digital");
+		Assert.isTrue(Character.isDigit(source), "Source must be a digital");
 		// 48-57是0-9的ASCII值
 		return mapping[Character.getNumericValue(source)];
 	}

@@ -5,19 +5,16 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public final class Synchronized implements InvocationHandler, Serializable {
 	private static final long serialVersionUID = 1L;
+	@NonNull
 	private final Object mutex; // Object on which to synchronize
+	@NonNull
 	private final Object source;
-
-	private Synchronized(Object source, Object mutex) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(mutex != null, "mutex");
-		this.mutex = mutex;
-		this.source = source;
-	}
 
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		synchronized (mutex) {

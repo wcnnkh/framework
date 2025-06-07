@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.io.MimeType.SpecificityComparator;
@@ -326,8 +326,7 @@ public final class MimeTypeUtils {
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP 1.1:
 	 *      Semantics and Content, section 5.3.2</a>
 	 */
-	public static void sortBySpecificity(List<MimeType> mimeTypes) {
-		Assert.notNull(mimeTypes, "'mimeTypes' must not be null");
+	public static void sortBySpecificity(@NonNull List<MimeType> mimeTypes) {
 		if (mimeTypes.size() > 1) {
 			Collections.sort(mimeTypes, SPECIFICITY_COMPARATOR);
 		}

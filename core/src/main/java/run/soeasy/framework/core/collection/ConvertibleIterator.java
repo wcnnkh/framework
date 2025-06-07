@@ -4,14 +4,14 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-@Data
-@AllArgsConstructor
-public class ConvertibleIterator<S, E> implements Iterator<E> {
+@RequiredArgsConstructor
+class ConvertibleIterator<S, E> implements Iterator<E> {
+	@NonNull
 	private final Iterator<? extends S> iterator;
+	@NonNull
 	private final Function<? super S, ? extends E> converter;
 
 	@Override
@@ -31,8 +31,7 @@ public class ConvertibleIterator<S, E> implements Iterator<E> {
 	}
 
 	@Override
-	public void forEachRemaining(Consumer<? super E> action) {
-		Assert.requiredArgument(action != null, "action");
+	public void forEachRemaining(@NonNull Consumer<? super E> action) {
 		iterator.forEachRemaining((s) -> {
 			E e = converter.apply(s);
 			action.accept(e);

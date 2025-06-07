@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.CharSequenceSplitIterator;
@@ -814,14 +815,6 @@ public final class StringUtils {
 		}
 	}
 
-	public static char[] mergeCharArray(char[]... chars) {
-		StringBuilder sb = new StringBuilder();
-		for (char[] cs : chars) {
-			sb.append(cs);
-		}
-		return sb.toString().toCharArray();
-	}
-
 	/**
 	 * 合并多个路径
 	 * 
@@ -876,7 +869,7 @@ public final class StringUtils {
 	 * @return an array without duplicates, in natural sort order
 	 */
 	public static String[] removeDuplicateStrings(String[] array) {
-		if (ObjectUtils.isEmpty(array)) {
+		if (ArrayUtils.isEmpty(array)) {
 			return array;
 		}
 		Set<String> set = new TreeSet<String>();

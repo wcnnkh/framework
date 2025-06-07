@@ -17,13 +17,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceTransformer;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 
+@RequiredArgsConstructor
 public class XmlTransformer implements ResourceTransformer {
 	private static Logger logger = LogManager.getLogger(XmlTransformer.class);
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
@@ -34,16 +36,12 @@ public class XmlTransformer implements ResourceTransformer {
 			logger.warn(e, "config transformer factory error!");
 		}
 	}
-
+ 
+	@NonNull
 	private final TransformerFactory transformerFactory;
 
 	public XmlTransformer() {
 		this(TRANSFORMER_FACTORY);
-	}
-
-	public XmlTransformer(TransformerFactory transformerFactory) {
-		Assert.requiredArgument(transformerFactory != null, "transformerFactory");
-		this.transformerFactory = transformerFactory;
 	}
 
 	@Override

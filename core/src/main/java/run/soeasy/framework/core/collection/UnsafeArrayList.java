@@ -2,22 +2,20 @@ package run.soeasy.framework.core.collection;
 
 import java.util.AbstractList;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 数据不安全的ArrayList， 不可以进行add操作, {@link #toArray()}不进行任何拷贝
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <E>
  */
+@RequiredArgsConstructor
 public class UnsafeArrayList<E> extends AbstractList<E> {
+	@NonNull
 	private final E[] array;
-
-	public UnsafeArrayList(E[] array) {
-		Assert.requiredArgument(array != null, "array");
-		this.array = array;
-	}
 
 	@Override
 	public E get(int index) {

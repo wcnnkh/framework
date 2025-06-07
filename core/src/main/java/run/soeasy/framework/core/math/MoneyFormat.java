@@ -3,10 +3,10 @@ package run.soeasy.framework.core.math;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.ArrayUtils;
 
 public final class MoneyFormat implements Codec<BigDecimal, String> {
@@ -35,10 +35,7 @@ public final class MoneyFormat implements Codec<BigDecimal, String> {
 				new NumberUnit[] { NumberUnit.MONEY_01, NumberUnit.MONEY_001 });
 	}
 
-	public MoneyFormat(Codec<BigDecimal, String> numberCodec, NumberUnit[] integerUnits, NumberUnit[] decimalUnits) {
-		Assert.requiredArgument(numberCodec != null, "numberCodec");
-		Assert.requiredArgument(integerUnits != null, "integerUnits");
-		Assert.requiredArgument(decimalUnits != null, "decimalUnits");
+	public MoneyFormat(@NonNull Codec<BigDecimal, String> numberCodec, @NonNull NumberUnit[] integerUnits, @NonNull NumberUnit[] decimalUnits) {
 		this.numberCodec = numberCodec;
 		this.integerUnits = integerUnits;
 		this.decimalUnits = decimalUnits;

@@ -148,8 +148,7 @@ public class Headers extends AbstractMultiValueMap<String, String, Map<String, L
 	 * @param name     the control name
 	 * @param filename the filename (may be {@code null})
 	 */
-	public void setContentDispositionFormData(String name, String filename) {
-		Assert.notNull(name, "'name' must not be null");
+	public void setContentDispositionFormData(@NonNull String name, String filename) {
 		StringBuilder builder = new StringBuilder("form-data; name=\"");
 		builder.append(name).append('\"');
 		if (filename != null) {

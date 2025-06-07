@@ -2,7 +2,7 @@ package run.soeasy.framework.core.page;
 
 import java.util.function.Function;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 
 public class ConvertibleCursor<M extends Cursor<SK, ST>, SK, ST, K, T> implements Cursor<K, T> {
@@ -10,11 +10,8 @@ public class ConvertibleCursor<M extends Cursor<SK, ST>, SK, ST, K, T> implement
 	protected final Function<? super SK, ? extends K> cursorIdConverter;
 	protected final Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter;
 
-	public ConvertibleCursor(M source, Function<? super SK, ? extends K> cursorIdConverter,
-			Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(cursorIdConverter != null, "cursorIdConverter");
-		Assert.requiredArgument(elementsConverter != null, "elementsConverter");
+	public ConvertibleCursor(@NonNull M source, @NonNull Function<? super SK, ? extends K> cursorIdConverter,
+			@NonNull Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter) {
 		this.source = source;
 		this.cursorIdConverter = cursorIdConverter;
 		this.elementsConverter = elementsConverter;

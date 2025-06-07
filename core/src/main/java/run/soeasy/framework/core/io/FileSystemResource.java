@@ -16,7 +16,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 
 public class FileSystemResource extends AbstractResource {
@@ -40,8 +40,7 @@ public class FileSystemResource extends AbstractResource {
 	 * @param path a file path
 	 * @see #FileSystemResource(Path)
 	 */
-	public FileSystemResource(String path) {
-		Assert.notNull(path, "Path must not be null");
+	public FileSystemResource(@NonNull String path) {
 		this.path = StringUtils.cleanPath(path);
 		this.file = new File(path);
 		this.filePath = this.file.toPath();
@@ -62,8 +61,7 @@ public class FileSystemResource extends AbstractResource {
 	 * @see #FileSystemResource(Path)
 	 * @see #getFile()
 	 */
-	public FileSystemResource(File file) {
-		Assert.notNull(file, "File must not be null");
+	public FileSystemResource(@NonNull File file) {
 		this.path = StringUtils.cleanPath(file.getPath());
 		this.file = file;
 		this.filePath = file.toPath();
@@ -90,8 +88,7 @@ public class FileSystemResource extends AbstractResource {
 	 * @param filePath a Path handle to a file
 	 * @see #FileSystemResource(File)
 	 */
-	public FileSystemResource(Path filePath) {
-		Assert.notNull(filePath, "Path must not be null");
+	public FileSystemResource(@NonNull Path filePath) {
 		this.path = StringUtils.cleanPath(filePath.toString());
 		this.file = null;
 		this.filePath = filePath;
@@ -108,9 +105,7 @@ public class FileSystemResource extends AbstractResource {
 	 * @param path       a file path
 	 * @see #FileSystemResource(File)
 	 */
-	public FileSystemResource(FileSystem fileSystem, String path) {
-		Assert.notNull(fileSystem, "FileSystem must not be null");
-		Assert.notNull(path, "Path must not be null");
+	public FileSystemResource(@NonNull FileSystem fileSystem, @NonNull String path) {
 		this.path = StringUtils.cleanPath(path);
 		this.file = null;
 		this.filePath = fileSystem.getPath(this.path).normalize();

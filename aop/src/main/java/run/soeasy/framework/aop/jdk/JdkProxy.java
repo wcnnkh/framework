@@ -5,9 +5,9 @@ import java.lang.reflect.InvocationHandler;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.aop.ExecutionInterceptor;
 import run.soeasy.framework.aop.Proxy;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.invoke.ExecutionInterceptor;
 
 /**
  * 可执行的代理

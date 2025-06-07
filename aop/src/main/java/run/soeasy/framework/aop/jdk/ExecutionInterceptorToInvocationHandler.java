@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import lombok.Data;
+import run.soeasy.framework.aop.ExecutionInterceptor;
 import run.soeasy.framework.core.invoke.CustomizeInvocation;
-import run.soeasy.framework.core.invoke.ExecutionInterceptor;
 import run.soeasy.framework.core.invoke.Invocation;
 
 @Data

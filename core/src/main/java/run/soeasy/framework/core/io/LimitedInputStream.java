@@ -4,15 +4,15 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 
 public class LimitedInputStream extends FilterInputStream {
 	private long left;
 	private long mark = -1;
 
-	public LimitedInputStream(InputStream in, long limit) {
+	public LimitedInputStream(@NonNull InputStream in, long limit) {
 		super(in);
-		Assert.requiredArgument(in != null, "in");
 		Assert.isTrue(limit >= 0, "limit must be non-negative");
 		left = limit;
 	}

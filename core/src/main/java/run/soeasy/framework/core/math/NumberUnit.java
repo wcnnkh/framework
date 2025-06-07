@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import lombok.Data;
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 
 @Data
@@ -36,9 +37,8 @@ public class NumberUnit implements Serializable, Comparable<NumberUnit> {
 		this(name, new BigDecimal(radix));
 	}
 
-	public NumberUnit(String name, BigDecimal radix) {
-		Assert.requiredArgument(name != null, "name");
-		Assert.requiredArgument(radix != null && radix.compareTo(BigDecimal.ZERO) > 0, "radix");
+	public NumberUnit(@NonNull String name, @NonNull BigDecimal radix) {
+		Assert.isTrue(radix.compareTo(BigDecimal.ZERO) > 0, "radix need to be greater than 0");
 		this.name = name;
 		this.radix = radix;
 	}

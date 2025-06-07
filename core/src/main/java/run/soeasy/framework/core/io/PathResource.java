@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 
 public class PathResource implements Resource, PathVariable {
 	private final Path path;
@@ -31,8 +31,7 @@ public class PathResource implements Resource, PathVariable {
 	 * 
 	 * @param path a Path handle
 	 */
-	public PathResource(Path path) {
-		Assert.notNull(path, "Path must not be null");
+	public PathResource(@NonNull Path path) {
 		this.path = path.normalize();
 	}
 
@@ -47,8 +46,7 @@ public class PathResource implements Resource, PathVariable {
 	 * @param path a path
 	 * @see java.nio.file.Paths#get(String, String...)
 	 */
-	public PathResource(String path) {
-		Assert.notNull(path, "Path must not be null");
+	public PathResource(@NonNull String path) {
 		this.path = Paths.get(path).normalize();
 	}
 
@@ -63,8 +61,7 @@ public class PathResource implements Resource, PathVariable {
 	 * @param uri a path URI
 	 * @see java.nio.file.Paths#get(URI)
 	 */
-	public PathResource(URI uri) {
-		Assert.notNull(uri, "URI must not be null");
+	public PathResource(@NonNull URI uri) {
 		this.path = Paths.get(uri).normalize();
 	}
 

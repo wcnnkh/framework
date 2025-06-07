@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 
@@ -165,12 +166,10 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	 */
 	@SuppressWarnings("unchecked")
 	public ConcurrentReferenceHashMap(int initialCapacity, float loadFactor, int concurrencyLevel,
-			ReferenceType referenceType) {
-
+			@NonNull ReferenceType referenceType) {
 		Assert.isTrue(initialCapacity >= 0, "Initial capacity must not be negative");
 		Assert.isTrue(loadFactor > 0f, "Load factor must be positive");
 		Assert.isTrue(concurrencyLevel > 0, "Concurrency level must be positive");
-		Assert.notNull(referenceType, "Reference type must not be null");
 		this.loadFactor = loadFactor;
 		this.shift = calculateShift(concurrencyLevel, MAXIMUM_CONCURRENCY_LEVEL);
 		int size = 1 << this.shift;

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
@@ -50,8 +50,7 @@ public class ClassPathResource extends AbstractResource {
 	 *                    {@code null} for the thread context class loader
 	 * @see ClassLoader#getResourceAsStream(String)
 	 */
-	public ClassPathResource(String path, ClassLoader classLoader) {
-		Assert.notNull(path, "Path must not be null");
+	public ClassPathResource(@NonNull String path, ClassLoader classLoader) {
 		String pathToUse = StringUtils.cleanPath(path);
 		if (pathToUse.startsWith("/")) {
 			pathToUse = pathToUse.substring(1);
@@ -69,8 +68,7 @@ public class ClassPathResource extends AbstractResource {
 	 * @param clazz the class to load resources with
 	 * @see java.lang.Class#getResourceAsStream
 	 */
-	public ClassPathResource(String path, Class<?> clazz) {
-		Assert.notNull(path, "Path must not be null");
+	public ClassPathResource(@NonNull String path, Class<?> clazz) {
 		this.path = StringUtils.cleanPath(path);
 		this.clazz = clazz;
 	}

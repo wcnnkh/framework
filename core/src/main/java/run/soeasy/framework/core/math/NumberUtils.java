@@ -24,7 +24,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.function.IntPredicate;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.type.ClassUtils;
@@ -42,10 +42,7 @@ public abstract class NumberUtils {
 	 * @param targetClass
 	 * @return
 	 */
-	public static Object converPrimitive(Number number, Class<?> targetClass) {
-		Assert.notNull(number, "Number must not be null");
-		Assert.notNull(targetClass, "Target class must not be null");
-
+	public static Object converPrimitive(@NonNull Number number, @NonNull Class<?> targetClass) {
 		if (ClassUtils.isByte(targetClass)) {
 			return number.byteValue();
 		} else if (ClassUtils.isShort(targetClass)) {
@@ -87,12 +84,8 @@ public abstract class NumberUtils {
 	 * @see java.math.BigDecimal
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Number> T convertNumberToTargetClass(Number number, Class<T> targetClass)
+	public static <T extends Number> T convertNumberToTargetClass(@NonNull Number number, @NonNull Class<T> targetClass)
 			throws IllegalArgumentException {
-
-		Assert.notNull(number, "Number must not be null");
-		Assert.notNull(targetClass, "Target class must not be null");
-
 		if (targetClass.isInstance(number)) {
 			return (T) number;
 		} else if (targetClass.equals(Byte.class)) {
@@ -174,11 +167,8 @@ public abstract class NumberUtils {
 	 * @see java.math.BigDecimal#BigDecimal(String)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Number> T parseNumber(String text, Class<T> targetClass) {
-		Assert.notNull(text, "Text must not be null");
-		Assert.notNull(targetClass, "Target class must not be null");
+	public static <T extends Number> T parseNumber(@NonNull String text, @NonNull Class<T> targetClass) {
 		String trimmed = text.trim();
-
 		if (targetClass.equals(Byte.class)) {
 			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte.valueOf(trimmed));
 		} else if (targetClass.equals(Short.class)) {
@@ -241,31 +231,26 @@ public abstract class NumberUtils {
 	 * @see #convertNumberToTargetClass
 	 * @see #parseNumber(String, Class)
 	 */
-	public static <T extends Number> T parseNumber(String text, Class<T> targetClass, NumberFormat numberFormat) {
-		if (numberFormat != null) {
-			Assert.notNull(text, "Text must not be null");
-			Assert.notNull(targetClass, "Target class must not be null");
-			DecimalFormat decimalFormat = null;
-			boolean resetBigDecimal = false;
-			if (numberFormat instanceof DecimalFormat) {
-				decimalFormat = (DecimalFormat) numberFormat;
-				if (BigDecimal.class.equals(targetClass) && !decimalFormat.isParseBigDecimal()) {
-					decimalFormat.setParseBigDecimal(true);
-					resetBigDecimal = true;
-				}
+	public static <T extends Number> T parseNumber(@NonNull String text, @NonNull Class<T> targetClass,
+			@NonNull NumberFormat numberFormat) {
+		DecimalFormat decimalFormat = null;
+		boolean resetBigDecimal = false;
+		if (numberFormat instanceof DecimalFormat) {
+			decimalFormat = (DecimalFormat) numberFormat;
+			if (BigDecimal.class.equals(targetClass) && !decimalFormat.isParseBigDecimal()) {
+				decimalFormat.setParseBigDecimal(true);
+				resetBigDecimal = true;
 			}
-			try {
-				Number number = numberFormat.parse(text.trim());
-				return convertNumberToTargetClass(number, targetClass);
-			} catch (ParseException ex) {
-				throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());
-			} finally {
-				if (resetBigDecimal) {
-					decimalFormat.setParseBigDecimal(false);
-				}
+		}
+		try {
+			Number number = numberFormat.parse(text.trim());
+			return convertNumberToTargetClass(number, targetClass);
+		} catch (ParseException ex) {
+			throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());
+		} finally {
+			if (resetBigDecimal) {
+				decimalFormat.setParseBigDecimal(false);
 			}
-		} else {
-			return parseNumber(text, targetClass);
 		}
 	}
 
@@ -359,11 +344,9 @@ public abstract class NumberUtils {
 	 * @param units
 	 * @return
 	 */
-	public static <E extends Throwable> String format(BigDecimal number,
-			ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, NumberUnit... units)
+	public static <E extends Throwable> String format(@NonNull BigDecimal number,
+			@NonNull ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, NumberUnit... units)
 			throws E {
-		Assert.requiredArgument(number != null, "number");
-		Assert.requiredArgument(toString != null, "toString");
 		if (units == null || units.length == 0 || number.compareTo(BigDecimal.ZERO) == 0) {
 			return toString.apply(number.abs());
 		}

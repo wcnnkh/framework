@@ -3,14 +3,13 @@ package run.soeasy.framework.logging;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.domain.Wrapper;
 
 public class FacadeLogger extends AbstractLogger implements Wrapper<Logger> {
 	private volatile Logger source;
 
-	public FacadeLogger(Logger source) {
-		Assert.requiredArgument(source != null, "source");
+	public FacadeLogger(@NonNull Logger source) {
 		this.source = source;
 	}
 
@@ -46,8 +45,7 @@ public class FacadeLogger extends AbstractLogger implements Wrapper<Logger> {
 		}
 	}
 
-	public void setSource(Logger source) {
-		Assert.requiredArgument(source != null, "source");
+	public void setSource(@NonNull Logger source) {
 		Logger oldLogger = this.source;
 		this.source = source;
 		info("Logger change from {} to {}", oldLogger, this.source);

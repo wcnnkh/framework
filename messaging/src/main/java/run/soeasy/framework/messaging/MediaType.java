@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
@@ -568,8 +569,7 @@ public class MediaType extends MimeType implements Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP 1.1:
 	 *      Semantics and Content, section 5.3.2</a>
 	 */
-	public static void sortBySpecificity(List<MediaType> mediaTypes) {
-		Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
+	public static void sortBySpecificity(@NonNull List<MediaType> mediaTypes) {
 		if (mediaTypes.size() > 1) {
 			Collections.sort(mediaTypes, SPECIFICITY_COMPARATOR);
 		}
@@ -601,8 +601,7 @@ public class MediaType extends MimeType implements Serializable {
 	 * @param mediaTypes the list of media types to be sorted
 	 * @see #getQualityValue()
 	 */
-	public static void sortByQualityValue(List<MediaType> mediaTypes) {
-		Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
+	public static void sortByQualityValue(@NonNull List<MediaType> mediaTypes) {
 		if (mediaTypes.size() > 1) {
 			Collections.sort(mediaTypes, QUALITY_VALUE_COMPARATOR);
 		}
@@ -615,8 +614,7 @@ public class MediaType extends MimeType implements Serializable {
 	 * @see MediaType#sortBySpecificity(List)
 	 * @see MediaType#sortByQualityValue(List)
 	 */
-	public static void sortBySpecificityAndQuality(List<MediaType> mediaTypes) {
-		Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
+	public static void sortBySpecificityAndQuality(@NonNull List<MediaType> mediaTypes) {
 		if (mediaTypes.size() > 1) {
 			Collections.sort(mediaTypes, new CompoundComparator<MediaType>(MediaType.SPECIFICITY_COMPARATOR,
 					MediaType.QUALITY_VALUE_COMPARATOR));

@@ -3,7 +3,7 @@ package run.soeasy.framework.core.comparator;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 
 public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -18,8 +18,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	 * 
 	 * @param comparator the comparator to decorate
 	 */
-	public InvertibleComparator(Comparator<T> comparator) {
-		Assert.notNull(comparator, "Comparator must not be null");
+	public InvertibleComparator(@NonNull Comparator<T> comparator) {
 		this.comparator = comparator;
 	}
 
@@ -30,8 +29,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	 * @param comparator the comparator to decorate
 	 * @param ascending  the sort order: ascending (true) or descending (false)
 	 */
-	public InvertibleComparator(Comparator<T> comparator, boolean ascending) {
-		Assert.notNull(comparator, "Comparator must not be null");
+	public InvertibleComparator(@NonNull Comparator<T> comparator, boolean ascending) {
 		this.comparator = comparator;
 		setAscending(ascending);
 	}

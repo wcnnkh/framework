@@ -4,20 +4,16 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public class IterationIterator<S, T> implements Iterator<T> {
+@RequiredArgsConstructor
+class IterationIterator<S, T> implements Iterator<T> {
+	@NonNull
 	private final Iterator<? extends S> iterator;
+	@NonNull
 	private final Function<? super S, ? extends Iterator<? extends T>> converter;
 	private Iterator<? extends T> valueIterator;
-
-	public IterationIterator(Iterator<? extends S> iterator,
-			Function<? super S, ? extends Iterator<? extends T>> converter) {
-		Assert.requiredArgument(iterator != null, "iterator");
-		Assert.requiredArgument(converter != null, "converter");
-		this.iterator = iterator;
-		this.converter = converter;
-	}
 
 	@Override
 	public boolean hasNext() {

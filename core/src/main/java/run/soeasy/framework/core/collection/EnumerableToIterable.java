@@ -4,20 +4,15 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import lombok.Data;
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-@Data
+@RequiredArgsConstructor
 public class EnumerableToIterable<S, T> implements Iterable<T> {
+	@NonNull
 	private final Enumerable<? extends S> enumerable;
+	@NonNull
 	private final Function<? super S, ? extends T> converter;
-
-	public EnumerableToIterable(Enumerable<? extends S> enumerable, Function<? super S, ? extends T> converter) {
-		Assert.requiredArgument(enumerable != null, "enumerable");
-		Assert.requiredArgument(converter != null, "converter");
-		this.enumerable = enumerable;
-		this.converter = converter;
-	}
 
 	@Override
 	public Iterator<T> iterator() {

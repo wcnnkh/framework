@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -30,8 +31,7 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	 * @param comparators the comparators to build into a compound comparator
 	 * @see InvertibleComparator
 	 */
-	public CompoundComparator(Comparator... comparators) {
-		Assert.notNull(comparators, "Comparators must not be null");
+	public CompoundComparator(@NonNull Comparator... comparators) {
 		this.comparators = new ArrayList<InvertibleComparator>(comparators.length);
 		for (Comparator comparator : comparators) {
 			addComparator(comparator);

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 
@@ -61,8 +62,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 		return elements;
 	}
 
-	public void setElements(Elements<T> elements) {
-		Assert.requiredArgument(elements != null, "elements");
+	public void setElements(@NonNull Elements<T> elements) {
 		this.elements = elements;
 	}
 
