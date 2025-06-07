@@ -8,7 +8,8 @@ public class JdkLoggerTest {
 	@Test
 	public void test() {
 		JdkLoggerFactory loggerFactory = new JdkLoggerFactory();
-		Logger logger = loggerFactory.getLogger(JdkLoggerTest.class.getName());
+		AbstractLogger logger = (AbstractLogger) loggerFactory.getLogger(JdkLoggerTest.class.getName());
+		logger.setNeedToInferCaller(true);
 		logger.info("AAA");
 		assertTrue(logger.isInfoEnabled());
 	}
