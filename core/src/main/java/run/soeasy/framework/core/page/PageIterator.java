@@ -6,41 +6,42 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.collection.Listable;
 
 @RequiredArgsConstructor
-public class PageIterator<E> implements Iterator<List<E>> {
+public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 	@NonNull
 	private final Iterator<? extends E> iterator;
 	private final int pageSize;
-	private Supplier<List<E>> listSupplier;
-	@Getter
-	private int page = 0;
+	private volatile int page = 0;
+	private volatile Supplier<Pageable<Long, E>> supplier;
 
 	@Override
 	public synchronized boolean hasNext() {
-		if (listSupplier == null && iterator.hasNext()) {
-			page++;
+		if (supplier == null && iterator.hasNext()) {
 			List<E> list = new ArrayList<>(pageSize);
 			while (iterator.hasNext() && list.size() < pageSize) {
 				list.add(iterator.next());
 			}
-			listSupplier = () -> list;
+
+			long offset = page * pageSize;
+			Pageable<Long, E> pageable = new Cursor<Long, E>(offset, Listable.forCollection(list), offset + pageSize);
+			supplier = () -> pageable;
 		}
-		return listSupplier != null;
+		return supplier != null;
 	}
 
 	@Override
-	public synchronized List<E> next() {
+	public synchronized Pageable<Long, E> next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
 		try {
-			return listSupplier.get();
+			return supplier.get();
 		} finally {
-			listSupplier = null;
+			supplier = null;
 		}
 	}
 

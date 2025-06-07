@@ -1,112 +1,36 @@
 package run.soeasy.framework.core.page;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
+import run.soeasy.framework.core.collection.Listable;
 
-import lombok.NonNull;
-import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.core.collection.Elements;
-
-public interface Pageable<K, T> extends Page<K, T>, Browseable<K, T> {
-
-
-
-	@Override
-	default Pageable<K, T> next() {
-		return jumpTo(getNextCursorId());
-	}
-
-	default Pageable<K, T> jumpTo(K cursorId) {
-		return jumpTo(cursorId, getPageSize());
-	}
-
+/**
+ * 可分页的对象
+ * 
+ * @author soeasy.run
+ *
+ * @param <K>
+ * @param <V>
+ */
+public interface Pageable<K, V> extends Listable<V> {
 	/**
-	 * 获取所有页
-	 */
-	default Elements<? extends Page<K, T>> pages() {
-		return Elements.of(() -> new BrowseableIterator<>(this, (e) -> e.next()));
-	}
-
-	Pageable<K, T> jumpTo(K cursorId, long count);
-
-	@Override
-	default Page<K, T> all() {
-		return new AllPage<>(this);
-	}
-
-	/**
-	 * 这是极端情况下的处理，不推荐使用(性能低下)
+	 * 当前游标id
 	 * 
-	 * @param start
-	 * @param limit
 	 * @return
 	 */
-	default Paginations<T> toPaginations(long start, long limit) {
-		Paginations<T> paginations = new Paginations<>(all().getElements());
-		paginations.setTotal(paginations.getTotal());
-		paginations.setCursorId(start);
-		paginations.setPageSize(limit);
-		return paginations;
-	}
+	K getCursorId();
 
 	/**
-	 * 默认调用{@link #convert(Function)}
+	 * 下一个游标id
 	 * 
-	 * @param predicate
 	 * @return
 	 */
-	default Pageable<K, T> filter(@NonNull Predicate<? super T> predicate) {
-		return convert((elements) -> elements.filter(predicate));
-	}
+	K getNextCursorId();
 
 	/**
-	 * 默认调用{@link #map(Codec, Function)}
+	 * 是否有下一页
 	 * 
-	 * @param <TT>
-	 * @param elementMapper
 	 * @return
 	 */
-	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> elementMapper) {
-		return map(Codec.identity(), elementMapper);
-	}
-
-	/**
-	 * 默认调用{@link #convert(Function, Function)}
-	 * 
-	 * @param <TK>
-	 * @param <TT>
-	 * @param cursorIdCodec
-	 * @param elementMapper
-	 * @return
-	 */
-	default <TK, TT> Pageable<TK, TT> map(Codec<K, TK> cursorIdCodec, @NonNull Function<? super T, ? extends TT> elementMapper) {
-		return convert(cursorIdCodec, (elements) -> elements.map(elementMapper));
-	}
-
-	/**
-	 * 默认调用{@link #convert(Function)}
-	 * 
-	 * @param <TT>
-	 * @param mapper
-	 * @return
-	 */
-	default <TT> Pageable<K, TT> flatMap(@NonNull Function<? super T, ? extends Elements<TT>> mapper) {
-		return convert((elements) -> elements.flatMap(mapper));
-	}
-
-	/**
-	 * 默认调用{@link #convert(Codec, Function)}
-	 * 
-	 * @param <TT>
-	 * @param elementsConverter
-	 * @return
-	 */
-	default <TT> Pageable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return convert(Codec.identity(), elementsConverter);
-	}
-
-	default <TK, TT> Pageable<TK, TT> convert(Codec<K, TK> cursorIdCodec,
-			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
-		return new ConvertiblePageable<>(this, cursorIdCodec, elementsConverter);
+	default boolean hasNextPage() {
+		return getNextCursorId() != null;
 	}
 }
