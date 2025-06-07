@@ -27,7 +27,6 @@ import run.soeasy.framework.core.collection.ArrayUtils;
  * Note: this comparator imposes orderings that are inconsistent with equals.
  *
  * @see Ordered
- * @see run.soeasy.framework.core.annotation.AnnotationAwareOrderComparator
  * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
  * @see java.util.Arrays#sort(Object[], java.util.Comparator)
  */
@@ -73,7 +72,7 @@ public class OrderComparator implements Comparator<Object> {
 	}
 
 	public int compare(int o1, int o2) {
-		return CompareUtils.compare(o1, o2, false);
+		return Integer.compare(o1, o2);
 	}
 
 	/**

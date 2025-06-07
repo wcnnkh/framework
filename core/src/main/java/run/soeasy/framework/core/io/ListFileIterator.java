@@ -12,8 +12,7 @@ public class ListFileIterator implements Iterator<File> {
 
 	/**
 	 * @param directory
-	 * @param fileFilter
-	 * @param maxDepth   迭代最大深度, -1不限制深度
+	 * @param maxDepth  迭代最大深度, -1不限制深度
 	 */
 	public ListFileIterator(File directory, int maxDepth) {
 		this(directory, maxDepth, 0);

@@ -90,12 +90,6 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		return value == null ? 0 : Double.parseDouble(value);
 	}
 
-	/**
-	 * 是否有多个，例如是一个数组或集合
-	 * 
-	 * @see #getAsElements()
-	 * @return
-	 */
 	default boolean isMultiple() {
 		return false;
 	}
@@ -210,11 +204,6 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		return isNumber() ? getAsNumber() : new CharSequenceTemplate(getAsString(), null);
 	}
 
-	/**
-	 * 是否是数值
-	 * 
-	 * @return
-	 */
 	boolean isNumber();
 
 	NumberValue getAsNumber();

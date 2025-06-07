@@ -27,59 +27,23 @@ public interface Browseable<K, T> extends Cursor<K, T> {
 		return new AllCursor<>(this);
 	}
 
-	/**
-	 * 默认调用{@link #convert(Function)}
-	 * 
-	 * @param predicate
-	 * @return
-	 */
 	default Browseable<K, T> filter(@NonNull Predicate<? super T> predicate) {
 		return convert((elements) -> elements.filter(predicate));
 	}
 
-	/**
-	 * 默认调用{@link #map(Codec, Function)}
-	 * 
-	 * @param <TT>
-	 * @param elementMapper
-	 * @return
-	 */
 	default <TT> Browseable<K, TT> map(Function<? super T, ? extends TT> elementMapper) {
 		return map(Codec.identity(), elementMapper);
 	}
 
-	/**
-	 * 默认调用{@link #convert(Function, Function)}
-	 * 
-	 * @param <TK>
-	 * @param <TT>
-	 * @param cursorIdCodec
-	 * @param elementMapper
-	 * @return
-	 */
-	default <TK, TT> Browseable<TK, TT> map( Codec<K, TK> cursorIdCodec,
+	default <TK, TT> Browseable<TK, TT> map(Codec<K, TK> cursorIdCodec,
 			@NonNull Function<? super T, ? extends TT> elementMapper) {
 		return convert(cursorIdCodec, (elements) -> elements.map(elementMapper));
 	}
 
-	/**
-	 * 默认调用{@link #convert(Function)}
-	 * 
-	 * @param <TT>
-	 * @param mapper
-	 * @return
-	 */
 	default <TT> Browseable<K, TT> flatMap(@NonNull Function<? super T, ? extends Elements<TT>> mapper) {
 		return convert((elements) -> elements.flatMap(mapper));
 	}
 
-	/**
-	 * 默认调用{@link #convert(Codec, Function)}
-	 * 
-	 * @param <TT>
-	 * @param elementsConverter
-	 * @return
-	 */
 	default <TT> Browseable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
 		return convert(Codec.identity(), elementsConverter);
 	}

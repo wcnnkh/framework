@@ -27,46 +27,6 @@ import java.util.Map;
  *
  */
 public interface MultiValueMap<K, V> extends Map<K, List<V>> {
-	@FunctionalInterface
-	public static interface MultiValueMapWrapper<K, V, W extends MultiValueMap<K, V>>
-			extends MultiValueMap<K, V>, MapWrapper<K, List<V>, W> {
-		@Override
-		default V getFirst(Object key) {
-			return getSource().getFirst(key);
-		}
-
-		@Override
-		default void adds(K key, List<V> values) {
-			getSource().adds(key, values);
-		}
-
-		@Override
-		default void set(K key, V value) {
-			getSource().set(key, value);
-		}
-
-		@Override
-		default void add(K key, V value) {
-			getSource().add(key, value);
-		}
-
-		@Override
-		default void setAll(Map<? extends K, ? extends V> map) {
-			getSource().setAll(map);
-		}
-
-		@Override
-		default void addAll(Map<? extends K, ? extends List<V>> map) {
-			getSource().addAll(map);
-		}
-
-		@Override
-		default Map<K, V> toSingleValueMap() {
-			return getSource().toSingleValueMap();
-		}
-
-	}
-
 	/**
 	 * Return the first value for the given key.
 	 * 
@@ -101,11 +61,6 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 	 */
 	void set(K key, V value);
 
-	/**
-	 * Set the given values under.
-	 * 
-	 * @param values the values.
-	 */
 	default void setAll(Map<? extends K, ? extends V> map) {
 		for (Entry<? extends K, ? extends V> entry : map.entrySet()) {
 			set(entry.getKey(), entry.getValue());

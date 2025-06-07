@@ -89,6 +89,7 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	 * 初始化容器时的回调
 	 * 
 	 * @return
+	 * @throws X
 	 */
 	protected C newContainer() throws X {
 		return containerSource.get();
@@ -190,7 +191,7 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		if (set.isEmpty()) {
 			return set;
 		}
-		
+
 		if (set.getClass().getName().startsWith("java.util.")) {
 			return set;
 		}

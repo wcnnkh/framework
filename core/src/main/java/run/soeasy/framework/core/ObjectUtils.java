@@ -2,21 +2,9 @@ package run.soeasy.framework.core;
 
 import run.soeasy.framework.core.collection.ArrayUtils;
 
-/**
- * Miscellaneous object utility methods.
- * 
- * @author wcnnkh
- *
- */
 public final class ObjectUtils {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 
-	/**
-	 * Determine whether the given object is an array: either an Object array or a
-	 * primitive array.
-	 * 
-	 * @param obj the object to check
-	 */
 	public static boolean isArray(Object obj) {
 		return (obj != null && obj.getClass().isArray());
 	}

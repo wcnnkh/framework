@@ -25,9 +25,9 @@ public enum FileComparator implements Comparator<File> {
 
 			return 0;
 		case SIZE:
-			return CompareUtils.compare(o1.length(), o2.length(), true);
+			return Long.compare(o2.length(), o1.length());
 		case LAST_MODIFIED:
-			return CompareUtils.compare(o1.lastModified(), o2.lastModified(), true);
+			return Long.compare(o2.lastModified(), o2.lastModified());
 		default:
 			throw new UnsupportedOperationException(this.name());
 		}

@@ -14,7 +14,7 @@ public interface ParameterNameDiscoverer {
 	 * others. However, it is recommended to use stub parameter names instead
 	 * wherever feasible.
 	 * 
-	 * @param ctor the executable to find parameter names for
+	 * @param executable the executable to find parameter names for
 	 * @return an array of parameter names if the names can be resolved, or
 	 *         {@code null} if they cannot
 	 */
