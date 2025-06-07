@@ -6,11 +6,11 @@ import java.util.function.Predicate;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.collection.Elements;
 
-public class StandardBrowseable<K, T> implements CursorWrapper<K, T, Cursor<K, T>>, Browseable<K, T> {
+public class CustomizeBrowseable<K, T> implements CursorWrapper<K, T, Cursor<K, T>>, Browseable<K, T> {
 	private final Cursor<K, T> source;
 	private final Function<K, ? extends Cursor<K, T>> processor;
 
-	public StandardBrowseable(Cursor<K, T> source, Function<K, ? extends Cursor<K, T>> processor) {
+	public CustomizeBrowseable(Cursor<K, T> source, Function<K, ? extends Cursor<K, T>> processor) {
 		this.source = source;
 		this.processor = processor;
 	}
@@ -20,14 +20,14 @@ public class StandardBrowseable<K, T> implements CursorWrapper<K, T, Cursor<K, T
 		return source;
 	}
 
-	public StandardBrowseable(K cursorId, Function<K, ? extends Cursor<K, T>> processor) {
+	public CustomizeBrowseable(K cursorId, Function<K, ? extends Cursor<K, T>> processor) {
 		this(processor.apply(cursorId), processor);
 	}
 
 	@Override
 	public Browseable<K, T> jumpTo(K cursorId) {
 		Cursor<K, T> jumpTo = processor.apply(cursorId);
-		return new StandardBrowseable<>(jumpTo, processor);
+		return new CustomizeBrowseable<>(jumpTo, processor);
 	}
 
 	@Override

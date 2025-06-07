@@ -9,7 +9,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.ListElementsWrapper;
 import run.soeasy.framework.core.collection.StandardListElements;
 
-public class SharedCursor<K, T> extends StandardCursor<K, T> implements Serializable {
+public class SharedCursor<K, T> extends CustomizeCursor<K, T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**

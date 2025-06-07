@@ -8,12 +8,12 @@ import run.soeasy.framework.core.collection.Elements;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StandardCursor<K, T> implements Cursor<K, T> {
+public class CustomizeCursor<K, T> implements Cursor<K, T> {
 	private K cursorId;
 	private Elements<T> elements;
 	private K nextCursorId;
 
-	public StandardCursor(Cursor<K, T> cursor) {
+	public CustomizeCursor(Cursor<K, T> cursor) {
 		this(cursor.getCursorId(), cursor.getElements(), cursor.getNextCursorId());
 	}
 

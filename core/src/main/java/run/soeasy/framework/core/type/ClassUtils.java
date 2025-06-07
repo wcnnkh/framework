@@ -17,8 +17,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.page.Browseable;
-import run.soeasy.framework.core.page.StandardBrowseable;
-import run.soeasy.framework.core.page.StandardCursor;
+import run.soeasy.framework.core.page.CustomizeBrowseable;
+import run.soeasy.framework.core.page.CustomizeCursor;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -267,10 +267,10 @@ public final class ClassUtils {
 	}
 
 	public static Browseable<Class<?>, Class<?>> getInterfaces(@NonNull Class<?> sourceClass) {
-		return new StandardBrowseable<Class<?>, Class<?>>(sourceClass, (c) -> {
+		return new CustomizeBrowseable<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new StandardCursor<>(c, Elements.of(list), c.getSuperclass());
+			return new CustomizeCursor<>(c, Elements.of(list), c.getSuperclass());
 		});
 	}
 

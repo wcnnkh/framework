@@ -6,11 +6,11 @@ import java.util.function.Predicate;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.core.collection.Elements;
 
-public class StandardPageable<K, T> implements PageWrapper<K, T, Page<K, T>>, Pageable<K, T> {
+public class CustomizePageable<K, T> implements PageWrapper<K, T, Page<K, T>>, Pageable<K, T> {
 	private final Page<K, T> source;
-	private final CursorProcessor<K, T> processor;
+	private final CursorQuery<K, T> processor;
 
-	public StandardPageable(Page<K, T> source, CursorProcessor<K, T> processor) {
+	public CustomizePageable(Page<K, T> source, CursorQuery<K, T> processor) {
 		this.source = source;
 		this.processor = processor;
 	}
@@ -19,17 +19,17 @@ public class StandardPageable<K, T> implements PageWrapper<K, T, Page<K, T>>, Pa
 		return source;
 	}
 
-	public StandardPageable(long total, K cursorId, long count, CursorProcessor<K, T> processor) {
-		this(new StandardPage<K, T>(total, count, processor.process(cursorId, count)), processor);
+	public CustomizePageable(long total, K cursorId, long count, CursorQuery<K, T> processor) {
+		this(new StandardPage<K, T>(total, count, processor.query(cursorId, count)), processor);
 	}
 
-	public CursorProcessor<K, T> getProcessor() {
+	public CursorQuery<K, T> getProcessor() {
 		return processor;
 	}
 
 	@Override
 	public Pageable<K, T> jumpTo(K cursorId, long count) {
-		return new StandardPageable<>(getTotal(), cursorId, count, processor);
+		return new CustomizePageable<>(getTotal(), cursorId, count, processor);
 	}
 
 	@Override

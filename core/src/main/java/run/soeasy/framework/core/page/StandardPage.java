@@ -7,7 +7,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StandardPage<K, T> extends StandardCursor<K, T> implements Page<K, T> {
+public class StandardPage<K, T> extends CustomizeCursor<K, T> implements Page<K, T> {
 	private final long total;
 	private long pageSize;
 
