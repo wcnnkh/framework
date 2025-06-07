@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.invoke.reflect.ReflectionProperty;
+import run.soeasy.framework.core.execute.reflect.ReflectionProperty;
 
 @Getter
 public class BeanProperty extends ReflectionProperty {

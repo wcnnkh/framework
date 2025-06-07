@@ -7,7 +7,7 @@ import run.soeasy.framework.aop.jdk.JdkProxyFactory;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.invoke.Execution;
+import run.soeasy.framework.core.execute.Execution;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data

@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.aop.ProxyUtils;
-import run.soeasy.framework.core.invoke.reflect.ReflectionMethod;
+import run.soeasy.framework.core.execute.reflect.ReflectionMethod;
 
 @Getter
 public class JdkProxyMethod extends ReflectionMethod {

@@ -2,8 +2,8 @@ package run.soeasy.framework.aop;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.invoke.Execution;
-import run.soeasy.framework.core.invoke.ExecutionWrapper;
+import run.soeasy.framework.core.execute.Execution;
+import run.soeasy.framework.core.execute.ExecutionWrapper;
 
 @Data
 public class InterceptableExecution<W extends Execution> implements ExecutionWrapper<W> {

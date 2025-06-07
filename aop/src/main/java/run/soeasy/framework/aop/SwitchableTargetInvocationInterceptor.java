@@ -1,7 +1,7 @@
 package run.soeasy.framework.aop;
 
 import lombok.Data;
-import run.soeasy.framework.core.invoke.Invocation;
+import run.soeasy.framework.core.execute.Invocation;
 
 @Data
 public class SwitchableTargetInvocationInterceptor implements InvocationInterceptor {
