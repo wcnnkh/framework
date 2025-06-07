@@ -3,9 +3,11 @@
 	<parent>
 		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>aop</artifactId>
+	<name>aop</name>
+	<description>面向切面编程，抽象了切面操作</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>

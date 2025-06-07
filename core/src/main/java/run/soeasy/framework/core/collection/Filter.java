@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
  * 
  * @author soeasy.run
  *
- * @param <S>
  * @param <T>
  */
 @FunctionalInterface
@@ -41,7 +40,7 @@ public interface Filter<T> extends Function<Elements<T>, Elements<T>> {
 	public static <T> Filter<T> ignoreNull() {
 		return (Filter<T>) PredicateFilter.IGNORE_NULL;
 	}
-	
+
 	@Override
 	Elements<T> apply(Elements<T> elements);
 }

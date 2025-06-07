@@ -13,8 +13,8 @@ public interface Transformer<S, T> {
 	 * would occur, often object fields or property locations.
 	 * <p>
 	 * If this method returns {@code true}, it means
-	 * {@link #convert(Object, TypeDescriptor, TypeDescriptor)} is capable of
-	 * converting an instance of {@code sourceTypeDescriptor} to
+	 * {@link #transform(Object, TypeDescriptor, Object, TypeDescriptor)} is capable
+	 * of converting an instance of {@code sourceTypeDescriptor} to
 	 * {@code targetTypeDescriptor}.
 	 * <p>
 	 * Special note on collections, arrays, and maps types: For conversion between

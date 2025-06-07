@@ -46,7 +46,6 @@ public abstract class Poller implements Runnable {
 	 * @param period
 	 * @param timeUnit
 	 * @param threadFactory
-	 * @return
 	 */
 	public void startEndlessLoop(long period, TimeUnit timeUnit, ThreadFactory threadFactory) {
 		if (isRunning()) {
@@ -79,7 +78,6 @@ public abstract class Poller implements Runnable {
 	 * @param period
 	 * @param timeUnit
 	 * @param scheduledExecutorService
-	 * @return
 	 */
 	public void startScheduled(long period, TimeUnit timeUnit, ScheduledExecutorService scheduledExecutorService) {
 		if (isRunning()) {
@@ -103,7 +101,6 @@ public abstract class Poller implements Runnable {
 	 * @param period
 	 * @param timeUnit
 	 * @param timer
-	 * @return
 	 */
 	public void startTimerTask(long period, TimeUnit timeUnit, Timer timer) {
 		if (isRunning()) {

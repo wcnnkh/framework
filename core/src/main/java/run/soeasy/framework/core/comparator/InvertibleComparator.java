@@ -34,22 +34,17 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 		setAscending(ascending);
 	}
 
-	/**
-	 * Specify the sort order: ascending (true) or descending (false).
-	 */
 	public void setAscending(boolean ascending) {
 		this.ascending = ascending;
 	}
 
-	/**
-	 * Return the sort order: ascending (true) or descending (false).
-	 */
 	public boolean isAscending() {
 		return this.ascending;
 	}
 
 	/**
-	 * Invert the sort order: ascending --&gt; descending or descending --&gt; ascending.
+	 * Invert the sort order: ascending --&gt; descending or descending --&gt;
+	 * ascending.
 	 */
 	public void invertOrder() {
 		this.ascending = !this.ascending;

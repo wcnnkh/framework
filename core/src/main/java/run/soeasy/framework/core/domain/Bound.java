@@ -28,7 +28,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
 	/**
 	 * 右包含
 	 * 
-	 * @param bound
+	 * @param value
 	 * @param comparator
 	 * @return
 	 */

@@ -21,8 +21,6 @@ package run.soeasy.framework.core.comparator;
  *
  * @see PriorityOrdered
  * @see OrderComparator
- * @see run.soeasy.framework.core.annotation.Order
- * @see run.soeasy.framework.core.annotation.AnnotationAwareOrderComparator
  */
 public interface Ordered {
 

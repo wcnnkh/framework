@@ -3,9 +3,11 @@
 	<parent>
 		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>slf4j</artifactId>
+	<name>slf4j</name>
+	<description>将日志重定向到slf4j</description>
 
 	<properties>
 		<slf4j.version>1.7.36</slf4j.version>
@@ -29,10 +31,6 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>${slf4j.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>run.soeasy.framework</groupId>
-			<artifactId>testing</artifactId>
 		</dependency>
 	</dependencies>
 </project>

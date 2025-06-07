@@ -15,10 +15,10 @@ import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.page.Browseable;
-import run.soeasy.framework.core.page.StandardBrowseable;
-import run.soeasy.framework.core.page.StandardCursor;
+import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.page.Cursor;
+import run.soeasy.framework.core.page.CursorPaging;
+import run.soeasy.framework.core.page.Paging;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -266,11 +266,11 @@ public final class ClassUtils {
 		return cl;
 	}
 
-	public static Browseable<Class<?>, Class<?>> getInterfaces(@NonNull Class<?> sourceClass) {
-		return new StandardBrowseable<Class<?>, Class<?>>(sourceClass, (c) -> {
-			Class<?>[] interfaces = c.getInterfaces();
+	public static Paging<Class<?>, Class<?>> getInterfaces(@NonNull Class<?> sourceClass) {
+		return new CursorPaging<Class<?>, Class<?>>(sourceClass, (clazz, size) -> {
+			Class<?>[] interfaces = clazz.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new StandardCursor<>(c, Elements.of(list), c.getSuperclass());
+			return new Cursor<>(clazz, Listable.forCollection(list), clazz.getSuperclass());
 		});
 	}
 
@@ -402,7 +402,7 @@ public final class ClassUtils {
 	public static boolean isMultipleValues(Class<?> type) {
 		return type != null && (type.isArray() || Collection.class.isAssignableFrom(type));
 	}
-	
+
 	public static boolean isPrimitive(Type type) {
 		return type instanceof Class && ((Class<?>) type).isPrimitive();
 	}

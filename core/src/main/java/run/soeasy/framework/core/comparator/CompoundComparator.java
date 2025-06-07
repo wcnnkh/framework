@@ -131,9 +131,6 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 		this.comparators.get(index).setAscending(false);
 	}
 
-	/**
-	 * Returns the number of aggregated comparators.
-	 */
 	public int getComparatorCount() {
 		return this.comparators.size();
 	}

@@ -167,10 +167,10 @@ public final class StringUtils {
 	/**
 	 * 把不足的地方用指定字符填充
 	 * 
-	 * @param text
-	 * @param complemented
-	 * @param length
-	 * @return
+	 * @param text         原字符串
+	 * @param complemented 要补充的字符
+	 * @param length       补充后的长度
+	 * @return 新字符
 	 */
 	public static String complemented(String text, char complemented, int length) {
 		Assert.isTrue(length >= text.length(),
@@ -267,14 +267,6 @@ public final class StringUtils {
 		return sb.toString();
 	}
 
-	/**
-	 * Test if the given String ends with the specified suffix, ignoring upper/lower
-	 * case.
-	 * 
-	 * @param str    the String to check
-	 * @param suffix the suffix to look for
-	 * @see java.lang.String#endsWith
-	 */
 	public static boolean endsWithIgnoreCase(String str, String suffix) {
 		if (str == null || suffix == null) {
 			return false;
@@ -352,25 +344,6 @@ public final class StringUtils {
 	// Convenience methods for working with formatted Strings
 	// ---------------------------------------------------------------------
 
-	/**
-	 * Check whether the given CharSequence has actual text. More specifically,
-	 * returns {@code true} if the string not {@code null}, its length is greater
-	 * than 0, and it contains at least one non-whitespace character.
-	 * <p>
-	 * 
-	 * <pre>
-	 * StringUtils.hasText(null) = false
-	 * StringUtils.hasText("") = false
-	 * StringUtils.hasText(" ") = false
-	 * StringUtils.hasText("12345") = true
-	 * StringUtils.hasText(" 12345 ") = true
-	 * </pre>
-	 * 
-	 * @param value the CharSequence to check (may be {@code null})
-	 * @return {@code true} if the CharSequence is not {@code null}, its length is
-	 *         greater than 0, and it does not contain whitespace only
-	 * @see Character#isWhitespace
-	 */
 	public static boolean hasText(CharSequence value) {
 		if (value == null) {
 			return false;
@@ -410,16 +383,6 @@ public final class StringUtils {
 		return indexOf(source, target, 0);
 	}
 
-	/**
-	 * 从左边开始获取组合第一次出现的位置, prefix和suffix必须是成对出现的，允许嵌套
-	 * 
-	 * @param source
-	 * @param prefix
-	 * @param suffix
-	 * @param fromIndex
-	 * @param endIndex
-	 * @return
-	 */
 	public static Range<Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex, int endIndex) {
 		if (source == null || prefix == null || suffix == null) {
 			return null;
@@ -472,19 +435,6 @@ public final class StringUtils {
 		return index == -1 ? -1 : index + fromIndex;
 	}
 
-	/**
-	 * Code shared by String and StringBuffer to do searches. The source is the
-	 * character array being searched, and the target is the string being searched
-	 * for.
-	 *
-	 * @param source       the characters being searched.
-	 * @param sourceOffset offset of the source string.
-	 * @param sourceCount  count of the source string.
-	 * @param target       the characters being searched for.
-	 * @param targetOffset offset of the target string.
-	 * @param targetCount  count of the target string.
-	 * @param fromIndex    the index to begin searching from.
-	 */
 	public static int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset,
 			int targetCount, int fromIndex) {
 		if (fromIndex >= sourceCount) {
@@ -527,14 +477,6 @@ public final class StringUtils {
 		return indexOf(source, target, 0);
 	}
 
-	/**
-	 * 从左边开始获取字符串组合第一次出现的位置, prefix和suffix必须是成对出现的，允许嵌套
-	 * 
-	 * @param text
-	 * @param prefix
-	 * @param suffix
-	 * @return
-	 */
 	public static Range<Integer> indexOf(CharSequence text, CharSequence prefix, CharSequence suffix) {
 		return indexOf(text, prefix, suffix, 0);
 	}
@@ -684,19 +626,6 @@ public final class StringUtils {
 		return index == -1 ? -1 : index + endIndex;
 	}
 
-	/**
-	 * Code shared by String and StringBuffer to do searches. The source is the
-	 * character array being searched, and the target is the string being searched
-	 * for.
-	 *
-	 * @param source       the characters being searched.
-	 * @param sourceOffset offset of the source string.
-	 * @param sourceCount  count of the source string.
-	 * @param target       the characters being searched for.
-	 * @param targetOffset offset of the target string.
-	 * @param targetCount  count of the target string.
-	 * @param fromIndex    the index to begin searching from.
-	 */
 	public static int lastIndexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset,
 			int targetCount, int fromIndex) {
 		if (source == null || target == null) {
@@ -815,12 +744,6 @@ public final class StringUtils {
 		}
 	}
 
-	/**
-	 * 合并多个路径
-	 * 
-	 * @param paths
-	 * @return
-	 */
 	public static String mergePaths(@NonNull Iterable<? extends String> paths) {
 		StringBuilder sb = new StringBuilder();
 		for (String path : paths) {
@@ -982,14 +905,6 @@ public final class StringUtils {
 		}
 	}
 
-	/**
-	 * Test if the given String starts with the specified prefix, ignoring
-	 * upper/lower case.
-	 * 
-	 * @param str    the String to check
-	 * @param prefix the prefix to look for
-	 * @see java.lang.String#startsWith
-	 */
 	public static boolean startsWithIgnoreCase(String str, String prefix) {
 		if (str == null || prefix == null) {
 			return false;
@@ -1003,23 +918,6 @@ public final class StringUtils {
 		String lcStr = str.substring(0, prefix.length()).toLowerCase();
 		String lcPrefix = prefix.toLowerCase();
 		return lcStr.equals(lcPrefix);
-	}
-
-	/**
-	 * Test whether the given string matches the given substring at the given index.
-	 * 
-	 * @param str       the original string (or StringBuilder)
-	 * @param index     the index in the original string to start matching against
-	 * @param substring the substring to match at the given index
-	 */
-	public static boolean substringMatch(CharSequence str, int index, CharSequence substring) {
-		for (int j = 0; j < substring.length(); j++) {
-			int i = index + j;
-			if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	public static Elements<String> tokenize(String text, String delimiters) {

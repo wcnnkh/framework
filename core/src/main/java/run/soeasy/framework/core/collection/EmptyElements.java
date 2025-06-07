@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class EmptyElements<E> extends EmptyStreamable<E> implements Elements<E> {
+class EmptyElements<E> extends EmptyStreamable<E> implements Elements<E>, Listable<E> {
 	private static final long serialVersionUID = 1L;
 	static final EmptyElements<Object> EMPTY_ELEMENTS = new EmptyElements<>();
 
@@ -59,5 +59,15 @@ public class EmptyElements<E> extends EmptyStreamable<E> implements Elements<E> 
 	@Override
 	public SetElementsWrapper<E, ?> toSet() {
 		return new StandardSetElements<>(Collections.emptySet());
+	}
+
+	@Override
+	public final boolean hasElements() {
+		return false;
+	}
+
+	@Override
+	public final Elements<E> getElements() {
+		return this;
 	}
 }

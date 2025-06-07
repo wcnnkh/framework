@@ -610,8 +610,7 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * 递归实现<br/>
-	 * 从每个集合中取一个组合为新集合的所有可能
+	 * 递归实现, 从每个集合中取一个组合为新集合的所有可能
 	 * 
 	 * @param source
 	 * @return
@@ -992,7 +991,6 @@ public abstract class CollectionUtils {
 	 * @param collection the original collection object, potentially {@code null}
 	 * @param capacity   the initial capacity
 	 * @return a new, empty collection instance
-	 * @see #isApproximableCollectionType
 	 * @see java.util.LinkedList
 	 * @see java.util.ArrayList
 	 * @see java.util.EnumSet
@@ -1031,7 +1029,6 @@ public abstract class CollectionUtils {
 	 * @param map      the original map object, potentially {@code null}
 	 * @param capacity the initial capacity
 	 * @return a new, empty map instance
-	 * @see #isApproximableMapType
 	 * @see java.util.EnumMap
 	 * @see java.util.TreeMap
 	 * @see java.util.LinkedHashMap

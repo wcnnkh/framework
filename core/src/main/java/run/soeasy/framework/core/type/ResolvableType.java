@@ -305,7 +305,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * Nesting levels may also apply to array types; for example given
 	 * {@code String[]}, a nesting level of 2 refers to {@code String}.
 	 * <p>
-	 * If a type does not {@link #hasGenerics() contain} generics the
+	 * If a type does not {@link #hasActualTypeArguments() contain} generics the
 	 * {@link #getSuperType() supertype} hierarchy will be considered.
 	 * 
 	 * @param nestingLevel        the required nesting level, indexed from 1 for the

@@ -3,18 +3,15 @@
 	<parent>
 		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>dom</artifactId>
+	<name>dom</name>
+	<description>提供dom读写的抽象和java原生实现</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>
 			<artifactId>core</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>run.soeasy.framework</groupId>
-			<artifactId>testing</artifactId>
 		</dependency>
 	</dependencies>
 </project>

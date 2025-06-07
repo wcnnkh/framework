@@ -1,25 +1,26 @@
 package run.soeasy.framework.core.collection;
 
-/**
- * 可列出的
- * 
- * @author shuchaowen
- *
- * @param <E>
- */
+import java.io.Serializable;
+import java.util.Collection;
+
+@FunctionalInterface
 public interface Listable<E> {
-	/**
-	 * 列出所有元素
-	 * 
-	 * @return
-	 */
+	@SuppressWarnings("unchecked")
+	public static <E> Listable<E> empty() {
+		return (Listable<E>) EmptyElements.EMPTY_ELEMENTS;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <E> Listable<E> forElements(Elements<E> elements) {
+		return (Listable<E> & Serializable) () -> elements;
+	}
+
+	public static <E> Listable<E> forCollection(Collection<E> collection) {
+		return forElements(Elements.of(collection));
+	}
+
 	Elements<E> getElements();
 
-	/**
-	 * 是否存在元素
-	 * 
-	 * @return
-	 */
 	default boolean hasElements() {
 		return getElements().isEmpty();
 	}

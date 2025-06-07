@@ -8,9 +8,9 @@ import run.soeasy.framework.core.exchange.Registration;
 /**
  * 定义一个注册表
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
- * @param <T>
+ * @param <E>
  */
 public interface Registry<E> extends Elements<E> {
 	default <R> Registry<R> map(@NonNull Codec<R, E> codec) {

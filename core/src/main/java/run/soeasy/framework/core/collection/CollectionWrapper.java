@@ -6,7 +6,9 @@ import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public interface CollectionWrapper<E, W extends Collection<E>> extends Collection<E>, IterableWrapper<E, W> {
+@FunctionalInterface
+public interface CollectionWrapper<E, W extends Collection<E>>
+		extends Collection<E>, IterableWrapper<E, W> {
 
 	@Override
 	default int size() {

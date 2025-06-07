@@ -27,19 +27,6 @@ import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
-/**
- * 就像{@link Iterable}可以返回{@link Iterator}一样，{@link Streamable}可以返回{@link Stream}
- * 此类其他方法调用{@link Streamable#stream()}后会自动关闭
- * 
- * <p>
- * 此类的方法除{@link #stream()}外都是end point
- * 
- * @author wcnnkh
- * @see Iterable#iterator()
- * @see Streamable#stream()
- *
- * @param <T>
- */
 @FunctionalInterface
 public interface Streamable<E> {
 	@SuppressWarnings("unchecked")
@@ -59,14 +46,6 @@ public interface Streamable<E> {
 		return anyMatch((s) -> target.anyMatch(((t) -> predicate.test(s, t))));
 	}
 
-	/**
-	 * 调用{@link #export(Function)}
-	 * 
-	 * @param <R>
-	 * @param <A>
-	 * @param collector
-	 * @return
-	 */
 	default <R, A> R collect(Collector<? super E, A, R> collector) {
 		return export((stream) -> stream.collect(collector));
 	}
@@ -84,7 +63,8 @@ public interface Streamable<E> {
 		}
 	}
 
-	default <T> boolean equals(@NonNull Streamable<? extends T> streamable, @NonNull BiPredicate<? super E, ? super T> predicate) {
+	default <T> boolean equals(@NonNull Streamable<? extends T> streamable,
+			@NonNull BiPredicate<? super E, ? super T> predicate) {
 		Stream<E> stream = stream();
 		try {
 			Stream<? extends T> targetStream = streamable.stream();
@@ -129,29 +109,14 @@ public interface Streamable<E> {
 		}
 	}
 
-	/**
-	 * 调用{@link #export(Function)}
-	 * 
-	 * @return
-	 */
 	default Optional<E> findAny() {
 		return export((stream) -> stream.findAny());
 	}
 
-	/**
-	 * 调用{@link #export(Function)}
-	 * 
-	 * @return
-	 */
 	default Optional<E> findFirst() {
 		return export((stream) -> stream.findFirst());
 	}
 
-	/**
-	 * 调用{@link #export(Function)}
-	 * 
-	 * @return
-	 */
 	default E first() {
 		return export((stream) -> {
 			Iterator<E> iterator = stream.iterator();
@@ -301,7 +266,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * @see #export(Function)
+	 * @see #export(ThrowingFunction)
 	 * @param <A>
 	 * @param generator
 	 * @return

@@ -26,11 +26,9 @@ import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;
 
 /**
- * A {@link ListenableFuture} whose value can be set via {@link #set(Object)} or
- * {@link #setException(Throwable)}. It may also get cancelled.
+ * A {@link ListenableFuture} whose value can be set via {@link #trySuccess(Object)} or
+ * {@link #tryFailure(Throwable)}. It may also get cancelled.
  *
- * <p>
- * Inspired by {@code com.google.common.util.concurrent.SettableFuture}.
  *
  */
 public class SettableListenableFuture<T> implements Promise<T> {
@@ -107,9 +105,9 @@ public class SettableListenableFuture<T> implements Promise<T> {
 	/**
 	 * Retrieve the value.
 	 * <p>
-	 * This method returns the value if it has been set via {@link #set(Object)},
+	 * This method returns the value if it has been set via {@link #trySuccess(Object)},
 	 * throws an {@link java.util.concurrent.ExecutionException} if an exception has
-	 * been set via {@link #setException(Throwable)}, or throws a
+	 * been set via {@link #tryFailure(Throwable)}, or throws a
 	 * {@link java.util.concurrent.CancellationException} if the future has been
 	 * cancelled.
 	 * 
@@ -122,9 +120,9 @@ public class SettableListenableFuture<T> implements Promise<T> {
 	/**
 	 * Retrieve the value.
 	 * <p>
-	 * This method returns the value if it has been set via {@link #set(Object)},
+	 * This method returns the value if it has been set via {@link #trySuccess(Object)},
 	 * throws an {@link java.util.concurrent.ExecutionException} if an exception has
-	 * been set via {@link #setException(Throwable)}, or throws a
+	 * been set via {@link #tryFailure(Throwable)}, or throws a
 	 * {@link java.util.concurrent.CancellationException} if the future has been
 	 * cancelled.
 	 * 

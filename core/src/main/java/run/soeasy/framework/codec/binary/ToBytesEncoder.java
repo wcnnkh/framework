@@ -26,12 +26,6 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 		return toEncoder(HexCodec.DEFAULT);
 	}
 
-	/**
-	 * 会直接将结果转换为16进制字符串
-	 * 
-	 * @see MD5#DEFAULT
-	 * @return
-	 */
 	default Encoder<D, String> toMD5() {
 		return toEncoder(MD5.DEFAULT);
 	}
@@ -62,15 +56,6 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 
 	void encode(D source, OutputStream target) throws IOException, EncodeException;
 
-	/**
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param targetConsumer
-	 * @throws IOException
-	 * @throws EncodeException
-	 * @throws E
-	 */
 	default <E extends Throwable> void encode(D source, BufferConsumer<? super byte[], ? extends E> targetConsumer)
 			throws IOException, EncodeException, E {
 		File tempFile = File.createTempFile("encode", "processor");
