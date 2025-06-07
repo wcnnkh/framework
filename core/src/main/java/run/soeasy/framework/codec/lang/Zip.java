@@ -28,22 +28,25 @@ public class Zip implements BytesCodec {
 			if (!target.exists()) {
 				target.mkdirs();
 			}
-
+			
+			File canonicalTarget = target.getCanonicalFile();
 			Enumeration<? extends ZipEntry> ens = zipFile.entries();
 			ZipEntry zipEntry = null;
 			while (ens.hasMoreElements()) {
 				zipEntry = ens.nextElement();
 				File entityFile = new File(target, zipEntry.getName());
 				entityFile = entityFile.getCanonicalFile();
+				if (!entityFile.toPath().startsWith(canonicalTarget.toPath())) {
+					throw new IOException("Zip entry is outside of the target directory: " + zipEntry.getName());
+				}
+				
 				if (zipEntry.isDirectory()) {
-					// dirName = dirName.substring(0, dirName.length() - 1);
 					entityFile.mkdirs();
 				} else {
 					entityFile.createNewFile();
 					InputStream is = zipFile.getInputStream(zipEntry);
 					try {
 						FileUtils.copyInputStreamToFile(is, entityFile);
-						// 出现异常应该中止吗？
 					} finally {
 						IOUtils.close(is);
 					}
