@@ -14,6 +14,3 @@
 */.settings/
 */logs/
 */.*
-
-/activemq-data/
-*//activemq-data/
