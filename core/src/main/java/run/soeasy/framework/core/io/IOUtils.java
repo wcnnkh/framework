@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 
@@ -1332,21 +1331,17 @@ public final class IOUtils {
 	}
 
 	public static <E extends Throwable> long read(CharBuffer buffer,
-			BufferProcessor<? super char[], ? extends E> reader) throws E {
-		return read(buffer, DEFAULT_BUFFER_SIZE, reader);
+			BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E {
+		return read(buffer, DEFAULT_BUFFER_SIZE, bufferConsumer);
 	}
 
-	public static <E extends Throwable> long read(ByteBuffer buffer, BufferProcessor<byte[], E> reader) throws E {
-		return read(buffer, DEFAULT_BUFFER_SIZE, reader);
+	public static <E extends Throwable> long read(ByteBuffer buffer, BufferConsumer<byte[], E> bufferConsumer)
+			throws E {
+		return read(buffer, DEFAULT_BUFFER_SIZE, bufferConsumer);
 	}
 
 	public static <E extends Throwable> long read(CharBuffer buffer, int bufferSize,
-			BufferProcessor<? super char[], ? extends E> reader) throws E {
-		Assert.isTrue(bufferSize > 0, "Buffersize needs to be greater than 0");
-		if (reader == null) {
-			return 0;
-		}
-
+			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E {
 		if (buffer == null || !buffer.hasRemaining()) {
 			return 0;
 		}
@@ -1356,7 +1351,7 @@ public final class IOUtils {
 			int ofs = buffer.arrayOffset();
 			int pos = buffer.position();
 			int lim = buffer.limit();
-			reader.process(b, ofs + pos, lim - pos);
+			bufferConsumer.accept(b, ofs + pos, lim - pos);
 			buffer.position(lim);
 			return lim - pos;
 		} else {
@@ -1367,7 +1362,7 @@ public final class IOUtils {
 			while (len > 0) {
 				int chunk = Math.min(len, tempArray.length);
 				buffer.get(tempArray, 0, chunk);
-				reader.process(tempArray, 0, chunk);
+				bufferConsumer.accept(tempArray, 0, chunk);
 				len -= chunk;
 				size += chunk;
 			}
@@ -1375,13 +1370,8 @@ public final class IOUtils {
 		}
 	}
 
-	public static <E extends Throwable> long read(ByteBuffer buffer, int bufferSize, BufferProcessor<byte[], E> reader)
-			throws E {
-		Assert.isTrue(bufferSize > 0, "Buffersize needs to be greater than 0");
-		if (reader == null) {
-			return 0;
-		}
-
+	public static <E extends Throwable> long read(ByteBuffer buffer, int bufferSize,
+			@NonNull BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E {
 		if (buffer == null || !buffer.hasRemaining()) {
 			return 0;
 		}
@@ -1391,7 +1381,7 @@ public final class IOUtils {
 			int ofs = buffer.arrayOffset();
 			int pos = buffer.position();
 			int lim = buffer.limit();
-			reader.process(b, ofs + pos, lim - pos);
+			bufferConsumer.accept(b, ofs + pos, lim - pos);
 			buffer.position(lim);
 			return lim - pos;
 		} else {
@@ -1402,7 +1392,7 @@ public final class IOUtils {
 			while (len > 0) {
 				int chunk = Math.min(len, tempArray.length);
 				buffer.get(tempArray, 0, chunk);
-				reader.process(tempArray, 0, chunk);
+				bufferConsumer.accept(tempArray, 0, chunk);
 				len -= chunk;
 				size += chunk;
 			}
@@ -1410,23 +1400,18 @@ public final class IOUtils {
 		}
 	}
 
-	public static <E extends Throwable> long read(InputStream input, BufferProcessor<byte[], E> reader)
-			throws E, IOException {
-		return read(input, DEFAULT_BUFFER_SIZE, reader);
+	public static <E extends Throwable> long read(InputStream input,
+			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
+		return read(input, DEFAULT_BUFFER_SIZE, bufferConsumer);
 	}
 
-	public static <E extends Throwable> long read(InputStream input, int bufferSize, BufferProcessor<byte[], E> reader)
-			throws E, IOException {
-		Assert.isTrue(bufferSize > 0, "Buffersize needs to be greater than 0");
-		if (reader == null || input == null) {
-			return 0;
-		}
-
+	public static <E extends Throwable> long read(@NonNull InputStream input, int bufferSize,
+			@NonNull BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
 		byte[] buffer = new byte[bufferSize];
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
-			reader.process(buffer, 0, n);
+			bufferConsumer.accept(buffer, 0, n);
 			count += n;
 		}
 		return count;
