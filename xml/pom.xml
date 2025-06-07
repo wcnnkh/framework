@@ -6,6 +6,8 @@
 		<version>0.0.1</version>
 	</parent>
 	<artifactId>xml</artifactId>
+	<name>xml</name>
+	<description>对xml的读写默认实现</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>

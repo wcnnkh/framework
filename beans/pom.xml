@@ -6,6 +6,8 @@
 		<version>0.0.1</version>
 	</parent>
 	<artifactId>beans</artifactId>
+	<name>beans</name>
+	<description>对java bean的相关操作</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>

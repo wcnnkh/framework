@@ -6,6 +6,8 @@
 		<version>0.0.1</version>
 	</parent>
 	<artifactId>jdbc</artifactId>
+	<name>jdbc</name>
+	<description>对jdbc操作进行简化抽象</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>

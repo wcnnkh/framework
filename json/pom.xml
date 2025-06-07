@@ -6,6 +6,8 @@
 		<version>0.0.1</version>
 	</parent>
 	<artifactId>json</artifactId>
+	<name>json</name>
+	<description>对json的相关抽象</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>

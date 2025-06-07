@@ -6,6 +6,8 @@
 		<version>0.0.1</version>
 	</parent>
 	<artifactId>messaging</artifactId>
+	<name>messaging</name>
+	<description>对消息实体和消息转换的抽象，提供了一些简单的实现</description>
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>
