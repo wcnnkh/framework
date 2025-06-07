@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.IntFunction;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.io.Bits;
 
 public class MapRecordCodec<K, V> implements ToBytesCodec<Map<K, V>> {
@@ -25,10 +25,8 @@ public class MapRecordCodec<K, V> implements ToBytesCodec<Map<K, V>> {
 		this(keyCodec, valueCodec, (size) -> new LinkedHashMap<K, V>(size));
 	}
 
-	public MapRecordCodec(Codec<K, byte[]> keyCodec, Codec<V, byte[]> valueCodec, IntFunction<Map<K, V>> mapSupplier) {
-		Assert.requiredArgument(keyCodec != null, "keyCodec");
-		Assert.requiredArgument(valueCodec != null, "valueCodec");
-		Assert.requiredArgument(mapSupplier != null, "mapSupplier");
+	public MapRecordCodec(@NonNull Codec<K, byte[]> keyCodec, @NonNull Codec<V, byte[]> valueCodec,
+			@NonNull IntFunction<Map<K, V>> mapSupplier) {
 		this.keyCodec = new RecordCodec<K>(keyCodec);
 		this.valueCodec = new RecordCodec<V>(valueCodec);
 		this.mapSupplier = mapSupplier;

@@ -12,6 +12,7 @@ import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.Decoder;
 import run.soeasy.framework.codec.lang.DateCodec;
@@ -297,8 +298,7 @@ public class TimeUtils extends DateCodec {
 	 * @param localDateTime
 	 * @return
 	 */
-	public static Instant toInstant(LocalDateTime localDateTime) {
-		Assert.requiredArgument(localDateTime != null, "localDateTime");
+	public static Instant toInstant(@NonNull LocalDateTime localDateTime) {
 		return localDateTime.toInstant(OffsetDateTime.now().getOffset());
 	}
 

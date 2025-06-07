@@ -12,7 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 
 public class UrlResource extends AbstractResource {
@@ -83,8 +82,7 @@ public class UrlResource extends AbstractResource {
 	 * @param uri a URI
 	 * @throws MalformedURLException if the given URL path is not valid
 	 */
-	public UrlResource(URI uri) throws MalformedURLException {
-		Assert.notNull(uri, "URI must not be null");
+	public UrlResource(@NonNull URI uri) throws MalformedURLException {
 		this.uri = uri;
 		this.url = uri.toURL();
 	}
@@ -94,8 +92,7 @@ public class UrlResource extends AbstractResource {
 	 * 
 	 * @param url a URL
 	 */
-	public UrlResource(URL url) {
-		Assert.notNull(url, "URL must not be null");
+	public UrlResource(@NonNull URL url) {
 		this.uri = null;
 		this.url = url;
 	}
@@ -109,8 +106,7 @@ public class UrlResource extends AbstractResource {
 	 * @throws MalformedURLException if the given URL path is not valid
 	 * @see java.net.URL#URL(String)
 	 */
-	public UrlResource(String path) throws MalformedURLException {
-		Assert.notNull(path, "Path must not be null");
+	public UrlResource(@NonNull String path) throws MalformedURLException {
 		this.uri = null;
 		this.url = new URL(path);
 		this.cleanedUrl = getCleanedUrl(this.url, path);

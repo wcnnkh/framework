@@ -4,20 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import lombok.Data;
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 
 @Data
 public class NumberUnit implements Serializable, Comparable<NumberUnit> {
 	private static final long serialVersionUID = 1L;
-
-	public static final NumberUnit MONEY_001 = new NumberUnit("分", "0.01");
-	public static final NumberUnit MONEY_01 = new NumberUnit("角", "0.1");
-	public static final NumberUnit MONEY = new NumberUnit("元", 1L);
-	public static final NumberUnit MONEY_10 = new NumberUnit("拾", 10L);
-	public static final NumberUnit MONEY_100 = new NumberUnit("佰", 100L);
-	public static final NumberUnit MONEY_1000 = new NumberUnit("仟", 1000L);
-	public static final NumberUnit MONEY_10000 = new NumberUnit("万", 10000L);
-	public static final NumberUnit MONEY_100000000 = new NumberUnit("亿", 100000000L);
 
 	public static final NumberUnit B = new NumberUnit("B", 1l);
 	public static final NumberUnit KB = new NumberUnit("KB", 1024L);
@@ -36,9 +28,8 @@ public class NumberUnit implements Serializable, Comparable<NumberUnit> {
 		this(name, new BigDecimal(radix));
 	}
 
-	public NumberUnit(String name, BigDecimal radix) {
-		Assert.requiredArgument(name != null, "name");
-		Assert.requiredArgument(radix != null && radix.compareTo(BigDecimal.ZERO) > 0, "radix");
+	public NumberUnit(@NonNull String name, @NonNull BigDecimal radix) {
+		Assert.isTrue(radix.compareTo(BigDecimal.ZERO) > 0, "radix need to be greater than 0");
 		this.name = name;
 		this.radix = radix;
 	}

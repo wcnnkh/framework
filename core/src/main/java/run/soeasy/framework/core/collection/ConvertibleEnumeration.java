@@ -3,18 +3,15 @@ package run.soeasy.framework.core.collection;
 import java.util.Enumeration;
 import java.util.function.Function;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public class ConvertibleEnumeration<T, E> implements Enumeration<E> {
-	private Enumeration<? extends T> enumeration;
-	private Function<? super T, ? extends E> converter;
-
-	public ConvertibleEnumeration(Enumeration<? extends T> enumeration, Function<? super T, ? extends E> converter) {
-		Assert.requiredArgument(enumeration != null, "enumeration");
-		Assert.requiredArgument(converter != null, "converter");
-		this.enumeration = enumeration;
-		this.converter = converter;
-	}
+@RequiredArgsConstructor
+class ConvertibleEnumeration<T, E> implements Enumeration<E> {
+	@NonNull
+	private final Enumeration<? extends T> enumeration;
+	@NonNull
+	private final Function<? super T, ? extends E> converter;
 
 	public boolean hasMoreElements() {
 		return enumeration.hasMoreElements();

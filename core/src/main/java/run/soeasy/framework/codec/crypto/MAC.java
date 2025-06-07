@@ -16,7 +16,6 @@ import lombok.NonNull;
 import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesEncoder;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.io.IOUtils;
 
 /**
@@ -43,7 +42,6 @@ public class MAC implements BytesEncoder, Cloneable {
 	}
 
 	public MAC(@NonNull Key key, AlgorithmParameterSpec algorithmParameterSpec) {
-		Assert.requiredArgument(key != null, "key");
 		this.key = key;
 		this.algorithmParameterSpec = algorithmParameterSpec;
 	}

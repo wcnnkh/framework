@@ -3,7 +3,7 @@ package run.soeasy.framework.core.page;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 
 public interface Page<K, T> extends Cursor<K, T> {
@@ -27,8 +27,7 @@ public interface Page<K, T> extends Cursor<K, T> {
 	}
 
 	@Override
-	default Page<K, T> filter(Predicate<? super T> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	default Page<K, T> filter(@NonNull Predicate<? super T> predicate) {
 		return convert((e) -> e.filter(predicate));
 	}
 
@@ -53,8 +52,7 @@ public interface Page<K, T> extends Cursor<K, T> {
 	 * @return
 	 */
 	default <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> cursorIdMapper,
-			Function<? super T, ? extends TT> elementMapper) {
-		Assert.requiredArgument(elementMapper != null, "elementMapper");
+			@NonNull Function<? super T, ? extends TT> elementMapper) {
 		return convert(cursorIdMapper, (elements) -> elements.map(elementMapper));
 	}
 
@@ -65,8 +63,7 @@ public interface Page<K, T> extends Cursor<K, T> {
 	 * @param mapper
 	 * @return
 	 */
-	default <TT> Page<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		Assert.requiredArgument(mapper != null, "mapper");
+	default <TT> Page<K, TT> flatMap(@NonNull Function<? super T, ? extends Elements<TT>> mapper) {
 		return convert((elements) -> elements.flatMap(mapper));
 	}
 

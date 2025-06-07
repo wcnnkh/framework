@@ -47,7 +47,6 @@ public abstract class AbstractLogger implements Logger {
 	public StackTraceElement getStackTraceElement() {
 		StackTraceElement[] stackTraceElements = new Throwable().getStackTrace();
 		for (StackTraceElement stackTraceElement : stackTraceElements) {
-			// TODO 是否要忽略AbstractLogger
 			if (FacadeLogger.class.getName().equals(stackTraceElement.getClassName())
 					|| Logger.class.getName().equals(stackTraceElement.getClassName())) {
 				continue;

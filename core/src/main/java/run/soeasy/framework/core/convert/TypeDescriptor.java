@@ -469,7 +469,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @return the collection type descriptor
 	 */
 	public static TypeDescriptor collection(@NonNull Class<?> collectionType, TypeDescriptor elementTypeDescriptor) {
-		Assert.notNull(collectionType, "Collection type must not be null");
 		if (!Collection.class.isAssignableFrom(collectionType)) {
 			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
 		}
@@ -478,7 +477,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	}
 
 	public static TypeDescriptor collection(@NonNull Class<?> collectionType, ResolvableType elementType) {
-		Assert.notNull(collectionType, "Collection type must not be null");
 		if (!Collection.class.isAssignableFrom(collectionType)) {
 			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
 		}
@@ -511,7 +509,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 */
 	public static TypeDescriptor map(@NonNull Class<?> mapType, TypeDescriptor keyTypeDescriptor,
 			TypeDescriptor valueTypeDescriptor) {
-		Assert.notNull(mapType, "Map type must not be null");
 		if (!Map.class.isAssignableFrom(mapType)) {
 			throw new IllegalArgumentException("Map type must be a [java.util.Map]");
 		}
@@ -521,7 +518,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	}
 
 	public static TypeDescriptor map(@NonNull Class<?> mapType, ResolvableType keyType, ResolvableType valueType) {
-		Assert.notNull(mapType, "Map type must not be null");
 		if (!Map.class.isAssignableFrom(mapType)) {
 			throw new IllegalArgumentException("Map type must be a [java.util.Map]");
 		}

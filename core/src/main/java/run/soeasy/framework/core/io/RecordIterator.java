@@ -8,9 +8,9 @@ import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.lang.RecordCodec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CloseableIterator;
 import run.soeasy.framework.core.function.ThrowingSupplier;
 
@@ -31,9 +31,8 @@ public final class RecordIterator<E> implements CloseableIterator<E> {
 		this(() -> new FileInputStream(file), codec);
 	}
 
-	public RecordIterator(ThrowingSupplier<? extends InputStream, ? extends IOException> source, RecordCodec<E> codec) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(codec != null, "codec");
+	public RecordIterator(@NonNull ThrowingSupplier<? extends InputStream, ? extends IOException> source,
+			@NonNull RecordCodec<E> codec) {
 		this.source = source;
 		this.codec = codec;
 	}

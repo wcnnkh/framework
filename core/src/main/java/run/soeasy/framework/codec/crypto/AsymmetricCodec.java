@@ -7,7 +7,7 @@ import java.security.Key;
 import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 
 /**
  * 非对称加密 一次能加密的明文长度与密钥长度成正比： len_in_byte(raw_data) = len_in_bit(key)/8 -11，如
@@ -40,13 +40,13 @@ public class AsymmetricCodec extends CryptoCodec {
 
 	@Override
 	public <E extends Throwable> void encode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
-		super.encode(source, this.maxBlock - 11, targetProcessor);
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws IOException, EncodeException, E {
+		super.encode(source, this.maxBlock - 11, targetConsumer);
 	}
 
 	@Override
 	public <E extends Throwable> void decode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
-		super.decode(source, this.maxBlock, targetProcessor);
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws DecodeException, IOException, E {
+		super.decode(source, this.maxBlock, targetConsumer);
 	}
 }

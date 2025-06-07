@@ -4,16 +4,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import run.soeasy.framework.aop.jdk.JdkProxyFactory;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.invoke.Execution;
-import run.soeasy.framework.core.invoke.ExecutionInterceptor;
-import run.soeasy.framework.core.invoke.ExecutionInterceptorRegistry;
-import run.soeasy.framework.core.invoke.ExecutionInterceptors;
-import run.soeasy.framework.core.invoke.InterceptableExecution;
-import run.soeasy.framework.core.invoke.SwitchableTargetInvocationInterceptor;
+import run.soeasy.framework.core.execute.Execution;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 @Data
@@ -54,7 +48,6 @@ public class Aop extends JdkProxyFactory {
 	@Override
 	public Proxy getProxy(@NonNull Class<?> sourceClass, Class<?>[] interfaces,
 			ExecutionInterceptor executionInterceptor) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
 				this.id);
 		Elements<? extends ExecutionInterceptor> executionInterceptors;
@@ -82,8 +75,7 @@ public class Aop extends JdkProxyFactory {
 		return getProxyFunction(function, null);
 	}
 
-	public Execution getProxyFunction(@NonNull Execution function, ExecutionInterceptor executionInterceptor) {
-		Assert.requiredArgument(function != null, "function");
+	public Execution getProxyFunction(@NonNull Execution execution, ExecutionInterceptor executionInterceptor) {
 		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
 				this.id);
 		Elements<? extends ExecutionInterceptor> executionInterceptors;
@@ -95,7 +87,7 @@ public class Aop extends JdkProxyFactory {
 					getExecutionInterceptorRegistry(), executionInterceptor);
 		}
 		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors);
-		return new InterceptableExecution<>(function, useExecutionInterceptor);
+		return new InterceptableExecution<>(execution, useExecutionInterceptor);
 	}
 
 	public final <T> Proxy getProxy(Class<? extends T> sourceClass, T source) {

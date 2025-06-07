@@ -2,7 +2,7 @@ package run.soeasy.framework.core.comparator;
 
 import java.util.Comparator;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 
 public class NullSafeComparator<T> implements Comparator<T> {
 
@@ -58,8 +58,7 @@ public class NullSafeComparator<T> implements Comparator<T> {
 	 * @param nullsLow   whether to treat nulls lower or higher than non-null
 	 *                   objects
 	 */
-	public NullSafeComparator(Comparator<T> comparator, boolean nullsLow) {
-		Assert.notNull(comparator, "The non-null comparator is required");
+	public NullSafeComparator(@NonNull Comparator<T> comparator, boolean nullsLow) {
 		this.nonNullComparator = comparator;
 		this.nullsLow = nullsLow;
 	}

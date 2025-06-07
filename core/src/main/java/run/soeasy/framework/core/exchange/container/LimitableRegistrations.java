@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 import lombok.ToString;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.exchange.Registrations;
@@ -61,7 +60,6 @@ public class LimitableRegistrations<T extends Registration> extends LimitableReg
 	 * @return 返回一个新的
 	 */
 	public LimitableRegistrations<T> combine(@NonNull T registration) {
-		Assert.requiredArgument(registration != null, "registration");
 		return combineAll(Elements.singleton(registration));
 	}
 
@@ -72,7 +70,6 @@ public class LimitableRegistrations<T extends Registration> extends LimitableReg
 	 * @return 返回一个新的
 	 */
 	public LimitableRegistrations<T> combineAll(@NonNull Elements<? extends T> registrations) {
-		Assert.requiredArgument(registrations != null, "registrations");
 		return new LimitableRegistrations<>(this.elements.concat(registrations));
 	}
 }

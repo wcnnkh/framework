@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.domain.Pair;
 
 /**
@@ -123,8 +122,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return new CacheableElements<>(this, Collectors.toList());
 	}
 
-	default Elements<E> concat(Elements<? extends E> elements) {
-		Assert.requiredArgument(elements != null, "elements");
+	default Elements<E> concat(@NonNull Elements<? extends E> elements) {
 		return new MergedElements<>(this, elements);
 	}
 
@@ -167,8 +165,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return convert(true, (stream) -> stream.filter(predicate));
 	}
 
-	default <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
-		Assert.requiredArgument(mapper != null, "mapper");
+	default <U> Elements<U> flatMap(@NonNull Function<? super E, ? extends Streamable<U>> mapper) {
 		return convert(true, (stream) -> {
 			return stream.flatMap((e) -> {
 				Streamable<U> streamy = mapper.apply(e);
@@ -215,13 +212,11 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return convert(true, (e) -> e.limit(maxSize));
 	}
 
-	default <U> Elements<U> map(Function<? super E, ? extends U> mapper) {
-		Assert.requiredArgument(mapper != null, "mapper");
+	default <U> Elements<U> map(@NonNull Function<? super E, ? extends U> mapper) {
 		return convert(false, (stream) -> stream.map(mapper));
 	}
 
-	default Elements<E> peek(Consumer<? super E> action) {
-		Assert.requiredArgument(action != null, "action");
+	default Elements<E> peek(@NonNull Consumer<? super E> action) {
 		return convert(false, (e) -> e.peek(action));
 	}
 
@@ -242,8 +237,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		return convert(false, (e) -> e.sorted());
 	}
 
-	default Elements<E> sorted(Comparator<? super E> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
+	default Elements<E> sorted(@NonNull Comparator<? super E> comparator) {
 		return convert(false, (e) -> e.sorted(comparator));
 	}
 

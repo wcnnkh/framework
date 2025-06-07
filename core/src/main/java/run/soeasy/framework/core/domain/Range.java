@@ -130,9 +130,7 @@ public final class Range<T> implements Serializable {
 	 * @param lower must not be {@literal null}.
 	 * @return
 	 */
-	public static <T> RangeBuilder<T> from(Bound<T> lower) {
-
-		Assert.notNull(lower, "Lower bound must not be null!");
+	public static <T> RangeBuilder<T> from(@NonNull Bound<T> lower) {
 		return new RangeBuilder<>(lower);
 	}
 
@@ -282,9 +280,7 @@ public final class Range<T> implements Serializable {
 		 * @param upper must not be {@literal null}.
 		 * @return
 		 */
-		public Range<T> to(Bound<T> upper) {
-
-			Assert.notNull(upper, "Upper bound must not be null!");
+		public Range<T> to(@NonNull Bound<T> upper) {
 			return new Range<>(lower, upper);
 		}
 	}

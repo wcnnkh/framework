@@ -8,7 +8,7 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.Decoder;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 import run.soeasy.framework.core.io.FileUtils;
 
 public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
@@ -39,19 +39,19 @@ public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 	/**
 	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
 	 * 
-	 * @param <S>             异常类型
-	 * @param source          输入
-	 * @param targetProcessor 输出
+	 * @param <S>            异常类型
+	 * @param source         输入
+	 * @param targetConsumer 输出
 	 * @throws DecodeException 解码异常
 	 * @throws IOException     io error
 	 * @throws S               异常类型
 	 */
-	default <S extends Throwable> void decode(E source, BufferProcessor<byte[], S> targetProcessor)
+	default <S extends Throwable> void decode(E source, BufferConsumer<? super byte[], ? extends S> targetConsumer)
 			throws DecodeException, IOException, S {
 		File tempFile = File.createTempFile("decode", "processor");
 		try {
 			decode(source, tempFile);
-			FileUtils.read(tempFile, targetProcessor);
+			FileUtils.read(tempFile, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

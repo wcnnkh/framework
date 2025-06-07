@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.MultipleDecoder;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 import run.soeasy.framework.core.io.FileUtils;
 import run.soeasy.framework.core.io.IOUtils;
 
@@ -81,11 +81,11 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		}
 	}
 
-	default <E extends Throwable> void decode(File source, int bufferSize, BufferProcessor<byte[], E> targetProcessor)
-			throws IOException, DecodeException, E {
+	default <E extends Throwable> void decode(File source, int bufferSize,
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws IOException, DecodeException, E {
 		FileInputStream fis = new FileInputStream(source);
 		try {
-			decode(fis, bufferSize, targetProcessor);
+			decode(fis, bufferSize, targetConsumer);
 		} finally {
 			fis.close();
 		}
@@ -192,10 +192,11 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 	void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException;
 
 	default <E extends Throwable> void decode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor, int count) throws DecodeException, IOException, E {
+			BufferConsumer<? super byte[], ? extends E> targetConsumer, int count)
+			throws DecodeException, IOException, E {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
 		if (count == 1) {
-			decode(source, bufferSize, targetProcessor);
+			decode(source, bufferSize, targetConsumer);
 			return;
 		}
 
@@ -217,18 +218,18 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		}
 
 		try {
-			decode(lastFile, bufferSize, targetProcessor);
+			decode(lastFile, bufferSize, targetConsumer);
 		} finally {
 			lastFile.delete();
 		}
 	}
 
 	default <E extends Throwable> void decode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws DecodeException, IOException, E {
 		File tempFile = File.createTempFile("decode", "processor");
 		try {
 			decode(source, bufferSize, tempFile);
-			FileUtils.read(tempFile, bufferSize, targetProcessor);
+			FileUtils.read(tempFile, bufferSize, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

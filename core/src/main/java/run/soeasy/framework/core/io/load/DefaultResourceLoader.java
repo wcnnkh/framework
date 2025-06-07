@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import lombok.Getter;
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.DefaultClassLoaderAccessor;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.exchange.Receipt;
@@ -23,9 +23,7 @@ public class DefaultResourceLoader extends DefaultClassLoaderAccessor implements
 		return protocolResolvers.configure(discovery);
 	}
 
-	public Resource getResource(String location) {
-		Assert.notNull(location, "Location must not be null");
-
+	public Resource getResource(@NonNull String location) {
 		Resource resource = protocolResolvers.resolve(location, this);
 		if (resource != null) {
 			return resource;

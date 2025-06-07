@@ -2,7 +2,7 @@ package run.soeasy.framework.logging;
 
 import java.util.logging.Level;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 
 public class CustomLevel extends Level {
 	private static final long serialVersionUID = 1L;
@@ -27,8 +27,7 @@ public class CustomLevel extends Level {
 		return origin.intValue() >= target.intValue();
 	}
 
-	public static Level parse(String levelName) {
-		Assert.requiredArgument(levelName != null, levelName);
+	public static Level parse(@NonNull String levelName) {
 		return Level.parse(levelName.toUpperCase());
 	}
 }

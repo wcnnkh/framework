@@ -119,7 +119,7 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 
 	@Override
 	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
-		Assert.requiredArgument(privateKey != null, "privateKey");
+		Assert.state(privateKey != null, "privateKey does not exist");
 		try {
 			Signature signature = getEncodeSignature();
 			IOUtils.read(source, bufferSize, signature::update);

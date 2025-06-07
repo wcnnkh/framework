@@ -1203,20 +1203,20 @@ public final class FileUtils {
 		return true;
 	}
 
-	public static <E extends Throwable> void read(File file, BufferProcessor<byte[], E> processor)
+	public static <E extends Throwable> void read(File file, BufferConsumer<? super byte[], ? extends E> bufferConsumer)
 			throws IOException, E {
-		read(file, IOUtils.DEFAULT_BUFFER_SIZE, processor);
+		read(file, IOUtils.DEFAULT_BUFFER_SIZE, bufferConsumer);
 	}
 
-	public static <E extends Throwable> void read(File file, int bufferSize, BufferProcessor<byte[], E> processor)
-			throws IOException, E {
+	public static <E extends Throwable> void read(File file, int bufferSize,
+			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws IOException, E {
 		if (!file.exists()) {
 			return;
 		}
 
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			IOUtils.read(fis, bufferSize, processor);
+			IOUtils.read(fis, bufferSize, bufferConsumer);
 		} finally {
 			fis.close();
 		}

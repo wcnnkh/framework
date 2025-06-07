@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;
 
@@ -184,8 +184,7 @@ public class SettableListenableFuture<T> implements Promise<T> {
 	}
 
 	@Override
-	public boolean tryFailure(Throwable cause) {
-		Assert.notNull(cause, "Exception must not be null");
+	public boolean tryFailure(@NonNull Throwable cause) {
 		return this.settableTask.setExceptionResult(cause);
 	}
 

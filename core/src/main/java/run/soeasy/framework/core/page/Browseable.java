@@ -4,8 +4,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Elements;
 
 public interface Browseable<K, T> extends Cursor<K, T> {
@@ -33,8 +33,7 @@ public interface Browseable<K, T> extends Cursor<K, T> {
 	 * @param predicate
 	 * @return
 	 */
-	default Browseable<K, T> filter(Predicate<? super T> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	default Browseable<K, T> filter(@NonNull Predicate<? super T> predicate) {
 		return convert((elements) -> elements.filter(predicate));
 	}
 
@@ -58,9 +57,8 @@ public interface Browseable<K, T> extends Cursor<K, T> {
 	 * @param elementMapper
 	 * @return
 	 */
-	default <TK, TT> Browseable<TK, TT> map(Codec<K, TK> cursorIdCodec,
-			Function<? super T, ? extends TT> elementMapper) {
-		Assert.requiredArgument(elementMapper != null, "elementMapper");
+	default <TK, TT> Browseable<TK, TT> map( Codec<K, TK> cursorIdCodec,
+			@NonNull Function<? super T, ? extends TT> elementMapper) {
 		return convert(cursorIdCodec, (elements) -> elements.map(elementMapper));
 	}
 
@@ -71,8 +69,7 @@ public interface Browseable<K, T> extends Cursor<K, T> {
 	 * @param mapper
 	 * @return
 	 */
-	default <TT> Browseable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
-		Assert.requiredArgument(mapper != null, "mapper");
+	default <TT> Browseable<K, TT> flatMap(@NonNull Function<? super T, ? extends Elements<TT>> mapper) {
 		return convert((elements) -> elements.flatMap(mapper));
 	}
 

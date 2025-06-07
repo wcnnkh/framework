@@ -22,7 +22,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.function.ThrowingFunction;
@@ -84,9 +84,7 @@ public interface Streamable<E> {
 		}
 	}
 
-	default <T> boolean equals(Streamable<? extends T> streamable, BiPredicate<? super E, ? super T> predicate) {
-		Assert.requiredArgument(streamable != null, "streamable");
-		Assert.requiredArgument(predicate != null, "predicate");
+	default <T> boolean equals(@NonNull Streamable<? extends T> streamable, @NonNull BiPredicate<? super E, ? super T> predicate) {
 		Stream<E> stream = stream();
 		try {
 			Stream<? extends T> targetStream = streamable.stream();
@@ -161,13 +159,11 @@ public interface Streamable<E> {
 		});
 	}
 
-	default void forEach(Consumer<? super E> action) {
-		Assert.requiredArgument(action != null, "action");
+	default void forEach(@NonNull Consumer<? super E> action) {
 		transfer((stream) -> stream.forEach(action));
 	}
 
-	default void forEachOrdered(Consumer<? super E> action) {
-		Assert.requiredArgument(action != null, "action");
+	default void forEachOrdered(@NonNull Consumer<? super E> action) {
 		transfer((stream) -> stream.forEachOrdered(action));
 	}
 
@@ -196,8 +192,7 @@ public interface Streamable<E> {
 		});
 	}
 
-	default int hashCode(ToIntFunction<? super E> hash) {
-		Assert.requiredArgument(hash != null, "hash");
+	default int hashCode(@NonNull ToIntFunction<? super E> hash) {
 		Stream<E> stream = stream();
 		try {
 			Iterator<E> iterator = stream.iterator();
@@ -287,8 +282,7 @@ public interface Streamable<E> {
 	 */
 	Stream<E> stream();
 
-	default boolean test(Predicate<? super Stream<E>> predicate) {
-		Assert.requiredArgument(predicate != null, "predicate");
+	default boolean test(@NonNull Predicate<? super Stream<E>> predicate) {
 		Stream<E> stream = stream();
 		try {
 			return predicate.test(stream);

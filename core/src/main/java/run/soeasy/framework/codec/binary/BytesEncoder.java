@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.MultipleEncoder;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 import run.soeasy.framework.core.io.FileUtils;
 import run.soeasy.framework.core.io.IOUtils;
 
@@ -159,10 +159,11 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 	void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException;
 
 	default <E extends Throwable> void encode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor, int count) throws IOException, EncodeException, E {
+			BufferConsumer<? super byte[], ? extends E> targetConsumer, int count)
+			throws IOException, EncodeException, E {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
 		if (count == 1) {
-			encode(source, bufferSize, targetProcessor);
+			encode(source, bufferSize, targetConsumer);
 			return;
 		}
 
@@ -184,28 +185,28 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		}
 
 		try {
-			encode(lastFile, bufferSize, targetProcessor);
+			encode(lastFile, bufferSize, targetConsumer);
 		} finally {
 			lastFile.delete();
 		}
 	}
 
-	default <E extends Throwable> void encode(File source, int bufferSize, BufferProcessor<byte[], E> targetProcessor)
-			throws IOException, EncodeException, E {
+	default <E extends Throwable> void encode(File source, int bufferSize,
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws IOException, EncodeException, E {
 		FileInputStream fis = new FileInputStream(source);
 		try {
-			encode(fis, bufferSize, targetProcessor);
+			encode(fis, bufferSize, targetConsumer);
 		} finally {
 			fis.close();
 		}
 	}
 
 	default <E extends Throwable> void encode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws IOException, EncodeException, E {
 		File tempFile = File.createTempFile("encode", "processor");
 		try {
 			encode(source, bufferSize, tempFile);
-			FileUtils.read(tempFile, bufferSize, targetProcessor);
+			FileUtils.read(tempFile, bufferSize, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

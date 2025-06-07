@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.io.load;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.DefaultClassLoaderAccessor;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.io.ClassPathResource;
@@ -20,8 +20,7 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 	 * 
 	 * @param clazz the class to load resources through
 	 */
-	public ClassRelativeResourceLoader(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
+	public ClassRelativeResourceLoader(@NonNull Class<?> clazz) {
 		this.clazz = clazz;
 		setClassLoaderProvider(new DefaultClassLoaderAccessor(clazz));
 	}

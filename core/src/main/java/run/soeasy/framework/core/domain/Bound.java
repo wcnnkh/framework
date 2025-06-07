@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.function.ValueThrowingOptional;
 
@@ -85,8 +84,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
 	 * @param value must not be {@literal null}.
 	 * @return
 	 */
-	public static <T> Bound<T> inclusive(T value) {
-		Assert.notNull(value, "Value must not be null!");
+	public static <T> Bound<T> inclusive(@NonNull T value) {
 		return new Bound<>(value, true);
 	}
 
@@ -136,8 +134,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
 	 * @param value must not be {@literal null}.
 	 * @return
 	 */
-	public static <T> Bound<T> exclusive(T value) {
-		Assert.notNull(value, "Value must not be null!");
+	public static <T> Bound<T> exclusive(@NonNull T value) {
 		return new Bound<>(value, false);
 	}
 

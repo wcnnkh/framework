@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.transmittable.thread;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 import run.soeasy.framework.core.transmittable.Inheriter;
 
 public final class ThreadLocalInheriter<T> implements Inheriter<T, T> {
@@ -12,8 +12,7 @@ public final class ThreadLocalInheriter<T> implements Inheriter<T, T> {
 		this(threadLocal, false);
 	}
 
-	public ThreadLocalInheriter(ThreadLocal<T> threadLocal, boolean nullable) {
-		Assert.requiredArgument(threadLocal != null, "threadLocal");
+	public ThreadLocalInheriter(@NonNull ThreadLocal<T> threadLocal, boolean nullable) {
 		this.threadLocal = threadLocal;
 		this.nullable = nullable;
 	}

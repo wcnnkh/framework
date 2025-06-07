@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.codec.CodecException;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 import run.soeasy.framework.core.io.IOUtils;
 
 @Getter
@@ -48,7 +48,7 @@ public class CipherFactory {
 	}
 
 	public <E extends Throwable> long doFinal(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor)
+			BufferConsumer<? super byte[], ? extends E> targetConsumer)
 			throws IOException, GeneralSecurityException, NoSuchProviderException, E {
 		Cipher cipher = getCipher();
 		return IOUtils.read(source, bufferSize, (buff, offset, len) -> {
@@ -58,7 +58,7 @@ public class CipherFactory {
 			} catch (IllegalBlockSizeException | BadPaddingException e) {
 				throw new CodecException(e);
 			}
-			targetProcessor.process(target, 0, target.length);
+			targetConsumer.accept(target, 0, target.length);
 		});
 	}
 

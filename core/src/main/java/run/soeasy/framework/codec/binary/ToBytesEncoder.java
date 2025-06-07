@@ -12,7 +12,7 @@ import run.soeasy.framework.codec.lang.Base64;
 import run.soeasy.framework.codec.lang.HexCodec;
 import run.soeasy.framework.codec.security.MD5;
 import run.soeasy.framework.codec.security.SHA1;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 import run.soeasy.framework.core.io.FileUtils;
 import run.soeasy.framework.core.io.IOUtils;
 
@@ -66,17 +66,17 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
 	 * 
 	 * @param source
-	 * @param targetProcessor
+	 * @param targetConsumer
 	 * @throws IOException
 	 * @throws EncodeException
 	 * @throws E
 	 */
-	default <E extends Throwable> void encode(D source, BufferProcessor<byte[], E> targetProcessor)
+	default <E extends Throwable> void encode(D source, BufferConsumer<? super byte[], ? extends E> targetConsumer)
 			throws IOException, EncodeException, E {
 		File tempFile = File.createTempFile("encode", "processor");
 		try {
 			encode(source, tempFile);
-			FileUtils.read(tempFile, targetProcessor);
+			FileUtils.read(tempFile, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

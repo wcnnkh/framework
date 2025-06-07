@@ -19,7 +19,7 @@ import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.security.SecurityCodec;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.BufferProcessor;
+import run.soeasy.framework.core.io.BufferConsumer;
 
 /**
  * 需要encodeKey和decoderKey的为非对称加解密
@@ -85,7 +85,7 @@ public class CryptoCodec extends SecurityCodec {
 
 	@Override
 	public byte[] encode(byte[] source) throws EncodeException {
-		Assert.requiredArgument(encoder != null, "encoder");
+		Assert.state(encoder != null, "encoder does not exist");
 		try {
 			return encoder.doFinal(source);
 		} catch (GeneralSecurityException e) {
@@ -95,7 +95,7 @@ public class CryptoCodec extends SecurityCodec {
 
 	@Override
 	public byte[] decode(byte[] source) throws DecodeException {
-		Assert.requiredArgument(decoder != null, "decoder");
+		Assert.state(decoder != null, "decoder does not exist");
 		try {
 			return decoder.doFinal(source);
 		} catch (GeneralSecurityException e) {
@@ -115,10 +115,10 @@ public class CryptoCodec extends SecurityCodec {
 
 	@Override
 	public <E extends Throwable> void encode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
-		Assert.requiredArgument(encoder != null, "encoder");
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws IOException, EncodeException, E {
+		Assert.state(encoder != null, "encoder does not exist");
 		try {
-			encoder.doFinal(source, bufferSize, targetProcessor);
+			encoder.doFinal(source, bufferSize, targetConsumer);
 		} catch (IOException | GeneralSecurityException e) {
 			throw new EncodeException(e);
 		}
@@ -126,10 +126,10 @@ public class CryptoCodec extends SecurityCodec {
 
 	@Override
 	public <E extends Throwable> void decode(InputStream source, int bufferSize,
-			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
-		Assert.requiredArgument(decoder != null, "decoder");
+			BufferConsumer<? super byte[], ? extends E> targetConsumer) throws DecodeException, IOException, E {
+		Assert.state(decoder != null, "decoder does not exist");
 		try {
-			decoder.doFinal(source, bufferSize, targetProcessor);
+			decoder.doFinal(source, bufferSize, targetConsumer);
 		} catch (IOException | GeneralSecurityException e) {
 			throw new DecodeException(e);
 		}

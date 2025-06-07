@@ -2,7 +2,7 @@ package run.soeasy.framework.core.comparator;
 
 import java.util.Comparator;
 
-import run.soeasy.framework.core.Assert;
+import lombok.NonNull;
 
 public class ClassLoaderComparator<T extends ClassLoader> implements Comparator<T> {
 	private static final ClassLoaderComparator<?> GLOBAL = new ClassLoaderComparator<>();
@@ -19,8 +19,7 @@ public class ClassLoaderComparator<T extends ClassLoader> implements Comparator<
 	 * @param parentClassLoader
 	 * @return
 	 */
-	public static boolean isParent(ClassLoader classLoader, ClassLoader parentClassLoader) {
-		Assert.requiredArgument(classLoader != null, "classLoader");
+	public static boolean isParent(@NonNull ClassLoader classLoader, ClassLoader parentClassLoader) {
 		ClassLoader current = parentClassLoader;
 		while (current != null) {
 			ClassLoader parent = classLoader.getParent();
