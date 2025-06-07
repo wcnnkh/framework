@@ -20,14 +20,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.function.IntPredicate;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.type.ClassUtils;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
@@ -35,115 +32,6 @@ import run.soeasy.framework.core.type.ClassUtils;
  * comprehensive suite of string utilities.
  */
 public abstract class NumberUtils {
-	/**
-	 * 把一个number转换成基本数据类型
-	 * 
-	 * @param number
-	 * @param targetClass
-	 * @return
-	 */
-	public static Object converPrimitive(@NonNull Number number, @NonNull Class<?> targetClass) {
-		if (ClassUtils.isByte(targetClass)) {
-			return number.byteValue();
-		} else if (ClassUtils.isShort(targetClass)) {
-			return number.shortValue();
-		} else if (ClassUtils.isInt(targetClass)) {
-			return number.intValue();
-		} else if (ClassUtils.isLong(targetClass)) {
-			return number.longValue();
-		} else if (ClassUtils.isFloat(targetClass)) {
-			return number.floatValue();
-		} else if (ClassUtils.isDouble(targetClass)) {
-			return number.doubleValue();
-		} else if (ClassUtils.isBoolean(targetClass)) {
-			return number.intValue() == 1;
-		} else if (ClassUtils.isChar(targetClass)) {
-			return (char) number.intValue();
-		} else {
-			throw new IllegalArgumentException(targetClass.getName() + "不是一个基本数据类型");
-		}
-	}
-
-	/**
-	 * 注意，boolean不是number类型 Convert the given number into an instance of the given
-	 * target class.
-	 * 
-	 * @param number      the number to convert
-	 * @param targetClass the target class to convert to
-	 * @return the converted number
-	 * @throws IllegalArgumentException if the target class is not supported (i.e.
-	 *                                  not a standard Number subclass as included
-	 *                                  in the JDK)
-	 * @see java.lang.Byte
-	 * @see java.lang.Short
-	 * @see java.lang.Integer
-	 * @see java.lang.Long
-	 * @see java.math.BigInteger
-	 * @see java.lang.Float
-	 * @see java.lang.Double
-	 * @see java.math.BigDecimal
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends Number> T convertNumberToTargetClass(@NonNull Number number, @NonNull Class<T> targetClass)
-			throws IllegalArgumentException {
-		if (targetClass.isInstance(number)) {
-			return (T) number;
-		} else if (targetClass.equals(Byte.class)) {
-			long value = number.longValue();
-			if (value < Byte.MIN_VALUE || value > Byte.MAX_VALUE) {
-				raiseOverflowException(number, targetClass);
-			}
-			return (T) Byte.valueOf(number.byteValue());
-		} else if (targetClass.equals(Short.class)) {
-			long value = number.longValue();
-			if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) {
-				raiseOverflowException(number, targetClass);
-			}
-			return (T) Short.valueOf(number.shortValue());
-		} else if (targetClass.equals(Integer.class)) {
-			long value = number.longValue();
-			if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
-				raiseOverflowException(number, targetClass);
-			}
-			return (T) Integer.valueOf(number.intValue());
-		} else if (targetClass.equals(Long.class)) {
-			return (T) Long.valueOf(number.longValue());
-		} else if (targetClass.equals(BigInteger.class)) {
-			if (number instanceof BigDecimal) {
-				// do not lose precision - use BigDecimal's own conversion
-				return (T) ((BigDecimal) number).toBigInteger();
-			} else {
-				// original value is not a Big* number - use standard long
-				// conversion
-				return (T) BigInteger.valueOf(number.longValue());
-			}
-		} else if (targetClass.equals(Float.class)) {
-			return (T) Float.valueOf(number.floatValue());
-		} else if (targetClass.equals(Double.class)) {
-			return (T) Double.valueOf(number.doubleValue());
-		} else if (targetClass.equals(BigDecimal.class)) {
-			// always use BigDecimal(String) here to avoid unpredictability of
-			// BigDecimal(double)
-			// (see BigDecimal javadoc for details)
-			return (T) new BigDecimal(number.toString());
-		} else {
-			throw new IllegalArgumentException("Could not convert number [" + number + "] of type ["
-					+ number.getClass().getName() + "] to unknown target class [" + targetClass.getName() + "]");
-		}
-	}
-
-	/**
-	 * Raise an overflow exception for the given number and target class.
-	 * 
-	 * @param number      the number we tried to convert
-	 * @param targetClass the target class we tried to convert to
-	 */
-	@SuppressWarnings("rawtypes")
-	private static void raiseOverflowException(Number number, Class targetClass) {
-		throw new IllegalArgumentException("Could not convert number [" + number + "] of type ["
-				+ number.getClass().getName() + "] to target class [" + targetClass.getName() + "]: overflow");
-	}
-
 	/**
 	 * Parse the given text into a number instance of the given target class, using
 	 * the corresponding {@code decode} / {@code valueOf} methods.
@@ -211,47 +99,6 @@ public abstract class NumberUtils {
 	public static boolean isInteger(Class<?> type) {
 		return type == long.class || type == int.class || type == byte.class || type == short.class
 				|| BigInteger.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Parse the given text into a number instance of the given target class, using
-	 * the given NumberFormat. Trims the input {@code String} before attempting to
-	 * parse the number.
-	 * 
-	 * @param text         the text to convert
-	 * @param targetClass  the target class to parse into
-	 * @param numberFormat the NumberFormat to use for parsing (if {@code null},
-	 *                     this method falls back to
-	 *                     {@code parseNumber(String, Class)})
-	 * @return the parsed number
-	 * @throws IllegalArgumentException if the target class is not supported (i.e.
-	 *                                  not a standard Number subclass as included
-	 *                                  in the JDK)
-	 * @see java.text.NumberFormat#parse
-	 * @see #convertNumberToTargetClass
-	 * @see #parseNumber(String, Class)
-	 */
-	public static <T extends Number> T parseNumber(@NonNull String text, @NonNull Class<T> targetClass,
-			@NonNull NumberFormat numberFormat) {
-		DecimalFormat decimalFormat = null;
-		boolean resetBigDecimal = false;
-		if (numberFormat instanceof DecimalFormat) {
-			decimalFormat = (DecimalFormat) numberFormat;
-			if (BigDecimal.class.equals(targetClass) && !decimalFormat.isParseBigDecimal()) {
-				decimalFormat.setParseBigDecimal(true);
-				resetBigDecimal = true;
-			}
-		}
-		try {
-			Number number = numberFormat.parse(text.trim());
-			return convertNumberToTargetClass(number, targetClass);
-		} catch (ParseException ex) {
-			throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());
-		} finally {
-			if (resetBigDecimal) {
-				decimalFormat.setParseBigDecimal(false);
-			}
-		}
 	}
 
 	/**
@@ -356,7 +203,7 @@ public abstract class NumberUtils {
 		return sb.toString();
 	}
 
-	protected static <E extends Throwable> void format(StringBuilder sb, BigDecimal number,
+	private static <E extends Throwable> void format(StringBuilder sb, BigDecimal number,
 			ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, int startUnitsIndex,
 			int endUnitsIndex, NumberUnit... units) throws E {
 		BigDecimal surplus = number;
