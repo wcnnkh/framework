@@ -1,47 +1,13 @@
 package run.soeasy.framework.messaging;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import lombok.NonNull;
-import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.domain.Wrapped;
-import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.core.io.OutputFactory;
-import run.soeasy.framework.core.io.OutputStreamSource;
+import run.soeasy.framework.core.io.pipeline.OutputFactory;
+import run.soeasy.framework.core.io.pipeline.OutputStreamSource;
 
 public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
-	@FunctionalInterface
-	public static interface OutputMessageWrapper<W extends OutputMessage>
-			extends OutputMessage, MessageWrapper<W>, OutputStreamSourceWrapper<OutputStream, W> {
-
-		@Override
-		default OutputFactory<OutputStream, Writer> encode() {
-			return getSource().encode();
-		}
-
-		@Override
-		default void setContentType(MediaType contentType) {
-			getSource().setContentType(contentType);
-		}
-
-		@Override
-		default void setContentLength(long contentLength) {
-			getSource().setContentLength(contentLength);
-		}
-
-		@Override
-		default void setCharsetName(String charsetName) {
-			getSource().setCharsetName(charsetName);
-		}
-
-		@Override
-		default OutputMessage buffered() {
-			return getSource().buffered();
-		}
-	}
 
 	default void setContentType(MediaType contentType) {
 		String charsetName = contentType.getCharsetName();
@@ -78,34 +44,6 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 			return OutputStreamSource.super.encode();
 		}
 		return encode(charsetName);
-	}
-
-	@Setter
-	public static class BufferingOutputMessage<W extends OutputMessage> extends Wrapped<W>
-			implements OutputMessageWrapper<W> {
-		private OutputStream outputStream;
-
-		public BufferingOutputMessage(W source) {
-			super(source);
-		}
-
-		@Override
-		public OutputStream getOutputStream() throws IOException {
-			if (outputStream == null) {
-				outputStream = getSource().getOutputStream();
-			}
-			return outputStream;
-		}
-
-		@Override
-		public @NonNull Pipeline<OutputStream, IOException> getOutputStreamPipeline() {
-			return Pipeline.forSupplier(() -> getOutputStream());
-		}
-
-		@Override
-		public OutputMessage buffered() {
-			return this;
-		}
 	}
 
 	default OutputMessage buffered() {

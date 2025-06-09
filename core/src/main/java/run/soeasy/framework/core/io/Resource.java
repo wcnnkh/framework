@@ -11,12 +11,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import lombok.Data;
-import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Listable;
-import run.soeasy.framework.core.collection.ListableWrapper;
+import run.soeasy.framework.core.io.pipeline.InputSource;
+import run.soeasy.framework.core.io.pipeline.OutputSource;
 
 /**
  * 一个资源的定义
@@ -26,125 +25,6 @@ import run.soeasy.framework.core.collection.ListableWrapper;
  */
 public interface Resource
 		extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable, Listable<Resource> {
-
-	@Data
-	public static class RenamedResource<W extends Resource> implements ResourceWrapper<W> {
-		@NonNull
-		private final String name;
-		@NonNull
-		private final W source;
-	}
-
-	@FunctionalInterface
-	public static interface ResourceWrapper<W extends Resource>
-			extends Resource, InputSourceWrapper<InputStream, Reader, W>, OutputSourceWrapper<OutputStream, Writer, W>,
-			ListableWrapper<Resource, W> {
-		@Override
-		default String getName() {
-			return getSource().getName();
-		}
-
-		@Override
-		default Resource createRelative(String relativePath) throws IOException {
-			return getSource().createRelative(relativePath);
-		}
-
-		@Override
-		default boolean exists() {
-			return getSource().exists();
-		}
-
-		@Override
-		default String getDescription() {
-			return getSource().getDescription();
-		}
-
-		@Override
-		default File getFile() throws IOException, FileNotFoundException {
-			return getSource().getFile();
-		}
-
-		@Override
-		default URI getURI() throws IOException {
-			return getSource().getURI();
-		}
-
-		@Override
-		default URL getURL() throws IOException {
-			return getSource().getURL();
-		}
-
-		@Override
-		default boolean isFile() {
-			return getSource().isFile();
-		}
-
-		@Override
-		default long lastModified() throws IOException {
-			return getSource().lastModified();
-		}
-
-		@Override
-		default long contentLength() throws IOException {
-			return getSource().contentLength();
-		}
-
-		@Override
-		default boolean hasElements() {
-			return getSource().hasElements();
-		}
-
-		@Override
-		default Elements<Resource> getElements() {
-			return getSource().getElements();
-		}
-
-		@Override
-		default boolean isOpen() {
-			return getSource().isOpen();
-		}
-
-		@Override
-		default boolean isReadable() {
-			return getSource().isReadable();
-		}
-
-		@Override
-		default InputStream getInputStream() throws IOException {
-			return getSource().getInputStream();
-		}
-
-		@Override
-		default boolean isDecoded() {
-			return getSource().isDecoded();
-		}
-
-		@Override
-		default Reader getReader() throws IOException {
-			return getSource().getReader();
-		}
-
-		@Override
-		default boolean isWritable() {
-			return getSource().isWritable();
-		}
-
-		@Override
-		default OutputStream getOutputStream() throws IOException {
-			return getSource().getOutputStream();
-		}
-
-		@Override
-		default boolean isEncoded() {
-			return getSource().isEncoded();
-		}
-
-		@Override
-		default Writer getWriter() throws IOException {
-			return getSource().getWriter();
-		}
-	}
-
 	public static final String EXTENSION_SEPARATOR = ".";
 	public static final String FOLDER_SEPARATOR = "/";
 	public static final String URL_PROTOCOL_FILE = "file";

@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.io;
+package run.soeasy.framework.core.io.pipeline;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,24 +10,6 @@ import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
 public interface InputStreamSource<T extends InputStream> extends InputStreamFactory<T> {
-	public static interface InputStreamSourceWrapper<T extends InputStream, W extends InputStreamSource<T>>
-			extends InputStreamSource<T>, InputStreamFactoryWrapper<T, W> {
-		@Override
-		default T getInputStream() throws IOException {
-			return getSource().getInputStream();
-		}
-
-		@Override
-		default @NonNull Pipeline<T, IOException> getInputStreamPipeline() {
-			return getSource().getInputStreamPipeline();
-		}
-
-		@Override
-		default ReadableByteChannel readableChannel() throws IOException {
-			return getSource().readableChannel();
-		}
-	}
-
 	T getInputStream() throws IOException;
 
 	@Override

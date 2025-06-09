@@ -10,7 +10,7 @@ import java.util.Arrays;
  * 取自jdk的实现 Utility methods for packing/unpacking primitive values in/out of
  * byte arrays using big-endian byte ordering.
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public final class Bits {
