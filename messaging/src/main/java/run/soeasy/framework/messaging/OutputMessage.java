@@ -4,8 +4,8 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.io.pipeline.OutputFactory;
-import run.soeasy.framework.core.io.pipeline.OutputStreamSource;
+import run.soeasy.framework.io.pipeline.OutputFactory;
+import run.soeasy.framework.io.pipeline.OutputStreamSource;
 
 public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
 

@@ -7,7 +7,7 @@ import java.security.Key;
 import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.core.io.BufferConsumer;
+import run.soeasy.framework.io.BufferConsumer;
 
 /**
  * 非对称加密 一次能加密的明文长度与密钥长度成正比： len_in_byte(raw_data) = len_in_bit(key)/8 -11，如

@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import run.soeasy.framework.codec.lang.CharsetCodec;
+import run.soeasy.framework.io.file.FileRecords;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class FileRecordsTest {

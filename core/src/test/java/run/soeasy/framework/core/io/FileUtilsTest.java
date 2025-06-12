@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 
 import org.junit.Test;
 
+import run.soeasy.framework.io.file.FileUtils;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class FileUtilsTest {

@@ -14,7 +14,7 @@ import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
-import run.soeasy.framework.core.io.Bits;
+import run.soeasy.framework.io.Bits;
 
 public class MapRecordCodec<K, V> implements ToBytesCodec<Map<K, V>> {
 	private final RecordCodec<K> keyCodec;

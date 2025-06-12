@@ -14,7 +14,7 @@ import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
 import run.soeasy.framework.codec.crypto.HmacMD5;
 import run.soeasy.framework.codec.crypto.HmacSHA1;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 使用指定字符集进行编解码

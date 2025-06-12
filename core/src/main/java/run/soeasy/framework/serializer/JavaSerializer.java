@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 public class JavaSerializer implements Serializer {
 	public final static JavaSerializer INSTANCE = new JavaSerializer();

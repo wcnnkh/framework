@@ -19,7 +19,7 @@ import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.security.SecurityCodec;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.BufferConsumer;
+import run.soeasy.framework.io.BufferConsumer;
 
 /**
  * 需要encodeKey和decoderKey的为非对称加解密

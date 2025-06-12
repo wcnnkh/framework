@@ -5,7 +5,7 @@ import java.io.IOException;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedData;
-import run.soeasy.framework.core.io.MimeType;
+import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;

@@ -12,9 +12,9 @@ import java.io.OutputStream;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.MultipleDecoder;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.BufferConsumer;
-import run.soeasy.framework.core.io.FileUtils;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.BufferConsumer;
+import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.file.FileUtils;
 
 public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<byte[]>, MultipleDecoder<byte[]> {
 

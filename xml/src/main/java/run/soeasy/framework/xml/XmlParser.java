@@ -27,9 +27,9 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceParser;
+import run.soeasy.framework.io.Resource;
 
 @RequiredArgsConstructor
 @Getter

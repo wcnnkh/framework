@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging;
 import java.io.InputStream;
 import java.io.Reader;
 
-import run.soeasy.framework.core.io.pipeline.InputFactory;
-import run.soeasy.framework.core.io.pipeline.InputStreamSourceWrapper;
+import run.soeasy.framework.io.pipeline.InputFactory;
+import run.soeasy.framework.io.pipeline.InputStreamSourceWrapper;
 
 @FunctionalInterface
 public interface InputMessageWrapper<W extends InputMessage>

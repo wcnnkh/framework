@@ -10,7 +10,7 @@ import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesCodec;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 public class Gzip implements BytesCodec {
 	public static final Gzip DEFAULT = new Gzip();

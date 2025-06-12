@@ -14,8 +14,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.codec.CodecException;
-import run.soeasy.framework.core.io.BufferConsumer;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.BufferConsumer;
+import run.soeasy.framework.io.IOUtils;
 
 @Getter
 @RequiredArgsConstructor

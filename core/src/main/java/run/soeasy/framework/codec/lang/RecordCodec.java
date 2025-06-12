@@ -11,8 +11,8 @@ import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
-import run.soeasy.framework.core.io.Bits;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.Bits;
+import run.soeasy.framework.io.IOUtils;
 
 @RequiredArgsConstructor
 public final class RecordCodec<D> implements ToBytesCodec<D> {

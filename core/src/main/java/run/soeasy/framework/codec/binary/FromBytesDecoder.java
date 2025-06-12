@@ -8,8 +8,8 @@ import java.io.InputStream;
 
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.Decoder;
-import run.soeasy.framework.core.io.IOUtils;
-import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.Resource;
 
 public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 	D decode(InputStream source, int bufferSize) throws IOException, DecodeException;

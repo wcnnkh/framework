@@ -16,7 +16,7 @@ import lombok.NonNull;
 import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesEncoder;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 

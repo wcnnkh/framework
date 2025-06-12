@@ -9,8 +9,8 @@ import java.io.InputStream;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.io.IOUtils;
-import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.Resource;
 
 public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 

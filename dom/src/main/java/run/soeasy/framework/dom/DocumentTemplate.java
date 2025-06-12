@@ -14,8 +14,6 @@ import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.io.Resource;
-import run.soeasy.framework.core.io.StringBufferResource;
 import run.soeasy.framework.dom.convert.NodeReader;
 import run.soeasy.framework.dom.convert.NodeReaders;
 import run.soeasy.framework.dom.convert.NodeWriter;
@@ -24,6 +22,8 @@ import run.soeasy.framework.dom.resource.ResourceParser;
 import run.soeasy.framework.dom.resource.ResourceParsers;
 import run.soeasy.framework.dom.resource.ResourceTransformer;
 import run.soeasy.framework.dom.resource.ResourceTransformers;
+import run.soeasy.framework.io.Resource;
+import run.soeasy.framework.io.StringBufferResource;
 
 @Getter
 @Setter

@@ -15,8 +15,8 @@ import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesCodec;
-import run.soeasy.framework.core.io.FileUtils;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.file.FileUtils;
 
 public class Zip implements BytesCodec {
 	public static final Zip DEFAULT = new Zip();

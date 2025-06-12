@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.core.spi.ConfigurableServices;
+import run.soeasy.framework.io.Resource;
 
 public class ResourceParsers extends ConfigurableServices<ResourceParser> implements ResourceParser {
 	public ResourceParsers() {

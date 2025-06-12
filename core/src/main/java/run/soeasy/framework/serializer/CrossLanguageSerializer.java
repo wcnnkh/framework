@@ -8,7 +8,7 @@ import java.io.OutputStream;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 跨语言的序列化和反序列化
