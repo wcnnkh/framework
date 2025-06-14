@@ -12,8 +12,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Listable;
 import run.soeasy.framework.io.file.FileVariable;
 import run.soeasy.framework.io.pipeline.InputSource;
 import run.soeasy.framework.io.pipeline.OutputSource;
@@ -25,7 +23,7 @@ import run.soeasy.framework.io.pipeline.OutputSource;
  *
  */
 public interface Resource
-		extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable, Listable<Resource> {
+		extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable {
 	public static final String EXTENSION_SEPARATOR = ".";
 	public static final String FOLDER_SEPARATOR = "/";
 	public static final String URL_PROTOCOL_FILE = "file";
@@ -232,16 +230,6 @@ public interface Resource
 	 */
 	default URL getURL() throws IOException {
 		throw new IOException("Cannot be resolved as URL");
-	}
-
-	@Override
-	default boolean hasElements() {
-		return false;
-	}
-
-	@Override
-	default Elements<Resource> getElements() {
-		return Elements.empty();
 	}
 
 	boolean exists();
