@@ -3,7 +3,6 @@ package run.soeasy.framework.io.load;
 import lombok.NonNull;
 import run.soeasy.framework.core.DefaultClassLoaderAccessor;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.io.ClassPathResource;
 import run.soeasy.framework.io.Resource;
 
 /**

@@ -1,4 +1,4 @@
-package run.soeasy.framework.io;
+package run.soeasy.framework.io.load;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.io.AbstractResource;
+import run.soeasy.framework.io.Resource;
 
 /**
  * {@link Resource} implementation for class path resources. Uses either a given

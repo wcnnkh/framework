@@ -10,7 +10,6 @@ import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.exchange.Receipt;
 import run.soeasy.framework.core.spi.Configurable;
 import run.soeasy.framework.core.spi.ProviderFactory;
-import run.soeasy.framework.io.ClassPathResource;
 import run.soeasy.framework.io.Resource;
 import run.soeasy.framework.io.UrlResource;
 
