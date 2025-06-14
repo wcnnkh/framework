@@ -18,8 +18,8 @@ import java.nio.file.StandardOpenOption;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.io.AbstractResource;
 import run.soeasy.framework.io.Resource;
+import run.soeasy.framework.io.load.AbstractResource;
 
 public class FileSystemResource extends AbstractResource {
 

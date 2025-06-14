@@ -4,8 +4,8 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.io.pipeline.InputFactory;
-import run.soeasy.framework.io.pipeline.InputStreamSource;
+import run.soeasy.framework.io.InputFactory;
+import run.soeasy.framework.io.InputStreamSource;
 
 public interface InputMessage extends Message, InputStreamSource<InputStream> {
 

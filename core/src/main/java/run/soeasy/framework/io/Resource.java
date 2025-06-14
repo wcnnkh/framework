@@ -13,8 +13,6 @@ import java.net.URL;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.io.file.FileVariable;
-import run.soeasy.framework.io.pipeline.InputSource;
-import run.soeasy.framework.io.pipeline.OutputSource;
 
 /**
  * 一个资源的定义

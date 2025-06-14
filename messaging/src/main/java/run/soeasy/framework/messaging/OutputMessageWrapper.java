@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import run.soeasy.framework.io.pipeline.OutputFactory;
-import run.soeasy.framework.io.pipeline.OutputStreamSourceWrapper;
+import run.soeasy.framework.io.OutputFactory;
+import run.soeasy.framework.io.OutputStreamSourceWrapper;
 
 @FunctionalInterface
 public interface OutputMessageWrapper<W extends OutputMessage>

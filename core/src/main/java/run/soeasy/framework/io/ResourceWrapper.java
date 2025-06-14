@@ -10,9 +10,6 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
 
-import run.soeasy.framework.io.pipeline.InputSourceWrapper;
-import run.soeasy.framework.io.pipeline.OutputSourceWrapper;
-
 @FunctionalInterface
 public interface ResourceWrapper<W extends Resource>
 		extends Resource, InputSourceWrapper<InputStream, Reader, W>, OutputSourceWrapper<OutputStream, Writer, W> {
