@@ -24,16 +24,12 @@ public class FileUtils {
 
 	public static <E extends Throwable> void copy(File file, BufferConsumer<? super byte[], ? extends E> bufferConsumer)
 			throws IOException, E {
-		copy(file, IOUtils.DEFAULT_BUFFER_SIZE, bufferConsumer);
+		copy(file, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, bufferConsumer);
 	}
 
 	public static <E extends Throwable> void copy(File file, byte[] buffer,
 			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws IOException, E {
-		if (!file.exists()) {
-			return;
-		}
-
-		FileInputStream fis = new FileInputStream(file);
+		FileInputStream fis = openInputStream(file);
 		try {
 			IOUtils.transferTo(fis, buffer, bufferConsumer);
 		} finally {
@@ -41,45 +37,9 @@ public class FileUtils {
 		}
 	}
 
-	public static <E extends Throwable> void copy(File file, int bufferSize,
+	public static <E extends Throwable> void copy(@NonNull File file, int bufferSize,
 			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws IOException, E {
-		if (!file.exists()) {
-			return;
-		}
-
-		FileInputStream fis = new FileInputStream(file);
-		try {
-			IOUtils.transferTo(fis, bufferSize, bufferConsumer);
-		} finally {
-			fis.close();
-		}
-	}
-
-	public static long copy(File input, OutputStream output) throws IOException {
-		final FileInputStream fis = new FileInputStream(input);
-		try {
-			return IOUtils.transferTo(fis, output);
-		} finally {
-			fis.close();
-		}
-	}
-
-	public static long copy(File input, OutputStream output, byte[] buffer) throws IOException {
-		final FileInputStream fis = new FileInputStream(input);
-		try {
-			return IOUtils.transferTo(fis, output, buffer);
-		} finally {
-			fis.close();
-		}
-	}
-
-	public static long copy(File input, OutputStream output, int bufferSize) throws IOException {
-		final FileInputStream fis = new FileInputStream(input);
-		try {
-			return IOUtils.transferTo(fis, output, bufferSize);
-		} finally {
-			fis.close();
-		}
+		copy(file, new byte[bufferSize], bufferConsumer);
 	}
 
 	/**
@@ -154,7 +114,7 @@ public class FileUtils {
 	public static long transferTo(InputStream source, File destination) throws IOException {
 		FileOutputStream output = openOutputStream(destination);
 		try {
-			return IOUtils.transferTo(source, output);
+			return IOUtils.transferTo(source, output::write);
 		} finally {
 			IOUtils.close(output);
 		}
@@ -163,7 +123,7 @@ public class FileUtils {
 	public static long transferTo(InputStream source, Path destination) throws IOException {
 		OutputStream output = Files.newOutputStream(destination);
 		try {
-			return IOUtils.transferTo(source, output);
+			return IOUtils.transferTo(source, output::write);
 		} finally {
 			IOUtils.close(output);
 		}

@@ -74,7 +74,7 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 		try {
 			OutputStream out = dest.getOutputStream();
 			try {
-				return IOUtils.transferTo(input, out);
+				return IOUtils.transferTo(input, out::write);
 			} finally {
 				out.close();
 			}

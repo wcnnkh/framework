@@ -49,7 +49,7 @@ public interface ReaderFactory<R extends Reader> {
 		try {
 			Writer out = dest.getWriter();
 			try {
-				return IOUtils.transferTo(input, out);
+				return IOUtils.transferTo(input, out::write);
 			} finally {
 				out.close();
 			}
