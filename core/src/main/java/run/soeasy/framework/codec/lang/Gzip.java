@@ -10,20 +10,21 @@ import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesCodec;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 public class Gzip implements BytesCodec {
 	public static final Gzip DEFAULT = new Gzip();
 
 	@Override
-	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target) throws IOException, EncodeException {
+	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
+			throws IOException, EncodeException {
 		if (target instanceof GZIPOutputStream) {
-			IOUtils.write(source, target, bufferSize);
+			IOUtils.transferTo(source, bufferSize, target::write);
 		} else {
 			GZIPOutputStream gzip = null;
 			try {
 				gzip = new GZIPOutputStream(target);
-				IOUtils.write(source, gzip, bufferSize);
+				IOUtils.transferTo(source, bufferSize, gzip::write);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}
@@ -31,14 +32,15 @@ public class Gzip implements BytesCodec {
 	}
 
 	@Override
-	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target) throws DecodeException, IOException {
+	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
+			throws DecodeException, IOException {
 		if (source instanceof GZIPInputStream) {
-			IOUtils.write(source, target, bufferSize);
+			IOUtils.transferTo(source, bufferSize, target::write);
 		} else {
 			GZIPInputStream gzip = null;
 			try {
 				gzip = new GZIPInputStream(source);
-				IOUtils.write(gzip, target, bufferSize);
+				IOUtils.transferTo(gzip, bufferSize, target::write);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}

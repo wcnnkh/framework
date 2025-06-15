@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.w3c.dom.Node;
 
-import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.io.Resource;
 
 public interface ResourceTransformer {
 	boolean canTransform(Node source);

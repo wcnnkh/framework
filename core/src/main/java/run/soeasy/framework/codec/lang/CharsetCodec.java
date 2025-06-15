@@ -14,7 +14,7 @@ import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
 import run.soeasy.framework.codec.crypto.HmacMD5;
 import run.soeasy.framework.codec.crypto.HmacSHA1;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 使用指定字符集进行编解码
@@ -87,7 +87,7 @@ public class CharsetCodec implements ToBytesCodec<String> {
 
 	@Override
 	public String decode(InputStream source, int bufferSize) throws IOException, DecodeException {
-		return decode(IOUtils.copyToByteArray(source, bufferSize));
+		return decode(IOUtils.toByteArray(source, bufferSize));
 	}
 
 	public String decode(byte[] source) throws DecodeException {

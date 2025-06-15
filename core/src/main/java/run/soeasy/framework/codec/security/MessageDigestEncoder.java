@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesEncoder;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 public class MessageDigestEncoder implements BytesEncoder, Cloneable {
 	protected final String algorithm;
@@ -66,7 +66,7 @@ public class MessageDigestEncoder implements BytesEncoder, Cloneable {
 		if (secretKey != null) {
 			messageDigest.update(secretKey);
 		}
-		IOUtils.read(source, bufferSize, messageDigest::update);
+		IOUtils.transferTo(source, bufferSize, messageDigest::update);
 		return messageDigest.digest();
 	}
 

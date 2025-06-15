@@ -2,7 +2,7 @@ package run.soeasy.framework.json;
 
 import java.io.IOException;
 
-import run.soeasy.framework.core.io.Exportable;
+import run.soeasy.framework.io.Exportable;
 
 /**
  * 所有的JSON元素应该都实现此接口

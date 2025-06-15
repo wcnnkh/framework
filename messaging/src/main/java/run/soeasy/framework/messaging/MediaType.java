@@ -15,9 +15,9 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.comparator.CompoundComparator;
-import run.soeasy.framework.core.io.InvalidMimeTypeException;
-import run.soeasy.framework.core.io.MimeType;
-import run.soeasy.framework.core.io.MimeTypeUtils;
+import run.soeasy.framework.io.InvalidMimeTypeException;
+import run.soeasy.framework.io.MimeType;
+import run.soeasy.framework.io.MimeTypeUtils;
 
 public class MediaType extends MimeType implements Serializable {
 

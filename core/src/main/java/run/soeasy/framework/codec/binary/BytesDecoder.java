@@ -12,9 +12,9 @@ import java.io.OutputStream;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.MultipleDecoder;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.BufferConsumer;
-import run.soeasy.framework.core.io.FileUtils;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.BufferConsumer;
+import run.soeasy.framework.io.FileUtils;
+import run.soeasy.framework.io.IOUtils;
 
 public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<byte[]>, MultipleDecoder<byte[]> {
 
@@ -92,11 +92,11 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 	}
 
 	default void decode(InputStream source, OutputStream target) throws DecodeException, IOException {
-		decode(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+		decode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target);
 	}
 
 	default void decode(InputStream source, OutputStream target, int count) throws DecodeException, IOException {
-		decode(source, IOUtils.DEFAULT_BUFFER_SIZE, target, count);
+		decode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target, count);
 	}
 
 	default void decode(File source, int bufferSize, OutputStream target) throws DecodeException, IOException {
@@ -229,7 +229,7 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		File tempFile = File.createTempFile("decode", "processor");
 		try {
 			decode(source, bufferSize, tempFile);
-			FileUtils.read(tempFile, bufferSize, targetConsumer);
+			FileUtils.copy(tempFile, bufferSize, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

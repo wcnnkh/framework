@@ -15,7 +15,7 @@ import run.soeasy.framework.codec.lang.URLCodec;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 @Data
 @ToString(callSuper = true)

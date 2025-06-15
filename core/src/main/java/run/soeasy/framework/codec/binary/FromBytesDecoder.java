@@ -8,14 +8,14 @@ import java.io.InputStream;
 
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.Decoder;
-import run.soeasy.framework.core.io.IOUtils;
-import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.InputStreamFactory;
 
 public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 	D decode(InputStream source, int bufferSize) throws IOException, DecodeException;
 
 	default D decode(InputStream source) throws IOException, DecodeException {
-		return decode(source, IOUtils.DEFAULT_BUFFER_SIZE);
+		return decode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 	}
 
 	default D decode(File source) throws IOException, DecodeException {
-		return decode(source, IOUtils.DEFAULT_BUFFER_SIZE);
+		return decode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE);
 	}
 
 	default D decode(File source, int bufferSize) throws IOException, DecodeException {
@@ -54,11 +54,12 @@ public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 		}
 	}
 
-	default D decode(Resource source) throws IOException, DecodeException {
+	default D decode(InputStreamFactory<? extends InputStream> source) throws IOException, DecodeException {
 		return source.getInputStreamPipeline().optional().map(this::decode).get();
 	}
 
-	default D decode(Resource source, int bufferSize) throws IOException, DecodeException {
+	default D decode(InputStreamFactory<? extends InputStream> source, int bufferSize)
+			throws IOException, DecodeException {
 		return source.getInputStreamPipeline().optional().map((is) -> decode(is, bufferSize)).get();
 	}
 }

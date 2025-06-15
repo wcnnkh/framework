@@ -19,9 +19,9 @@ import org.w3c.dom.Node;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.io.Resource;
 import run.soeasy.framework.dom.DomException;
 import run.soeasy.framework.dom.resource.ResourceTransformer;
+import run.soeasy.framework.io.Resource;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 

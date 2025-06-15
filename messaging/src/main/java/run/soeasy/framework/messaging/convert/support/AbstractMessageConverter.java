@@ -10,7 +10,7 @@ import lombok.Setter;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
-import run.soeasy.framework.core.io.MimeType;
+import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.Headers;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;

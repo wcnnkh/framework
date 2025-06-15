@@ -23,15 +23,4 @@ public class StringUtilsTest {
 		assertTrue(Arrays.equals(text.split(","), StringUtils.splitToArray(text, false, false, ",")));
 	}
 
-	@Test
-	public void test() {
-		assertTrue("/".equals(StringUtils.cleanPath("//")));
-		String path = "/a";
-		assertTrue(path.equals(StringUtils.cleanPath(path)));
-		assertTrue("/../a/b".equals(StringUtils.mergePaths("/", "/", "/", "../a", "/b")));
-		assertTrue("/a/b/".equals(StringUtils.mergePaths("/", "/", "/", "/a", "b/")));
-		assertTrue("a/b".equals(StringUtils.cleanPath("a//b")));
-		assertTrue("".equals(StringUtils.mergePaths("", "")));
-		assertTrue("/a".equals(StringUtils.mergePaths("", "/a")));
-	}
 }

@@ -12,9 +12,9 @@ import run.soeasy.framework.codec.lang.Base64;
 import run.soeasy.framework.codec.lang.HexCodec;
 import run.soeasy.framework.codec.security.MD5;
 import run.soeasy.framework.codec.security.SHA1;
-import run.soeasy.framework.core.io.BufferConsumer;
-import run.soeasy.framework.core.io.FileUtils;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.BufferConsumer;
+import run.soeasy.framework.io.FileUtils;
+import run.soeasy.framework.io.IOUtils;
 
 public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 
@@ -61,7 +61,7 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 		File tempFile = File.createTempFile("encode", "processor");
 		try {
 			encode(source, tempFile);
-			FileUtils.read(tempFile, targetConsumer);
+			FileUtils.copy(tempFile, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

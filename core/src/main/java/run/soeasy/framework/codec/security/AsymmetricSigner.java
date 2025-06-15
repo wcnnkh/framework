@@ -16,7 +16,7 @@ import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesEncoder;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
 
@@ -109,7 +109,7 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 
 		try {
 			Signature signature = getVerifySignature();
-			IOUtils.read(source, bufferSize, signature::update);
+			IOUtils.transferTo(source, bufferSize, signature::update);
 			return signature.verify(target);
 		} catch (Exception e) {
 			logger.error(e, "verify error");
@@ -122,7 +122,7 @@ public class AsymmetricSigner implements BytesEncoder, Cloneable {
 		Assert.state(privateKey != null, "privateKey does not exist");
 		try {
 			Signature signature = getEncodeSignature();
-			IOUtils.read(source, bufferSize, signature::update);
+			IOUtils.transferTo(source, bufferSize, signature::update);
 			byte[] sign = signature.sign();
 			target.write(sign);
 		} catch (Exception e) {

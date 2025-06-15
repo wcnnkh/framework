@@ -53,7 +53,6 @@ import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.io.IOUtils;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
 public abstract class CollectionUtils {
@@ -810,7 +809,7 @@ public abstract class CollectionUtils {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		Stream<T> stream = StreamSupport.stream(spliterator, false);
 		if (iterator instanceof AutoCloseable) {
-			stream = stream.onClose(IOUtils::closeQuietly);
+			stream = stream.onClose(ObjectUtils::closeQuietly);
 		}
 		return stream;
 	}

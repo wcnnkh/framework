@@ -17,7 +17,7 @@ import run.soeasy.framework.core.type.MultiableInstanceFactory;
 import run.soeasy.framework.core.type.ReflectionUtils;
 import run.soeasy.framework.core.type.ResolvableType;
 
-public class Cloner extends ObjectMapper<Property> {
+public class Cloner extends ObjectMapper<ReflectionField> {
 	// 用来防止死循环
 	private static final ThreadLocal<IdentityHashMap<Object, Object>> IDENTITY_MAP_CONTEXT = new ThreadLocal<>();
 	private static final Set<Class<?>> CANNOT_CLONE_TYPES = new HashSet<>();
@@ -36,13 +36,13 @@ public class Cloner extends ObjectMapper<Property> {
 	}
 
 	@Override
-	public ClassMembersLoader<Property> getClassPropertyTemplate(Class<?> requiredClass) {
-		ClassMembersLoader<Property> classMembersLoader = super.getClassPropertyTemplate(requiredClass);
+	public ClassMembersLoader<ReflectionField> getClassPropertyTemplate(Class<?> requiredClass) {
+		ClassMembersLoader<ReflectionField> classMembersLoader = super.getClassPropertyTemplate(requiredClass);
 		if (classMembersLoader == null && canClone(requiredClass)) {
 			return new ClassMembersLoader<>(requiredClass, (clazz) -> {
 				return ReflectionUtils.getDeclaredFields(clazz).filter((e) -> !Modifier.isStatic(e.getModifiers()))
-						.map((field) -> (Property) new ReflectionField(field));
-			}).withAll();// 这里使用全部的原因是最新的java可以在接口中定义私有变量
+						.map((field) -> new ReflectionField(field));
+			}).withAll();// 这里使用全部的原因是最新版本的java可以在接口中定义私有变量
 		}
 		return classMembersLoader;
 	}

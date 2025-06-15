@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.io.Exportable;
+import run.soeasy.framework.io.Exportable;
 
 public final class FormatableMessage implements Exportable, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;

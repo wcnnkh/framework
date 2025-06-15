@@ -8,8 +8,8 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.Decoder;
-import run.soeasy.framework.core.io.BufferConsumer;
-import run.soeasy.framework.core.io.FileUtils;
+import run.soeasy.framework.io.BufferConsumer;
+import run.soeasy.framework.io.FileUtils;
 
 public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 
@@ -51,7 +51,7 @@ public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 		File tempFile = File.createTempFile("decode", "processor");
 		try {
 			decode(source, tempFile);
-			FileUtils.read(tempFile, targetConsumer);
+			FileUtils.copy(tempFile, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

@@ -13,7 +13,7 @@ import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.ToBytesCodec;
 import run.soeasy.framework.codec.lang.SerializerCodec;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.io.IOUtils;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 序列化与反序列化
@@ -60,7 +60,7 @@ public interface Serializer extends ToBytesCodec<Object>, CrossLanguageSerialize
 	<T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException;
 
 	default <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
-		return deserialize(input, IOUtils.DEFAULT_BUFFER_SIZE);
+		return deserialize(input, IOUtils.DEFAULT_BYTE_BUFFER_SIZE);
 	}
 
 	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException {

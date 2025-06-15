@@ -9,8 +9,8 @@ import java.io.InputStream;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.io.IOUtils;
-import run.soeasy.framework.core.io.Resource;
+import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.InputStreamFactory;
 
 public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 
@@ -26,7 +26,7 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	E encode(InputStream source, int bufferSize) throws IOException, EncodeException;
 
 	default boolean verify(InputStream source, E target) throws EncodeException, IOException {
-		return verify(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+		return verify(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target);
 	}
 
 	default boolean verify(InputStream source, int bufferSize, E target) throws EncodeException, IOException {
@@ -48,14 +48,16 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	}
 
 	default boolean verify(File source, E target) throws EncodeException, IOException {
-		return verify(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+		return verify(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target);
 	}
 
-	default boolean verify(Resource source, E target) throws EncodeException, IOException {
-		return verify(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+	default boolean verify(InputStreamFactory<? extends InputStream> source, E target)
+			throws EncodeException, IOException {
+		return verify(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target);
 	}
 
-	default boolean verify(Resource source, int bufferSize, E target) throws EncodeException, IOException {
+	default boolean verify(InputStreamFactory<? extends InputStream> source, int bufferSize, E target)
+			throws EncodeException, IOException {
 		return source.getInputStreamPipeline().optional().filter((is) -> verify(is, bufferSize, target)).isPresent();
 	}
 
@@ -68,7 +70,7 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	 * @throws EncodeException
 	 */
 	default E encode(InputStream source) throws IOException, EncodeException {
-		return encode(source, IOUtils.DEFAULT_BUFFER_SIZE);
+		return encode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE);
 	}
 
 	@Override
@@ -94,7 +96,7 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	}
 
 	default E encode(File source) throws IOException, EncodeException {
-		return encode(source, IOUtils.DEFAULT_BUFFER_SIZE);
+		return encode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE);
 	}
 
 	default E encode(File source, int bufferSize) throws IOException, EncodeException {
@@ -111,11 +113,12 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 		}
 	}
 
-	default E encode(Resource source) throws IOException, EncodeException {
+	default E encode(InputStreamFactory<? extends InputStream> source) throws IOException, EncodeException {
 		return source.getInputStreamPipeline().optional().map(this::encode).get();
 	}
 
-	default E encode(Resource source, int bufferSize) throws IOException, EncodeException {
+	default E encode(InputStreamFactory<? extends InputStream> source, int bufferSize)
+			throws IOException, EncodeException {
 		return source.getInputStreamPipeline().optional().map((is) -> encode(is, bufferSize)).get();
 	}
 }
