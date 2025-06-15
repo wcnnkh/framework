@@ -18,44 +18,10 @@ import run.soeasy.framework.io.watch.Variable;
 /**
  * 资源的定义
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
  */
 public interface Resource extends InputSource, OutputSource, Variable {
-	public static final String EXTENSION_SEPARATOR = ".";
-	public static final String FOLDER_SEPARATOR = "/";
-
-	public static String getName(String path) {
-		if (path == null) {
-			return null;
-		}
-		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		return (separatorIndex != -1 ? path.substring(separatorIndex + 1) : path);
-	}
-
-	/**
-	 * Extract the filename extension from the given path, e.g. "mypath/myfile.txt"
-	 * -&gt; "txt".
-	 * 
-	 * @param path the file path (may be {@code null})
-	 * @return the extracted filename extension, or {@code null} if none
-	 */
-	public static String getExtension(String path) {
-		if (path == null) {
-			return null;
-		}
-
-		int extIndex = path.lastIndexOf(EXTENSION_SEPARATOR);
-		if (extIndex == -1) {
-			return null;
-		}
-		int folderIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		if (folderIndex > extIndex) {
-			return null;
-		}
-		return path.substring(extIndex + 1);
-	}
-
 	/**
 	 * 返回一个不存在的资源
 	 * 
