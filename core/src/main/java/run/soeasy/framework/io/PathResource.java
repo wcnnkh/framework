@@ -86,5 +86,4 @@ class PathResource implements Resource, PathVariable {
 	public String getDescription() {
 		return "path [" + this.path.toAbsolutePath() + "]";
 	}
-
 }

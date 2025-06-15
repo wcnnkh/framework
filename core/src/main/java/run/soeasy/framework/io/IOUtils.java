@@ -13,7 +13,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.stream.Stream;
 
@@ -31,11 +30,15 @@ public final class IOUtils {
 
 	private static final int EOF = -1;
 
-	public static long append(Reader input, Appendable output) throws IOException {
-		return append(input, output, new char[DEFAULT_BUFFER_SIZE]);
+	public static long transferTo(Reader input, Appendable output) throws IOException {
+		return transferTo(input, output, DEFAULT_BUFFER_SIZE);
 	}
 
-	public static long append(Reader input, Appendable output, char[] buffer) throws IOException {
+	public static long transferTo(Reader input, Appendable output, int bufferSize) throws IOException {
+		return transferTo(input, output, new char[bufferSize]);
+	}
+
+	public static long transferTo(Reader input, Appendable output, char[] buffer) throws IOException {
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
@@ -105,12 +108,12 @@ public final class IOUtils {
 	 * @throws NullPointerException if the input or output is null
 	 * @throws IOException          if an I/O error occurs
 	 */
-	public static long copy(InputStream input, OutputStream output) throws IOException {
-		return copy(input, output, DEFAULT_BUFFER_SIZE);
+	public static long transferTo(InputStream input, OutputStream output) throws IOException {
+		return transferTo(input, output, DEFAULT_BUFFER_SIZE);
 	}
 
-	public static long copy(InputStream input, OutputStream output, int bufferSize) throws IOException {
-		return copy(input, output, new byte[bufferSize]);
+	public static long transferTo(InputStream input, OutputStream output, int bufferSize) throws IOException {
+		return transferTo(input, output, new byte[bufferSize]);
 	}
 
 	/**
@@ -128,7 +131,7 @@ public final class IOUtils {
 	 * @throws NullPointerException if the input or output is null
 	 * @throws IOException          if an I/O error occurs
 	 */
-	public static long copy(InputStream input, OutputStream output, byte[] buffer) throws IOException {
+	public static long transferTo(InputStream input, OutputStream output, byte[] buffer) throws IOException {
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
@@ -138,41 +141,15 @@ public final class IOUtils {
 		return count;
 	}
 
-	/**
-	 * Copy chars from a large (over 2GB) <code>Reader</code> to a
-	 * <code>Writer</code>.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * <p>
-	 * The buffer size is given by {@link #DEFAULT_BUFFER_SIZE}.
-	 *
-	 * @param input  the <code>Reader</code> to read from
-	 * @param output the <code>Writer</code> to write to
-	 * @return the number of characters copied
-	 * @throws NullPointerException if the input or output is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static long copy(Reader input, Writer output) throws IOException {
-		return copy(input, output, new char[DEFAULT_BUFFER_SIZE]);
+	public static long transferTo(Reader input, Writer output) throws IOException {
+		return transferTo(input, output, DEFAULT_BUFFER_SIZE);
 	}
 
-	/**
-	 * Copy chars from a large (over 2GB) <code>Reader</code> to a
-	 * <code>Writer</code>.
-	 * <p>
-	 * This method uses the provided buffer, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * <p>
-	 *
-	 * @param input  the <code>Reader</code> to read from
-	 * @param output the <code>Writer</code> to write to
-	 * @param buffer the buffer to be used for the copy
-	 * @return the number of characters copied
-	 * @throws NullPointerException if the input or output is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static long copy(Reader input, Writer output, char[] buffer) throws IOException {
+	public static long transferTo(Reader input, Writer output, int bufferSize) throws IOException {
+		return transferTo(input, output, new char[bufferSize]);
+	}
+
+	public static long transferTo(Reader input, Writer output, char[] buffer) throws IOException {
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
@@ -200,87 +177,18 @@ public final class IOUtils {
 		return NullOutputStream.NULL_OUTPUT_STREAM;
 	}
 
-	// copy from Reader
-	// -----------------------------------------------------------------------
-
-	public static <E extends Throwable> long read(ByteBuffer buffer, BufferConsumer<byte[], E> bufferConsumer)
-			throws E {
-		return read(buffer, DEFAULT_BUFFER_SIZE, bufferConsumer);
-	}
-
-	public static <E extends Throwable> long read(ByteBuffer buffer, int bufferSize,
-			@NonNull BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E {
-		if (buffer == null || !buffer.hasRemaining()) {
-			return 0;
-		}
-
-		if (buffer.hasArray()) {
-			byte[] b = buffer.array();
-			int ofs = buffer.arrayOffset();
-			int pos = buffer.position();
-			int lim = buffer.limit();
-			bufferConsumer.accept(b, ofs + pos, lim - pos);
-			buffer.position(lim);
-			return lim - pos;
-		} else {
-			int len = buffer.remaining();
-			int n = Math.min(len, bufferSize);
-			byte[] tempArray = new byte[n];
-			long size = 0;
-			while (len > 0) {
-				int chunk = Math.min(len, tempArray.length);
-				buffer.get(tempArray, 0, chunk);
-				bufferConsumer.accept(tempArray, 0, chunk);
-				len -= chunk;
-				size += chunk;
-			}
-			return size;
-		}
-	}
-
-	public static <E extends Throwable> long read(CharBuffer buffer,
-			BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E {
-		return read(buffer, DEFAULT_BUFFER_SIZE, bufferConsumer);
-	}
-
-	public static <E extends Throwable> long read(CharBuffer buffer, int bufferSize,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E {
-		if (buffer == null || !buffer.hasRemaining()) {
-			return 0;
-		}
-
-		if (buffer.hasArray()) {
-			char[] b = buffer.array();
-			int ofs = buffer.arrayOffset();
-			int pos = buffer.position();
-			int lim = buffer.limit();
-			bufferConsumer.accept(b, ofs + pos, lim - pos);
-			buffer.position(lim);
-			return lim - pos;
-		} else {
-			int len = buffer.remaining();
-			int n = Math.min(len, bufferSize);
-			char[] tempArray = new char[n];
-			long size = 0;
-			while (len > 0) {
-				int chunk = Math.min(len, tempArray.length);
-				buffer.get(tempArray, 0, chunk);
-				bufferConsumer.accept(tempArray, 0, chunk);
-				len -= chunk;
-				size += chunk;
-			}
-			return size;
-		}
-	}
-
-	public static <E extends Throwable> long read(InputStream input,
+	public static <E extends Throwable> long transferTo(InputStream input,
 			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
-		return read(input, DEFAULT_BUFFER_SIZE, bufferConsumer);
+		return transferTo(input, DEFAULT_BUFFER_SIZE, bufferConsumer);
 	}
 
-	public static <E extends Throwable> long read(@NonNull InputStream input, int bufferSize,
+	public static <E extends Throwable> long transferTo(InputStream input, int bufferSize,
+			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
+		return transferTo(input, bufferSize, bufferConsumer);
+	}
+
+	public static <E extends Throwable> long transferTo(@NonNull InputStream input, byte[] buffer,
 			@NonNull BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
-		byte[] buffer = new byte[bufferSize];
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
@@ -365,7 +273,7 @@ public final class IOUtils {
 
 	public static byte[] toByteArray(InputStream input, byte[] buffer) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		copy(input, output, buffer);
+		transferTo(input, output, buffer);
 		return output.toByteArray();
 	}
 
@@ -382,13 +290,13 @@ public final class IOUtils {
 	 */
 	public static char[] toCharArray(Reader input) throws IOException {
 		CharArrayWriter sw = new CharArrayWriter();
-		copy(input, sw);
+		transferTo(input, sw);
 		return sw.toCharArray();
 	}
 
 	public static CharSequence toCharSequence(@NonNull Reader reader) throws IOException {
 		StringWriter writer = new StringWriter();
-		copy(reader, writer);
+		transferTo(reader, writer);
 		return writer.getBuffer();
 	}
 }

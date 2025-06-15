@@ -89,7 +89,7 @@ public class MAC implements BytesEncoder, Cloneable {
 	@Override
 	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		Mac mac = getMac();
-		IOUtils.read(source, bufferSize, mac::update);
+		IOUtils.transferTo(source, bufferSize, mac::update);
 		byte[] response = mac.doFinal();
 		target.write(response);
 	}

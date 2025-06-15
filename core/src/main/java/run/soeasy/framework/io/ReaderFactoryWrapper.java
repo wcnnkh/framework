@@ -2,14 +2,16 @@ package run.soeasy.framework.io;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
-public interface ReaderFactoryWrapper<T extends Reader, W extends ReaderFactory<T>>
-		extends ReaderFactory<T>, Wrapper<W> {
+public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<R>>
+		extends ReaderFactory<R>, Wrapper<W> {
 
 	@Override
 	default Reader getReader() throws IOException {
@@ -17,7 +19,7 @@ public interface ReaderFactoryWrapper<T extends Reader, W extends ReaderFactory<
 	}
 
 	@Override
-	default Pipeline<T, IOException> getReaderPipeline() {
+	default Pipeline<R, IOException> getReaderPipeline() {
 		return getSource().getReaderPipeline();
 	}
 
@@ -29,5 +31,10 @@ public interface ReaderFactoryWrapper<T extends Reader, W extends ReaderFactory<
 	@Override
 	default Elements<String> readLines() {
 		return getSource().readLines();
+	}
+
+	@Override
+	default <T extends Writer> long transferTo(@NonNull WriterFactory<? extends T> dest) throws IOException {
+		return getSource().transferTo(dest);
 	}
 }

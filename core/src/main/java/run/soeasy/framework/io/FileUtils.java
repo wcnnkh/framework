@@ -22,6 +22,98 @@ public class FileUtils {
 	 */
 	public static final File[] EMPTY_FILE_ARRAY = new File[0];
 
+	public static <E extends Throwable> void copy(File file, BufferConsumer<? super byte[], ? extends E> bufferConsumer)
+			throws IOException, E {
+		copy(file, IOUtils.DEFAULT_BUFFER_SIZE, bufferConsumer);
+	}
+
+	public static <E extends Throwable> void copy(File file, byte[] buffer,
+			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws IOException, E {
+		if (!file.exists()) {
+			return;
+		}
+
+		FileInputStream fis = new FileInputStream(file);
+		try {
+			IOUtils.transferTo(fis, buffer, bufferConsumer);
+		} finally {
+			fis.close();
+		}
+	}
+
+	public static <E extends Throwable> void copy(File file, int bufferSize,
+			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws IOException, E {
+		if (!file.exists()) {
+			return;
+		}
+
+		FileInputStream fis = new FileInputStream(file);
+		try {
+			IOUtils.transferTo(fis, bufferSize, bufferConsumer);
+		} finally {
+			fis.close();
+		}
+	}
+
+	public static long copy(File input, OutputStream output) throws IOException {
+		final FileInputStream fis = new FileInputStream(input);
+		try {
+			return IOUtils.transferTo(fis, output);
+		} finally {
+			fis.close();
+		}
+	}
+
+	public static long copy(File input, OutputStream output, byte[] buffer) throws IOException {
+		final FileInputStream fis = new FileInputStream(input);
+		try {
+			return IOUtils.transferTo(fis, output, buffer);
+		} finally {
+			fis.close();
+		}
+	}
+
+	public static long copy(File input, OutputStream output, int bufferSize) throws IOException {
+		final FileInputStream fis = new FileInputStream(input);
+		try {
+			return IOUtils.transferTo(fis, output, bufferSize);
+		} finally {
+			fis.close();
+		}
+	}
+
+	/**
+	 * 递归迭代目录下的所有文件
+	 * 
+	 * @param directory
+	 * @return
+	 */
+	public static Elements<File> listAllFiles(@NonNull File directory) {
+		return listFiles(directory, -1);
+	}
+
+	/**
+	 * 迭代目录下的文件，不进行递归
+	 * 
+	 * @param directory
+	 * @return
+	 */
+	public static Elements<File> listFiles(@NonNull File directory) {
+		return listFiles(directory, 0);
+	}
+
+	/**
+	 * 迭代目录下的文件
+	 * 
+	 * @param directory
+	 * @param maxDepth  迭代最大深度, -1不限制深度
+	 * @return
+	 */
+	public static Elements<File> listFiles(@NonNull File directory, int maxDepth) {
+		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
+		return Elements.of(() -> new ListFileIterator(directory, maxDepth));
+	}
+
 	public static FileInputStream openInputStream(File file) throws IOException {
 		if (file.exists()) {
 			if (file.isDirectory()) {
@@ -59,94 +151,21 @@ public class FileUtils {
 		return new FileOutputStream(file, append);
 	}
 
-	/**
-	 * Copy bytes from a <code>File</code> to an <code>OutputStream</code>.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedInputStream</code>.
-	 * </p>
-	 * 
-	 * @param input  the <code>File</code> to read from
-	 * @param output the <code>OutputStream</code> to write to
-	 * @return the number of bytes copied
-	 * @throws NullPointerException if the input or output is null
-	 * @throws IOException          if an I/O error occurs
-	 */
-	public static long copyFile(File input, OutputStream output) throws IOException {
-		final FileInputStream fis = new FileInputStream(input);
-		try {
-			return IOUtils.copy(fis, output);
-		} finally {
-			fis.close();
-		}
-	}
-
-	public static long copyInputStreamToFile(InputStream source, File destination) throws IOException {
+	public static long transferTo(InputStream source, File destination) throws IOException {
 		FileOutputStream output = openOutputStream(destination);
 		try {
-			return IOUtils.copy(source, output);
+			return IOUtils.transferTo(source, output);
 		} finally {
 			IOUtils.close(output);
 		}
 	}
 
-	public static long copyInputStreamToPath(InputStream source, Path destination) throws IOException {
+	public static long transferTo(InputStream source, Path destination) throws IOException {
 		OutputStream output = Files.newOutputStream(destination);
 		try {
-			return IOUtils.copy(source, output);
+			return IOUtils.transferTo(source, output);
 		} finally {
 			IOUtils.close(output);
 		}
-	}
-
-	public static <E extends Throwable> void read(File file, BufferConsumer<? super byte[], ? extends E> bufferConsumer)
-			throws IOException, E {
-		read(file, IOUtils.DEFAULT_BUFFER_SIZE, bufferConsumer);
-	}
-
-	public static <E extends Throwable> void read(File file, int bufferSize,
-			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws IOException, E {
-		if (!file.exists()) {
-			return;
-		}
-
-		FileInputStream fis = new FileInputStream(file);
-		try {
-			IOUtils.read(fis, bufferSize, bufferConsumer);
-		} finally {
-			fis.close();
-		}
-	}
-
-	/**
-	 * 递归迭代目录下的所有文件
-	 * 
-	 * @param directory
-	 * @return
-	 */
-	public static Elements<File> listAllFiles(@NonNull File directory) {
-		return listFiles(directory, -1);
-	}
-
-	/**
-	 * 迭代目录下的文件，不进行递归
-	 * 
-	 * @param directory
-	 * @return
-	 */
-	public static Elements<File> listFiles(@NonNull File directory) {
-		return listFiles(directory, 0);
-	}
-
-	/**
-	 * 迭代目录下的文件
-	 * 
-	 * @param directory
-	 * @param maxDepth  迭代最大深度, -1不限制深度
-	 * @return
-	 */
-	public static Elements<File> listFiles(@NonNull File directory, int maxDepth) {
-		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
-		return Elements.of(() -> new ListFileIterator(directory, maxDepth));
 	}
 }

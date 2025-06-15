@@ -17,8 +17,19 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
 		extends InputStreamFactory<I>, ReaderFactoryWrapper<Reader, W> {
 
 	@Override
-	default boolean isDecoded() {
-		return getSource().isDecoded();
+	default InputStreamFactory<I> decode(Charset charset) {
+		return getSource().decode(charset);
+	}
+
+	@Override
+	default InputStreamFactory<I> decode(String charsetName) {
+		return getSource().decode(charsetName);
+	}
+
+	@Override
+	default <T extends Reader> InputStreamFactory<I> decode(
+			@NonNull ThrowingFunction<? super I, ? extends T, IOException> decoder) {
+		return getSource().decode(decoder);
 	}
 
 	@Override
@@ -32,29 +43,13 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
 	}
 
 	@Override
-	default <T extends Reader> InputStreamFactory<I> decode(
-			@NonNull ThrowingFunction<? super I, ? extends T, IOException> decoder) {
-		return getSource().decode(decoder);
-	}
-
-	@Override
-	default byte[] toByteArray() throws IOException {
-		return getSource().toByteArray();
-	}
-
-	@Override
-	default InputStreamFactory<I> decode(Charset charset) {
-		return getSource().decode(charset);
-	}
-
-	@Override
-	default InputStreamFactory<I> decode(String charsetName) {
-		return getSource().decode(charsetName);
-	}
-
-	@Override
 	default Pipeline<Reader, IOException> getReaderPipeline() {
 		return getSource().getReaderPipeline();
+	}
+
+	@Override
+	default boolean isDecoded() {
+		return getSource().isDecoded();
 	}
 
 	@Override
@@ -63,8 +58,13 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
 	}
 
 	@Override
-	default long transferTo(@NonNull File dest) throws IOException, IllegalStateException {
-		return getSource().transferTo(dest);
+	default byte[] toByteArray() throws IOException {
+		return getSource().toByteArray();
+	}
+
+	@Override
+	default void transferTo(@NonNull File dest) throws IOException, IllegalStateException {
+		getSource().transferTo(dest);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
 	}
 
 	@Override
-	default long transferTo(@NonNull Path dest) throws IOException {
-		return getSource().transferTo(dest);
+	default void transferTo(@NonNull Path dest) throws IOException {
+		getSource().transferTo(dest);
 	}
 }

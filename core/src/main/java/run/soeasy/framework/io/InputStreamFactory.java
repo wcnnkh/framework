@@ -17,20 +17,12 @@ import run.soeasy.framework.core.function.ThrowingFunction;
 
 @FunctionalInterface
 public interface InputStreamFactory<I extends InputStream> extends ReaderFactory<Reader> {
-	@NonNull
-	Pipeline<I, IOException> getInputStreamPipeline();
-
-	default InputStream getInputStream() throws IOException {
-		return new InputStreamPipeline(getInputStreamPipeline());
+	default InputStreamFactory<I> decode(@NonNull Charset charset) {
+		return new DecodedInputStreamFactory<>(this, charset, (e) -> new InputStreamReader(e, charset));
 	}
 
-	default boolean isDecoded() {
-		return false;
-	}
-
-	@Override
-	default @NonNull Pipeline<Reader, IOException> getReaderPipeline() {
-		return getInputStreamPipeline().map((e) -> (Reader) new InputStreamReader(e)).onClose((e) -> e.close());
+	default InputStreamFactory<I> decode(@NonNull String charsetName) {
+		return new DecodedInputStreamFactory<>(this, charsetName, (e) -> new InputStreamReader(e, charsetName));
 	}
 
 	default <T extends Reader> InputStreamFactory<I> decode(
@@ -38,12 +30,20 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 		return new DecodedInputStreamFactory<>(this, null, decoder);
 	}
 
-	default InputStreamFactory<I> decode(@NonNull Charset charset) {
-		return new DecodedInputStreamFactory<>(this, charset, (e) -> new InputStreamReader(e, charset));
+	default InputStream getInputStream() throws IOException {
+		return new InputStreamPipeline(getInputStreamPipeline());
 	}
 
-	default InputStreamFactory<I> decode(@NonNull String charsetName) {
-		return new DecodedInputStreamFactory<>(this, charsetName, (e) -> new InputStreamReader(e, charsetName));
+	@NonNull
+	Pipeline<I, IOException> getInputStreamPipeline();
+
+	@Override
+	default @NonNull Pipeline<Reader, IOException> getReaderPipeline() {
+		return getInputStreamPipeline().map((e) -> (Reader) new InputStreamReader(e)).onClose((e) -> e.close());
+	}
+
+	default boolean isDecoded() {
+		return false;
 	}
 
 	default ReadableByteChannel readableChannel() throws IOException {
@@ -59,19 +59,10 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 		}
 	}
 
-	default long transferTo(@NonNull File dest) throws IOException, IllegalStateException {
+	default void transferTo(@NonNull File dest) throws IOException, IllegalStateException {
 		InputStream input = getInputStream();
 		try {
-			return FileUtils.copyInputStreamToFile(input, dest);
-		} finally {
-			input.close();
-		}
-	}
-
-	default long transferTo(@NonNull Path dest) throws IOException {
-		InputStream input = getInputStream();
-		try {
-			return FileUtils.copyInputStreamToPath(input, dest);
+			FileUtils.transferTo(input, dest);
 		} finally {
 			input.close();
 		}
@@ -83,10 +74,19 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 		try {
 			OutputStream out = dest.getOutputStream();
 			try {
-				return IOUtils.copy(input, out);
+				return IOUtils.transferTo(input, out);
 			} finally {
 				out.close();
 			}
+		} finally {
+			input.close();
+		}
+	}
+
+	default void transferTo(@NonNull Path dest) throws IOException {
+		InputStream input = getInputStream();
+		try {
+			FileUtils.transferTo(input, dest);
 		} finally {
 			input.close();
 		}

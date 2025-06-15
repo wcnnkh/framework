@@ -51,7 +51,7 @@ public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 		File tempFile = File.createTempFile("decode", "processor");
 		try {
 			decode(source, tempFile);
-			FileUtils.read(tempFile, targetConsumer);
+			FileUtils.copy(tempFile, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

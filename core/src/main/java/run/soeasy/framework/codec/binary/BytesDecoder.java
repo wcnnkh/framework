@@ -229,7 +229,7 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		File tempFile = File.createTempFile("decode", "processor");
 		try {
 			decode(source, bufferSize, tempFile);
-			FileUtils.read(tempFile, bufferSize, targetConsumer);
+			FileUtils.copy(tempFile, bufferSize, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

@@ -206,7 +206,7 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		File tempFile = File.createTempFile("encode", "processor");
 		try {
 			encode(source, bufferSize, tempFile);
-			FileUtils.read(tempFile, bufferSize, targetConsumer);
+			FileUtils.copy(tempFile, bufferSize, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

@@ -51,7 +51,7 @@ public class CipherFactory {
 			BufferConsumer<? super byte[], ? extends E> targetConsumer)
 			throws IOException, GeneralSecurityException, NoSuchProviderException, E {
 		Cipher cipher = getCipher();
-		return IOUtils.read(source, bufferSize, (buff, offset, len) -> {
+		return IOUtils.transferTo(source, bufferSize, (buff, offset, len) -> {
 			byte[] target;
 			try {
 				target = cipher.doFinal(buff, offset, len);

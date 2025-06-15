@@ -2,6 +2,7 @@ package run.soeasy.framework.io;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
@@ -41,5 +42,19 @@ public interface ReaderFactory<R extends Reader> {
 			}
 			return Stream.empty();
 		});
+	}
+
+	default <T extends Writer> long transferTo(@NonNull WriterFactory<? extends T> dest) throws IOException {
+		Reader input = getReader();
+		try {
+			Writer out = dest.getWriter();
+			try {
+				return IOUtils.transferTo(input, out);
+			} finally {
+				out.close();
+			}
+		} finally {
+			input.close();
+		}
 	}
 }

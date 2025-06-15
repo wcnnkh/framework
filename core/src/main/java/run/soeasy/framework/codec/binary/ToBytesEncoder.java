@@ -61,7 +61,7 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 		File tempFile = File.createTempFile("encode", "processor");
 		try {
 			encode(source, tempFile);
-			FileUtils.read(tempFile, targetConsumer);
+			FileUtils.copy(tempFile, targetConsumer);
 		} finally {
 			tempFile.delete();
 		}

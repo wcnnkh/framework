@@ -46,7 +46,7 @@ public class Zip implements BytesCodec {
 					entityFile.createNewFile();
 					InputStream is = zipFile.getInputStream(zipEntry);
 					try {
-						FileUtils.copyInputStreamToFile(is, entityFile);
+						FileUtils.transferTo(is, entityFile);
 					} finally {
 						IOUtils.close(is);
 					}
@@ -61,12 +61,12 @@ public class Zip implements BytesCodec {
 	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws IOException, EncodeException {
 		if (target instanceof ZipOutputStream) {
-			IOUtils.copy(source, target, bufferSize);
+			IOUtils.transferTo(source, target, bufferSize);
 		} else {
 			ZipOutputStream zip = null;
 			try {
 				zip = new ZipOutputStream(target);
-				IOUtils.copy(source, zip, bufferSize);
+				IOUtils.transferTo(source, zip, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(zip);
 			}
@@ -77,12 +77,12 @@ public class Zip implements BytesCodec {
 	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws DecodeException, IOException {
 		if (source instanceof ZipInputStream) {
-			IOUtils.copy(source, target, bufferSize);
+			IOUtils.transferTo(source, target, bufferSize);
 		} else {
 			ZipInputStream zip = null;
 			try {
 				zip = new ZipInputStream(source);
-				IOUtils.copy(zip, target, bufferSize);
+				IOUtils.transferTo(zip, target, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(zip);
 			}

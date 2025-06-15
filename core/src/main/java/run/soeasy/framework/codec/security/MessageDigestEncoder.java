@@ -66,7 +66,7 @@ public class MessageDigestEncoder implements BytesEncoder, Cloneable {
 		if (secretKey != null) {
 			messageDigest.update(secretKey);
 		}
-		IOUtils.read(source, bufferSize, messageDigest::update);
+		IOUtils.transferTo(source, bufferSize, messageDigest::update);
 		return messageDigest.digest();
 	}
 
