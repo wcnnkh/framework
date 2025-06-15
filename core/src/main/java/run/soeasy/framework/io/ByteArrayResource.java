@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.NoSuchElementException;
 
 public final class ByteArrayResource extends ByteArrayOutputStream implements Resource {
 	private int lastModified = 0;
@@ -24,13 +23,8 @@ public final class ByteArrayResource extends ByteArrayOutputStream implements Re
 	}
 
 	@Override
-	public byte[] readAllBytes() throws NoSuchElementException, IOException {
-		return toByteArray();
-	}
-
-	@Override
-	public String readAllCharacters() throws NoSuchElementException, IOException {
-		return new String(buf, 0, count);
+	public synchronized byte[] toByteArray() {
+		return super.toByteArray();
 	}
 
 	@Override

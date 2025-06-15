@@ -3,24 +3,38 @@ package run.soeasy.framework.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
-public interface OutputSourceWrapper<O extends OutputStream, E extends Writer, W extends OutputSource<O, E>> extends
-		OutputSource<O, E>, OutputFactoryWrapper<O, E, W>, OutputStreamSourceWrapper<O, W>, WriterSourceWrapper<E, W> {
+@FunctionalInterface
+public interface OutputSourceWrapper<W extends OutputSource>
+		extends OutputSource, OutputStreamFactoryWrapper<OutputStream, W> {
 	@Override
-	default boolean isWritable() {
-		return getSource().isWritable();
+	default OutputStream getOutputStream() throws IOException {
+		return getSource().getOutputStream();
 	}
 
 	@Override
-	default @NonNull Pipeline<O, IOException> getOutputStreamPipeline() {
+	default @NonNull Pipeline<OutputStream, IOException> getOutputStreamPipeline() {
 		return getSource().getOutputStreamPipeline();
 	}
 
 	@Override
-	default @NonNull Pipeline<E, IOException> getWriterPipeline() {
-		return getSource().getWriterPipeline();
+	default OutputSource encode(Charset charset) {
+		return getSource().encode(charset);
+	}
+
+	@Override
+	default OutputSource encode(String charsetName) {
+		return getSource().encode(charsetName);
+	}
+
+	@Override
+	default <T extends Writer> OutputSource encode(
+			@NonNull ThrowingFunction<? super OutputStream, ? extends T, IOException> encoder) {
+		return getSource().encode(encoder);
 	}
 }

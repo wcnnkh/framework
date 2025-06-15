@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.util.InvalidPropertiesFormatException;
-import java.util.Optional;
 import java.util.Properties;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.domain.CharsetCapable;
 import run.soeasy.framework.core.type.ReflectionUtils;
-import run.soeasy.framework.io.CharsetCapable;
 import run.soeasy.framework.io.Resource;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
@@ -64,7 +63,7 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 						"The specified character set is only supported in versions of jdk 1.6 and above: " + resource);
 				resource.getInputStreamPipeline().optional().ifPresent((is) -> properties.load(is));
 			} else {
-				resource.decode().getReaderPipeline().optional()
+				resource.getReaderPipeline().optional()
 						.ifPresent((is) -> ReflectionUtils.invoke(LOAD_METHOD, properties, is));
 			}
 		}
@@ -78,12 +77,12 @@ public class DefaultPropertiesResolver extends ConfigurablePropertiesResolver {
 		}
 
 		if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {
-			Optional<String> charsetName = CharsetCapable.getCharsetName(resource);
+			String charsetName = CharsetCapable.getCharsetName(resource);
 			resource.getOutputStreamPipeline().optional().ifPresent((os) -> {
-				properties.storeToXML(os, null, charsetName.orElse(null));
+				properties.storeToXML(os, null, charsetName);
 			});
 		} else {
-			resource.encode().getWriterPipeline().optional().ifPresent((os) -> {
+			resource.getWriterPipeline().optional().ifPresent((os) -> {
 				properties.store(os, null);
 			});
 		}

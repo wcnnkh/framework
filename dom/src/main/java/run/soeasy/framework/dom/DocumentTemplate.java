@@ -79,6 +79,6 @@ public class DocumentTemplate implements NodeReader, NodeWriter, ResourceParser,
 	public String toString(Node node) throws IOException {
 		StringBufferResource resource = new StringBufferResource();
 		transform(node, resource);
-		return resource.readAllCharacters();
+		return resource.toCharSequence().toString();
 	}
 }

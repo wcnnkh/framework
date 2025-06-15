@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LineIterator implements Iterator<String> {
+class LineIterator implements Iterator<String> {
 	/** The reader that is being read. */
 	private final BufferedReader bufferedReader;
 	/** The current line. */
@@ -29,8 +29,8 @@ public class LineIterator implements Iterator<String> {
 	// -----------------------------------------------------------------------
 	/**
 	 * Indicates whether the <code>Reader</code> has more lines. If there is an
-	 * <code>IOException</code> then {@link BufferedReader#close()} will be called on this
-	 * instance.
+	 * <code>IOException</code> then {@link BufferedReader#close()} will be called
+	 * on this instance.
 	 *
 	 * @return {@code true} if the Reader has more lines
 	 * @throws IllegalStateException if an IO exception occurs

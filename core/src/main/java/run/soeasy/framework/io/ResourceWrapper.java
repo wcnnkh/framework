@@ -1,26 +1,20 @@
 package run.soeasy.framework.io;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URL;
+import java.nio.charset.Charset;
+
+import lombok.NonNull;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 @FunctionalInterface
-public interface ResourceWrapper<W extends Resource>
-		extends Resource, InputSourceWrapper<InputStream, Reader, W>, OutputSourceWrapper<OutputStream, Writer, W> {
+public interface ResourceWrapper<W extends Resource> extends Resource, InputSourceWrapper<W>, OutputSourceWrapper<W> {
 	@Override
 	default String getName() {
 		return getSource().getName();
-	}
-
-	@Override
-	default Resource createRelative(String relativePath) throws IOException {
-		return getSource().createRelative(relativePath);
 	}
 
 	@Override
@@ -31,26 +25,6 @@ public interface ResourceWrapper<W extends Resource>
 	@Override
 	default String getDescription() {
 		return getSource().getDescription();
-	}
-
-	@Override
-	default File getFile() throws IOException, FileNotFoundException {
-		return getSource().getFile();
-	}
-
-	@Override
-	default URI getURI() throws IOException {
-		return getSource().getURI();
-	}
-
-	@Override
-	default URL getURL() throws IOException {
-		return getSource().getURL();
-	}
-
-	@Override
-	default boolean isFile() {
-		return getSource().isFile();
 	}
 
 	@Override
@@ -74,37 +48,48 @@ public interface ResourceWrapper<W extends Resource>
 	}
 
 	@Override
-	default InputStream getInputStream() throws IOException {
-		return getSource().getInputStream();
-	}
-
-	@Override
-	default boolean isDecoded() {
-		return getSource().isDecoded();
-	}
-
-	@Override
-	default Reader getReader() throws IOException {
-		return getSource().getReader();
-	}
-
-	@Override
 	default boolean isWritable() {
 		return getSource().isWritable();
 	}
 
 	@Override
-	default OutputStream getOutputStream() throws IOException {
-		return getSource().getOutputStream();
+	default Resource encode(Charset charset) {
+		return getSource().encode(charset);
 	}
 
 	@Override
-	default boolean isEncoded() {
-		return getSource().isEncoded();
+	default Resource encode(String charsetName) {
+		return getSource().encode(charsetName);
 	}
 
 	@Override
-	default Writer getWriter() throws IOException {
-		return getSource().getWriter();
+	default Resource decode(@NonNull Charset charset) {
+		return getSource().decode(charset);
+	}
+
+	@Override
+	default Resource decode(@NonNull String charsetName) {
+		return getSource().decode(charsetName);
+	}
+
+	@Override
+	default Resource codec(@NonNull Charset charset) {
+		return getSource().codec(charset);
+	}
+
+	@Override
+	default Resource codec(String charsetName) {
+		return getSource().codec(charsetName);
+	}
+
+	@Override
+	default Resource codec(@NonNull ThrowingFunction<? super OutputStream, ? extends Writer, IOException> encoder,
+			@NonNull ThrowingFunction<? super InputStream, ? extends Reader, IOException> decoder) {
+		return getSource().codec(encoder, decoder);
+	}
+
+	@Override
+	default Resource rename(String name) {
+		return getSource().rename(name);
 	}
 }

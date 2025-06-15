@@ -3,30 +3,38 @@ package run.soeasy.framework.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.NoSuchElementException;
+import java.nio.charset.Charset;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
-public interface InputSourceWrapper<I extends InputStream, R extends Reader, W extends InputSource<I, R>> extends
-		InputSource<I, R>, InputFactoryWrapper<I, R, W>, InputStreamSourceWrapper<I, W>, ReaderSourceWrapper<R, W> {
+@FunctionalInterface
+public interface InputSourceWrapper<W extends InputSource>
+		extends InputSource, InputStreamFactoryWrapper<InputStream, W> {
 	@Override
-	default boolean isReadable() {
-		return getSource().isReadable();
+	default InputStream getInputStream() throws IOException {
+		return getSource().getInputStream();
 	}
 
 	@Override
-	default String readAllCharacters() throws NoSuchElementException, IOException {
-		return getSource().readAllCharacters();
-	}
-
-	@Override
-	default @NonNull Pipeline<I, IOException> getInputStreamPipeline() {
+	default @NonNull Pipeline<InputStream, IOException> getInputStreamPipeline() {
 		return getSource().getInputStreamPipeline();
 	}
 
 	@Override
-	default @NonNull Pipeline<R, IOException> getReaderPipeline() {
-		return getSource().getReaderPipeline();
+	default InputSource decode(@NonNull Charset charset) {
+		return getSource().decode(charset);
+	}
+
+	@Override
+	default InputSource decode(@NonNull String charsetName) {
+		return getSource().decode(charsetName);
+	}
+
+	@Override
+	default <T extends Reader> InputSource decode(
+			@NonNull ThrowingFunction<? super InputStream, ? extends T, IOException> decoder) {
+		return getSource().decode(decoder);
 	}
 }

@@ -4,9 +4,14 @@ import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class RenamedResource<W extends Resource> implements ResourceWrapper<W> {
-	@NonNull
-	private final String name;
+class RenamedResource<W extends Resource> implements ResourceWrapper<W> {
 	@NonNull
 	private final W source;
+	@NonNull
+	private final String name;
+
+	@Override
+	public Resource rename(String name) {
+		return new RenamedResource<>(this.source, name);
+	}
 }

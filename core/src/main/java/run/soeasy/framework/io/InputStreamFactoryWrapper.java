@@ -5,73 +5,76 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.nio.file.Path;
-import java.util.NoSuchElementException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
-@FunctionalInterface
-public interface InputStreamFactoryWrapper<T extends InputStream, W extends InputStreamFactory<T>>
-		extends InputStreamFactory<T>, Wrapper<W> {
-	@Override
-	default Pipeline<T, IOException> getInputStreamPipeline() {
-		return getSource().getInputStreamPipeline();
-	}
-
-	@Override
-	default <R extends Reader> InputFactory<T, R> decode(
-			@NonNull ThrowingFunction<? super T, ? extends R, IOException> pipeline) {
-		return getSource().decode(pipeline);
-	}
-
-	@Override
-	default byte[] readAllBytes() throws NoSuchElementException, IOException {
-		return getSource().readAllBytes();
-	}
-
-	@Override
-	default InputFactory<T, Reader> decode() {
-		return getSource().decode();
-	}
-
-	@Override
-	default InputFactory<T, Reader> decode(Charset charset) {
-		return getSource().decode(charset);
-	}
-
-	@Override
-	default InputFactory<T, Reader> decode(CharsetDecoder charsetDecoder) {
-		return getSource().decode(charsetDecoder);
-	}
-
-	@Override
-	default InputFactory<T, Reader> decode(String charsetName) {
-		return getSource().decode(charsetName);
-	}
-
-	@Override
-	default void transferTo(File dest) throws IOException, IllegalStateException {
-		getSource().transferTo(dest);
-	}
-
-	@Override
-	default void transferTo(Path dest) throws IOException, IllegalStateException {
-		getSource().transferTo(dest);
-	}
-
-	@Override
-	default <R extends OutputStream> void transferTo(@NonNull OutputStreamFactory<? extends R> dest)
-			throws IOException {
-		getSource().transferTo(dest);
-	}
+public interface InputStreamFactoryWrapper<I extends InputStream, W extends InputStreamFactory<I>>
+		extends InputStreamFactory<I>, ReaderFactoryWrapper<Reader, W> {
 
 	@Override
 	default boolean isDecoded() {
 		return getSource().isDecoded();
+	}
+
+	@Override
+	default InputStream getInputStream() throws IOException {
+		return getSource().getInputStream();
+	}
+
+	@Override
+	default Pipeline<I, IOException> getInputStreamPipeline() {
+		return getSource().getInputStreamPipeline();
+	}
+
+	@Override
+	default <T extends Reader> InputStreamFactory<I> decode(
+			@NonNull ThrowingFunction<? super I, ? extends T, IOException> decoder) {
+		return getSource().decode(decoder);
+	}
+
+	@Override
+	default byte[] toByteArray() throws IOException {
+		return getSource().toByteArray();
+	}
+
+	@Override
+	default InputStreamFactory<I> decode(Charset charset) {
+		return getSource().decode(charset);
+	}
+
+	@Override
+	default InputStreamFactory<I> decode(String charsetName) {
+		return getSource().decode(charsetName);
+	}
+
+	@Override
+	default Pipeline<Reader, IOException> getReaderPipeline() {
+		return getSource().getReaderPipeline();
+	}
+
+	@Override
+	default ReadableByteChannel readableChannel() throws IOException {
+		return getSource().readableChannel();
+	}
+
+	@Override
+	default long transferTo(@NonNull File dest) throws IOException, IllegalStateException {
+		return getSource().transferTo(dest);
+	}
+
+	@Override
+	default <R extends OutputStream> long transferTo(@NonNull OutputStreamFactory<? extends R> dest)
+			throws IOException {
+		return getSource().transferTo(dest);
+	}
+
+	@Override
+	default long transferTo(@NonNull Path dest) throws IOException {
+		return getSource().transferTo(dest);
 	}
 }

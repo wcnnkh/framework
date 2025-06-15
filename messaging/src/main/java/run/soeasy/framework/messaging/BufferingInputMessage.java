@@ -20,7 +20,7 @@ public class BufferingInputMessage<W extends InputMessage> extends Wrapped<W> im
 	@Override
 	public InputStream getInputStream() throws IOException {
 		if (inputStream == null) {
-			byte[] data = getSource().readAllBytes();
+			byte[] data = getSource().toByteArray();
 			inputStream = new ByteArrayInputStream(data);
 		}
 		return inputStream;

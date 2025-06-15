@@ -87,7 +87,7 @@ public class CharsetCodec implements ToBytesCodec<String> {
 
 	@Override
 	public String decode(InputStream source, int bufferSize) throws IOException, DecodeException {
-		return decode(IOUtils.copyToByteArray(source, bufferSize));
+		return decode(IOUtils.toByteArray(source, bufferSize));
 	}
 
 	public String decode(byte[] source) throws DecodeException {

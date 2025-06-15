@@ -1,9 +1,7 @@
-package run.soeasy.framework.io.file;
+package run.soeasy.framework.io.watch;
 
 import java.io.File;
 import java.io.IOException;
-
-import run.soeasy.framework.io.watch.Variable;
 
 public interface FileVariable extends Variable {
 	File getFile() throws IOException;

@@ -1,21 +1,27 @@
 package run.soeasy.framework.messaging;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.Reader;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.io.InputFactory;
-import run.soeasy.framework.io.InputStreamSource;
+import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.io.InputSource;
 
-public interface InputMessage extends Message, InputStreamSource<InputStream> {
+public interface InputMessage extends Message, InputSource {
 
 	@Override
-	default InputFactory<InputStream, Reader> decode() {
+	default boolean isDecoded() {
+		return StringUtils.isNotEmpty(getCharsetName());
+	}
+
+	@Override
+	default @NonNull Pipeline<Reader, IOException> getReaderPipeline() {
 		String charsetName = getCharsetName();
 		if (StringUtils.isEmpty(charsetName)) {
-			return InputStreamSource.super.decode();
+			return decode(charsetName).getReaderPipeline();
 		}
-		return decode(charsetName);
+		return InputSource.super.getReaderPipeline();
 	}
 
 	default InputMessage buffered() {

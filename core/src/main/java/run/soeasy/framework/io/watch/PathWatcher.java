@@ -15,7 +15,6 @@ import run.soeasy.framework.core.exchange.Registration;
 import run.soeasy.framework.core.exchange.container.RegistrationException;
 import run.soeasy.framework.core.exchange.container.Registry;
 import run.soeasy.framework.core.exchange.event.ChangeEvent;
-import run.soeasy.framework.io.file.FileVariable;
 
 @RequiredArgsConstructor
 public class PathWatcher<T extends FileVariable> extends Poller

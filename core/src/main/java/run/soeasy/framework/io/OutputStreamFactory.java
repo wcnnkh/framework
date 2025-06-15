@@ -2,42 +2,49 @@ package run.soeasy.framework.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 @FunctionalInterface
-public interface OutputStreamFactory<T extends OutputStream> {
+public interface OutputStreamFactory<O extends OutputStream> extends WriterFactory<Writer> {
 
 	@NonNull
-	Pipeline<T, IOException> getOutputStreamPipeline();
+	Pipeline<O, IOException> getOutputStreamPipeline();
+
+	default OutputStream getOutputStream() throws IOException {
+		return new OutputStreamPipeline(getOutputStreamPipeline());
+	}
+
+	@Override
+	default @NonNull Pipeline<Writer, IOException> getWriterPipeline() {
+		return getOutputStreamPipeline().map((e) -> (Writer) new OutputStreamWriter(e)).onClose((e) -> e.close());
+	}
 
 	default boolean isEncoded() {
 		return false;
 	}
 
-	default <R extends Writer> OutputFactory<T, R> encode(
-			@NonNull ThrowingFunction<? super T, ? extends R, IOException> pipeline) {
-		return new StandardEncodedOutputStreamFactory<>(this, pipeline);
+	default <T extends Writer> OutputStreamFactory<O> encode(
+			@NonNull ThrowingFunction<? super O, ? extends T, IOException> encoder) {
+		return new EncodedOutputStreamFactory<>(this, null, encoder);
 	}
 
-	default OutputFactory<T, Writer> encode() {
-		return new DefaultEncodedOutputStreamFactory<>(this);
+	default OutputStreamFactory<O> encode(Charset charset) {
+		return new EncodedOutputStreamFactory<>(this, charset, (e) -> new OutputStreamWriter(e, charset));
 	}
 
-	default OutputFactory<T, Writer> encode(Charset charset) {
-		return new StandardCharsetOutputStreamFactory<>(this, charset);
+	default OutputStreamFactory<O> encode(String charsetName) {
+		return new EncodedOutputStreamFactory<>(this, charsetName, (e) -> new OutputStreamWriter(e, charsetName));
 	}
 
-	default OutputFactory<T, Writer> encode(CharsetEncoder charsetEncoder) {
-		return new DefaultEncodedOutputStreamFactory<>(this, charsetEncoder);
-	}
-
-	default OutputFactory<T, Writer> encode(String charsetName) {
-		return new StandardCharsetOutputStreamFactory<>(this, charsetName);
+	default WritableByteChannel writableChannel() throws IOException {
+		return Channels.newChannel(getOutputStream());
 	}
 }

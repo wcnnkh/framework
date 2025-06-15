@@ -13,8 +13,8 @@ import run.soeasy.framework.codec.lang.HexCodec;
 import run.soeasy.framework.codec.security.MD5;
 import run.soeasy.framework.codec.security.SHA1;
 import run.soeasy.framework.io.BufferConsumer;
+import run.soeasy.framework.io.FileUtils;
 import run.soeasy.framework.io.IOUtils;
-import run.soeasy.framework.io.file.FileUtils;
 
 public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 

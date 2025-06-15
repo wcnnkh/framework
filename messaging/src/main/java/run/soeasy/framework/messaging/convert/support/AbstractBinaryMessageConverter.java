@@ -25,13 +25,13 @@ public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageCon
 	@Override
 	protected T readObject(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
-		byte[] body = message.readAllBytes();
+		byte[] body = message.toByteArray();
 		return parseObject(body, targetDescriptor, message, contentType);
 	}
 
 	@Override
-	protected void writeObject(@NonNull TypedData<T> data, @NonNull OutputMessage message, @NonNull MediaType contentType)
-			throws IOException {
+	protected void writeObject(@NonNull TypedData<T> data, @NonNull OutputMessage message,
+			@NonNull MediaType contentType) throws IOException {
 		byte[] body = toBinary(data, message, contentType);
 		if (body == null) {
 			return;

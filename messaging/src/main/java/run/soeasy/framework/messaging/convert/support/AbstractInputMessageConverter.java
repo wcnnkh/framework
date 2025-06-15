@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
-import run.soeasy.framework.io.InputStreamSource;
+import run.soeasy.framework.io.InputSource;
 import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
@@ -49,7 +49,7 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
 		return readToInputMessage(message, message, targetDescriptor);
 	}
 
-	protected abstract T readToInputMessage(@NonNull Message message, InputStreamSource<?> source,
+	protected abstract T readToInputMessage(@NonNull Message message, InputSource source,
 			@NonNull TargetDescriptor targetDescriptor) throws IOException;
 
 }

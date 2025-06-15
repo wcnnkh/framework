@@ -1,13 +1,14 @@
 package run.soeasy.framework.messaging;
 
-import java.io.OutputStream;
+import java.io.IOException;
 import java.io.Writer;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.io.OutputFactory;
-import run.soeasy.framework.io.OutputStreamSource;
+import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.io.OutputSource;
 
-public interface OutputMessage extends Message, OutputStreamSource<OutputStream> {
+public interface OutputMessage extends Message, OutputSource {
 
 	default void setContentType(MediaType contentType) {
 		String charsetName = contentType.getCharsetName();
@@ -38,12 +39,16 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 	}
 
 	@Override
-	default OutputFactory<OutputStream, Writer> encode() {
-		String charsetName = getCharsetName();
-		if (StringUtils.isEmpty(charsetName)) {
-			return OutputStreamSource.super.encode();
+	default boolean isEncoded() {
+		return StringUtils.isNotEmpty(getCharsetName());
+	}
+
+	@Override
+	default @NonNull Pipeline<Writer, IOException> getWriterPipeline() {
+		if (isEncoded()) {
+			return encode(getCharsetName()).getWriterPipeline();
 		}
-		return encode(charsetName);
+		return OutputSource.super.getWriterPipeline();
 	}
 
 	default OutputMessage buffered() {

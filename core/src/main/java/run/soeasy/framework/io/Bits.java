@@ -6,17 +6,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-/**
- * 取自jdk的实现 Utility methods for packing/unpacking primitive values in/out of
- * byte arrays using big-endian byte ordering.
- * 
- * @author soeasy.run
- *
- */
-public final class Bits {
-	private Bits() {
-	};
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
+public class Bits {
 	/*
 	 * Methods for unpacking primitive values from byte arrays starting at given
 	 * offsets.

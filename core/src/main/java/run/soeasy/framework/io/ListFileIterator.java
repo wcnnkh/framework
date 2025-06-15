@@ -1,11 +1,11 @@
-package run.soeasy.framework.io.file;
+package run.soeasy.framework.io;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class ListFileIterator implements Iterator<File> {
+class ListFileIterator implements Iterator<File> {
 	private final File directory;
 	private final int depth;// 当前深度
 	private final int maxDepth;// 最大迭代深度

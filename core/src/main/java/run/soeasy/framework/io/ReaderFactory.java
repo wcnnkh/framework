@@ -2,8 +2,6 @@ package run.soeasy.framework.io;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
-import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
@@ -11,18 +9,27 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.function.Pipeline;
 
 @FunctionalInterface
-public interface ReaderFactory<T extends Reader> {
+public interface ReaderFactory<R extends Reader> {
 	@NonNull
-	Pipeline<T, IOException> getReaderPipeline();
+	Pipeline<R, IOException> getReaderPipeline();
 
-	default String readAllCharacters() throws NoSuchElementException, IOException {
-		return getReaderPipeline().optional().map(IOUtils::read).get();
+	default Reader getReader() throws IOException {
+		return new ReaderPipeline(getReaderPipeline());
 	}
 
-	default Elements<String> readAllLines() {
+	default CharSequence toCharSequence() throws IOException {
+		Reader reader = getReader();
+		try {
+			return IOUtils.toCharSequence(reader);
+		} finally {
+			reader.close();
+		}
+	}
+
+	default Elements<String> readLines() {
 		return Elements.of(() -> {
 			try {
-				Pipeline<T, IOException> channel = getReaderPipeline();
+				Pipeline<R, IOException> channel = getReaderPipeline();
 				return IOUtils.readLines(channel.get()).onClose(() -> {
 					try {
 						channel.close();
@@ -34,10 +41,5 @@ public interface ReaderFactory<T extends Reader> {
 			}
 			return Stream.empty();
 		});
-	}
-
-	default <R extends Writer> void transferTo(@NonNull WriterFactory<? extends R> dest) throws IOException {
-		getReaderPipeline().optional()
-				.ifPresent((r) -> dest.getWriterPipeline().optional().ifPresent((w) -> IOUtils.copy(r, w)));
 	}
 }

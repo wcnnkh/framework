@@ -1,5 +1,6 @@
 package run.soeasy.framework.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,7 +8,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.NoSuchElementException;
 
 import lombok.Getter;
 
@@ -21,11 +21,6 @@ public final class StringBufferResource extends StringWriter implements Resource
 
 	public StringBufferResource(int initialSize) {
 		super(initialSize);
-	}
-
-	@Override
-	public boolean exists() {
-		return true;
 	}
 
 	@Override
@@ -78,22 +73,17 @@ public final class StringBufferResource extends StringWriter implements Resource
 	}
 
 	@Override
-	public byte[] readAllBytes() throws NoSuchElementException, IOException {
-		return readAllCharacters().getBytes();
-	}
-
-	@Override
-	public String readAllCharacters() throws NoSuchElementException, IOException {
-		return getBuffer().toString();
+	public final CharSequence toCharSequence() throws IOException {
+		return getBuffer();
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return null;
+		return new ByteArrayInputStream(getBuffer().toString().getBytes());
 	}
 
 	@Override
 	public OutputStream getOutputStream() throws IOException {
-		return null;
+		return NullOutputStream.NULL_OUTPUT_STREAM;
 	}
 }

@@ -3,15 +3,7 @@ package run.soeasy.framework.io;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * This OutputStream writes all data to the famous <b>/dev/null</b>.
- * <p>
- * This output stream has no destination (file/socket etc.) and all bytes
- * written to it are ignored and lost.
- * 
- * @version $Id: NullOutputStream.java 1302056 2012-03-18 03:03:38Z ggregory $
- */
-public class NullOutputStream extends OutputStream {
+class NullOutputStream extends OutputStream {
 
 	/**
 	 * A singleton.

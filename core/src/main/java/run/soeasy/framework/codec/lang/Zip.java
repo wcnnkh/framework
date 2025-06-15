@@ -15,8 +15,8 @@ import lombok.NonNull;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.binary.BytesCodec;
+import run.soeasy.framework.io.FileUtils;
 import run.soeasy.framework.io.IOUtils;
-import run.soeasy.framework.io.file.FileUtils;
 
 public class Zip implements BytesCodec {
 	public static final Zip DEFAULT = new Zip();
@@ -28,7 +28,7 @@ public class Zip implements BytesCodec {
 			if (!target.exists()) {
 				target.mkdirs();
 			}
-			
+
 			File canonicalTarget = target.getCanonicalFile();
 			Enumeration<? extends ZipEntry> ens = zipFile.entries();
 			ZipEntry zipEntry = null;
@@ -39,7 +39,7 @@ public class Zip implements BytesCodec {
 				if (!entityFile.toPath().startsWith(canonicalTarget.toPath())) {
 					throw new IOException("Zip entry is outside of the target directory: " + zipEntry.getName());
 				}
-				
+
 				if (zipEntry.isDirectory()) {
 					entityFile.mkdirs();
 				} else {
@@ -61,12 +61,12 @@ public class Zip implements BytesCodec {
 	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws IOException, EncodeException {
 		if (target instanceof ZipOutputStream) {
-			IOUtils.write(source, target, bufferSize);
+			IOUtils.copy(source, target, bufferSize);
 		} else {
 			ZipOutputStream zip = null;
 			try {
 				zip = new ZipOutputStream(target);
-				IOUtils.write(source, zip, bufferSize);
+				IOUtils.copy(source, zip, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(zip);
 			}
@@ -77,12 +77,12 @@ public class Zip implements BytesCodec {
 	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws DecodeException, IOException {
 		if (source instanceof ZipInputStream) {
-			IOUtils.write(source, target, bufferSize);
+			IOUtils.copy(source, target, bufferSize);
 		} else {
 			ZipInputStream zip = null;
 			try {
 				zip = new ZipInputStream(source);
-				IOUtils.write(zip, target, bufferSize);
+				IOUtils.copy(zip, target, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(zip);
 			}

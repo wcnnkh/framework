@@ -16,6 +16,7 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LinkedCaseInsensitiveMap;
+import run.soeasy.framework.core.domain.CharsetCapable;
 
 public class MimeType implements CharsetCapable, Comparable<MimeType>, Serializable {
 

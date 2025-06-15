@@ -1,30 +1,29 @@
 package run.soeasy.framework.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 
-import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.io.file.FileVariable;
+import lombok.NonNull;
+import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.io.watch.Variable;
 
 /**
- * 一个资源的定义
+ * 资源的定义
  * 
  * @author shuchaowen
  *
  */
-public interface Resource
-		extends InputSource<InputStream, Reader>, OutputSource<OutputStream, Writer>, FileVariable {
+public interface Resource extends InputSource, OutputSource, Variable {
 	public static final String EXTENSION_SEPARATOR = ".";
 	public static final String FOLDER_SEPARATOR = "/";
-	public static final String URL_PROTOCOL_FILE = "file";
 
 	public static String getName(String path) {
 		if (path == null) {
@@ -58,223 +57,116 @@ public interface Resource
 	}
 
 	/**
-	 * Create a URI instance for the given URL, replacing spaces with "%20" URI
-	 * encoding first.
+	 * 返回一个不存在的资源
 	 * 
-	 * @param url the URL to convert into a URI instance
-	 * @return the URI instance
-	 * @throws URISyntaxException if the URL wasn't a valid URI
-	 * @see java.net.URL#toURI()
+	 * @return 一个单例
 	 */
-	public static URI toURI(URL url) throws URISyntaxException {
-		return toURI(url.toString());
+	public static Resource nonexistent() {
+		return NonexistentResource.NONEXISTENT_RESOURCE;
 	}
 
-	/**
-	 * Create a URI instance for the given location String, replacing spaces with
-	 * "%20" URI encoding first.
-	 * 
-	 * @param location the location String to convert into a URI instance
-	 * @return the URI instance
-	 * @throws URISyntaxException if the location wasn't a valid URI
-	 */
-	public static URI toURI(String location) throws URISyntaxException {
-		return new URI(StringUtils.replace(location, " ", "%20"));
+	public static Resource forFile(File file) {
+		return new FileResource(file);
+	}
+
+	public static Resource forPath(Path path) {
+		return new PathResource(path);
 	}
 
 	default String getName() {
-		if (isFile()) {
-			try {
-				return getFile().getName();
-			} catch (IOException e) {
-			}
-		}
-
-		URI uri;
-		try {
-			uri = getURI();
-		} catch (IOException e) {
-			return null;
-		}
-
-		if (uri == null) {
-			return null;
-		}
-		return getName(uri.getPath());
+		return getClass().getSimpleName();
 	}
 
 	/**
-	 * Indicate whether this resource represents a handle with an open stream. If
-	 * {@code true}, the cannot be read/write multiple times, and must be
-	 * read/writer and closed to avoid resource leaks.
-	 **/
+	 * 是否已打开。如果为true则表示此资源已经打开，多次获取可能拿到同样的流
+	 * 
+	 * @return
+	 */
 	default boolean isOpen() {
 		return false;
 	}
 
+	/**
+	 * 内容长度
+	 * 
+	 * @return -1表示未知
+	 * @throws IOException
+	 */
 	default long contentLength() throws IOException {
-		if (isFile()) {
-			return getFile().length();
-		}
-
-		InputStream is = getInputStream();
-		try {
-			long size = 0;
-			byte[] buf = new byte[256];
-			int read;
-			while ((read = is.read(buf)) != -1) {
-				size += read;
-			}
-			return size;
-		} finally {
-			is.close();
-		}
+		return -1;
 	}
 
 	/**
-	 * 创建关联资源
+	 * 获取资源描述
 	 * 
-	 * @param relativePath
 	 * @return
-	 * @throws IOException
 	 */
-	default Resource createRelative(String relativePath) throws IOException {
-		throw new FileNotFoundException("Cannot create a relative resource for " + getDescription());
-	}
-
 	default String getDescription() {
-		try {
-			return "URL [" + getURL() + "]";
-		} catch (IOException e) {
-		}
-
-		try {
-			return "URI [" + getURI() + "]";
-		} catch (IOException e) {
-		}
 		return getClass().getName();
 	}
 
-	default boolean isFile() {
-		try {
-			URI uri = getURI();
-			return URL_PROTOCOL_FILE.equals(uri.getScheme());
-		} catch (IOException ex) {
-		}
-
-		try {
-			URL url = getURL();
-			return URL_PROTOCOL_FILE.equals(url.getProtocol());
-		} catch (IOException ex) {
-		}
-		return false;
-	}
-
-	default File getFile() throws IOException, FileNotFoundException {
-		try {
-			URI uri = getURI();
-			if (!URL_PROTOCOL_FILE.equals(uri.getScheme())) {
-				throw new FileNotFoundException(getDescription() + " cannot be resolved to absolute file path "
-						+ "because it does not reside in the file system: " + uri);
-			}
-			return new File(uri.getSchemeSpecificPart());
-		} catch (IOException e) {
-		}
-
-		try {
-			URL url = getURL();
-			if (!URL_PROTOCOL_FILE.equals(url.getProtocol())) {
-				throw new FileNotFoundException(getDescription() + " cannot be resolved to absolute file path "
-						+ "because it does not reside in the file system: " + url);
-			}
-			try {
-				return new File(toURI(url).getSchemeSpecificPart());
-			} catch (URISyntaxException ex) {
-				// Fallback for URLs that are not valid URIs (should hardly ever
-				// happen).
-				return new File(url.getFile());
-			}
-		} catch (IOException e) {
-		}
-		throw new FileNotFoundException(getDescription() + " cannot be resolved to absolute file path");
+	default boolean exists() {
+		return isReadable() || isWritable();
 	}
 
 	/**
-	 * Return a URI handle for this resource.
-	 * 
-	 * @throws IOException if the resource cannot be resolved as URI, i.e. if the
-	 *                     resource is not available as descriptor
+	 * 最后一次个性记录
 	 */
-	default URI getURI() throws IOException {
-		URL url;
-		try {
-			url = getURL();
-		} catch (IOException e) {
-			throw new IOException("Cannot be resolved as URI");
-		}
-
-		try {
-			return toURI(url);
-		} catch (URISyntaxException ex) {
-			throw new IOException("Invalid URI [" + url + "]", ex);
-		}
-	}
-
-	/**
-	 * Return a URL handle for this resource.
-	 * 
-	 * @throws IOException if the resource cannot be resolved as URL, i.e. if the
-	 *                     resource is not available as descriptor
-	 */
-	default URL getURL() throws IOException {
-		throw new IOException("Cannot be resolved as URL");
-	}
-
-	boolean exists();
-
 	@Override
 	default long lastModified() throws IOException {
-		return isFile() ? getFile().lastModified() : 0;
+		return 0;
+	}
+
+	/**
+	 * 是否可读
+	 * 
+	 * @return
+	 */
+	boolean isReadable();
+
+	/**
+	 * 是否可写
+	 * 
+	 * @return
+	 */
+	boolean isWritable();
+
+	@Override
+	default Resource decode(@NonNull Charset charset) {
+		return codec(charset);
 	}
 
 	@Override
-	default boolean isReadable() {
-		return false;
+	default Resource decode(@NonNull String charsetName) {
+		return codec(charsetName);
 	}
 
 	@Override
-	default InputStream getInputStream() throws IOException {
-		throw new IOException("Cannot readable resources");
+	default Resource encode(Charset charset) {
+		return codec(charset);
 	}
 
 	@Override
-	default boolean isDecoded() {
-		return false;
+	default Resource encode(String charsetName) {
+		return codec(charsetName);
 	}
 
-	@Override
-	default Reader getReader() throws IOException {
-		throw new IOException("Cannot decode resources");
+	default Resource codec(@NonNull Charset charset) {
+		return new CodedResource<>(this, charset, (e) -> new OutputStreamWriter(e, charset),
+				(e) -> new InputStreamReader(e, charset));
 	}
 
-	@Override
-	default boolean isWritable() {
-		return false;
+	default Resource codec(String charsetName) {
+		return new CodedResource<>(this, charsetName, (e) -> new OutputStreamWriter(e, charsetName),
+				(e) -> new InputStreamReader(e, charsetName));
 	}
 
-	@Override
-	default OutputStream getOutputStream() throws IOException {
-		throw new IOException("Cannot writable resources");
+	default Resource codec(@NonNull ThrowingFunction<? super OutputStream, ? extends Writer, IOException> encoder,
+			@NonNull ThrowingFunction<? super InputStream, ? extends Reader, IOException> decoder) {
+		return new CodedResource<>(this, null, encoder, decoder);
 	}
 
-	@Override
-	default boolean isEncoded() {
-		return false;
+	default Resource rename(String name) {
+		return new RenamedResource<>(this, name);
 	}
-
-	@Override
-	default Writer getWriter() throws IOException {
-		throw new IOException("Cannot encode resources");
-	}
-
 }

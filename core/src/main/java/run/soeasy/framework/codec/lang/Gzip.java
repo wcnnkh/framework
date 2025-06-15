@@ -16,14 +16,15 @@ public class Gzip implements BytesCodec {
 	public static final Gzip DEFAULT = new Gzip();
 
 	@Override
-	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target) throws IOException, EncodeException {
+	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
+			throws IOException, EncodeException {
 		if (target instanceof GZIPOutputStream) {
-			IOUtils.write(source, target, bufferSize);
+			IOUtils.copy(source, target, bufferSize);
 		} else {
 			GZIPOutputStream gzip = null;
 			try {
 				gzip = new GZIPOutputStream(target);
-				IOUtils.write(source, gzip, bufferSize);
+				IOUtils.copy(source, gzip, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}
@@ -31,14 +32,15 @@ public class Gzip implements BytesCodec {
 	}
 
 	@Override
-	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target) throws DecodeException, IOException {
+	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
+			throws DecodeException, IOException {
 		if (source instanceof GZIPInputStream) {
-			IOUtils.write(source, target, bufferSize);
+			IOUtils.copy(source, target, bufferSize);
 		} else {
 			GZIPInputStream gzip = null;
 			try {
 				gzip = new GZIPInputStream(source);
-				IOUtils.write(gzip, target, bufferSize);
+				IOUtils.copy(gzip, target, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}
