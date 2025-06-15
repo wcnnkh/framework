@@ -59,7 +59,7 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 	}
 
 	default void encode(InputStream source, OutputStream target) throws IOException, EncodeException {
-		encode(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+		encode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target);
 	}
 
 	default void encode(InputStream source, int bufferSize, OutputStream target, int count)

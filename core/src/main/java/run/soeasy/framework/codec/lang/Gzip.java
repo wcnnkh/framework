@@ -19,12 +19,12 @@ public class Gzip implements BytesCodec {
 	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws IOException, EncodeException {
 		if (target instanceof GZIPOutputStream) {
-			IOUtils.transferTo(source, target, bufferSize);
+			IOUtils.transferTo(source, bufferSize, target::write);
 		} else {
 			GZIPOutputStream gzip = null;
 			try {
 				gzip = new GZIPOutputStream(target);
-				IOUtils.transferTo(source, gzip, bufferSize);
+				IOUtils.transferTo(source, bufferSize, gzip::write);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}
@@ -35,12 +35,12 @@ public class Gzip implements BytesCodec {
 	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws DecodeException, IOException {
 		if (source instanceof GZIPInputStream) {
-			IOUtils.transferTo(source, target, bufferSize);
+			IOUtils.transferTo(source, bufferSize, target::write);
 		} else {
 			GZIPInputStream gzip = null;
 			try {
 				gzip = new GZIPInputStream(source);
-				IOUtils.transferTo(gzip, target, bufferSize);
+				IOUtils.transferTo(gzip, bufferSize, target::write);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}

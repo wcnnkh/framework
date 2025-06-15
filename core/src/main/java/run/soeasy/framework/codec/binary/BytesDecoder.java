@@ -92,11 +92,11 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 	}
 
 	default void decode(InputStream source, OutputStream target) throws DecodeException, IOException {
-		decode(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+		decode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target);
 	}
 
 	default void decode(InputStream source, OutputStream target, int count) throws DecodeException, IOException {
-		decode(source, IOUtils.DEFAULT_BUFFER_SIZE, target, count);
+		decode(source, IOUtils.DEFAULT_BYTE_BUFFER_SIZE, target, count);
 	}
 
 	default void decode(File source, int bufferSize, OutputStream target) throws DecodeException, IOException {

@@ -61,12 +61,12 @@ public class Zip implements BytesCodec {
 	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws IOException, EncodeException {
 		if (target instanceof ZipOutputStream) {
-			IOUtils.transferTo(source, target, bufferSize);
+			IOUtils.transferTo(source, bufferSize, target::write);
 		} else {
 			ZipOutputStream zip = null;
 			try {
 				zip = new ZipOutputStream(target);
-				IOUtils.transferTo(source, zip, bufferSize);
+				IOUtils.transferTo(source, bufferSize, zip::write);
 			} finally {
 				IOUtils.closeQuietly(zip);
 			}
@@ -77,12 +77,12 @@ public class Zip implements BytesCodec {
 	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
 			throws DecodeException, IOException {
 		if (source instanceof ZipInputStream) {
-			IOUtils.transferTo(source, target, bufferSize);
+			IOUtils.transferTo(source, bufferSize, target::write);
 		} else {
 			ZipInputStream zip = null;
 			try {
 				zip = new ZipInputStream(source);
-				IOUtils.transferTo(zip, target, bufferSize);
+				IOUtils.transferTo(zip, bufferSize, target::write);
 			} finally {
 				IOUtils.closeQuietly(zip);
 			}

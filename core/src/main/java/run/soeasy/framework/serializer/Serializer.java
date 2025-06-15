@@ -60,7 +60,7 @@ public interface Serializer extends ToBytesCodec<Object>, CrossLanguageSerialize
 	<T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException;
 
 	default <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
-		return deserialize(input, IOUtils.DEFAULT_BUFFER_SIZE);
+		return deserialize(input, IOUtils.DEFAULT_BYTE_BUFFER_SIZE);
 	}
 
 	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException {
