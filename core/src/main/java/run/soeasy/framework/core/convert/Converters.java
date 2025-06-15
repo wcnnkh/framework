@@ -64,5 +64,4 @@ public class Converters extends ConfigurableServices<Converter<? super Object, ?
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		return anyMatch((e) -> e.canConvert(sourceTypeDescriptor, targetTypeDescriptor));
 	}
-
 }

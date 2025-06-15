@@ -20,8 +20,8 @@ public class ConvertedProvider<S, T, W extends Provider<S>> extends ConvertedEle
 	}
 
 	@Override
-	public <U> Provider<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
-		return Provider.super.convert(resize, converter);
+	public <U> Provider<U> map(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
+		return Provider.super.map(resize, converter);
 	}
 
 	@Override

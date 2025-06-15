@@ -10,8 +10,7 @@ import run.soeasy.framework.core.exchange.Registration;
 public interface Include<S> extends Registration, Provider<S> {
 
 	@Override
-	default <U> Include<U> convert(boolean resize,
-			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+	default <U> Include<U> map(boolean resize, @NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
 		return new ConvertedInclude<>(this, resize, converter);
 	}
 

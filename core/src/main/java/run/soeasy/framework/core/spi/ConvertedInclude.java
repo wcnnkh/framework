@@ -29,8 +29,8 @@ public class ConvertedInclude<S, T, W extends Include<S>> extends ConvertedProvi
 	}
 
 	@Override
-	public <U> Include<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
-		return Include.super.convert(resize, converter);
+	public <U> Include<U> map(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
+		return Include.super.map(resize, converter);
 	}
 
 }

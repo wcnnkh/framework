@@ -134,7 +134,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * @param converter
 	 * @return
 	 */
-	default <U> Elements<U> convert(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
+	default <U> Elements<U> map(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
 		return new ConvertedElements<>(this, resize, converter);
 	}
 
@@ -144,7 +144,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * @return
 	 */
 	default Elements<E> distinct() {
-		return convert(true, (e) -> e.distinct());
+		return map(true, (e) -> e.distinct());
 	}
 
 	@Override
@@ -162,11 +162,11 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	}
 
 	default Elements<E> filter(@NonNull Predicate<? super E> predicate) {
-		return convert(true, (stream) -> stream.filter(predicate));
+		return map(true, (stream) -> stream.filter(predicate));
 	}
 
 	default <U> Elements<U> flatMap(@NonNull Function<? super E, ? extends Streamable<U>> mapper) {
-		return convert(true, (stream) -> {
+		return map(true, (stream) -> {
 			return stream.flatMap((e) -> {
 				Streamable<U> streamy = mapper.apply(e);
 				return streamy == null ? Stream.empty() : streamy.stream();
@@ -188,7 +188,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	}
 
 	default Elements<Sequential<E>> sequential() {
-		return convert(false, (stream) -> {
+		return map(false, (stream) -> {
 			Stream<Sequential<E>> newStream = CollectionUtils
 					.unknownSizeStream(new SequentialIterator<>(stream.iterator()));
 			return newStream.onClose(stream::close);
@@ -209,15 +209,15 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	Iterator<E> iterator();
 
 	default Elements<E> limit(long maxSize) {
-		return convert(true, (e) -> e.limit(maxSize));
+		return map(true, (e) -> e.limit(maxSize));
 	}
 
 	default <U> Elements<U> map(@NonNull Function<? super E, ? extends U> mapper) {
-		return convert(false, (stream) -> stream.map(mapper));
+		return map(false, (stream) -> stream.map(mapper));
 	}
 
 	default Elements<E> peek(@NonNull Consumer<? super E> action) {
-		return convert(false, (e) -> e.peek(action));
+		return map(false, (e) -> e.peek(action));
 	}
 
 	/**
@@ -226,19 +226,19 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	 * @return
 	 */
 	default Elements<E> reverse() {
-		return convert(false, (stream) -> stream.sorted(Collections.reverseOrder()));
+		return map(false, (stream) -> stream.sorted(Collections.reverseOrder()));
 	}
 
 	default Elements<E> skip(long n) {
-		return convert(true, (e) -> e.skip(n));
+		return map(true, (e) -> e.skip(n));
 	}
 
 	default Elements<E> sorted() {
-		return convert(false, (e) -> e.sorted());
+		return map(false, (e) -> e.sorted());
 	}
 
 	default Elements<E> sorted(@NonNull Comparator<? super E> comparator) {
-		return convert(false, (e) -> e.sorted(comparator));
+		return map(false, (e) -> e.sorted(comparator));
 	}
 
 	@Override
@@ -252,6 +252,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 	}
 
 	default Elements<E> unordered() {
-		return convert(false, (e) -> e.unordered());
+		return map(false, (e) -> e.unordered());
 	}
 }

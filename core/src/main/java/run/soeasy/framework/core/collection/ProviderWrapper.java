@@ -20,8 +20,8 @@ public interface ProviderWrapper<S, W extends Provider<S>> extends Provider<S>, 
 	}
 
 	@Override
-	default <U> Provider<U> convert(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return getSource().convert(resize, converter);
+	default <U> Provider<U> map(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return getSource().map(resize, converter);
 	}
 
 	@Override

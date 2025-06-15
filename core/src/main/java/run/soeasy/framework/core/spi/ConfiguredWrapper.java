@@ -11,9 +11,8 @@ import run.soeasy.framework.core.exchange.Registration;
 public interface ConfiguredWrapper<S, W extends Configured<S>>
 		extends Configured<S>, IncludeWrapper<S, W>, ReceiptWrapper<W> {
 	@Override
-	default <U> Configured<U> convert(boolean resize,
-			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return getSource().convert(resize, converter);
+	default <U> Configured<U> map(boolean resize, @NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return getSource().map(resize, converter);
 	}
 
 	@Override
