@@ -14,13 +14,15 @@ import java.util.Optional;
 import java.util.Set;
 
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Listable;
 import run.soeasy.framework.core.page.Cursor;
 import run.soeasy.framework.core.page.CursorPaging;
 import run.soeasy.framework.core.page.Paging;
 
-public final class ClassUtils {
+@UtilityClass
+public class ClassUtils {
 	/** Suffix for array class names: "[]" */
 	public static final String ARRAY_SUFFIX = "[]";
 
@@ -559,8 +561,5 @@ public final class ClassUtils {
 	public static boolean isLambdaClass(Class<?> clazz) {
 		return (clazz.isSynthetic() && (clazz.getSuperclass() == Object.class) && (clazz.getInterfaces().length > 0)
 				&& clazz.getName().contains("$$Lambda"));
-	}
-
-	private ClassUtils() {
 	}
 }

@@ -4,7 +4,10 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class AnnotationUtils {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class AnnotationUtils {
 	public static final Annotation[] EMPTY = new Annotation[0];
 
 	@SuppressWarnings("unchecked")

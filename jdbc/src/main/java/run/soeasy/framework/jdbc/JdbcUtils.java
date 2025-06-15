@@ -6,8 +6,6 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,13 +13,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Enumeration;
 
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.LinkedMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
 import run.soeasy.framework.core.type.ClassUtils;
 
+@UtilityClass
 public final class JdbcUtils {
 	public static Object[] getRowValues(ResultSet resultSet, int size) throws SQLException {
 		Object[] values = new Object[size];
@@ -101,19 +100,6 @@ public final class JdbcUtils {
 				}
 			}
 			preparedStatement.setObject(i + 1, value);
-		}
-	}
-
-	public static void deregisterDriver() {
-		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		if (drivers != null) {
-			while (drivers.hasMoreElements()) {
-				try {
-					DriverManager.deregisterDriver(drivers.nextElement());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 }

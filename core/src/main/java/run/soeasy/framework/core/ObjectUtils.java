@@ -1,8 +1,10 @@
 package run.soeasy.framework.core;
 
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
 
-public final class ObjectUtils {
+@UtilityClass
+public class ObjectUtils {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 
 	public static boolean isArray(Object obj) {
