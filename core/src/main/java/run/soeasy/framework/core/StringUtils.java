@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.CharSequenceSplitIterator;
 import run.soeasy.framework.core.domain.CharSequenceTemplate;
 import run.soeasy.framework.core.domain.Range;
 
-public final class StringUtils {
+@UtilityClass
+public class StringUtils {
 	public static final String[] EMPTY_ARRAY = new String[0];
 
 	public static int count(CharSequence charSequence, CharSequence target) {
@@ -709,8 +711,5 @@ public final class StringUtils {
 			values[vIndex++] = v;
 		}
 		return new String(values, 0, vIndex);
-	}
-
-	private StringUtils() {
 	}
 }

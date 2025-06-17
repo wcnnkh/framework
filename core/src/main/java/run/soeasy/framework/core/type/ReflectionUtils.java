@@ -8,11 +8,13 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
-public final class ReflectionUtils {
+@UtilityClass
+public class ReflectionUtils {
 	public static final Constructor<?>[] EMPTY_CONSTRUCTOR_ARRAY = new Constructor<?>[0];
 	public static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 	public static final Method[] EMPTY_METHOD_ARRAY = new Method[0];

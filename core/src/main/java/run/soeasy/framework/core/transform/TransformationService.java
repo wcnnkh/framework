@@ -1,59 +1,50 @@
 package run.soeasy.framework.core.transform;
 
+import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceInjectors;
 
-public interface TransformationService extends Transformer<Object, Object> {
+@Getter
+public class TransformationService implements Transformer {
+	private final ServiceInjectors<Transformer> injectors = new ServiceInjectors<>();
+	private final Transformers transformers = new Transformers();
+	private final TransformerRegistry registry = new TransformerRegistry();
 
-	default boolean canTransform(@NonNull Class<?> sourceClass, @NonNull Class<?> targetClass) {
-		return canTransform(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
+	public TransformationService() {
+		injectors.register((service) -> {
+			if (service instanceof TransformationService) {
+				TransformerAware transformerAware = (TransformerAware) service;
+				transformerAware.setTransformer(this);
+			}
+			return Registration.SUCCESS;
+		});
 	}
 
-	default boolean canTransform(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetTypeDescriptor) {
-		return canTransform(TypeDescriptor.valueOf(sourceClass), targetTypeDescriptor);
-	}
-
-	default boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull Class<?> targetClass) {
-		return canTransform(sourceTypeDescriptor, TypeDescriptor.valueOf(targetClass));
+	public Registration register(Transformer transformer) {
+		Registration registration = transformers instanceof ConditionalTransformer
+				? registry.register((ConditionalTransformer) transformer)
+				: transformers.register(transformer);
+		if (!registration.isCancelled()) {
+			injectors.inject(transformer);
+		}
+		return registration;
 	}
 
 	@Override
-	boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull TypeDescriptor targetTypeDescriptor);
-
-	default boolean transform(@NonNull Object source, @NonNull Object target) {
-		return transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
-	}
-
-	default boolean transform(@NonNull Object source, @NonNull Object target,
+	public boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
-		return transform(source, TypeDescriptor.forObject(source), target, targetTypeDescriptor);
+		return registry.canTransform(sourceTypeDescriptor, targetTypeDescriptor)
+				|| transformers.canTransform(sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
-	default <T> boolean transform(@NonNull Object source, @NonNull T target, @NonNull Class<? extends T> targetClass) {
-		return transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.valueOf(targetClass));
-	}
-
-	default boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
-			@NonNull Object target) {
-		return transform(source, sourceTypeDescriptor, target, TypeDescriptor.forObject(target));
-	}
-
-	default <T> boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
-			@NonNull T target, @NonNull Class<? extends T> targetClass) {
-		return transform(source, sourceTypeDescriptor, target, TypeDescriptor.valueOf(targetClass));
-	}
-
-	default <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass, @NonNull Object target) {
-		return transform(source, TypeDescriptor.valueOf(sourceClass), target, TypeDescriptor.forObject(target));
-	}
-
-	default <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass, @NonNull Object target,
-			@NonNull TypeDescriptor targetTypeDescriptor) {
-		return transform(source, TypeDescriptor.valueOf(sourceClass), target, targetTypeDescriptor);
-	}
-
-	default <S, T> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass, @NonNull T target,
-			@NonNull Class<? extends T> targetClass) {
-		return transform(source, TypeDescriptor.valueOf(sourceClass), target, TypeDescriptor.valueOf(targetClass));
+	@Override
+	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
+		if (registry.canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
+			return registry.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
+		}
+		return transformers.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 	}
 }

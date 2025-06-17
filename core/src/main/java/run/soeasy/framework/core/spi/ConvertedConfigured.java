@@ -14,8 +14,8 @@ public class ConvertedConfigured<S, T, W extends Configured<S>> extends Converte
 	}
 
 	@Override
-	public <U> Configured<U> convert(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
-		return Configured.super.convert(resize, converter);
+	public <U> Configured<U> map(boolean resize, Function<? super Stream<T>, ? extends Stream<U>> converter) {
+		return Configured.super.map(resize, converter);
 	}
 
 	@Override

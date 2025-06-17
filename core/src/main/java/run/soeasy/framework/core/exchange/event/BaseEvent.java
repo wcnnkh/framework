@@ -5,7 +5,7 @@ import java.util.EventObject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.time.TimeUtils;
+import run.soeasy.framework.core.time.Millisecond;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 /**
@@ -66,6 +66,6 @@ public class BaseEvent extends EventObject {
 
 	@Override
 	public String toString() {
-		return TimeUtils.MILLISECOND.format(timestamp) + " on event " + id + " source " + source;
+		return Millisecond.DEFAULT.format(timestamp) + " on event " + id + " source " + source;
 	}
 }

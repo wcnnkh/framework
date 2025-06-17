@@ -1,53 +1,49 @@
 package run.soeasy.framework.core.convert;
 
+import lombok.Getter;
 import lombok.NonNull;
+import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.spi.ServiceInjectors;
 
-/**
- * A service interface for type conversion. This is the entry point into the
- * convert system. Call {@link #convert(Object, Class)} to perform a thread-safe
- * type conversion using this system.
- */
-public interface ConversionService extends Converter<Object, Object> {
-	public static ConversionService identity() {
-		return IdentityConversionService.INSTANCE;
-	}
+@Getter
+public class ConversionService implements Converter {
+	private final Converters converters = new Converters();
+	private final ServiceInjectors<Object> injectors = new ServiceInjectors<>();
+	private final ConverterRegistry registry = new ConverterRegistry();
 
-	public static ConversionService directly() {
-		return DirectlyConversionService.INSTANCE;
-	}
-
-	default boolean canConvert(@NonNull Class<?> sourceClass, @NonNull Class<?> targetClass) {
-		return canConvert(TypeDescriptor.valueOf(sourceClass), TypeDescriptor.valueOf(targetClass));
-	}
-
-	default boolean canConvert(@NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetTypeDescriptor) {
-		return canConvert(TypeDescriptor.valueOf(sourceClass), targetTypeDescriptor);
-	}
-
-	default boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull Class<?> targetClass) {
-		return canConvert(sourceTypeDescriptor, TypeDescriptor.valueOf(targetClass));
+	public ConversionService() {
+		injectors.register((service) -> {
+			if (service instanceof ConverterAware) {
+				ConverterAware conversionServiceAware = (ConverterAware) service;
+				conversionServiceAware.setConverter(this);
+			}
+			return Registration.SUCCESS;
+		});
 	}
 
 	@Override
-	boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor, @NonNull TypeDescriptor targetTypeDescriptor);
-
-	default Object convert(Object source, @NonNull Class<?> sourceClass, @NonNull TypeDescriptor targetTypeDescriptor)
-			throws ConversionException {
-		return convert(source, TypeDescriptor.valueOf(sourceClass), targetTypeDescriptor);
+	public boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull TypeDescriptor targetTypeDescriptor) {
+		return registry.canConvert(sourceTypeDescriptor, targetTypeDescriptor)
+				|| converters.canConvert(sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
-	@SuppressWarnings("unchecked")
-	default <T> T convert(@NonNull Object source, @NonNull Class<? extends T> targetClass) throws ConversionException {
-		return (T) convert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(targetClass));
+	@Override
+	public Object convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+		if (registry.canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
+			return registry.convert(source, sourceTypeDescriptor, targetTypeDescriptor);
+		}
+		return converters.convert(source, sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
-	default Object convert(Object source, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
-		return convert(source, TypeDescriptor.forObject(source), targetTypeDescriptor);
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T> T convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
-			@NonNull Class<? extends T> targetClass) throws ConversionException {
-		return (T) convert(source, sourceTypeDescriptor, TypeDescriptor.valueOf(targetClass));
+	public Registration register(@NonNull Converter converter) {
+		Registration registration = converter instanceof ConditionalConverter
+				? registry.register((ConditionalConverter) converter)
+				: converters.register(converter);
+		if (!registration.isCancelled()) {
+			injectors.inject(converter);
+		}
+		return registration;
 	}
 }

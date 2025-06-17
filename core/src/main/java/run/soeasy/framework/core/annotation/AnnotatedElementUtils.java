@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.function.Function;
 
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.UnsafeArrayList;
 
+@UtilityClass
 public class AnnotatedElementUtils {
 	public static final AnnotatedElement EMPTY_ANNOTATED_ELEMENT = new EmptyAnnotatedElement();
 
@@ -74,8 +76,5 @@ public class AnnotatedElementUtils {
 			}
 		}
 		return list == null ? (first == null ? Collections.emptyList() : new UnsafeArrayList<>(first)) : list;
-	}
-
-	private AnnotatedElementUtils() {
 	}
 }

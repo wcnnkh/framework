@@ -135,7 +135,7 @@ public interface TypedValueWrapper<W extends TypedValue>
 	}
 
 	@Override
-	default TypedValue getAsValue(@NonNull Converter<? super Object, ? extends Object> converter) {
+	default TypedValue getAsValue(@NonNull Converter converter) {
 		return getSource().getAsValue(converter);
 	}
 }

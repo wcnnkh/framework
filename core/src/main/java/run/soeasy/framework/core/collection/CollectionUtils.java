@@ -51,11 +51,13 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
-public abstract class CollectionUtils {
+@UtilityClass
+public class CollectionUtils {
 	private static final class PreviousIterator<E> implements Iterator<E> {
 		private final ListIterator<E> listIterator;
 

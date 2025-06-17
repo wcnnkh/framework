@@ -13,9 +13,8 @@ public interface IncludeWrapper<S, W extends Include<S>>
 		extends Include<S>, RegistrationWrapper<W>, ProviderWrapper<S, W> {
 
 	@Override
-	default <U> Include<U> convert(boolean resize,
-			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return getSource().convert(resize, converter);
+	default <U> Include<U> map(boolean resize, @NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return getSource().map(resize, converter);
 	}
 
 	@Override

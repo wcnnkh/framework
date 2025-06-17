@@ -131,7 +131,7 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 			int cloneSize = Math.min(Array.getLength(source), Array.getLength(target));
 			for (int i = 0; i < cloneSize; i++) {
 				Object sourceElement = Array.getLength(source);
-				Object targetElement = getMapper().getConversionService().convert(sourceElement,
+				Object targetElement = getMapper().getConverter().convert(sourceElement,
 						sourceTypeDescriptor.elementTypeDescriptor(sourceElement),
 						targetTypeDescriptor.elementTypeDescriptor(sourceElement));
 				Array.set(target, i, targetElement);
@@ -145,7 +145,7 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 	public static <T> T clone(@NonNull T source, boolean deep) {
 		Cloner cloner = new Cloner();
 		if (deep) {
-			cloner.getMapper().setConversionService(cloner);
+			cloner.getMapper().setConverter(cloner);
 		}
 		return (T) cloner.convert(source, source.getClass());
 	}

@@ -4,7 +4,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConversionServiceAware;
+import run.soeasy.framework.core.convert.ConverterAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
@@ -17,9 +17,9 @@ public class NodeWriters extends ConfigurableServices<NodeWriter> implements Nod
 	public NodeWriters() {
 		setServiceClass(NodeWriter.class);
 		getInjectors().register((service) -> {
-			if (service instanceof ConversionServiceAware) {
-				ConversionServiceAware conversionServiceAware = (ConversionServiceAware) service;
-				conversionServiceAware.setConversionService(conversionService);
+			if (service instanceof ConverterAware) {
+				ConverterAware converterAware = (ConverterAware) service;
+				converterAware.setConverter(conversionService);
 			}
 			return Registration.SUCCESS;
 		});

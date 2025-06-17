@@ -1,15 +1,14 @@
 package run.soeasy.framework.core.math;
 
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.math.gcd.DivisionAlgorithm;
 import run.soeasy.framework.core.math.gcd.GreatestCommonDivisor;
 import run.soeasy.framework.core.spi.NativeProvider;
 
-public final class MathUtils {
+@UtilityClass
+public class MathUtils {
 	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = NativeProvider
 			.load(GreatestCommonDivisor.class).findFirst().orElseGet(DivisionAlgorithm::new);
-
-	private MathUtils() {
-	};
 
 	/**
 	 * 计算最大公约数

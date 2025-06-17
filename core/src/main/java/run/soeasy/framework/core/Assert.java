@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.CollectionUtils;
 
 /**
@@ -37,7 +38,8 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * &gt;= 2.0 for a more comprehensive suite of assertion utilities.
  *
  */
-public abstract class Assert {
+@UtilityClass
+public class Assert {
 
 	/**
 	 * Assert that the given String is not empty; that is, it must not be

@@ -2,26 +2,24 @@ package run.soeasy.framework.core.transform;
 
 import java.util.Comparator;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.comparator.ComparableComparator;
 import run.soeasy.framework.core.convert.ConditionalConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TypeMapping;
 import run.soeasy.framework.core.spi.ConfigurableServices;
-import run.soeasy.framework.core.type.TypeMapping;
 
-public class Transformers extends ConfigurableServices<Transformer<? super Object, ? super Object>>
-		implements ConditionalTransformer<Object, Object>, Comparator<Transformer<? super Object, ? super Object>> {
+public class Transformers extends ConfigurableServices<Transformer> implements Transformer, Comparator<Transformer> {
 	public Transformers() {
 		setComparator(this);
 	}
 
 	@Override
-	public int compare(Transformer<? super Object, ? super Object> o1, Transformer<? super Object, ? super Object> o2) {
+	public int compare(Transformer o1, Transformer o2) {
 		if (o1 instanceof ConditionalTransformer && o2 instanceof ConditionalTransformer) {
-			Set<TypeMapping> pairs = ((ConditionalTransformer<?, ?>) o1).getTransformableTypeMappings();
-			Set<TypeMapping> otherPairs = ((ConditionalTransformer<?, ?>) o2).getTransformableTypeMappings();
+			Set<TypeMapping> pairs = ((ConditionalTransformer) o1).getTransformableTypeMappings();
+			Set<TypeMapping> otherPairs = ((ConditionalTransformer) o2).getTransformableTypeMappings();
 			for (TypeMapping pair : pairs) {
 				for (TypeMapping other : otherPairs) {
 					if (pair.compareTo(other) == -1) {
@@ -45,12 +43,6 @@ public class Transformers extends ConfigurableServices<Transformer<? super Objec
 	}
 
 	@Override
-	public Set<TypeMapping> getTransformableTypeMappings() {
-		return stream().filter((e) -> e instanceof ConditionalTransformer).map((e) -> (ConditionalTransformer<?, ?>) e)
-				.flatMap((e) -> e.getTransformableTypeMappings().stream()).collect(Collectors.toSet());
-	}
-
-	@Override
 	public boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		return anyMatch((e) -> e.canTransform(sourceTypeDescriptor, targetTypeDescriptor));
@@ -59,7 +51,7 @@ public class Transformers extends ConfigurableServices<Transformer<? super Objec
 	@Override
 	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
-		for (Transformer<? super Object, ? super Object> transformer : this) {
+		for (Transformer transformer : this) {
 			if (transformer.canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
 				return transformer.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 			}

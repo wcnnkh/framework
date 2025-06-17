@@ -27,8 +27,7 @@ public class Included<S> extends Receipted implements Configured<S>, ProviderWra
 	}
 
 	@Override
-	public <U> Configured<U> convert(boolean resize,
-			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
-		return Configured.super.convert(resize, converter);
+	public <U> Configured<U> map(boolean resize, @NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return Configured.super.map(resize, converter);
 	}
 }

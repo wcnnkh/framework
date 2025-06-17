@@ -9,8 +9,10 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 
-public final class ArrayUtils {
+@UtilityClass
+public class ArrayUtils {
 	public static final int[] EMPTY_INT_ARRAY = new int[0];
 	public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 	public static final short[] EMPTY_SHORT_ARRAY = new short[0];
@@ -414,8 +416,5 @@ public final class ArrayUtils {
 			newArray[i] = Array.get(source, i);
 		}
 		return newArray;
-	}
-
-	private ArrayUtils() {
 	}
 }

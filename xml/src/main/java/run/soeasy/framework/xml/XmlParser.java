@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.function.ThrowingFunction;
@@ -34,7 +34,7 @@ import run.soeasy.framework.io.Resource;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class XmlParser implements ResourceParser, ConversionService {
+public class XmlParser implements ResourceParser, Converter {
 	@NonNull
 	private DocumentBuilderFactory documentBuilderFactory;
 	@NonNull

@@ -27,8 +27,8 @@ public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, 
 	}
 
 	@Override
-	default <U> Elements<U> convert(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
-		return getSource().convert(resize, converter);
+	default <U> Elements<U> map(boolean resize, Function<? super Stream<E>, ? extends Stream<U>> converter) {
+		return getSource().map(resize, converter);
 	}
 
 	@Override

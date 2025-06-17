@@ -12,10 +12,10 @@ import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 
 @Getter
 @Setter
-public class TransformingConverter<S, T> implements Converter<S, T>, Transformer<S, T> {
+public class TransformingConverter<S, T> implements Converter, Transformer {
 	@NonNull
 	private InstanceFactory instanceFactory = InstanceFactorySupporteds.REFLECTION;
-	private Transformer<? super S, ? super T> transformer;
+	private Transformer transformer;
 	private boolean enable = true;
 
 	@Override
@@ -32,8 +32,8 @@ public class TransformingConverter<S, T> implements Converter<S, T>, Transformer
 	}
 
 	@Override
-	public boolean transform(@NonNull S source, @NonNull TypeDescriptor sourceTypeDescriptor, @NonNull T target,
-			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
+	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
 		if (!canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
 			return false;
 		}
@@ -41,15 +41,14 @@ public class TransformingConverter<S, T> implements Converter<S, T>, Transformer
 		return transformer.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public T convert(S source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Object convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		if (!canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
 			throw new ConverterNotFoundException(sourceTypeDescriptor, targetTypeDescriptor);
 		}
 
-		T target = (T) instanceFactory.newInstance(targetTypeDescriptor.getResolvableType());
+		Object target = instanceFactory.newInstance(targetTypeDescriptor.getResolvableType());
 		transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 		return target;
 	}

@@ -2,9 +2,11 @@ package run.soeasy.framework.aop;
 
 import java.lang.reflect.Method;
 
+import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
+@UtilityClass
 public class ProxyUtils {
 	public static boolean isIgnoreMethod(Method method) {
 		return ReflectionUtils.isHashCodeMethod(method) && ReflectionUtils.isToStringMethod(method)

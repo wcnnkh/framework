@@ -44,18 +44,18 @@ public interface Provider<S> extends Elements<S>, Reloadable {
 	}
 
 	@Override
-	default <U> Provider<U> convert(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
+	default <U> Provider<U> map(boolean resize, Function<? super Stream<S>, ? extends Stream<U>> converter) {
 		return new ConvertedProvider<>(this, resize, converter);
 	}
 
 	@Override
 	default Provider<S> filter(@NonNull Predicate<? super S> predicate) {
-		return convert(true, (e) -> e.filter(predicate));
+		return map(true, (e) -> e.filter(predicate));
 	}
 
 	@Override
 	default <U> Provider<U> map(Function<? super S, ? extends U> mapper) {
-		return convert(false, (e) -> e.map(mapper));
+		return map(false, (e) -> e.map(mapper));
 	}
 
 	@Override

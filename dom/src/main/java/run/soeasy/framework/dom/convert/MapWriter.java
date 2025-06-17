@@ -9,7 +9,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
 
@@ -29,9 +28,10 @@ public class MapWriter extends AbstractNodeWriter {
 				continue;
 			}
 
-			String name = (String) getConversionService().convert(entry.getKey(),
-					source.getReturnTypeDescriptor().getMapKeyTypeDescriptor(), TypeDescriptor.valueOf(String.class));
-			TypedValue value = TypedValue.of(entry.getValue(), source.getReturnTypeDescriptor().getMapValueTypeDescriptor());
+			String name = getConverter().convert(entry.getKey(),
+					source.getReturnTypeDescriptor().getMapKeyTypeDescriptor(), String.class);
+			TypedValue value = TypedValue.of(entry.getValue(),
+					source.getReturnTypeDescriptor().getMapValueTypeDescriptor());
 			if (getNodeWriter().isWriteable(value)) {
 				Element element = node.getOwnerDocument().createElement(name);
 				getNodeWriter().writeTo(value, element);

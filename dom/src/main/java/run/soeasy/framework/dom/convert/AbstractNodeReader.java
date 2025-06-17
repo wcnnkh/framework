@@ -3,14 +3,14 @@ package run.soeasy.framework.dom.convert;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConversionServiceAware;
+import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.convert.ConverterAware;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 
 @Getter
 @Setter
-public abstract class AbstractNodeReader implements NodeReader, ConversionServiceAware, NodeReaderAware {
+public abstract class AbstractNodeReader implements NodeReader, ConverterAware, NodeReaderAware {
 	@NonNull
-	private ConversionService conversionService = SystemConversionService.getInstance();
+	private Converter converter = SystemConversionService.getInstance();
 	private NodeReader nodeWriter = this;
 }

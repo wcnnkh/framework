@@ -22,7 +22,7 @@ public interface Configured<S> extends Include<S>, Receipt {
 	}
 
 	@Override
-	default <U> Configured<U> convert(boolean resize,
+	default <U> Configured<U> map(boolean resize,
 			@NonNull Function<? super Stream<S>, ? extends Stream<U>> converter) {
 		return new ConvertedConfigured<>(this, resize, converter);
 	}
