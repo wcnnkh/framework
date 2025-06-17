@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert;
 
-class IdentityConverter implements Converter {
-	static final IdentityConverter INSTANCE = new IdentityConverter();
+class AssignableConverter implements Converter {
+	static final AssignableConverter INSTANCE = new AssignableConverter();
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceTypeDescriptor, TypeDescriptor targetTypeDescriptor)

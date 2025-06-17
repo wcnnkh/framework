@@ -4,12 +4,8 @@ import lombok.NonNull;
 
 @FunctionalInterface
 public interface Converter extends Convertable {
-	public static Converter identity() {
-		return IdentityConverter.INSTANCE;
-	}
-
-	public static Converter directly() {
-		return DirectlyConverter.INSTANCE;
+	public static Converter assignable() {
+		return AssignableConverter.INSTANCE;
 	}
 
 	@Override

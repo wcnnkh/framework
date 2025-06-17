@@ -12,18 +12,6 @@ public class Hour extends PeriodicTimeUnit {
 	public static final Hour DEFAULT = new Hour();
 
 	public Hour() {
-		super("yyyy-MM-dd HH", Calendar.HOUR_OF_DAY, 60 * Minute.DEFAULT.getMillseconds());
-	}
-
-	@Override
-	public void setMinValue(Calendar value) {
-		Minute.DEFAULT.setMinValue(value);
-		super.setMinValue(value);
-	}
-
-	@Override
-	public void setMaxValue(Calendar value) {
-		Minute.DEFAULT.setMaxValue(value);
-		super.setMaxValue(value);
+		super("yyyy-MM-dd HH", Calendar.HOUR_OF_DAY, Minute.DEFAULT, 60 * Minute.DEFAULT.getMillseconds());
 	}
 }

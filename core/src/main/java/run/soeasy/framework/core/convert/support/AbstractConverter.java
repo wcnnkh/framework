@@ -12,7 +12,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 @Setter
 public abstract class AbstractConverter implements Converter, ConverterAware {
 	@NonNull
-	private Converter converter = Converter.directly();
+	private Converter converter = Converter.assignable();
 
 	public abstract boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor);

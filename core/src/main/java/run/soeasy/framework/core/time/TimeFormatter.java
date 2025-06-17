@@ -22,7 +22,6 @@ public class TimeFormatter extends Converters {
 					instance.register(Second.DEFAULT);
 					instance.register(Minute.DEFAULT);
 					instance.register(Hour.DEFAULT);
-					instance.register(Week.DEFAULT);
 					instance.register(Day.DEFAULT);
 					instance.register(Month.DEFAULT);
 					instance.register(Year.DEFAULT);

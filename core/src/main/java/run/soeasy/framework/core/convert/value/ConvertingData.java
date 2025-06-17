@@ -40,7 +40,7 @@ public class ConvertingData<T, W extends AccessibleDescriptor>
 				result = ((TypedValue) value).getAsObject(targetTypeDescriptor);
 			}
 		} else {
-			if (converter == null) {
+			if (converter != null) {
 				result = converter.convert(value, TypeDescriptor.forObject(value), targetTypeDescriptor);
 			} else {
 				result = value;
