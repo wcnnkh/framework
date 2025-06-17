@@ -12,7 +12,7 @@ public class Hour extends PeriodicTimeUnit {
 	public static final Hour DEFAULT = new Hour();
 
 	public Hour() {
-		super(Calendar.HOUR_OF_DAY, 60 * Minute.DEFAULT.getMillseconds());
+		super("yyyy-MM-dd HH", Calendar.HOUR_OF_DAY, 60 * Minute.DEFAULT.getMillseconds());
 	}
 
 	@Override

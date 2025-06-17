@@ -20,8 +20,8 @@ import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.MultiValueMap;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConversionServiceAware;
+import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.convert.ConverterAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.TypedValue;
@@ -31,9 +31,9 @@ import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 
 @Getter
 @Setter
-public abstract class ObjectFormat implements PairFormat<String, TypedValue>, ConversionServiceAware {
+public abstract class ObjectFormat implements PairFormat<String, TypedValue>, ConverterAware {
 	@NonNull
-	private ConversionService conversionService = SystemConversionService.getInstance();
+	private Converter converter = SystemConversionService.getInstance();
 
 	@Override
 	public final String format(Stream<KeyValue<String, TypedValue>> source) {
@@ -69,8 +69,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 			throws IOException {
 		Set<Entry> entrySet = ((Map) source).entrySet();
 		for (Entry entry : entrySet) {
-			String key = (String) conversionService.convert(entry.getKey(), sourceType.getMapKeyTypeDescriptor(),
-					TypeDescriptor.valueOf(String.class));
+			String key = converter.convert(entry.getKey(), sourceType.getMapKeyTypeDescriptor(), String.class);
 			if (StringUtils.isNotEmpty(sourceKey)) {
 				key = joinKey(sourceKey, key);
 			}
@@ -108,9 +107,8 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		}
 
 		TypeDescriptor targetType = TypeDescriptor.map(Map.class, String.class, Object.class);
-		if (conversionService.canConvert(sourceType, targetType)) {
-			Map<String, Object> sourceMap = (Map<String, Object>) conversionService.convert(source, sourceType,
-					targetType);
+		if (converter.canConvert(sourceType, targetType)) {
+			Map<String, Object> sourceMap = (Map<String, Object>) converter.convert(source, sourceType, targetType);
 			formatMap(null, sourceMap, targetType, target);
 			return;
 		}
@@ -186,8 +184,8 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 		MultiValueMap<String, TypedValue> sourceMap = parseMultiValueMap(source);
 		TypeDescriptor sourceType = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class),
 				TypeDescriptor.collection(List.class, String.class));
-		if (conversionService.canConvert(sourceType, targetType)) {
-			return conversionService.convert(sourceMap, sourceType, targetType);
+		if (converter.canConvert(sourceType, targetType)) {
+			return converter.convert(sourceMap, sourceType, targetType);
 		}
 
 		if (targetType.isMap()) {
@@ -199,12 +197,11 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 					targetType.getMapKeyTypeDescriptor().getType(), sourceMap.size());
 			for (Entry<String, List<TypedValue>> entry : sourceMap.entrySet()) {
 				Object key = entry.getKey();
-				key = conversionService.convert(key, TypeDescriptor.forObject(key),
-						targetType.getMapKeyTypeDescriptor());
+				key = converter.convert(key, TypeDescriptor.forObject(key), targetType.getMapKeyTypeDescriptor());
 
 				Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
 						: entry.getValue();
-				value = conversionService.convert(value, TypeDescriptor.forObject(value),
+				value = converter.convert(value, TypeDescriptor.forObject(value),
 						targetType.getMapValueTypeDescriptor());
 
 				targetMap.put(key, value);
@@ -220,8 +217,7 @@ public abstract class ObjectFormat implements PairFormat<String, TypedValue>, Co
 			for (BeanProperty element : elements) {
 				Object value = entry.getValue() != null && entry.getValue().size() == 1 ? entry.getValue().get(0)
 						: entry.getValue();
-				value = conversionService.convert(value, TypeDescriptor.forObject(value),
-						element.getRequiredTypeDescriptor());
+				value = converter.convert(value, TypeDescriptor.forObject(value), element.getRequiredTypeDescriptor());
 				element.writeTo(target, value);
 			}
 		}

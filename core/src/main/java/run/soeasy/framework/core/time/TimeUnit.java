@@ -5,16 +5,19 @@ import java.util.Date;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.domain.Discrete;
 
-@RequiredArgsConstructor
 @Getter
-public abstract class TimeUnit implements Discrete<Date> {
+public abstract class TimeUnit extends TimeFormat implements Discrete<Date> {
 	/**
 	 * 日历中的字段
 	 */
 	private final int calendarField;
+
+	public TimeUnit(@NonNull String pattern, int calendarField) {
+		super(pattern);
+		this.calendarField = calendarField;
+	}
 
 	/**
 	 * 获取Calendar

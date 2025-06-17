@@ -3,7 +3,7 @@ package run.soeasy.framework.core.transform.templates;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 /**
@@ -19,7 +19,7 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 @Setter
 public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
 	@NonNull
-	private ConversionService conversionService = ConversionService.identity();
+	private Converter converter = Converter.identity();
 
 	public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {
@@ -29,12 +29,12 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
 
 		TypedValueAccessor sourceAccessor = sourceContext.getKeyValue().getValue();
 		TypedValueAccessor targetAccessor = targetContext.getKeyValue().getValue();
-		if (!conversionService.canConvert(sourceAccessor.getReturnTypeDescriptor(),
+		if (!converter.canConvert(sourceAccessor.getReturnTypeDescriptor(),
 				targetAccessor.getRequiredTypeDescriptor())) {
 			return false;
 		}
 
-		Object value = conversionService.convert(sourceAccessor.get(), sourceAccessor.getReturnTypeDescriptor(),
+		Object value = converter.convert(sourceAccessor.get(), sourceAccessor.getReturnTypeDescriptor(),
 				targetAccessor.getRequiredTypeDescriptor());
 		if (value == null && targetAccessor.isRequired()) {
 			return false;

@@ -12,7 +12,7 @@ public class Minute extends PeriodicTimeUnit {
 	public static final Minute DEFAULT = new Minute();
 
 	public Minute() {
-		super(Calendar.MINUTE, 60 * Second.DEFAULT.getMillseconds());
+		super("yyyy-MM-dd HH:mm", Calendar.MINUTE, 60 * Second.DEFAULT.getMillseconds());
 	}
 
 	@Override

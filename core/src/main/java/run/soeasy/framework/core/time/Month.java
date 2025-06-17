@@ -12,7 +12,7 @@ public class Month extends TimeUnit {
 	public static final Month DEFAULT = new Month();
 
 	public Month() {
-		super(Calendar.MONTH);
+		super("yyyy-MM", Calendar.MONTH);
 	}
 
 	@Override

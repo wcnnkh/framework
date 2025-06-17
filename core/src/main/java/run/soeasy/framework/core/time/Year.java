@@ -12,7 +12,7 @@ public class Year extends TimeUnit {
 	public static final Year DEFAULT = new Year();
 
 	public Year() {
-		super(Calendar.YEAR);
+		super("yyyy", Calendar.YEAR);
 	}
 
 	@Override

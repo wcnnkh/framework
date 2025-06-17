@@ -12,7 +12,7 @@ public class Day extends PeriodicTimeUnit {
 	public static final Day DEFAULT = new Day();
 
 	public Day() {
-		super(Calendar.DAY_OF_MONTH, 24L * Hour.DEFAULT.getMillseconds());
+		super("yyyy-MM-dd", Calendar.DAY_OF_MONTH, 24L * Hour.DEFAULT.getMillseconds());
 	}
 
 	@Override

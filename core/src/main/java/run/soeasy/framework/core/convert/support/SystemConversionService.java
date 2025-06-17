@@ -1,16 +1,14 @@
 package run.soeasy.framework.core.convert.support;
 
 import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConverterRegistry;
-import run.soeasy.framework.core.convert.strings.StringConverter;
 
 /**
  * 全局的ConversionService
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
  */
-public class SystemConversionService extends ConverterRegistry {
+public class SystemConversionService extends ConversionService {
 
 	private static volatile SystemConversionService instance;
 
@@ -28,18 +26,13 @@ public class SystemConversionService extends ConverterRegistry {
 	}
 
 	public SystemConversionService() {
-		getConverters().register(new ArrayToArrayConversionService(this));
-		getConverters().register(new ArrayToCollectionConversionService(this));
-
-		getConverters().register(new CollectionToArrayConversionService(this));
-		getConverters().register(new CollectionToCollectionConversionService(this));
-		getConverters().register(new CollectionToObjectConversionService(this));
-
-		getConverters().register(new MapToMapConversionService(this));
-
-		getConverters().register(StringConverter.getInstance());
-
-		getConverters().register(new ObjectToArrayConversionService(this));
-		getConverters().register(new ObjectToCollectionConversionService(this));
+		getConverters().register(new ArrayToArrayConverter());
+		getConverters().register(new ArrayToCollectionConverter());
+		getConverters().register(new CollectionToArrayConverter());
+		getConverters().register(new CollectionToCollectionConverter());
+		getConverters().register(new CollectionToObjectConverter());
+		getConverters().register(new MapToMapConverter());
+		getConverters().register(new ObjectToArrayConverter());
+		getConverters().register(new ObjectToCollectionConverter());
 	}
 }

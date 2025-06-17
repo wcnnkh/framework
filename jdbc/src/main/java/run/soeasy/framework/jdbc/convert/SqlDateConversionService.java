@@ -7,14 +7,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.ConditionalConversionService;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionFailedException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.convert.support.AbstractConversionService;
-import run.soeasy.framework.core.type.TypeMapping;
+import run.soeasy.framework.core.convert.TypeMapping;
+import run.soeasy.framework.core.convert.support.AbstractConditionalConverter;
 
-public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
+public class SqlDateConversionService extends AbstractConditionalConverter {
 	private static final Set<TypeMapping> CONVERIBLE_PAIRS = new HashSet<TypeMapping>(8);
 
 	static {

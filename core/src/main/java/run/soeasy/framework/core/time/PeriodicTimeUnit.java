@@ -3,6 +3,7 @@ package run.soeasy.framework.core.time;
 import java.util.Calendar;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * 周期性时间单位
@@ -17,8 +18,8 @@ public class PeriodicTimeUnit extends TimeUnit {
 	 */
 	private final long millseconds;
 
-	public PeriodicTimeUnit(int calendarField, long millseconds) {
-		super(calendarField);
+	public PeriodicTimeUnit(@NonNull String pattern, int calendarField, long millseconds) {
+		super(pattern, calendarField);
 		this.millseconds = millseconds;
 	}
 

@@ -1,92 +1,72 @@
 package run.soeasy.framework.core.transform;
 
+import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import lombok.Getter;
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.TypeMapping;
 import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.exchange.Registrations;
 import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
-import run.soeasy.framework.core.spi.ServiceInjectors;
-import run.soeasy.framework.core.type.TypeMapping;
 
-@Getter
-public class TransformerRegistry implements ConditionalTransformationService {
-	private final ServiceInjectors<Transformer<?, ?>> injectors = new ServiceInjectors<>();
-	private final Transformers transformers = new Transformers();
-	private final TreeMapContainer<TypeMapping, CustomizeConditionalTransformationService> registry = new TreeMapContainer<>();
+public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transformer> implements ConditionalTransformer {
 
-	public TransformerRegistry() {
-		transformers.getInjectors().add(injectors);
-		injectors.register((service) -> {
-			if (service instanceof TransformationService) {
-				TransformationServiceAware transformationServiceAware = (TransformationServiceAware) service;
-				transformationServiceAware.setTransformationService(this);
-			}
-			return Registration.SUCCESS;
-		});
-	}
-
-	public Registration registerReversibleTransformer(@NonNull TypeMapping typeMapping,
-			@NonNull ReversibleTransformer<?, ?> reversibleTransformer) {
-		Registration registration = registry.register(typeMapping,
-				new CustomizeConditionalTransformationService(typeMapping, reversibleTransformer));
-		if (!registration.isCancelled()) {
-			injectors.inject(reversibleTransformer);
+	private Transformer getTransformer(@NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull TypeDescriptor targetTypeDescriptor) {
+		Transformer transformer = getTransformerByHash(sourceTypeDescriptor, targetTypeDescriptor);
+		if (transformer == null) {
+			transformer = getTransformerByHash(targetTypeDescriptor, sourceTypeDescriptor);
 		}
-		return registration;
-	}
 
-	public final <S, T> Registration registerReversibleTransformer(@NonNull Class<S> sourceClass,
-			@NonNull Class<T> targetClass, @NonNull ReversibleTransformer<? super S, ? super T> reversibleTransformer) {
-		return registerReversibleTransformer(new TypeMapping(sourceClass, targetClass), reversibleTransformer);
-	}
-
-	public final <S, T> Registration registerTransformer(@NonNull Class<S> sourceClass, @NonNull Class<T> targetClass,
-			Transformer<? super S, ? super T> transformer, Transformer<? super T, ? super S> reversedTransformer) {
-		Registration registration = registerReversibleTransformer(sourceClass, targetClass,
-				new ReversedTransformer<>(transformer, reversedTransformer));
-		if (!registration.isCancelled()) {
-			if (transformer != null) {
-				injectors.inject(transformer);
-			}
-
-			if (reversedTransformer != null) {
-				injectors.inject(reversedTransformer);
+		for (Entry<TypeMapping, Transformer> entry : entrySet()) {
+			if (entry.getValue().canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
+				return entry.getValue();
 			}
 		}
-		return registration;
-	}
-
-	private TransformationService getTransformationService(TypeDescriptor sourceTypeDescriptor,
-			TypeDescriptor targetTypeDescriptor) {
 		return null;
+	}
+
+	private Transformer getTransformerByHash(@NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull TypeDescriptor targetTypeDescriptor) {
+		TypeMapping typeMapping = new TypeMapping(sourceTypeDescriptor.getType(), targetTypeDescriptor.getType());
+		return get(typeMapping);
 	}
 
 	@Override
 	public boolean canTransform(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
-		return getTransformationService(sourceTypeDescriptor, targetTypeDescriptor) != null
-				|| transformers.canTransform(sourceTypeDescriptor, targetTypeDescriptor);
+		return getTransformer(sourceTypeDescriptor, targetTypeDescriptor) != null;
 	}
 
 	@Override
 	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
-		TransformationService transformationService = getTransformationService(sourceTypeDescriptor,
-				targetTypeDescriptor);
-		if (transformationService != null) {
-			return transformationService.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
+		Transformer transformer = getTransformer(sourceTypeDescriptor, targetTypeDescriptor);
+		if (transformer == null) {
+			throw new ConverterNotFoundException(sourceTypeDescriptor, targetTypeDescriptor);
 		}
-		return transformers.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
+		return transformer.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 	}
 
 	@Override
 	public Set<TypeMapping> getTransformableTypeMappings() {
-		return Stream.concat(registry.values().stream().flatMap((e) -> e.getTransformableTypeMappings().stream()),
-				transformers.getTransformableTypeMappings().stream()).collect(Collectors.toSet());
+		return keySet();
 	}
 
+	public Registration register(ConditionalTransformer conditionalTransformer) {
+		Set<TypeMapping> typeMappings = conditionalTransformer.getTransformableTypeMappings();
+		List<Registration> registrations = typeMappings.stream().map((e) -> register(e, conditionalTransformer))
+				.collect(Collectors.toList());
+		return Registrations.forList(registrations);
+	}
+
+	public <S, T> Registration register(Class<S> sourceType, Class<T> targetType,
+			BiConsumer<? super S, ? super T> consumer) {
+		ConsumeTransformer<S, T> transformer = new ConsumeTransformer<>(sourceType, targetType, consumer);
+		return register(transformer);
+	}
 }

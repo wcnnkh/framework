@@ -7,8 +7,8 @@ import java.util.Arrays;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.ConversionService;
-import run.soeasy.framework.core.convert.ConversionServiceAware;
+import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.convert.ConverterAware;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
@@ -20,10 +20,10 @@ import run.soeasy.framework.messaging.Message;
 
 @Getter
 @Setter
-public class TextMessageConverter extends AbstractTextMessageConverter<Object> implements ConversionServiceAware {
+public class TextMessageConverter extends AbstractTextMessageConverter<Object> implements ConverterAware {
 	public static final MediaType TEXT_ALL = new MediaType("text", "*");
 	@NonNull
-	private ConversionService conversionService = SystemConversionService.getInstance();
+	private Converter converter = SystemConversionService.getInstance();
 
 	public TextMessageConverter() {
 		super(Object.class);
@@ -33,7 +33,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	@Override
 	public boolean isReadable(@NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) {
-		return getConversionService().canConvert(TypeDescriptor.valueOf(String.class),
+		return getConverter().canConvert(TypeDescriptor.valueOf(String.class),
 				targetDescriptor.getRequiredTypeDescriptor())
 				&& super.isReadable(targetDescriptor, message, contentType);
 	}
@@ -41,18 +41,18 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	@Override
 	public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
 			MimeType contentType) {
-		return getConversionService().canConvert(sourceDescriptor.getReturnTypeDescriptor(),
+		return getConverter().canConvert(sourceDescriptor.getReturnTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class)) && super.isWriteable(sourceDescriptor, message, contentType);
 	}
 
 	@Override
 	protected Object parseObject(String body, TargetDescriptor targetDescriptor) throws IOException {
-		return getConversionService().convert(body, TypeDescriptor.forObject(body),
+		return getConverter().convert(body, TypeDescriptor.forObject(body),
 				targetDescriptor.getRequiredTypeDescriptor());
 	}
 
 	@Override
 	protected String toString(TypedData<Object> body, MediaType contentType, Charset charset) throws IOException {
-		return (String) getConversionService().convert(body.value(), TypeDescriptor.valueOf(String.class));
+		return (String) getConverter().convert(body.value(), TypeDescriptor.valueOf(String.class));
 	}
 }

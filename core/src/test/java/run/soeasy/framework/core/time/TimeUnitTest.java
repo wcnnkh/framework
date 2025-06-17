@@ -1,12 +1,30 @@
 package run.soeasy.framework.core.time;
 
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertTrue;
+
+import java.text.ParseException;
+import java.util.Date;
 
 import org.junit.Test;
 
 public class TimeUnitTest {
+
 	@Test
-	public void test() {
-		System.out.println(TimeUnit.MILLISECONDS.toSeconds(1));
+	public void test() throws ParseException {
+		Date time = new Date();
+		test(Year.DEFAULT, time);
+		test(Month.DEFAULT, time);
+		test(Day.DEFAULT, time);
+		test(Hour.DEFAULT, time);
+		test(Minute.DEFAULT, time);
+		test(Second.DEFAULT, time);
+		test(Millisecond.DEFAULT, time);
+
+		String str = time.toString();
+		assertTrue((time.getTime() / 1000) == (TimeFormatter.parse(str).getTime() / 1000));
+	}
+
+	private void test(TimeUnit timeUnit, Date time) {
+		assertTrue(timeUnit.minValue(time).getTime() == timeUnit.parse(timeUnit.format(time)).getTime());
 	}
 }

@@ -12,7 +12,7 @@ public class Second extends PeriodicTimeUnit {
 	public static final Second DEFAULT = new Second();
 
 	public Second() {
-		super(Calendar.SECOND, 1000L);
+		super("yyyy-MM-dd HH:mm:ss", Calendar.SECOND, 1000L);
 	}
 
 	@Override

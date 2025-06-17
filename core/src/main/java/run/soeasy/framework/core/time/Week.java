@@ -12,7 +12,7 @@ public class Week extends PeriodicTimeUnit {
 	public static final Week DEFAULT = new Week();
 
 	public Week() {
-		super(Calendar.WEEK_OF_MONTH, 7 * Day.DEFAULT.getMillseconds());
+		super("yyyy-MM-dd E", Calendar.WEEK_OF_MONTH, 7 * Day.DEFAULT.getMillseconds());
 	}
 
 	@Override
