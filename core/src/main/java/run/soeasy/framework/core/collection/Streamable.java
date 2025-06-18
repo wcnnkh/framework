@@ -257,6 +257,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为数组
+	 * 
 	 * @see #toList()
 	 * @see List#toArray()
 	 * @return
@@ -266,6 +268,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为指定数组
+	 * 
 	 * @see #export(ThrowingFunction)
 	 * @param <A>
 	 * @param generator
@@ -276,6 +280,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为指定数组
+	 * 
 	 * @see #toList()
 	 * @see List#toArray(Object[])
 	 * @param <T>
@@ -287,6 +293,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为List
+	 * 
 	 * @see #collect(Collector)
 	 * @return
 	 */
@@ -295,6 +303,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为Map
+	 * 
 	 * @see #toMap(Function, Function)
 	 * @param <K>
 	 * @param keyMapper
@@ -305,6 +315,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为Map
+	 * 
 	 * @see #toMap(Function, Function, Supplier)
 	 * @param <K>
 	 * @param <V>
@@ -318,6 +330,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为Map
+	 * 
 	 * @see #collect(Collector)
 	 * @param <K>
 	 * @param <V>
@@ -335,6 +349,8 @@ public interface Streamable<E> {
 	}
 
 	/**
+	 * 转换为Set
+	 * 
 	 * @see #collect(Collector)
 	 * @return
 	 */
