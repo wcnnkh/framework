@@ -14,6 +14,12 @@ import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 import run.soeasy.framework.core.type.MultiableInstanceFactory;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
+/**
+ * 使用反射的克隆器
+ * 
+ * @author soeasy.run
+ *
+ */
 public class Cloner extends ObjectMapper<ReflectionField> {
 	// 用来防止死循环
 	private static final ThreadLocal<IdentityHashMap<Object, Object>> IDENTITY_MAP_CONTEXT = new ThreadLocal<>();
