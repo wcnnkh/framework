@@ -12,19 +12,7 @@ public class Month extends TimeUnit {
 	public static final Month DEFAULT = new Month();
 
 	public Month() {
-		super("yyyy-MM", Calendar.MONTH);
-	}
-
-	@Override
-	public void setMaxValue(Calendar value) {
-		Day.DEFAULT.setMaxValue(value);
-		super.setMaxValue(value);
-	}
-
-	@Override
-	public void setMinValue(Calendar value) {
-		Day.DEFAULT.setMinValue(value);
-		super.setMinValue(value);
+		super("yyyy-MM", Calendar.MONTH, Day.DEFAULT);
 	}
 
 	@Override

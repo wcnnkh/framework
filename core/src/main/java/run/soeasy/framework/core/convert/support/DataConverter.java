@@ -42,19 +42,21 @@ public class DataConverter<S, T> extends AbstractConditionalConverter implements
 	@Override
 	public final Object convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
-		TypedValue value = TypedValue.of(source, targetTypeDescriptor);
+		TypedValue value = TypedValue.of(source, sourceTypeDescriptor);
 		TypeMapping typeMapping = new TypeMapping(sourceType, targetType);
 		if (typeMapping.canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
 			try {
-				TypedData<T> target = encode(value.getAsData(sourceTypeDescriptor));
-				return target.value().getAsObject(targetTypeDescriptor);
+				TypedData<S> sourceTypedData = value.map(sourceType, getConverter());
+				TypedData<T> target = encode(sourceTypedData);
+				return target.value().map(targetTypeDescriptor, getConverter()).get();
 			} catch (EncodeException e) {
 				throw new ConversionFailedException(sourceTypeDescriptor, targetTypeDescriptor, source, e);
 			}
 		} else if (typeMapping.canConvert(targetTypeDescriptor, sourceTypeDescriptor)) {
+			TypedData<T> targetTypedData = value.map(targetType, getConverter());
 			try {
-				TypedData<S> target = decode(value.getAsData(sourceTypeDescriptor));
-				return target.value().getAsObject(targetTypeDescriptor);
+				TypedData<S> target = decode(targetTypedData);
+				return target.value().map(targetTypeDescriptor, getConverter()).get();
 			} catch (DecodeException e) {
 				throw new ConversionFailedException(sourceTypeDescriptor, targetTypeDescriptor, source, e);
 			}
@@ -64,11 +66,11 @@ public class DataConverter<S, T> extends AbstractConditionalConverter implements
 
 	@Override
 	public TypedData<T> encode(TypedData<S> source) throws EncodeException {
-		return source.value().getAsData(targetType);
+		return source.value().map(targetType, getConverter());
 	}
 
 	@Override
 	public TypedData<S> decode(TypedData<T> source) throws DecodeException {
-		return source.value().getAsData(sourceType);
+		return source.value().map(sourceType, getConverter());
 	}
 }

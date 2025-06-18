@@ -2,7 +2,6 @@ package run.soeasy.framework.core.collection;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Supplier;
 
 import run.soeasy.framework.core.domain.Value;
 import run.soeasy.framework.core.domain.Version;
@@ -72,9 +71,9 @@ public interface Lookup<K, V extends Value> {
 		return value == null ? null : value.getAsNumber();
 	}
 
-	default <T> T getAsObject(K key, Class<? extends T> type, Supplier<? extends T> defaultSupplier) {
+	default <T> T getAsObject(K key, Class<? extends T> type) {
 		V value = get(key);
-		return value == null ? null : value.getAsObject(type, defaultSupplier);
+		return value == null ? null : value.getAsObject(type);
 	}
 
 	default short getAsShort(K key) {

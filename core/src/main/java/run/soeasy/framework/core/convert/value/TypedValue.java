@@ -1,11 +1,9 @@
 package run.soeasy.framework.core.convert.value;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import lombok.NonNull;
@@ -25,13 +23,15 @@ public interface TypedValue extends TypedData<Object>, Value {
 		return of(value, null);
 	}
 
-	public static TypedValue of(Object value, TypeDescriptor type) {
-		if (type == null && value instanceof TypedValue) {
-			return (TypedValue) value;
+	public static TypedValue of(Object value, TypeDescriptor typeDescriptor) {
+		if (value instanceof TypedData) {
+			TypedValue typedValue = ((TypedData<?>) value).value();
+			return typeDescriptor == null ? typedValue : typedValue.map(typeDescriptor, Converter.assignable());
 		}
 
-		ConvertingValue<AccessibleDescriptor> any = new ConvertingValue<>(AccessibleDescriptor.forTypeDescriptor(type));
+		CustomizeTypedValueAccessor any = new CustomizeTypedValueAccessor();
 		any.setValue(value);
+		any.setTypeDescriptor(typeDescriptor);
 		return any;
 	}
 
@@ -56,8 +56,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return new BigDecimal(((Number) value).doubleValue());
 		}
-
-		return getAsData(BigDecimal.class).get();
+		return map(BigDecimal.class, Converter.assignable()).get();
 	}
 
 	default BigInteger getAsBigInteger() {
@@ -77,8 +76,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Value) {
 			return ((Value) value).getAsBigInteger();
 		}
-
-		return getAsData(BigInteger.class).get();
+		return map(BigInteger.class, Converter.assignable()).get();
 	}
 
 	default boolean getAsBoolean() {
@@ -98,7 +96,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).intValue() == 1;
 		}
-		return getAsData(boolean.class).get();
+		return map(boolean.class, Converter.assignable()).get();
 	}
 
 	default byte getAsByte() {
@@ -118,8 +116,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).byteValue();
 		}
-
-		return getAsData(byte.class).get();
+		return map(byte.class, Converter.assignable()).get();
 	}
 
 	default char getAsChar() {
@@ -135,8 +132,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Value) {
 			return ((Value) value).getAsChar();
 		}
-
-		return Optional.ofNullable(getAsData(char.class).get()).orElse((char) 0);
+		return map(char.class, Converter.assignable()).get();
 	}
 
 	@Override
@@ -157,8 +153,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).doubleValue();
 		}
-
-		return Optional.ofNullable(getAsData(double.class).get()).orElse(0d);
+		return map(double.class, Converter.assignable()).get();
 	}
 
 	@Override
@@ -197,12 +192,10 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Enum<?>) {
 			return (T) value;
 		}
-
 		if (value instanceof Value) {
 			return ((Value) value).getAsEnum(enumType);
 		}
-
-		return getAsData(enumType).get();
+		return map(enumType, Converter.assignable()).get();
 	}
 
 	default float getAsFloat() {
@@ -222,8 +215,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof TypedValue) {
 			return ((TypedValue) value).getAsFloat();
 		}
-
-		return Optional.ofNullable(getAsData(float.class).get()).orElse(0f);
+		return map(float.class, Converter.assignable()).get();
 	}
 
 	@Override
@@ -245,7 +237,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).intValue();
 		}
 
-		return Optional.ofNullable(getAsData(int.class).get()).orElse(0);
+		return map(int.class, Converter.assignable()).get();
 	}
 
 	@Override
@@ -267,7 +259,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).longValue();
 		}
 
-		return Optional.ofNullable(getAsData(long.class).get()).orElse(0L);
+		return map(long.class, Converter.assignable()).get();
 	}
 
 	default NumberValue getAsNumber() {
@@ -288,22 +280,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Value) value).getAsNumber();
 		}
 
-		return getAsData(NumberValue.class).get();
-	}
-
-	default <T> T getAsObject(Class<? extends T> type) {
-		return getAsObject(type, () -> getAsData(type).get());
-	}
-
-	default Object getAsObject(Type type) {
-		if (type instanceof Class) {
-			return getAsObject((Class<?>) type);
-		}
-		return getAsObject(TypeDescriptor.valueOf(type));
-	}
-
-	default Object getAsObject(TypeDescriptor type) {
-		return getAsObject(type.getType(), () -> getAsData(type).get());
+		return map(NumberValue.class, Converter.assignable()).get();
 	}
 
 	default short getAsShort() {
@@ -323,8 +300,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).shortValue();
 		}
-
-		return Optional.ofNullable(getAsData(short.class).get()).orElse((short) 0);
+		return map(short.class, Converter.assignable()).get();
 	}
 
 	default String getAsString() {
@@ -345,7 +321,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Enum<?>) value).name();
 		}
 
-		return (String) getAsData(String.class).get();
+		return map(String.class, Converter.assignable()).get();
 	}
 
 	@Override
@@ -363,7 +339,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Value) value).getAsVersion();
 		}
 
-		return getAsData(Version.class).get();
+		return map(Version.class, Converter.assignable()).get();
 	}
 
 	@Override
@@ -403,27 +379,13 @@ public interface TypedValue extends TypedData<Object>, Value {
 		return true;
 	}
 
-	default <T> TypedData<T> getAsData(Class<? extends T> requriedType) {
-		return getAsData(TypeDescriptor.valueOf(requriedType));
-	}
-
 	@SuppressWarnings("unchecked")
-	default <T> TypedData<T> getAsData(@NonNull TypeDescriptor typeDescriptor) {
-		return (TypedData<T>) getAsValue(AccessibleDescriptor.forTypeDescriptor(typeDescriptor));
+	default <R> TypedData<R> map(@NonNull Class<R> type, @NonNull Converter converter) {
+		return (TypedData<R>) map(TypeDescriptor.forObject(type), converter);
 	}
 
-	default TypedValue getAsValue(@NonNull AccessibleDescriptor typeDescriptor) {
-		ConvertingValue<AccessibleDescriptor> any = new ConvertingValue<>(typeDescriptor);
-		any.setValue(this);
-		return any;
-	}
-
-	default TypedValue getAsValue(@NonNull Converter converter) {
-		ConvertingValue<AccessibleDescriptor> converting = new ConvertingValue<AccessibleDescriptor>(
-				AccessibleDescriptor.forTypeDescriptor(getReturnTypeDescriptor()));
-		converting.setValue(this);
-		converting.setConverter(converter);
-		return converting;
+	default TypedValue map(@NonNull TypeDescriptor typeDescriptor, @NonNull Converter converter) {
+		return new MappedTypedValue<>(this, typeDescriptor, converter);
 	}
 
 	default TypedValue value() {

@@ -2,7 +2,6 @@ package run.soeasy.framework.core.convert.value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Supplier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
@@ -76,11 +75,6 @@ public interface TypedValueWrapper<W extends TypedValue>
 	}
 
 	@Override
-	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
-		return getSource().getAsObject(requiredType, defaultSupplier);
-	}
-
-	@Override
 	default short getAsShort() {
 		return getSource().getAsShort();
 	}
@@ -115,27 +109,12 @@ public interface TypedValueWrapper<W extends TypedValue>
 	}
 
 	@Override
-	default Object getAsObject(TypeDescriptor type) {
-		return getSource().getAsObject(type);
+	default <R> TypedData<R> map(@NonNull Class<R> type, @NonNull Converter converter) {
+		return getSource().map(type, converter);
 	}
 
 	@Override
-	default <T> TypedData<T> getAsData(Class<? extends T> requriedType) {
-		return getSource().getAsData(requriedType);
-	}
-
-	@Override
-	default <T> TypedData<T> getAsData(@NonNull TypeDescriptor typeDescriptor) {
-		return getSource().getAsData(typeDescriptor);
-	}
-
-	@Override
-	default TypedValue getAsValue(@NonNull AccessibleDescriptor typeDescriptor) {
-		return getSource().getAsValue(typeDescriptor);
-	}
-
-	@Override
-	default TypedValue getAsValue(@NonNull Converter converter) {
-		return getSource().getAsValue(converter);
+	default TypedValue map(@NonNull TypeDescriptor typeDescriptor, @NonNull Converter converter) {
+		return getSource().map(typeDescriptor, converter);
 	}
 }

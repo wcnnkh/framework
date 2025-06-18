@@ -20,7 +20,7 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 	@NonNull
 	private Charset defaultCharset = StandardCharsets.UTF_8;
 
-	public AbstractTextMessageConverter(@NonNull Class<? extends T> requriedType) {
+	public AbstractTextMessageConverter(@NonNull Class<T> requriedType) {
 		super(requriedType);
 	}
 
@@ -49,15 +49,16 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 	}
 
 	@Override
-	protected byte[] toBinary(@NonNull TypedData<T> body, @NonNull Message message, MediaType mediaType) throws IOException {
+	protected byte[] toBinary(@NonNull TypedData<T> body, @NonNull Message message, MediaType mediaType)
+			throws IOException {
 		Charset charset = getCharset(mediaType, message);
 		String text = toString(body, mediaType, charset);
 		return text.getBytes(charset);
 	}
 
 	@Override
-	protected void writeObject(@NonNull TypedData<T> data, @NonNull OutputMessage message, @NonNull MediaType contentType)
-			throws IOException {
+	protected void writeObject(@NonNull TypedData<T> data, @NonNull OutputMessage message,
+			@NonNull MediaType contentType) throws IOException {
 		MediaType contentTypeToUse = contentType;
 		Charset charset = getCharset(contentType, message);
 		if (contentTypeToUse.getCharset() == null) {

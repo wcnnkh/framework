@@ -5,28 +5,17 @@ import java.util.Date;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.domain.Discrete;
 
 @Getter
-public abstract class TimeUnit extends TimeFormat implements Discrete<Date> {
+public abstract class TimeUnit extends TimeDiscrete {
 	/**
-	 * 日历中的字段
+	 * 下一个单位，可能为空
 	 */
-	private final int calendarField;
+	private final TimeUnit nextTimeUnit;
 
-	public TimeUnit(@NonNull String pattern, int calendarField) {
-		super(pattern);
-		this.calendarField = calendarField;
-	}
-
-	/**
-	 * 获取Calendar
-	 * 
-	 * @param forceCreate 是否强制创建一个新的
-	 * @return
-	 */
-	public Calendar getCalendar(boolean forceCreate) {
-		return Calendar.getInstance();
+	public TimeUnit(@NonNull String pattern, int calendarField, TimeUnit nextTimeUnit) {
+		super(pattern, calendarField);
+		this.nextTimeUnit = nextTimeUnit;
 	}
 
 	public final Date minValue(@NonNull Date value) {
@@ -43,44 +32,19 @@ public abstract class TimeUnit extends TimeFormat implements Discrete<Date> {
 		return calendar.getTime();
 	}
 
-	@Override
-	public long distance(Date start, Date end) {
-		Calendar startCalendar = getCalendar(false);
-		Calendar endCalendar = getCalendar(true);
-		return distance(startCalendar, endCalendar);
-	}
-
-	@Override
-	public Date next(Date value) {
-		Calendar calendar = getCalendar(false);
-		calendar.setTimeInMillis(value.getTime());
-		next(calendar, 1);
-		return calendar.getTime();
-	}
-
-	@Override
-	public Date previous(Date value) {
-		Calendar calendar = getCalendar(false);
-		calendar.setTimeInMillis(value.getTime());
-		previous(calendar, 1);
-		return calendar.getTime();
-	}
-
 	public void setMinValue(Calendar value) {
-		value.set(getCalendarField(), value.getActualMinimum(getCalendarField()));
+		if (nextTimeUnit == null) {
+			return;
+		}
+		nextTimeUnit.setMinValue(value);
+		value.set(nextTimeUnit.getCalendarField(), value.getActualMinimum(nextTimeUnit.getCalendarField()));
 	}
 
 	public void setMaxValue(Calendar value) {
-		value.set(getCalendarField(), value.getActualMaximum(getCalendarField()));
+		if (nextTimeUnit == null) {
+			return;
+		}
+		nextTimeUnit.setMaxValue(value);
+		value.set(nextTimeUnit.getCalendarField(), value.getActualMaximum(nextTimeUnit.getCalendarField()));
 	}
-
-	public void next(Calendar value, int unit) {
-		value.add(calendarField, value.get(calendarField) + unit);
-	}
-
-	public void previous(Calendar value, int unit) {
-		value.add(calendarField, value.get(calendarField) - unit);
-	}
-
-	public abstract long distance(Calendar start, Calendar end);
 }

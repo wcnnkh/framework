@@ -5,11 +5,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.transform.property.TypedProperties;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
-public interface AnnotationProperties<A extends Annotation>
-		extends TypedProperties, InvocationHandler {
+public interface AnnotationProperties<A extends Annotation> extends TypedProperties, InvocationHandler {
 	Class<A> getType();
 
 	@Override
@@ -29,7 +31,9 @@ public interface AnnotationProperties<A extends Annotation>
 		}
 
 		if (hasKey(method.getName())) {
-			return getAsObject(method.getName(), method.getReturnType(), () -> null);
+			TypedValue typedValue = get(method.getName());
+			return typedValue == null ? null
+					: typedValue.map(TypeDescriptor.forMethodReturnType(method), Converter.assignable()).get();
 		}
 		throw new IllegalArgumentException(
 				String.format("Method [%s] is unsupported for synthesized annotation type [%s]", method, getType()));

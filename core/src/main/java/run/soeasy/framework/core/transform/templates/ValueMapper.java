@@ -19,7 +19,7 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 @Setter
 public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
 	@NonNull
-	private Converter converter = Converter.identity();
+	private Converter converter = Converter.assignable();
 
 	public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {

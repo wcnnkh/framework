@@ -18,8 +18,8 @@ public class PeriodicTimeUnit extends TimeUnit {
 	 */
 	private final long millseconds;
 
-	public PeriodicTimeUnit(@NonNull String pattern, int calendarField, long millseconds) {
-		super(pattern, calendarField);
+	public PeriodicTimeUnit(@NonNull String pattern, int calendarField, TimeUnit nextTimeUnit, long millseconds) {
+		super(pattern, calendarField, nextTimeUnit);
 		this.millseconds = millseconds;
 	}
 

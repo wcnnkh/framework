@@ -192,7 +192,7 @@ public final class IOUtils {
 
 	public static <E extends Throwable> long transferTo(InputStream input, int bufferSize,
 			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(input, bufferSize, bufferConsumer);
+		return transferTo(input, new byte[bufferSize], bufferConsumer);
 	}
 
 	public static <E extends Throwable> long transferTo(@NonNull Reader input,

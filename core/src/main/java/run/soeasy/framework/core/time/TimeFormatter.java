@@ -17,15 +17,14 @@ public class TimeFormatter extends Converters {
 			synchronized (TimeFormatter.class) {
 				if (instance == null) {
 					instance = new TimeFormatter();
-					instance.register(TimeFormat.DATE);
-					instance.register(Millisecond.DEFAULT);
-					instance.register(Second.DEFAULT);
-					instance.register(Minute.DEFAULT);
-					instance.register(Hour.DEFAULT);
-					instance.register(Week.DEFAULT);
-					instance.register(Day.DEFAULT);
-					instance.register(Month.DEFAULT);
 					instance.register(Year.DEFAULT);
+					instance.register(Month.DEFAULT);
+					instance.register(Day.DEFAULT);
+					instance.register(Hour.DEFAULT);
+					instance.register(Minute.DEFAULT);
+					instance.register(Second.DEFAULT);
+					instance.register(Millisecond.DEFAULT);
+					instance.register(TimeFormat.DATE);
 				}
 			}
 		}
