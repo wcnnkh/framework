@@ -3,7 +3,6 @@ package run.soeasy.framework.core.math;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.function.Supplier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.domain.Value;
@@ -190,15 +189,6 @@ public class Fraction extends RationalNumber {
 
 	private String toString(NumberValue value) {
 		return (value instanceof Fraction) ? ("(" + value + ")") : value.toString();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
-		if (String.class == requiredType) {
-			return (T) getAsString();
-		}
-		return super.getAsObject(requiredType, defaultSupplier);
 	}
 
 	@Override

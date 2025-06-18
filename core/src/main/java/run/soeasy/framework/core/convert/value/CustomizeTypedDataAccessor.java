@@ -7,7 +7,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 public class CustomizeTypedDataAccessor<T> implements TypedDataAccessor<T> {
 	private T value;
 	private TypeDescriptor typeDescriptor;
-	
+
 	@Override
 	public final TypeDescriptor getReturnTypeDescriptor() {
 		return getTypeDescriptor();
@@ -32,4 +32,11 @@ public class CustomizeTypedDataAccessor<T> implements TypedDataAccessor<T> {
 		this.value = value;
 	}
 
+	@Override
+	public TypedValue value() {
+		CustomizeTypedValueAccessor valueAccessor = new CustomizeTypedValueAccessor();
+		valueAccessor.setValue(this.value);
+		valueAccessor.setTypeDescriptor(this.typeDescriptor);
+		return valueAccessor;
+	}
 }

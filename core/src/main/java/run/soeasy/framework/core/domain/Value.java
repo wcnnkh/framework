@@ -9,7 +9,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
@@ -146,12 +145,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		return value == null ? 0 : Long.parseLong(value);
 	}
 
-	default <R> R getAsObject(Class<? extends R> requiredType) {
-		return getAsObject(requiredType, () -> DEFAULT.getAsObject(requiredType));
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	default <R> R getAsObject(Class<? extends R> requiredType, Supplier<? extends R> defaultSupplier) {
+	default <R> R getAsObject(Class<? extends R> requiredType) {
 		Object v = null;
 		if (String.class == requiredType) {
 			v = getAsString();
@@ -186,7 +181,7 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 		} else if (requiredType.isArray()) {
 			v = getAsArray(requiredType);
 		} else {
-			v = defaultSupplier.get();
+			v = null;
 		}
 		return (R) v;
 	}

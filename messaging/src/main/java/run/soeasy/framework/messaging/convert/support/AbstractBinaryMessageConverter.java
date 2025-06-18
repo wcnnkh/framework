@@ -12,7 +12,7 @@ import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
 
 public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageConverter<T> {
-	public AbstractBinaryMessageConverter(@NonNull Class<? extends T> requriedType) {
+	public AbstractBinaryMessageConverter(@NonNull Class<T> requriedType) {
 		super(requriedType);
 	}
 

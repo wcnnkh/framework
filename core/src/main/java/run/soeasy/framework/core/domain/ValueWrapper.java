@@ -2,7 +2,6 @@ package run.soeasy.framework.core.domain;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Supplier;
 
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.math.NumberValue;
@@ -75,8 +74,8 @@ public interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
 	}
 
 	@Override
-	default <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
-		return getSource().getAsObject(requiredType, defaultSupplier);
+	default <R> R getAsObject(Class<? extends R> requiredType) {
+		return getSource().getAsObject(requiredType);
 	}
 
 	@Override

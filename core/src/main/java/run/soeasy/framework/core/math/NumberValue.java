@@ -2,7 +2,6 @@ package run.soeasy.framework.core.math;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Supplier;
 
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Value;
@@ -162,11 +161,11 @@ public abstract class NumberValue extends Number implements Version {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getAsObject(Class<? extends T> requiredType, Supplier<? extends T> defaultSupplier) {
+	public <T> T getAsObject(Class<? extends T> requiredType) {
 		if (NumberValue.class == requiredType) {
 			return (T) this;
 		}
-		return Version.super.getAsObject(requiredType, defaultSupplier);
+		return Version.super.getAsObject(requiredType);
 	}
 
 	@Override

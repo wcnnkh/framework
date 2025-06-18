@@ -2,7 +2,6 @@ package run.soeasy.framework.core.collection;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Supplier;
 
 import run.soeasy.framework.core.domain.Value;
 import run.soeasy.framework.core.domain.Version;
@@ -65,8 +64,8 @@ public interface LookupWrapper<K, V extends Value, W extends Lookup<K, V>> exten
 		return getSource().getAsNumber(key);
 	}
 
-	default <T> T getAsObject(K key, Class<? extends T> type, Supplier<? extends T> defaultSupplier) {
-		return getSource().getAsObject(key, type, defaultSupplier);
+	default <T> T getAsObject(K key, Class<? extends T> type) {
+		return getSource().getAsObject(key, type);
 	}
 
 	default short getAsShort(K key) {
