@@ -63,7 +63,6 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 
 	/**
 	 * @see #encode(InputStream, int)
-	 * @see IOUtils#DEFAULT_BUFFER_SIZE
 	 * @param source
 	 * @return
 	 * @throws IOException
