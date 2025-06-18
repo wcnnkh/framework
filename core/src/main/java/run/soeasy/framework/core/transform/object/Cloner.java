@@ -2,9 +2,7 @@ package run.soeasy.framework.core.transform.object;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Set;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
@@ -15,30 +13,20 @@ import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 import run.soeasy.framework.core.type.MultiableInstanceFactory;
 import run.soeasy.framework.core.type.ReflectionUtils;
-import run.soeasy.framework.core.type.ResolvableType;
 
 public class Cloner extends ObjectMapper<ReflectionField> {
 	// 用来防止死循环
 	private static final ThreadLocal<IdentityHashMap<Object, Object>> IDENTITY_MAP_CONTEXT = new ThreadLocal<>();
-	private static final Set<Class<?>> CANNOT_CLONE_TYPES = new HashSet<>();
-	static {
-		CANNOT_CLONE_TYPES.add(String.class);
-	}
 
 	public Cloner() {
 		setInstanceFactory(new MultiableInstanceFactory(InstanceFactorySupporteds.ALLOCATE,
 				InstanceFactorySupporteds.SERIALIZATION));
 	}
 
-	public boolean canClone(Class<?> type) {
-		return !ClassUtils.isPrimitiveOrWrapper(type) && !CANNOT_CLONE_TYPES.contains(type)
-				&& canInstantiated(ResolvableType.forType(type));
-	}
-
 	@Override
 	public ClassMembersLoader<ReflectionField> getClassPropertyTemplate(Class<?> requiredClass) {
 		ClassMembersLoader<ReflectionField> classMembersLoader = super.getClassPropertyTemplate(requiredClass);
-		if (classMembersLoader == null && canClone(requiredClass)) {
+		if (classMembersLoader == null) {
 			return new ClassMembersLoader<>(requiredClass, (clazz) -> {
 				return ReflectionUtils.getDeclaredFields(clazz).filter((e) -> !Modifier.isStatic(e.getModifiers()))
 						.map((field) -> new ReflectionField(field));
@@ -50,8 +38,7 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 	@Override
 	public boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
-		return sourceTypeDescriptor.getType() == targetTypeDescriptor.getType()
-				&& super.canTransform(sourceTypeDescriptor, targetTypeDescriptor);
+		return sourceTypeDescriptor.isAssignableTo(targetTypeDescriptor);
 	}
 
 	@Override
@@ -76,6 +63,7 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 				return target;
 			}
 
+			targetTypeDescriptor = targetTypeDescriptor.narrow(source);
 			return convert(source, sourceTypeDescriptor, targetTypeDescriptor, identityMap);
 		} finally {
 			if (root) {
@@ -84,8 +72,13 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 		}
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceTypeDescriptor, TypeDescriptor targetTypeDescriptor,
-			IdentityHashMap<Object, Object> identityMap) throws ConversionException {
+	public Object convert(@NonNull Object source, TypeDescriptor sourceTypeDescriptor,
+			TypeDescriptor targetTypeDescriptor, IdentityHashMap<Object, Object> identityMap)
+			throws ConversionException {
+		if (ClassUtils.isPrimitiveOrWrapper(source.getClass())) {
+			return source;
+		}
+
 		if (source instanceof byte[]) {
 			return ((byte[]) source).clone();
 		} else if (source instanceof short[]) {
@@ -110,10 +103,7 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 			transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 			return target;
 		}
-
-		return canClone(targetTypeDescriptor.getType())
-				? super.convert(source, sourceTypeDescriptor, targetTypeDescriptor)
-				: source;
+		return super.convert(source, sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
 	@Override
@@ -141,6 +131,14 @@ public class Cloner extends ObjectMapper<ReflectionField> {
 		return super.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 	}
 
+	/**
+	 * 克隆
+	 * 
+	 * @param <T>
+	 * @param source 来源
+	 * @param deep   是否深拷贝
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(@NonNull T source, boolean deep) {
 		Cloner cloner = new Cloner();
