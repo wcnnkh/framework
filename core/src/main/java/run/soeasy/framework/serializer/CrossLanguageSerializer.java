@@ -13,7 +13,7 @@ import run.soeasy.framework.io.IOUtils;
 /**
  * 跨语言的序列化和反序列化
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface CrossLanguageSerializer {

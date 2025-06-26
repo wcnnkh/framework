@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Filter;
+import run.soeasy.framework.core.collection.function.Filter;
 import run.soeasy.framework.core.exchange.AbstractChannel;
 import run.soeasy.framework.core.exchange.BatchListenableChannel;
 import run.soeasy.framework.core.exchange.FakeBatchListenableChannel;

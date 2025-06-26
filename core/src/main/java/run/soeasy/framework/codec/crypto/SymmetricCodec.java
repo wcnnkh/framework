@@ -10,7 +10,7 @@ import run.soeasy.framework.core.StringUtils;
 /**
  * 对称编解码器
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class SymmetricCodec extends CryptoCodec {

@@ -3,7 +3,7 @@ package run.soeasy.framework.core.exchange.container;
 /**
  * 事件注册异常
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class RegistrationException extends RuntimeException {

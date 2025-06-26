@@ -6,7 +6,7 @@ import java.util.Enumeration;
  * 可枚举的
  * 
  * @see Iterable
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <E>
  */

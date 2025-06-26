@@ -14,7 +14,7 @@ import run.soeasy.framework.io.BufferConsumer;
  * 1024bit 的密钥，一次能加密的内容长度为 1024/8 -11 = 117 byte。
  * 所以非对称加密一般都用于加密对称加密算法的密钥，而不是直接加密内容。
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class AsymmetricCodec extends CryptoCodec {

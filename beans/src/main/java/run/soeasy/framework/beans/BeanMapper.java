@@ -5,11 +5,11 @@ import java.util.Arrays;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.object.ObjectMapper;
+import run.soeasy.framework.core.transform.property.PropertyMapper;
 import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
 
 @Getter
-public class BeanMapper extends ObjectMapper<BeanProperty> {
+public class BeanMapper extends PropertyMapper<BeanProperty> {
 	private static final ConfigurableBeanInfoFactory BEAN_INFO_FACTORY = new ConfigurableBeanInfoFactory();
 	public static volatile BeanMapper instance;
 
@@ -19,7 +19,7 @@ public class BeanMapper extends ObjectMapper<BeanProperty> {
 
 	public static <S, T> boolean copyProperties(S source, @NonNull Class<? extends S> sourceClass, T target,
 			@NonNull Class<? extends T> targetClass, @NonNull PropertyMappingFilter... filters) {
-		return getInstane().transform(source, TypeDescriptor.valueOf(sourceClass), targetClass,
+		return getInstane().transform(source, TypeDescriptor.valueOf(sourceClass), target,
 				TypeDescriptor.valueOf(targetClass), Arrays.asList(filters));
 	}
 

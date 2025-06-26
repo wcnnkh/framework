@@ -6,7 +6,7 @@ import java.security.spec.AlgorithmParameterSpec;
 /**
  * DES
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class DES extends SymmetricCodec {

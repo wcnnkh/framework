@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * 基于构造器的实例工厂
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 @RequiredArgsConstructor

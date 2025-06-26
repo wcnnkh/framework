@@ -24,9 +24,4 @@ public interface DecoderWrapper<E, D, W extends Decoder<E, D>> extends Decoder<E
 	default Elements<D> decodeAll(@NonNull Elements<? extends E> sources) throws DecodeException {
 		return getSource().decodeAll(sources);
 	}
-
-	@Override
-	default boolean canDecode() {
-		return getSource().canDecode();
-	}
 }

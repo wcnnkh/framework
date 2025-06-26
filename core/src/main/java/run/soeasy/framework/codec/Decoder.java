@@ -5,10 +5,6 @@ import run.soeasy.framework.core.collection.Elements;
 
 @FunctionalInterface
 public interface Decoder<E, D> {
-	default boolean canDecode() {
-		return true;
-	}
-
 	D decode(E source) throws DecodeException;
 
 	default Elements<D> decodeAll(@NonNull Elements<? extends E> sources) throws DecodeException {

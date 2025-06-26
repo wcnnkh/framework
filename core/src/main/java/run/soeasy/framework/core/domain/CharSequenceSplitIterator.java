@@ -10,7 +10,7 @@ import run.soeasy.framework.core.StringUtils;
 /**
  * 迭代分割字符串
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class CharSequenceSplitIterator implements Iterator<CharSequenceTemplate> {

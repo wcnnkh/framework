@@ -8,7 +8,7 @@ import run.soeasy.framework.core.math.Calculator;
 /**
  * 求两数的最大公约数(Greatest Common Divisor)
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface GreatestCommonDivisor extends Calculator {

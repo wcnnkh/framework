@@ -12,7 +12,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 /**
  * 可执行的代理
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 @Data

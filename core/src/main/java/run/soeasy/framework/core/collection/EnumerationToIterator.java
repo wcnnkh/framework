@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * 枚举转迭代
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <E>
  */

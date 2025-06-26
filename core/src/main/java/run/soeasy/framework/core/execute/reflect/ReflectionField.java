@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.object.Property;
+import run.soeasy.framework.core.transform.property.Property;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class ReflectionField implements Property, Serializable {
@@ -28,11 +28,13 @@ public class ReflectionField implements Property, Serializable {
 	public synchronized void setField(@NonNull Field field) {
 		this.fieldSupplier = () -> field;
 		this.name = field.getName();
+		this.typeDescriptor = null;
 	}
 
 	public synchronized void setName(@NonNull String name) {
 		this.name = name;
 		this.fieldSupplier = null;
+		this.typeDescriptor = null;
 	}
 
 	public Field getField() {
@@ -63,7 +65,9 @@ public class ReflectionField implements Property, Serializable {
 		if (typeDescriptor == null) {
 			synchronized (this) {
 				if (typeDescriptor == null) {
-					typeDescriptor = TypeDescriptor.forFieldType(getField());
+					Field field = getField();
+					typeDescriptor = field == null ? TypeDescriptor.valueOf(Object.class)
+							: TypeDescriptor.forFieldType(getField());
 				}
 			}
 		}
@@ -91,7 +95,7 @@ public class ReflectionField implements Property, Serializable {
 	}
 
 	@Override
-	public void writeTo(Object value, Object target) {
+	public void writeTo(Object target, Object value) {
 		ReflectionUtils.set(getField(), target, value);
 	}
 
@@ -102,6 +106,7 @@ public class ReflectionField implements Property, Serializable {
 
 	@Override
 	public String toString() {
-		return getField().toString();
+		Field field = getField();
+		return field == null ? null : field.toString();
 	}
 }

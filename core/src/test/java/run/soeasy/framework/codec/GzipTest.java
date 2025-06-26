@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.codec.lang.CharsetCodec;
+import run.soeasy.framework.codec.format.CharsetCodec;
 
 public class GzipTest {
 	@Test

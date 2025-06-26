@@ -46,7 +46,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	}
 
 	@Override
-	protected Object parseObject(String body, TargetDescriptor targetDescriptor) throws IOException {
+	protected Object parseObject(String body, TargetDescriptor targetDescriptor, Charset charset) throws IOException {
 		return getConverter().convert(body, TypeDescriptor.forObject(body),
 				targetDescriptor.getRequiredTypeDescriptor());
 	}

@@ -14,7 +14,7 @@ public class ServiceMapTest {
 		serviceMap.set(Long.class, "long-" + UUIDSequences.global().next());
 		System.out.println(serviceMap.toString());
 
-		serviceMap.search(String.class).forEach((e) -> System.out.println("String:" + e));
-		serviceMap.search(Number.class).forEach((e) -> System.out.println("number:" + e));
+		serviceMap.assignableFrom(String.class).forEach((e) -> System.out.println("String:" + e));
+		serviceMap.assignableFrom(Number.class).forEach((e) -> System.out.println("number:" + e));
 	}
 }

@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -416,5 +418,23 @@ public class ArrayUtils {
 			newArray[i] = Array.get(source, i);
 		}
 		return newArray;
+	}
+
+	/**
+	 * 使用反射读取
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static Stream<Object> stream(Object array) {
+		if (array == null) {
+			return Stream.empty();
+		}
+
+		if (array instanceof Object[]) {
+			return Arrays.stream((Object[]) array);
+		}
+
+		return IntStream.range(0, Array.getLength(array)).mapToObj((index) -> Array.get(array, index));
 	}
 }

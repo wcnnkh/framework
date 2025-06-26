@@ -3,7 +3,7 @@ package run.soeasy.framework.core.math;
 /**
  * 常用的运算方式，按运算优先级排序
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public enum Calculators implements Calculator {

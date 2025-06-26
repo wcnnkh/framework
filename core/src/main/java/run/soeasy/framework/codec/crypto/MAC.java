@@ -22,7 +22,7 @@ import run.soeasy.framework.io.IOUtils;
  * 
  * HmacMD5 HmacSHA1 HmacSHA256
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class MAC implements BytesEncoder, Cloneable {

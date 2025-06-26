@@ -8,7 +8,7 @@ import run.soeasy.framework.core.math.NumberValue;
 /**
  * 更相减损法
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class DerogationMethod implements GreatestCommonDivisor {

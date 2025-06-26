@@ -2,7 +2,7 @@ package run.soeasy.framework.core.exchange.event;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Filter;
+import run.soeasy.framework.core.collection.function.Filter;
 import run.soeasy.framework.core.exchange.BatchListenableChannel;
 import run.soeasy.framework.core.exchange.FakeSingleListenableChannel;
 import run.soeasy.framework.core.exchange.ListenableChannel;

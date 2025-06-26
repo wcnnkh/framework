@@ -20,7 +20,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	private final K cursorId;
 	private final int pageSize;
 	@NonNull
-	private final PagingQuery<K, V, Pageable<K, V>> pagingQuery;
+	private final PagingQuery<K, Pageable<K, V>> pagingQuery;
 
 	/**
 	 * 每页无数量限制的分页
@@ -28,11 +28,11 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * @param cursorId
 	 * @param pagingQuery
 	 */
-	public CursorPaging(K cursorId, @NonNull PagingQuery<K, V, Pageable<K, V>> pagingQuery) {
+	public CursorPaging(K cursorId, @NonNull PagingQuery<K, Pageable<K, V>> pagingQuery) {
 		this(cursorId, 0, pagingQuery);
 	}
 
-	public CursorPaging(K cursorId, int pageSize, @NonNull PagingQuery<K, V, Pageable<K, V>> pagingQuery) {
+	public CursorPaging(K cursorId, int pageSize, @NonNull PagingQuery<K, Pageable<K, V>> pagingQuery) {
 		this(null, cursorId, pageSize, pagingQuery);
 	}
 

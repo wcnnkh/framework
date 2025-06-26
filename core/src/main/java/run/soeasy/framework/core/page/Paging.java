@@ -13,7 +13,7 @@ import run.soeasy.framework.core.collection.LinkedIterator;
  * @param <K>
  * @param <V>
  */
-public interface Paging<K, V> extends Pageable<K, V>, PagingQuery<K, V, Paging<K, V>> {
+public interface Paging<K, V> extends Pageable<K, V>, PagingQuery<K, Paging<K, V>> {
 	/**
 	 * 是否已知总数,未知数量的分页在调用getTotal使用的是代价最大的循环计数
 	 * 

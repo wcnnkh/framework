@@ -29,6 +29,10 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
 
 		TypedValueAccessor sourceAccessor = sourceContext.getKeyValue().getValue();
 		TypedValueAccessor targetAccessor = targetContext.getKeyValue().getValue();
+		if (!(sourceAccessor.isReadable() && targetAccessor.isWriteable())) {
+			return false;
+		}
+
 		if (!converter.canConvert(sourceAccessor.getReturnTypeDescriptor(),
 				targetAccessor.getRequiredTypeDescriptor())) {
 			return false;
@@ -39,7 +43,6 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
 		if (value == null && targetAccessor.isRequired()) {
 			return false;
 		}
-
 		targetAccessor.set(value);
 		return true;
 	}

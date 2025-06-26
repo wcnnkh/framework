@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.ToString;
-import run.soeasy.framework.core.transform.object.Cloner;
+import run.soeasy.framework.core.transform.property.Cloner;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 import run.soeasy.framework.serializer.SerializerException;
 

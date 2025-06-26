@@ -4,7 +4,7 @@ package run.soeasy.framework.core.transmittable;
  * 
  * B b = replay(capture()); try{ codeing... } finally{ restore(b); }
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <A>
  * @param <B>

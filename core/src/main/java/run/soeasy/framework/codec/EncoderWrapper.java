@@ -29,9 +29,4 @@ public interface EncoderWrapper<D, E, W extends Encoder<D, E>> extends Encoder<D
 	default Elements<E> encodeAll(@NonNull Elements<? extends D> sources) throws EncodeException {
 		return getSource().encodeAll(sources);
 	}
-
-	@Override
-	default boolean canEncode() {
-		return getSource().canEncode();
-	}
 }

@@ -23,7 +23,7 @@ import run.soeasy.framework.logging.Logger;
 /**
  * 非对称加密签名
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class AsymmetricSigner implements BytesEncoder, Cloneable {

@@ -1,17 +1,14 @@
 package run.soeasy.framework.core.page;
 
-import run.soeasy.framework.core.collection.Listable;
-
 /**
  * 分页查询
  * 
  * @author soeasy.run
  *
  * @param <S>
- * @param <E>
  * @param <T>
  */
-public interface PagingQuery<S, E, T extends Listable<E>> {
+public interface PagingQuery<S, T> {
 	/**
 	 * 根据指定游标进行查询
 	 * 

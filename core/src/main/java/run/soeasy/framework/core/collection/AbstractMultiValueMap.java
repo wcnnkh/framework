@@ -49,7 +49,7 @@ public abstract class AbstractMultiValueMap<K, V, M extends Map<K, List<V>>>
 			return false;
 		}
 
-		if (obj instanceof DefaultMultiValueMap) {
+		if (obj instanceof AbstractMultiValueMap) {
 			return getSource().equals((((AbstractMultiValueMap<?, ?, ?>) obj).getSource()));
 		}
 		return getSource().equals(obj);

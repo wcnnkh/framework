@@ -24,7 +24,7 @@ import run.soeasy.framework.core.domain.Pair;
  * <p>
  * 一般用于代替{@link Collection}返回，可以支持一次性加载到内存和部分加载到内存
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <E>
  */

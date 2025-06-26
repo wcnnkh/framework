@@ -7,7 +7,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execute.InvodableElement;
-import run.soeasy.framework.core.transform.object.Property;
+import run.soeasy.framework.core.transform.property.Property;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
 public class ReflectionMethod extends ReflectionExecutable<Method> implements InvodableElement, Property, Serializable {
@@ -81,7 +81,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
 	}
 
 	@Override
-	public void writeTo(Object value, Object target) throws UnsupportedOperationException {
+	public void writeTo(Object target, Object value) throws UnsupportedOperationException {
 		if (!isWriteable()) {
 			throw new UnsupportedOperationException(getSource().toString());
 		}

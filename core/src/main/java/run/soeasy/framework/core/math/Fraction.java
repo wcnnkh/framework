@@ -11,7 +11,7 @@ import run.soeasy.framework.core.math.gcd.GreatestCommonDivisor;
 /**
  * 分数
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class Fraction extends RationalNumber {

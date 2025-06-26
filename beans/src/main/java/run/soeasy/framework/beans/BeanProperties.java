@@ -1,7 +1,7 @@
 package run.soeasy.framework.beans;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.transform.object.ObjectProperties;
+import run.soeasy.framework.core.transform.property.ObjectProperties;
 
 public class BeanProperties extends ObjectProperties<BeanProperty, BeanPropertyTemplate> {
 
