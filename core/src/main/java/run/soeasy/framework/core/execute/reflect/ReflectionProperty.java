@@ -6,10 +6,12 @@ import java.lang.reflect.Method;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.transform.property.Property;
 
 @Getter
+@ToString(callSuper = true)
 public class ReflectionProperty extends ReflectionField implements Property, Serializable {
 	public static enum InvokeType {
 		DEFAULT, FIELD, METHOD

@@ -10,11 +10,18 @@ import java.util.UUID;
 import org.junit.Test;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import run.soeasy.framework.beans.BeanMapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
 public class QueryStringFormatTest {
 	@Test
 	public void test() {
+		BeanMapper.getInstane().getObjectTemplate(QueryStringObject.class).forEach((e) -> {
+			System.out.println(e);
+		});
+		
 		Map<String, Object> map = new HashMap<>();
 		map.put("value", UUID.randomUUID());
 		map.put("name", "query");
@@ -36,12 +43,17 @@ public class QueryStringFormatTest {
 		System.out.println(newObject);
 		assertEquals(queryStringObject, newObject);
 	}
+	
+	@Data
+	private static class QueryStringObject1{
+		private String[] array;
+	}
 
 	@Data
-	public static class QueryStringObject {
+	@EqualsAndHashCode(callSuper = true)
+	@ToString(callSuper = true)
+	public static class QueryStringObject extends QueryStringObject1{
 		private String name;
 		private String value;
-		private String[] array;
-		// private String[] array;
 	}
 }

@@ -27,7 +27,6 @@ import run.soeasy.framework.core.join.KeyValueSplitter;
 import run.soeasy.framework.core.transform.collection.MapEntryMapping;
 import run.soeasy.framework.core.transform.templates.DefaultMapper;
 import run.soeasy.framework.core.transform.templates.Mapping;
-import run.soeasy.framework.core.transform.templates.MappingContext;
 import run.soeasy.framework.core.type.ResolvableType;
 import run.soeasy.framework.io.CharacterStreamFormat;
 
@@ -36,6 +35,8 @@ import run.soeasy.framework.io.CharacterStreamFormat;
  * 
  * 实现特点： 1. 继承自KeyValueSplitter，复用键值对分割逻辑 2. 实现CharacterStreamFormat接口，支持流式读写 3.
  * 实现Codec接口，定义MultiValueMap与字符串的编解码规则 4. 实现ConverterAware接口，集成类型转换能力
+ * 
+ * @author soeasy.run
  */
 @Getter
 @Setter
@@ -56,6 +57,8 @@ public class KeyValueFormat extends KeyValueSplitter
 	public KeyValueFormat(@NonNull CharSequence delimiter, @NonNull CharSequence connector,
 			@NonNull Codec<String, String> keyCodec, @NonNull Codec<String, String> valueCodec) {
 		super(delimiter, connector, keyCodec, valueCodec);
+		keyValueMapper.getMappingProvider().registerFactory(Map.class,
+				(map, type) -> new MapEntryMapping(map, type, converter));
 	}
 
 	@Override
@@ -118,24 +121,12 @@ public class KeyValueFormat extends KeyValueSplitter
 	 * @param sourceTypeDescriptor 源对象的类型描述符
 	 * @throws IOException 当向Appendable写入数据失败时抛出
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void format(Appendable appendable, @NonNull Object source, TypeDescriptor sourceTypeDescriptor)
 			throws IOException {
-		// 定义目标Map类型描述符（LinkedHashMap保持顺序）
-		TypeDescriptor mapTypeDescriptor = TypeDescriptor.map(LinkedHashMap.class, Object.class, Object.class);
-		// 类型转换逻辑：若需要转换则使用Converter，否则直接使用
-		if (converter.canConvert(sourceTypeDescriptor, mapTypeDescriptor)) {
-			Map<Object, Object> sourceMap = (Map<Object, Object>) converter.convert(source, sourceTypeDescriptor,
-					mapTypeDescriptor);
-			Joiner.joinAll(appendable, sourceMap.entrySet().stream().map(KeyValue::wrap).iterator(), this);
-		} else if (source instanceof Map) {
-			Map<Object, Object> sourceMap = (Map<Object, Object>) source;
-			Joiner.joinAll(appendable, sourceMap.entrySet().stream().map(KeyValue::wrap).iterator(), this);
-		} else {
-			Joiner.joinAll(appendable, keyValueMapper.getMapping(source, sourceTypeDescriptor).getElements().stream()
-					.map((e) -> KeyValue.of(e.getKey(), e.getValue().get())).iterator(), this);
-		}
+		Mapping<Object, TypedValueAccessor> mapping = keyValueMapper.getMapping(source, sourceTypeDescriptor);
+		Joiner.joinAll(appendable, mapping.getElements().stream().filter((e) -> e.getValue().isReadable())
+				.map((e) -> KeyValue.of(e.getKey(), e.getValue().get())).iterator(), this);
 	}
 
 	/**
@@ -158,21 +149,11 @@ public class KeyValueFormat extends KeyValueSplitter
 	@Override
 	public Object parse(Readable readable, TypeDescriptor targetTypeDescriptor)
 			throws IOException, ConversionException {
-		// 从流中解析键值对并分组（处理重复键）
 		TypeDescriptor mapTypeDescriptor = TypeDescriptor.map(LinkedHashMap.class, String.class,
 				ResolvableType.forClassWithGenerics(List.class, String.class));
 		Map<String, List<String>> map = split(readable).collect(Collectors.groupingBy(KeyValue::getKey,
 				LinkedHashMap::new, Collectors.mapping(KeyValue::getValue, Collectors.toList())));
-		if (converter.canConvert(mapTypeDescriptor, targetTypeDescriptor)) {
-			// 使用Converter将Map转换为目标类型（体现策略模式）
-			return converter.convert(map, targetTypeDescriptor);
-		}
-
-		Object target = keyValueMapper.newInstance(targetTypeDescriptor.getResolvableType());
-		MapEntryMapping sourceMapping = new MapEntryMapping(map, mapTypeDescriptor, converter);
-		Mapping<Object, TypedValueAccessor> targetMapping = keyValueMapper.getMapping(target, targetTypeDescriptor);
-		keyValueMapper.doMapping(new MappingContext<>(sourceMapping), new MappingContext<>(targetMapping));
-		return target;
+		return keyValueMapper.convert(map, mapTypeDescriptor, targetTypeDescriptor);
 	}
 
 	/**
