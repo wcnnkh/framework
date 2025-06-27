@@ -12,6 +12,7 @@ import lombok.Setter;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
+import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.DefaultMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
 import run.soeasy.framework.core.convert.ConversionException;
@@ -23,10 +24,11 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.join.Joiner;
 import run.soeasy.framework.core.join.KeyValueSplitter;
-import run.soeasy.framework.core.transform.collection.MapMapping;
+import run.soeasy.framework.core.transform.collection.MapEntryMapping;
 import run.soeasy.framework.core.transform.templates.DefaultMapper;
 import run.soeasy.framework.core.transform.templates.Mapping;
 import run.soeasy.framework.core.transform.templates.MappingContext;
+import run.soeasy.framework.core.type.ResolvableType;
 import run.soeasy.framework.io.CharacterStreamFormat;
 
 /**
@@ -54,6 +56,26 @@ public class KeyValueFormat extends KeyValueSplitter
 	public KeyValueFormat(@NonNull CharSequence delimiter, @NonNull CharSequence connector,
 			@NonNull Codec<String, String> keyCodec, @NonNull Codec<String, String> valueCodec) {
 		super(delimiter, connector, keyCodec, valueCodec);
+	}
+
+	@Override
+	public long join(Appendable appendable, long count, KeyValue<? extends Object, ? extends Object> element)
+			throws IOException {
+		Object value = element.getValue();
+		if (value instanceof Iterable) {
+			for (Object obj : (Iterable<?>) value) {
+				count += super.join(appendable, count, KeyValue.of(element.getKey(), obj));
+			}
+			return count;
+		}
+
+		if (value != null && value.getClass().isArray()) {
+			for (Object obj : ArrayUtils.elements(value)) {
+				count += super.join(appendable, count, KeyValue.of(element.getKey(), obj));
+			}
+			return count;
+		}
+		return super.join(appendable, count, element);
 	}
 
 	/**
@@ -137,15 +159,17 @@ public class KeyValueFormat extends KeyValueSplitter
 	public Object parse(Readable readable, TypeDescriptor targetTypeDescriptor)
 			throws IOException, ConversionException {
 		// 从流中解析键值对并分组（处理重复键）
+		TypeDescriptor mapTypeDescriptor = TypeDescriptor.map(LinkedHashMap.class, String.class,
+				ResolvableType.forClassWithGenerics(List.class, String.class));
 		Map<String, List<String>> map = split(readable).collect(Collectors.groupingBy(KeyValue::getKey,
 				LinkedHashMap::new, Collectors.mapping(KeyValue::getValue, Collectors.toList())));
-		if (converter.canConvert(map.getClass(), targetTypeDescriptor)) {
+		if (converter.canConvert(mapTypeDescriptor, targetTypeDescriptor)) {
 			// 使用Converter将Map转换为目标类型（体现策略模式）
 			return converter.convert(map, targetTypeDescriptor);
 		}
 
 		Object target = keyValueMapper.newInstance(targetTypeDescriptor.getResolvableType());
-		MapMapping sourceMapping = new MapMapping(map, TypeDescriptor.forObject(map), converter);
+		MapEntryMapping sourceMapping = new MapEntryMapping(map, mapTypeDescriptor, converter);
 		Mapping<Object, TypedValueAccessor> targetMapping = keyValueMapper.getMapping(target, targetTypeDescriptor);
 		keyValueMapper.doMapping(new MappingContext<>(sourceMapping), new MappingContext<>(targetMapping));
 		return target;

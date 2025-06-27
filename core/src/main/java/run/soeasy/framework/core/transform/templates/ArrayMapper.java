@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
 
@@ -44,6 +45,9 @@ public class ArrayMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
 			Iterator<KeyValue<K, V>> sourceIterator = sourceList.iterator();
 			while (sourceIterator.hasNext()) {
 				KeyValue<K, V> source = sourceIterator.next();
+				if(!ObjectUtils.equals(source.getKey(), target.getKey())) {
+					continue;
+				}
 				if (valueMapper.doMapping(sourceContext.current(source), targetContext.nested(target))) {
 					sourceIterator.remove();
 					count++;

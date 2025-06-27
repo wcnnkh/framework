@@ -3,7 +3,7 @@ package run.soeasy.framework.core.convert;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface Converter extends Convertable {
+public interface Converter extends Convertable{
 	public static Converter assignable() {
 		return AssignableConverter.INSTANCE;
 	}

@@ -166,11 +166,13 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return Elements.of(collection).map((v) -> TypedValue.of(v, elementTypeDescriptor));
 		} else if (value instanceof Iterable) {
 			Iterable<?> iterable = (Iterable<?>) value;
-			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.upcast(Iterable.class)
+					.map((e) -> e.getActualTypeArgument(0));
 			return Elements.of(iterable).map((v) -> TypedValue.of(v, elementTypeDescriptor));
 		} else if (value instanceof Enumerable) {
 			Enumerable<?> enumerable = (Enumerable<?>) value;
-			TypeDescriptor elementTypeDescriptor = typeDescriptor.getGeneric(0);
+			TypeDescriptor elementTypeDescriptor = typeDescriptor.upcast(Enumerable.class)
+					.map((e) -> e.getActualTypeArgument(0));
 			return Elements.of(enumerable).map((v) -> TypedValue.of(v, elementTypeDescriptor));
 		} else if (value.getClass().isArray()) {
 			int len = Array.getLength(value);

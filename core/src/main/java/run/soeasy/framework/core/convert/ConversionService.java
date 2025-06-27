@@ -14,8 +14,8 @@ public class ConversionService implements Converter {
 	public ConversionService() {
 		injectors.register((service) -> {
 			if (service instanceof ConverterAware) {
-				ConverterAware conversionServiceAware = (ConverterAware) service;
-				conversionServiceAware.setConverter(this);
+				ConverterAware converterAware = (ConverterAware) service;
+				converterAware.setConverter(this);
 			}
 			return Registration.SUCCESS;
 		});

@@ -40,15 +40,11 @@ public abstract class AbstractEntityMessageConverter<T extends Entity<?>> extend
 	@Override
 	protected Object doRead(@NonNull TargetDescriptor targetDescriptor, @NonNull InputMessage message,
 			MimeType contentType) throws IOException {
-		TypeDescriptor typeDescriptor = targetDescriptor.getRequiredTypeDescriptor();
-		if (typeDescriptor.isGeneric()) {
-			typeDescriptor = typeDescriptor.getNested(1);
-		} else {
-			typeDescriptor = TypeDescriptor.valueOf(Object.class);
-		}
-
 		Object value = getMessageConverter().readFrom(() -> targetDescriptor.getRequiredTypeDescriptor(), message,
 				contentType);
+		// 拿到entity中body对应的类型
+		TypeDescriptor typeDescriptor = targetDescriptor.getRequiredTypeDescriptor().upcast(Entity.class);
+		typeDescriptor = typeDescriptor.map((e) -> e.getActualTypeArgument(0));
 		return readToEntity(TypedValue.of(value, typeDescriptor), message);
 	}
 

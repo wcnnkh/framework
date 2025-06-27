@@ -10,7 +10,7 @@ import org.junit.Test;
 public class TypeComparatorTest {
 	@Test
 	public void test() {
-		TreeSet<Class<?>> set = new TreeSet<Class<?>>(new TypeComparator());
+		TreeSet<Class<?>> set = new TreeSet<Class<?>>(TypeComparator.DEFAULT);
 		set.add(Object.class);
 		set.add(Integer.class);
 		set.add(Number.class);
@@ -18,7 +18,7 @@ public class TypeComparatorTest {
 		assertTrue(set.first() == Integer.class);
 		assertTrue(set.last() == Object.class);
 		
-		TreeMap<Class<?>, Object> map = new TreeMap<>(new TypeComparator());
+		TreeMap<Class<?>, Object> map = new TreeMap<>(TypeComparator.DEFAULT);
 		map.put(Object.class, 1);
 		map.put(Number.class, 2);
 		map.put(Integer.class, 3);

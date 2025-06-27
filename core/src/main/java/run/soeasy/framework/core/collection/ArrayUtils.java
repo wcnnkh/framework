@@ -421,20 +421,39 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * 使用反射读取
+	 * 将数组转换为Stream
+	 * 支持对象数组和基本类型数组，包括多维数组的第一层转换
 	 * 
-	 * @param array
-	 * @return
+	 * @param array 待转换的数组，可为null
+	 * @return 包含数组元素的Stream，数组为null时返回空Stream
 	 */
 	public static Stream<Object> stream(Object array) {
-		if (array == null) {
-			return Stream.empty();
-		}
+	    if (array == null) {
+	        return Stream.empty(); // 处理null输入，返回空流
+	    }
 
-		if (array instanceof Object[]) {
-			return Arrays.stream((Object[]) array);
-		}
+	    if (array instanceof Object[]) {
+	        // 处理对象数组，直接使用Arrays.stream
+	        return Arrays.stream((Object[]) array);
+	    }
 
-		return IntStream.range(0, Array.getLength(array)).mapToObj((index) -> Array.get(array, index));
+	    // 处理基本类型数组或其他类型数组
+	    return IntStream.range(0, Array.getLength(array))
+	            .mapToObj(index -> Array.get(array, index));
+	}
+	
+	/**
+	 * 将数组转换为Elements对象
+	 * 支持对象数组和基本类型数组，提供惰性加载的元素访问方式
+	 * 
+	 * @param array 待转换的数组，可为null
+	 * @return Elements对象，包含数组元素的惰性访问接口
+	 * @see Elements 元素容器接口
+	 */
+	public static Elements<Object> elements(Object array) {
+	    if (array == null) {
+	        return Elements.empty(); // 处理null输入，返回空Elements
+	    }
+	    return Elements.of(() -> stream(array)); // 封装Stream供给函数
 	}
 }

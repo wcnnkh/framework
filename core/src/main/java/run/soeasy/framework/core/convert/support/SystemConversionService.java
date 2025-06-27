@@ -30,6 +30,7 @@ public class SystemConversionService extends ConversionService {
 	}
 
 	public SystemConversionService() {
+		getConverters().register(new ObjectToCollectionConverter());
 		getConverters().register(new ArrayToArrayConverter());
 		getConverters().register(new ArrayToCollectionConverter());
 		getConverters().register(new CollectionToArrayConverter());
@@ -37,7 +38,6 @@ public class SystemConversionService extends ConversionService {
 		getConverters().register(new CollectionToObjectConverter());
 		getConverters().register(new MapToMapConverter());
 		getConverters().register(new ObjectToArrayConverter());
-		getConverters().register(new ObjectToCollectionConverter());
 	}
 
 	@Override

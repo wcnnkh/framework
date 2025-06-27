@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
@@ -14,6 +15,12 @@ class CollectionToArrayConverter extends AbstractConditionalConverter {
 
 	public Set<TypeMapping> getConvertibleTypeMappings() {
 		return Collections.singleton(new TypeMapping(Collection.class, Object[].class));
+	}
+	
+	@Override
+	public boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor,
+			@NonNull TypeDescriptor targetTypeDescriptor) {
+		return super.canConvert(sourceTypeDescriptor, targetTypeDescriptor);
 	}
 
 	@Override

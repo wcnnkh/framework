@@ -21,13 +21,14 @@ import run.soeasy.framework.core.transform.templates.TemplateMapping;
 @Getter
 @Setter
 @ToString(of = "map")
-public class MapMapping implements TemplateMapping<TypedValueAccessor> {
+public class MapEntryMapping implements TemplateMapping<TypedValueAccessor> {
 	@NonNull
 	private final Map<?, ?> map;
 	@NonNull
 	private final TypeDescriptor typeDescriptor;
 	@NonNull
 	private Converter converter = SystemConversionService.getInstance();
+	
 
 	@Override
 	public TypedValueAccessor get(Object key) {
