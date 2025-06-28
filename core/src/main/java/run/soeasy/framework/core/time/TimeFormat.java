@@ -8,58 +8,64 @@ import java.util.Locale;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.core.convert.support.DataConverter;
-import run.soeasy.framework.core.convert.value.TypedData;
+import run.soeasy.framework.core.convert.ConversionException;
+import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.strings.StringConverter;
 
+/**
+ * 日期转换
+ * 
+ * @author soeasy.run
+ *
+ */
 @Getter
-public class TimeFormat extends DataConverter<Date, String> {
+public class TimeFormat implements StringConverter<Date> {
 	public static final TimeFormat DATE = new TimeFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 
+	private final Locale locale;
 	@NonNull
 	private final String pattern;
-	private final Locale locale;
 
 	public TimeFormat(@NonNull String pattern) {
 		this(pattern, null);
 	}
 
 	public TimeFormat(@NonNull String pattern, Locale locale) {
-		super(Date.class, String.class);
 		this.pattern = pattern;
 		this.locale = locale;
+	}
+
+	public final String format(Date source) {
+		DateFormat dateFormat = getDateFormat();
+		return dateFormat.format(source);
+	}
+
+	public final String format(long milliseconds) {
+		return format(new Date(milliseconds));
+	}
+
+	@Override
+	public Date from(String source, TypeDescriptor sourceTypeDescriptor, TypeDescriptor targetTypeDescriptor)
+			throws ConversionException {
+		return parse(source);
 	}
 
 	public DateFormat getDateFormat() {
 		return locale == null ? new SimpleDateFormat(pattern) : new SimpleDateFormat(pattern, locale);
 	}
 
-	@Override
-	public TypedData<String> encode(TypedData<Date> source) throws EncodeException {
-		return TypedData.forValue(format(source.get()));
-	}
-
-	@Override
-	public TypedData<Date> decode(TypedData<String> source) throws DecodeException {
-		return TypedData.forValue(parse(source.get()));
-	}
-
-	public String format(Date source) throws EncodeException {
-		DateFormat dateFormat = getDateFormat();
-		return dateFormat.format(source);
-	}
-
-	public Date parse(String source) throws DecodeException {
+	public final Date parse(String source) throws ConversionException {
 		DateFormat dateFormat = getDateFormat();
 		try {
 			return dateFormat.parse(source);
 		} catch (ParseException e) {
-			throw new DecodeException(e);
+			throw new ConversionException(e);
 		}
 	}
 
-	public String format(long time) throws EncodeException {
-		return format(new Date(time));
+	@Override
+	public String to(Date source, TypeDescriptor sourceTypeDescriptor, TypeDescriptor targetTypeDescriptor)
+			throws ConversionException {
+		return format(source);
 	}
 }

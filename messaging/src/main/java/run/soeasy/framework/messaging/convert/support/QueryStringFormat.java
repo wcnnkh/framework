@@ -32,10 +32,10 @@ public class QueryStringFormat extends BeanFormat {
 	}
 
 	public static String format(@NonNull Charset charset, @NonNull Object source) {
-		return getFormat(charset).format(source, TypeDescriptor.forObject(source));
+		return getFormat(charset).convert(source, String.class);
 	}
 
 	public static Object parse(@NonNull Charset charset, String source, @NonNull TypeDescriptor targetTypeDescriptor) {
-		return getFormat(charset).parse(source, targetTypeDescriptor);
+		return getFormat(charset).convert(source, targetTypeDescriptor);
 	}
 }

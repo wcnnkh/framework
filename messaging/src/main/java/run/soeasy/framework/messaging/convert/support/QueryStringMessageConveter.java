@@ -21,13 +21,13 @@ public class QueryStringMessageConveter extends TextMessageConverter {
 	protected Object parseObject(String body, TargetDescriptor targetDescriptor, Charset charset) {
 		QueryStringFormat queryStringFormat = new QueryStringFormat(charset);
 		queryStringFormat.setConverter(getConverter());
-		return queryStringFormat.parse(body, targetDescriptor.getRequiredTypeDescriptor());
+		return queryStringFormat.convert(body, targetDescriptor.getRequiredTypeDescriptor());
 	}
 
 	@Override
 	protected String toString(TypedData<Object> body, MediaType contentType, Charset charset) throws IOException {
 		QueryStringFormat queryStringFormat = new QueryStringFormat(charset);
 		queryStringFormat.setConverter(getConverter());
-		return queryStringFormat.format(body.get(), body.getReturnTypeDescriptor());
+		return queryStringFormat.convert(body.get(), body.getReturnTypeDescriptor(), String.class);
 	}
 }
