@@ -71,11 +71,6 @@ public interface Lookup<K, V extends Value> {
 		return value == null ? null : value.getAsNumber();
 	}
 
-	default <T> T getAsObject(K key, Class<? extends T> type) {
-		V value = get(key);
-		return value == null ? null : value.getAsObject(type);
-	}
-
 	default short getAsShort(K key) {
 		V value = get(key);
 		return value == null ? 0 : value.getAsShort();

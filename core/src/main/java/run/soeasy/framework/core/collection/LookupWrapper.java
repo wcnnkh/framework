@@ -64,10 +64,6 @@ public interface LookupWrapper<K, V extends Value, W extends Lookup<K, V>> exten
 		return getSource().getAsNumber(key);
 	}
 
-	default <T> T getAsObject(K key, Class<? extends T> type) {
-		return getSource().getAsObject(key, type);
-	}
-
 	default short getAsShort(K key) {
 		return getSource().getAsShort(key);
 	}

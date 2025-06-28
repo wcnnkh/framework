@@ -9,11 +9,6 @@ import run.soeasy.framework.core.math.NumberValue;
 @FunctionalInterface
 public interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
 	@Override
-	default <T> T getAsArray(Class<? extends T> componentType) {
-		return getSource().getAsArray(componentType);
-	}
-
-	@Override
 	default BigDecimal getAsBigDecimal() {
 		return getSource().getAsBigDecimal();
 	}
@@ -71,11 +66,6 @@ public interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
 	@Override
 	default NumberValue getAsNumber() {
 		return getSource().getAsNumber();
-	}
-
-	@Override
-	default <R> R getAsObject(Class<? extends R> requiredType) {
-		return getSource().getAsObject(requiredType);
 	}
 
 	@Override

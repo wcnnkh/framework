@@ -1,65 +1,51 @@
 package run.soeasy.framework.core.domain;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.EnumSet;
-import java.util.NoSuchElementException;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.convert.number.NumberToEnumConverter;
+import run.soeasy.framework.core.convert.strings.StringToBigDecimalConverter;
+import run.soeasy.framework.core.convert.strings.StringToBigIntegerConverter;
+import run.soeasy.framework.core.convert.strings.StringToBooleanConverter;
+import run.soeasy.framework.core.convert.strings.StringToByteConverter;
+import run.soeasy.framework.core.convert.strings.StringToCharacterConverter;
+import run.soeasy.framework.core.convert.strings.StringToDoubleConverter;
+import run.soeasy.framework.core.convert.strings.StringToEnumConverter;
+import run.soeasy.framework.core.convert.strings.StringToFloatConverter;
+import run.soeasy.framework.core.convert.strings.StringToIntegerConverter;
+import run.soeasy.framework.core.convert.strings.StringToLongConverter;
+import run.soeasy.framework.core.convert.strings.StringToShortConverter;
 import run.soeasy.framework.core.math.NumberValue;
-import run.soeasy.framework.core.type.ClassUtils;
 
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
-	public static final Value DEFAULT = new DefaultValue();
-
-	@SuppressWarnings("unchecked")
-	default <T> T getAsArray(Class<? extends T> componentType) {
-		Value[] values = getAsElements().toArray(new Value[0]);
-		int len = values.length;
-		T array = (T) Array.newInstance(componentType, len);
-		for (int i = 0; i < len; i++) {
-			Value value = values[i];
-			if (value == null) {
-				continue;
-			}
-
-			Object target = value.getAsObject(componentType);
-			Array.set(array, i, target);
-		}
-		return array;
-	}
 
 	default BigDecimal getAsBigDecimal() {
 		if (isNumber()) {
 			return getAsNumber().getAsBigDecimal();
 		}
-		String value = getAsString();
-		return value == null ? null : new BigDecimal(value);
+		return StringToBigDecimalConverter.DEFAULT.convert(getAsString(), BigDecimal.class);
 	}
 
 	default BigInteger getAsBigInteger() {
 		if (isNumber()) {
 			return getAsNumber().getAsBigInteger();
 		}
-
-		String value = getAsString();
-		return value == null ? null : new BigInteger(value);
+		return StringToBigIntegerConverter.DEFAULT.convert(getAsString(), BigInteger.class);
 	}
 
 	@Override
 	default boolean getAsBoolean() {
 		if (isNumber()) {
-			return getAsNumber().compareTo(NumberValue.ONE) == 0;
+			return getAsNumber().getAsBoolean();
 		}
 
-		String value = getAsString();
-		return value == null ? false : Boolean.parseBoolean(value);
+		Boolean value = StringToBooleanConverter.DEFAULT.convert(getAsString(), Boolean.class);
+		return value == null ? false : value;
 	}
 
 	default byte getAsByte() {
@@ -67,16 +53,13 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			return getAsNumber().getAsByte();
 		}
 
-		String value = getAsString();
-		return value == null ? 0 : Byte.parseByte(value);
+		Byte value = StringToByteConverter.DEFAULT.convert(getAsString(), Byte.class);
+		return value == null ? 0 : value;
 	}
 
 	default char getAsChar() {
-		String value = getAsString();
-		if (value.length() == 1) {
-			return value.charAt(0);
-		}
-		throw new UnsupportedOperationException("Not a char");
+		Character value = StringToCharacterConverter.DEFAULT.convert(getAsString(), Character.class);
+		return value == null ? 0 : value;
 	}
 
 	@Override
@@ -85,8 +68,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			return getAsNumber().getAsDouble();
 		}
 
-		String value = getAsString();
-		return value == null ? 0 : Double.parseDouble(value);
+		Double value = StringToDoubleConverter.DEFAULT.convert(getAsString(), Double.class);
+		return value == null ? 0d : value;
 	}
 
 	default boolean isMultiple() {
@@ -99,21 +82,9 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 
 	default <T extends Enum<T>> T getAsEnum(Class<T> enumType) {
 		if (isNumber()) {
-			int ordinal = getAsNumber().getAsInt();
-			EnumSet<T> enumSet = EnumSet.noneOf(enumType);
-			for (T e : enumSet) {
-				if (e.ordinal() == ordinal) {
-					return e;
-				}
-			}
-			throw new NoSuchElementException(enumType + "[" + ordinal + "]");
+			return NumberToEnumConverter.DEFAULT.convert(getAsNumber(), enumType);
 		}
-
-		String value = getAsString();
-		if (StringUtils.isEmpty(value)) {
-			return null;
-		}
-		return Enum.valueOf(enumType, value);
+		return StringToEnumConverter.DEFAULT.convert(getAsString(), enumType);
 	}
 
 	default float getAsFloat() {
@@ -121,8 +92,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			return getAsNumber().getAsFloat();
 		}
 
-		String value = getAsString();
-		return value == null ? 0 : Float.parseFloat(value);
+		Float value = StringToFloatConverter.DEFAULT.convert(getAsString(), Float.class);
+		return value == null ? 0f : value;
 	}
 
 	@Override
@@ -131,8 +102,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			return getAsNumber().getAsInt();
 		}
 
-		String value = getAsString();
-		return value == null ? 0 : Integer.parseInt(value);
+		Integer value = StringToIntegerConverter.DEFAULT.convert(getAsString(), Integer.class);
+		return value == null ? 0 : value;
 	}
 
 	@Override
@@ -141,49 +112,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			return getAsNumber().getAsLong();
 		}
 
-		String value = getAsString();
-		return value == null ? 0 : Long.parseLong(value);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	default <R> R getAsObject(Class<? extends R> requiredType) {
-		Object v = null;
-		if (String.class == requiredType) {
-			v = getAsString();
-		} else if (ClassUtils.isInt(requiredType)) {
-			v = getAsInt();
-		} else if (ClassUtils.isLong(requiredType)) {
-			v = getAsLong();
-		} else if (ClassUtils.isFloat(requiredType)) {
-			v = getAsFloat();
-		} else if (ClassUtils.isDouble(requiredType)) {
-			v = getAsDouble();
-		} else if (ClassUtils.isShort(requiredType)) {
-			v = getAsShort();
-		} else if (ClassUtils.isBoolean(requiredType)) {
-			v = getAsBoolean();
-		} else if (ClassUtils.isByte(requiredType)) {
-			v = getAsByte();
-		} else if (ClassUtils.isChar(requiredType)) {
-			v = getAsChar();
-		} else if (BigDecimal.class == requiredType) {
-			v = getAsBigDecimal();
-		} else if (BigInteger.class == requiredType) {
-			v = getAsBigInteger();
-		} else if (Version.class == requiredType) {
-			v = getAsVersion();
-		} else if (NumberValue.class.isAssignableFrom(requiredType)) {
-			v = getAsNumber();
-		} else if (requiredType.isEnum()) {
-			v = getAsEnum((Class<? extends Enum>) requiredType);
-		} else if (requiredType == Value.class) {
-			v = this;
-		} else if (requiredType.isArray()) {
-			v = getAsArray(requiredType);
-		} else {
-			v = null;
-		}
-		return (R) v;
+		Long value = StringToLongConverter.DEFAULT.convert(getAsString(), Long.class);
+		return value == null ? 0L : value;
 	}
 
 	default short getAsShort() {
@@ -191,8 +121,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
 			return getAsNumber().getAsShort();
 		}
 
-		String value = getAsString();
-		return value == null ? 0 : Short.parseShort(value);
+		Short value = StringToShortConverter.DEFAULT.convert(getAsString(), Short.class);
+		return value == null ? 0 : value;
 	}
 
 	default Version getAsVersion() {

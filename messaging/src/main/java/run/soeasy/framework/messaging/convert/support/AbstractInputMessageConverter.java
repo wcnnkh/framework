@@ -5,6 +5,7 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
@@ -38,7 +39,7 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
 	@Override
 	protected void doWrite(@NonNull TypedValue source, @NonNull OutputMessage message, @NonNull MediaType contentType)
 			throws IOException {
-		InputMessage input = source.getAsObject(InputMessage.class);
+		InputMessage input = source.map(InputMessage.class, Converter.assignable()).get();
 		writeHeader(input, message);
 		input.transferTo(message);
 	}

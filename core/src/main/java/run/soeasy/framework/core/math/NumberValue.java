@@ -159,15 +159,6 @@ public abstract class NumberValue extends Number implements Version {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getAsObject(Class<? extends T> requiredType) {
-		if (NumberValue.class == requiredType) {
-			return (T) this;
-		}
-		return Version.super.getAsObject(requiredType);
-	}
-
 	@Override
 	public short getAsShort() throws ArithmeticException {
 		BigInteger number = getAsBigInteger();
