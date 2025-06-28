@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.domain.Pair;
 
 /**
  * 和{@link Streamable}类似，但此接口可以返回无需关闭的{@link Iterator}
@@ -192,16 +191,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 			Stream<Sequential<E>> newStream = CollectionUtils
 					.unknownSizeStream(new SequentialIterator<>(stream.iterator()));
 			return newStream.onClose(stream::close);
-		});
-	}
-
-	default <R> Elements<Pair<Sequential<E>, Sequential<R>>> pairs(@NonNull Elements<? extends R> elements) {
-		return Elements.of(() -> {
-			Stream<E> leftStream = Elements.this.stream();
-			Stream<? extends R> rightStream = elements.stream();
-			Stream<Pair<Sequential<E>, Sequential<R>>> newStream = CollectionUtils
-					.unknownSizeStream(new PairIterator<>(leftStream.iterator(), rightStream.iterator()));
-			return newStream.onClose(leftStream::close).onClose(rightStream::close);
 		});
 	}
 

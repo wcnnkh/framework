@@ -101,8 +101,13 @@ public class KeyValueFormat extends KeyValueSplitter
 	public void to(Object source, TypeDescriptor sourceTypeDescriptor, Appendable appendable)
 			throws ConversionException, IOException {
 		Mapping<Object, TypedValueAccessor> mapping = keyValueMapper.getMapping(source, sourceTypeDescriptor);
-		Joiner.joinAll(appendable, mapping.getElements().stream().filter((e) -> e.getValue().isReadable())
-				.map((e) -> KeyValue.of(e.getKey(), e.getValue().get())).iterator(), this);
+		for(KeyValue<Object, TypedValueAccessor> keyValue : mapping.getElements()) {
+			System.out.println(keyValue.getValue().get());
+			System.out.println(keyValue.getKey() + "," + keyValue.getValue().get());
+		}
+		List<KeyValue<Object, Object>> list = mapping.getElements().stream().filter((e) -> e.getValue().isReadable())
+				.map((e) -> KeyValue.of(e.getKey(), e.getValue().get())).collect(Collectors.toList());
+		Joiner.joinAll(appendable, list, this);
 	}
 
 	@Override

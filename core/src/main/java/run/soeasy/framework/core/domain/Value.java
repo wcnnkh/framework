@@ -23,7 +23,6 @@ import run.soeasy.framework.core.convert.strings.StringToShortConverter;
 import run.soeasy.framework.core.math.NumberValue;
 
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
-
 	default BigDecimal getAsBigDecimal() {
 		if (isNumber()) {
 			return getAsNumber().getAsBigDecimal();

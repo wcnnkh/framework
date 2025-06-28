@@ -5,6 +5,6 @@ import org.junit.Test;
 public class TypedValueTest {
 	@Test
 	public void test() {
-		System.out.println(TypedValue.of("111").getAsInt());
+		assert TypedValue.of("111").getAsInt() == 111;
 	}
 }

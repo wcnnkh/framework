@@ -1,12 +1,11 @@
 package run.soeasy.framework.core.convert.value;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.stream.IntStream;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Enumerable;
 import run.soeasy.framework.core.convert.Converter;
@@ -96,7 +95,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).intValue() == 1;
 		}
-		return map(boolean.class, Converter.assignable()).get();
+		Boolean target = map(boolean.class, Converter.assignable()).get();
+		return target == null ? false : target;
 	}
 
 	default byte getAsByte() {
@@ -116,7 +116,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).byteValue();
 		}
-		return map(byte.class, Converter.assignable()).get();
+		Byte target = map(byte.class, Converter.assignable()).get();
+		return target == null ? 0 : target;
 	}
 
 	default char getAsChar() {
@@ -132,7 +133,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Value) {
 			return ((Value) value).getAsChar();
 		}
-		return map(char.class, Converter.assignable()).get();
+		Character target = map(char.class, Converter.assignable()).get();
+		return target == null ? 0 : target;
 	}
 
 	@Override
@@ -153,7 +155,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).doubleValue();
 		}
-		return map(double.class, Converter.assignable()).get();
+		Double target = map(double.class, Converter.assignable()).get();
+		return target == null ? 0d : target;
 	}
 
 	@Override
@@ -175,10 +178,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 					.map((e) -> e.getActualTypeArgument(0));
 			return Elements.of(enumerable).map((v) -> TypedValue.of(v, elementTypeDescriptor));
 		} else if (value.getClass().isArray()) {
-			int len = Array.getLength(value);
 			TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
-			return Elements.of(() -> IntStream.range(0, len)
-					.mapToObj((index) -> TypedValue.of(Array.get(value, index), elementTypeDescriptor)));
+			return Elements.of(() -> ArrayUtils.stream(value).map((e) -> TypedValue.of(e, elementTypeDescriptor)));
 		}
 		return Elements.singleton(TypedValue.of(value, typeDescriptor));
 	}
@@ -217,7 +218,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof TypedValue) {
 			return ((TypedValue) value).getAsFloat();
 		}
-		return map(float.class, Converter.assignable()).get();
+		Float target = map(float.class, Converter.assignable()).get();
+		return target == null ? 0f : target;
 	}
 
 	@Override
@@ -239,7 +241,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).intValue();
 		}
 
-		return map(int.class, Converter.assignable()).get();
+		Integer target = map(int.class, Converter.assignable()).get();
+		return target == null ? 0 : target;
 	}
 
 	@Override
@@ -261,7 +264,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 			return ((Number) value).longValue();
 		}
 
-		return map(long.class, Converter.assignable()).get();
+		Long target = map(long.class, Converter.assignable()).get();
+		return target == null ? 0L : target;
 	}
 
 	default NumberValue getAsNumber() {
@@ -302,7 +306,8 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Number) {
 			return ((Number) value).shortValue();
 		}
-		return map(short.class, Converter.assignable()).get();
+		Short target = map(short.class, Converter.assignable()).get();
+		return target == null ? 0 : target;
 	}
 
 	default String getAsString() {
@@ -372,13 +377,7 @@ public interface TypedValue extends TypedData<Object>, Value {
 		if (value instanceof Value) {
 			return ((Value) value).isNumber();
 		}
-
-		try {
-			getAsNumber();
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")

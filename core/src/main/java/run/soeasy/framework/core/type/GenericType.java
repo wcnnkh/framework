@@ -19,6 +19,7 @@ public class GenericType<T extends Type> implements ResolvableType {
 
 	public GenericType(@NonNull T type) {
 		this.type = type;
+		this.rawType = type instanceof Class ? ((Class<?>) type) : null;
 	}
 
 	@Override

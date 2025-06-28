@@ -5,7 +5,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.format.KeyValueFormat;
-import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.transform.property.TypedProperties;
@@ -24,7 +23,6 @@ public class BeanFormat extends KeyValueFormat {
 					.map((e) -> KeyValue.of(e.getKey(), e.getValue()));
 			return mapping;
 		});
-		getKeyValueMapper().getMapper().setConverter(SystemConversionService.getInstance());
 	}
-	
+
 }

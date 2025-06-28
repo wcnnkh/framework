@@ -88,6 +88,22 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 		return generic;
 	}
 
+	default boolean hasActualTypeArguments() {
+		Type type = getType();
+		if (type instanceof ParameterizedType) {
+			return ((ParameterizedType) type).getActualTypeArguments().length != 0;
+		}
+
+		if (type instanceof TypeVariable) {
+			TypeVariable<?> typeVariable = (TypeVariable<?>) type;
+			ResolvableType resolvableType = resolveTypeVariable(typeVariable);
+			if (resolvableType != null) {
+				return resolvableType.hasActualTypeArguments();
+			}
+		}
+		return false;
+	}
+
 	@Override
 	default ResolvableType[] getActualTypeArguments() {
 		Type type = getType();
@@ -97,9 +113,9 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 
 		if (type instanceof TypeVariable) {
 			TypeVariable<?> typeVariable = (TypeVariable<?>) type;
-			ResolvableType resolved = resolveTypeVariable(typeVariable);
-			if (resolved != null) {
-				return resolved.getActualTypeArguments();
+			ResolvableType resolvableType = resolveTypeVariable(typeVariable);
+			if (resolvableType != null) {
+				return resolvableType.getActualTypeArguments();
 			}
 		}
 		return EMPTY_TYPES_ARRAY;
@@ -234,10 +250,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 		return EMPTY_TYPES_ARRAY;
 	}
 
-	default boolean hasActualTypeArguments() {
-		return getActualTypeArguments().length != 0;
-	}
-
 	default boolean isArray() {
 		return getType() instanceof GenericArrayType || getRawType().isArray();
 	}
@@ -283,7 +295,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 		}
 		return true;
 	}
-
+	
 	@Override
 	default ResolvableType resolveTypeVariable(TypeVariable<?> typeVariable) {
 		TypeVariable<?>[] typeParameters = getRawType().getTypeParameters();

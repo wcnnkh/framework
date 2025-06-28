@@ -22,6 +22,7 @@ import run.soeasy.framework.core.convert.strings.StringToLocaleConverter;
 import run.soeasy.framework.core.convert.strings.StringToLongConverter;
 import run.soeasy.framework.core.convert.strings.StringToShortConverter;
 import run.soeasy.framework.core.convert.strings.StringToTimeZoneConverter;
+import run.soeasy.framework.core.convert.value.ValueConverter;
 
 /**
  * 全局的ConversionService
@@ -47,15 +48,6 @@ public class SystemConversionService extends ConversionService {
 	}
 
 	public SystemConversionService() {
-		getConverters().register(new ObjectToCollectionConverter());
-		getConverters().register(new ArrayToArrayConverter());
-		getConverters().register(new ArrayToCollectionConverter());
-		getConverters().register(new CollectionToArrayConverter());
-		getConverters().register(new CollectionToCollectionConverter());
-		getConverters().register(new CollectionToObjectConverter());
-		getConverters().register(new MapToMapConverter());
-		getConverters().register(new ObjectToArrayConverter());
-
 		register(StringToBigDecimalConverter.DEFAULT);
 		register(StringToBigIntegerConverter.DEFAULT);
 		register(StringToBooleanConverter.DEFAULT);
@@ -73,6 +65,17 @@ public class SystemConversionService extends ConversionService {
 		register(StringToShortConverter.DEFAULT);
 		register(StringToTimeZoneConverter.DEFAULT);
 		register(NumberToEnumConverter.DEFAULT);
+		register(ValueConverter.DEFAULT);
+
+		getConverters().register(new ObjectToCollectionConverter());
+		getConverters().register(new ArrayToArrayConverter());
+		getConverters().register(new ArrayToCollectionConverter());
+		getConverters().register(new CollectionToArrayConverter());
+		getConverters().register(new CollectionToCollectionConverter());
+		getConverters().register(new CollectionToObjectConverter());
+		getConverters().register(new MapToMapConverter());
+		getConverters().register(new ObjectToArrayConverter());
+		register(ObjectToStringConverter.DEFAULT);
 	}
 
 	@Override

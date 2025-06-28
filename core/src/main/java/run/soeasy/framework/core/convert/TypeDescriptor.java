@@ -48,6 +48,10 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 		this.type = (type != null ? type : resolvableType.getRawType());
 	}
 
+	public Class<?> getType() {
+		return type == null ? resolvableType.getRawType() : type;
+	}
+
 	public Class<?> getObjectType() {
 		return ClassUtils.resolvePrimitiveIfNecessary(getType());
 	}
@@ -108,7 +112,8 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	}
 
 	public TypeDescriptor map(@NonNull Function<? super ResolvableType, ? extends ResolvableType> mapper) {
-		return new TypeDescriptor(mapper.apply(getResolvableType()), null, this);
+		ResolvableType resolvableType = mapper.apply(this.resolvableType);
+		return new TypeDescriptor(resolvableType, null, this);
 	}
 
 	public TypeDescriptor getElementTypeDescriptor() {
