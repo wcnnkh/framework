@@ -1,12 +1,8 @@
-package run.soeasy.framework.core.convert.support;
+package run.soeasy.framework.core.convert;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.Converter;
-import run.soeasy.framework.core.convert.ConverterAware;
-import run.soeasy.framework.core.convert.TypeDescriptor;
 
 @Getter
 @Setter

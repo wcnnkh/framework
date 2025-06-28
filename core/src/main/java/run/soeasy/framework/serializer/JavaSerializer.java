@@ -8,7 +8,7 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.io.IOUtils;
 
-public class JavaSerializer implements Serializer {
+public class JavaSerializer implements TypedSerializer {
 	public final static JavaSerializer INSTANCE = new JavaSerializer();
 
 	@Override
@@ -23,13 +23,12 @@ public class JavaSerializer implements Serializer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException {
+	public Object deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(input);
-			return (T) ois.readObject();
+			return ois.readObject();
 		} finally {
 			if (ois != null) {
 				ois.close();

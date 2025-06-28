@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.AbstractConditionalConverter;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;

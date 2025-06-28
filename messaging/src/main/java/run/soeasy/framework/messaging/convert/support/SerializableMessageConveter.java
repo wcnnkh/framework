@@ -10,12 +10,12 @@ import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.convert.MessageConvertException;
-import run.soeasy.framework.serializer.Serializer;
+import run.soeasy.framework.serializer.TypedSerializer;
 
 public class SerializableMessageConveter extends AbstractBinaryMessageConverter<Object> {
-	private final Serializer serializer;
+	private final TypedSerializer serializer;
 
-	public SerializableMessageConveter(Serializer serializer) {
+	public SerializableMessageConveter(TypedSerializer serializer) {
 		super(Object.class);
 		getMediaTypeRegistry().addAll(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
 		this.serializer = serializer;

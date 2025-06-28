@@ -1,8 +1,6 @@
-package run.soeasy.framework.core.convert.support;
+package run.soeasy.framework.core.convert;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.convert.ConditionalConverter;
-import run.soeasy.framework.core.convert.TypeDescriptor;
 
 public abstract class AbstractConditionalConverter extends AbstractConverter implements ConditionalConverter {
 	

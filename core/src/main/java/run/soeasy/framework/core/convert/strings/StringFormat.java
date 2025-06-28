@@ -54,7 +54,7 @@ public interface StringFormat<T> extends StringConverter<T> {
 			throws ConversionException {
 		StringBuilder builder = new StringBuilder();
 		try {
-			to(builder, source, sourceTypeDescriptor);
+			to(source, sourceTypeDescriptor, builder);
 		} catch (IOException e) {
 			throw new IllegalStateException("internal error", e);
 		}
@@ -64,14 +64,14 @@ public interface StringFormat<T> extends StringConverter<T> {
 	/**
 	 * 正向转换：T类型格式化为Appendable 需实现类提供具体的格式化逻辑
 	 * 
-	 * @param appendable           字符输出目标
 	 * @param source               T类型源对象
 	 * @param sourceTypeDescriptor 源类型描述符
+	 * @param appendable           字符输出目标
 	 * @throws ConversionException 格式化失败时抛出
 	 * @throws IOException         写入失败时抛出
 	 */
 	@Override
-	void to(Appendable appendable, T source, TypeDescriptor sourceTypeDescriptor)
+	void to(T source, TypeDescriptor sourceTypeDescriptor, Appendable appendable)
 			throws ConversionException, IOException;
 
 	/**

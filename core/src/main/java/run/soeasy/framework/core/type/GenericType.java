@@ -47,8 +47,10 @@ public class GenericType<T extends Type> implements ResolvableType {
 
 	@Override
 	public ResolvableType resolveTypeVariable(TypeVariable<?> typeVariable) {
-		return typeVariableResolver == null ? ResolvableType.super.resolveTypeVariable(typeVariable)
-				: typeVariableResolver.resolveTypeVariable(typeVariable);
+		ResolvableType resolvableType = typeVariableResolver != null
+				? typeVariableResolver.resolveTypeVariable(typeVariable)
+				: null;
+		return resolvableType != null ? resolvableType : ResolvableType.super.resolveTypeVariable(typeVariable);
 	}
 
 	@Override

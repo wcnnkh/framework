@@ -92,13 +92,13 @@ public class KeyValueFormat extends KeyValueSplitter
 	/**
 	 * 将对象格式化为键值对并追加到目标位置 支持将任意对象转换为Map后再格式化为键值对字符串
 	 * 
-	 * @param appendable           目标追加位置（如StringBuilder、FileWriter）
 	 * @param source               待格式化的对象（通常为Map或可转换为Map的类型）
 	 * @param sourceTypeDescriptor 源对象的类型描述符
+	 * @param appendable           目标追加位置（如StringBuilder、FileWriter）
 	 * @throws IOException 当向Appendable写入数据失败时抛出
 	 */
 	@Override
-	public void to(Appendable appendable, Object source, TypeDescriptor sourceTypeDescriptor)
+	public void to(Object source, TypeDescriptor sourceTypeDescriptor, Appendable appendable)
 			throws ConversionException, IOException {
 		Mapping<Object, TypedValueAccessor> mapping = keyValueMapper.getMapping(source, sourceTypeDescriptor);
 		Joiner.joinAll(appendable, mapping.getElements().stream().filter((e) -> e.getValue().isReadable())

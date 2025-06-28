@@ -5,6 +5,23 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.number.NumberToEnumConverter;
+import run.soeasy.framework.core.convert.strings.StringToBigDecimalConverter;
+import run.soeasy.framework.core.convert.strings.StringToBigIntegerConverter;
+import run.soeasy.framework.core.convert.strings.StringToBooleanConverter;
+import run.soeasy.framework.core.convert.strings.StringToByteConverter;
+import run.soeasy.framework.core.convert.strings.StringToCharacterConverter;
+import run.soeasy.framework.core.convert.strings.StringToCharsetConverter;
+import run.soeasy.framework.core.convert.strings.StringToClassConverter;
+import run.soeasy.framework.core.convert.strings.StringToCurrencyConverter;
+import run.soeasy.framework.core.convert.strings.StringToDoubleConverter;
+import run.soeasy.framework.core.convert.strings.StringToEnumConverter;
+import run.soeasy.framework.core.convert.strings.StringToFloatConverter;
+import run.soeasy.framework.core.convert.strings.StringToIntegerConverter;
+import run.soeasy.framework.core.convert.strings.StringToLocaleConverter;
+import run.soeasy.framework.core.convert.strings.StringToLongConverter;
+import run.soeasy.framework.core.convert.strings.StringToShortConverter;
+import run.soeasy.framework.core.convert.strings.StringToTimeZoneConverter;
 
 /**
  * 全局的ConversionService
@@ -38,6 +55,24 @@ public class SystemConversionService extends ConversionService {
 		getConverters().register(new CollectionToObjectConverter());
 		getConverters().register(new MapToMapConverter());
 		getConverters().register(new ObjectToArrayConverter());
+
+		register(StringToBigDecimalConverter.DEFAULT);
+		register(StringToBigIntegerConverter.DEFAULT);
+		register(StringToBooleanConverter.DEFAULT);
+		register(StringToByteConverter.DEFAULT);
+		register(StringToCharacterConverter.DEFAULT);
+		register(StringToCharsetConverter.DEFAULT);
+		register(StringToClassConverter.DEFAULT);
+		register(StringToCurrencyConverter.DEFAULT);
+		register(StringToDoubleConverter.DEFAULT);
+		register(StringToEnumConverter.DEFAULT);
+		register(StringToFloatConverter.DEFAULT);
+		register(StringToIntegerConverter.DEFAULT);
+		register(StringToLocaleConverter.DEFAULT);
+		register(StringToLongConverter.DEFAULT);
+		register(StringToShortConverter.DEFAULT);
+		register(StringToTimeZoneConverter.DEFAULT);
+		register(NumberToEnumConverter.DEFAULT);
 	}
 
 	@Override

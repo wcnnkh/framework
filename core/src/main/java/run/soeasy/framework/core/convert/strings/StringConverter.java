@@ -36,13 +36,14 @@ public interface StringConverter<T> extends ReversibleConverter<T, String> {
 	/**
 	 * 将T类型格式化为Appendable 支持将对象格式化为字符输出流
 	 * 
-	 * @param appendable           字符输出流
 	 * @param source               T类型源对象
 	 * @param sourceTypeDescriptor 源类型描述符
+	 * @param appendable           字符输出流
 	 * @throws ConversionException 格式化失败时抛出
 	 * @throws IOException         写入失败时抛出
 	 */
-	default void to(Appendable appendable, T source, TypeDescriptor sourceTypeDescriptor) throws ConversionException, IOException {
+	default void to(T source, TypeDescriptor sourceTypeDescriptor, Appendable appendable)
+			throws ConversionException, IOException {
 		String content = to(source, sourceTypeDescriptor, TypeDescriptor.valueOf(String.class));
 		appendable.append(content);
 	}

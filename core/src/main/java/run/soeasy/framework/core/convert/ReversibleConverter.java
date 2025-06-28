@@ -22,7 +22,6 @@ public interface ReversibleConverter<S, T> extends ConditionalConverter {
 		// 解析当前接口的泛型类型参数
 		ResolvableType resolvableType = ResolvableType.forType(getClass());
 		resolvableType = resolvableType.as(ReversibleConverter.class);
-
 		// 获取泛型参数的原始类型
 		Class<?> sourceType = resolvableType.getActualTypeArgument(0).getRawType();
 		Class<?> targetType = resolvableType.getActualTypeArgument(1).getRawType();

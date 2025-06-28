@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.convert.support.SystemConversionService;
 
 @Getter
 @RequiredArgsConstructor
@@ -23,7 +24,6 @@ class MappedTypedValue<W extends TypedValue> implements TypedValueWrapper<W> {
 		if (converter.canConvert(sourceTypeDescriptor, typeDescriptor)) {
 			return converter.convert(source.get(), sourceTypeDescriptor, typeDescriptor);
 		}
-
-		return source.getAsObject(typeDescriptor.getType());
+		return SystemConversionService.getInstance().convert(source.get(), sourceTypeDescriptor, typeDescriptor);
 	}
 }
