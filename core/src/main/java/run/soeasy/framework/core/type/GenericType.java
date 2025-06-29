@@ -1,61 +1,40 @@
 package run.soeasy.framework.core.type;
 
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+/**
+ * 泛型
+ * 
+ * @author soeasy.run
+ *
+ */
 @Getter
 @Setter
-public class GenericType<T extends Type> implements ResolvableType {
-	private ResolvableType[] actualTypeArguments;
-	private ResolvableType ownerType;
-	private Class<?> rawType;
+public class GenericType extends RawType {
 	@NonNull
-	private final T type;
-	private TypeVariableResolver typeVariableResolver;
+	private Type[] actualTypeArguments = EMPTY_TYPES_ARRAY;
+	private Type ownerType;
 
-	public GenericType(@NonNull T type) {
-		this.type = type;
-		this.rawType = type instanceof Class ? ((Class<?>) type) : null;
+	public GenericType(@NonNull Class<?> rawType) {
+		super(rawType);
 	}
 
 	@Override
 	public ResolvableType[] getActualTypeArguments() {
-		return actualTypeArguments == null ? ResolvableType.super.getActualTypeArguments() : actualTypeArguments;
+		return ResolvableType.toResolvableTypes(this.getTypeVariableResolver(), actualTypeArguments);
 	}
 
 	@Override
 	public ResolvableType getOwnerType() {
-		return ownerType != null ? ResolvableType.super.getOwnerType() : ownerType;
-	}
-
-	@Override
-	public Class<?> getRawType() {
-		if (rawType != null) {
-			return rawType;
-		}
-		return ResolvableType.super.getRawType();
+		return ownerType == null ? null : ResolvableType.forType(ownerType, this.getTypeVariableResolver());
 	}
 
 	@Override
 	public boolean hasActualTypeArguments() {
-		return actualTypeArguments == null ? ResolvableType.super.hasActualTypeArguments()
-				: actualTypeArguments.length != 0;
-	}
-
-	@Override
-	public ResolvableType resolveTypeVariable(TypeVariable<?> typeVariable) {
-		ResolvableType resolvableType = typeVariableResolver != null
-				? typeVariableResolver.resolveTypeVariable(typeVariable)
-				: null;
-		return resolvableType != null ? resolvableType : ResolvableType.super.resolveTypeVariable(typeVariable);
-	}
-
-	@Override
-	public final String toString() {
-		return getTypeName();
+		return actualTypeArguments == null ? super.hasActualTypeArguments() : actualTypeArguments.length != 0;
 	}
 }
