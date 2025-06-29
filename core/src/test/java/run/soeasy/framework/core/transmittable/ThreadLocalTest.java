@@ -4,11 +4,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.transmittable.thread.NamedInheritableThreadLocal;
+import run.soeasy.framework.core.transmittable.registry.AnyInheriterRegistry;
 
 public class ThreadLocalTest {
-	private static InheritableThreadLocal<Object> inheritableThreadLocal = new NamedInheritableThreadLocal<>("test",
-			true);
+	private static InheritableThreadLocal<Object> inheritableThreadLocal = new InheritableThreadLocal<>();
+	static {
+		AnyInheriterRegistry.global().register(inheritableThreadLocal);
+	}
 
 	@Test
 	public void inheritableThreadLocalTest() {

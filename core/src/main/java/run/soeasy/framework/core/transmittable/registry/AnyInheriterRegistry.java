@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.transmittable.registry;
 
 import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.transmittable.thread.ThreadLocalInheriter;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public final class AnyInheriterRegistry extends InheriterRegistry<Object, Object> {

@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.transmittable.thread;
+package run.soeasy.framework.core.transmittable.registry;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.transmittable.Inheriter;
