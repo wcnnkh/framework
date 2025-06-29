@@ -12,6 +12,11 @@ import run.soeasy.framework.codec.binary.ToBytesCodec;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.io.IOUtils;
 
+/**
+ * 类型化序列化器接口
+ * 继承自{@link Serializer}和{@link ToBytesCodec}，提供类型安全的序列化能力
+ * 支持对象与字节流/字节数组的双向转换，并处理泛型类型信息
+ */
 public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 
 	/**
@@ -24,7 +29,7 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	void serialize(Object source, OutputStream target) throws IOException;
 
 	/**
-	 * 实现Serializer的serialize方法
+	 * 实现{@link Serializer}的serialize方法
 	 */
 	@Override
 	default void serialize(Object source, TypeDescriptor sourceTypeDescriptor, OutputStream target) throws IOException {
@@ -32,7 +37,7 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	}
 
 	/**
-	 * 实现Serializer的deserialize方法
+	 * 实现{@link Serializer}的deserialize方法
 	 */
 	@Override
 	default Object deserialize(InputStream source, TypeDescriptor targetTypeDescriptor)
@@ -45,7 +50,7 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	}
 
 	/**
-	 * 实现ToBytesCodec的encode方法
+	 * 实现{@link ToBytesCodec}的encode方法
 	 */
 	@Override
 	default void encode(Object source, OutputStream target) throws IOException, EncodeException {
@@ -104,7 +109,7 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	}
 
 	/**
-	 * 实现ToBytesCodec的encode方法
+	 * 实现{@link ToBytesCodec}的encode方法
 	 */
 	@Override
 	default byte[] encode(Object source) throws EncodeException {
@@ -112,7 +117,7 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	}
 
 	/**
-	 * 实现ToBytesCodec的decode方法
+	 * 实现{@link ToBytesCodec}的decode方法
 	 */
 	@Override
 	default Object decode(InputStream source, int bufferSize) throws IOException, DecodeException {

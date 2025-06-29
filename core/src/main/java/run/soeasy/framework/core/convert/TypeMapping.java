@@ -13,9 +13,9 @@ import run.soeasy.framework.core.type.ClassUtils;
  * 表示从源类型到目标类型的映射关系，支持类型转换判断、反向映射和比较
  * 
  * 实现接口：
- * - KeyValue<Class<?>, Class<?>>: 表示键值对（键为源类型，值为目标类型）
+ * - KeyValue&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt;: 表示键值对（键为源类型，值为目标类型）
  * - Convertable: 支持类型转换判断
- * - Comparable<TypeMapping>: 支持类型映射的比较排序
+ * - Comparable&lt;TypeMapping&gt;: 支持类型映射的比较排序
  */
 @RequiredArgsConstructor
 @Getter
@@ -27,7 +27,7 @@ public class TypeMapping implements KeyValue<Class<?>, Class<?>>, Convertable, C
     private final Class<?> value;     // 目标类型（映射的值）
 
     /**
-     * 获取反向映射（目标类型->源类型）
+     * 获取反向映射（目标类型-&gt;源类型）
      * 
      * @return 反向的TypeMapping实例，value和key互换
      */

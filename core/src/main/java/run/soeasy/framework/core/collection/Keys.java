@@ -1,22 +1,28 @@
 package run.soeasy.framework.core.collection;
 
 /**
- * 获取所有的key
+ * 键集合接口
+ * 定义获取键集合和检查键存在性的标准行为
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
- * @param <K>
+ * @param <K> 键的类型
  */
 public interface Keys<K> {
-	Elements<K> keys();
+    /**
+     * 获取所有键的集合
+     * 
+     * @return 键的元素集合
+     */
+    Elements<K> keys();
 
-	/**
-	 * 是否存在此key
-	 * 
-	 * @param key
-	 * @return
-	 */
-	default boolean hasKey(K key) {
-		return keys().contains(key);
-	}
+    /**
+     * 判断是否存在指定键
+     * 
+     * @param key 待检查的键
+     * @return 存在返回true，否则返回false
+     */
+    default boolean hasKey(K key) {
+        return keys().contains(key);
+    }
 }

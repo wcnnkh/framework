@@ -9,8 +9,8 @@ import run.soeasy.framework.core.convert.TypeMapping;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
- * 双向转换器接口，支持源类型(S)与目标类型(T)之间的双向属性转换
- * 继承自ConditionalTransformer，通过类型映射集合实现条件转换判断
+ * 双向转换器接口，支持源类型(S)与目标类型(T)之间的双向属性转换。
+ * 继承自{@link ConditionalTransformer}，通过类型映射集合实现条件转换判断。
  * 
  * @param <S> 源类型
  * @param <T> 目标类型
@@ -20,10 +20,10 @@ import run.soeasy.framework.core.type.ResolvableType;
 public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
 
     /**
-     * 自动解析泛型参数生成类型映射关系
-     * 基于接口泛型参数S和T生成源类型到目标类型的映射
+     * 自动解析泛型参数生成类型映射关系。
+     * 基于接口泛型参数S和T生成源类型到目标类型的映射。
      * 
-     * @return TypeMapping实例，包含S->T的类型映射关系
+     * @return TypeMapping实例，包含S-&gt;T的类型映射关系
      * @throws IllegalStateException 当泛型参数解析失败时抛出
      */
     default TypeMapping getTypeMapping() {
@@ -39,8 +39,8 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     }
 
     /**
-     * 获取支持的双向类型映射集合
-     * 包含正向映射(S->T)和反向映射(T->S)
+     * 获取支持的双向类型映射集合。
+     * 包含正向映射(S-&gt;T)和反向映射(T-&gt;S)。
      * 
      * @return 不可变的TypeMapping集合，包含两个映射关系
      */
@@ -54,8 +54,8 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     }
 
     /**
-     * 执行双向转换的核心方法
-     * 根据源类型和目标类型自动判断调用正向或反向转换逻辑
+     * 执行双向转换的核心方法。
+     * 根据源类型和目标类型自动判断调用正向或反向转换逻辑。
      * 
      * @param source 源对象，非null
      * @param sourceTypeDescriptor 源类型描述符，非null
@@ -82,8 +82,8 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     }
 
     /**
-     * 正向转换方法：S类型对象转换到T类型对象
-     * 由实现类提供具体的属性传输逻辑
+     * 正向转换方法：S类型对象转换到T类型对象。
+     * 由实现类提供具体的属性传输逻辑。
      * 
      * @param source S类型源对象
      * @param sourceTypeDescriptor 源类型描述符
@@ -94,8 +94,8 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     boolean to(S source, TypeDescriptor sourceTypeDescriptor, T target, TypeDescriptor targetTypeDescriptor);
 
     /**
-     * 反向转换方法：T类型对象转换到S类型对象
-     * 由实现类提供具体的属性传输逻辑
+     * 反向转换方法：T类型对象转换到S类型对象。
+     * 由实现类提供具体的属性传输逻辑。
      * 
      * @param source T类型源对象
      * @param sourceTypeDescriptor 源类型描述符
