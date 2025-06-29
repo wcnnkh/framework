@@ -1,6 +1,7 @@
 package run.soeasy.framework.codec.format;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,13 +102,10 @@ public class KeyValueFormat extends KeyValueSplitter
 	public void to(Object source, TypeDescriptor sourceTypeDescriptor, Appendable appendable)
 			throws ConversionException, IOException {
 		Mapping<Object, TypedValueAccessor> mapping = keyValueMapper.getMapping(source, sourceTypeDescriptor);
-		for(KeyValue<Object, TypedValueAccessor> keyValue : mapping.getElements()) {
-			System.out.println(keyValue.getValue().get());
-			System.out.println(keyValue.getKey() + "," + keyValue.getValue().get());
-		}
-		List<KeyValue<Object, Object>> list = mapping.getElements().stream().filter((e) -> e.getValue().isReadable())
-				.map((e) -> KeyValue.of(e.getKey(), e.getValue().get())).collect(Collectors.toList());
-		Joiner.joinAll(appendable, list, this);
+		Iterator<KeyValue<Object, Object>> iterator = mapping.getElements().stream()
+				.filter((e) -> e.getValue().isReadable()).map((e) -> KeyValue.of(e.getKey(), e.getValue().get()))
+				.iterator();
+		Joiner.joinAll(appendable, iterator, this);
 	}
 
 	@Override
