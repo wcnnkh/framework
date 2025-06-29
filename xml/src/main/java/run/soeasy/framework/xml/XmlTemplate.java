@@ -76,7 +76,6 @@ public class XmlTemplate implements DocumentOperations {
         // 安全特性配置（防御XXE攻击）
         try {
             documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         } catch (ParserConfigurationException e) {
             logger.error("Failed to set XML security features", e);
         }
