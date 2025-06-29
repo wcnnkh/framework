@@ -3,7 +3,7 @@ package run.soeasy.framework.core.math;
 /**
  * 数学函数定义
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <S>
  * @param <T>

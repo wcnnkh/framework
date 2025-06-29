@@ -1,63 +1,14 @@
 package run.soeasy.framework.messaging;
 
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.StandardListElements;
 import run.soeasy.framework.io.MimeType;
-import run.soeasy.framework.io.MimeTypeUtils;
 
 public interface MediaTypes extends Elements<MediaType>, Comparable<MediaTypes> {
-
-	public static class EmptyMimeTypes implements MediaTypes, Serializable {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Iterator<MediaType> iterator() {
-			return Collections.emptyIterator();
-		}
-
-		@Override
-		public Stream<MediaType> stream() {
-			return Stream.empty();
-		}
-
-	}
-
-	public static class StandardMimeTypes extends StandardListElements<MediaType, List<MediaType>>
-			implements MediaTypes {
-		private static final long serialVersionUID = 1L;
-
-		public StandardMimeTypes(@NonNull List<MediaType> source) {
-			super(source);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-
-			if (obj instanceof MediaTypes) {
-				return CollectionUtils.unorderedEquals(toList(), ((MediaTypes) obj).toList());
-			}
-			return false;
-		}
-
-		@Override
-		public String toString() {
-			return MimeTypeUtils.toString(this);
-		}
-
-	}
 
 	public static final MediaTypes EMPTY = new EmptyMimeTypes();
 

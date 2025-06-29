@@ -12,9 +12,6 @@ import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
-import lombok.NonNull;
-import run.soeasy.framework.core.domain.Pair;
-
 public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, StreamableWrapper<E, W> {
 	@Override
 	default Provider<E> cacheable() {
@@ -64,11 +61,6 @@ public interface ElementsWrapper<E, W extends Elements<E>> extends Elements<E>, 
 	@Override
 	default Elements<Sequential<E>> sequential() {
 		return getSource().sequential();
-	}
-
-	@Override
-	default <R> Elements<Pair<Sequential<E>, Sequential<R>>> pairs(@NonNull Elements<? extends R> elements) {
-		return getSource().pairs(elements);
 	}
 
 	@Override

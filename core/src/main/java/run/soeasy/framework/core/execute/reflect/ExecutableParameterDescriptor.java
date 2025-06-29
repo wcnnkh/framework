@@ -35,12 +35,12 @@ public class ExecutableParameterDescriptor implements PropertyDescriptor {
 
 	@Override
 	public final TypeDescriptor getReturnTypeDescriptor() {
-		return getReturnTypeDescriptor();
+		return getTypeDescriptor();
 	}
 
 	@Override
 	public final TypeDescriptor getRequiredTypeDescriptor() {
-		return getRequiredTypeDescriptor();
+		return getTypeDescriptor();
 	}
 
 }

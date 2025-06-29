@@ -8,6 +8,7 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.comparator.TypeComparator;
 import run.soeasy.framework.core.exchange.container.PayloadRegistration;
 import run.soeasy.framework.core.exchange.container.map.MultiValueMapContainer;
+import run.soeasy.framework.core.type.ClassUtils;
 
 public class ServiceMap<S> extends
 		MultiValueMapContainer<Class<?>, S, PayloadRegistration<S>, Services<S>, TreeMap<Class<?>, Services<S>>> {
@@ -25,7 +26,7 @@ public class ServiceMap<S> extends
 	 * @param requiredType
 	 * @return
 	 */
-	public Elements<S> search(Class<?> requiredType) {
+	public Elements<S> assignableFrom(Class<?> requiredType) {
 		return readAsElements((map) -> {
 			if (map == null) {
 				return Elements.empty();
@@ -36,8 +37,9 @@ public class ServiceMap<S> extends
 				return services;
 			}
 
-			return Elements.of(() -> map.entrySet().stream().filter((e) -> requiredType.isAssignableFrom(e.getKey()))
-					.flatMap((e) -> e.getValue().stream()));
+			return Elements
+					.of(() -> map.entrySet().stream().filter((e) -> ClassUtils.isAssignable(e.getKey(), requiredType))
+							.flatMap((e) -> e.getValue().stream()));
 		});
 	}
 }

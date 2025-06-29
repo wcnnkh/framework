@@ -6,7 +6,7 @@ import run.soeasy.framework.core.execute.Execution;
 /**
  * 拦截器
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 @FunctionalInterface

@@ -9,7 +9,7 @@ import run.soeasy.framework.core.type.ClassUtils;
 /**
  * 可执行器的描述
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface ExecutableDescriptor extends SourceDescriptor, AnnotatedElement {

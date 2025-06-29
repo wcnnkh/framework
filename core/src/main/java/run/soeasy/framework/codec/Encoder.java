@@ -8,10 +8,6 @@ import run.soeasy.framework.core.collection.Elements;
 
 @FunctionalInterface
 public interface Encoder<D, E> extends BiPredicate<D, E> {
-	default boolean canEncode() {
-		return true;
-	}
-
 	E encode(D source) throws EncodeException;
 
 	@Override

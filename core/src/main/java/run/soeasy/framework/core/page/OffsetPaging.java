@@ -38,7 +38,7 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	 * @param pageSize
 	 * @param pagingQuery
 	 */
-	public OffsetPaging(long offset, int pageSize, @NonNull PagingQuery<Long, V, Listable<V>> pagingQuery) {
+	public OffsetPaging(long offset, int pageSize, @NonNull PagingQuery<Long, Listable<V>> pagingQuery) {
 		super(offset, pageSize, (cursorId, length) -> {
 			Listable<V> listable = pagingQuery.query(cursorId, length);
 			return new Cursor<>(cursorId, listable, listable.hasElements() ? (cursorId + length) : null);
@@ -53,7 +53,7 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	 * @param pageSize
 	 * @param pagingQuery
 	 */
-	public OffsetPaging(long total, long offset, int pageSize, @NonNull PagingQuery<Long, V, Listable<V>> pagingQuery) {
+	public OffsetPaging(long total, long offset, int pageSize, @NonNull PagingQuery<Long, Listable<V>> pagingQuery) {
 		super(total, offset, pageSize, (cursorId, length) -> {
 			long nextCursorId = cursorId + length;
 			return new Cursor<>(cursorId, pagingQuery.query(cursorId, length),

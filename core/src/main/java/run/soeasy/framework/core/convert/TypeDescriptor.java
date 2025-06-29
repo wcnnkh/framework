@@ -10,20 +10,35 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
+import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
-import run.soeasy.framework.core.collection.LRULinkedHashMap;
 import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.ResolvableType;
 
+/**
+ * 类型描述符，封装类型信息及注解元数据
+ * <p>
+ * 用于描述Java类型的详细信息，包括原始类型、泛型参数、数组/集合/映射类型的元素类型，
+ * 以及类型关联的注解信息。该类是类型转换框架的核心数据结构，支持类型窄化、向上转型等操作。
+ * </p>
+ */
+@Getter
 public class TypeDescriptor extends MergedAnnotatedElement {
-	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new LRULinkedHashMap<Class<?>, TypeDescriptor>(
-			256);
+	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new HashMap<>(32);
 
+	/**
+	 * 预缓存的常见类型数组，包含基本类型、包装类型和常用引用类型
+	 * <p>
+	 * 用于提升常见类型的TypeDescriptor创建效率，避免重复反射操作
+	 * </p>
+	 */
 	private static final Class<?>[] CACHED_COMMON_TYPES = { boolean.class, Boolean.class, byte.class, Byte.class,
 			char.class, Character.class, double.class, Double.class, float.class, Float.class, int.class, Integer.class,
 			long.class, Long.class, short.class, Short.class, String.class, Object.class };
@@ -34,20 +49,23 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 		}
 	}
 
+	/**
+	 * 原始类型（可能为null，由resolvableType解析）
+	 */
 	private final Class<?> type;
 
+	/**
+	 * 可解析类型，包含完整的泛型信息
+	 */
+	@NonNull
 	private final ResolvableType resolvableType;
 
 	/**
-	 * Create a new type descriptor from a {@link ResolvableType}.
-	 * <p>
-	 * This constructor is used internally and may also be used by subclasses that
-	 * support non-Java languages with extended type systems.
+	 * 构造TypeDescriptor实例
 	 * 
-	 * @param resolvableType    the resolvable type
-	 * @param type              the backing type (or {@code null} if it should get
-	 *                          resolved)
-	 * @param annotatedElements the type annotatedElements
+	 * @param resolvableType 可解析类型（不可为null）
+	 * @param type           原始类型（可为null，通过resolvableType解析）
+	 * @param annotatedElements 注解元素数组（用于合并注解元数据）
 	 */
 	public TypeDescriptor(@NonNull ResolvableType resolvableType, Class<?> type,
 			@NonNull AnnotatedElement... annotatedElements) {
@@ -57,64 +75,32 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	}
 
 	/**
-	 * Variation of {@link #getType()} that accounts for a primitive type by
-	 * returning its object wrapper type.
-	 * <p>
-	 * This is useful for conversion service implementations that wish to normalize
-	 * to object-based types and not work with primitive types directly.
+	 * 获取类型（优先使用构造时指定的type，否则从resolvableType解析）
+	 * 
+	 * @return 类型Class对象
+	 */
+	public Class<?> getType() {
+		return type == null ? resolvableType.getRawType() : type;
+	}
+
+	/**
+	 * 获取对象类型（解析基本类型的包装类型为原始类型）
+	 * 
+	 * @return 解析后的对象类型
 	 */
 	public Class<?> getObjectType() {
 		return ClassUtils.resolvePrimitiveIfNecessary(getType());
 	}
 
 	/**
-	 * The type of the backing class, method parameter, field, or property described
-	 * by this TypeDescriptor.
+	 * 窄化类型描述符（根据实际值的类型调整描述符）
 	 * <p>
-	 * Returns primitive types as-is. See {@link #getObjectType()} for a variation
-	 * of this operation that resolves primitive types to their corresponding Object
-	 * types if necessary.
+	 * 例如：TypeDescriptor.forType(Collection.class).narrow(new ArrayList<String>())
+	 * 将返回包含String泛型参数的Collection类型描述符
+	 * </p>
 	 * 
-	 * @see #getObjectType()
-	 */
-	public Class<?> getType() {
-		return this.type;
-	}
-
-	/**
-	 * Return the underlying {@link ResolvableType}.
-	 */
-	public ResolvableType getResolvableType() {
-		return this.resolvableType;
-	}
-
-	public TypeDescriptor getNested(int nestingLevel) {
-		return new TypeDescriptor(resolvableType.getNested(nestingLevel), null, this);
-	}
-
-	public TypeDescriptor getGeneric(int... indexes) {
-		return new TypeDescriptor(resolvableType.getActualTypeArgument(indexes), null, this);
-	}
-
-	/**
-	 * Narrows this {@link TypeDescriptor} by setting its type to the class of the
-	 * provided value.
-	 * <p>
-	 * If the value is {@code null}, no narrowing is performed and this
-	 * TypeDescriptor is returned unchanged.
-	 * <p>
-	 * Designed to be called by binding frameworks when they read property, field,
-	 * or method return values. Allows such frameworks to narrow a TypeDescriptor
-	 * built from a declared property, field, or method return value type. For
-	 * example, a field declared as {@code java.lang.Object} would be narrowed to
-	 * {@code java.util.HashMap} if it was set to a {@code java.util.HashMap} value.
-	 * The narrowed TypeDescriptor can then be used to convert the HashMap to some
-	 * other type. Annotation and nested type context is preserved by the narrowed
-	 * copy.
-	 * 
-	 * @param value the value to use for narrowing this type descriptor
-	 * @return this TypeDescriptor narrowed (returns a copy with its type updated to
-	 *         the class of the provided value)
+	 * @param value 实际值（可为null，返回原描述符）
+	 * @return 窄化后的TypeDescriptor
 	 */
 	public TypeDescriptor narrow(Object value) {
 		if (value == null) {
@@ -124,18 +110,11 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 		return new TypeDescriptor(narrowed, value.getClass(), this);
 	}
 
-	public TypeDescriptor convert(ResolvableType type) {
-		return new TypeDescriptor(type, type.getRawType(), this);
-	}
-
 	/**
-	 * Cast this {@link TypeDescriptor} to a superclass or implemented interface
-	 * preserving annotations and nested type context.
+	 * 向上转型类型描述符（转换为指定父类型）
 	 * 
-	 * @param superType the super type to cast to (can be {@code null})
-	 * @return a new TypeDescriptor for the up-cast type
-	 * @throws IllegalArgumentException if this type is not assignable to the
-	 *                                  super-type
+	 * @param superType 父类型（不可为null，必须是当前类型的父类型）
+	 * @return 转型后的TypeDescriptor，null表示转型失败
 	 */
 	public TypeDescriptor upcast(Class<?> superType) {
 		if (superType == null) {
@@ -146,52 +125,33 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	}
 
 	/**
-	 * Return the name of this type: the fully qualified class name.
+	 * 获取类型的全限定名
+	 * 
+	 * @return 类型全限定名字符串
 	 */
 	public String getName() {
 		return ClassUtils.getQualifiedName(getType());
 	}
 
 	/**
-	 * Is this type a primitive type?
+	 * 判断是否为基本类型
+	 * 
+	 * @return true表示基本类型，false表示引用类型
 	 */
 	public boolean isPrimitive() {
 		return getType().isPrimitive();
 	}
 
-	public boolean isEnum() {
-		return getType().isEnum();
-	}
-
 	/**
-	 * 是否是泛型
-	 * 
-	 * @return
-	 */
-	public boolean isGeneric() {
-		return getResolvableType().hasActualTypeArguments();
-	}
-
-	/**
-	 * Returns true if an object of this type descriptor can be assigned to the
-	 * location described by the given type descriptor.
+	 * 判断当前类型是否可赋值给目标类型描述符
 	 * <p>
-	 * For example,
-	 * {@code valueOf(String.class).isAssignableTo(valueOf(CharSequence.class))}
-	 * returns {@code true} because a String value can be assigned to a CharSequence
-	 * variable. On the other hand,
-	 * {@code valueOf(Number.class).isAssignableTo(valueOf(Integer.class))} returns
-	 * {@code false} because, while all Integers are Numbers, not all Numbers are
-	 * Integers.
-	 * <p>
-	 * For arrays, collections, and maps, element and key/value types are checked if
-	 * declared. For example, a List&lt;String&gt; field value is assignable to a
-	 * Collection&lt;CharSequence&gt; field, but List&lt;Number&gt; is not
-	 * assignable to List&lt;Integer&gt;.
+	 * 校验逻辑：
+	 * 1. 原始类型兼容性
+	 * 2. 数组/集合/映射类型的元素类型兼容性
+	 * </p>
 	 * 
-	 * @return {@code true} if this type is assignable to the type represented by
-	 *         the provided type descriptor
-	 * @see #getObjectType()
+	 * @param typeDescriptor 目标类型描述符
+	 * @return true表示可赋值，false表示不可赋值
 	 */
 	public boolean isAssignableTo(TypeDescriptor typeDescriptor) {
 		boolean typesAssignable = typeDescriptor.getObjectType().isAssignableFrom(getObjectType());
@@ -210,161 +170,134 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 		}
 	}
 
+	/**
+	 * 判断嵌套类型是否可赋值（辅助isAssignableTo方法）
+	 * 
+	 * @param nestedTypeDescriptor 当前嵌套类型描述符
+	 * @param otherNestedTypeDescriptor 目标嵌套类型描述符
+	 * @return true表示可赋值
+	 */
 	private boolean isNestedAssignable(TypeDescriptor nestedTypeDescriptor, TypeDescriptor otherNestedTypeDescriptor) {
-
 		return (nestedTypeDescriptor == null || otherNestedTypeDescriptor == null
 				|| nestedTypeDescriptor.isAssignableTo(otherNestedTypeDescriptor));
 	}
 
 	/**
-	 * Is this type a {@link Collection} type?
+	 * 判断是否为集合类型（实现Collection接口）
+	 * 
+	 * @return true表示集合类型
 	 */
 	public boolean isCollection() {
 		return Collection.class.isAssignableFrom(getType());
 	}
 
 	/**
-	 * Is this type an array type?
+	 * 判断是否为数组类型
+	 * 
+	 * @return true表示数组类型
 	 */
 	public boolean isArray() {
 		return getType().isArray();
 	}
 
 	/**
-	 * If this type is an array, returns the array's component type. If this type is
-	 * a {@code Stream}, returns the stream's component type. If this type is a
-	 * {@link Collection} and it is parameterized, returns the Collection's element
-	 * type. If the Collection is not parameterized, returns {@code null} indicating
-	 * the element type is not declared.
+	 * 映射可解析类型（用于泛型转换）
 	 * 
-	 * @return the array component type or Collection element type, or {@code null}
-	 *         if this type is not an array type or a {@code java.util.Collection}
-	 *         or if its element type is not parameterized
-	 * @see #elementTypeDescriptor(Object)
+	 * @param mapper 可解析类型映射函数（不可为null）
+	 * @return 映射后的TypeDescriptor
+	 */
+	public TypeDescriptor map(@NonNull Function<? super ResolvableType, ? extends ResolvableType> mapper) {
+		ResolvableType resolvableType = mapper.apply(this.resolvableType);
+		return new TypeDescriptor(resolvableType, null, this);
+	}
+
+	/**
+	 * 获取元素类型描述符（适用于数组和集合）
+	 * <p>
+	 * 示例：List<String>的元素类型描述符为String
+	 * </p>
+	 * 
+	 * @return 元素类型的TypeDescriptor
 	 */
 	public TypeDescriptor getElementTypeDescriptor() {
 		if (getResolvableType().isArray()) {
 			return new TypeDescriptor(getResolvableType().getComponentType(), null, this);
 		}
-		if (Stream.class.isAssignableFrom(getType())) {
-			return getRelatedIfResolvable(this, getResolvableType().as(Stream.class).getActualTypeArgument(0));
-		}
-		return getRelatedIfResolvable(this, getResolvableType().as(Collection.class).getActualTypeArgument(0));
+		return upcast(Collection.class).map((e) -> e.getActualTypeArgument(0));
 	}
 
 	/**
-	 * If this type is a {@link Collection} or an array, creates a element
-	 * TypeDescriptor from the provided collection or array element.
-	 * <p>
-	 * Narrows the {@link #getElementTypeDescriptor() elementType} property to the
-	 * class of the provided collection or array element. For example, if this
-	 * describes a {@code java.util.List&lt;java.lang.Number&lt;} and the element
-	 * argument is an {@code java.lang.Integer}, the returned TypeDescriptor will be
-	 * {@code java.lang.Integer}. If this describes a
-	 * {@code java.util.List&lt;?&gt;} and the element argument is an
-	 * {@code java.lang.Integer}, the returned TypeDescriptor will be
-	 * {@code java.lang.Integer} as well.
-	 * <p>
-	 * Annotation and nested type context will be preserved in the narrowed
-	 * TypeDescriptor that is returned.
+	 * 根据元素值窄化元素类型描述符
 	 * 
-	 * @param element the collection or array element
-	 * @return a element type descriptor, narrowed to the type of the provided
-	 *         element
-	 * @see #getElementTypeDescriptor()
-	 * @see #narrow(Object)
+	 * @param element 元素值
+	 * @return 窄化后的元素类型描述符
 	 */
 	public TypeDescriptor elementTypeDescriptor(Object element) {
 		return narrow(element, getElementTypeDescriptor());
 	}
 
 	/**
-	 * Is this type a {@link Map} type?
+	 * 判断是否为映射类型（实现Map接口）
+	 * 
+	 * @return true表示映射类型
 	 */
 	public boolean isMap() {
 		return Map.class.isAssignableFrom(getType());
 	}
 
 	/**
-	 * If this type is a {@link Map} and its key type is parameterized, returns the
-	 * map's key type. If the Map's key type is not parameterized, returns
-	 * {@code null} indicating the key type is not declared.
+	 * 获取映射键类型描述符
+	 * <p>
+	 * 示例：Map<String, Integer>的键类型描述符为String
+	 * </p>
 	 * 
-	 * @return the Map key type, or {@code null} if this type is a Map but its key
-	 *         type is not parameterized
-	 * @throws IllegalStateException if this type is not a {@code java.util.Map}
+	 * @return 键类型的TypeDescriptor
 	 */
 	public TypeDescriptor getMapKeyTypeDescriptor() {
 		Assert.state(isMap(), "Not a [java.util.Map]");
-		return getRelatedIfResolvable(this, getResolvableType().as(Map.class).getActualTypeArgument(0));
+		return upcast(Map.class).map((e) -> e.getActualTypeArgument(0));
 	}
 
 	/**
-	 * If this type is a {@link Map}, creates a mapKey {@link TypeDescriptor} from
-	 * the provided map key.
-	 * <p>
-	 * Narrows the {@link #getMapKeyTypeDescriptor() mapKeyType} property to the
-	 * class of the provided map key. For example, if this describes a
-	 * {@code java.util.Map&lt;java.lang.Number, java.lang.String&lt;} and the key
-	 * argument is a {@code java.lang.Integer}, the returned TypeDescriptor will be
-	 * {@code java.lang.Integer}. If this describes a
-	 * {@code java.util.Map&lt;?, ?&gt;} and the key argument is a
-	 * {@code java.lang.Integer}, the returned TypeDescriptor will be
-	 * {@code java.lang.Integer} as well.
-	 * <p>
-	 * Annotation and nested type context will be preserved in the narrowed
-	 * TypeDescriptor that is returned.
+	 * 根据键值窄化映射键类型描述符
 	 * 
-	 * @param mapKey the map key
-	 * @return the map key type descriptor
-	 * @throws IllegalStateException if this type is not a {@code java.util.Map}
-	 * @see #narrow(Object)
+	 * @param mapKey 键值
+	 * @return 窄化后的键类型描述符
 	 */
 	public TypeDescriptor getMapKeyTypeDescriptor(Object mapKey) {
 		return narrow(mapKey, getMapKeyTypeDescriptor());
 	}
 
 	/**
-	 * If this type is a {@link Map} and its value type is parameterized, returns
-	 * the map's value type.
+	 * 获取映射值类型描述符
 	 * <p>
-	 * If the Map's value type is not parameterized, returns {@code null} indicating
-	 * the value type is not declared.
+	 * 示例：Map<String, Integer>的值类型描述符为Integer
+	 * </p>
 	 * 
-	 * @return the Map value type, or {@code null} if this type is a Map but its
-	 *         value type is not parameterized
-	 * @throws IllegalStateException if this type is not a {@code java.util.Map}
+	 * @return 值类型的TypeDescriptor
 	 */
 	public TypeDescriptor getMapValueTypeDescriptor() {
 		Assert.state(isMap(), "Not a [java.util.Map]");
-		return getRelatedIfResolvable(this, getResolvableType().as(Map.class).getActualTypeArgument(1));
+		return upcast(Map.class).map((e) -> e.getActualTypeArgument(1));
 	}
 
 	/**
-	 * If this type is a {@link Map}, creates a mapValue {@link TypeDescriptor} from
-	 * the provided map value.
-	 * <p>
-	 * Narrows the {@link #getMapValueTypeDescriptor() mapValueType} property to the
-	 * class of the provided map value. For example, if this describes a
-	 * {@code java.util.Map&lt;java.lang.String, java.lang.Number&lt;} and the value
-	 * argument is a {@code java.lang.Integer}, the returned TypeDescriptor will be
-	 * {@code java.lang.Integer}. If this describes a
-	 * {@code java.util.Map&lt;?, ?&gt;} and the value argument is a
-	 * {@code java.lang.Integer}, the returned TypeDescriptor will be
-	 * {@code java.lang.Integer} as well.
-	 * <p>
-	 * Annotation and nested type context will be preserved in the narrowed
-	 * TypeDescriptor that is returned.
+	 * 根据值窄化映射值类型描述符
 	 * 
-	 * @param mapValue the map value
-	 * @return the map value type descriptor
-	 * @throws IllegalStateException if this type is not a {@code java.util.Map}
-	 * @see #narrow(Object)
+	 * @param mapValue 映射值
+	 * @return 窄化后的值类型描述符
 	 */
 	public TypeDescriptor getMapValueTypeDescriptor(Object mapValue) {
 		return narrow(mapValue, getMapValueTypeDescriptor());
 	}
 
+	/**
+	 * 窄化类型描述符（通用辅助方法）
+	 * 
+	 * @param value 实际值
+	 * @param typeDescriptor 原始类型描述符
+	 * @return 窄化后的类型描述符
+	 */
 	private TypeDescriptor narrow(Object value, TypeDescriptor typeDescriptor) {
 		if (typeDescriptor != null) {
 			return typeDescriptor.narrow(value);
@@ -376,174 +309,173 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	}
 
 	/**
-	 * Create a new type descriptor for an object.
+	 * 判断与另一个TypeDescriptor是否相等
 	 * <p>
-	 * Use this factory method to introspect a source object before asking the
-	 * conversion system to convert it to some another type.
-	 * <p>
-	 * If the provided object is {@code null}, returns {@code null}, else calls
-	 * {@link #valueOf(Class)} to build a TypeDescriptor from the object's class.
+	 * 相等条件：
+	 * 1. 原始类型相同
+	 * 2. 注解元数据相同
+	 * 3. 集合/数组/映射的元素类型相同
+	 * </p>
 	 * 
-	 * @param source the source object
-	 * @return the type descriptor
+	 * @param other 待比较的对象
+	 * @return true表示相等
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (!(other instanceof TypeDescriptor)) {
+			return false;
+		}
+		TypeDescriptor otherDesc = (TypeDescriptor) other;
+		if (getType() != otherDesc.getType()) {
+			return false;
+		}
+		if (!annotationsMatch(otherDesc)) {
+			return false;
+		}
+		if (isCollection() || isArray()) {
+			return ObjectUtils.equals(getElementTypeDescriptor(), otherDesc.getElementTypeDescriptor());
+		} else if (isMap()) {
+			return (ObjectUtils.equals(getMapKeyTypeDescriptor(), otherDesc.getMapKeyTypeDescriptor())
+					&& ObjectUtils.equals(getMapValueTypeDescriptor(), otherDesc.getMapValueTypeDescriptor()));
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * 比较注解元数据是否匹配
+	 * 
+	 * @param otherDesc 另一个TypeDescriptor
+	 * @return true表示注解匹配
+	 */
+	private boolean annotationsMatch(TypeDescriptor otherDesc) {
+		Annotation[] anns = getAnnotations();
+		Annotation[] otherAnns = otherDesc.getAnnotations();
+		if (anns == otherAnns) {
+			return true;
+		}
+		if (anns.length != otherAnns.length) {
+			return false;
+		}
+		if (anns.length > 0) {
+			for (int i = 0; i < anns.length; i++) {
+				if (!annotationEquals(anns[i], otherAnns[i])) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 比较两个注解是否相等（优化版）
+	 * 
+	 * @param ann 注解1
+	 * @param otherAnn 注解2
+	 * @return true表示相等
+	 */
+	private boolean annotationEquals(Annotation ann, Annotation otherAnn) {
+		// 优先比较引用地址，再比较注解类型和值，提升性能
+		return (ann == otherAnn || (ann.getClass() == otherAnn.getClass() && ann.equals(otherAnn)));
+	}
+
+	/**
+	 * 获取哈希码（基于原始类型）
+	 * 
+	 * @return 哈希码
+	 */
+	@Override
+	public int hashCode() {
+		return getType().hashCode();
+	}
+
+	/**
+	 * 获取类型描述字符串（包含注解和类型信息）
+	 * 
+	 * @return 类型描述字符串
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Annotation ann : getAnnotations()) {
+			builder.append('@').append(ann.annotationType().getName()).append(' ');
+		}
+		builder.append(getResolvableType());
+		return builder.toString();
+	}
+
+	/**
+	 * 根据对象创建TypeDescriptor（对象为null时返回null）
+	 * 
+	 * @param source 源对象
+	 * @return TypeDescriptor实例，null表示source为null
 	 */
 	public static TypeDescriptor forObject(Object source) {
 		return (source != null ? valueOf(source.getClass()) : null);
 	}
 
-	public static TypeDescriptor forMethodReturnType(@NonNull Executable executable) {
-		if (executable instanceof Method) {
-			return new TypeDescriptor(ResolvableType.forType(((Method) executable).getGenericReturnType()), null,
-					executable);
-		}
-		return new TypeDescriptor(ResolvableType.forType(executable.getDeclaringClass()), null, executable);
-	}
-
-	public static TypeDescriptor forFieldType(@NonNull Field field) {
-		return new TypeDescriptor(ResolvableType.forType(field.getGenericType()), null, field);
-	}
-
-	public static TypeDescriptor forParameter(@NonNull Parameter parameter) {
-		return new TypeDescriptor(ResolvableType.forType(parameter.getParameterizedType()), null, parameter);
-	}
-
-	public static TypeDescriptor forExecutableParameter(Executable executable, int index) {
-		if (index >= executable.getParameterCount()) {
-			throw new IndexOutOfBoundsException("index: " + index);
-		}
-		Parameter parameter = executable.getParameters()[index];
-		return forParameter(parameter);
-	}
-
 	/**
-	 * Create a new type descriptor from the given type.
-	 * <p>
-	 * Use this to instruct the conversion system to convert an object to a specific
-	 * target type, when no type location such as a method parameter or field is
-	 * available to provide additional conversion context.
-	 * <p>
-	 * Generally prefer use of {@link #forObject(Object)} for constructing type
-	 * descriptors from source objects, as it handles the {@code null} object case.
+	 * 根据类型创建TypeDescriptor（使用预缓存优化常见类型）
 	 * 
-	 * @param type the class (may be {@code null} to indicate {@code Object.class})
-	 * @return the corresponding type descriptor
+	 * @param type 类型（可为null，默认Object.class）
+	 * @return TypeDescriptor实例
 	 */
 	public static TypeDescriptor valueOf(Class<?> type) {
 		if (type == null) {
 			type = Object.class;
 		}
 		TypeDescriptor desc = commonTypesCache.get(type);
-		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forType(type), null, type));
-	}
-
-	public static TypeDescriptor valueOf(Type type) {
-		if (type == null) {
-			type = Object.class;
-		}
-
-		return new TypeDescriptor(ResolvableType.forType(type), null);
-	}
-
-	public static TypeDescriptor valueOf(ResolvableType type) {
-		if (type == null) {
-			type = ResolvableType.forType(Object.class);
-		}
-		return new TypeDescriptor(type, null);
+		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forType(type), null));
 	}
 
 	/**
-	 * Create a new type descriptor from a {@link java.util.Collection} type.
-	 * <p>
-	 * Useful for converting to typed Collections.
-	 * <p>
-	 * For example, a {@code List<String>} could be converted to a
-	 * {@code List<EmailAddress>} by converting to a targetType built with this
-	 * method. The method call to construct such a {@code TypeDescriptor} would look
-	 * something like:
-	 * {@code collection(List.class, TypeDescriptor.valueOf(EmailAddress.class));}
+	 * 创建带泛型参数的TypeDescriptor
 	 * 
-	 * @param collectionType        the collection type, which must implement
-	 *                              {@link Collection}.
-	 * @param elementTypeDescriptor a descriptor for the collection's element type,
-	 *                              used to convert collection elements
-	 * @return the collection type descriptor
+	 * @param type 原始类型
+	 * @param generics 泛型参数数组
+	 * @return 带泛型的TypeDescriptor
 	 */
-	public static TypeDescriptor collection(@NonNull Class<?> collectionType, TypeDescriptor elementTypeDescriptor) {
+	public static <T> TypeDescriptor forClassWithGenerics(Class<T> type, Type... generics) {
+		return new TypeDescriptor(ResolvableType.forClassWithGenerics(type, generics), null);
+	}
+
+	/**
+	 * 创建集合类型的TypeDescriptor
+	 * 
+	 * @param collectionType 集合类型（必须是Collection的子类型）
+	 * @param elementType 元素类型
+	 * @return 集合类型描述符
+	 */
+	public static TypeDescriptor collection(@NonNull Class<?> collectionType, Type elementType) {
 		if (!Collection.class.isAssignableFrom(collectionType)) {
 			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
 		}
-		ResolvableType element = (elementTypeDescriptor != null ? elementTypeDescriptor.resolvableType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null);
-	}
-
-	public static TypeDescriptor collection(@NonNull Class<?> collectionType, ResolvableType elementType) {
-		if (!Collection.class.isAssignableFrom(collectionType)) {
-			throw new IllegalArgumentException("Collection type must be a [java.util.Collection]");
-		}
-		ResolvableType element = (elementType != null ? elementType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(collectionType, element), null);
-	}
-
-	public static TypeDescriptor collection(Class<?> collectionType, Class<?> elementType) {
-		return collection(collectionType, ResolvableType.forType(elementType));
+		return forClassWithGenerics(collectionType, elementType);
 	}
 
 	/**
-	 * Create a new type descriptor from a {@link java.util.Map} type.
-	 * <p>
-	 * Useful for converting to typed Maps.
-	 * <p>
-	 * For example, a Map&lt;String, String&gt; could be converted to a Map&lt;Id,
-	 * EmailAddress&gt; by converting to a targetType built with this method: The
-	 * method call to construct such a TypeDescriptor would look something like:
+	 * 创建映射类型的TypeDescriptor
 	 * 
-	 * <pre class="code">
-	 * map(Map.class, TypeDescriptor.valueOf(Id.class), TypeDescriptor.valueOf(EmailAddress.class));
-	 * </pre>
-	 * 
-	 * @param mapType             the map type, which must implement {@link Map}
-	 * @param keyTypeDescriptor   a descriptor for the map's key type, used to
-	 *                            convert map keys
-	 * @param valueTypeDescriptor the map's value type, used to convert map values
-	 * @return the map type descriptor
+	 * @param mapType 映射类型（必须是Map的子类型）
+	 * @param keyType 键类型
+	 * @param valueType 值类型
+	 * @return 映射类型描述符
 	 */
-	public static TypeDescriptor map(@NonNull Class<?> mapType, TypeDescriptor keyTypeDescriptor,
-			TypeDescriptor valueTypeDescriptor) {
+	public static TypeDescriptor map(@NonNull Class<?> mapType, @NonNull Type keyType, @NonNull Type valueType) {
 		if (!Map.class.isAssignableFrom(mapType)) {
 			throw new IllegalArgumentException("Map type must be a [java.util.Map]");
 		}
-		ResolvableType key = (keyTypeDescriptor != null ? keyTypeDescriptor.resolvableType : null);
-		ResolvableType value = (valueTypeDescriptor != null ? valueTypeDescriptor.resolvableType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null);
-	}
-
-	public static TypeDescriptor map(@NonNull Class<?> mapType, ResolvableType keyType, ResolvableType valueType) {
-		if (!Map.class.isAssignableFrom(mapType)) {
-			throw new IllegalArgumentException("Map type must be a [java.util.Map]");
-		}
-		ResolvableType key = (keyType != null ? keyType : null);
-		ResolvableType value = (valueType != null ? valueType : null);
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(mapType, key, value), null);
-	}
-
-	public static TypeDescriptor map(@NonNull Class<?> mapType, Class<?> keyType, Class<?> valueType) {
-		return map(mapType, ResolvableType.forType(keyType), ResolvableType.forType(valueType));
+		return forClassWithGenerics(mapType, keyType, valueType);
 	}
 
 	/**
-	 * Create a new type descriptor as an array of the specified type.
-	 * <p>
-	 * For example to create a {@code Map<String,String>[]} use:
+	 * 创建数组类型的TypeDescriptor
 	 * 
-	 * <pre class="code">
-	 * TypeDescriptor.array(
-	 * 		TypeDescriptor.map(Map.class, TypeDescriptor.value(String.class), TypeDescriptor.value(String.class)));
-	 * </pre>
-	 * 
-	 * @param elementTypeDescriptor the {@link TypeDescriptor} of the array element
-	 *                              or {@code null}
-	 * @return an array {@link TypeDescriptor} or {@code null} if
-	 *         {@code elementTypeDescriptor} is {@code null}
+	 * @param elementTypeDescriptor 元素类型描述符
+	 * @return 数组类型描述符，null表示元素类型描述符为null
 	 */
 	public static TypeDescriptor array(TypeDescriptor elementTypeDescriptor) {
 		if (elementTypeDescriptor == null) {
@@ -553,34 +485,53 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 				elementTypeDescriptor);
 	}
 
-	public static TypeDescriptor array(ResolvableType elementType) {
-		if (elementType == null) {
-			return null;
+	/**
+	 * 根据可执行方法创建返回值的TypeDescriptor
+	 * 
+	 * @param executable 可执行方法（构造方法或普通方法）
+	 * @return 返回值类型描述符
+	 */
+	public static TypeDescriptor forMethodReturnType(@NonNull Executable executable) {
+		if (executable instanceof Method) {
+			return new TypeDescriptor(ResolvableType.forType(((Method) executable).getGenericReturnType()), null,
+					executable);
 		}
-		return new TypeDescriptor(elementType, null);
+		return new TypeDescriptor(ResolvableType.forType(executable.getDeclaringClass()), null, executable);
 	}
 
-	public static TypeDescriptor array(Class<?> elementType) {
-		if (elementType == null) {
-			return null;
-		}
-		return array(ResolvableType.forType(elementType));
+	/**
+	 * 根据字段创建TypeDescriptor
+	 * 
+	 * @param field 字段对象
+	 * @return 字段类型描述符
+	 */
+	public static TypeDescriptor forFieldType(@NonNull Field field) {
+		return new TypeDescriptor(ResolvableType.forType(field.getGenericType()), null, field);
 	}
 
-	private static TypeDescriptor getRelatedIfResolvable(TypeDescriptor source, ResolvableType type) {
-		if (type == null) {
-			return null;
-		}
-		return new TypeDescriptor(type, null, source);
+	/**
+	 * 根据参数创建TypeDescriptor
+	 * 
+	 * @param parameter 参数对象
+	 * @return 参数类型描述符
+	 */
+	public static TypeDescriptor forParameter(@NonNull Parameter parameter) {
+		return new TypeDescriptor(ResolvableType.forType(parameter.getParameterizedType()), null, parameter);
 	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Annotation ann : getAnnotations()) {
-			builder.append("@").append(ann.annotationType().getName()).append(' ');
+
+	/**
+	 * 根据可执行方法的参数索引创建TypeDescriptor
+	 * 
+	 * @param executable 可执行方法
+	 * @param index 参数索引
+	 * @return 参数类型描述符
+	 * @throws IndexOutOfBoundsException 当索引超出参数数量时抛出
+	 */
+	public static TypeDescriptor forExecutableParameter(Executable executable, int index) {
+		if (index >= executable.getParameterCount()) {
+			throw new IndexOutOfBoundsException("index: " + index + ", parameter count: " + executable.getParameterCount());
 		}
-		builder.append(getResolvableType().toString());
-		return builder.toString();
+		Parameter parameter = executable.getParameters()[index];
+		return forParameter(parameter);
 	}
 }

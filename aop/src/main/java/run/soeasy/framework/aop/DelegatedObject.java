@@ -3,7 +3,7 @@ package run.soeasy.framework.aop;
 /**
  * 被代理的对象
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface DelegatedObject {

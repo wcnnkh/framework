@@ -44,14 +44,21 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 	protected T parseObject(byte[] body, @NonNull TargetDescriptor targetDescriptor, @NonNull Message message,
 			MimeType contentType) throws IOException {
 		Charset charset = getCharset(contentType, message);
+		if (charset == null) {
+			getDefaultCharset();
+		}
+
 		String text = new String(body, charset);
-		return parseObject(text, targetDescriptor);
+		return parseObject(text, targetDescriptor, charset);
 	}
 
 	@Override
 	protected byte[] toBinary(@NonNull TypedData<T> body, @NonNull Message message, MediaType mediaType)
 			throws IOException {
 		Charset charset = getCharset(mediaType, message);
+		if (charset == null) {
+			charset = getDefaultCharset();
+		}
 		String text = toString(body, mediaType, charset);
 		return text.getBytes(charset);
 	}
@@ -73,7 +80,9 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 		super.writeObject(data, message, contentTypeToUse);
 	}
 
-	protected abstract T parseObject(String body, TargetDescriptor targetDescriptor) throws IOException;
+	protected abstract T parseObject(String body, TargetDescriptor targetDescriptor, @NonNull Charset charset)
+			throws IOException;
 
-	protected abstract String toString(TypedData<T> body, MediaType contentType, Charset charset) throws IOException;
+	protected abstract String toString(TypedData<T> body, MediaType contentType, @NonNull Charset charset)
+			throws IOException;
 }

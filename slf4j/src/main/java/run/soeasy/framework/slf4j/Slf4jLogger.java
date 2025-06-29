@@ -11,7 +11,7 @@ import run.soeasy.framework.logging.FormatableMessage;
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class Slf4jLogger implements run.soeasy.framework.logging.Logger {

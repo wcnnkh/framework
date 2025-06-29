@@ -4,24 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
-public class ObjectSerializer implements Serializer {
-	private final CrossLanguageSerializer serializer;
+@RequiredArgsConstructor
+class ObjectSerializer implements TypedSerializer {
+	@NonNull
+	private final Serializer serializer;
+	@NonNull
 	private final TypeDescriptor typeDescriptor;
-
-	public ObjectSerializer(CrossLanguageSerializer serializer, TypeDescriptor typeDescriptor) {
-		this.serializer = serializer;
-		this.typeDescriptor = typeDescriptor;
-	}
-
-	public final CrossLanguageSerializer getSerializer() {
-		return serializer;
-	}
-
-	public final TypeDescriptor getTypeDescriptor() {
-		return typeDescriptor;
-	}
 
 	@Override
 	public void serialize(Object source, OutputStream target) throws IOException {
@@ -29,7 +21,12 @@ public class ObjectSerializer implements Serializer {
 	}
 
 	@Override
-	public <T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException {
+	public Object deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException {
 		return serializer.deserialize(input, typeDescriptor);
+	}
+
+	@Override
+	public TypedSerializer typed(TypeDescriptor typeDescriptor) {
+		return new ObjectSerializer(serializer, typeDescriptor);
 	}
 }

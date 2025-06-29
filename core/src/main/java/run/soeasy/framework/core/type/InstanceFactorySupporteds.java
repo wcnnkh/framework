@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * 已支持的实例工厂
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 @RequiredArgsConstructor

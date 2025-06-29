@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.merge.Merger;
+import run.soeasy.framework.core.collection.function.Merger;
 
 public class MergedElements<E> implements ElementsWrapper<E, Elements<E>> {
 	private static final int JOIN_MAX_LENGTH = Integer.max(4,

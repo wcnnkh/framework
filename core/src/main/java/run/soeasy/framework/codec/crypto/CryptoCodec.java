@@ -24,7 +24,7 @@ import run.soeasy.framework.io.BufferConsumer;
 /**
  * 需要encodeKey和decoderKey的为非对称加解密
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class CryptoCodec extends SecurityCodec {
@@ -71,16 +71,6 @@ public class CryptoCodec extends SecurityCodec {
 
 	public final CipherFactory getDecoder() {
 		return decoder;
-	}
-
-	@Override
-	public boolean canEncode() {
-		return encoder != null;
-	}
-
-	@Override
-	public boolean canDecode() {
-		return decoder != null;
 	}
 
 	@Override

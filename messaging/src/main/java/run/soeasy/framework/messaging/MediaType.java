@@ -14,7 +14,6 @@ import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.comparator.CompoundComparator;
 import run.soeasy.framework.io.InvalidMimeTypeException;
 import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.io.MimeTypeUtils;
@@ -616,8 +615,9 @@ public class MediaType extends MimeType implements Serializable {
 	 */
 	public static void sortBySpecificityAndQuality(@NonNull List<MediaType> mediaTypes) {
 		if (mediaTypes.size() > 1) {
-			Collections.sort(mediaTypes, new CompoundComparator<MediaType>(MediaType.SPECIFICITY_COMPARATOR,
-					MediaType.QUALITY_VALUE_COMPARATOR));
+			if (mediaTypes.size() > 1) {
+				mediaTypes.sort(MediaType.SPECIFICITY_COMPARATOR.thenComparing(MediaType.QUALITY_VALUE_COMPARATOR));
+			}
 		}
 	}
 

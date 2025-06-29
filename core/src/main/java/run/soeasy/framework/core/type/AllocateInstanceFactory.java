@@ -66,7 +66,7 @@ public class AllocateInstanceFactory implements InstanceFactory {
 
 	@Override
 	public Object newInstance(@NonNull ResolvableType requiredType) {
-		return ReflectionUtils.invoke(getAllocateInstanceMethod(), getUnsafe(), requiredType.getType());
+		return ReflectionUtils.invoke(getAllocateInstanceMethod(), getUnsafe(), requiredType);
 	}
 
 }

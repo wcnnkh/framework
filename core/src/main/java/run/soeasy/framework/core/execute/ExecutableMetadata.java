@@ -11,7 +11,7 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
 /**
  * 可执行的
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface ExecutableMetadata extends ExecutableDescriptor {

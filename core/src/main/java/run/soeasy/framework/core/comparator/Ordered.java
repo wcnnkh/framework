@@ -1,59 +1,39 @@
 package run.soeasy.framework.core.comparator;
 
 /**
- * {@code Ordered} is an interface that can be implemented by objects that
- * should be <em>orderable</em>, for example in a {@code Collection}.
+ * * 有序接口 定义对象优先级排序的标准，通过getOrder()返回的整数值确定顺序
+ * 
+ * 排序规则： - 数值越小优先级越高（HIGHEST_PRECEDENCE < DEFAULT_PRECEDENCE <
+ * LOWEST_PRECEDENCE） - 适用于需要排序的组件（如拦截器、转换器、处理器等）
+ * 
+ * @author soeasy.run
  *
- * <p>
- * The actual {@link #getOrder() order} can be interpreted as prioritization,
- * with the first object (with the lowest order value) having the highest
- * priority.
- *
- * <p>
- * Note that there is also a <em>priority</em> marker for this interface:
- * {@link PriorityOrdered}. Order values expressed by {@code PriorityOrdered}
- * objects always apply before same order values expressed by <em>plain</em>
- * {@link Ordered} objects.
- *
- * <p>
- * Consult the Javadoc for {@link OrderComparator} for details on the sort
- * semantics for non-ordered objects.
- *
- * @see PriorityOrdered
- * @see OrderComparator
  */
 public interface Ordered {
 
 	/**
-	 * Useful constant for the highest precedence value.
-	 * 
-	 * @see java.lang.Integer#MIN_VALUE
+	 * 最高优先级常量 数值为Integer.MIN_VALUE，在排序中优先级最高
 	 */
 	int HIGHEST_PRECEDENCE = Integer.MIN_VALUE;
 
+	/**
+	 * 默认优先级常量 数值为0，当未指定具体优先级时使用
+	 */
 	int DEFAULT_PRECEDENCE = 0;
 
 	/**
-	 * Useful constant for the lowest precedence value.
-	 * 
-	 * @see java.lang.Integer#MAX_VALUE
+	 * 最低优先级常量 数值为Integer.MAX_VALUE，在排序中优先级最低
 	 */
 	int LOWEST_PRECEDENCE = Integer.MAX_VALUE;
 
 	/**
-	 * Get the order value of this object.
-	 * <p>
-	 * Higher values are interpreted as lower priority. As a consequence, the object
-	 * with the lowest value has the highest priority (somewhat analogous to Servlet
-	 * {@code load-on-startup} values).
-	 * <p>
-	 * Same order values will result in arbitrary sort positions for the affected
-	 * objects.
+	 * 获取对象的顺序值
 	 * 
-	 * @return the order value
-	 * @see #HIGHEST_PRECEDENCE
-	 * @see #LOWEST_PRECEDENCE
+	 * 排序规则： - 数值越小优先级越高（例如：A.getOrder() < B.getOrder() → A优先级高于B） - 相同顺序值的对象排序位置不确定
+	 * 
+	 * @return 顺序值，数值越小优先级越高
+	 * @see #HIGHEST_PRECEDENCE 最高优先级
+	 * @see #LOWEST_PRECEDENCE 最低优先级
 	 */
 	int getOrder();
-
 }

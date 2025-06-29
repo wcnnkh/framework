@@ -6,7 +6,7 @@ import java.math.BigInteger;
 /**
  * 两数相加, 返回大类型
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class Addition implements MathFunction<Number, Number> {

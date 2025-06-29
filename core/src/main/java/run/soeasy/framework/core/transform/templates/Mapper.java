@@ -6,7 +6,7 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 /**
  * 映射器
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <K>
  * @param <V>

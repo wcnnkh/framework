@@ -46,7 +46,7 @@ public class ExecutableParameterTemplate implements ParameterTemplate, Provider<
 						PropertyDescriptor[] array = new PropertyDescriptor[parameters.length];
 						for (int i = 0; i < parameters.length; i++) {
 							PropertyDescriptor parameterDescriptor = new ExecutableParameterDescriptor(parameters[i]);
-							if (i < names.length && names[i] != null) {
+							if (names != null && i < names.length && names[i] != null) {
 								parameterDescriptor = parameterDescriptor.rename(names[i]);
 							}
 							array[i] = parameterDescriptor;

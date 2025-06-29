@@ -6,10 +6,12 @@ import java.lang.reflect.Method;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.object.Property;
+import run.soeasy.framework.core.transform.property.Property;
 
 @Getter
+@ToString(callSuper = true)
 public class ReflectionProperty extends ReflectionField implements Property, Serializable {
 	public static enum InvokeType {
 		DEFAULT, FIELD, METHOD
@@ -96,11 +98,11 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
 	}
 
 	@Override
-	public void writeTo(Object value, Object target) {
+	public void writeTo(Object target, Object value) {
 		if (writeType == InvokeType.FIELD || writeMethod == null) {
-			super.writeTo(value, target);
+			super.writeTo(target, value);
 		} else {
-			writeMethod.writeTo(value, target);
+			writeMethod.writeTo(target, value);
 		}
 	}
 }

@@ -9,7 +9,7 @@ import run.soeasy.framework.core.math.NumberValue;
 /**
  * 辗转相除法
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public class DivisionAlgorithm implements GreatestCommonDivisor {

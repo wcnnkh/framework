@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import lombok.ToString;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.transform.object.Cloner;
+import run.soeasy.framework.core.transform.property.Cloner;
 import run.soeasy.framework.sequences.uuid.UUIDSequences;
 
 public class ReflectionTest {

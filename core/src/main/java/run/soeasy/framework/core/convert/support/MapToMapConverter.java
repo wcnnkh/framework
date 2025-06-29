@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.convert.AbstractConditionalConverter;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;

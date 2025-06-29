@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.ConversionException;
-import run.soeasy.framework.core.convert.ConversionService;
+import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
@@ -21,18 +21,18 @@ public class MapEntryAccessor implements TypedValueAccessor {
 	@NonNull
 	private final TypeDescriptor mapTypeDescriptor;
 	@NonNull
-	private final ConversionService conversionService;
+	private final Converter converter;
 
 	@Override
 	public Object get() throws ConversionException {
 		Object value = map.get(key);
-		return conversionService.convert(value, mapTypeDescriptor.getMapValueTypeDescriptor());
+		return converter.convert(value, mapTypeDescriptor.getMapValueTypeDescriptor());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set(Object value) throws UnsupportedOperationException {
-		Object target = conversionService.convert(value, mapTypeDescriptor.getMapValueTypeDescriptor());
+		Object target = converter.convert(value, mapTypeDescriptor.getMapValueTypeDescriptor());
 		map.put(key, target);
 	}
 

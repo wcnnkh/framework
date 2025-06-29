@@ -7,7 +7,7 @@ import run.soeasy.framework.core.domain.KeyValue;
 /**
  * 映射
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  * @param <K>
  * @param <V>

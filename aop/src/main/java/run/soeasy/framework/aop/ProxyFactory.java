@@ -5,7 +5,7 @@ import lombok.NonNull;
 /**
  * 代理
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface ProxyFactory {

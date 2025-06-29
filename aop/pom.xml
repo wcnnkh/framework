@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3</version>
 	</parent>
 	<artifactId>aop</artifactId>
 	<name>aop</name>

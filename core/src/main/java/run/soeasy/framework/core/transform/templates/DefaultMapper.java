@@ -18,10 +18,10 @@ import run.soeasy.framework.core.type.ResolvableType;
 @Getter
 @Setter
 public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends GenericMapper<K, V, T>
-		implements Transformer, Converter, InstanceFactory, MappingProvider<Object, K, V, T> {
+		implements Transformer, Converter, InstanceFactory, MappingFactory<Object, K, V, T> {
 	@NonNull
 	private InstanceFactory instanceFactory = InstanceFactorySupporteds.REFLECTION;
-	private final MappingLoader<K, V, T> mappingLoader = new MappingLoader<>();
+	private final MappingProvider<K, V, T> mappingProvider = new MappingProvider<>();
 
 	public DefaultMapper() {
 		super(new ConfigurableServices<>(), new ValueMapper<>());
@@ -65,12 +65,12 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 
 	@Override
 	public T getMapping(@NonNull Object source, @NonNull TypeDescriptor requiredType) {
-		return mappingLoader.getMapping(source, requiredType);
+		return mappingProvider.getMapping(source, requiredType);
 	}
 
 	@Override
 	public boolean hasMapping(@NonNull TypeDescriptor requiredType) {
-		return mappingLoader.hasMapping(requiredType);
+		return mappingProvider.hasMapping(requiredType);
 	}
 
 	@Override

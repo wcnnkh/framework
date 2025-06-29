@@ -3,7 +3,7 @@ package run.soeasy.framework.core.math;
 /**
  * 运算器/计算器
  * 
- * @author wcnnkh
+ * @author soeasy.run
  *
  */
 public interface Calculator extends MathFunction<NumberValue, NumberValue> {

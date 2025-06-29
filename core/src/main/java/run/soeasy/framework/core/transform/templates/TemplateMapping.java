@@ -1,12 +1,11 @@
 package run.soeasy.framework.core.transform.templates;
 
-import run.soeasy.framework.core.collection.Lookup;
 import run.soeasy.framework.core.collection.NoUniqueElementException;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 
 @FunctionalInterface
 public interface TemplateMapping<E extends TypedValueAccessor>
-		extends Mapping<Object, E>, Lookup<Object, E>, Template<E> {
+		extends Mapping<Object, E>, Template<E> {
 
 	@Override
 	default TemplateMapping<E> asMap(boolean uniqueness) {

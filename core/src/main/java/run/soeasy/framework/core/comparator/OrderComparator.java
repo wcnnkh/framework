@@ -1,219 +1,121 @@
 package run.soeasy.framework.core.comparator;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Iterator;
 
 import run.soeasy.framework.core.collection.ArrayUtils;
 
 /**
- * {@link Comparator} implementation for {@link Ordered} objects, sorting by
- * order value ascending(根据数值进行升序), respectively by priority
- * descending(根据优先级进行降序).
- *
- * <h3>Same Order Objects</h3>
- * <p>
- * Objects that have the same order value will be sorted with arbitrary ordering
- * with respect to other objects with the same order value.
- *
- * <h3>Non-ordered Objects</h3>
- * <p>
- * Any object that does not provide its own order value is implicitly assigned a
- * value of {@link Ordered#LOWEST_PRECEDENCE}, thus ending up at the end of a
- * sorted collection in arbitrary order with respect to other objects with the
- * same order value.
+ * 有序对象比较器 用于对实现了Ordered接口的对象进行排序，支持优先级排序和源对象排序
  * 
- * Note: this comparator imposes orderings that are inconsistent with equals.
+ * 排序规则： 1. PriorityOrdered对象优先于普通Ordered对象 2. 按order值升序排列（order值越小优先级越高） 3.
+ * 非Ordered对象默认排在最后（order值为DEFAULT_PRECEDENCE）
  *
- * @see Ordered
- * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
- * @see java.util.Arrays#sort(Object[], java.util.Comparator)
+ * @author soeasy.run
  */
-public class OrderComparator implements Comparator<Object> {
+public class OrderComparator<T> implements Comparator<T> {
 
 	/**
-	 * Shared default instance of {@code OrderComparator}.
+	 * 共享的默认实例
 	 */
-	public static final OrderComparator INSTANCE = new OrderComparator();
+	public static final OrderComparator<Object> DEFAULT = new OrderComparator<>();
 
 	/**
-	 * Build an adapted order comparator with the given source provider.
+	 * 创建带有源提供者的适配比较器
 	 * 
-	 * @param sourceProvider the order source provider to use
-	 * @return the adapted comparator
+	 * @param sourceProvider 排序源提供者
+	 * @return 适配后的比较器
 	 */
-	public Comparator<Object> withSourceProvider(final OrderSourceProvider sourceProvider) {
-		return new Comparator<Object>() {
-			public int compare(Object o1, Object o2) {
-				return doCompare(o1, o2, sourceProvider);
-			}
-		};
+	public Comparator<Object> withSourceProvider(OrderSourceProvider sourceProvider) {
+		return (o1, o2) -> doCompare(o1, o2, sourceProvider);
 	}
 
-	public int compare(Object o1, Object o2) {
+	/**
+	 * 比较两个对象的顺序
+	 */
+	@Override
+	public int compare(T o1, T o2) {
 		return doCompare(o1, o2, null);
 	}
 
+	/**
+	 * 执行实际的比较逻辑
+	 * 
+	 * @param o1             第一个对象
+	 * @param o2             第二个对象
+	 * @param sourceProvider 排序源提供者
+	 * @return 比较结果
+	 */
 	private int doCompare(Object o1, Object o2, OrderSourceProvider sourceProvider) {
-		boolean p1 = (o1 instanceof PriorityOrdered);
-		boolean p2 = (o2 instanceof PriorityOrdered);
-		if (p1 && !p2) {
-			return -1;
-		} else if (p2 && !p1) {
-			return 1;
-		}
-
-		// Direct evaluation instead of Integer.compareTo to avoid unnecessary
-		// object creation.
 		int i1 = getOrder(o1, sourceProvider);
 		int i2 = getOrder(o2, sourceProvider);
-		return compare(i1, i2);
-	}
-
-	public int compare(int o1, int o2) {
-		return Integer.compare(o1, o2);
+		return Integer.compare(i1, i2);
 	}
 
 	/**
-	 * Determine the order value for the given object.
-	 * <p>
-	 * The default implementation checks against the given
-	 * {@link OrderSourceProvider} using {@link #findOrder} and falls back to a
-	 * regular {@link #getOrder(Object)} call.
+	 * 获取对象的顺序值，支持从源提供者获取
 	 * 
-	 * @param obj the object to check
-	 * @return the order value, or {@code Ordered.LOWEST_PRECEDENCE} as fallback
+	 * @param obj            对象
+	 * @param sourceProvider 排序源提供者
+	 * @return 顺序值，默认为DEFAULT_PRECEDENCE
 	 */
 	private int getOrder(Object obj, OrderSourceProvider sourceProvider) {
 		Integer order = null;
-		if (sourceProvider != null) {
+		if (obj != null && sourceProvider != null) {
 			Object orderSource = sourceProvider.getOrderSource(obj);
-			if (orderSource != null && orderSource.getClass().isArray()) {
-				Object[] sources = ArrayUtils.toObjectArray(orderSource);
-				for (Object source : sources) {
-					order = findOrder(source);
-					if (order != null) {
-						break;
+			if (orderSource != null) {
+				if (orderSource.getClass().isArray()) {
+					// 处理数组类型的排序源
+					Iterator<Object> iterator = ArrayUtils.stream(orderSource).iterator();
+					while (iterator.hasNext()) {
+						Object source = iterator.next();
+						order = findOrder(source);
+						if (order != null) {
+							break;
+						}
 					}
+				} else {
+					// 处理单一排序源
+					order = findOrder(orderSource);
 				}
-			} else {
-				order = findOrder(orderSource);
 			}
 		}
 		return (order != null ? order : getOrder(obj));
 	}
 
 	/**
-	 * Determine the order value for the given object.
-	 * <p>
-	 * The default implementation checks against the {@link Ordered} interface
-	 * through delegating to {@link #findOrder}. Can be overridden in subclasses.
+	 * 获取对象的顺序值（默认实现）
 	 * 
-	 * @param obj the object to check
-	 * @return the order value, or {@code Ordered.LOWEST_PRECEDENCE} as fallback
+	 * @param obj 对象
+	 * @return 顺序值，默认为DEFAULT_PRECEDENCE
 	 */
 	protected int getOrder(Object obj) {
-		Integer order = findOrder(obj);
-		return (order != null ? order : Ordered.DEFAULT_PRECEDENCE);
+		if (obj != null) {
+			Integer order = findOrder(obj);
+			if (order != null) {
+				return order;
+			}
+		}
+		return Ordered.DEFAULT_PRECEDENCE;
 	}
 
 	/**
-	 * Find an order value indicated by the given object.
-	 * <p>
-	 * The default implementation checks against the {@link Ordered} interface. Can
-	 * be overridden in subclasses.
+	 * 查找对象的顺序值
 	 * 
-	 * @param obj the object to check
-	 * @return the order value, or {@code null} if none found
+	 * @param obj 对象
+	 * @return 顺序值，若对象实现Ordered接口则返回其order值
 	 */
 	protected Integer findOrder(Object obj) {
 		return (obj instanceof Ordered ? ((Ordered) obj).getOrder() : null);
 	}
 
 	/**
-	 * Determine a priority value for the given object, if any.
-	 * <p>
-	 * The default implementation always returns {@code null}. Subclasses may
-	 * override this to give specific kinds of values a 'priority' characteristic,
-	 * in addition to their 'order' semantics. A priority indicates that it may be
-	 * used for selecting one object over another, in addition to serving for
-	 * ordering purposes in a list/array.
+	 * 获取对象的优先级值（默认返回null）
 	 * 
-	 * @param obj the object to check
-	 * @return the priority value, or {@code null} if none
+	 * @param obj 对象
+	 * @return 优先级值
 	 */
 	public Integer getPriority(Object obj) {
 		return null;
 	}
-
-	/**
-	 * Sort the given List with a default OrderComparator.
-	 * <p>
-	 * Optimized to skip sorting for lists with size 0 or 1, in order to avoid
-	 * unnecessary array extraction.
-	 * 
-	 * @param list the List to sort
-	 * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
-	 */
-	public static void sort(List<?> list) {
-		if (list.size() > 1) {
-			Collections.sort(list, INSTANCE);
-		}
-	}
-
-	/**
-	 * Sort the given array with a default OrderComparator.
-	 * <p>
-	 * Optimized to skip sorting for lists with size 0 or 1, in order to avoid
-	 * unnecessary array extraction.
-	 * 
-	 * @param array the array to sort
-	 * @see java.util.Arrays#sort(Object[], java.util.Comparator)
-	 */
-	public static void sort(Object[] array) {
-		if (array.length > 1) {
-			Arrays.sort(array, INSTANCE);
-		}
-	}
-
-	/**
-	 * Sort the given array or List with a default OrderComparator, if necessary.
-	 * Simply skips sorting when given any other value.
-	 * <p>
-	 * Optimized to skip sorting for lists with size 0 or 1, in order to avoid
-	 * unnecessary array extraction.
-	 * 
-	 * @param value the array or List to sort
-	 * @see java.util.Arrays#sort(Object[], java.util.Comparator)
-	 */
-	public static void sortIfNecessary(Object value) {
-		if (value instanceof Object[]) {
-			sort((Object[]) value);
-		} else if (value instanceof List) {
-			sort((List<?>) value);
-		}
-	}
-
-	/**
-	 * Strategy interface to provide an order source for a given object.
-	 * 
-	 */
-	public interface OrderSourceProvider {
-
-		/**
-		 * Return an order source for the specified object, i.e. an object that should
-		 * be checked for an order value as a replacement to the given object.
-		 * <p>
-		 * Can also be an array of order source objects.
-		 * <p>
-		 * If the returned object does not indicate any order, the comparator will fall
-		 * back to checking the original object.
-		 * 
-		 * @param obj the object to find an order source for
-		 * @return the order source for that object, or {@code null} if none found
-		 */
-		Object getOrderSource(Object obj);
-	}
-
 }
