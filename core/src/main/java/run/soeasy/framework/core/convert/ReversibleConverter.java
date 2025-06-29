@@ -7,16 +7,24 @@ import lombok.NonNull;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
- * 可逆转换器接口 支持类型S到T和T到S的双向转换，自动推导类型映射关系
+ * 可逆转换器接口<br>
+ * 支持类型S到T和T到S的双向转换，自动推导类型映射关系
  * 
- * 核心特性： 1. 双向转换支持（to/from方法） 2. 自动类型映射推导 3. 条件转换支持（继承自ConditionalConverter）
+ * 核心特性：
+ * 1. 双向转换支持（to/from方法）
+ * 2. 自动类型映射推导
+ * 3. 条件转换支持（继承自{@link ConditionalConverter}）
+ * 
+ * @param <S> 源类型
+ * @param <T> 目标类型
  */
 public interface ReversibleConverter<S, T> extends ConditionalConverter {
 
 	/**
-	 * 获取类型映射关系 基于泛型参数自动解析源类型和目标类型
+	 * 获取类型映射关系<br>
+	 * 基于泛型参数自动解析源类型和目标类型
 	 * 
-	 * @return 类型映射对象，包含S->T的映射关系
+	 * @return 类型映射对象，包含S&rarr;T的映射关系
 	 */
 	default TypeMapping getTypeMapping() {
 		// 解析当前接口的泛型类型参数
@@ -30,7 +38,8 @@ public interface ReversibleConverter<S, T> extends ConditionalConverter {
 	}
 
 	/**
-	 * 获取可转换的类型映射集合 包含正向映射(S->T)和反向映射(T->S)
+	 * 获取可转换的类型映射集合<br>
+	 * 包含正向映射(S&rarr;T)和反向映射(T&rarr;S)
 	 * 
 	 * @return 包含两个TypeMapping的集合
 	 */
@@ -43,6 +52,14 @@ public interface ReversibleConverter<S, T> extends ConditionalConverter {
 		return typeMappings;
 	}
 
+	/**
+	 * 判断是否可以执行类型转换<br>
+	 * 检查源类型和目标类型是否符合当前转换器支持的映射关系
+	 * 
+	 * @param sourceTypeDescriptor 源类型描述符
+	 * @param targetTypeDescriptor 目标类型描述符
+	 * @return 如果可以转换返回true，否则返回false
+	 */
 	@Override
 	default boolean canConvert(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
@@ -51,7 +68,8 @@ public interface ReversibleConverter<S, T> extends ConditionalConverter {
 	}
 
 	/**
-	 * 执行类型转换 自动判断转换方向并调用相应的转换方法
+	 * 执行类型转换<br>
+	 * 自动判断转换方向并调用相应的转换方法
 	 * 
 	 * @param source               源对象
 	 * @param sourceTypeDescriptor 源类型描述符
@@ -87,7 +105,7 @@ public interface ReversibleConverter<S, T> extends ConditionalConverter {
 	}
 
 	/**
-	 * 执行S->T的转换
+	 * 执行S&rarr;T的转换
 	 * 
 	 * @param source               源对象(S类型)
 	 * @param sourceTypeDescriptor 源类型描述符
@@ -98,7 +116,7 @@ public interface ReversibleConverter<S, T> extends ConditionalConverter {
 	T to(S source, TypeDescriptor sourceTypeDescriptor, TypeDescriptor targetTypeDescriptor) throws ConversionException;
 
 	/**
-	 * 执行T->S的转换
+	 * 执行T&rarr;S的转换
 	 * 
 	 * @param source               源对象(T类型)
 	 * @param sourceTypeDescriptor 源类型描述符

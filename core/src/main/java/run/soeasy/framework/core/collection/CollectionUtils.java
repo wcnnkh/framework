@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2012 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package run.soeasy.framework.core.collection;
 
 import java.lang.reflect.Field;
@@ -57,6 +41,11 @@ import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
+/**
+ * 集合工具类 提供集合操作的各种实用方法，包括比较、过滤、转换、合并等功能
+ * 
+ * @author soeasy.run
+ */
 @UtilityClass
 public class CollectionUtils {
 	private static final class PreviousIterator<E> implements Iterator<E> {
@@ -90,6 +79,13 @@ public class CollectionUtils {
 		ReflectionUtils.makeAccessible(ELEMENT_TYPE_FIELD);
 	}
 
+	/**
+	 * 获取EnumMap的键类型
+	 * 
+	 * @param <T> 键类型
+	 * @param map EnumMap实例
+	 * @return 键的Class对象，非EnumMap返回null
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> Class<T> getEnumMapKeyType(Map map) {
 		Class<T> keyType = null;
@@ -99,6 +95,13 @@ public class CollectionUtils {
 		return keyType;
 	}
 
+	/**
+	 * 获取EnumSet的元素类型
+	 * 
+	 * @param <T>        元素类型
+	 * @param collection EnumSet实例
+	 * @return 元素的Class对象，非EnumSet返回null
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Class<T> getEnumSetElementType(@SuppressWarnings("rawtypes") Collection collection) {
 		Class<T> elementType = null;
@@ -108,14 +111,23 @@ public class CollectionUtils {
 		return elementType;
 	}
 
+	/**
+	 * 比较两个集合的元素顺序
+	 * 
+	 * @param <T>         元素类型
+	 * @param collection1 第一个集合
+	 * @param collection2 第二个集合
+	 * @param comparator  元素比较器
+	 * @return 比较结果：负数-前者小，0-相等，正数-前者大
+	 */
 	public static <T> int compare(Collection<? extends T> collection1, Collection<? extends T> collection2,
 			Comparator<T> comparator) {
-		if (CollectionUtils.isEmpty(collection1)) {
-			return CollectionUtils.isEmpty(collection2) ? 0 : -1;
+		if (isEmpty(collection1)) {
+			return isEmpty(collection2) ? 0 : -1;
 		}
 
-		if (CollectionUtils.isEmpty(collection2)) {
-			return CollectionUtils.isEmpty(collection1) ? 0 : 1;
+		if (isEmpty(collection2)) {
+			return isEmpty(collection1) ? 0 : 1;
 		}
 
 		Iterator<? extends T> iterator1 = collection1.iterator();
@@ -129,14 +141,23 @@ public class CollectionUtils {
 		return collection1.size() - collection2.size();
 	}
 
+	/**
+	 * 比较两个迭代器的元素顺序
+	 * 
+	 * @param <T>        元素类型
+	 * @param iterator1  第一个迭代器
+	 * @param iterator2  第二个迭代器
+	 * @param comparator 元素比较器
+	 * @return 比较结果：负数-前者小，0-相等，正数-前者大
+	 */
 	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
 			Comparator<T> comparator) {
-		if (CollectionUtils.isEmpty(iterator1)) {
-			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
+		if (isEmpty(iterator1)) {
+			return isEmpty(iterator2) ? 0 : -1;
 		}
 
-		if (CollectionUtils.isEmpty(iterator2)) {
-			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
+		if (isEmpty(iterator2)) {
+			return isEmpty(iterator1) ? 0 : 1;
 		}
 
 		while (iterator1.hasNext() && iterator2.hasNext()) {
@@ -148,12 +169,20 @@ public class CollectionUtils {
 		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
 	}
 
+	/**
+	 * 计算两个可迭代对象的补集（全集-子集）
+	 * 
+	 * @param <E>          元素类型
+	 * @param universal    全集
+	 * @param subaggregate 子集
+	 * @return 补集元素集合
+	 */
 	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate) {
-		if (CollectionUtils.isEmpty(universal)) {
+		if (isEmpty(universal)) {
 			return Collections.emptyList();
 		}
 
-		if (CollectionUtils.isEmpty(subaggregate)) {
+		if (isEmpty(subaggregate)) {
 			return unknownSizeStream(universal.iterator()).collect(Collectors.toList());
 		}
 
@@ -166,9 +195,18 @@ public class CollectionUtils {
 		return complementary(universal.iterator(), subaggregate.iterator());
 	}
 
+	/**
+	 * 计算两个可迭代对象的补集（全集-子集），使用自定义比较器
+	 * 
+	 * @param <E>          元素类型
+	 * @param universal    全集
+	 * @param subaggregate 子集
+	 * @param comparator   元素比较器
+	 * @return 补集元素集合
+	 */
 	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate,
 			Comparator<? super E> comparator) {
-		if (CollectionUtils.isEmpty(universal)) {
+		if (isEmpty(universal)) {
 			return Collections.emptyList();
 		}
 
@@ -176,29 +214,37 @@ public class CollectionUtils {
 				subaggregate == null ? Collections.emptyIterator() : subaggregate.iterator(), comparator);
 	}
 
+	/**
+	 * 计算两个迭代器的补集（全集-子集）
+	 * 
+	 * @param <E>          元素类型
+	 * @param universal    全集迭代器
+	 * @param subaggregate 子集迭代器
+	 * @return 补集元素集合
+	 */
 	public static <E> Collection<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate) {
 		return complementary(universal, subaggregate, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
 	}
 
 	/**
-	 * 获取补集(一定有全集大于子集)
+	 * 计算两个迭代器的补集（全集-子集），使用自定义比较器
 	 * 
 	 * @param <E>          元素类型
-	 * @param universal    全集
-	 * @param subaggregate 子集
-	 * @param comparator   比较器
-	 * @return 返回补集
+	 * @param universal    全集迭代器
+	 * @param subaggregate 子集迭代器
+	 * @param comparator   元素比较器，不可为null
+	 * @return 补集元素列表
 	 */
 	public static <E> List<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate,
 			@NonNull Comparator<? super E> comparator) {
-		if (CollectionUtils.isEmpty(universal)) {
+		if (isEmpty(universal)) {
 			// 如果全集不存在那么也就没有补集
 			return Collections.emptyList();
 		}
 
 		List<E> universalSet = new ArrayList<>();
 		universal.forEachRemaining(universalSet::add);
-		if (CollectionUtils.isEmpty(subaggregate)) {
+		if (isEmpty(subaggregate)) {
 			return universalSet;
 		}
 
@@ -217,16 +263,15 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Return {@code true} if any element in '{@code candidates}' is contained in
-	 * '{@code source}'; otherwise returns {@code false}.
+	 * 检查源集合是否包含任意候选元素
 	 * 
-	 * @param source     the source Collection
-	 * @param candidates the candidates to search for
-	 * @return whether any of the candidates has been found
+	 * @param source     源集合
+	 * @param candidates 候选元素集合
+	 * @return 包含任意候选元素返回true，否则false
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean containsAny(Collection source, Collection candidates) {
-		if (CollectionUtils.isEmpty(source) || CollectionUtils.isEmpty(candidates)) {
+		if (isEmpty(source) || isEmpty(candidates)) {
 			return false;
 		}
 		for (Object candidate : candidates) {
@@ -238,14 +283,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Check whether the given Collection contains the given element instance.
-	 * <p>
-	 * Enforces the given instance to be present, rather than returning {@code true}
-	 * for an equal element as well.
+	 * 检查集合是否包含指定对象实例（严格引用相等）
 	 * 
-	 * @param collection the Collection to check
-	 * @param element    the element to look for
-	 * @return {@code true} if found, {@code false} else
+	 * @param collection 待检查集合
+	 * @param element    目标元素
+	 * @return 包含实例返回true，否则false
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean containsInstance(Collection collection, Object element) {
@@ -260,11 +302,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 深度递归
+	 * 深度优先遍历多个可迭代对象，生成所有可能的组合
 	 * 
-	 * @param <T>
-	 * @param source
-	 * @return 返回所有路径
+	 * @param <T>    元素类型
+	 * @param source 可迭代对象列表，每个元素代表一层选择
+	 * @return 所有组合的列表，每个组合是一个元素路径
 	 */
 	public static <T> List<List<T>> depthFirstTraversal(List<? extends Iterable<? extends T>> source) {
 		List<List<T>> target = new ArrayList<>();
@@ -287,28 +329,83 @@ public class CollectionUtils {
 		}
 	}
 
+	/**
+	 * 创建指定类型的空集合
+	 * 
+	 * @param <T> 集合类型
+	 * @param type 集合类型（Map/Set/Collection及其子类型）
+	 * @return 空集合实例
+	 * @throws IllegalArgumentException 不支持的集合类型
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T empty(Class<?> type) {
-		if (Map.class.isAssignableFrom(type)) {
-			return (T) Collections.emptyNavigableMap();
-		} else if (Set.class.isAssignableFrom(type)) {
-			return (T) Collections.emptyNavigableSet();
-		} else if (Collection.class.isAssignableFrom(type)) {
-			return (T) Collections.emptyList();
-		}
-		throw new IllegalArgumentException("Unsupported Collection type: " + type);
+	    if (type == null) {
+	        throw new IllegalArgumentException("Type must not be null");
+	    }
+	    
+	    // 处理Map及其子接口
+	    if (Map.class.isAssignableFrom(type)) {
+	        if (SortedMap.class.isAssignableFrom(type)) {
+	            return (T) Collections.emptyNavigableMap();
+	        } else {
+	            return (T) Collections.emptyMap();
+	        }
+	    }
+	    
+	    // 处理Set及其子接口
+	    if (Set.class.isAssignableFrom(type)) {
+	        if (SortedSet.class.isAssignableFrom(type)) {
+	            return (T) Collections.emptyNavigableSet();
+	        } else {
+	            return (T) Collections.emptySet();
+	        }
+	    }
+	    
+	    // 处理Collection及其子接口
+	    if (Collection.class.isAssignableFrom(type)) {
+	        return (T) Collections.emptyList();
+	    }
+	    
+	    throw new IllegalArgumentException("Unsupported Collection type: " + type);
 	}
 
+	/**
+	 * 获取空的MultiValueMap实例
+	 * 
+	 * @param <K> 键类型
+	 * @param <V> 值类型
+	 * @return 空的MultiValueMap
+	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
 		return EMPTY_MULTI_VALUE_MAP;
 	}
 
+	/**
+	 * 按顺序比较两个可迭代对象的元素
+	 * 
+	 * @param <L>           左元素类型
+	 * @param <R>           右元素类型
+	 * @param leftIterable  左可迭代对象
+	 * @param rightIterable 右可迭代对象
+	 * @param predicate     元素比较谓词
+	 * @return 所有对应元素满足条件且长度相等返回true
+	 */
 	public static <L, R> boolean equals(@NonNull Iterable<? extends L> leftIterable,
 			@NonNull Iterable<? extends R> rightIterable, @NonNull BiPredicate<? super L, ? super R> predicate) {
 		return equals(leftIterable.iterator(), rightIterable.iterator(), predicate);
 	}
 
+	/**
+	 * 按顺序比较两个迭代器的元素
+	 * 
+	 * @param <L>           左元素类型
+	 * @param <R>           右元素类型
+	 * @param leftIterator  左迭代器
+	 * @param rightIterator 右迭代器
+	 * @param predicate     元素比较谓词
+	 * @return 所有对应元素满足条件且长度相等返回true
+	 */
 	public static <L, R> boolean equals(@NonNull Iterator<? extends L> leftIterator,
 			@NonNull Iterator<? extends R> rightIterator, @NonNull BiPredicate<? super L, ? super R> predicate) {
 		while (leftIterator.hasNext() && rightIterator.hasNext()) {
@@ -320,11 +417,10 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Find the common element type of the given Collection, if any.
+	 * 查找集合中所有元素的共同类型
 	 * 
-	 * @param collection the Collection to check
-	 * @return the common element type, or {@code null} if no clear common type has
-	 *         been found (or the collection was empty)
+	 * @param collection 待检查集合
+	 * @return 共同类型Class对象，无共同类型或集合为空返回null
 	 */
 	@SuppressWarnings("rawtypes")
 	public static Class<?> findCommonElementType(Collection collection) {
@@ -345,11 +441,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 获取第一个
+	 * 获取可迭代对象的第一个元素
 	 * 
-	 * @param <T>
-	 * @param iterable
-	 * @return
+	 * @param <T>      元素类型
+	 * @param iterable 可迭代对象
+	 * @return 第一个元素，空可迭代返回null
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T first(Iterable<? extends T> iterable) {
@@ -366,18 +462,16 @@ public class CollectionUtils {
 		}
 
 		Iterator<? extends T> iterator = iterable.iterator();
-		while (iterator.hasNext()) {
-			return iterator.next();
-		}
-		return null;
+		return iterator.hasNext() ? iterator.next() : null;
 	}
 
 	/**
-	 * 获取一个迭代器
+	 * 获取列表的正向或反向迭代器
 	 * 
-	 * @param list
+	 * @param <E>      元素类型
+	 * @param list     列表
 	 * @param previous 是否反向迭代
-	 * @return
+	 * @return 迭代器实例
 	 */
 	public static <E> Iterator<E> getIterator(List<E> list, boolean previous) {
 		if (isEmpty(list)) {
@@ -391,10 +485,25 @@ public class CollectionUtils {
 		}
 	}
 
+	/**
+	 * 计算可迭代对象的哈希码
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterable 可迭代对象
+	 * @return 哈希码值
+	 */
 	public static <E> int hashCode(Iterable<? extends E> iterable) {
 		return hashCode(iterable, (e) -> e.hashCode());
 	}
 
+	/**
+	 * 计算可迭代对象的哈希码，使用自定义哈希函数
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterable 可迭代对象
+	 * @param hash     哈希值计算函数
+	 * @return 哈希码值
+	 */
 	public static <E> int hashCode(Iterable<? extends E> iterable, ToIntFunction<? super E> hash) {
 		if (iterable == null) {
 			return 0;
@@ -402,10 +511,25 @@ public class CollectionUtils {
 		return hashCode(iterable.iterator(), hash);
 	}
 
+	/**
+	 * 计算迭代器的哈希码
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterator 迭代器
+	 * @return 哈希码值
+	 */
 	public static <E> int hashCode(Iterator<? extends E> iterator) {
 		return hashCode(iterator, (e) -> e.hashCode());
 	}
 
+	/**
+	 * 计算迭代器的哈希码，使用自定义哈希函数
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterator 迭代器
+	 * @param hash     哈希值计算函数
+	 * @return 哈希码值
+	 */
 	public static <E> int hashCode(Iterator<? extends E> iterator, ToIntFunction<? super E> hash) {
 		if (iterator == null) {
 			return 0;
@@ -419,6 +543,14 @@ public class CollectionUtils {
 		return result;
 	}
 
+	/**
+	 * 计算两个可迭代对象的交集
+	 * 
+	 * @param <E>           元素类型
+	 * @param leftIterable  左可迭代对象
+	 * @param rightIterable 右可迭代对象
+	 * @return 交集元素集合
+	 */
 	public static <E> Collection<E> intersection(Iterable<? extends E> leftIterable,
 			Iterable<? extends E> rightIterable) {
 		if (isEmpty(leftIterable) || isEmpty(rightIterable)) {
@@ -426,7 +558,7 @@ public class CollectionUtils {
 		}
 
 		if (rightIterable instanceof Set) {
-			// 对set做优化
+			// 对Set做优化
 			Set<E> rightSet = new LinkedHashSet<>();
 			rightIterable.forEach(rightSet::add);
 			List<E> list = null;
@@ -443,6 +575,17 @@ public class CollectionUtils {
 		return intersection(leftIterable.iterator(), rightIterable.iterator());
 	}
 
+	/**
+	 * 计算两个可迭代对象的交集，使用自定义合并函数
+	 * 
+	 * @param <E>           元素类型
+	 * @param <T>           结果类型
+	 * @param leftIterable  左可迭代对象
+	 * @param rightIterable 右可迭代对象
+	 * @param comparator    元素比较器
+	 * @param combiner      元素合并函数
+	 * @return 交集元素集合
+	 */
 	public static <E, T> Collection<T> intersection(Iterable<? extends E> leftIterable,
 			Iterable<? extends E> rightIterable, Comparator<? super E> comparator,
 			BiFunction<? super E, ? super E, ? extends T> combiner) {
@@ -452,6 +595,14 @@ public class CollectionUtils {
 		return intersection(leftIterable.iterator(), rightIterable.iterator(), comparator, combiner);
 	}
 
+	/**
+	 * 计算两个迭代器的交集
+	 * 
+	 * @param <E>           元素类型
+	 * @param leftIterator  左迭代器
+	 * @param rightIterator 右迭代器
+	 * @return 交集元素集合
+	 */
 	public static <E> Collection<E> intersection(Iterator<? extends E> leftIterator,
 			Iterator<? extends E> rightIterator) {
 		return intersection(leftIterator, rightIterator, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1,
@@ -459,15 +610,15 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 交集
+	 * 计算两个迭代器的交集，使用自定义比较器和合并函数
 	 * 
-	 * @param <E>           需要比较的元素类型
-	 * @param <T>           返回的元素类型
-	 * @param leftIterator  左边来源
-	 * @param rightIterator 右边来原
-	 * @param comparator    比较是否相同
-	 * @param combiner      将结果合并
-	 * @return 返回交集列表
+	 * @param <E>           元素类型
+	 * @param <T>           结果类型
+	 * @param leftIterator  左迭代器
+	 * @param rightIterator 右迭代器
+	 * @param comparator    元素比较器，不可为null
+	 * @param combiner      元素合并函数，不可为null
+	 * @return 交集元素集合
 	 */
 	public static <E, T> Collection<T> intersection(Iterator<? extends E> leftIterator,
 			Iterator<? extends E> rightIterator, @NonNull Comparator<? super E> comparator,
@@ -499,6 +650,14 @@ public class CollectionUtils {
 		return list == null ? Collections.emptyList() : list;
 	}
 
+	/**
+	 * 检查可迭代对象中所有元素是否满足条件
+	 * 
+	 * @param <E>       元素类型
+	 * @param iterable  可迭代对象
+	 * @param predicate 条件谓词
+	 * @return 所有元素满足条件返回true，否则false
+	 */
 	public static <E> boolean isAll(Iterable<? extends E> iterable, Predicate<? super E> predicate) {
 		if (iterable == null) {
 			return true;
@@ -507,6 +666,14 @@ public class CollectionUtils {
 		return isAll(iterable.iterator(), predicate);
 	}
 
+	/**
+	 * 检查迭代器中所有元素是否满足条件
+	 * 
+	 * @param <E>       元素类型
+	 * @param iterator  迭代器
+	 * @param predicate 条件谓词，不可为null
+	 * @return 所有元素满足条件返回true，否则false
+	 */
 	public static <E> boolean isAll(Iterator<? extends E> iterator, @NonNull Predicate<? super E> predicate) {
 		if (iterator == null) {
 			return true;
@@ -521,6 +688,14 @@ public class CollectionUtils {
 		return true;
 	}
 
+	/**
+	 * 检查可迭代对象中是否存在满足条件的元素
+	 * 
+	 * @param <E>       元素类型
+	 * @param iterable  可迭代对象
+	 * @param predicate 条件谓词
+	 * @return 存在满足条件的元素返回true，否则false
+	 */
 	public static <E> boolean isAny(Iterable<? extends E> iterable, Predicate<? super E> predicate) {
 		if (iterable == null) {
 			return false;
@@ -529,6 +704,14 @@ public class CollectionUtils {
 		return isAny(iterable.iterator(), predicate);
 	}
 
+	/**
+	 * 检查迭代器中是否存在满足条件的元素
+	 * 
+	 * @param <E>       元素类型
+	 * @param iterator  迭代器
+	 * @param predicate 条件谓词，不可为null
+	 * @return 存在满足条件的元素返回true，否则false
+	 */
 	public static <E> boolean isAny(Iterator<? extends E> iterator, @NonNull Predicate<? super E> predicate) {
 		if (iterator == null) {
 			return false;
@@ -543,6 +726,12 @@ public class CollectionUtils {
 		return false;
 	}
 
+	/**
+	 * 判断可迭代对象是否为空
+	 * 
+	 * @param iterable 可迭代对象
+	 * @return 为空返回true，否则false
+	 */
 	public static boolean isEmpty(Iterable<?> iterable) {
 		if (iterable == null) {
 			return true;
@@ -556,22 +745,33 @@ public class CollectionUtils {
 		return isEmpty(iterator);
 	}
 
+	/**
+	 * 判断迭代器是否为空
+	 * 
+	 * @param iterator 迭代器
+	 * @return 为空返回true，否则false
+	 */
 	public static boolean isEmpty(Iterator<?> iterator) {
 		return iterator == null || !iterator.hasNext();
 	}
 
 	/**
-	 * Return {@code true} if the supplied Map is {@code null} or empty. Otherwise,
-	 * return {@code false}.
+	 * 判断Map是否为空
 	 * 
-	 * @param map the Map to check
-	 * @return whether the given Map is empty
+	 * @param map Map对象
+	 * @return 为空返回true，否则false
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean isEmpty(Map map) {
 		return (map == null || map.isEmpty());
 	}
 
+	/**
+	 * 判断集合是否为不可修改的
+	 * 
+	 * @param collection 集合对象
+	 * @return 不可修改返回true，否则false
+	 */
 	public static boolean isUnmodifiable(Object collection) {
 		if (collection == null) {
 			return false;
@@ -583,6 +783,15 @@ public class CollectionUtils {
 		return false;
 	}
 
+	/**
+	 * 转换迭代器元素类型，生成新迭代器
+	 * 
+	 * @param <S>       源元素类型
+	 * @param <T>       目标元素类型
+	 * @param iterator  源迭代器
+	 * @param converter 元素转换函数，不可为null
+	 * @return 新迭代器实例
+	 */
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
 			@NonNull Function<? super S, ? extends Iterator<? extends T>> converter) {
 		if (iterator == null) {
@@ -591,12 +800,31 @@ public class CollectionUtils {
 		return new IterationIterator<>(iterator, converter);
 	}
 
+	/**
+	 * 将迭代器转换为List
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterator 迭代器
+	 * @return List实例，空迭代器返回空List
+	 */
 	public static <E> List<E> list(Iterator<? extends E> iterator) {
 		if (iterator == null || !iterator.hasNext()) {
 			return Collections.emptyList();
 		}
 
-		return Collections.list(CollectionUtils.toEnumeration(iterator));
+		return Collections.list(toEnumeration(iterator));
+	}
+
+	/**
+	 * 递归生成多个字符串集合的所有组合
+	 * 
+	 * @param source 字符串集合列表，每个元素代表一层选择
+	 * @return 所有组合的Elements列表
+	 */
+	public static List<Elements<String>> recursiveComposition(List<? extends Iterable<String>> source) {
+		List<Elements<String>> target = new ArrayList<>();
+		recursion(source, Elements.empty(), 0, target);
+		return target;
 	}
 
 	private static void recursion(List<? extends Iterable<String>> source, Elements<String> parents, int deep,
@@ -612,22 +840,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 递归实现, 从每个集合中取一个组合为新集合的所有可能
+	 * 反转集合元素顺序
 	 * 
-	 * @param source
-	 * @return
-	 */
-	public static List<Elements<String>> recursiveComposition(List<? extends Iterable<String>> source) {
-		List<Elements<String>> target = new ArrayList<>();
-		recursion(source, Elements.empty(), 0, target);
-		return target;
-	}
-
-	/**
-	 * 颠倒一个集合的排列
-	 * 
-	 * @param collection
-	 * @return
+	 * @param <E>        元素类型
+	 * @param collection 集合
+	 * @return 反转后的List实例
 	 */
 	@SuppressWarnings("unchecked")
 	public static <E> List<E> reversal(Collection<E> collection) {
@@ -640,14 +857,34 @@ public class CollectionUtils {
 		return Arrays.asList((E[]) values);
 	}
 
+	/**
+	 * 获取集合大小
+	 * 
+	 * @param collection 集合
+	 * @return 元素数量，null返回0
+	 */
 	public static int size(Collection<?> collection) {
 		return collection == null ? 0 : collection.size();
 	}
 
+	/**
+	 * 获取Map大小
+	 * 
+	 * @param map Map对象
+	 * @return 键值对数量，null返回0
+	 */
 	public static int size(Map<?, ?> map) {
 		return map == null ? 0 : map.size();
 	}
 
+	/**
+	 * 按键排序Map
+	 * 
+	 * @param <K>    键类型
+	 * @param <V>    值类型
+	 * @param source 源Map
+	 * @return 按键排序后的LinkedHashMap
+	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> sort(Map<K, V> source) {
 		if (isEmpty(source)) {
@@ -665,9 +902,13 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Marshal the elements from the given enumeration into an array of the given
-	 * type. Enumeration elements must be assignable to the type of the given array.
-	 * The array returned will be a different instance than the array given.
+	 * 将Enumeration转换为数组
+	 * 
+	 * @param <A>         数组类型
+	 * @param <E>         元素类型
+	 * @param enumeration Enumeration对象
+	 * @param array       目标数组
+	 * @return 包含所有元素的数组
 	 */
 	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration, A[] array) {
 		ArrayList<A> elements = new ArrayList<A>();
@@ -677,6 +918,13 @@ public class CollectionUtils {
 		return elements.toArray(array);
 	}
 
+	/**
+	 * 将Iterator转换为Enumeration
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterator Iterator对象
+	 * @return Enumeration实例
+	 */
 	public static <E> Enumeration<E> toEnumeration(final Iterator<? extends E> iterator) {
 		if (iterator == null || !iterator.hasNext()) {
 			return Collections.emptyEnumeration();
@@ -686,10 +934,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Adapt an enumeration to an iterator.
+	 * 将Enumeration转换为Iterator
 	 * 
-	 * @param enumeration the enumeration
-	 * @return the iterator
+	 * @param <E>         元素类型
+	 * @param enumeration Enumeration对象
+	 * @return Iterator实例
 	 */
 	public static <E> Iterator<E> toIterator(Enumeration<? extends E> enumeration) {
 		if (enumeration == null || !enumeration.hasMoreElements()) {
@@ -700,15 +949,24 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Adapts a {@code Map<K, List<V>>} to an {@code MultiValueMap<K,V>}.
-	 *
-	 * @param map the map
-	 * @return the multi-value map
+	 * 将Map&lt;K, List&lt;V&gt;&gt;转换为MultiValueMap&lt;K, V&gt;
+	 * 
+	 * @param <K> 键类型
+	 * @param <V> 值类型
+	 * @param map 源Map
+	 * @return MultiValueMap实例
 	 */
 	public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> map) {
-		return new DefaultMultiValueMap<>(map);
+	    return new DefaultMultiValueMap<>(map);
 	}
 
+	/**
+	 * 将可迭代对象转换为Set
+	 * 
+	 * @param <E>      元素类型
+	 * @param iterable 可迭代对象
+	 * @return Set实例，空可迭代返回空Set
+	 */
 	public static <E> Set<E> toSet(Iterable<E> iterable) {
 		Iterator<E> iterator = iterable.iterator();
 		if (!iterator.hasNext()) {
@@ -722,6 +980,14 @@ public class CollectionUtils {
 		return sets;
 	}
 
+	/**
+	 * 创建不可修改的Map视图
+	 * 
+	 * @param <K> 键类型
+	 * @param <V> 值类型
+	 * @param map 源Map
+	 * @return 不可修改的Map视图
+	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> unmodifiableMap(Map<K, V> map) {
 		if (isUnmodifiable(map)) {
@@ -739,10 +1005,12 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Returns an unmodifiable view of the specified multi-value map.
-	 *
-	 * @param map the map for which an unmodifiable view is to be returned.
-	 * @return an unmodifiable view of the specified multi-value map.
+	 * 创建不可修改的MultiValueMap视图
+	 * 
+	 * @param <K> 键类型
+	 * @param <V> 值类型
+	 * @param map 源MultiValueMap
+	 * @return 不可修改的MultiValueMap视图
 	 */
 	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(
 			@NonNull Map<? extends K, ? extends List<V>> map) {
@@ -755,6 +1023,13 @@ public class CollectionUtils {
 		return toMultiValueMap(unmodifiableMap);
 	}
 
+	/**
+	 * 创建不可修改的Set视图
+	 * 
+	 * @param <E> 元素类型
+	 * @param set 源Set
+	 * @return 不可修改的Set视图
+	 */
 	public static <E> Set<E> unmodifiableSet(Set<E> set) {
 		if (isUnmodifiable(set)) {
 			return set;
@@ -769,12 +1044,12 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 无序的判断是否一致
+	 * 无序判断两个集合是否相等（元素相同但顺序可不同）
 	 * 
-	 * @param <E>
-	 * @param leftColllection
-	 * @param rightCollection
-	 * @return
+	 * @param <E>             元素类型
+	 * @param leftColllection 左集合
+	 * @param rightCollection 右集合
+	 * @return 元素相同返回true，否则false
 	 */
 	public static <E> boolean unorderedEquals(Collection<? extends E> leftColllection,
 			Collection<? extends E> rightCollection) {
@@ -790,6 +1065,13 @@ public class CollectionUtils {
 				&& intersection(leftColllection, rightCollection).size() == leftColllection.size();
 	}
 
+	/**
+	 * 创建只读List
+	 * 
+	 * @param <T>        元素类型
+	 * @param collection 源集合
+	 * @return 只读List实例
+	 */
 	public static <T> List<T> newReadOnlyList(Collection<T> collection) {
 		if (isEmpty(collection)) {
 			return Collections.emptyList();
@@ -799,11 +1081,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 构造一个未知数量的流
+	 * 创建未知大小的流
 	 * 
-	 * @param <T>
-	 * @param iterator
-	 * @return
+	 * @param <T>      元素类型
+	 * @param iterator 迭代器
+	 * @return 流实例
 	 */
 	public static <T> Stream<T> unknownSizeStream(Iterator<? extends T> iterator) {
 		if (iterator == null) {
@@ -812,38 +1094,20 @@ public class CollectionUtils {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		Stream<T> stream = StreamSupport.stream(spliterator, false);
 		if (iterator instanceof AutoCloseable) {
-			stream = stream.onClose(ObjectUtils::closeQuietly);
+			stream = stream.onClose(() -> ObjectUtils.closeQuietly((AutoCloseable) iterator));
 		}
 		return stream;
 	}
 
 	/**
-	 * Create the most appropriate collection for the given collection type.
-	 * <p>
-	 * <strong>Warning</strong>: Since the parameterized type {@code E} is not bound
-	 * to the supplied {@code elementType}, type safety cannot be guaranteed if the
-	 * desired {@code collectionType} is {@link EnumSet}. In such scenarios, the
-	 * caller is responsible for ensuring that the supplied {@code elementType} is
-	 * an enum type matching type {@code E}. As an alternative, the caller may wish
-	 * to treat the return value as a raw collection or collection of
-	 * {@link Object}.
+	 * 创建最适合的集合实现
 	 * 
-	 * @param collectionType the desired type of the target collection (never
-	 *                       {@code null})
-	 * @param elementType    the collection's element type, or {@code null} if
-	 *                       unknown (note: only relevant for {@link EnumSet}
-	 *                       creation)
-	 * @param capacity       the initial capacity
-	 * @return a new collection instance
-	 * @see java.util.LinkedHashSet
-	 * @see java.util.ArrayList
-	 * @see java.util.TreeSet
-	 * @see java.util.EnumSet
-	 * @throws IllegalArgumentException if the supplied {@code collectionType} is
-	 *                                  {@code null}; or if the desired
-	 *                                  {@code collectionType} is {@link EnumSet}
-	 *                                  and the supplied {@code elementType} is not
-	 *                                  a subtype of {@link Enum}
+	 * @param <E>            元素类型
+	 * @param collectionType 集合接口类型
+	 * @param elementType    元素类型，可为null
+	 * @param capacity       初始容量
+	 * @return 集合实例
+	 * @throws IllegalArgumentException 不支持的集合类型
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public static <E> Collection<E> createCollection(@NonNull Class<?> collectionType, Class<?> elementType,
@@ -890,38 +1154,43 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Create the most appropriate collection for the given collection type.
-	 * <p>
-	 * Delegates to {@link #createCollection(Class, Class, int)} with a {@code null}
-	 * element type.
+	 * 创建最适合的集合实现（元素类型为null）
 	 * 
-	 * @param collectionType the desired type of the target collection (never
-	 *                       {@code null})
-	 * @param capacity       the initial capacity
-	 * @return a new collection instance
-	 * @throws IllegalArgumentException if the supplied {@code collectionType} is
-	 *                                  {@code null} or of type {@link EnumSet}
+	 * @param <E>            元素类型
+	 * @param collectionType 集合接口类型
+	 * @param capacity       初始容量
+	 * @return 集合实例
+	 * @throws IllegalArgumentException 不支持的集合类型
 	 */
 	public static <E> Collection<E> createCollection(Class<?> collectionType, int capacity) {
 		return createCollection(collectionType, null, capacity);
 	}
 
 	/**
-	 * Create the most appropriate map for the given map type.
-	 * <p>
-	 * Delegates to {@link #createMap(Class, Class, int)} with a {@code null} key
-	 * type.
+	 * 创建最适合的Map实现（键类型为null）
 	 * 
-	 * @param mapType  the desired type of the target map
-	 * @param capacity the initial capacity
-	 * @return a new map instance
-	 * @throws IllegalArgumentException if the supplied {@code mapType} is
-	 *                                  {@code null} or of type {@link EnumMap}
+	 * @param <K>      键类型
+	 * @param <V>      值类型
+	 * @param mapType  Map接口类型
+	 * @param capacity 初始容量
+	 * @return Map实例
+	 * @throws IllegalArgumentException 不支持的Map类型
 	 */
 	public static <K, V> Map<K, V> createMap(Class<?> mapType, int capacity) {
 		return createMap(mapType, null, capacity);
 	}
 
+	/**
+	 * 创建最适合的Map实现
+	 * 
+	 * @param <K>      键类型
+	 * @param <V>      值类型
+	 * @param mapType  Map接口类型
+	 * @param keyType  键类型，可为null
+	 * @param capacity 初始容量
+	 * @return Map实例
+	 * @throws IllegalArgumentException 不支持的Map类型
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <K, V> Map<K, V> createMap(@NonNull Class<?> mapType, Class<?> keyType, int capacity) {
 		if (mapType.isInterface()) {
@@ -964,12 +1233,11 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Cast the given type to a subtype of {@link Enum}.
+	 * 将类转换为枚举类型
 	 * 
-	 * @param enumType the enum type, never {@code null}
-	 * @return the given type as subtype of {@link Enum}
-	 * @throws IllegalArgumentException if the given type is not a subtype of
-	 *                                  {@link Enum}
+	 * @param enumType 待转换的类
+	 * @return 枚举类型Class对象
+	 * @throws IllegalArgumentException 非枚举类型
 	 */
 	@SuppressWarnings("rawtypes")
 	private static Class<? extends Enum> asEnumType(@NonNull Class<?> enumType) {
@@ -980,24 +1248,12 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Create the most approximate collection for the given collection.
-	 * <p>
-	 * <strong>Warning</strong>: Since the parameterized type {@code E} is not bound
-	 * to the type of elements contained in the supplied {@code collection}, type
-	 * safety cannot be guaranteed if the supplied {@code collection} is an
-	 * {@link EnumSet}. In such scenarios, the caller is responsible for ensuring
-	 * that the element type for the supplied {@code collection} is an enum type
-	 * matching type {@code E}. As an alternative, the caller may wish to treat the
-	 * return value as a raw collection or collection of {@link Object}.
+	 * 创建与原集合最相似的空集合
 	 * 
-	 * @param collection the original collection object, potentially {@code null}
-	 * @param capacity   the initial capacity
-	 * @return a new, empty collection instance
-	 * @see java.util.LinkedList
-	 * @see java.util.ArrayList
-	 * @see java.util.EnumSet
-	 * @see java.util.TreeSet
-	 * @see java.util.LinkedHashSet
+	 * @param <E>        元素类型
+	 * @param collection 原集合
+	 * @param capacity   初始容量
+	 * @return 新集合实例
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <E> Collection<E> createApproximateCollection(Object collection, int capacity) {
@@ -1018,22 +1274,13 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Create the most approximate map for the given map.
-	 * <p>
-	 * <strong>Warning</strong>: Since the parameterized type {@code K} is not bound
-	 * to the type of keys contained in the supplied {@code map}, type safety cannot
-	 * be guaranteed if the supplied {@code map} is an {@link EnumMap}. In such
-	 * scenarios, the caller is responsible for ensuring that the key type in the
-	 * supplied {@code map} is an enum type matching type {@code K}. As an
-	 * alternative, the caller may wish to treat the return value as a raw map or
-	 * map keyed by {@link Object}.
+	 * 创建与原Map最相似的空Map
 	 * 
-	 * @param map      the original map object, potentially {@code null}
-	 * @param capacity the initial capacity
-	 * @return a new, empty map instance
-	 * @see java.util.EnumMap
-	 * @see java.util.TreeMap
-	 * @see java.util.LinkedHashMap
+	 * @param <K>      键类型
+	 * @param <V>      值类型
+	 * @param map      原Map
+	 * @param capacity 初始容量
+	 * @return 新Map实例
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <K, V> Map<K, V> createApproximateMap(Object map, int capacity) {
@@ -1049,18 +1296,13 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 对迭代器中的所有元素执行消费操作，支持异常抛出。
-	 * <p>
-	 * 该方法通过递归方式遍历迭代器，对每个元素调用指定的消费者函数。
-	 * 采用try-finally结构确保递归调用的完整性，即使中间操作抛出异常也会继续处理剩余元素。
-	 * </p>
+	 * 对迭代器中所有元素执行带异常处理的消费操作
 	 * 
 	 * @param <T>      元素类型
-	 * @param <E>      可能抛出的异常类型
-	 * @param iterator 待遍历的迭代器
-	 * @param consumer 元素消费者函数，支持抛出异常E
-	 * @throws E 当消费者函数执行时抛出异常
-	 * @see ThrowingConsumer
+	 * @param <E>      异常类型
+	 * @param iterator 迭代器，不可为null
+	 * @param consumer 消费函数，不可为null
+	 * @throws E 消费过程中抛出的异常
 	 */
 	public static <T, E extends Throwable> void acceptAll(@NonNull Iterator<? extends T> iterator,
 			@NonNull ThrowingConsumer<? super T, ? extends E> consumer) throws E {
@@ -1074,18 +1316,13 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * 对可迭代对象中的所有元素执行消费操作，支持异常抛出。
-	 * <p>
-	 * 该方法将可迭代对象转换为迭代器后，调用{@link #acceptAll(Iterator, ThrowingConsumer)}
-	 * 实现元素遍历和消费，保持一致的异常处理逻辑。
-	 * </p>
+	 * 对可迭代对象中所有元素执行带异常处理的消费操作
 	 * 
 	 * @param <T>      元素类型
-	 * @param <E>      可能抛出的异常类型
-	 * @param iterable 待遍历的可迭代对象
-	 * @param consumer 元素消费者函数，支持抛出异常E
-	 * @throws E 当消费者函数执行时抛出异常
-	 * @see #acceptAll(Iterator, ThrowingConsumer)
+	 * @param <E>      异常类型
+	 * @param iterable 可迭代对象，不可为null
+	 * @param consumer 消费函数，不可为null
+	 * @throws E 消费过程中抛出的异常
 	 */
 	public static <T, E extends Throwable> void acceptAll(@NonNull Iterable<? extends T> iterable,
 			@NonNull ThrowingConsumer<? super T, ? extends E> consumer) throws E {
