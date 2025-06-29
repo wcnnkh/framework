@@ -54,6 +54,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
 @UtilityClass
@@ -1045,5 +1046,49 @@ public class CollectionUtils {
 		} else {
 			return new LinkedHashMap<K, V>(capacity);
 		}
+	}
+
+	/**
+	 * 对迭代器中的所有元素执行消费操作，支持异常抛出。
+	 * <p>
+	 * 该方法通过递归方式遍历迭代器，对每个元素调用指定的消费者函数。
+	 * 采用try-finally结构确保递归调用的完整性，即使中间操作抛出异常也会继续处理剩余元素。
+	 * </p>
+	 * 
+	 * @param <T>      元素类型
+	 * @param <E>      可能抛出的异常类型
+	 * @param iterator 待遍历的迭代器
+	 * @param consumer 元素消费者函数，支持抛出异常E
+	 * @throws E 当消费者函数执行时抛出异常
+	 * @see ThrowingConsumer
+	 */
+	public static <T, E extends Throwable> void acceptAll(@NonNull Iterator<? extends T> iterator,
+			@NonNull ThrowingConsumer<? super T, ? extends E> consumer) throws E {
+		if (iterator.hasNext()) {
+			try {
+				consumer.accept(iterator.next());
+			} finally {
+				acceptAll(iterator, consumer);
+			}
+		}
+	}
+
+	/**
+	 * 对可迭代对象中的所有元素执行消费操作，支持异常抛出。
+	 * <p>
+	 * 该方法将可迭代对象转换为迭代器后，调用{@link #acceptAll(Iterator, ThrowingConsumer)}
+	 * 实现元素遍历和消费，保持一致的异常处理逻辑。
+	 * </p>
+	 * 
+	 * @param <T>      元素类型
+	 * @param <E>      可能抛出的异常类型
+	 * @param iterable 待遍历的可迭代对象
+	 * @param consumer 元素消费者函数，支持抛出异常E
+	 * @throws E 当消费者函数执行时抛出异常
+	 * @see #acceptAll(Iterator, ThrowingConsumer)
+	 */
+	public static <T, E extends Throwable> void acceptAll(@NonNull Iterable<? extends T> iterable,
+			@NonNull ThrowingConsumer<? super T, ? extends E> consumer) throws E {
+		acceptAll(iterable.iterator(), consumer);
 	}
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.function.Filter;
 import run.soeasy.framework.core.exchange.AbstractChannel;
@@ -41,6 +42,6 @@ public class EventDispatcher<T> extends AbstractChannel<T> implements Listenable
 
 	public void syncPublish(T resource) {
 		Elements<Listener<? super T>> elements = filter.apply(registry);
-		elements.forEach((e) -> e.accept(resource));
+		CollectionUtils.acceptAll(elements, (e) -> e.accept(resource));
 	}
 }
