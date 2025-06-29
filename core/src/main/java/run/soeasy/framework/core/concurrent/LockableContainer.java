@@ -21,9 +21,9 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
 /**
  * 使用复制读来实现线程安全
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
- * @param <C>
+ * @param <C> 容器类型
  */
 public class LockableContainer<C, X extends Throwable> implements ReadWriteLock {
 	private volatile C container;
@@ -34,10 +34,21 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	 */
 	private volatile ReadWriteLock readWriteLock;
 
+	/**
+	 * 构造函数，初始化LockableContainer
+	 * 
+	 * @param containerSource 容器数据源，不能为null
+	 */
 	public LockableContainer(@NonNull ThrowingSupplier<? extends C, ? extends X> containerSource) {
 		this.containerSource = containerSource;
 	}
 
+	/**
+	 * 比较对象是否相等
+	 * 
+	 * @param obj 要比较的对象
+	 * @return 如果对象相等则返回true，否则返回false
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof LockableContainer) {
@@ -67,10 +78,20 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 获取读写锁
+	 * 
+	 * @return 读写锁实例
+	 */
 	public ReadWriteLock getReadWriteLock() {
 		return readWriteLock;
 	}
 
+	/**
+	 * 计算对象哈希值
+	 * 
+	 * @return 对象的哈希值
+	 */
 	@Override
 	public int hashCode() {
 		return readAsInt((conainer) -> ObjectUtils.hashCode(conainer));
@@ -79,7 +100,7 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 是否是线程安全的
 	 * 
-	 * @return
+	 * @return 如果是线程安全的返回true，否则返回false
 	 */
 	public boolean isThreadSafe() {
 		return readWriteLock != null;
@@ -88,13 +109,16 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 初始化容器时的回调
 	 * 
-	 * @return
-	 * @throws X
+	 * @return 新的容器实例
+	 * @throws X 可能抛出的异常
 	 */
 	protected C newContainer() throws X {
 		return containerSource.get();
 	}
 
+	/**
+	 * 重置容器，将容器置为null
+	 */
 	public void reset() {
 		Lock lock = writeLock();
 		try {
@@ -109,11 +133,11 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	}
 
 	/**
-	 * 读取
+	 * 读取容器内容
 	 * 
-	 * @param <R>
-	 * @param reader 回调参数可能为空
-	 * @return
+	 * @param <R>    返回值类型
+	 * @param reader 读取容器内容的函数，回调参数可能为空
+	 * @return 读取结果
 	 */
 	public <R> R read(Function<? super C, ? extends R> reader) {
 		Lock lock = readLock();
@@ -128,8 +152,8 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 测试container
 	 * 
-	 * @param predicate 回调参数可能为空
-	 * @return
+	 * @param predicate 测试容器内容的断言函数，回调参数可能为空
+	 * @return 测试结果
 	 */
 	public boolean readAsBoolean(Predicate<? super C> predicate) {
 		Lock lock = readLock();
@@ -141,6 +165,13 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 读取容器内容并转换为列表
+	 * 
+	 * @param <E>    列表元素类型
+	 * @param reader 读取容器内容的函数
+	 * @return 列表形式的容器内容
+	 */
 	public <E> List<E> readAsList(Function<? super C, ? extends List<E>> reader) {
 		Lock lock = readLock();
 		lock.lock();
@@ -152,6 +183,13 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 创建列表的共享副本，确保线程安全
+	 * 
+	 * @param <T>  列表元素类型
+	 * @param list 原始列表
+	 * @return 共享副本列表
+	 */
 	protected <T> List<T> shared(List<T> list) {
 		if (list == null) {
 			return null;
@@ -168,6 +206,14 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		return isThreadSafe() ? list.stream().collect(Collectors.toList()) : list;
 	}
 
+	/**
+	 * 创建映射的共享副本，确保线程安全
+	 * 
+	 * @param <K>  键类型
+	 * @param <V>  值类型
+	 * @param map  原始映射
+	 * @return 共享副本映射
+	 */
 	protected <K, V> Map<K, V> shared(Map<K, V> map) {
 		if (map == null) {
 			return null;
@@ -183,6 +229,13 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		return isThreadSafe() ? new LinkedHashMap<>(map) : map;
 	}
 
+	/**
+	 * 创建集合的共享副本，确保线程安全
+	 * 
+	 * @param <T>  集合元素类型
+	 * @param set  原始集合
+	 * @return 共享副本集合
+	 */
 	protected <T> Set<T> shared(Set<T> set) {
 		if (set == null) {
 			return null;
@@ -199,6 +252,14 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		return isThreadSafe() ? set.stream().collect(Collectors.toSet()) : set;
 	}
 
+	/**
+	 * 写入并返回列表形式的容器内容
+	 * 
+	 * @param <E>    列表元素类型
+	 * @param writer 写入容器内容的函数
+	 * @return 列表形式的容器内容
+	 * @throws X 可能抛出的异常
+	 */
 	public <E> List<E> writeAsList(Function<? super C, ? extends List<E>> writer) throws X {
 		return write((c) -> {
 			List<E> elements = writer.apply(c);
@@ -206,6 +267,13 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		});
 	}
 
+	/**
+	 * 更新并返回列表形式的容器内容
+	 * 
+	 * @param <E>      列表元素类型
+	 * @param executor 更新容器内容的函数
+	 * @return 列表形式的容器内容
+	 */
 	public <E> List<E> updateAsList(Function<? super C, ? extends List<E>> executor) {
 		return update((c) -> {
 			List<E> elements = executor.apply(c);
@@ -213,6 +281,14 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		});
 	}
 
+	/**
+	 * 读取容器内容并转换为映射
+	 * 
+	 * @param <K>    键类型
+	 * @param <V>    值类型
+	 * @param reader 读取容器内容的函数
+	 * @return 映射形式的容器内容
+	 */
 	public <K, V> Map<K, V> readAsMap(Function<? super C, ? extends Map<K, V>> reader) {
 		Lock lock = readLock();
 		lock.lock();
@@ -224,6 +300,13 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 读取容器内容并转换为集合
+	 * 
+	 * @param <E>    集合元素类型
+	 * @param reader 读取容器内容的函数
+	 * @return 集合形式的容器内容
+	 */
 	public <E> Set<E> readAsSet(Function<? super C, ? extends Set<E>> reader) {
 		Lock lock = readLock();
 		lock.lock();
@@ -235,6 +318,13 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 创建Elements的共享副本，确保线程安全
+	 * 
+	 * @param <T>      元素类型
+	 * @param elements 原始Elements
+	 * @return 共享副本Elements
+	 */
 	protected <T> Elements<T> shared(Elements<T> elements) {
 		if (elements == null) {
 			return null;
@@ -257,9 +347,9 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 容器可能为空
 	 * 
-	 * @param <E>
-	 * @param reader
-	 * @return
+	 * @param <E>    元素类型
+	 * @param reader 读取容器内容的函数
+	 * @return Elements形式的容器内容
 	 */
 	public <E> Elements<E> readAsElements(Function<? super C, ? extends Elements<E>> reader) {
 		Lock lock = readLock();
@@ -275,8 +365,8 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 读取并返回一个int
 	 * 
-	 * @param reader 回调参数可能为空
-	 * @return
+	 * @param reader 读取容器内容的函数，回调参数可能为空
+	 * @return 整数值
 	 */
 	public int readAsInt(ToIntFunction<? super C> reader) {
 		Lock lock = readLock();
@@ -288,15 +378,30 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 获取读锁
+	 * 
+	 * @return 读锁实例
+	 */
 	@Override
 	public Lock readLock() {
 		return readWriteLock == null ? NoOpLock.NO : readWriteLock.readLock();
 	}
 
+	/**
+	 * 设置读写锁
+	 * 
+	 * @param readWriteLock 读写锁实例
+	 */
 	public void setReadWriteLock(ReadWriteLock readWriteLock) {
 		this.readWriteLock = readWriteLock;
 	}
 
+	/**
+	 * 返回对象的字符串表示
+	 * 
+	 * @return 对象的字符串表示，如果容器为空则返回null
+	 */
 	@Override
 	public String toString() {
 		return read((e) -> e == null ? null : e.toString());
@@ -305,9 +410,9 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 执行，但不会从供应商获取container
 	 * 
-	 * @param <R>
-	 * @param executor 回调参数可能为空
-	 * @return
+	 * @param <R>      返回值类型
+	 * @param executor 执行函数，回调参数可能为空
+	 * @return 执行结果
 	 */
 	public <R> R update(Function<? super C, R> executor) {
 		Lock lock = writeLock();
@@ -322,9 +427,10 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 	/**
 	 * 写入，如果container为空会从供应商获取
 	 * 
-	 * @param <R>
-	 * @param writer 回调参数不会为空
-	 * @return
+	 * @param <R>    返回值类型
+	 * @param writer 写入函数，回调参数不会为空
+	 * @return 写入结果
+	 * @throws X 可能抛出的异常
 	 */
 	public <R> R write(Function<? super C, R> writer) throws X {
 		Lock lock = writeLock();
@@ -339,6 +445,11 @@ public class LockableContainer<C, X extends Throwable> implements ReadWriteLock 
 		}
 	}
 
+	/**
+	 * 获取写锁
+	 * 
+	 * @return 写锁实例
+	 */
 	@Override
 	public Lock writeLock() {
 		return readWriteLock == null ? NoOpLock.NO : readWriteLock.writeLock();

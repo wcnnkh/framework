@@ -1,7 +1,10 @@
 package run.soeasy.framework.core;
 
+import java.util.Arrays;
+
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
+import run.soeasy.framework.core.collection.CollectionUtils;
 
 @UtilityClass
 public class ObjectUtils {
@@ -63,29 +66,12 @@ public class ObjectUtils {
 	}
 
 	public static void close(AutoCloseable... autoCloseables) throws Exception {
-		if (autoCloseables == null) {
-			return;
-		}
-
-		Exception exception = null;
-		for (AutoCloseable autoCloseable : autoCloseables) {
-			if (autoCloseable == null) {
-				continue;
+		CollectionUtils.acceptAll(Arrays.asList(autoCloseables), (e) -> {
+			if(e == null) {
+				return ;
 			}
-
-			try {
-				autoCloseable.close();
-			} catch (Exception e) {
-				if (exception == null) {
-					exception = e;
-				} else {
-					exception.addSuppressed(e);
-				}
-			}
-		}
-		if (exception != null) {
-			throw exception;
-		}
+			e.close();
+		});
 	}
 
 	public static void closeQuietly(AutoCloseable... autoCloseables) {
