@@ -55,7 +55,7 @@ public class ConfigurableLoggerFactory extends LoggerRegistry implements Configu
 	public Receipt configure(@NonNull ProviderFactory discovery) {
 		try {
 			LoggerFactory loggerFactory = discovery.getProvider(LoggerFactory.class).first();
-			if (loggerFactory == null) {
+			if (loggerFactory != null) {
 				setLoggerFactory(loggerFactory);
 			}
 			return Receipt.SUCCESS;
