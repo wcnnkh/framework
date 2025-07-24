@@ -17,7 +17,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *   <li>状态一致性：注册状态与生命周期状态联动</li>
  * </ul>
  *
- * @author shuchaowen
+ * @author soeasy.run
  * @see Registration
  * @see Lifecycle
  */

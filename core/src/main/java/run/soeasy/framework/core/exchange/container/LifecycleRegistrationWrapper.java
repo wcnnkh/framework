@@ -10,7 +10,7 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  * </p>
  *
  * @param <W> 包装的目标注册类型，需继承LifecycleRegistration
- * @author shuchaowen
+ * @author soeasy.run
  */
 @FunctionalInterface
 public interface LifecycleRegistrationWrapper<W extends LifecycleRegistration>

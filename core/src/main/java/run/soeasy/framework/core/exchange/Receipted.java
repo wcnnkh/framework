@@ -20,7 +20,7 @@ package run.soeasy.framework.core.exchange;
  *   <li>系统事件的处理回执</li>
  * </ul>
  *
- * @author shuchaowen
+ * @author soeasy.run
  * @see Receipt
  * @see Registed
  */

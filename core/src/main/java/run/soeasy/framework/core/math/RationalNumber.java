@@ -25,7 +25,7 @@ package run.soeasy.framework.core.math;
  * 具体的有理数实现类应继承此类，并实现{@link #getAsBigInteger()}和{@link #getAsBigDecimal()}方法，
  * 以提供分子和分母的精确表示。
  *
- * @author shuchaowen
+ * @author soeasy.run
  * @see Fraction
  * @see NumberValue
  */

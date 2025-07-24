@@ -24,7 +24,7 @@ import lombok.NonNull;
  * <li>业务编号：生成订单号、流水号等具有业务含义的序列</li>
  * </ul>
  *
- * @author shuchaowen
+ * @author soeasy.run
  * @param <T> 序列值的类型，实现类需保证其可序列化为唯一标识
  */
 @FunctionalInterface

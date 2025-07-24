@@ -21,7 +21,7 @@ import run.soeasy.framework.core.exchange.Registration;
  * @param <W> 被包装的注册类型，需继承{@link Registration}
  * @param <T> 有效载荷的类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see PayloadRegistration
  * @see RegistrationWrapped
  */

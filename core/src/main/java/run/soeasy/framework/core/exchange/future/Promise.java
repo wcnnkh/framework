@@ -33,7 +33,7 @@ import lombok.NonNull;
  *
  * @param <V> 承诺结果的类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see Confirm
  * @see ListenableFuture
  */

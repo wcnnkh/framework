@@ -10,7 +10,7 @@ import run.soeasy.framework.core.exchange.Receipt;
  * 支持自定义配置和系统默认配置两种模式，适用于需要灵活加载服务实现的组件。
  * </p>
  *
- * @author shuchaowen
+ * @author soeasy.run
  */
 public interface Configurable {
 

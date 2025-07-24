@@ -44,7 +44,7 @@ import run.soeasy.framework.core.domain.Value;
  * int comparisonResult = intValue.compareTo(new IntValue(50));  // 返回负数，表示小于
  * </pre>
  *
- * @author shuchaowen
+ * @author soeasy.run
  * @see RationalNumber
  * @see NumberValue
  * @see Value

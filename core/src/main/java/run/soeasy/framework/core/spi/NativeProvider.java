@@ -15,7 +15,7 @@ import run.soeasy.framework.core.collection.Provider;
  *
  * @param <S> 服务接口类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see ServiceLoader
  * @see Provider
  */

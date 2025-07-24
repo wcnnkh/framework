@@ -24,7 +24,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <W> 被包装的注册类型，需继承{@link Registration}
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see Registration
  * @see Wrapper
  * @see InterceptableRegisration

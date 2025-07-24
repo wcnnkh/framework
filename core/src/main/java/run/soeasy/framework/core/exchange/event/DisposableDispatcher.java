@@ -36,7 +36,7 @@ import run.soeasy.framework.logging.Logger;
  *
  * @param <T> 事件数据类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see ListenableChannel
  * @see QueueContainer
  */

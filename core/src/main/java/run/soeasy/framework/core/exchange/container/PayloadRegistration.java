@@ -23,7 +23,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <T> 载荷数据的类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see Registration
  */
 public interface PayloadRegistration<T> extends Registration {

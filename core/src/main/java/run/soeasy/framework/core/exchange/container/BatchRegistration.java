@@ -24,7 +24,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <E> 注册对象类型，需继承{@link LimitableRegistration}
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see InterceptableRegisration
  * @see LimitableRegistration
  */

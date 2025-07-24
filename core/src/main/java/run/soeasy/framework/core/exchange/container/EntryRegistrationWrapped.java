@@ -23,7 +23,7 @@ import run.soeasy.framework.core.exchange.Registration;
  * @param <V> 值的类型
  * @param <W> 被包装的注册类型，需继承{@link EntryRegistration}&lt;{@link K}, {@link V}&gt;
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see EntryRegistration
  * @see EntryRegistrationWrapper
  * @see KeyValueRegistrationWrapped

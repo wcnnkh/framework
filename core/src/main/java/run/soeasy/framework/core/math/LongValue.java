@@ -43,7 +43,7 @@ import run.soeasy.framework.core.domain.Value;
  * int comparisonResult = longValue.compareTo(new LongValue(9223372036854775800L));  // 返回正数，表示大于
  * </pre>
  *
- * @author shuchaowen
+ * @author soeasy.run
  * @see RationalNumber
  * @see NumberValue
  * @see Value

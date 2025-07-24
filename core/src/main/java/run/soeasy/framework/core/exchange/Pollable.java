@@ -4,7 +4,7 @@ package run.soeasy.framework.core.exchange;
  * 可拉取接口
  * 定义数据拉取的标准行为，支持阻塞式获取数据
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
  * @param <T> 拉取数据的类型
  */

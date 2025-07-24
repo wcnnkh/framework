@@ -26,7 +26,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <T> 注册操作返回的回执类型，需实现{@link Receipt}接口
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see Listenable
  * @see Registration
  * @see Receipt

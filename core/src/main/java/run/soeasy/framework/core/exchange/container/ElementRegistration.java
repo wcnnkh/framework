@@ -19,7 +19,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <V> 注册元素的载荷类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see PayloadRegistration
  * @see LifecycleRegistration
  */

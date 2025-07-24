@@ -11,7 +11,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <S> 服务实例的类型，即被注入的服务对象类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see Registration
  * @see ServiceInjectors
  */

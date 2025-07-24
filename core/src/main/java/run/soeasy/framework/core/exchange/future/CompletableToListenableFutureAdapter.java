@@ -34,7 +34,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <T> 异步任务的结果类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see ListenableFuture
  * @see CompletableFuture
  */

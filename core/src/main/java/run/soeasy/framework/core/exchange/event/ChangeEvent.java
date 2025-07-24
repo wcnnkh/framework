@@ -22,7 +22,7 @@ import lombok.NonNull;
  *
  * @param <T> 变更对象的类型
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see BaseEvent
  * @see ChangeType
  */
