@@ -5,6 +5,7 @@ import java.util.Map;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.exchange.container.EntryRegistration;
+import run.soeasy.framework.core.exchange.event.ChangeEvent;
 import run.soeasy.framework.core.function.ThrowingSupplier;
 
 /**

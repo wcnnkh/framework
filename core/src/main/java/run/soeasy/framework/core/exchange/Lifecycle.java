@@ -27,7 +27,6 @@ package run.soeasy.framework.core.exchange;
  * </ul>
  *
  * @author soeasy.run
- * @see SmartLifecycle
  */
 public interface Lifecycle {
 

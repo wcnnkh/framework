@@ -32,7 +32,7 @@ import run.soeasy.framework.core.type.ClassUtils;
  * ClassLoaderAccessor accessor2 = new DefaultClassLoaderAccessor(Thread.currentThread().getContextClassLoader());
  * 
  * // 通过提供者接口初始化
- * ClassLoaderAccessor accessor3 = new DefaultClassLoaderAccessor(() -> ClassLoader.getSystemClassLoader());
+ * ClassLoaderAccessor accessor3 = new DefaultClassLoaderAccessor(() -&gt; ClassLoader.getSystemClassLoader());
  * </pre>
  *
  * @see ClassLoaderAccessor

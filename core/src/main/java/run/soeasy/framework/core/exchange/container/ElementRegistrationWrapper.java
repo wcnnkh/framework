@@ -17,9 +17,9 @@ import run.soeasy.framework.core.exchange.Registration;
  * </ul>
  *
  * @param <E> 元素载荷类型
- * @param <W> 被包装的源注册类型，需继承{@link ElementRegistration}<{@link E}>
+ * @param <W> 被包装的源注册类型，需继承{@link ElementRegistration}&lt;{@link E}&gt;
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see ElementRegistration
  * @see PayloadRegistrationWrapper
  * @see LifecycleRegistrationWrapper

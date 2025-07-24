@@ -23,9 +23,9 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  *
  * @param <C> 容器类型
  * @param <E> 容器元素类型
- * @param <P> 注册类型，需继承自{@link PayloadRegistration}<{@link E}>
+ * @param <P> 注册类型，需继承自{@link PayloadRegistration}&lt;{@link E}&gt;
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see Container
  * @see LockableContainer
  */

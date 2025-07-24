@@ -76,7 +76,7 @@ public interface FromBinaryDecoder<D> extends Decoder<byte[], D> {
 	 * @param source     输入源对象，不可为null
 	 * @param bufferSize 解码缓冲区大小（建议≥1024）
 	 * @return 解码后的目标类型对象
-	 * @throws IOException     输入源获取流或关闭流失败时抛出
+	 * @throws IOException    输入源获取流或关闭流失败时抛出
 	 * @throws CodecException 解码逻辑失败时抛出
 	 */
 	default D decode(@NonNull InputSource source, int bufferSize) throws IOException, CodecException {
@@ -94,9 +94,9 @@ public interface FromBinaryDecoder<D> extends Decoder<byte[], D> {
 	 * 实现类需定义具体解码逻辑，将输入流的字节数据转换为目标类型， 建议采用分段读取策略以优化大文件处理的内存占用。
 	 * 
 	 * @param source     待解码的输入流，不可为null
-	 * @param bufferSize 解码缓冲区大小（>0）
+	 * @param bufferSize 解码缓冲区大小（&gt;0）
 	 * @return 解码后的目标类型对象
-	 * @throws IOException     输入流读取失败时抛出（如文件不存在、网络中断）
+	 * @throws IOException    输入流读取失败时抛出（如文件不存在、网络中断）
 	 * @throws CodecException 解码逻辑失败时抛出（如数据格式不支持）
 	 */
 	D decode(@NonNull InputStream source, int bufferSize) throws IOException, CodecException;

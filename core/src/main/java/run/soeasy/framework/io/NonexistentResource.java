@@ -26,4 +26,9 @@ class NonexistentResource implements Resource {
 	public boolean isWritable() {
 		return false;
 	}
+	
+	@Override
+	public long lastModified() throws IOException {
+		return 0;
+	}
 }

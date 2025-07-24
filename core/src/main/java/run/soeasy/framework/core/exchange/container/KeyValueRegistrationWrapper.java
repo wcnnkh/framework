@@ -19,9 +19,9 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  *
  * @param <K> 键的类型
  * @param <V> 值的类型
- * @param <W> 被包装的源注册类型，需继承{@link KeyValueRegistration}<{@link K}, {@link V}>
+ * @param <W> 被包装的源注册类型，需继承{@link KeyValueRegistration}&lt;{@link K}, {@link V}&gt;
  * 
- * @author shuchaowen
+ * @author soeasy.run
  * @see KeyValueRegistration
  * @see RegistrationWrapper
  */

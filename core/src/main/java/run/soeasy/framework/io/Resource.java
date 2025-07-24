@@ -13,7 +13,6 @@ import java.nio.file.Path;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.function.ThrowingFunction;
-import run.soeasy.framework.io.watch.Variable;
 
 /**
  * 资源的定义
@@ -33,7 +32,7 @@ import run.soeasy.framework.io.watch.Variable;
  * @see InputSource
  * @see OutputSource
  */
-public interface Resource extends InputSource, OutputSource, Variable {
+public interface Resource extends InputSource, OutputSource {
 	/**
 	 * 返回一个不存在的资源
 	 * 
@@ -49,8 +48,14 @@ public interface Resource extends InputSource, OutputSource, Variable {
 	 * @param file 不可为null
 	 * @return 文件资源实例
 	 */
-	public static Resource forFile(File file) {
-		return new FileResource(file);
+	public static Resource forFile(@NonNull File file) {
+		return new FileResource() {
+
+			@Override
+			public File getFile() {
+				return file;
+			}
+		};
 	}
 
 	/**
@@ -59,8 +64,14 @@ public interface Resource extends InputSource, OutputSource, Variable {
 	 * @param path 不可为null
 	 * @return 路径资源实例
 	 */
-	public static Resource forPath(Path path) {
-		return new PathResource(path);
+	public static Resource forPath(@NonNull Path path) {
+		return new PathResource() {
+
+			@Override
+			public Path getPath() {
+				return path;
+			}
+		};
 	}
 
 	/**
@@ -115,9 +126,7 @@ public interface Resource extends InputSource, OutputSource, Variable {
 	 * @return 最后修改时间戳（毫秒）
 	 * @throws IOException 当获取修改时间时发生I/O错误
 	 */
-	default long lastModified() throws IOException {
-		return 0;
-	}
+	long lastModified() throws IOException;
 
 	/**
 	 * 是否可读

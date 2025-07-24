@@ -63,7 +63,7 @@ public final class JavaVersion extends JoinVersion implements Serializable {
      * 解析规则：
      * <ol>
      *   <li>使用点号（.）分割版本号字符串</li>
-     *   <li>对于Java 9及以上版本（主版本号>1），自动在前面添加"1."以保持格式统一</li>
+     *   <li>对于Java 9及以上版本（主版本号&gt;1），自动在前面添加"1."以保持格式统一</li>
      *   <li>例如："9"会被解析为"1.9.0"，"11.0.1"会被解析为"1.11.0.1"</li>
      * </ol>
      *

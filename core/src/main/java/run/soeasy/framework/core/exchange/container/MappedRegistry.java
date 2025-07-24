@@ -26,7 +26,7 @@ import run.soeasy.framework.core.exchange.Registration;
  *
  * @param <S> 源注册中心存储的类型（内部类型）
  * @param <T> 对外暴露的注册类型（目标类型）
- * @param <W> 被包装的源注册中心类型，需继承{@link Registry}<{@link S}>
+ * @param <W> 被包装的源注册中心类型，需继承{@link Registry}&lt;{@link S}&gt;
  * 
  * @author soeasy.run
  * @see Registry

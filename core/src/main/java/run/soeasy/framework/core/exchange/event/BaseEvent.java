@@ -26,7 +26,7 @@ import run.soeasy.framework.sequences.UUIDSequence;
  * @author soeasy.run
  * @see EventObject
  * @see Millisecond
- * @see UUIDSequences
+ * @see UUIDSequence
  */
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)

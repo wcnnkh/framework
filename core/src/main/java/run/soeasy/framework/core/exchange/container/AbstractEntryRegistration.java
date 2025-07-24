@@ -15,7 +15,6 @@ import run.soeasy.framework.core.concurrent.limit.DisposableLimiter;
  *   <li>资源限制：通过{@link DisposableLimiter}实现资源使用限制</li>
  *   <li>抽象方法：强制子类实现键值获取逻辑</li>
  * </ul>
- * </p>
  *
  * @param <K> 键的类型
  * @param <V> 值的类型

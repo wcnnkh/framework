@@ -22,7 +22,6 @@ package run.soeasy.framework.core.exchange;
  *
  * @author soeasy.run
  * @see Lifecycle
- * @see ApplicationContext
  */
 public interface LifecycleProcessor extends Lifecycle {
 

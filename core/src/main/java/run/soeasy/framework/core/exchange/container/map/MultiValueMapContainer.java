@@ -44,9 +44,9 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  *
  * @param <K> 键的类型
  * @param <V> 值的类型
- * @param <R> 值注册的类型，需继承{@link PayloadRegistration}<{@link V}>
- * @param <VC> 值容器的类型，需继承{@link Container}<{@link V}, {@link R}>
- * @param <M> 底层映射的类型，需继承{@link Map}<{@link K}, {@link VC}>
+ * @param <R> 值注册的类型，需继承{@link PayloadRegistration}&lt;{@link V}&gt;
+ * @param <VC> 值容器的类型，需继承{@link Container}&lt;{@link V}, {@link R}&gt;
+ * @param <M> 底层映射的类型，需继承{@link Map}&lt;{@link K}, {@link VC}&gt;
  * 
  * @author soeasy.run
  * @see MultiValueMap
