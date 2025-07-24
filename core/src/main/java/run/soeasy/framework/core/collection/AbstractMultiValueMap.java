@@ -16,7 +16,7 @@ import lombok.Setter;
  * @author soeasy.run
  * @param <K> 键的类型
  * @param <V> 值的类型
- * @param <M> 底层Map的类型，必须是Map<K, List<V>>的子类型
+ * @param <M> 底层Map的类型，必须是Map&lt;K, List&lt;V&gt;&gt;的子类型
  */
 @Getter
 @Setter

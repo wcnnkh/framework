@@ -1,5 +1,7 @@
 package run.soeasy.framework.core.exchange.event;
 
+import java.util.EventListener;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

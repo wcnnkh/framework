@@ -27,7 +27,7 @@ import lombok.NonNull;
  * </ul>
  *
  * @param <E> 元素类型
- * @param <C> 缓存的集合类型，必须实现Collection<E>
+ * @param <C> 缓存的集合类型，必须实现Collection&lt;E&gt;
  * @see CacheableElements
  * @see Streamable
  * @see Collector

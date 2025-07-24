@@ -21,7 +21,7 @@ import run.soeasy.framework.core.transmittable.Inheriter;
  * 
  * <pre>
  * WrappedRunnable&lt;Context, Backup, MyInheriter, Exception, Runnable&gt; wrappedTask = new WrappedRunnable&lt;&gt;(
- * 		() -> System.out.println("Task execution"), contextInheriter);
+ * 		() -&gt; System.out.println("Task execution"), contextInheriter);
  * 
  * executorService.execute(wrappedTask);
  * </pre>

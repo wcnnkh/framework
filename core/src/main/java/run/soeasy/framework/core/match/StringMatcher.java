@@ -52,8 +52,6 @@ public interface StringMatcher extends Comparator<String> {
      * 获取指定大小写策略的前缀匹配器。
      *
      * @param ignoreCase 是否忽略大小写：
-     *                   true时使用{@link String#startsWithIgnoreCase}逻辑，
-     *                   false时使用{@link String#startsWith}逻辑
      * @return 前缀匹配器实例
      */
     public static StringMatcher prefix(boolean ignoreCase) {

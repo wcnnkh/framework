@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  *
  * @author soeasy.run
  * @param <E> 元素类型
- * @param <W> 被包装的集合类型，必须实现Collection<E>接口
+ * @param <W> 被包装的集合类型，必须实现Collection&lt;E&gt;接口
  * @see CollectionWrapper
  * @see IterableElementsWrapper
  */

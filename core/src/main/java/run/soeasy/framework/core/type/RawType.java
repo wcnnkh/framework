@@ -45,7 +45,7 @@ import lombok.NonNull;
  * System.out.println("组件类型: " + componentType.getRawType()); // 输出: class java.lang.String
  * </pre>
  *
- * @param <T> 原始类型的类型参数，固定为Class<?>
+ * @param <T> 原始类型的类型参数，固定为Class&lt;?&gt;
  * @see AbstractResolvableType
  * @see ResolvableType
  * @see TypeVariableResolver

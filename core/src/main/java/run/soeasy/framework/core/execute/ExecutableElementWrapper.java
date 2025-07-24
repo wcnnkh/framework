@@ -8,7 +8,6 @@ import lombok.NonNull;
  * <p>
  * 该接口作为函数式接口，允许通过Lambda表达式或方法引用来简洁地实现包装逻辑，
  * 适用于需要动态增强可执行元素行为的场景，如日志记录、权限控制、事务管理等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,13 +16,11 @@ import lombok.NonNull;
  *   <li>方法转发：默认方法将调用转发给被包装的源可执行元素，保持原始行为</li>
  *   <li>多层包装：同时继承元数据包装器和模板包装器，支持全方位功能扩展</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code W}：被包装的可执行元素类型，需实现{@link ExecutableElement}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -34,7 +31,6 @@ import lombok.NonNull;
  *   <li>缓存处理：执行前检查缓存，执行后更新缓存</li>
  *   <li>参数校验：执行前验证输入参数的合法性</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ExecutableElement
@@ -50,7 +46,6 @@ public interface ExecutableElementWrapper<W extends ExecutableElement>
      * <p>
      * 该默认实现将调用转发给被包装的源可执行元素的{@link ExecutableElement#execute(Class[], Object...)}方法，
      * 子类可覆盖此方法添加前置处理（如参数转换）或后置处理（如结果包装）。
-     * </p>
      * 
      * @param parameterTypes 参数类型数组，不可为null
      * @param args 参数值数组，不可为null
@@ -67,7 +62,6 @@ public interface ExecutableElementWrapper<W extends ExecutableElement>
      * <p>
      * 该默认实现将调用转发给被包装的源可执行元素的{@link ExecutableElement#execute(Object...)}方法，
      * 子类可覆盖此方法添加额外逻辑，如参数验证、结果转换等。
-     * </p>
      * 
      * @param args 参数值数组，不可为null
      * @return 可执行元素的执行结果

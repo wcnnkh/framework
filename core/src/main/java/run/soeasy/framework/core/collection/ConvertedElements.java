@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @param <S> 源元素类型
  * @param <E> 目标元素类型
- * @param <W> 源元素集合类型，必须实现Elements<S>接口
+ * @param <W> 源元素集合类型，必须实现Elements&lt;S&gt;接口
  * @see ElementsWrapper
  * @see Function
  * @see Stream

@@ -30,11 +30,9 @@ import lombok.NonNull;
  * <pre class="code">
  * // 创建通配符类型：? extends Number
  * WildcardType wildcardType = new WildcardType() {
- *     @Override
  *     public Type[] getUpperBounds() {
  *         return new Type[]{Number.class};
  *     }
- *     @Override
  *     public Type[] getLowerBounds() {
  *         return new Type[0];
  *     }

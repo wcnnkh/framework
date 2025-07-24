@@ -12,7 +12,6 @@ import run.soeasy.framework.core.convert.value.SourceDescriptorWrapper;
  * <p>
  * 该接口采用装饰器模式，允许在不修改原始描述符的情况下，为其提供额外行为。
  * 作为函数式接口，它可以通过Lambda表达式或方法引用简洁地实现。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -21,7 +20,6 @@ import run.soeasy.framework.core.convert.value.SourceDescriptorWrapper;
  *   <li>透明代理：默认方法转发调用至原始描述符</li>
  *   <li>类型安全：泛型约束确保包装器与被包装对象类型兼容</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -30,7 +28,6 @@ import run.soeasy.framework.core.convert.value.SourceDescriptorWrapper;
  *   <li>性能监控：测量可执行元素的执行时间</li>
  *   <li>参数验证：在执行前验证参数合法性</li>
  * </ul>
- * </p>
  *
  * @param <W> 被包装的可执行描述符类型
  * 
@@ -47,7 +44,6 @@ public interface ExecutableDescriptorWrapper<W extends ExecutableDescriptor>
      * 判断被包装的可执行元素是否可以无参执行
      * <p>
      * 该默认方法将调用转发给原始描述符的{@link ExecutableDescriptor#canExecuted()}方法。
-     * </p>
      * 
      * @return 若被包装的可执行元素可以无参执行返回true，否则返回false
      */
@@ -74,7 +70,6 @@ public interface ExecutableDescriptorWrapper<W extends ExecutableDescriptor>
      * 获取被包装的可执行元素的返回类型描述符
      * <p>
      * 该默认方法将调用转发给原始描述符的{@link ExecutableDescriptor#getReturnTypeDescriptor()}方法。
-     * </p>
      * 
      * @return 返回类型描述符
      */

@@ -26,7 +26,7 @@ import run.soeasy.framework.core.exchange.container.collection.ArrayListContaine
  *   <li>监听器管理：继承自父类的监听器注册、过滤和生命周期管理能力</li>
  * </ul>
  *
- * @param <T> 事件元素的类型，批量事件为{@link Elements<T>}
+ * @param <T> 事件元素的类型，批量事件为{@link Elements&lt;T&gt;}
  * 
  * @author soeasy.run
  * @see EventDispatcher

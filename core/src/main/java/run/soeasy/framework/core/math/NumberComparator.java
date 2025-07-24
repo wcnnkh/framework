@@ -11,7 +11,7 @@ import java.util.Comparator;
  *
  * <p>实现特点：
  * <ul>
- *   <li>单例模式：通过{@link #INSTANCE}提供全局唯一实例</li>
+ *   <li>单例模式：通过{@link #DEFAULT}提供全局唯一实例</li>
  *   <li>类型安全：正确处理不同Number子类的比较逻辑</li>
  *   <li>空值处理：null值被视为小于非null值</li>
  *   <li>性能优化：优先使用基本数据类型比较，避免不必要的高精度计算</li>
@@ -40,9 +40,9 @@ public class NumberComparator implements Comparator<Number> {
      * @param left 左操作数
      * @param right 右操作数
      * @return 比较结果：
-     *         - 负数：left < right
+     *         - 负数：left &lt; right
      *         - 零：left == right
-     *         - 正数：left > right
+     *         - 正数：left &gt; right
      */
     @Override
     public int compare(Number left, Number right) {

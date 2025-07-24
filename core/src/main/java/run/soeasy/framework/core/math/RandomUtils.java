@@ -52,8 +52,8 @@ import run.soeasy.framework.core.function.ThrowingFunction;
  *     new Item("普通道具", 90)
  * );
  * Item selected = RandomUtils.random(items, 
- *     item -> item.getWeight(), 
- *     item -> System.out.println("选中: " + item.getName())
+ *     item -&gt; item.getWeight(), 
+ *     item -&gt; System.out.println("选中: " + item.getName())
  * );
  * </pre>
  */

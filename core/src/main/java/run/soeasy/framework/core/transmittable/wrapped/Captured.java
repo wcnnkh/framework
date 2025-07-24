@@ -3,6 +3,7 @@ package run.soeasy.framework.core.transmittable.wrapped;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.transmittable.Inheriter;
+import run.soeasy.framework.core.transmittable.InheriterBackup;
 
 /**
  * 已捕获上下文状态的可继承对象包装器。

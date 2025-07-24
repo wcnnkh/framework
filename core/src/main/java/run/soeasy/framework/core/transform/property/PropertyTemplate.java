@@ -50,7 +50,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      *   <li>字符串类型：作为名称精确匹配属性</li>
      *   <li>其他类型：委托给{@link Template#get(Object)}处理</li>
      * </ul>
-     * </p>
      * 
      * @param key 检索键，支持数字、字符串或其他类型
      * @return 匹配的属性描述符

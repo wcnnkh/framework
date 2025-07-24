@@ -37,11 +37,11 @@ import run.soeasy.framework.core.transmittable.Inheriter;
  *     );
  * 
  * // 提交Callable任务，自动携带当前上下文
- * Future&lt;String&gt; future = inheritableService.submit(() -> "result");
+ * Future&lt;String&gt; future = inheritableService.submit(() -&gt; "result");
  * 
  * // 批量提交任务，所有任务共享相同上下文
  * List&lt;Future&lt;String&gt;&gt; futures = inheritableService.invokeAll(Collections.singletonList(
- *     () -> "task result"
+ *     () -&gt; "task result"
  * ));
  * </pre>
  *

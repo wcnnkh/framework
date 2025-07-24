@@ -6,7 +6,6 @@ package run.soeasy.framework.core.collection.function;
  * 权重值通常为非负整数，值越大表示权重越高。
  *
  * @author soeasy.run
- * @see WeightedSelector
  */
 public interface Weighted {
     

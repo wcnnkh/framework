@@ -436,7 +436,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * 
      * @param minimumValue 最小值
      * @param maximumValue 最大值
-     * @return 位移值，使1 << shift生成的大小在min和max之间
+     * @return 位移值，使1 &lt;&lt; shift生成的大小在min和max之间
      */
     protected static int calculateShift(int minimumValue, int maximumValue) {
         int shift = 0;

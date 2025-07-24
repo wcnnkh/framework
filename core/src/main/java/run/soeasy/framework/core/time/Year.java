@@ -8,7 +8,6 @@ import lombok.NonNull;
  * <p>
  * 该类继承自{@link TimeUnit}，定义了时间单位为年，
  * 下一级时间单位为月（{@link Month}），适用于需要按年份处理时间的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -24,7 +23,6 @@ import lombok.NonNull;
  *   <li>若结束月份小于开始月份，年份差减1</li>
  *   <li>若月份相同但结束日期小于开始日期，年份差减1</li>
  * </ol>
- * </p>
  *
  * @author soeasy.run
  * @see TimeUnit

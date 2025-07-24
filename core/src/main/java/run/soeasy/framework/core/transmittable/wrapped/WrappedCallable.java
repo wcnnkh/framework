@@ -22,7 +22,7 @@ import run.soeasy.framework.core.transmittable.Inheriter;
  * <pre>
  * WrappedCallable&lt;Context, Backup, MyInheriter, String, Exception, Callable&lt;String&gt;&gt; wrappedTask = 
  *     new WrappedCallable&lt;&gt;(
- *         () -> { return "task result"; },
+ *         () -&gt; { return "task result"; },
  *         contextInheriter
  *     );
  * 

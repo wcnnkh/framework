@@ -51,7 +51,6 @@ public interface TemplateMappingWrapper<E extends TypedValueAccessor, W extends 
      * 
      * @param key 键对象，可以是数值类型或其他类型
      * @return 对应的唯一元素，若键不存在则返回null
-     * @throws NoUniqueElementException 当键对应多个元素时抛出
      * @see TemplateMapping#get(Object)
      */
     @Override

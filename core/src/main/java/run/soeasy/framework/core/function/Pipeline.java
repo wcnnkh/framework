@@ -70,7 +70,6 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
      * @param <T>                  资源类型，必须是AutoCloseable的子类型
      * @param autoCloseableSupplier AutoCloseable资源供应者
      * @return 包装后的流水线实例，支持自动关闭
-     * @throws Exception 资源获取或关闭时可能抛出的异常
      */
     public static <T extends AutoCloseable> Pipeline<T, Exception> forAutoCloseable(
             ThrowingSupplier<T, Exception> autoCloseableSupplier) {
@@ -84,7 +83,6 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
      * @param <T>               资源类型，必须是Closeable的子类型
      * @param closeableSupplier Closeable资源供应者
      * @return 包装后的流水线实例，支持自动关闭
-     * @throws IOException 资源获取或关闭时可能抛出的IO异常
      */
     public static <T extends Closeable> Pipeline<T, IOException> forCloseable(
             ThrowingSupplier<T, IOException> closeableSupplier) {

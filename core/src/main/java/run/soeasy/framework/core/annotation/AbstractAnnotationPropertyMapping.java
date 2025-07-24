@@ -20,7 +20,6 @@ import run.soeasy.framework.core.collection.ArrayUtils;
  *   <li>一致哈希值：基于注解类型和属性值计算hashCode</li>
  *   <li>抽象模板：定义了注解属性映射的基本框架，子类只需实现具体属性获取逻辑</li>
  * </ul>
- * </p>
  *
  * <p><b>实现说明：</b>
  * <ul>
@@ -28,7 +27,6 @@ import run.soeasy.framework.core.collection.ArrayUtils;
  *   <li>hashCode方法：结合注解类型和属性值计算哈希值</li>
  *   <li>属性比较：使用ObjectUtils.equals进行深层值比较</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AnnotationProperties
@@ -44,7 +42,6 @@ public abstract class AbstractAnnotationPropertyMapping<A extends Annotation> im
      *   <li>注解类型的哈希值</li>
      *   <li>所有属性元素的哈希值（通过ArrayUtils.hashCode计算）</li>
      * </ol>
-     * </p>
      * 
      * @return 注解属性映射的哈希值
      */
@@ -62,7 +59,6 @@ public abstract class AbstractAnnotationPropertyMapping<A extends Annotation> im
      *   <li>注解类型相同</li>
      *   <li>所有属性值相同（使用ObjectUtils.equals进行深层比较）</li>
      * </ol>
-     * </p>
      * 
      * @param obj 待比较的对象
      * @return 如果对象相等返回true，否则返回false

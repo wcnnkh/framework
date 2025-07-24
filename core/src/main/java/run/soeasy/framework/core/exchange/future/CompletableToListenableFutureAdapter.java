@@ -91,7 +91,7 @@ public class CompletableToListenableFutureAdapter<T> implements ListenableFuture
      * 监听器会在任务完成（成功/失败/取消）时接收当前ListenableFuture实例，
      * 支持通过返回的Registration取消监听。
      * 
-     * @param listener 事件监听器，接收ListenableFuture<T>类型参数
+     * @param listener 事件监听器，接收ListenableFuture&lt;T&gt;类型参数
      * @return 注册回执，用于取消监听
      * @throws NullPointerException 若listener为null
      */

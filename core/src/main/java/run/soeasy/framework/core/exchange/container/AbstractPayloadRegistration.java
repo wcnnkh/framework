@@ -15,7 +15,6 @@ import run.soeasy.framework.core.ObjectUtils;
  *   <li>生命周期管理：继承自父类的启动、停止和状态管理能力</li>
  *   <li>可扩展性：允许子类重写默认行为</li>
  * </ul>
- * </p>
  *
  * @param <S> 负载对象的类型
  * 

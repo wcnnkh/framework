@@ -17,7 +17,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  * <p>
  * 该接口通过代理模式将属性操作转换为注解的方法调用，支持基于属性集合动态生成注解实例，
  * 适用于需要在运行时动态构造注解的场景，如测试框架、动态代理、注解处理器等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,13 +25,11 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>类型安全：通过泛型约束确保合成注解的类型一致性</li>
  *   <li>代理处理：实现InvocationHandler接口，处理注解方法的调用</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code A}：合成的注解类型，必须是{@link Annotation}的子类</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -42,7 +39,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>注解处理器：动态处理和生成注解实例</li>
  *   <li>元编程：基于属性集合动态生成注解元数据</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TypedProperties
@@ -67,7 +63,6 @@ public interface AnnotationProperties<A extends Annotation> extends TypedPropert
      *   <li>注解元方法：annotationType()</li>
      *   <li>注解属性方法：通过属性名称获取对应值</li>
      * </ol>
-     * </p>
      * 
      * @param proxy 代理实例
      * @param method 被调用的方法
@@ -106,7 +101,6 @@ public interface AnnotationProperties<A extends Annotation> extends TypedPropert
      * 该方法使用Java动态代理生成实现指定注解类型的代理实例，
      * 代理的方法调用将委托给当前{@link AnnotationProperties}实现，
      * 从而实现基于属性集合的动态注解。
-     * </p>
      * 
      * @return 动态合成的注解实例
      */

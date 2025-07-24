@@ -14,7 +14,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  * <p>
  * 该接口提供了可执行元素的参数类型匹配判断、名称获取、声明类型描述等核心功能，
  * 是框架中反射操作和动态执行的基础元数据接口。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -23,7 +22,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  *   <li>参数模板访问：通过{@link #getParameterTemplate()}获取参数属性描述集合</li>
  *   <li>类型安全：通过{@link TypeDescriptor}确保元数据的类型安全性</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -32,7 +30,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  *   <li>框架插件系统：描述插件方法的元数据以实现动态加载</li>
  *   <li>参数校验：在执行前校验参数类型是否匹配</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ExecutableDescriptor
@@ -50,7 +47,6 @@ public interface ExecutableMetadata extends ExecutableDescriptor {
      *   <li>检查每个参数类型是否与参数模板的返回类型兼容</li>
      *   <li>要求参数数量和类型完全匹配</li>
      * </ol>
-     * </p>
      * 
      * @param parameterTypes 待检查的参数类型数组，不可为null
      * @return 若参数类型完全匹配返回true，否则返回false
@@ -73,7 +69,6 @@ public interface ExecutableMetadata extends ExecutableDescriptor {
      * 获取可执行元素的名称
      * <p>
      * 对于方法，返回方法名；对于构造函数，返回类名。
-     * </p>
      * 
      * @return 可执行元素的名称
      */
@@ -84,7 +79,6 @@ public interface ExecutableMetadata extends ExecutableDescriptor {
      * <p>
      * 返回声明该可执行元素的类或接口的类型描述符，
      * 对于构造函数，返回所属类的类型描述符。
-     * </p>
      * 
      * @return 声明类型的描述符
      */
@@ -95,7 +89,6 @@ public interface ExecutableMetadata extends ExecutableDescriptor {
      * <p>
      * 返回该可执行元素在声明中抛出的所有异常类型的描述符，
      * 对于构造函数，返回其声明抛出的异常类型。
-     * </p>
      * 
      * @return 异常类型描述符的元素集合
      */
@@ -106,7 +99,6 @@ public interface ExecutableMetadata extends ExecutableDescriptor {
      * <p>
      * 返回包含所有参数属性描述符的模板，每个描述符对应一个参数，
      * 可用于获取参数的名称、类型等元数据信息。
-     * </p>
      * 
      * @return 参数模板
      */

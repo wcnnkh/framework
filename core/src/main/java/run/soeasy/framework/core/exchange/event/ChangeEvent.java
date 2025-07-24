@@ -162,12 +162,6 @@ public class ChangeEvent<T> extends BaseEvent {
 
     /**
      * 转换变更事件的类型（支持事件类型升级或降级）
-     * <p>
-     * 示例：
-     * <pre>
-     * ChangeEvent<User> userEvent = ...;
-     * ChangeEvent<Person> personEvent = userEvent.convert(User::toPerson);
-     * </pre>
      * 
      * @param <R> 目标类型
      * @param mapper 类型转换函数，不可为null

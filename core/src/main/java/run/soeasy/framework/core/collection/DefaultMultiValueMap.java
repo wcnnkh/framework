@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @param <K> 键的类型
  * @param <V> 值的类型
- * @param <M> 底层Map实现的类型，必须继承Map<K, List<V>>
+ * @param <M> 底层Map实现的类型，必须继承Map&lt;K, List&lt;V&gt;&gt;
  * @see MultiValueMap
  * @see AbstractMultiValueMap
  */

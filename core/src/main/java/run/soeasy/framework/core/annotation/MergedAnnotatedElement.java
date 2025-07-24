@@ -17,7 +17,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * <p>
  * 该类通过聚合多个{@link AnnotatedElement}实例，实现注解信息的合并查询，
  * 支持在多个元素中查找注解、检查注解存在性等操作，适用于需要处理多层注解的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,7 +25,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  *   <li>高效集合操作：使用流式处理优化多元素注解查询性能</li>
  *   <li>等值比较支持：基于聚合的元素集合实现hashCode和equals方法</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -36,7 +34,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  *   <li>元数据聚合：聚合多个元素的元数据注解</li>
  *   <li>插件系统：合并框架核心和插件的注解配置</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AnnotatedElement
@@ -53,7 +50,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 获取指定类型的注解（从第一个元素开始查询）
      * <p>
      * 按顺序遍历所有注解元素，返回第一个包含该注解的元素的注解实例
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -69,7 +65,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 获取所有注解（合并所有元素的注解）
      * <p>
      * 合并所有注解元素的注解数组，去重后按顺序返回
-     * </p>
      * 
      * @return 合并后的注解数组
      */
@@ -83,7 +78,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 获取指定类型的所有注解（合并所有元素的注解）
      * <p>
      * 合并所有注解元素的指定类型注解，去重后按顺序返回
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -100,7 +94,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 获取直接声明的指定类型注解（从第一个元素开始查询）
      * <p>
      * 按顺序遍历所有注解元素，返回第一个元素直接声明的该注解实例
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -116,7 +109,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 获取直接声明的所有注解（合并所有元素的注解）
      * <p>
      * 合并所有注解元素直接声明的注解数组，去重后按顺序返回
-     * </p>
      * 
      * @return 合并后的直接声明注解数组
      */
@@ -130,7 +122,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 获取直接声明的指定类型所有注解（合并所有元素的注解）
      * <p>
      * 合并所有注解元素直接声明的指定类型注解，去重后按顺序返回
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -147,7 +138,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 检查是否存在指定类型的注解
      * <p>
      * 只要有一个注解元素存在该注解即返回true
-     * </p>
      * 
      * @param annotationClass 注解类
      * @return 存在返回true，否则返回false
@@ -176,7 +166,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 计算合并注解元素的哈希值
      * <p>
      * 哈希值基于聚合的注解元素集合计算
-     * </p>
      * 
      * @return 哈希值
      */
@@ -189,7 +178,6 @@ public class MergedAnnotatedElement implements AnnotatedElement {
      * 判断与其他对象的相等性
      * <p>
      * 当且仅当对象为MergedAnnotatedElement且聚合的注解元素集合相等时返回true
-     * </p>
      * 
      * @param obj 待比较对象
      * @return 相等返回true，否则返回false

@@ -30,7 +30,7 @@ public interface Listable<E> {
 
     /**
      * 基于已有元素集合创建Listable实例，返回的实例同时实现Serializable接口。
-     * 通过接口组合语法（Listable & Serializable）确保实例可序列化。
+     * 通过接口组合语法（Listable&lt;E&gt; & Serializable）确保实例可序列化。
      *
      * @param <E> 元素类型
      * @param elements 元素集合，不可为null

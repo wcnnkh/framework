@@ -17,7 +17,6 @@ import run.soeasy.framework.core.collection.UnsafeArrayList;
  * <p>
  * 该类采用函数式接口作为处理器，实现注解查询逻辑的灵活定制，
  * 支持将多个元素的注解信息合并为统一结果，适用于需要处理多层注解的复杂场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,7 +25,6 @@ import run.soeasy.framework.core.collection.UnsafeArrayList;
  *   <li>函数式处理：通过Function接口定制注解提取逻辑</li>
  *   <li>空安全处理：内置空元素常量{@link #EMPTY_ANNOTATED_ELEMENT}处理空场景</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -36,7 +34,6 @@ import run.soeasy.framework.core.collection.UnsafeArrayList;
  *   <li>插件系统注解整合：合并框架核心和插件的注解配置</li>
  *   <li>动态注解合成：基于多个元素的注解动态生成合成注解</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AnnotatedElement
@@ -57,7 +54,6 @@ public class AnnotatedElementUtils {
      *   <li>若首次找到注解则记录，后续找到的同类型注解将被收集</li>
      *   <li>若收集到多个注解，使用{@link SynthesizedAnnotation#synthesize(Class, List)}合成新注解</li>
      * </ol>
-     * </p>
      * 
      * @param <A> 注解元素类型，继承自{@link AnnotatedElement}
      * @param <T> 注解类型，继承自{@link Annotation}
@@ -112,7 +108,6 @@ public class AnnotatedElementUtils {
      *   <li>收集所有非空数组的注解到统一列表</li>
      *   <li>返回合并后的注解列表，元素顺序与遍历顺序一致</li>
      * </ol>
-     * </p>
      * 
      * @param <A> 注解元素类型，继承自{@link AnnotatedElement}
      * @param <T> 注解类型

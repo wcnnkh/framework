@@ -27,7 +27,7 @@ import run.soeasy.framework.core.transmittable.Inheriter;
  *     );
  * 
  * // 提交任务，自动携带当前上下文
- * inheritableExecutor.execute(() -> {
+ * inheritableExecutor.execute(() -&gt; {
  *     // 任务逻辑，自动使用提交时的上下文
  * });
  * </pre>

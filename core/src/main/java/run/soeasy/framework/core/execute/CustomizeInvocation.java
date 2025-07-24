@@ -10,7 +10,6 @@ import lombok.Setter;
  * <p>
  * 该类通过委托模式将调用逻辑转发给具体的可调用元素，
  * 并提供了目标对象管理、参数校验和执行异常处理的能力，确保调用过程的安全性和可靠性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -19,7 +18,6 @@ import lombok.Setter;
  *   <li>执行委托：将实际调用逻辑委托给封装的可调用元素</li>
  *   <li>异常处理：直接抛出执行过程中产生的异常，便于上层统一处理</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -28,7 +26,6 @@ import lombok.Setter;
  *   <li>RPC框架：封装远程方法调用的上下文信息</li>
  *   <li>插件系统：动态加载并执行插件类的方法</li>
  * </ul>
- * </p>
  *
  * @param <W> 可调用元素类型，需实现{@link InvodableElement}接口
  * @author soeasy.run
@@ -60,7 +57,6 @@ public class CustomizeInvocation<W extends InvodableElement> extends AbstractExe
      * 该方法会调用封装的可调用元素的{@link InvodableElement#invoke(Object, Object...)}方法，
      * 并传递当前上下文中的目标对象和参数数组。执行前无需额外的参数类型校验，
      * 因为{@link InvodableElement}的默认实现已包含参数类型校验逻辑。
-     * </p>
      * 
      * @return 方法执行结果
      * @throws Throwable 执行过程中抛出的任何异常

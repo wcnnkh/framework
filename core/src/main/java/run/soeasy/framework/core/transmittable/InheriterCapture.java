@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
  * <p>示例用法：
  * <pre class="code">
  * // 创建上下文捕获器
- * InheriterCapture&lt;TransmittableThreadLocal&lt;String&gt;, Void&gt; capture = new InheriterCapture<>();
+ * InheriterCapture&lt;TransmittableThreadLocal&lt;String&gt;, Void&gt; capture = new InheriterCapture&lt;&gt;();
  * 
  * // 注册多个Inheriter
  * capture.put(threadLocal1, threadLocal1.capture());

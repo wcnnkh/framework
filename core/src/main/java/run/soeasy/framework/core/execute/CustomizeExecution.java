@@ -8,7 +8,6 @@ import lombok.NonNull;
  * <p>
  * 该类通过委托模式将执行逻辑转发给具体的可执行元素，
  * 并提供了参数校验和执行异常处理的能力，确保执行过程的安全性和可靠性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,7 +16,6 @@ import lombok.NonNull;
  *   <li>异常处理：直接抛出执行过程中产生的异常，便于上层统一处理</li>
  *   <li>泛型支持：通过泛型约束确保元数据类型的一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -26,7 +24,6 @@ import lombok.NonNull;
  *   <li>自定义命令：封装自定义命令的执行逻辑</li>
  *   <li>测试工具：用于单元测试中的方法调用</li>
  * </ul>
- * </p>
  *
  * @param <W> 可执行元素类型，需实现{@link ExecutableElement}接口
  * @author soeasy.run
@@ -51,7 +48,6 @@ public class CustomizeExecution<W extends ExecutableElement> extends AbstractExe
      * 该方法会调用封装的可执行元素的{@link ExecutableElement#execute(Object...)}方法，
      * 并传递当前上下文中的参数数组。执行前无需额外的参数类型校验，
      * 因为{@link ExecutableElement}的默认实现已包含参数类型校验逻辑。
-     * </p>
      * 
      * @return 执行结果
      * @throws Throwable 执行过程中抛出的任何异常

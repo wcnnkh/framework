@@ -15,7 +15,6 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  * <p>
  * 该类通过组合模式将外部属性源与注解类型绑定，实现注解属性的动态访问，
  * 适用于需要将现有属性结构转换为注解表示的场景，如配置项映射、元数据转换等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -24,14 +23,12 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  *   <li>自定义映射：支持自定义注解类型与属性源的映射关系</li>
  *   <li>接口适配：实现TypedPropertiesWrapper接口，保持与属性体系的兼容性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code A}：目标注解类型，必须是{@link Annotation}的子类</li>
  *   <li>{@code P}：源属性类型，必须是{@link TypedProperties}的子类</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -41,7 +38,6 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  *   <li>注解代理：为现有属性提供注解式访问接口</li>
  *   <li>插件系统：将插件配置转换为框架可识别的注解</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AnnotationProperties

@@ -45,7 +45,6 @@ public final class NoneType extends AbstractResolvableType<Type> {
      * 该构造函数用于初始化无类型实例，通常关联Object.class或其他基础类型。
      *
      * @param type 基础类型（通常为Object.class），不可为null
-     * @throws NullPointerException 当type为null时抛出
      */
     public NoneType(@NonNull Type type) {
         super(type);

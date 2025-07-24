@@ -75,7 +75,7 @@ public interface Filter<T> extends Function<Elements<T>, Elements<T>> {
 
     /**
      * 返回忽略null元素的过滤器。
-     * 该过滤器使用(e -> e != null)的Predicate，过滤掉集合中的所有null元素。
+     * 该过滤器使用(e -&gt; e != null)的Predicate，过滤掉集合中的所有null元素。
      *
      * @param <T> 元素类型
      * @return 忽略null元素的过滤器

@@ -33,7 +33,7 @@ import java.lang.reflect.TypeVariable;
  * 
  * // 创建类型变量解析器
  * TypeVariableResolver resolver = new TypeVariableResolver() {
- *     @Override
+ *     
  *     public ResolvableType resolveTypeVariable(TypeVariable&lt;?&gt; tv) {
  *         if (tv.getName().equals("T")) {
  *             return ResolvableType.forClass(Integer.class);

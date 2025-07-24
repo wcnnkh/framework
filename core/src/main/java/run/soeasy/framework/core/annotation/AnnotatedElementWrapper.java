@@ -21,13 +21,11 @@ import run.soeasy.framework.core.domain.Wrapper;
  *   <li>方法转发：默认方法将注解查询调用转发给被包装的源元素，保持原始行为</li>
  *   <li>类型安全：通过泛型约束确保包装器与被包装对象的类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code W}：被包装的带注解元素类型，需实现{@link AnnotatedElement}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -37,7 +35,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  *   <li>注解组合：将多个注解组合为一个逻辑注解</li>
  *   <li>兼容性处理：为不支持重复注解的旧版本JDK提供重复注解支持</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AnnotatedElement

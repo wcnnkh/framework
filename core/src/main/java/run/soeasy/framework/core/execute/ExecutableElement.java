@@ -8,7 +8,6 @@ import lombok.NonNull;
  * <p>
  * 该接口提供了完整的可执行元素抽象，既包含参数类型、声明类型等元数据信息，
  * 又具备动态执行能力，支持参数类型校验和不同形式的执行调用。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,7 +16,6 @@ import lombok.NonNull;
  *   <li>参数校验：默认实现包含参数类型匹配校验，避免类型不匹配异常</li>
  *   <li>执行重载：提供带参数类型和纯参数值两种执行方法，适应不同调用场景</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -26,7 +24,6 @@ import lombok.NonNull;
  *   <li>动态代理：为代理对象提供统一的方法执行接口</li>
  *   <li>插件系统：作为插件方法的抽象定义，支持动态加载和执行</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ExecutableMetadata
@@ -39,7 +36,6 @@ public interface ExecutableElement extends ExecutableMetadata, ExecutableTemplat
      * <p>
      * 该默认实现先通过{@link #canExecuted(Class[])}方法校验参数类型匹配性，
      * 若不匹配则抛出{@link IllegalArgumentException}，否则调用纯参数值的执行方法。
-     * </p>
      * 
      * @param parameterTypes 参数类型数组，不可为null
      * @param args 参数值数组，不可为null
@@ -61,7 +57,6 @@ public interface ExecutableElement extends ExecutableMetadata, ExecutableTemplat
      * <p>
      * 该方法通过可执行元素的元数据自动匹配参数类型，适用于参数类型已知或可推断的场景。
      * 实现类应根据元数据中的参数模板（{@link #getParameterTemplate()}）进行参数类型匹配和转换。
-     * </p>
      * 
      * @param args 参数值数组，不可为null
      * @return 可执行元素的执行结果

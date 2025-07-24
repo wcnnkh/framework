@@ -9,7 +9,6 @@ import lombok.NonNull;
  * <p>
  * 子类需实现{@link #execute()}方法，定义具体的执行逻辑。该基类通过Lombok自动生成
  * 元数据和参数的getter方法，并确保参数数组的初始状态。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,7 +17,6 @@ import lombok.NonNull;
  *   <li>不可变元数据：元数据在初始化后不可更改，保证执行过程中的一致性</li>
  *   <li>可变参数：参数数组可在执行前修改，支持动态参数调整</li>
  * </ul>
- * </p>
  *
  * <p><b>使用说明：</b>
  * <ul>
@@ -26,7 +24,6 @@ import lombok.NonNull;
  *   <li>可通过{@link #getArguments()}获取和修改参数数组</li>
  *   <li>执行逻辑由子类的{@link #execute()}方法实现</li>
  * </ul>
- * </p>
  *
  * @param <W> 可执行元素的元数据类型，需实现{@link ExecutableMetadata}
  * @author soeasy.run

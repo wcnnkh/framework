@@ -34,7 +34,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  * 
  * // 创建类型包装器
  * ResolvableTypeWrapper&lt;ResolvableType&gt; wrappedType = new ResolvableTypeWrapper&lt;&gt;() {
- *     @Override
  *     public ResolvableType getSource() {
  *         return originalType;
  *     }

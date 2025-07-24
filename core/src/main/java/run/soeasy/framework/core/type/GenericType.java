@@ -35,7 +35,7 @@ import lombok.Setter;
  * 
  * // 获取泛型参数
  * ResolvableType[] typeArguments = listOfStringType.getActualTypeArguments();
- * if (typeArguments.length > 0) {
+ * if (typeArguments.length &gt; 0) {
  *     System.out.println("第一个泛型参数类型: " + typeArguments[0].getRawType());
  * }
  * 

@@ -35,7 +35,6 @@ package run.soeasy.framework.core.transmittable;
  * @param <A> 捕获的上下文数据类型
  * @param <B> 备份的上下文数据类型
  * 
- * @see TransmittableThreadLocal
  * @see InheritableThreadLocal
  */
 public interface Inheriter<A, B> {

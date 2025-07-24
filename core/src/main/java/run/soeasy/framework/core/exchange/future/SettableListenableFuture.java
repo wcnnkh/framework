@@ -10,7 +10,7 @@ import run.soeasy.framework.core.exchange.Listener;
 import run.soeasy.framework.core.exchange.Registration;
 
 /**
- * 可设置结果的可监听未来结果实现，实现{@link Promise<T>}接口。
+ * 可设置结果的可监听未来结果实现，实现{@link Promise}接口。
  * 该类允许手动设置异步操作的结果或异常，并支持取消操作和不可取消标记。
  * <p>
  * 核心特性：
