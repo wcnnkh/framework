@@ -1,5 +1,7 @@
 package run.soeasy.framework.core.exchange;
 
+import lombok.NonNull;
+
 /**
  * 可监听的接口
  * 定义注册监听器的标准行为，支持单条监听和批量监听模式
@@ -26,5 +28,5 @@ public interface Listenable<T> {
      * @param listener 待注册的监听器
      * @return 注册操作的句柄，用于后续取消注册
      */
-    Registration registerListener(Listener<T> listener);
+    Registration registerListener(@NonNull Listener<T> listener);
 }

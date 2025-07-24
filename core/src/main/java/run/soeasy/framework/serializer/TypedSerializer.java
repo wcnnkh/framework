@@ -6,18 +6,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.codec.binary.ToBytesCodec;
+import run.soeasy.framework.codec.binary.ToBinaryCodec;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.io.IOUtils;
 
 /**
  * 类型化序列化器接口
- * 继承自{@link Serializer}和{@link ToBytesCodec}，提供类型安全的序列化能力
+ * 继承自{@link Serializer}和{@link ToBinaryCodec}，提供类型安全的序列化能力
  * 支持对象与字节流/字节数组的双向转换，并处理泛型类型信息
  */
-public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
+public interface TypedSerializer extends Serializer, ToBinaryCodec<Object> {
 
 	/**
 	 * 将对象序列化为输出流
@@ -41,19 +41,19 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	 */
 	@Override
 	default Object deserialize(InputStream source, TypeDescriptor targetTypeDescriptor)
-			throws IOException, DecodeException {
+			throws IOException, SerializerException {
 		try {
 			return deserialize(source);
 		} catch (ClassNotFoundException e) {
-			throw new DecodeException(e);
+			throw new SerializerException(e);
 		}
 	}
-
+	
 	/**
-	 * 实现{@link ToBytesCodec}的encode方法
+	 * 实现{@link ToBinaryCodec}的encode方法
 	 */
 	@Override
-	default void encode(Object source, OutputStream target) throws IOException, EncodeException {
+	default void encode(Object source, OutputStream target) throws IOException, CodecException {
 		serialize(source, target);
 	}
 
@@ -109,18 +109,18 @@ public interface TypedSerializer extends Serializer, ToBytesCodec<Object> {
 	}
 
 	/**
-	 * 实现{@link ToBytesCodec}的encode方法
+	 * 实现{@link ToBinaryCodec}的encode方法
 	 */
 	@Override
-	default byte[] encode(Object source) throws EncodeException {
+	default byte[] encode(Object source) throws CodecException {
 		return serialize(source);
 	}
 
 	/**
-	 * 实现{@link ToBytesCodec}的decode方法
+	 * 实现{@link ToBinaryCodec}的decode方法
 	 */
 	@Override
-	default Object decode(InputStream source, int bufferSize) throws IOException, DecodeException {
+	default Object decode(InputStream source, int bufferSize) throws IOException, CodecException {
 		try {
 			return deserialize(source, bufferSize);
 		} catch (ClassNotFoundException e) {

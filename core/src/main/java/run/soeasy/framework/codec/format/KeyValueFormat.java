@@ -11,8 +11,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
+import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.DefaultMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
@@ -118,12 +117,12 @@ public class KeyValueFormat extends KeyValueSplitter
 	}
 
 	@Override
-	public final String encode(MultiValueMap<String, String> source) throws EncodeException {
+	public final String encode(MultiValueMap<String, String> source) throws CodecException {
 		return convert(source, String.class);
 	}
 
 	@Override
-	public final MultiValueMap<String, String> decode(String source) throws DecodeException {
+	public final MultiValueMap<String, String> decode(String source) throws CodecException {
 		// 使用Stream流处理键值对，分组收集到LinkedHashMap保持顺序
 		Map<String, List<String>> map = split(source).collect(Collectors.groupingBy(KeyValue::getKey, // 按键分组
 				LinkedHashMap::new, // 使用LinkedHashMap保持键的顺序

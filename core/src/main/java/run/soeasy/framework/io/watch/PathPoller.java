@@ -43,15 +43,7 @@ public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
 			return null;
 		}
 
-		File sourceFile;
-		try {
-			sourceFile = getVariable().getFile();
-		} catch (IOException e) {
-			// 获取文件异常
-			logger.error(e, "Unable to retrieve the original file {}", getVariable());
-			return null;
-		}
-
+		File sourceFile = getVariable().getFile();
 		if (sourceFile == null) {
 			// 不可能，因为watch需要知道path，所以一定存在
 			return null;
@@ -79,13 +71,7 @@ public class PathPoller<T extends FileVariable> extends VariablePoller<T> {
 	 */
 	public Path getWatchable() {
 		if (watchable == null) {
-			File file = null;
-			try {
-				file = getVariable().getFile();
-			} catch (IOException e) {
-				logger.error(e, "{} Unable to obtain File", getVariable());
-			}
-
+			File file =  getVariable().getFile();
 			if (file == null) {
 				return null;
 			}

@@ -17,7 +17,7 @@ import lombok.experimental.UtilityClass;
  * 数组工具类
  * 提供数组操作的各种实用方法，包括克隆、比较、合并、转换等功能
  * 
- * @author shuchaowen
+ * @author soeasy.run
  */
 @UtilityClass
 public class ArrayUtils {

@@ -1,90 +1,30 @@
 package run.soeasy.framework.codec.binary;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+/**
+ * ZIP格式编解码器，继承自{@link TransferrerCodec}，专门用于ZIP格式的二进制数据编解码，
+ * 组合{@link ZipEncoder}（编码/压缩）和{@link ZipDecoder}（解码/解压）实现完整的ZIP处理能力。
+ * 
+ * <p>该类为final类，不可继承，确保ZIP编解码逻辑的稳定性。提供默认的UTF-8字符集实例{@link #UTF_8}，
+ * 适用于大多数需要ZIP压缩和解压的场景，简化ZIP格式数据的处理流程。
+ * 
+ * @author soeasy.run
+ * @see TransferrerCodec
+ * @see ZipEncoder
+ * @see ZipDecoder
+ */
+public final class Zip extends TransferrerCodec<ZipEncoder, ZipDecoder> {
+    /**
+     * 使用UTF-8字符集的默认ZIP编解码器实例，可直接用于ZIP格式的压缩与解压操作
+     */
+    public static final Zip UTF_8 = new Zip(ZipEncoder.UTF_8, ZipDecoder.UTF_8);
 
-import lombok.NonNull;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.io.FileUtils;
-import run.soeasy.framework.io.IOUtils;
-
-public class Zip implements BytesCodec {
-	public static final Zip DEFAULT = new Zip();
-
-	public static void unZip(@NonNull File source, @NonNull File target) throws ZipException, IOException {
-		ZipFile zipFile = null;
-		try {
-			zipFile = new ZipFile(source);
-			if (!target.exists()) {
-				target.mkdirs();
-			}
-
-			File canonicalTarget = target.getCanonicalFile();
-			Enumeration<? extends ZipEntry> ens = zipFile.entries();
-			ZipEntry zipEntry = null;
-			while (ens.hasMoreElements()) {
-				zipEntry = ens.nextElement();
-				File entityFile = new File(target, zipEntry.getName());
-				entityFile = entityFile.getCanonicalFile();
-				if (!entityFile.toPath().startsWith(canonicalTarget.toPath())) {
-					throw new IOException("Zip entry is outside of the target directory: " + zipEntry.getName());
-				}
-
-				if (zipEntry.isDirectory()) {
-					entityFile.mkdirs();
-				} else {
-					entityFile.createNewFile();
-					InputStream is = zipFile.getInputStream(zipEntry);
-					try {
-						FileUtils.transferTo(is, entityFile);
-					} finally {
-						IOUtils.close(is);
-					}
-				}
-			}
-		} finally {
-			IOUtils.close(zipFile);
-		}
-	}
-
-	@Override
-	public void encode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
-			throws IOException, EncodeException {
-		if (target instanceof ZipOutputStream) {
-			IOUtils.transferTo(source, bufferSize, target::write);
-		} else {
-			ZipOutputStream zip = null;
-			try {
-				zip = new ZipOutputStream(target);
-				IOUtils.transferTo(source, bufferSize, zip::write);
-			} finally {
-				IOUtils.closeQuietly(zip);
-			}
-		}
-	}
-
-	@Override
-	public void decode(@NonNull InputStream source, int bufferSize, @NonNull OutputStream target)
-			throws DecodeException, IOException {
-		if (source instanceof ZipInputStream) {
-			IOUtils.transferTo(source, bufferSize, target::write);
-		} else {
-			ZipInputStream zip = null;
-			try {
-				zip = new ZipInputStream(source);
-				IOUtils.transferTo(zip, bufferSize, target::write);
-			} finally {
-				IOUtils.closeQuietly(zip);
-			}
-		}
-	}
+    /**
+     * 构造ZIP编解码器（指定ZIP编码器和解码器）
+     * 
+     * @param encodeTransferrer ZIP编码器（用于ZIP压缩）
+     * @param decodeTransferrer ZIP解码器（用于ZIP解压）
+     */
+    public Zip(ZipEncoder encodeTransferrer, ZipDecoder decodeTransferrer) {
+        super(encodeTransferrer, decodeTransferrer);
+    }
 }

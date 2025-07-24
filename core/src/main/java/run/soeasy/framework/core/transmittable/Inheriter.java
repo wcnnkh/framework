@@ -1,20 +1,78 @@
 package run.soeasy.framework.core.transmittable;
 
 /**
- * 
- * B b = replay(capture()); try{ codeing... } finally{ restore(b); }
- * 
- * @author soeasy.run
+ * 上下文传递管理器接口，用于在线程间或不同执行阶段间传递和恢复上下文信息。
+ * 该接口定义了一套完整的上下文管理机制，包括捕获上下文、清除上下文、
+ * 重放上下文和恢复上下文四个核心操作，形成一个完整的上下文生命周期管理。
  *
- * @param <A>
- * @param <B>
+ * <p>典型使用模式：
+ * <pre class="code">
+ * B backup = replay(capture()); // 捕获当前上下文并应用到当前执行环境
+ * try {
+ *     // 执行需要特定上下文的代码
+ *     // ...
+ * } finally {
+ *     restore(backup); // 恢复之前的上下文状态
+ * }
+ * </pre>
+ *
+ * <p>设计目标：
+ * <ul>
+ *   <li>线程安全：在多线程环境中可靠地传递上下文</li>
+ *   <li>非侵入性：不影响原有业务逻辑，通过AOP或装饰器模式应用</li>
+ *   <li>灵活性：支持多种上下文类型的传递和恢复</li>
+ *   <li>完整性：确保上下文信息在传递过程中不丢失</li>
+ * </ul>
+ *
+ * <p>实现注意事项：
+ * <ul>
+ *   <li>capture()和clear()应成对调用，确保上下文状态的一致性</li>
+ *   <li>replay()和restore()应成对调用，形成完整的上下文生命周期</li>
+ *   <li>实现类应考虑线程安全问题，特别是在多线程环境中</li>
+ *   <li>备份对象B应是不可变的或深度拷贝的，避免状态污染</li>
+ * </ul>
+ *
+ * @param <A> 捕获的上下文数据类型
+ * @param <B> 备份的上下文数据类型
+ * 
+ * @see TransmittableThreadLocal
+ * @see InheritableThreadLocal
  */
 public interface Inheriter<A, B> {
-	A capture();
+    /**
+     * 捕获当前线程或执行环境的上下文状态。
+     * 该方法会收集当前环境中需要传递的上下文信息，
+     * 并将其封装为一个不可变的上下文对象返回。
+     *
+     * @return 捕获的上下文对象，包含当前环境的上下文状态
+     */
+    A capture();
 
-	B clear();
+    /**
+     * 清除当前线程或执行环境的上下文状态。
+     * 该方法会移除或重置当前环境中的上下文信息，
+     * 并返回清除前的上下文备份，用于后续恢复操作。
+     *
+     * @return 清除前的上下文备份对象
+     */
+    B clear();
 
-	B replay(A capture);
+    /**
+     * 将捕获的上下文应用到当前线程或执行环境中。
+     * 该方法会将之前捕获的上下文信息重放到当前环境中，
+     * 并返回应用前的上下文备份，用于后续恢复操作。
+     *
+     * @param capture 之前捕获的上下文对象
+     * @return 应用前的上下文备份对象
+     */
+    B replay(A capture);
 
-	void restore(B backup);
+    /**
+     * 恢复之前的上下文状态。
+     * 该方法会将当前环境的上下文状态恢复到之前备份的状态，
+     * 通常在finally块中调用，确保上下文的正确恢复。
+     *
+     * @param backup 之前备份的上下文对象
+     */
+    void restore(B backup);
 }

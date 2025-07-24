@@ -9,21 +9,49 @@ import run.soeasy.framework.core.convert.TypeMapping;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
- * 双向转换器接口，支持源类型(S)与目标类型(T)之间的双向属性转换。
- * 继承自{@link ConditionalTransformer}，通过类型映射集合实现条件转换判断。
- * 
+ * 双向条件转换器接口，支持源类型(S)与目标类型(T)之间的双向属性转换，继承自{@link ConditionalTransformer}。
+ * <p>
+ * 该接口通过泛型参数定义双向转换的类型关系，自动生成正向(S->T)和反向(T->S)的类型映射，
+ * 实现类只需提供{@link #to}和{@link #from}方法的具体转换逻辑，适用于需要双向属性映射的场景，
+ * 如DTO与Entity的双向转换、参数与响应的双向映射等。
+ * </p>
+ *
+ * <p><b>核心特性：</b>
+ * <ul>
+ *   <li>双向转换：自动支持S->T和T->S两种转换方向</li>
+ *   <li>类型映射：基于泛型参数自动生成双向类型映射关系</li>
+ *   <li>条件判断：继承自{@link ConditionalTransformer}，支持基于类型映射的条件转换</li>
+ *   <li>泛型解析：通过{@link ResolvableType}自动解析当前接口的泛型参数</li>
+ * </ul>
+ * </p>
+ *
+ * <p><b>潜在问题：</b>
+ * <ul>
+ *   <li>泛型解析限制：{@link #getTypeMapping}依赖运行时泛型解析，对于匿名内部类或擦除的泛型可能失败</li>
+ *   <li>类型安全风险：{@link #transform}中的强制类型转换可能引发{@link ClassCastException}</li>
+ *   <li>线程安全：未定义线程安全策略，实现类需自行保证多线程环境下的安全性</li>
+ *   <li>反向映射假设：默认认为正向映射的反向映射必然有效，实际可能需要自定义反向逻辑</li>
+ * </ul>
+ * </p>
+ *
  * @param <S> 源类型
  * @param <T> 目标类型
- * @see ConditionalTransformer 条件转换器基接口
- * @see TypeMapping 类型映射定义
+ * 
+ * @author soeasy.run
+ * @see ConditionalTransformer
+ * @see TypeMapping
+ * @see ResolvableType
  */
 public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
 
     /**
-     * 自动解析泛型参数生成类型映射关系。
-     * 基于接口泛型参数S和T生成源类型到目标类型的映射。
+     * 自动生成当前泛型参数的类型映射关系
+     * <p>
+     * 通过{@link ResolvableType}解析当前接口的泛型参数S和T，
+     * 生成从S到T的类型映射。该方法依赖运行时泛型信息，
+     * 若泛型参数在运行时被擦除（如匿名内部类），可能解析失败。
      * 
-     * @return TypeMapping实例，包含S-&gt;T的类型映射关系
+     * @return 包含S->T映射关系的TypeMapping实例
      * @throws IllegalStateException 当泛型参数解析失败时抛出
      */
     default TypeMapping getTypeMapping() {
@@ -39,10 +67,12 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     }
 
     /**
-     * 获取支持的双向类型映射集合。
-     * 包含正向映射(S-&gt;T)和反向映射(T-&gt;S)。
+     * 获取支持的双向类型映射集合
+     * <p>
+     * 包含正向映射(S->T)和通过{@link TypeMapping#reversed()}生成的反向映射(T->S)，
+     * 实现类可重写此方法以添加额外的类型映射规则。
      * 
-     * @return 不可变的TypeMapping集合，包含两个映射关系
+     * @return 包含双向映射的不可变集合（实际为HashSet，建议实现类返回不可变视图）
      */
     @Override
     default Set<TypeMapping> getTransformableTypeMappings() {
@@ -54,14 +84,21 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     }
 
     /**
-     * 执行双向转换的核心方法。
-     * 根据源类型和目标类型自动判断调用正向或反向转换逻辑。
+     * 执行双向转换的核心方法
+     * <p>
+     * 自动判断转换方向：
+     * <ol>
+     *   <li>若源类型可转换为目标类型，调用{@link #to}方法</li>
+     *   <li>若目标类型可转换为源类型，调用{@link #from}方法</li>
+     * </ol>
+     * 注意：强制类型转换可能引发{@link ClassCastException}，
+     * 实现类需确保传入对象的类型与泛型参数一致。
      * 
-     * @param source 源对象，非null
-     * @param sourceTypeDescriptor 源类型描述符，非null
-     * @param target 目标对象，非null
-     * @param targetTypeDescriptor 目标类型描述符，非null
-     * @return 转换成功返回true，否则返回false
+     * @param source 源对象，不可为null
+     * @param sourceTypeDescriptor 源类型描述符，不可为null
+     * @param target 目标对象，不可为null
+     * @param targetTypeDescriptor 目标类型描述符，不可为null
+     * @return 转换成功返回true，否则false
      * @throws ClassCastException 当对象类型与泛型参数不匹配时抛出
      */
     @SuppressWarnings("unchecked")
@@ -82,8 +119,10 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     }
 
     /**
-     * 正向转换方法：S类型对象转换到T类型对象。
-     * 由实现类提供具体的属性传输逻辑。
+     * 正向转换方法：S类型对象转换到T类型对象
+     * <p>
+     * 由实现类提供具体的属性传输逻辑，如字段映射、类型转换等。
+     * 该方法在{@link #transform}检测到正向转换时调用。
      * 
      * @param source S类型源对象
      * @param sourceTypeDescriptor 源类型描述符
@@ -94,8 +133,11 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     boolean to(S source, TypeDescriptor sourceTypeDescriptor, T target, TypeDescriptor targetTypeDescriptor);
 
     /**
-     * 反向转换方法：T类型对象转换到S类型对象。
-     * 由实现类提供具体的属性传输逻辑。
+     * 反向转换方法：T类型对象转换到S类型对象
+     * <p>
+     * 由实现类提供具体的属性传输逻辑，通常为{@link #to}的反向操作，
+     * 但实现类可根据业务需求自定义反向转换逻辑。
+     * 该方法在{@link #transform}检测到反向转换时调用。
      * 
      * @param source T类型源对象
      * @param sourceTypeDescriptor 源类型描述符

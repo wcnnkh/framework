@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
+import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.MultipleCodec;
@@ -23,7 +24,7 @@ public class URLCodec implements MultipleCodec<String> {
 		this(charset.name());
 	}
 
-	public String encode(String source) throws EncodeException {
+	public String encode(String source) throws CodecException {
 		try {
 			return URLEncoder.encode(source, charsetName);
 		} catch (UnsupportedEncodingException e) {
@@ -31,7 +32,7 @@ public class URLCodec implements MultipleCodec<String> {
 		}
 	}
 
-	public String decode(String source) throws DecodeException {
+	public String decode(String source) throws CodecException {
 		try {
 			return URLDecoder.decode(source, charsetName);
 		} catch (UnsupportedEncodingException e) {

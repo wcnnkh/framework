@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.Throwables;
+import java.util.List;
+
+import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Elements;
 
 @FunctionalInterface
@@ -27,11 +29,15 @@ public interface Receipts<R extends Receipt> extends Registrations<R>, Receipt {
 
 	@Override
 	default Throwable cause() {
-		Elements<Throwable> throwables = getElements().filter((e) -> e.isDone() && !e.isSuccess())
-				.map((e) -> e.cause());
-		if (throwables.isEmpty()) {
+		List<Throwable> list = getElements().filter((e) -> e.isDone() && !e.isSuccess()).map((e) -> e.cause()).toList();
+		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
-		return new Throwables(throwables);
+
+		Throwable throwable = new Throwable();
+		for (Throwable e : list) {
+			throwable.addSuppressed(e);
+		}
+		return throwable;
 	}
 }

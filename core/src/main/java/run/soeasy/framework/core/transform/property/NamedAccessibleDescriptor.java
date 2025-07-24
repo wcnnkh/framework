@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.transform.property;
 
 import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
-import run.soeasy.framework.core.convert.value.AccessibleDescriptor.AccessibleDescriptorWrapper;
+import run.soeasy.framework.core.convert.value.AccessibleDescriptorWrapper;
 import run.soeasy.framework.core.domain.Wrapped;
 
 public class NamedAccessibleDescriptor<W extends AccessibleDescriptor> extends Wrapped<W>

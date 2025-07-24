@@ -7,118 +7,83 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Provider;
 
 /**
- * jdk原生实现
+ * JDK原生服务提供者实现，封装{@link ServiceLoader}实现服务发现与加载功能。
+ * <p>
+ * 该实现基于Java SPI（Service Provider Interface）机制，提供对服务提供者的统一访问接口，
+ * 支持通过类加载器动态发现和加载服务实现类，适用于需要解耦服务接口与实现的场景。
+ * </p>
+ *
+ * @param <S> 服务接口类型
  * 
  * @author shuchaowen
- *
- * @param <S>
+ * @see ServiceLoader
+ * @see Provider
  */
 @RequiredArgsConstructor
 public class NativeProvider<S> implements Provider<S> {
-	/**
-	 * Creates a new service loader for the given service type, using the current
-	 * thread's {@linkplain java.lang.Thread#getContextClassLoader context class
-	 * loader}.
-	 *
-	 * <p>
-	 * An invocation of this convenience method of the form
-	 *
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * ServiceLoader.load(<i>service</i>)
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 *
-	 * is equivalent to
-	 *
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * ServiceLoader.load(<i>service</i>,
-	 *                    Thread.currentThread().getContextClassLoader())
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 *
-	 * @param <S>     the class of the service type
-	 *
-	 * @param service The interface or abstract class representing the service
-	 *
-	 * @return A new service loader
-	 */
-	public static <S> Provider<S> load(Class<S> service) {
-		ServiceLoader<S> serviceLoader = ServiceLoader.load(service);
-		return new NativeProvider<>(serviceLoader);
-	}
+    /**
+     * 使用当前线程的上下文类加载器加载指定服务的提供者
+     * <p>
+     * 等价于 {@code ServiceLoader.load(service, Thread.currentThread().getContextClassLoader())}
+     * 
+     * @param <S>     服务接口类型
+     * @param service 服务接口或抽象类
+     * @return 服务提供者实例
+     */
+    public static <S> Provider<S> load(Class<S> service) {
+        ServiceLoader<S> serviceLoader = ServiceLoader.load(service);
+        return new NativeProvider<>(serviceLoader);
+    }
 
-	/**
-	 * Creates a new service loader for the given service type and class loader.
-	 *
-	 * @param <S>     the class of the service type
-	 *
-	 * @param service The interface or abstract class representing the service
-	 *
-	 * @param loader  The class loader to be used to load provider-configuration
-	 *                files and provider classes, or <tt>null</tt> if the system
-	 *                class loader (or, failing that, the bootstrap class loader) is
-	 *                to be used
-	 *
-	 * @return A new service loader
-	 */
-	public static <S> Provider<S> load(Class<S> service, ClassLoader loader) {
-		ServiceLoader<S> serviceLoader = ServiceLoader.load(service, loader);
-		return new NativeProvider<>(serviceLoader);
-	}
+    /**
+     * 使用指定类加载器加载指定服务的提供者
+     * 
+     * @param <S>     服务接口类型
+     * @param service 服务接口或抽象类
+     * @param loader  类加载器（null时使用系统类加载器）
+     * @return 服务提供者实例
+     */
+    public static <S> Provider<S> load(Class<S> service, ClassLoader loader) {
+        ServiceLoader<S> serviceLoader = ServiceLoader.load(service, loader);
+        return new NativeProvider<>(serviceLoader);
+    }
 
-	/**
-	 * Creates a new service loader for the given service type, using the extension
-	 * class loader.
-	 *
-	 * <p>
-	 * This convenience method simply locates the extension class loader, call it
-	 * <tt><i>extClassLoader</i></tt>, and then returns
-	 *
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * ServiceLoader.load(<i>service</i>, <i>extClassLoader</i>)
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 *
-	 * <p>
-	 * If the extension class loader cannot be found then the system class loader is
-	 * used; if there is no system class loader then the bootstrap class loader is
-	 * used.
-	 *
-	 * <p>
-	 * This method is intended for use when only installed providers are desired.
-	 * The resulting service will only find and load providers that have been
-	 * installed into the current Java virtual machine; providers on the
-	 * application's class path will be ignored.
-	 *
-	 * @param <S>     the class of the service type
-	 *
-	 * @param service The interface or abstract class representing the service
-	 *
-	 * @return A new service loader
-	 */
-	public static <S> Provider<S> loadInstalled(Class<S> service) {
-		ServiceLoader<S> serviceLoader = ServiceLoader.loadInstalled(service);
-		return new NativeProvider<>(serviceLoader);
-	}
+    /**
+     * 使用扩展类加载器加载已安装的服务提供者
+     * <p>
+     * 该方法仅加载JVM安装的服务提供者，忽略应用类路径中的实现
+     * 
+     * @param <S>     服务接口类型
+     * @param service 服务接口或抽象类
+     * @return 服务提供者实例
+     */
+    public static <S> Provider<S> loadInstalled(Class<S> service) {
+        ServiceLoader<S> serviceLoader = ServiceLoader.loadInstalled(service);
+        return new NativeProvider<>(serviceLoader);
+    }
 
-	private final ServiceLoader<S> serviceLoader;
+    /** 封装的JDK原生ServiceLoader实例 */
+    private final ServiceLoader<S> serviceLoader;
 
-	@Override
-	public Iterator<S> iterator() {
-		return serviceLoader.iterator();
-	}
+    /**
+     * 获取服务提供者迭代器
+     * <p>
+     * 迭代器遍历顺序依赖于服务提供者的配置顺序和类加载器行为
+     * 
+     * @return 服务实例迭代器
+     */
+    @Override
+    public Iterator<S> iterator() {
+        return serviceLoader.iterator();
+    }
 
-	@Override
-	public void reload() {
-		serviceLoader.reload();
-	}
+    /**
+     * 重新加载服务提供者
+     * <p>
+     * 清空已加载的服务提供者缓存，重新扫描服务配置文件
+     */
+    @Override
+    public void reload() {
+        serviceLoader.reload();
+    }
 }
