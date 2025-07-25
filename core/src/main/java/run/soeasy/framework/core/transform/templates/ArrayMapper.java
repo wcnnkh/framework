@@ -19,7 +19,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * 该映射器采用"键匹配"策略，遍历目标集合中的每个元素，
  * 在源集合中查找键相等的元素并使用内部值映射器执行转换，
  * 已成功映射的源元素将被移除，避免重复处理。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -28,7 +27,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>一次性映射：每个源元素最多被映射一次</li>
  *   <li>嵌套上下文：通过创建嵌套上下文支持复杂结构映射</li>
  * </ul>
- * </p>
  *
  * <p><b>映射流程：</b>
  * <ol>
@@ -39,7 +37,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>使用内部映射器执行元素转换，成功后从源列表移除</li>
  *   <li>统计成功映射的元素数量并返回结果</li>
  * </ol>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
@@ -64,7 +61,6 @@ public class ArrayMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
      * <p>
      * 该方法遍历目标映射集合，为每个元素在源集合中查找匹配键的元素，
      * 并使用内部映射器执行具体的映射操作。映射成功的元素将从源集合中移除。
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null

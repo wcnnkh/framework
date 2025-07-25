@@ -9,7 +9,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * <p>
  * 该类通过包装源模板映射实例，将其转换为基于数组的实现，保持元素的顺序性。
  * 当启用唯一性约束时，插入重复键将覆盖原有值；否则允许存在重复键。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,7 +17,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>包装器模式：保留对源模板映射的引用，支持链式操作</li>
  *   <li>集合转换：可根据需要转换回其他集合形式</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -27,10 +25,9 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>线程安全：未实现线程安全机制，多线程环境下需外部同步</li>
  *   <li>空值处理：允许存储null值，可能导致空指针异常</li>
  * </ul>
- * </p>
  *
  * @param <E> 模板映射元素的类型，必须实现{@link TypedValueAccessor}接口
- * @param <W> 源模板映射的类型，需实现{@link TemplateMapping<E>}
+ * @param <W> 源模板映射的类型，需实现{@link TemplateMapping}
  * 
  * @author soeasy.run
  * @see ArrayTemplate
@@ -56,7 +53,6 @@ public class ArrayTemplateMapping<E extends TypedValueAccessor, W extends Templa
      * <p>
      * 若当前实例已满足唯一性要求（根据构造时的参数），则返回自身；
      * 否则委托给源模板映射创建新的数组形式实例。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return 数组形式的模板映射实例
@@ -70,7 +66,6 @@ public class ArrayTemplateMapping<E extends TypedValueAccessor, W extends Templa
      * 将模板映射转换为Map形式
      * <p>
      * 委托给源模板映射创建Map形式的实例。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的模板映射实例

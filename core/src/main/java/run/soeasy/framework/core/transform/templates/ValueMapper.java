@@ -17,7 +17,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>确认转换器是否支持源类型到目标类型的转换</li>
  *   <li>执行类型转换并设置目标值</li>
  * </ol>
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,7 +25,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>条件验证：在映射前进行多重条件检查，确保映射安全</li>
  *   <li>链式调用：支持通过setter方法进行流式配置</li>
  * </ul>
- * </p>
  *
  * <p><b>使用示例：</b>
  * <pre>{@code
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * mapper.setConverter(myCustomConverter);
  * boolean result = mapper.doMapping(sourceContext, targetContext);
  * }</pre>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
@@ -65,7 +62,6 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
      *   <li>转换器支持源类型到目标类型的转换</li>
      *   <li>转换结果非空（若目标值为必需项）</li>
      * </ul>
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null

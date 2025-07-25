@@ -7,7 +7,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该函数式接口用于将服务实例注入到目标组件中，返回的注册句柄可用于管理注入的生命周期，
  * 适用于依赖注入框架或服务管理场景，支持动态控制服务的注入与注销。
- * </p>
  *
  * @param <S> 服务实例的类型，即被注入的服务对象类型
  * 

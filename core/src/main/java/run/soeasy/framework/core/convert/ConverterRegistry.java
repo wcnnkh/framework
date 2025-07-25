@@ -53,8 +53,8 @@ public class ConverterRegistry extends TreeMapContainer<TypeMapping, Converter> 
      * <p>
      * 按以下顺序查找转换器：
      * <ol>
-     *   <li>通过源类型->目标类型映射查找</li>
-     *   <li>通过目标类型->源类型映射反向查找</li>
+     *   <li>通过源类型-&gt;目标类型映射查找</li>
+     *   <li>通过目标类型-&gt;源类型映射反向查找</li>
      *   <li>遍历所有转换器进行条件匹配</li>
      * </ol>
      * 

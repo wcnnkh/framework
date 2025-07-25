@@ -9,7 +9,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * 该接口作为映射流程中的过滤环节，允许在执行实际映射操作前对上下文状态进行检查、
  * 对映射器行为进行修改，或根据特定条件决定是否继续执行映射。适用于需要在映射过程中
  * 添加条件判断、权限控制、数据校验等横切逻辑的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,7 +16,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>行为增强：可修改映射器的行为或上下文属性</li>
  *   <li>函数式设计：支持通过lambda表达式快速实现简单过滤逻辑</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -26,11 +24,10 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>性能影响：链式过滤可能带来额外的调用开销</li>
  *   <li>异常处理：未定义异常处理机制，异常可能中断映射流程</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
- * @param <T> 映射类型，必须实现{@link Mapping<K, V>}
+ * @param <T> 映射类型，必须实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see Mapper

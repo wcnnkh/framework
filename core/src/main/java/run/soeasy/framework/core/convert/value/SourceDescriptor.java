@@ -7,7 +7,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 该接口定义了获取数据源返回类型的标准方法，实现类需提供具体的类型描述实现，
  * 适用于需要明确数据源类型信息的场景，如类型转换、参数校验、数据绑定等。
- * </p>
  *
  * <p><b>核心功能：</b>
  * <ul>

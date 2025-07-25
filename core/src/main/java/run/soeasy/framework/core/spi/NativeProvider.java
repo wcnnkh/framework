@@ -11,7 +11,6 @@ import run.soeasy.framework.core.collection.Provider;
  * <p>
  * 该实现基于Java SPI（Service Provider Interface）机制，提供对服务提供者的统一访问接口，
  * 支持通过类加载器动态发现和加载服务实现类，适用于需要解耦服务接口与实现的场景。
- * </p>
  *
  * @param <S> 服务接口类型
  * 

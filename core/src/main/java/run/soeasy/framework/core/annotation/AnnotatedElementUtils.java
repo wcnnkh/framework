@@ -52,7 +52,7 @@ public class AnnotatedElementUtils {
      *   <li>按顺序遍历所有注解元素</li>
      *   <li>对每个元素应用处理器函数提取注解</li>
      *   <li>若首次找到注解则记录，后续找到的同类型注解将被收集</li>
-     *   <li>若收集到多个注解，使用{@link SynthesizedAnnotation#synthesize(Class, List)}合成新注解</li>
+     *   <li>若收集到多个注解，使用{@link SynthesizedAnnotation#synthesize(Class, Iterable)}合成新注解</li>
      * </ol>
      * 
      * @param <A> 注解元素类型，继承自{@link AnnotatedElement}

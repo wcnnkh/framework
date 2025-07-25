@@ -9,7 +9,6 @@ import lombok.NonNull;
  * 该类通过包装属性模板和目标对象，将模板中的每个属性描述符映射为
  * 针对特定目标对象的属性访问器（{@link ObjectPropertyAccessor}），
  * 从而实现对对象属性的统一访问和操作。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,14 +17,12 @@ import lombok.NonNull;
  *   <li>延迟计算：属性值在访问时动态获取，保证与目标对象状态的实时一致性</li>
  *   <li>统一接口：通过属性访问器提供一致的属性读写方式，屏蔽底层实现差异</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code S}：属性类型，需实现{@link Property}</li>
- *   <li>{@code T}：属性模板类型，需实现{@link PropertyTemplate<S>}</li>
+ *   <li>{@code T}：属性模板类型，需实现{@link PropertyTemplate}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -33,7 +30,6 @@ import lombok.NonNull;
  *   <li>动态属性访问（如基于配置的属性读取/修改）</li>
  *   <li>数据绑定（如将表单数据绑定到对象属性）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyTemplateProperties

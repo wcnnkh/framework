@@ -23,22 +23,18 @@ package run.soeasy.framework.core.domain;
  * <p>示例用法：
  * <pre class="code">
  * // 整数离散导航实现
- * Discrete<Integer> integerDiscrete = new Discrete<Integer>() {
- *     @Override
+ * Discrete&lt;Integer&gt; integerDiscrete = new Discrete&lt;Integer&gt;() {
  *     public Integer next(Integer value) { return value + 1; }
- *     @Override
  *     public Integer previous(Integer value) { return value - 1; }
- *     @Override
  *     public long distance(Integer start, Integer end) { return end - start; }
  * };
  * 
  * // 枚举离散导航实现（假设Weekday是枚举类型）
- * Discrete<Weekday> weekdayDiscrete = new Discrete<Weekday>() {
- *     @Override
+ * Discrete&lt;Weekday&gt; weekdayDiscrete = new Discrete&lt;Weekday&gt;() {
  *     public Weekday next(Weekday value) {
  *         Weekday[] values = Weekday.values();
  *         int index = Arrays.binarySearch(values, value) + 1;
- *         return index < values.length ? values[index] : null;
+ *         return index &lt; values.length ? values[index] : null;
  *     }
  *     // 其余方法实现...
  * };
@@ -46,8 +42,7 @@ package run.soeasy.framework.core.domain;
  *
  * @param <T> 离散值类型，必须实现{@link Comparable}接口
  */
-@SuppressWarnings("rawtypes")
-public interface Discrete<T extends Comparable> {
+public interface Discrete<T extends Comparable<T>> {
     
     /**
      * 获取指定值的下一个离散值。

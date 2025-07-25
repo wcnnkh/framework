@@ -14,7 +14,6 @@ import run.soeasy.framework.core.execute.ExecutableMetadata;
  * <p>
  * 该类封装了Java反射中的Member对象（Method或Constructor），并提供了获取方法名称、
  * 声明类等基础元数据的能力，是框架中反射调用体系的核心基础组件。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -23,7 +22,6 @@ import run.soeasy.framework.core.execute.ExecutableMetadata;
  *   <li>类型安全：通过泛型约束确保封装的反射对象类型一致性</li>
  *   <li>声明类处理：提供便捷方法获取和描述声明类信息</li>
  * </ul>
- * </p>
  *
  * <p><b>子类实现：</b>
  * 子类需实现以下核心方法：
@@ -32,7 +30,6 @@ import run.soeasy.framework.core.execute.ExecutableMetadata;
  *   <li>{@link #getParameterTemplate()}：获取参数模板描述</li>
  *   <li>{@link #getExceptionTypeDescriptors()}：获取异常类型描述符集合</li>
  * </ul>
- * </p>
  *
  * @param <T> 反射Member类型，必须是{@link Member}的子类（如Method或Constructor）
  * @author soeasy.run
@@ -62,7 +59,6 @@ public abstract class AbstractReflectionExecutable<T extends Member> implements 
      * 获取可执行元素的名称
      * <p>
      * 对于Method，返回方法名；对于Constructor，返回类名。
-     * </p>
      * 
      * @return 可执行元素的名称
      */

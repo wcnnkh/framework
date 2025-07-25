@@ -35,8 +35,7 @@ import run.soeasy.framework.core.exchange.event.ChangeType;
  * 服务容器实现，用于管理和注册服务实例，支持服务的自动发现、加载和生命周期管理。
  * <p>
  * 该容器继承自{@link TreeSetContainer}，基于树状集合实现服务的有序存储，并通过比较器确保服务实例的唯一性。
- * 实现了{@link Provider<E>}接口，提供服务实例的访问和管理能力，适用于SPI（Service Provider Interface）场景。
- * </p>
+ * 实现了{@link Provider}接口，提供服务实例的访问和管理能力，适用于SPI（Service Provider Interface）场景。
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -138,7 +138,7 @@ public class ClassMembersLoader<E> implements Provider<E>, Listable<ClassMembers
      * <ol>
      *   <li>使用MergedElements合并当前类、父类和接口的成员</li>
      *   <li>父类或接口为空时使用空集合</li>
-     *   <li>保证迭代顺序：当前类 -> 父类 -> 接口</li>
+     *   <li>保证迭代顺序：当前类 -&gt; 父类 -&gt; 接口</li>
      * </ol>
      *
      * @return 合并后的成员迭代器

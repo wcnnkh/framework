@@ -11,7 +11,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  * 该类维护一个转换器列表，在执行转换时会按优先级顺序遍历所有转换器，
  * 直到找到一个支持当前类型转换的转换器并执行转换，适用于需要组合多个转换器
  * 处理复杂转换场景的情况，如类型转换链、多转换器优先级处理等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -19,16 +18,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  *   <li>优先级转换：使用{@link TransformerComparator}对转换器进行排序，按优先级尝试转换</li>
  *   <li>自动适配：遍历所有转换器，自动寻找支持当前类型转换的最佳实现</li>
  * </ul>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：未对转换器集合添加同步机制，多线程环境下可能出现并发修改问题</li>
- *   <li>性能损耗：遍历所有转换器的O(n)操作，在转换器数量较多时可能影响性能</li>
- *   <li>转换顺序依赖：转换结果依赖转换器的注册顺序和比较器逻辑，可能导致不可预知的行为</li>
- *   <li>异常传播：转换器抛出的异常会直接向上传播，未做统一封装处理</li>
- * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Transformer

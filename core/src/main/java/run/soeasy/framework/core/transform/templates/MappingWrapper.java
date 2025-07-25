@@ -11,7 +11,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * 该接口允许将一个映射实例包装为具有相同接口的新实例，从而在不修改原映射实现的前提下，
  * 实现功能增强（如日志记录、事务管理、权限控制等）。包装器会将所有操作委托给源映射实例，
  * 并可在委托前后添加自定义逻辑。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -20,7 +19,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>功能增强：可在委托操作前后添加额外逻辑（如验证、转换等）</li>
  *   <li>集合转换：继承{@link Mapping}的集合转换方法，委托给源映射处理</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -30,16 +28,14 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>类型擦除：泛型参数在运行时擦除，可能导致类型安全问题</li>
  *   <li>递归包装：多次包装同一映射可能导致嵌套过深，影响性能和调试</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
- * @param <W> 包装器自身的类型，需实现{@link Mapping<K, V>}
+ * @param <W> 包装器自身的类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see Mapping
  * @see DictionaryWrapper
- * @see WrapperPattern
  */
 @FunctionalInterface
 public interface MappingWrapper<K, V extends TypedValueAccessor, W extends Mapping<K, V>>

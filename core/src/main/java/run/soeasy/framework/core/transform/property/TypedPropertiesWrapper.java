@@ -6,7 +6,6 @@ package run.soeasy.framework.core.transform.property;
  * <p>
  * 该接口定义了类型化属性包装的标准规范，默认方法将所有操作委托给被包装的源属性，
  * 子类可通过覆盖特定方法修改属性的检索逻辑、结构转换行为或类型化操作规则。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -15,13 +14,11 @@ package run.soeasy.framework.core.transform.property;
  *   <li>类型安全：通过泛型约束保证包装前后的类型一致性</li>
  *   <li>多层扩展：同时继承属性映射包装和类型化属性能力，支持复合扩展</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code W}：被包装的源类型化属性类型，需实现{@link TypedProperties}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -30,7 +27,6 @@ package run.soeasy.framework.core.transform.property;
  *   <li>属性操作的拦截（如日志记录、权限控制）</li>
  *   <li>属性类型的转换（如统一类型适配）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TypedProperties
@@ -45,7 +41,6 @@ public interface TypedPropertiesWrapper<W extends TypedProperties>
      * <p>
      * 该默认实现调用被包装源属性的{@link TypedProperties#asMap(boolean)}方法，
      * 子类可覆盖此方法自定义Map转换逻辑（如添加额外处理）。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的类型化属性
@@ -60,7 +55,6 @@ public interface TypedPropertiesWrapper<W extends TypedProperties>
      * <p>
      * 该默认实现调用被包装源属性的{@link TypedProperties#asArray(boolean)}方法，
      * 子类可覆盖此方法自定义数组转换逻辑（如添加索引转换）。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return 数组形式的类型化属性

@@ -25,7 +25,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  * <p>
  * 该类通过反射缓存和流式处理优化注解合并性能，支持将多个注解的属性合并为一个逻辑注解，
  * 适用于需要处理重复注解或复合注解的场景，如Spring风格的组合注解、测试框架的多层注解合并等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -35,13 +34,11 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>序列化支持：实现Serializable接口，支持跨进程的注解合并场景</li>
  *   <li>线程安全：使用双重检查锁确保缓存操作的线程安全性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code A}：合并的注解类型，必须是{@link Annotation}的子类</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -51,7 +48,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>测试框架：动态合并测试相关的多个注解</li>
  *   <li>元编程：基于多个注解生成统一的元数据描述</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AbstractAnnotationPropertyMapping
@@ -75,7 +71,6 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
      *   <li>使用synchronized块确保多线程环境下的安全初始化</li>
      *   <li>过滤掉Object类的方法（如equals/hashCode）</li>
      * </ol>
-     * </p>
      * 
      * @param annotationType 注解类型
      * @return 过滤后的方法数组
@@ -121,7 +116,6 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
      *   <li>获取每个注解的方法并转换为PropertyAccessor</li>
      *   <li>使用Stream.flatMap合并所有访问器</li>
      * </ol>
-     * </p>
      * 
      * @return 属性访问器迭代器
      */
@@ -152,7 +146,6 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
      *   <li>注解类型的哈希值</li>
      *   <li>所有注解实例的哈希值（通过ArrayUtils.hashCode计算）</li>
      * </ol>
-     * </p>
      * 
      * @return 合并注解的哈希值
      */
@@ -169,7 +162,6 @@ public class MergedAnnotation<A extends Annotation> extends AbstractAnnotationPr
      *   <li>若对象为单个Annotation实例，先转换为MergedAnnotation再比较</li>
      *   <li>否则调用父类的相等性判断（基于类型和属性值）</li>
      * </ol>
-     * </p>
      * 
      * @param obj 待比较的对象
      * @return 相等返回true，否则返回false

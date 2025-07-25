@@ -17,7 +17,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  * 该转换器将类型映射判断和实际转换逻辑分离，
  * 在执行转换前会同时检查类型映射和内部转换器的可行性，
  * 适用于需要自定义转换规则的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,7 +24,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>组合模式：通过组合现有转换器实现转换逻辑，提高复用性</li>
  *   <li>灵活配置：支持单类型映射或多类型映射配置</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>空值风险：transformer为null时调用transform方法会抛出NPE</li>
  *   <li>异常传播：直接将内部转换器的异常向上传播，未做额外处理</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ConditionalTransformer

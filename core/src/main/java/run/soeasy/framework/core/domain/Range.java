@@ -17,7 +17,7 @@ import run.soeasy.framework.core.collection.Elements;
  * <p>核心特性：
  * <ul>
  *   <li>边界控制：通过{@link Bound}实现包含({@code []})或不包含({@code ()})边界值的精确控制</li>
- *   <li>无界支持：通过{@link #unbounded()}支持无限范围（如x > 10或x < 20）</li>
+ *   <li>无界支持：通过{@link #unbounded()}支持无限范围（如x &gt; 10或x &lt; 20）</li>
  *   <li>范围操作：提供包含检查、范围合并({@link #union})和范围包含判断({@link #contains(Range, Comparator)})</li>
  *   <li>类型安全：通过泛型确保范围值的类型一致性，支持类型转换({@link #convert})</li>
  *   <li>构建便捷：通过{@link RangeBuilder}和多种静态工厂方法创建不同类型的范围</li>
@@ -35,16 +35,16 @@ import run.soeasy.framework.core.collection.Elements;
  * <p>示例用法：
  * <pre class="code">
  * // 创建包含10到20的闭区间 [10,20]
- * Range<Integer> range = Range.closed(10, 20);
+ * Range&lt;Integer&gt; range = Range.closed(10, 20);
  * 
  * // 检查15是否在范围内
  * boolean contains = range.contains(15, Integer::compareTo);
  * 
  * // 创建左开右闭区间 (10,20]
- * Range<Integer> leftOpen = Range.leftOpen(10, 20);
+ * Range&lt;Integer&gt; leftOpen = Range.leftOpen(10, 20);
  * 
  * // 合并两个范围
- * Range<Integer> union = range.union(leftOpen, Integer::compareTo);
+ * Range&lt;Integer&gt; union = range.union(leftOpen, Integer::compareTo);
  * </pre>
  *
  * @param <T> 范围值的类型，需支持通过比较器进行比较
@@ -421,7 +421,7 @@ public final class Range<T> implements Serializable {
      * <p>
      * 使用示例：
      * <pre class="code">
-     * Range<Integer> range = Range.from(Bound.inclusive(10)).to(Bound.exclusive(20));
+     * Range&lt;Integer&gt; range = Range.from(Bound.inclusive(10)).to(Bound.exclusive(20));
      * </pre>
      *
      * @param <T> 范围值类型

@@ -16,7 +16,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  * <p>
  * 该类采用懒加载和缓存机制，延迟创建并缓存方法的声明类型、异常类型、参数模板和返回类型等元数据，
  * 以提高反射操作的性能。同时支持对方法注解的访问和处理，实现了注解元素的包装功能。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,7 +24,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>注解处理：实现注解元素包装接口，支持对方法注解的统一访问</li>
  *   <li>类型描述：提供类型描述符（TypeDescriptor）体系的元数据访问</li>
  * </ul>
- * </p>
  *
  * <p><b>性能优化：</b>
  * <ul>
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>缓存机制：元数据创建后会被缓存，避免重复创建</li>
  *   <li>失效机制：当源Executable对象变更时，自动清空缓存</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -44,7 +41,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>API文档生成：提取方法签名和注解信息生成文档</li>
  *   <li>参数验证：基于方法参数注解实现参数验证逻辑</li>
  * </ul>
- * </p>
  *
  * @param <T> 反射Executable类型，必须是{@link Executable}的子类（如Method或Constructor）
  * @author soeasy.run
@@ -107,7 +103,6 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * <p>
      * 该方法使用双重检查锁实现延迟初始化，首次调用时创建并缓存声明类的类型描述符，
      * 后续调用直接返回缓存结果，提高性能。
-     * </p>
      * 
      * @return 声明类的类型描述符
      */
@@ -131,7 +126,6 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * <p>
      * 该方法使用双重检查锁实现延迟初始化，首次调用时创建并缓存异常类型描述符集合，
      * 后续调用直接返回缓存结果，提高性能。
-     * </p>
      * 
      * @return 异常类型描述符集合
      */
@@ -152,7 +146,6 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * <p>
      * 该方法使用双重检查锁实现延迟初始化，首次调用时创建并缓存参数模板，
      * 后续调用直接返回缓存结果，提高性能。
-     * </p>
      * 
      * @return 参数模板
      */
@@ -173,7 +166,6 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * <p>
      * 该方法使用双重检查锁实现延迟初始化，首次调用时创建并缓存返回类型描述符，
      * 后续调用直接返回缓存结果，提高性能。
-     * </p>
      * 
      * @return 返回类型描述符
      */

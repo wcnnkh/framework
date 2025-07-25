@@ -8,7 +8,6 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
  * <p>
  * 该接口定义了属性的基本描述信息，包括属性名称和访问能力（读写权限），
  * 适用于对象属性的反射访问、数据绑定、类型转换等场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,7 +16,6 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
  *   <li>访问能力：继承自{@link AccessibleDescriptor}的读写能力</li>
  *   <li>空数组常量：提供{@link #EMPTY_ARRAY}用于空属性数组场景</li>
  * </ul>
- * </p>
  *
  * <p><b>实现注意事项：</b>
  * <ul>
@@ -25,7 +23,6 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
  *   <li>名称应符合目标框架的属性命名规范（如Java Bean规范）</li>
  *   <li>实现类需确保名称的线程安全性（若涉及多线程访问）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AccessibleDescriptor
@@ -41,7 +38,6 @@ public interface PropertyDescriptor extends AccessibleDescriptor {
      * <p>
      * 返回的名称应符合目标框架的属性命名规范，
      * 例如Java Bean属性名称（首字母小写的驼峰命名）。
-     * </p>
      * 
      * @return 属性名称，非空字符串
      */
@@ -52,7 +48,6 @@ public interface PropertyDescriptor extends AccessibleDescriptor {
      * <p>
      * 该方法返回一个新的属性描述符，保留原描述符的访问能力，
      * 但使用新的属性名称。原描述符实例不会被修改。
-     * </p>
      * 
      * @param name 新的属性名称，不可为null
      * @return 重命名的属性描述符实例

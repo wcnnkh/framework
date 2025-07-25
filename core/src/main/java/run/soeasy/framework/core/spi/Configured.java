@@ -10,14 +10,13 @@ import run.soeasy.framework.core.exchange.Registration;
 /**
  * 配置化服务接口，集成服务包含能力与操作结果反馈，支持服务实例的转换与组合管理。
  * <p>
- * 该接口继承自{@link Include&lt;S&gt;}和{@link Receipt}，既可以管理服务实例的生命周期，
+ * 该接口继承自{@link Include}和{@link Receipt}，既可以管理服务实例的生命周期，
  * 又能反馈操作结果状态，适用于需要跟踪服务配置过程并支持动态转换的场景。
- * </p>
  *
  * <p>
  * <b>核心特性：</b>
  * <ul>
- * <li>服务包含：继承{@link Include&lt;S&gt;}，支持服务实例的迭代与转换</li>
+ * <li>服务包含：继承{@link Include}，支持服务实例的迭代与转换</li>
  * <li>结果反馈：继承{@link Receipt}，提供操作成功/失败的状态标识</li>
  * <li>注册组合：通过{@link #and}方法组合多个注册操作的生命周期</li>
  * <li>流式转换：通过{@link #map}方法支持服务实例流的类型转换</li>

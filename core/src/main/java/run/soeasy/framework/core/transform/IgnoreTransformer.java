@@ -8,14 +8,12 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 该转换器的所有转换相关方法始终返回false，表示不支持任何转换操作，
  * 适用于需要禁用转换或作为占位符的场景。
- * </p>
  *
  * <p><b>单例模式实现：</b>
  * <ul>
  *   <li>通过{@link #INSTANCE}提供全局唯一实例</li>
  *   <li>注意：构造函数未显式声明为private，理论上可被外部实例化（需自行保证单例约束）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Transformer

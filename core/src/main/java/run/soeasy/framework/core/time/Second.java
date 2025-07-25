@@ -9,7 +9,6 @@ import lombok.NonNull;
  * <p>
  * 该类继承自{@link PeriodicTimeUnit}，定义了时间单位为秒（1000毫秒），
  * 下一级时间单位为毫秒（{@link Millisecond}），适用于需要按秒处理时间的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

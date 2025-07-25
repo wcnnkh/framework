@@ -13,7 +13,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * 该函数式接口继承自{@link Configured}、{@link IncludeWrapper}和{@link ReceiptWrapper}，
  * 允许对配置化服务实例进行包装转换，同时保持注册生命周期管理、服务提供和操作结果反馈能力，
  * 适用于需要对配置化服务集合进行代理、增强或转换的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

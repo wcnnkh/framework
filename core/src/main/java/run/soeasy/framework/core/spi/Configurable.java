@@ -8,7 +8,6 @@ import run.soeasy.framework.core.exchange.Receipt;
  * <p>
  * 实现该接口的类可通过{@link ProviderFactory}动态配置服务发现机制，
  * 支持自定义配置和系统默认配置两种模式，适用于需要灵活加载服务实现的组件。
- * </p>
  *
  * @author soeasy.run
  */

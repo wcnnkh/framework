@@ -16,7 +16,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  * 该类支持通过字段名称动态查找字段，并提供字段值的读写功能，
  * 实现了属性接口以统一字段与方法的访问方式。同时支持序列化，
  * 便于在远程调用或持久化场景中使用。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,7 +25,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>序列化支持：实现Serializable接口，支持字段的序列化和反序列化</li>
  *   <li>延迟初始化：使用延迟加载机制查找字段，提高性能</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -36,7 +34,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>配置管理：动态读取和设置配置字段</li>
  *   <li>测试工具：在测试中访问对象的私有字段</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Property
@@ -90,7 +87,6 @@ public class ReflectionField implements Property, Serializable {
      * 设置反射Field对象
      * <p>
      * 该方法会更新字段供应商，并清空缓存的类型描述符
-     * </p>
      * 
      * @param field 反射Field对象，不可为null
      */
@@ -104,7 +100,6 @@ public class ReflectionField implements Property, Serializable {
      * 设置字段名称
      * <p>
      * 该方法会清空字段供应商和缓存的类型描述符，下次访问时将重新查找字段
-     * </p>
      * 
      * @param name 字段名称，不可为null
      */
@@ -118,7 +113,6 @@ public class ReflectionField implements Property, Serializable {
      * 获取反射Field对象（延迟初始化）
      * <p>
      * 该方法使用双重检查锁机制延迟查找字段，首次访问时才会实际查找字段对象
-     * </p>
      * 
      * @return 反射Field对象，若未找到则可能返回null（取决于查找策略）
      */
@@ -158,7 +152,6 @@ public class ReflectionField implements Property, Serializable {
      * 获取字段的类型描述符（延迟初始化）
      * <p>
      * 该方法使用双重检查锁机制延迟创建类型描述符，首次访问时才会实际获取字段类型
-     * </p>
      * 
      * @return 字段的类型描述符
      */
@@ -199,7 +192,6 @@ public class ReflectionField implements Property, Serializable {
      * 判断字段是否可读
      * <p>
      * 只要成功获取到字段对象即视为可读
-     * </p>
      * 
      * @return 如果获取到字段对象返回true，否则返回false
      */
@@ -212,7 +204,6 @@ public class ReflectionField implements Property, Serializable {
      * 判断字段是否可写
      * <p>
      * 只要成功获取到字段对象即视为可写（忽略访问权限控制）
-     * </p>
      * 
      * @return 如果获取到字段对象返回true，否则返回false
      */
@@ -225,7 +216,6 @@ public class ReflectionField implements Property, Serializable {
      * 向字段写入值
      * <p>
      * 该方法通过反射设置字段的值，会自动处理访问权限
-     * </p>
      * 
      * @param target 目标对象
      * @param value 要写入的值
@@ -239,7 +229,6 @@ public class ReflectionField implements Property, Serializable {
      * 从字段读取值
      * <p>
      * 该方法通过反射获取字段的值，会自动处理访问权限
-     * </p>
      * 
      * @param target 目标对象
      * @return 字段的值

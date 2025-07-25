@@ -29,7 +29,7 @@ import run.soeasy.framework.io.IOUtils;
  * <p>
  * 使用场景：
  * <ul>
- * <li>解析URL查询参数（如"key1=value1&key2=value2"）</li>
+ * <li>解析URL查询参数（如"key1=value1&amp;key2=value2"）</li>
  * <li>处理配置文件键值对（如"property1=value1;property2=value2"）</li>
  * <li>解析HTTP请求头（如"Header1: Value1, Header2: Value2"）</li>
  * <li>需要编解码处理的键值对文本分割场景</li>

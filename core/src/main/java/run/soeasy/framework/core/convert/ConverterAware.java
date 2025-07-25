@@ -22,7 +22,7 @@ package run.soeasy.framework.core.convert;
  *         this.converter = converter;
  *     }
  *     
- *     public <T> T process(String input, Class<T> targetType) {
+ *     public &lt;T&gt; T process(String input, Class&lt;T&gt; targetType) {
  *         return converter.convert(input, targetType);
  *     }
  * }
@@ -30,7 +30,6 @@ package run.soeasy.framework.core.convert;
  *
  * @author soeasy.run
  * @see Converter
- * @see ConvertService
  */
 public interface ConverterAware {
 

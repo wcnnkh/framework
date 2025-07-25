@@ -16,12 +16,11 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
- * 可执行元素异常类型描述符提供者，实现{@link Provider<TypeDescriptor>}接口，
+ * 可执行元素异常类型描述符提供者，实现{@link Provider}接口，
  * 用于封装可执行元素（Method/Constructor）的异常类型元数据，提供类型描述符的懒加载和迭代访问能力。
  * <p>
  * 该类通过反射获取可执行元素声明的异常类型，并将其转换为{@link TypeDescriptor}体系，
  * 支持泛型类型解析、注解元数据提取，适用于异常处理、类型校验等需要异常类型信息的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -30,7 +29,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>类型增强：将反射类型转换为{@link TypeDescriptor}，支持泛型和注解元数据</li>
  *   <li>缓存策略：加载后的类型描述符会被缓存，多次访问无需重复反射</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -40,7 +38,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>动态代理：生成包含异常声明的代理方法</li>
  *   <li>API文档：提取方法异常信息生成文档</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Executable
@@ -67,7 +64,6 @@ public class ExecutableExceptionTypeDescriptors implements Provider<TypeDescript
      * 获取异常类型描述符的迭代器
      * <p>
      * 首次调用时触发异常类型的加载和转换，后续调用直接返回缓存结果
-     * </p>
      * 
      * @return 异常类型描述符迭代器
      */
@@ -81,7 +77,6 @@ public class ExecutableExceptionTypeDescriptors implements Provider<TypeDescript
      * 强制重新加载异常类型描述符
      * <p>
      * 等效于调用{@code reload(true)}，清空缓存并重新通过反射获取异常类型
-     * </p>
      */
     @Override
     public void reload() {
@@ -98,7 +93,6 @@ public class ExecutableExceptionTypeDescriptors implements Provider<TypeDescript
      *   <li>通过反射获取可执行元素的异常类型信息</li>
      *   <li>转换为TypeDescriptor并缓存结果</li>
      * </ol>
-     * </p>
      * 
      * @param force 是否强制刷新缓存，true时忽略当前缓存状态
      * @return 是否成功加载新的类型描述符

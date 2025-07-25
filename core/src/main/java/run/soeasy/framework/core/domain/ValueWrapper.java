@@ -31,7 +31,7 @@ import run.soeasy.framework.core.math.NumberValue;
  * <pre class="code">
  * // 包装值并添加日志记录
  * Value originalValue = config.getValue("timeout");
- * ValueWrapper<Value> loggedValue = value -> {
+ * ValueWrapper&lt;Value&gt; loggedValue = value -&gt; {
  *     System.out.println("Access value: " + value.getAsString());
  *     return originalValue;
  * };

@@ -15,7 +15,6 @@ import run.soeasy.framework.core.type.ClassUtils;
  * <p>
  * 该容器继承自{@link MultiValueMapContainer}，使用树状映射（{@link TreeMap}）存储服务，
  * 键为服务类型，值为对应类型的服务集合（{@link Services}），适用于需要按类型组织和检索服务的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -58,10 +57,10 @@ public class ServiceMap<S> extends
     /**
      * 搜索可分配给指定类型的服务列表
      * <p>
-     * 检索所有类型与{@link requiredType}兼容的服务，包括：
+     * 检索所有类型与requiredType兼容的服务，包括：
      * <ol>
-     *   <li>直接注册到{@link requiredType}的服务</li>
-     *   <li>注册到{@link requiredType}子类型、实现类或接口的服务</li>
+     *   <li>直接注册到requiredType的服务</li>
+     *   <li>注册到requiredType子类型、实现类或接口的服务</li>
      * </ol>
      * 
      * @param requiredType 所需的服务类型，不可为null

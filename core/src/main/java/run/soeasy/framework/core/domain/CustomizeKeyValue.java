@@ -31,19 +31,19 @@ import lombok.NoArgsConstructor;
  * <p>示例用法：
  * <pre class="code">
  * // 使用构造函数创建键值对
- * CustomizeKeyValue<String, Integer> pair = new CustomizeKeyValue<>("age", 25);
+ * CustomizeKeyValue&lt;String, Integer&gt; pair = new CustomizeKeyValue&lt;&gt;("age", 25);
  * 
  * // 使用默认构造函数后设置值
- * CustomizeKeyValue<String, String> config = new CustomizeKeyValue<>();
+ * CustomizeKeyValue&lt;String, String&gt; config = new CustomizeKeyValue&lt;&gt;();
  * config.setKey("timeout");
  * config.setValue("3000");
  * 
  * // 作为Entry使用
- * Map<String, Integer> map = new HashMap<>();
+ * Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
  * map.put(pair.getKey(), pair.getValue());
  * 
  * // 作为KeyValue使用
- * KeyValue<String, Integer> kv = pair;
+ * KeyValue&lt;String, Integer&gt; kv = pair;
  * System.out.println(kv.getValue()); // 输出: 25
  * </pre>
  *

@@ -9,7 +9,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 该类重写了{@link #canTransform}方法，将条件判断逻辑委托给{@link ConditionalTransformer}接口的默认实现，
  * 子类可通过重写此方法或提供类型映射集合来定义具体的转换条件。
- * </p>
  *
  * <p><b>实现细节：</b>
  * <ul>
@@ -17,7 +16,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>实现{@link ConditionalTransformer}，提供基于类型映射的条件转换能力</li>
  *   <li>重写{@link #canTransform}方法，调用接口默认实现</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -25,7 +23,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>{@link #canTransform}方法仅调用父接口默认实现，需结合{@link #getTransformableTypeMappings}使用</li>
  *   <li>未处理类型映射集合的线程安全问题，多线程环境需自行保证</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AbstractTransformer

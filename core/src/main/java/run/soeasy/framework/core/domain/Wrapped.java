@@ -29,7 +29,7 @@ import run.soeasy.framework.core.ObjectUtils;
  * <p>示例用法：
  * <pre class="code">
  * // 包装字符串对象
- * Wrapped<String> wrapped = new Wrapped<>("hello");
+ * Wrapped&lt;String&gt; wrapped = new Wrapped&lt;&gt;("hello");
  * 
  * // 访问源对象
  * String source = wrapped.getSource(); // "hello"

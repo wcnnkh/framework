@@ -13,7 +13,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>{@link TypedDataAccessor}的数据读写能力</li>
  * </ul>
  * 适用于需要双向数据操作和类型转换的场景，如数据绑定、表单处理、配置解析等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -33,12 +33,10 @@ import lombok.NonNull;
  * <pre class="code">
  * // 创建一个简单的String实例工厂
  * InstanceFactory stringFactory = new InstanceFactory() {
- *     @Override
  *     public boolean canInstantiated(@NonNull ResolvableType requiredType) {
  *         return requiredType.getRawType() == String.class;
  *     }
  *
- *     @Override
  *     public Object newInstance(@NonNull ResolvableType requiredType) {
  *         return ""; // 返回空字符串实例
  *     }

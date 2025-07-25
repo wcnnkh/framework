@@ -13,7 +13,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  * <p>
  * 该类支持构造函数的执行（实例化对象），并实现了序列化接口以支持远程调用或持久化场景。
  * 通过缓存构造函数的声明类和参数类型信息，确保在序列化后仍能恢复构造函数的引用。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -22,7 +21,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>序列化支持：实现Serializable接口，支持构造函数的序列化和反序列化</li>
  *   <li>状态恢复：反序列化后能通过缓存的类信息恢复构造函数引用</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -32,7 +30,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>对象池：通过反射构造函数创建池化对象</li>
  *   <li>测试框架：动态创建测试对象</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ReflectionExecutable
@@ -78,7 +75,6 @@ public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>>
      * 获取反射Constructor对象，支持在序列化后恢复构造函数引用
      * <p>
      * 如果构造函数在序列化后丢失引用，会通过缓存的声明类和参数类型信息重新查找构造函数。
-     * </p>
      * 
      * @return 反射Constructor对象
      */
@@ -100,7 +96,6 @@ public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>>
      * 执行构造函数创建新实例
      * <p>
      * 该方法通过反射调用构造函数，使用指定的参数创建类的新实例。
-     * </p>
      * 
      * @param args 构造函数参数
      * @return 新创建的对象实例

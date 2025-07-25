@@ -23,7 +23,6 @@ import run.soeasy.framework.core.transform.templates.TemplateMapping;
  * <p>
  * 该类通过包装Map实例和类型描述符，将Map的每个条目转换为独立的访问器，
  * 适用于需要将Map视为属性集合进行操作的场景，如表单数据绑定、动态属性访问等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -32,7 +31,6 @@ import run.soeasy.framework.core.transform.templates.TemplateMapping;
  *   <li>自动类型转换：使用{@link Converter}实现Map值的类型转换</li>
  *   <li>高效遍历：支持通过流(Stream)高效遍历Map的所有条目</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -41,7 +39,6 @@ import run.soeasy.framework.core.transform.templates.TemplateMapping;
  *   <li>Map数据与对象属性的映射转换</li>
  *   <li>需要类型安全操作Map条目的场景</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TemplateMapping
@@ -71,7 +68,6 @@ public class MapEntryMapping implements TemplateMapping<TypedValueAccessor> {
      * <p>
      * 若Map包含指定键，则创建并返回对应的{@link MapEntryAccessor}，
      * 否则返回null。访问器可用于类型安全地读取和修改Map条目值。
-     * </p>
      * 
      * @param key 要获取的Map键
      * @return 对应的类型化值访问器，若键不存在则返回null
@@ -97,7 +93,6 @@ public class MapEntryMapping implements TemplateMapping<TypedValueAccessor> {
      * <p>
      * 将Map的每个条目转换为{@link KeyValue}对象，其中值部分为对应的
      * 类型化值访问器，支持通过流(Stream)进行高效遍历。
-     * </p>
      * 
      * @return 包含所有Map条目的KeyValue集合
      */
@@ -111,7 +106,6 @@ public class MapEntryMapping implements TemplateMapping<TypedValueAccessor> {
      * <p>
      * 若Map包含指定键，返回包含对应访问器的单元素集合；
      * 否则返回空集合。
-     * </p>
      * 
      * @param key 要获取的Map键
      * @return 包含对应访问器的集合
@@ -127,7 +121,6 @@ public class MapEntryMapping implements TemplateMapping<TypedValueAccessor> {
      * <p>
      * 使用提供的Map、键、类型描述符和转换器创建{@link MapEntryAccessor}实例，
      * 用于类型安全地访问和操作Map条目值。
-     * </p>
      * 
      * @param key Map中的键
      * @return 新创建的Map条目访问器

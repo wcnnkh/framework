@@ -11,7 +11,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 该类提供了可配置的类型描述符和访问控制标志，支持设置返回类型、目标类型、
  * 非空约束、可读/可写权限，适用于需要自定义类型描述和访问控制的场景。
- * </p>
  *
  * <p><b>实现细节：</b>
  * <ul>
@@ -19,7 +18,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>通过字段配置方式定义类型描述和访问权限</li>
  *   <li>提供构造函数快速初始化类型描述符</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -28,7 +26,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>序列化版本号{@code serialVersionUID}为1，未明确版本迭代策略</li>
  *   <li>未重写{@link Object#equals(Object)}和{@link Object#hashCode()}方法，可能导致逻辑错误</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see AccessibleDescriptor

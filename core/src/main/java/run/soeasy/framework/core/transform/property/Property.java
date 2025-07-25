@@ -8,7 +8,6 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
  * <p>
  * 该接口在{@link PropertyDescriptor}基础上增加了属性值操作能力，
  * 适用于对象属性的反射操作、数据绑定、类型转换等需要动态访问属性值的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,7 +16,6 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
  *   <li>访问器封装：通过{@link #accessor(Object)}获取属性访问器实例</li>
  *   <li>元数据继承：继承{@link PropertyDescriptor}的属性名称和描述信息</li>
  * </ul>
- * </p>
  *
  * <p><b>实现注意事项：</b>
  * <ul>
@@ -25,7 +23,6 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
  *   <li>属性值转换责任：实现者需处理源值与目标属性的类型适配</li>
  *   <li>异常处理规范：读写操作应抛出明确的运行时异常（如{@link IllegalArgumentException}）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyDescriptor

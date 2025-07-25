@@ -25,7 +25,7 @@ import run.soeasy.framework.core.domain.KeyValue;
  *
  * <p>使用场景：
  * <ul>
- *   <li>生成URL查询参数（如key1=value1&key2=value2）</li>
+ *   <li>生成URL查询参数（如key1=value1&amp;key2=value2）</li>
  *   <li>格式化配置项（如property1=value1;property2=value2）</li>
  *   <li>组装HTTP请求头（如Header1: Value1, Header2: Value2）</li>
  *   <li>自定义协议消息的键值对部分组装</li>
@@ -42,7 +42,7 @@ import run.soeasy.framework.core.domain.KeyValue;
 public class KeyValueJoiner<K, V> implements Joiner<KeyValue<? extends K, ? extends V>> {
     
     /**
-     * 键值对之间的分隔符（如"&"、";"），不可变且不可为null。
+     * 键值对之间的分隔符（如"&amp;"、";"），不可变且不可为null。
      * <p>
      * 示例：多个键值对"key1=value1"和"key2=value2"之间使用","分隔，
      * 最终结果为"key1=value1,key2=value2"。

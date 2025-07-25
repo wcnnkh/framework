@@ -11,7 +11,6 @@ import run.soeasy.framework.core.collection.ConvertedProvider;
  * <p>
  * 该类继承自{@link ConvertedProvider}，在转换服务提供者的基础上，
  * 提供服务包含的生命周期管理能力，适用于需要动态转换服务类型的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

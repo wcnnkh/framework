@@ -10,7 +10,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * 其中值类型必须实现{@link TypedValueAccessor}以支持类型化的值访问。
  * 映射器负责将源上下文中的键值对映射到目标上下文中，适用于对象转换、
  * 数据映射等需要上下文感知的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,7 +17,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>上下文感知：基于{@link MappingContext}进行映射操作，支持嵌套上下文</li>
  *   <li>值访问控制：值类型必须实现{@link TypedValueAccessor}，提供类型化值操作</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -27,11 +25,10 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>异常处理：接口未定义异常处理机制，实现类需自行决定</li>
  *   <li>线程安全：未明确是否线程安全，多线程环境需外部同步</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
- * @param <T> 映射类型，必须实现{@link Mapping<K, V>}
+ * @param <T> 映射类型，必须实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see Mapping

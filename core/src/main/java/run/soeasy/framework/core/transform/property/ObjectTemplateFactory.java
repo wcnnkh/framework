@@ -6,7 +6,6 @@ package run.soeasy.framework.core.transform.property;
  * <p>
  * 该接口提供对象类与属性模板之间的映射关系，支持查询和获取特定类的属性模板，
  * 适用于需要动态生成或缓存对象属性结构的场景，如对象映射、数据绑定等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -15,13 +14,11 @@ package run.soeasy.framework.core.transform.property;
  *   <li>泛型支持：通过泛型参数约束属性类型，保证类型一致性</li>
  *   <li>可扩展性：允许实现多种模板创建策略（如反射、注解、配置文件）</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code E}：属性类型，需实现{@link Property}接口</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -29,7 +26,6 @@ package run.soeasy.framework.core.transform.property;
  *   <li>数据绑定：将外部数据（如JSON、XML）映射到对象属性</li>
  *   <li>ORM框架：生成对象与数据库字段的映射关系</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyTemplate
@@ -42,7 +38,6 @@ public interface ObjectTemplateFactory<E extends Property> {
      * <p>
      * 该默认实现通过调用{@link #getObjectTemplate(Class)}方法并检查返回值是否为null来判断，
      * 子类可根据需要重写此方法以提供更高效的存在性检查逻辑。
-     * </p>
      * 
      * @param objectClass 对象类，不可为null
      * @return 若存在对应的属性模板返回true，否则返回false
@@ -56,7 +51,6 @@ public interface ObjectTemplateFactory<E extends Property> {
      * <p>
      * 实现类应根据对象类的结构信息（如字段、方法）生成对应的属性模板，
      * 或从缓存中获取已存在的模板。返回的模板应包含对象类的所有可映射属性。
-     * </p>
      * 
      * @param objectClass 对象类，不可为null
      * @return 对应的属性模板，若不存在则返回null

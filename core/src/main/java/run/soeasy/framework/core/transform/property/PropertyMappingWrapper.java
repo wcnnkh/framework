@@ -9,7 +9,6 @@ import run.soeasy.framework.core.transform.templates.TemplateMappingWrapper;
  * <p>
  * 该接口定义了属性映射包装的标准规范，默认方法将所有操作委托给被包装的源映射，
  * 子类可通过覆盖特定方法修改映射的检索逻辑、结构转换行为或类型转换规则。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,14 +17,12 @@ import run.soeasy.framework.core.transform.templates.TemplateMappingWrapper;
  *   <li>类型安全：通过泛型约束保证包装前后的类型一致性</li>
  *   <li>多层扩展：同时继承模板包装和映射包装能力，支持复合扩展</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code V}：属性访问器类型，需实现{@link PropertyAccessor}</li>
- *   <li>{@code W}：被包装的源属性映射类型，需实现{@link PropertyMapping<V>}</li>
+ *   <li>{@code W}：被包装的源属性映射类型，需实现{@link PropertyMapping}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -34,7 +31,6 @@ import run.soeasy.framework.core.transform.templates.TemplateMappingWrapper;
  *   <li>映射过程的日志记录或监控</li>
  *   <li>动态修改映射结构（如按需调整Map唯一性约束）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyMapping
@@ -65,7 +61,6 @@ public interface PropertyMappingWrapper<V extends PropertyAccessor, W extends Pr
      * <p>
      * 该默认实现调用被包装源映射的{@link PropertyMapping#asMap(boolean)}方法，
      * 子类可覆盖此方法自定义Map映射的创建逻辑（如添加额外处理）。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的属性映射
@@ -80,7 +75,6 @@ public interface PropertyMappingWrapper<V extends PropertyAccessor, W extends Pr
      * <p>
      * 该默认实现调用被包装源映射的{@link PropertyMapping#asArray(boolean)}方法，
      * 子类可覆盖此方法自定义数组映射的创建逻辑（如添加索引转换）。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return 数组形式的属性映射

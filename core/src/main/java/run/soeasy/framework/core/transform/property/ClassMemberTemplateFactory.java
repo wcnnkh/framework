@@ -8,7 +8,6 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  * <p>
  * 该接口提供类与类成员属性模板之间的映射关系，支持查询和获取特定类的成员属性模板，
  * 适用于需要动态分析和操作类成员的场景，如反射工具、ORM框架、代码生成器等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,13 +16,11 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  *   <li>泛型支持：通过泛型参数约束属性类型，保证类型一致性</li>
  *   <li>可扩展性：允许实现多种模板创建策略（如反射、注解、配置文件）</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code E}：属性类型，需实现{@link Property}接口</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -32,7 +29,6 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  *   <li>代码生成器：根据类结构生成相关代码</li>
  *   <li>序列化框架：分析类成员以实现对象的序列化和反序列化</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ClassMembersLoader
@@ -45,7 +41,6 @@ public interface ClassMemberTemplateFactory<E extends Property> {
      * <p>
      * 该默认实现通过调用{@link #getClassPropertyTemplate(Class)}方法并检查返回值是否为null来判断，
      * 子类可根据需要重写此方法以提供更高效的存在性检查逻辑。
-     * </p>
      * 
      * @param requiredClass 目标类，不可为null
      * @return 若存在对应的成员属性模板返回true，否则返回false
@@ -59,7 +54,6 @@ public interface ClassMemberTemplateFactory<E extends Property> {
      * <p>
      * 实现类应根据类的结构信息（如字段、方法）生成对应的成员属性模板，
      * 或从缓存中获取已存在的模板。返回的模板应包含类的所有可访问成员属性。
-     * </p>
      * 
      * @param requriedClass 目标类，不可为null
      * @return 对应的成员属性模板，若不存在则返回null

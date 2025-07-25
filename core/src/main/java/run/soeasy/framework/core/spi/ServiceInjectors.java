@@ -8,7 +8,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * 该容器继承自{@link ServiceContainer}，专门用于存储和管理{@link ServiceInjector}实例，
  * 实现了{@link ServiceInjector}接口以支持将服务实例注入到所有注册的注入器中，
  * 形成责任链模式的服务注入机制。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

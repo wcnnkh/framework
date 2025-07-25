@@ -12,7 +12,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  * 该接口通过维护一组{@link TypeMapping}定义可转换的类型对，
  * 在{@link #canTransform(TypeDescriptor, TypeDescriptor)}方法中基于类型映射集合
  * 判断是否支持特定的源类型到目标类型的转换，适用于需要细粒度控制转换规则的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -20,7 +19,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>条件转换判断：基于类型映射集合实现{@link Transformer#canTransform}逻辑</li>
  *   <li>默认实现：提供基于类型映射遍历的转换可行性判断</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -29,7 +27,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>映射顺序：类型映射的顺序可能影响判断结果，需注意定义顺序</li>
  *   <li>泛型匹配：类型映射的泛型参数匹配逻辑未明确，可能存在类型擦除风险</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Transformer

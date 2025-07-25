@@ -6,7 +6,6 @@ package run.soeasy.framework.core.convert.value;
  * 该函数式接口继承自{@link AccessibleDescriptor}、{@link SourceDescriptorWrapper}和{@link TargetDescriptorWrapper}，
  * 允许通过包装现有可访问描述符实例来添加额外逻辑，同时保持接口的透明性，
  * 适用于需要对访问描述符进行非侵入式增强的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

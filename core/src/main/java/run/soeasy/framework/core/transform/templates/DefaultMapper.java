@@ -27,7 +27,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>值映射器：处理具体的属性值转换</li>
  * </ul>
  * 实现了从对象到对象的完整转换流程，包括对象创建、属性映射和类型转换。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -37,7 +36,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>递归映射：通过内部映射器实现复杂对象的递归转换</li>
  *   <li>异常处理：统一的{@link ConversionException}处理机制</li>
  * </ul>
- * </p>
  *
  * <p><b>转换流程：</b>
  * <ol>
@@ -48,11 +46,10 @@ import run.soeasy.framework.core.type.ResolvableType;
  *   <li>执行属性值的映射和转换</li>
  *   <li>应用过滤器链进行后处理</li>
  * </ol>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
- * @param <T> 映射上下文的类型，需实现{@link Mapping<K, V>}
+ * @param <T> 映射上下文的类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see GenericMapper
@@ -76,7 +73,6 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
      * 构造默认映射器
      * <p>
      * 初始化时使用可配置的过滤器服务和值映射器
-     * </p>
      */
     public DefaultMapper() {
         super(new ConfigurableServices<>(), new ValueMapper<>());
@@ -110,7 +106,6 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
      *   <li>可以实例化目标类型</li>
      *   <li>可以进行源类型到目标类型的转换</li>
      * </ul>
-     * </p>
      * 
      * @param sourceTypeDescriptor 源类型描述符
      * @param targetTypeDescriptor 目标类型描述符
@@ -142,7 +137,6 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
      *   <li>源类型有可用的映射</li>
      *   <li>目标类型有可用的映射</li>
      * </ul>
-     * </p>
      * 
      * @param sourceTypeDescriptor 源类型描述符
      * @param targetTypeDescriptor 目标类型描述符
@@ -162,7 +156,6 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
      *   <li>创建目标类型的实例</li>
      *   <li>将源对象的属性值转换并映射到目标对象</li>
      * </ol>
-     * </p>
      * 
      * @param source 源对象
      * @param sourceTypeDescriptor 源类型描述符
@@ -220,7 +213,6 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
      *   <li>源类型有可用的映射</li>
      *   <li>目标类型有可用的映射</li>
      * </ul>
-     * </p>
      * 
      * @param source 源对象
      * @param sourceTypeDescriptor 源类型描述符

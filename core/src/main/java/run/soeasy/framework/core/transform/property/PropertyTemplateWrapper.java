@@ -16,7 +16,6 @@ import run.soeasy.framework.core.transform.templates.TemplateWrapper;
  * <p>
  * 该接口定义了属性模板包装的标准规范，默认方法将所有操作委托给被包装的源模板，
  * 子类可通过覆盖特定方法修改模板的检索逻辑、元素处理或结构转换行为。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,14 +24,12 @@ import run.soeasy.framework.core.transform.templates.TemplateWrapper;
  *   <li>类型安全：通过泛型约束保证包装前后的类型一致性</li>
  *   <li>结构转换：支持将包装后的模板转换为Map或数组形式</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code T}：属性描述符类型，需实现{@link PropertyDescriptor}</li>
- *   <li>{@code W}：被包装的源属性模板类型，需实现{@link PropertyTemplate<T>}</li>
+ *   <li>{@code W}：被包装的源属性模板类型，需实现{@link PropertyTemplate}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -41,7 +38,6 @@ import run.soeasy.framework.core.transform.templates.TemplateWrapper;
  *   <li>属性访问的日志记录或监控</li>
  *   <li>属性类型的动态转换（如包装时修改属性类型描述）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyTemplate
@@ -56,7 +52,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 该默认实现调用被包装源模板的{@link PropertyTemplate#get(Object)}方法，
      * 子类可覆盖此方法实现自定义检索逻辑（如缓存、过滤）。
-     * </p>
      * 
      * @param key 检索键，支持数字、字符串或其他类型
      * @return 匹配的属性描述符
@@ -72,7 +67,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 该默认实现调用被包装源模板的{@link PropertyTemplate#get(String)}方法，
      * 子类可覆盖此方法实现名称匹配规则的修改（如大小写不敏感匹配）。
-     * </p>
      * 
      * @param name 属性名称
      * @return 匹配的属性描述符
@@ -87,7 +81,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 将每个属性转换为{@link KeyValue}，键为属性名称，值为属性描述符，
      * 该实现与源模板逻辑一致，子类可覆盖以修改键的生成规则。
-     * </p>
      * 
      * @return 键值对元素集合
      */
@@ -101,7 +94,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 该默认实现调用被包装源模板的{@link PropertyTemplate#getTypes(Function)}方法，
      * 子类可覆盖此方法实现类型映射逻辑的修改（如添加类型转换）。
-     * </p>
      * 
      * @param typeMapper 类型映射函数，输入属性描述符，输出类型对象
      * @return 类型数组，顺序与属性顺序一致
@@ -115,7 +107,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 使用{@link CollectionUtils}创建未知大小的流，支持惰性操作，
      * 该实现与源模板逻辑一致，子类可覆盖以修改流的处理逻辑。
-     * </p>
      * 
      * @return 属性流
      */
@@ -129,7 +120,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 该默认实现调用被包装源模板的{@link PropertyTemplate#asMap(boolean)}方法，
      * 子类可覆盖此方法自定义Map模板的创建逻辑。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的属性模板
@@ -144,7 +134,6 @@ public interface PropertyTemplateWrapper<T extends PropertyDescriptor, W extends
      * <p>
      * 该默认实现调用被包装源模板的{@link PropertyTemplate#asArray(boolean)}方法，
      * 子类可覆盖此方法自定义数组模板的创建逻辑。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return 数组形式的属性模板

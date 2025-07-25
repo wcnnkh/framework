@@ -12,7 +12,6 @@ import run.soeasy.framework.core.exchange.Registrations;
  * <p>
  * 该函数式接口继承自{@link Registrations}和{@link Include}，既可以管理多个{@link Include}实例的生命周期，
  * 又能将这些实例的服务内容聚合为统一的访问接口，适用于需要批量处理服务集合的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

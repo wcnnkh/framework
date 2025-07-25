@@ -8,7 +8,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 与{@link run.soeasy.framework.core.convert.Converter}不同，Transformer直接修改目标对象而非创建新实例，
  * 适用于对象属性映射、数据绑定等需要原地修改的场景。接口采用函数式设计，支持通过lambda表达式快速实现简单转换逻辑。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,17 +16,15 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>重载支持：多种参数组合的transform方法，适配不同场景</li>
  *   <li>单例实例：通过{@link #ignore()}提供忽略转换的默认实现</li>
  * </ul>
- * </p>
  *
  * <p><b>使用示例：</b>
  * <pre>{@code
  * // 简单属性复制转换器
- * Transformer beanTransformer = (s, sType, t, tType) -> {
+ * Transformer beanTransformer = (s, sType, t, tType) -&gt; {
  *     tType.getObject().getDeclaredField("name").set(t, sType.getObject().getDeclaredField("name").get(s));
  *     return true;
  * };
  * }</pre>
- * </p>
  *
  * @author soeasy.run
  * @see run.soeasy.framework.core.convert.Converter

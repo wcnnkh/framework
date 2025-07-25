@@ -29,7 +29,6 @@ import java.nio.charset.Charset;
  * public class MyData implements CharsetCapable {
  *     private Charset charset = StandardCharsets.UTF_8;
  *     
- *     @Override
  *     public Charset getCharset() {
  *         return charset;
  *     }

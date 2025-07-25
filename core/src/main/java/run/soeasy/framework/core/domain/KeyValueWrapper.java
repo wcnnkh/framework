@@ -24,10 +24,10 @@ package run.soeasy.framework.core.domain;
  * <p>示例用法：
  * <pre class="code">
  * // 原始键值对
- * KeyValue<String, Integer> original = KeyValue.of("age", 25);
+ * KeyValue&lt;String, Integer&gt; original = KeyValue.of("age", 25);
  * 
  * // 包装键值对并添加日志记录
- * KeyValueWrapper<String, Integer, KeyValue<String, Integer>> logged = value -> {
+ * KeyValueWrapper&lt;String, Integer, KeyValue&lt;String, Integer&gt;&gt; logged = value -&gt; {
  *     System.out.println("Access key: " + value.getKey());
  *     return original;
  * };

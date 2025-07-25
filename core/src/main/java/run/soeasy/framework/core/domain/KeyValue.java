@@ -28,18 +28,18 @@ import lombok.NonNull;
  * <p>示例用法：
  * <pre class="code">
  * // 创建键值对
- * KeyValue<String, Integer> pair = KeyValue.of("age", 25);
+ * KeyValue&lt;String, Integer&gt; pair = KeyValue.of("age", 25);
  * 
  * // 获取键和值
  * String key = pair.getKey();    // "age"
  * Integer value = pair.getValue(); // 25
  * 
  * // 反转键值对
- * KeyValue<Integer, String> reversed = pair.reversed(); // (25, "age")
+ * KeyValue&lt;Integer, String&gt; reversed = pair.reversed(); // (25, "age")
  * 
  * // 包装Map.Entry
- * Map.Entry<String, Integer> entry = new AbstractMap.SimpleEntry<>("score", 90);
- * KeyValue<String, Integer> wrapped = KeyValue.wrap(entry);
+ * Map.Entry&lt;String, Integer&gt; entry = new AbstractMap.SimpleEntry&lt;&gt;("score", 90);
+ * KeyValue&lt;String, Integer&gt; wrapped = KeyValue.wrap(entry);
  * </pre>
  *
  * @param <K> 键的类型

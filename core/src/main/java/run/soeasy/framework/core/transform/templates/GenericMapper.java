@@ -15,7 +15,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * </ul>
  * 在执行映射时，会根据源和目标上下文的类型自动选择合适的映射策略，
  * 并应用注册的过滤器链进行预处理或后处理。
- * </p>
  *
  * <p><b>映射策略：</b>
  * <ol>
@@ -28,7 +27,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   </li>
  *   <li>其他情况默认调用父类处理</li>
  * </ol>
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -37,11 +35,10 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>自引用设计：内部映射器引用当前实例形成递归结构</li>
  *   <li>类型安全：值类型{@code V}需实现{@link TypedValueAccessor}</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
- * @param <T> 映射上下文的类型，需实现{@link Mapping<K, V>}
+ * @param <T> 映射上下文的类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see FilterableMapper
@@ -75,7 +72,6 @@ public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
      *   <li>单键值对：直接调用父类处理</li>
      *   <li>映射集合：根据源映射类型选择ArrayMapper或MapMapper</li>
      * </ul>
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null

@@ -13,7 +13,7 @@ import lombok.NonNull;
  * <ul>
  *   <li>无类型标识：表示缺失具体类型信息的特殊状态</li>
  *   <li>空类型特征：所有类型查询方法返回空或false</li>
- *   <li>基础类型映射：原始类型固定为{@link Object#class}</li>
+ *   <li>基础类型映射：原始类型固定为{@link Object}</li>
  *   <li>类型安全：作为类型系统的空对象模式实现</li>
  * </ul>
  *
@@ -33,7 +33,6 @@ import lombok.NonNull;
  * System.out.println("是否为数组: " + unknownType.isArray()); // 输出: false
  * </pre>
  *
- * @param <T> 类型参数，固定为{@link Type}
  * @see AbstractResolvableType
  * @see ResolvableType
  */

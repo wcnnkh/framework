@@ -16,7 +16,6 @@ import run.soeasy.framework.core.transform.templates.MappingFilter;
  *   <li>按名称过滤属性：排除特定名称的属性映射</li>
  *   <li>自定义过滤逻辑：通过谓词表达式定义复杂过滤规则</li>
  * </ul>
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,7 +24,6 @@ import run.soeasy.framework.core.transform.templates.MappingFilter;
  *   <li>谓词支持：通过{@link #predicate(BiPredicate)}支持自定义谓词过滤</li>
  *   <li>链式调用：可与其他过滤器组合使用，形成过滤链</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see MappingFilter
@@ -41,7 +39,6 @@ public interface PropertyMappingFilter extends MappingFilter<Object, PropertyAcc
      * <p>
      * 该过滤器会排除名称在指定集合中的属性，
      * 当源属性或目标属性的名称存在于集合中时，对应的映射会被过滤。
-     * </p>
      * 
      * @param names 要忽略的属性名称集合，不可为null
      * @return 按名称过滤的属性映射过滤器
@@ -56,7 +53,6 @@ public interface PropertyMappingFilter extends MappingFilter<Object, PropertyAcc
      * <p>
      * 该方法将BiPredicate转换为属性映射过滤器，
      * 当谓词返回true时允许映射，返回false时过滤映射。
-     * </p>
      * 
      * @param predicate 自定义谓词，参数为源属性和目标属性，不可为null
      * @return 自定义属性映射过滤器

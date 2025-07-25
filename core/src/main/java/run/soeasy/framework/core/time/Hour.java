@@ -9,7 +9,6 @@ import lombok.NonNull;
  * <p>
  * 该类继承自{@link PeriodicTimeUnit}，定义了时间单位为小时（60分钟），
  * 下一级时间单位为分钟（{@link Minute}），适用于需要按小时处理时间的场景。
- * </p>
  *
  * <p>
  * <b>核心特性：</b>

@@ -15,7 +15,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  * <p>
  * 该类将反射参数转换为属性描述符，支持参数类型、名称等元数据的延迟加载和类型描述符转换，
  * 适用于参数绑定、属性映射等需要参数元数据的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -24,7 +23,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  *   <li>线程安全：使用双重检查锁实现类型描述符的线程安全初始化</li>
  *   <li>类型增强：将反射参数转换为{@link TypeDescriptor}，支持泛型和注解元数据</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  *   <li>参数校验：基于参数类型和名称实现参数校验逻辑</li>
  *   <li>日志记录：记录方法调用时的参数名称和类型</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Parameter
@@ -65,7 +62,6 @@ public class ExecutableParameterDescriptor implements PropertyDescriptor {
      *   <li>使用volatile和同步块确保多线程环境下的安全初始化</li>
      *   <li>类型描述符创建后会被缓存，后续调用直接返回缓存结果</li>
      * </ol>
-     * </p>
      * 
      * @return 参数的类型描述符
      */
@@ -85,7 +81,6 @@ public class ExecutableParameterDescriptor implements PropertyDescriptor {
      * <p>
      * 直接返回反射Parameter对象的名称，
      * 该名称的可用性依赖于编译时是否使用{@code -parameters}标志
-     * </p>
      * 
      * @return 参数名称
      * @see Parameter#getName()
@@ -99,7 +94,6 @@ public class ExecutableParameterDescriptor implements PropertyDescriptor {
      * 获取参数的返回类型描述符（与参数类型相同）
      * <p>
      * 实现{@link PropertyDescriptor}接口，返回参数的类型描述符
-     * </p>
      * 
      * @return 参数的类型描述符
      */
@@ -112,7 +106,6 @@ public class ExecutableParameterDescriptor implements PropertyDescriptor {
      * 获取参数所需的类型描述符（与参数类型相同）
      * <p>
      * 实现{@link PropertyDescriptor}接口，返回参数的类型描述符
-     * </p>
      * 
      * @return 参数的类型描述符
      */

@@ -16,7 +16,6 @@ import run.soeasy.framework.core.transform.property.Property;
  * <p>
  * 该类支持灵活配置属性的读写方式：可通过字段直接访问，或通过getter/setter方法访问，
  * 并支持混合模式（读用方法、写用字段等）。实现了序列化接口，便于在远程调用或持久化场景中使用。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,7 +25,6 @@ import run.soeasy.framework.core.transform.property.Property;
  *   <li>类型适配：根据访问模式自动适配属性的类型描述符</li>
  *   <li>序列化支持：实现Serializable接口，支持属性访问器的序列化与反序列化</li>
  * </ul>
- * </p>
  *
  * <p><b>访问模式说明：</b>
  * <ul>
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.transform.property.Property;
  *   <li>{@link InvokeType#METHOD}：通过getter/setter方法访问属性</li>
  *   <li>{@link InvokeType#DEFAULT}：优先通过方法访问，无方法时自动 fallback 到字段</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -44,7 +41,6 @@ import run.soeasy.framework.core.transform.property.Property;
  *   <li>ORM框架：实现对象与数据库字段的映射</li>
  *   <li>配置管理：动态读取和设置对象的配置属性</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Property
@@ -119,7 +115,6 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
      *   <li>METHOD模式：使用写入方法的参数类型</li>
      *   <li>DEFAULT模式：优先使用写入方法，无方法时使用字段类型</li>
      * </ul>
-     * </p>
      * 
      * @return 属性所需的类型描述符
      */
@@ -142,7 +137,6 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
      *   <li>METHOD模式：使用读取方法的返回类型</li>
      *   <li>DEFAULT模式：优先使用读取方法，无方法时使用字段类型</li>
      * </ul>
-     * </p>
      * 
      * @return 属性的返回类型描述符
      */
@@ -165,7 +159,6 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
      *   <li>METHOD模式：检查读取方法是否存在且可读</li>
      *   <li>DEFAULT模式：只要字段或方法任意一种可用即返回true</li>
      * </ul>
-     * </p>
      * 
      * @return 属性是否可读
      */
@@ -195,7 +188,6 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
      *   <li>METHOD模式：检查写入方法是否存在且可写</li>
      *   <li>DEFAULT模式：只要字段或方法任意一种可用即返回true</li>
      * </ul>
-     * </p>
      * 
      * @return 属性是否可写
      */
@@ -225,7 +217,6 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
      *   <li>METHOD模式：通过读取方法读取</li>
      *   <li>DEFAULT模式：优先通过方法读取，无方法时通过字段读取</li>
      * </ul>
-     * </p>
      * 
      * @param target 目标对象
      * @return 属性值
@@ -248,7 +239,6 @@ public class ReflectionProperty extends ReflectionField implements Property, Ser
      *   <li>METHOD模式：通过写入方法写入</li>
      *   <li>DEFAULT模式：优先通过方法写入，无方法时通过字段写入</li>
      * </ul>
-     * </p>
      * 
      * @param target 目标对象
      * @param value 要写入的值

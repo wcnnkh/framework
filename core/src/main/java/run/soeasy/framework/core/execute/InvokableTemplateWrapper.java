@@ -8,7 +8,6 @@ import lombok.NonNull;
  * <p>
  * 该接口作为函数式接口，允许通过Lambda表达式或方法引用来简洁地实现包装逻辑，
  * 适用于需要动态增强方法调用行为的场景，如参数验证、返回值处理、异常拦截等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,13 +16,11 @@ import lombok.NonNull;
  *   <li>方法转发：默认方法将调用转发给被包装的源可调用模板，保持原始行为</li>
  *   <li>类型安全：通过泛型约束确保包装器与被包装对象的类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code W}：被包装的可调用模板类型，需实现{@link InvokableTemplate}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -33,7 +30,6 @@ import lombok.NonNull;
  *   <li>性能监控：记录方法执行时间和性能指标</li>
  *   <li>安全控制：在方法调用前验证访问权限</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see InvokableTemplate
@@ -47,7 +43,6 @@ public interface InvokableTemplateWrapper<W extends InvokableTemplate> extends I
      * <p>
      * 该默认实现将调用转发给被包装的源可调用模板的{@link InvokableTemplate#invoke(Object)}方法，
      * 子类可覆盖此方法添加前置处理（如目标对象验证）或后置处理（如结果缓存）。
-     * </p>
      * 
      * @param target 目标对象，对于静态方法可为null
      * @return 方法调用结果
@@ -63,7 +58,6 @@ public interface InvokableTemplateWrapper<W extends InvokableTemplate> extends I
      * <p>
      * 该默认实现将调用转发给被包装的源可调用模板的{@link InvokableTemplate#invoke(Object, Class[], Object...)}方法，
      * 子类可覆盖此方法添加额外逻辑，如参数转换、异常处理、性能监控等。
-     * </p>
      * 
      * @param target 目标对象，对于静态方法可为null
      * @param parameterTypes 参数类型数组，不可为null

@@ -10,7 +10,6 @@ import run.soeasy.framework.core.spi.ServiceComparator;
  * <p>
  * 该比较器优先比较{@link ConditionalTransformer}类型的转换器，通过其支持的
  * {@link TypeMapping}集合确定顺序，适用于服务发现、转换器排序等需要确定转换器优先级的场景。
- * </p>
  *
  * <p><b>比较策略：</b>
  * <ol>
@@ -19,16 +18,6 @@ import run.soeasy.framework.core.spi.ServiceComparator;
  *   <li>仅一方为ConditionalTransformer时，ConditionalTransformer优先级更高</li>
  *   <li>非ConditionalTransformer的比较委托给父类</li>
  * </ol>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>性能损耗：使用双重循环比较类型映射集合，大数据量时效率低下</li>
- *   <li>类型安全：未对TypeMapping的compareTo结果进行安全处理，可能抛出异常</li>
- *   <li>线程安全：未考虑多线程环境下TypeMapping集合的并发修改</li>
- *   <li>映射顺序：类型映射的顺序可能影响比较结果，需确保映射定义顺序一致</li>
- * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ServiceComparator
@@ -61,7 +50,7 @@ public class TransformerComparator extends ServiceComparator<Transformer> {
      * 
      * @param o1 待比较的转换器1
      * @param o2 待比较的转换器2
-     * @return 比较结果（<0表示o1<o2，0表示相等，>0表示o1>o2）
+     * @return 比较结果（&lt;0表示o1&lt;o2，0表示相等，&gt;0表示o1&gt;o2）
      */
     @Override
     public int compare(Transformer o1, Transformer o2) {

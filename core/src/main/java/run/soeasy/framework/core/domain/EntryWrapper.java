@@ -26,18 +26,18 @@ import java.util.Map.Entry;
  * <p>示例用法：
  * <pre class="code">
  * // 原始Map.Entry
- * Map.Entry<String, Integer> originalEntry = new AbstractMap.SimpleEntry<>("age", 25);
+ * Map.Entry&lt;String, Integer&gt; originalEntry = new AbstractMap.SimpleEntry&lt;&gt;("age", 25);
  * 
  * // 包装为KeyValue接口
- * EntryWrapper<String, Integer, Map.Entry<String, Integer>> wrapped = () -> originalEntry;
+ * EntryWrapper&lt;String, Integer, Map.Entry&lt;String, Integer&gt;&gt; wrapped = () -&gt; originalEntry;
  * 
  * // 作为KeyValue使用
- * KeyValue<String, Integer> keyValue = wrapped;
+ * KeyValue&lt;String, Integer&gt; keyValue = wrapped;
  * String key = keyValue.getKey();    // "age"
  * Integer value = keyValue.getValue(); // 25
  * 
  * // 作为Entry使用
- * Map.Entry<String, Integer> entry = wrapped;
+ * Map.Entry&lt;String, Integer&gt; entry = wrapped;
  * entry.setValue(30); // 修改原始条目值
  * </pre>
  *

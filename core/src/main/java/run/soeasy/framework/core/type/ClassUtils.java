@@ -47,15 +47,15 @@ import run.soeasy.framework.core.page.Paging;
  * <p>示例用法：
  * <pre class="code">
  * // 加载类
- * Class<?> clazz = ClassUtils.forName("java.lang.String");
+ * Class&lt;?&gt; clazz = ClassUtils.forName("java.lang.String");
  * 
  * // 检查类型
  * boolean isString = ClassUtils.isString(clazz);
  * 
  * // 获取接口
- * Paging<Class<?>, Class<?>> interfaces = ClassUtils.getInterfaces(clazz);
+ * Paging&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt; interfaces = ClassUtils.getInterfaces(clazz);
  * 
- * // 类型兼容性检查
+ * // 类型兼容性检查  
  * boolean assignable = ClassUtils.isAssignable(Number.class, Integer.class);
  * </pre>
  *
@@ -77,7 +77,7 @@ public class ClassUtils {
 
     private static final Class<?>[] EMPTY_ARRAY = new Class<?>[0];
 
-    /** 泛型前缀："<" */
+    /** 泛型前缀："&gt;" */
     public static final String GENERIC_PREFIX = "<";
 
     /** 内部数组类名前缀："[" */

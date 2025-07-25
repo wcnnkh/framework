@@ -17,7 +17,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  * 该类支持方法的动态调用，并通过实现Property接口提供类属性级别的访问能力，
  * 可将无参方法视为getter，将单参数方法视为setter，从而实现方法与属性的统一抽象。
  * 同时实现了序列化接口以支持远程调用或持久化场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -27,7 +26,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>序列化支持：实现Serializable接口，支持方法的序列化和反序列化</li>
  *   <li>状态恢复：反序列化后能通过缓存的类信息恢复方法引用</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -37,7 +35,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>RPC框架：远程方法调用</li>
  *   <li>表达式语言：动态调用对象方法</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ReflectionExecutable
@@ -91,7 +88,6 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      * 获取反射Method对象，支持在序列化后恢复方法引用
      * <p>
      * 如果方法在序列化后丢失引用，会通过缓存的名称、声明类和参数类型信息重新查找方法。
-     * </p>
      * 
      * @return 反射Method对象
      */
@@ -123,7 +119,6 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      * 动态调用目标对象的方法
      * <p>
      * 该方法通过反射调用目标对象的方法，使用指定的参数并返回结果。
-     * </p>
      * 
      * @param target 目标对象，若为静态方法则可为null
      * @param args 方法参数
@@ -138,7 +133,6 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      * 获取属性所需的类型描述符
      * <p>
      * 该方法仅在方法可写（即单参数方法）时支持，返回参数的类型描述符。
-     * </p>
      * 
      * @return 参数的类型描述符
      * @throws UnsupportedOperationException 如果方法不可写
@@ -175,7 +169,6 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      * 作为属性读取方法返回值
      * <p>
      * 该方法仅在方法可读（即无参方法）时支持，等效于调用无参方法获取返回值。
-     * </p>
      * 
      * @param target 目标对象，若为静态方法则可为null
      * @return 方法返回值
@@ -193,7 +186,6 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      * 作为属性写入值到方法
      * <p>
      * 该方法仅在方法可写（即单参数方法）时支持，等效于调用单参数方法设置值。
-     * </p>
      * 
      * @param target 目标对象，若为静态方法则可为null
      * @param value 要设置的值

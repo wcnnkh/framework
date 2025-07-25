@@ -9,7 +9,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * 该接口继承自{@link SourceDescriptor}和{@link TargetDescriptor}，
  * 既可以描述数据源的类型信息，也可以定义目标位置的类型要求，
  * 同时提供读写权限的判断能力，适用于需要双向类型描述和访问控制的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

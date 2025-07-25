@@ -14,7 +14,7 @@ import lombok.NonNull;
  * <p>核心特性：
  * <ul>
  *   <li>类型变量封装：封装Java反射中的TypeVariable接口，处理泛型类型变量（如T, E）</li>
- *   <li>边界解析：支持获取类型变量的上界和下界约束（如T extends Number & Comparable）</li>
+ *   <li>边界解析：支持获取类型变量的上界和下界约束（如T extends Number &amp; Comparable）</li>
  *   <li>动态解析：通过{@link TypeVariableResolver}动态解析类型变量为实际类型</li>
  *   <li>类型包装：实现ResolvableTypeWrapper接口，提供统一的类型访问接口</li>
  * </ul>
@@ -81,7 +81,7 @@ public class ResolvableTypeVariable extends AbstractResolvableType<TypeVariable<
      *   <li>从TypeVariable中获取声明的边界类型数组</li>
      *   <li>使用当前类型变量解析器将边界类型转换为ResolvableType数组</li>
      * </ol>
-     * 例如，对于类型变量T extends Number & Comparable，返回[Number, Comparable]的ResolvableType数组。
+     * 例如，对于类型变量T extends Number &amp; Comparable，返回[Number, Comparable]的ResolvableType数组。
      *
      * @return 类型变量的边界约束的ResolvableType数组
      */

@@ -9,7 +9,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  * 该函数式接口继承自{@link SourceDescriptor}和{@link Wrapper}，
  * 允许通过包装现有源描述符实例来添加额外逻辑，同时保持接口的透明性，
  * 适用于需要对源类型描述进行增强而不修改原始实现的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

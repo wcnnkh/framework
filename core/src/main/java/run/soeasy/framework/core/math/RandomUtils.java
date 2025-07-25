@@ -47,7 +47,7 @@ import run.soeasy.framework.core.function.ThrowingFunction;
  * String randomFruit = (String) RandomUtils.randomArray(new Random(), fruits, 1)[0];
  * 
  * // 权重随机选择（例如抽奖系统）
- * List<Item> items = Arrays.asList(
+ * List&lt;Item&gt; items = Arrays.asList(
  *     new Item("稀有道具", 10),
  *     new Item("普通道具", 90)
  * );

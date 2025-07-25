@@ -27,7 +27,6 @@ import run.soeasy.framework.core.exchange.event.ChangeType;
  * <p>
  * 该容器实现了{@link Container}、{@link ReloadableElementsWrapper}和{@link ServiceInjector}接口，
  * 支持服务实例的动态管理、按顺序排序和依赖注入，适用于SPI（Service Provider Interface）场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

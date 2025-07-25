@@ -12,7 +12,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * 该类继承自{@link SimpleAttributes}，可存储键值对属性，同时维护当前映射、
  * 键值对及父级上下文引用，适用于需要跟踪映射过程中状态的场景，如对象转换、
  * 数据映射等复杂操作的上下文管理。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -21,7 +20,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>映射状态维护：持有当前映射和键值对引用</li>
  *   <li>上下文创建：提供创建当前上下文和嵌套上下文的工厂方法</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -30,11 +28,10 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>泛型复杂性：多层泛型参数可能增加使用和维护难度</li>
  *   <li>空值处理：未对mapping和keyValue进行严格空值校验</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
- * @param <T> 映射类型，需实现{@link Mapping<K, V>}
+ * @param <T> 映射类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see SimpleAttributes

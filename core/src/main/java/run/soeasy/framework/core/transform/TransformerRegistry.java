@@ -17,9 +17,8 @@ import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
  * 转换器注册表，用于注册、管理和查找{@link Transformer}实例，
  * 实现{@link ConditionalTransformer}接口以支持基于类型映射的条件转换。
  * <p>
- * 该注册表通过{@link TypeMapping}作为键存储转换器，支持双向转换查找（S->T和T->S），
+ * 该注册表通过{@link TypeMapping}作为键存储转换器，支持双向转换查找（S-&gt;T和T-&gt;S），
  * 适用于需要动态注册转换器并根据类型关系自动匹配的场景，如对象映射、数据转换框架等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -28,16 +27,6 @@ import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
  *   <li>批量注册：支持一次性注册多个类型映射及其对应的转换器</li>
  *   <li>消费型转换器注册：通过BiConsumer快速注册简单的属性转换逻辑</li>
  * </ul>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：底层使用{@link TreeMapContainer}，需确保外部同步或使用线程安全实现</li>
- *   <li>性能损耗：{@link #getTransformer}方法存在O(n)遍历查找，大数据量时效率较低</li>
- *   <li>异常处理：{@link #transform}方法抛出{@link ConverterNotFoundException}，未提供更多上下文</li>
- *   <li>双向转换假设：默认认为T->S转换是S->T的反向，可能不符合实际业务逻辑</li>
- * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ConditionalTransformer

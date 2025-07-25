@@ -10,7 +10,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * 该函数式接口继承自{@link TypedValueAccessor}、{@link TypedValueWrapper}和{@link TypedDataAccessorWrapper}，
  * 允许通过包装现有类型化值访问器实例来添加额外逻辑，同时保持接口的透明性，
  * 适用于需要对类型化值访问进行非侵入式增强的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

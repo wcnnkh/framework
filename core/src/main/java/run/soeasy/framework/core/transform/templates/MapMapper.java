@@ -13,7 +13,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * <p>
  * 该映射器通过内部{@link Mapper}实例处理单个键值对的映射逻辑，
  * 遍历目标映射集合中的每个键，在源映射中查找匹配键的所有值并执行映射转换。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -22,7 +21,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>嵌套上下文：通过{@link MappingContext}的current方法创建嵌套映射上下文</li>
  *   <li>可配置性：通过注入不同的{@link Mapper}实例定制值映射逻辑</li>
  * </ul>
- * </p>
  *
  * <p><b>映射流程：</b>
  * <ol>
@@ -32,11 +30,10 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>对每个源值创建独立上下文并调用内部映射器</li>
  *   <li>累计映射成功次数并返回结果</li>
  * </ol>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
- * @param <T> 映射上下文的类型，需实现{@link Mapping<K, V>}
+ * @param <T> 映射上下文的类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see Mapper
@@ -61,7 +58,6 @@ public class MapMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>>
      *   <li>源和目标上下文均包含映射集合</li>
      *   <li>内部映射器返回true</li>
      * </ul>
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null

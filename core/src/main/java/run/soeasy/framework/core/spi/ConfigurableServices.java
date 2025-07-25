@@ -19,7 +19,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * 该类继承自{@link Services}，提供基于{@link ProviderFactory}的服务发现配置能力，
  * 支持动态注册、卸载和重新加载服务提供者，并通过内部锁机制保证线程安全，
  * 适用于需要灵活配置服务发现策略的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

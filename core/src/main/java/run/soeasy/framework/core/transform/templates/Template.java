@@ -13,7 +13,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * <p>
  * 该接口继承自{@link Dictionary}，提供了字典的基本操作，并扩展了基于索引的访问方式，
  * 允许通过数值索引快速定位元素。同时支持将模板转换为数组或Map形式，方便不同场景下的使用。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -22,7 +21,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>类型安全：元素必须实现{@link AccessibleDescriptor}，确保类型化访问</li>
  *   <li>唯一性约束：通过参数控制键的唯一性</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -31,7 +29,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>空值处理：未对键不存在的情况做特殊处理，可能返回null</li>
  *   <li>性能考虑：基于索引的访问依赖于内部元素顺序，可能影响性能</li>
  * </ul>
- * </p>
  *
  * @param <E> 模板元素的类型，必须实现{@link AccessibleDescriptor}接口
  * 

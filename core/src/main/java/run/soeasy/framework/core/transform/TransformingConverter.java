@@ -17,7 +17,6 @@ import run.soeasy.framework.core.type.InstanceFactorySupporteds;
  * 该转换器通过组合{@link Transformer}实现属性转换逻辑，
  * 并使用{@link InstanceFactory}创建目标对象实例，
  * 适用于需要将转换逻辑与对象创建解耦的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,16 +25,6 @@ import run.soeasy.framework.core.type.InstanceFactorySupporteds;
  *   <li>转换开关控制：通过enable字段动态启用/禁用转换功能</li>
  *   <li>异常封装：将Transformer的转换异常封装为Converter异常</li>
  * </ul>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：未对enable字段和transformer字段添加同步机制，多线程环境可能出现竞态条件</li>
- *   <li>空值风险：transformer字段未进行空值校验，当transformer为null时调用会抛出NPE</li>
- *   <li>异常处理：convert方法未捕获InstanceFactory.newInstance可能抛出的异常</li>
- *   <li>性能优化：默认使用反射实例工厂{@link InstanceFactorySupporteds.REFLECTION}，可考虑缓存实例</li>
- * </ul>
- * </p>
  *
  * @param <S> 源对象类型
  * @param <T> 目标对象类型

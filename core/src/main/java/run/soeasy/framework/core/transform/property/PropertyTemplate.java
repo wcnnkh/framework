@@ -16,7 +16,6 @@ import run.soeasy.framework.core.transform.templates.Template;
  * <p>
  * 该接口整合了模板的结构化访问与集合的流式操作特性，适用于属性元数据的集中管理场景，
  * 如对象属性映射、数据模型转换、动态属性访问等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,13 +24,11 @@ import run.soeasy.framework.core.transform.templates.Template;
  *   <li>结构转换：可转换为Map或数组形式的模板实现</li>
  *   <li>函数式支持：作为函数式接口可通过lambda表达式创建实例</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code T}：属性描述符类型，需实现{@link PropertyDescriptor}</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Template
@@ -69,7 +66,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      * 根据属性名称获取唯一属性描述符
      * <p>
      * 通过名称精确匹配属性，若存在多个匹配项则抛出异常
-     * </p>
      * 
      * @param name 属性名称
      * @return 匹配的属性描述符
@@ -83,7 +79,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      * 获取所有属性的键值对集合（键为属性名称）
      * <p>
      * 将每个属性转换为{@link KeyValue}，键为属性名称，值为属性描述符
-     * </p>
      * 
      * @return 键值对元素集合
      */
@@ -96,7 +91,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      * 获取属性类型数组
      * <p>
      * 通过函数映射将每个属性转换为类型对象，形成类型数组
-     * </p>
      * 
      * @param typeMapper 类型映射函数，输入属性描述符，输出类型对象
      * @return 类型数组，顺序与属性顺序一致
@@ -113,7 +107,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      * 获取属性的流视图
      * <p>
      * 使用{@link CollectionUtils}创建未知大小的流，支持惰性操作
-     * </p>
      * 
      * @return 属性流
      */
@@ -126,7 +119,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      * 转换为Map形式的属性模板
      * <p>
      * 创建新的{@link MapPropertyTemplate}实例，可选择键唯一性约束
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的属性模板
@@ -140,7 +132,6 @@ public interface PropertyTemplate<T extends PropertyDescriptor> extends Template
      * 转换为数组形式的属性模板
      * <p>
      * 创建新的{@link ArrayPropertyTemplate}实例，可选择键唯一性约束
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return 数组形式的属性模板

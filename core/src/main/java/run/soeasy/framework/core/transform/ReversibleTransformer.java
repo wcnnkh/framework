@@ -11,28 +11,17 @@ import run.soeasy.framework.core.type.ResolvableType;
 /**
  * 双向条件转换器接口，支持源类型(S)与目标类型(T)之间的双向属性转换，继承自{@link ConditionalTransformer}。
  * <p>
- * 该接口通过泛型参数定义双向转换的类型关系，自动生成正向(S->T)和反向(T->S)的类型映射，
+ * 该接口通过泛型参数定义双向转换的类型关系，自动生成正向(S-&gt;T)和反向(T-&gt;S)的类型映射，
  * 实现类只需提供{@link #to}和{@link #from}方法的具体转换逻辑，适用于需要双向属性映射的场景，
  * 如DTO与Entity的双向转换、参数与响应的双向映射等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
- *   <li>双向转换：自动支持S->T和T->S两种转换方向</li>
+ *   <li>双向转换：自动支持S-&gt;T和T-&gt;S两种转换方向</li>
  *   <li>类型映射：基于泛型参数自动生成双向类型映射关系</li>
  *   <li>条件判断：继承自{@link ConditionalTransformer}，支持基于类型映射的条件转换</li>
  *   <li>泛型解析：通过{@link ResolvableType}自动解析当前接口的泛型参数</li>
  * </ul>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>泛型解析限制：{@link #getTypeMapping}依赖运行时泛型解析，对于匿名内部类或擦除的泛型可能失败</li>
- *   <li>类型安全风险：{@link #transform}中的强制类型转换可能引发{@link ClassCastException}</li>
- *   <li>线程安全：未定义线程安全策略，实现类需自行保证多线程环境下的安全性</li>
- *   <li>反向映射假设：默认认为正向映射的反向映射必然有效，实际可能需要自定义反向逻辑</li>
- * </ul>
- * </p>
  *
  * @param <S> 源类型
  * @param <T> 目标类型
@@ -51,7 +40,7 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
      * 生成从S到T的类型映射。该方法依赖运行时泛型信息，
      * 若泛型参数在运行时被擦除（如匿名内部类），可能解析失败。
      * 
-     * @return 包含S->T映射关系的TypeMapping实例
+     * @return 包含S-&gt;T映射关系的TypeMapping实例
      * @throws IllegalStateException 当泛型参数解析失败时抛出
      */
     default TypeMapping getTypeMapping() {
@@ -69,7 +58,7 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
     /**
      * 获取支持的双向类型映射集合
      * <p>
-     * 包含正向映射(S->T)和通过{@link TypeMapping#reversed()}生成的反向映射(T->S)，
+     * 包含正向映射(S-&gt;T)和通过{@link TypeMapping#reversed()}生成的反向映射(T-&gt;S)，
      * 实现类可重写此方法以添加额外的类型映射规则。
      * 
      * @return 包含双向映射的不可变集合（实际为HashSet，建议实现类返回不可变视图）

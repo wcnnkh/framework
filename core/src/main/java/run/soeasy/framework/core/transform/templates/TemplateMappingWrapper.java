@@ -9,7 +9,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * 该接口允许将一个模板映射实例包装为具有相同接口的新实例，从而在不修改原模板映射实现的前提下，
  * 实现功能增强（如日志记录、权限控制、数据验证等）。包装器会将所有操作委托给源模板映射实例，
  * 并可在委托前后添加自定义逻辑。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,7 +17,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>功能增强：可在委托操作前后添加额外逻辑（如验证、转换等）</li>
  *   <li>集合转换：继承{@link TemplateMapping}的集合转换方法，委托给源模板映射处理</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -28,16 +26,14 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>递归包装：多次包装同一模板映射可能导致嵌套过深，影响性能和调试</li>
  *   <li>异常处理：未统一处理源映射可能抛出的异常</li>
  * </ul>
- * </p>
  *
  * @param <E> 模板映射元素的类型，必须实现{@link TypedValueAccessor}接口
- * @param <W> 包装器自身的类型，需实现{@link TemplateMapping<E>}
+ * @param <W> 包装器自身的类型，需实现{@link TemplateMapping}
  * 
  * @author soeasy.run
  * @see TemplateMapping
  * @see MappingWrapper
  * @see TemplateWrapper
- * @see WrapperPattern
  */
 @FunctionalInterface
 public interface TemplateMappingWrapper<E extends TypedValueAccessor, W extends TemplateMapping<E>>

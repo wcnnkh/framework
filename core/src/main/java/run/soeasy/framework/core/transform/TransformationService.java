@@ -12,7 +12,6 @@ import run.soeasy.framework.core.spi.ServiceInjectors;
  * 该服务集成了{@link Transformers}转换器集合和{@link TransformerRegistry}类型映射注册表，
  * 提供统一的转换入口，支持按优先级查找转换器并执行转换操作。同时通过{@link ServiceInjectors}
  * 实现转换器的依赖注入，确保组件间的转换器引用一致性。
- * </p>
  *
  * <p><b>核心组件：</b>
  * <ul>
@@ -20,17 +19,6 @@ import run.soeasy.framework.core.spi.ServiceInjectors;
  *   <li>{@link #transformers}：转换器集合，按优先级管理多个转换器</li>
  *   <li>{@link #registry}：类型映射注册表，基于类型映射管理条件转换器</li>
  * </ul>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：内部组件未明确线程安全保障，多线程环境需外部同步</li>
- *   <li>转换顺序：先查注册表后查转换器集合，可能导致优先级倒置</li>
- *   <li>依赖注入：注入逻辑可能引发循环依赖（如服务注入自身）</li>
- *   <li>异常处理：转换方法未封装异常，直接抛出转换器异常</li>
- *   <li>类型安全：条件转换器强制类型转换可能引发{@link ClassCastException}</li>
- * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Transformer
@@ -122,7 +110,6 @@ public class TransformationService implements Transformer {
      * @param target 目标对象，不可为null
      * @param targetTypeDescriptor 目标类型描述符，不可为null
      * @return 转换成功返回true，否则false
-     * @throws ConverterNotFoundException 当注册表和转换器集合均不支持转换时抛出
      */
     @Override
     public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,

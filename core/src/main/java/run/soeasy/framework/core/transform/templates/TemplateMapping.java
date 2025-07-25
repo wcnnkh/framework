@@ -15,7 +15,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>模板模式：通过索引或键访问元素，支持混合访问模式</li>
  * </ul>
  * 同时提供集合转换功能，可将模板映射转换为数组或Map形式。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -24,7 +23,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>类型安全：元素必须实现{@link TypedValueAccessor}，确保类型化访问</li>
  *   <li>唯一性约束：通过参数控制键的唯一性</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -33,7 +31,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>空值处理：未对键不存在的情况做特殊处理，可能返回null</li>
  *   <li>实现冲突：需确保{@link Mapping}和{@link Template}接口方法的一致性</li>
  * </ul>
- * </p>
  *
  * @param <E> 模板映射元素的类型，必须实现{@link TypedValueAccessor}接口
  * 

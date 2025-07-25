@@ -10,7 +10,6 @@ import run.soeasy.framework.core.comparator.OrderComparator;
  * <p>
  * 该比较器在父类比较逻辑基础上，当父类返回相等结果时使用自定义的{@code unknown}值，
  * 适用于需要明确服务执行顺序的SPI（Service Provider Interface）场景。
- * </p>
  *
  * @param <T> 服务实例的类型
  * 

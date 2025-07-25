@@ -33,7 +33,7 @@ import run.soeasy.framework.core.collection.Provider;
  * ClassMemberFactory&lt;Method&gt; methodFactory = new MethodMemberFactory();
  * 
  * // 包装为带缓存的工厂
- * ClassMemberFactory&lt;Method&gt; cachingFactory = new CachingClassMemberFactory<>(methodFactory);
+ * ClassMemberFactory&lt;Method&gt; cachingFactory = new CachingClassMemberFactory&lt;&gt;(methodFactory);
  * 
  * // 获取User类的方法提供者（首次创建会缓存）
  * Provider&lt;Method&gt; methodProvider = cachingFactory.getClassMemberProvider(User.class);

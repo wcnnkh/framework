@@ -16,7 +16,6 @@ import run.soeasy.framework.core.transform.templates.MappingContext;
  *   <li>当谓词返回true时，继续执行后续映射流程</li>
  *   <li>当谓词返回false时，终止当前属性的映射，直接返回false</li>
  * </ul>
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,7 +24,6 @@ import run.soeasy.framework.core.transform.templates.MappingContext;
  *   <li>链式组合：可与其他过滤器组合形成复杂过滤链</li>
  *   <li>空值安全：在执行谓词前会检查上下文是否包含有效键值</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -33,7 +31,6 @@ import run.soeasy.framework.core.transform.templates.MappingContext;
  *   <li>属性元数据条件过滤（如基于属性名称、类型）</li>
  *   <li>动态过滤规则（运行时根据上下文决定过滤条件）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyMappingFilter
@@ -57,7 +54,6 @@ public class PropertyMappingPredicate implements PropertyMappingFilter {
      *   <li>若谓词返回true，调用后续映射器继续映射流程</li>
      *   <li>若谓词返回false，直接终止映射并返回false</li>
      * </ol>
-     * </p>
      * 
      * @param sourceContext 源映射上下文，包含源属性信息
      * @param targetContext 目标映射上下文，包含目标属性信息

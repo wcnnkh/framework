@@ -5,16 +5,15 @@ import java.util.function.Supplier;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
 /**
- * 类型化数据接口，封装带类型描述的数据，继承自{@link SourceDescriptor}和{@link Supplier<T>}。
+ * 类型化数据接口，封装带类型描述的数据，继承自{@link SourceDescriptor}和{@link Supplier}。
  * <p>
  * 该接口用于将数据与其类型描述符绑定，提供类型安全的数据访问方式，
  * 适用于需要明确数据类型信息的场景，如类型转换、数据序列化、参数绑定等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
  *   <li>类型描述：通过{@link SourceDescriptor}获取数据的类型元信息</li>
- *   <li>数据提供：通过{@link Supplier<T>}获取实际数据值</li>
+ *   <li>数据提供：通过{@link Supplier}获取实际数据值</li>
  *   <li>值包装：通过{@link #value()}方法生成{@link TypedValue}实例</li>
  *   <li>工厂方法：提供静态工厂方法快速创建类型化数据实例</li>
  * </ul>

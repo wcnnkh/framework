@@ -10,7 +10,6 @@ import lombok.NonNull;
  * <p>
  * 该类继承自{@link ConvertedInclude}，在转换服务包含的基础上，
  * 提供配置结果状态的透传能力，适用于需要动态转换服务配置类型的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

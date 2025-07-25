@@ -9,7 +9,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * <p>
  * 该接口用于表示具有类型约束的键值映射关系，其中值类型{@code V}必须实现{@link TypedValueAccessor}接口，
  * 支持类型安全的值访问和转换。适用于数据转换、对象映射等需要类型化键值操作的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,7 +16,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>集合转换：通过{@link #asMap(boolean)}和{@link #asArray(boolean)}方法转换为不同集合形式</li>
  *   <li>唯一性控制：转换方法支持通过{@code uniqueness}参数控制键的唯一性</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -26,7 +24,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>唯一性逻辑不明确：{@code uniqueness}参数的具体语义未在接口中定义，依赖实现类解释</li>
  *   <li>函数式接口设计：作为函数式接口但未定义抽象方法（依赖父接口），可能导致设计混淆</li>
  * </ul>
- * </p>
  *
  * @param <K> 键的类型
  * @param <V> 值的类型，必须实现{@link TypedValueAccessor}接口

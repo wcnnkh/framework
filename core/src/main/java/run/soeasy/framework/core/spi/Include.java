@@ -10,14 +10,13 @@ import run.soeasy.framework.core.exchange.Registration;
 /**
  * 服务包含接口，集成注册管理与服务提供能力，支持服务实例的转换与组合操作。
  * <p>
- * 该接口继承自{@link Registration}和{@link Provider&lt;S&gt;}，既可以管理注册生命周期，
+ * 该接口继承自{@link Registration}和{@link Provider}，既可以管理注册生命周期，
  * 又能提供服务实例的访问能力，适用于需要动态管理服务集合的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
  *   <li>注册管理：继承{@link Registration}，支持取消注册操作</li>
- *   <li>服务提供：继承{@link Provider&lt;S&gt;}，支持服务实例的迭代访问</li>
+ *   <li>服务提供：继承{@link Provider}，支持服务实例的迭代访问</li>
  *   <li>流式转换：通过{@link #map}方法支持服务实例的流式转换</li>
  *   <li>注册组合：通过{@link #and}方法支持多个注册的组合管理</li>
  * </ul>

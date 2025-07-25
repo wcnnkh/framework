@@ -24,14 +24,14 @@ package run.soeasy.framework.core.domain;
  * <p>示例用法：
  * <pre class="code">
  * // 原始离散值导航实现
- * Discrete<Integer> original = new Discrete<Integer>() {
+ * Discrete&lt;Integer&gt; original = new Discrete&lt;Integer&gt;() {
  *     public Integer next(Integer v) { return v + 1; }
  *     public Integer previous(Integer v) { return v - 1; }
  *     public long distance(Integer s, Integer e) { return e - s; }
  * };
  * 
  * // 包装离散值导航并添加日志记录
- * DiscreteWrapper<Integer, Discrete<Integer>> logged = value -> {
+ * DiscreteWrapper&lt;Integer, Discrete&lt;Integer&gt;&gt; logged = value -&gt; {
  *     System.out.println("Navigate: " + value);
  *     return original;
  * };
@@ -45,15 +45,14 @@ package run.soeasy.framework.core.domain;
  * @see Discrete
  * @see Wrapper
  */
-@SuppressWarnings("rawtypes")
-public interface DiscreteWrapper<T extends Comparable, W extends Discrete<T>> extends Discrete<T>, Wrapper<W> {
+public interface DiscreteWrapper<T extends Comparable<T>, W extends Discrete<T>> extends Discrete<T>, Wrapper<W> {
     
     /**
      * 获取指定值的下一个离散值，转发给被包装的Discrete实例。
      *
      * @param value 当前值，不可为null
      * @return 下一个离散值，可能为null（如到达序列边界）
-     * @see Discrete#next(Object)
+     * @see Discrete#next(Comparable)
      */
     @Override
     default T next(T value) {
@@ -65,7 +64,7 @@ public interface DiscreteWrapper<T extends Comparable, W extends Discrete<T>> ex
      *
      * @param value 当前值，不可为null
      * @return 前一个离散值，可能为null（如到达序列边界）
-     * @see Discrete#previous(Object)
+     * @see Discrete#previous(Comparable)
      */
     @Override
     default T previous(T value) {
@@ -78,7 +77,7 @@ public interface DiscreteWrapper<T extends Comparable, W extends Discrete<T>> ex
      * @param start 起始值，不可为null
      * @param end   结束值，不可为null
      * @return 从start到end的距离，可为正/负/零
-     * @see Discrete#distance(Object, Object)
+     * @see Discrete#distance(Comparable, Comparable)
      */
     @Override
     default long distance(T start, T end) {

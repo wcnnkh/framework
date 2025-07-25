@@ -9,7 +9,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * 该类继承自{@link MappedTypedValue}并实现{@link TypedValueAccessorWrapper}接口，
  * 支持通过指定转换器将源类型化值访问器的返回值转换为目标类型，
  * 同时保留了对值的读写访问能力，适用于需要类型转换的数据访问场景。
- * </p>
  *
  * <p><b>核心功能：</b>
  * <ul>
@@ -17,7 +16,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>双向数据访问：继承父类的读取能力，同时实现写入接口</li>
  *   <li>透明包装：保持与源访问器一致的接口，对调用者透明</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -25,7 +23,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>转换逻辑不对称：读取和写入可能使用不同的转换逻辑</li>
  *   <li>父类依赖风险：继承父类的转换逻辑，可能导致行为不一致</li>
  * </ul>
- * </p>
  *
  * @param <W> 被包装的源类型化值访问器类型，需实现{@link TypedValueAccessor}
  * 

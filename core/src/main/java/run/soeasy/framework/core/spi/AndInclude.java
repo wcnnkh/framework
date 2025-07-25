@@ -10,7 +10,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该类通过包装源包含实例和额外注册操作，实现包含实例的链式组合，
  * 支持统一管理多个注册操作的生命周期，适用于需要组合多个资源注册的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

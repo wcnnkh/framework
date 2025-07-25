@@ -17,7 +17,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * <p>
  * 该类采用装饰器模式包装源模板实例，所有操作委托给源模板并在值访问时应用映射函数，
  * 确保源模板与目标类型的转换逻辑解耦，同时保持数据访问的透明性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -26,7 +25,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>空值安全：自动处理源值为{@code null}的情况，防止NPE</li>
  *   <li>接口兼容：完全实现{@link TemplateMapping}接口，支持数组/Map形式转换</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型约束：</b>
  * <ul>
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>{@code T}：源模板类型，需实现{@link Template}接口</li>
  *   <li>{@code V}：目标元素类型，需实现{@link TypedValueAccessor}以支持值操作</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TemplateMapping
@@ -59,7 +56,6 @@ public class TemplateProperties<S extends AccessibleDescriptor, T extends Templa
      * <p>
      * 若源模板元素集合为{@code null}，直接返回{@code null}；
      * 否则通过{@code map}操作对每个元素执行类型转换。
-     * </p>
      * 
      * @return 转换后的键值对集合，或{@code null}
      */
@@ -78,7 +74,6 @@ public class TemplateProperties<S extends AccessibleDescriptor, T extends Templa
      * <p>
      * 调用源模板的{@code get(key)}方法获取源元素，若存在则执行类型转换；
      * 若键对应多个元素，抛出{@link NoUniqueElementException}。
-     * </p>
      * 
      * @param key 查找键，支持数值索引或键名
      * @return 转换后的目标元素，或{@code null}（键不存在时）
@@ -125,7 +120,6 @@ public class TemplateProperties<S extends AccessibleDescriptor, T extends Templa
      * 根据索引获取元素键值对，应用映射函数转换类型
      * <p>
      * 若索引超出范围返回{@code null}，否则对源元素执行类型转换。
-     * </p>
      * 
      * @param index 元素索引
      * @return 转换后的键值对，或{@code null}（索引无效时）
@@ -172,7 +166,6 @@ public class TemplateProperties<S extends AccessibleDescriptor, T extends Templa
      * 根据键获取所有匹配的值，应用映射函数转换类型
      * <p>
      * 若键不存在返回{@code null}，否则对源值集合执行批量转换。
-     * </p>
      * 
      * @param key 查找键
      * @return 转换后的目标值集合，或{@code null}（键不存在时）

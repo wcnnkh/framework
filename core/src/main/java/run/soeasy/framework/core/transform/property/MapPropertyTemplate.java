@@ -8,7 +8,6 @@ import run.soeasy.framework.core.transform.templates.MapTemplate;
  * <p>
  * 该类采用装饰器模式包装源属性模板，将属性描述符组织为Map结构，
  * 适用于需要通过键快速检索属性的场景，如动态属性访问、属性映射转换等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,14 +16,12 @@ import run.soeasy.framework.core.transform.templates.MapTemplate;
  *   <li>装饰器模式：包装源属性模板，保持原有功能的同时提供Map访问方式</li>
  *   <li>实例复用：{@link #asMap(boolean)}方法会复用实例，避免重复创建</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code T}：属性描述符类型，需实现{@link PropertyDescriptor}</li>
- *   <li>{@code W}：被包装的源属性模板类型，需实现{@link PropertyTemplate<T>}</li>
+ *   <li>{@code W}：被包装的源属性模板类型，需实现{@link PropertyTemplate}</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyTemplate
@@ -52,7 +49,6 @@ public class MapPropertyTemplate<T extends PropertyDescriptor, W extends Propert
      *   <li>若当前唯一性设置与参数一致，直接返回自身</li>
      *   <li>否则调用源模板的{@link PropertyTemplate#asMap(boolean)}方法</li>
      * </ul>
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的属性模板实例

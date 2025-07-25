@@ -7,7 +7,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 该接口提供获取目标类型描述符的标准方法，并支持声明目标位置是否禁止空值，
  * 适用于类型转换、参数绑定、数据校验等需要明确目标类型要求的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

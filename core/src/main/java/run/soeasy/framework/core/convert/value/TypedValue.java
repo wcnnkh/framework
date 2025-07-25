@@ -22,7 +22,6 @@ import run.soeasy.framework.core.math.NumberValue;
  * <p>
  * 该接口继承自{@link TypedData}和{@link Value}，既提供类型元信息描述能力，
  * 又支持多种数据类型的强转操作，适用于需要类型安全值处理的场景，如数据绑定、类型转换、值对象操作等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -623,7 +622,7 @@ public interface TypedValue extends TypedData<Object>, Value {
      * 转换为指定类型的TypedData（泛型方法）
      * <p>
      * 调用{@link #map(TypeDescriptor, Converter)}方法，
-     * 使用{@link TypeDescriptor#forObject(Class)}创建类型描述符。
+     * 使用{@link TypeDescriptor#forObject(Object)}创建类型描述符。
      * 
      * @param <R>        目标类型
      * @param type       目标类型Class
@@ -652,11 +651,12 @@ public interface TypedValue extends TypedData<Object>, Value {
     /**
      * 返回当前实例（实现Value接口）
      * <p>
-     * 实现{@link Value#value()}方法，直接返回当前实例，
+     * 实现{@link TypedData#value()}方法，直接返回当前实例，
      * 支持链式调用和统一的Value接口操作。
      * 
      * @return 当前TypedValue实例
      */
+    @Override
     default TypedValue value() {
         return this;
     }

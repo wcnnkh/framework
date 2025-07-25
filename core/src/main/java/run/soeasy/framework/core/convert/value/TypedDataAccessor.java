@@ -1,12 +1,13 @@
 package run.soeasy.framework.core.convert.value;
 
+import run.soeasy.framework.core.convert.TypeDescriptor;
+
 /**
  * 类型化数据访问器接口，整合数据读写能力与类型描述功能，继承自{@link TypedData}和{@link AccessibleDescriptor}。
  * <p>
  * 该接口在{@link TypedData}基础上添加数据写入能力，允许通过类型安全的方式获取和设置数据值，
  * 同时通过{@link AccessibleDescriptor}提供类型描述和访问权限控制，
  * 适用于需要双向数据操作和类型校验的场景，如数据绑定、类型转换上下文等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

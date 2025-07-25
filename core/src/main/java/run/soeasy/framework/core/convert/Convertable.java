@@ -19,15 +19,14 @@ import lombok.NonNull;
  * <pre>
  * // 注册自定义类型转换器
  * ConvertService registry = new DefaultConvertService();
- * registry.addConverter((Convertable) (srcType, targetType) -> {
- *     return srcType.getType() == String.class && targetType.getType() == Integer.class;
+ * registry.addConverter((Convertable) (srcType, targetType) -&gt; {
+ *     return srcType.getType() == String.class &amp;&amp; targetType.getType() == Integer.class;
  * });
  * </pre>
  *
  * @author soeasy.run
  * @see TypeDescriptor
  * @see Converter
- * @see ConvertService
  */
 @FunctionalInterface
 public interface Convertable {

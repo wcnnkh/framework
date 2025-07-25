@@ -9,7 +9,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  * 该接口继承自{@link TargetDescriptor}和{@link Wrapper}，允许通过包装现有目标描述符实例
  * 来添加额外逻辑（如日志记录、权限校验、类型转换增强等），同时保持接口的透明性，
  * 适用于需要对目标类型描述进行非侵入式增强的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

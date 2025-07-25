@@ -41,7 +41,7 @@ import run.soeasy.framework.core.collection.ReloadableElementsWrapper;
  *     clazz -&gt; Elements.of(clazz.getDeclaredFields());
  * 
  * // 创建类成员解析器
- * ClassMembers&lt;Field&gt; classMembers = new ClassMembers<>(User.class, fieldLoader);
+ * ClassMembers&lt;Field&gt; classMembers = new ClassMembers&lt;&gt;(User.class, fieldLoader);
  * 
  * // 获取字段列表
  * Elements&lt;Field&gt; fields = classMembers.getSource();

@@ -17,7 +17,6 @@ import run.soeasy.framework.core.math.NumberValue;
  * 该函数式接口继承自{@link TypedValue}、{@link TypedDataWrapper}和{@link ValueWrapper}，
  * 允许通过包装现有类型化值实例来添加额外逻辑，同时保持接口的透明性，
  * 适用于需要对类型化值进行非侵入式增强的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

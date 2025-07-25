@@ -32,7 +32,6 @@ import lombok.Getter;
  * // 创建泛型数组类型：List&lt;String&gt;[]
  * Type listStringType = new TypeToken&lt;List&lt;String&gt;&gt;(){}.getType();
  * GenericArrayType arrayType = new GenericArrayType() {
- *     @Override
  *     public Type getGenericComponentType() {
  *         return listStringType;
  *     }

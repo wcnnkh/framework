@@ -10,10 +10,9 @@ import run.soeasy.framework.core.domain.Discrete;
 /**
  * 离散时间单位处理器，支持基于日历字段的时间离散化操作。
  * <p>
- * 该抽象类继承自{@link TimeFormat}并实现{@link Discrete&lt;Date&gt;}接口，
+ * 该抽象类继承自{@link TimeFormat}并实现{@link Discrete}接口，
  * 提供了对日期时间的离散化操作能力，如计算时间距离、获取相邻时间点等，
  * 适用于需要按固定时间单位（如天、小时、分钟）处理时间的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -23,8 +22,6 @@ import run.soeasy.framework.core.domain.Discrete;
  *   <li>格式转换能力：继承自{@link TimeFormat}，支持日期与字符串的格式转换</li>
  * </ul>
  *
- * @param <Date> 时间类型，此处固定为Java原生{@link Date}
- * 
  * @author soeasy.run
  * @see TimeFormat
  * @see Discrete

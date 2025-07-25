@@ -6,7 +6,6 @@ package run.soeasy.framework.core.transform.property;
  * <p>
  * 该接口扩展了属性映射的功能，提供类型化的属性访问能力，适用于需要精确控制
  * 属性类型的场景，如数据绑定、类型转换、泛型操作等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -15,7 +14,6 @@ package run.soeasy.framework.core.transform.property;
  *   <li>函数式接口：作为函数式接口可通过lambda表达式创建实例</li>
  *   <li>链式调用：转换方法返回{@link TypedProperties}类型，支持链式操作</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -23,7 +21,6 @@ package run.soeasy.framework.core.transform.property;
  *   <li>类型安全的数据绑定：确保属性值类型匹配的场景</li>
  *   <li>动态类型转换：根据类型信息进行属性值转换的场景</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyMapping
@@ -38,7 +35,6 @@ public interface TypedProperties extends PropertyMapping<PropertyAccessor> {
      * <p>
      * 创建新的{@link MapTypedProperties}实例，可选择键唯一性约束。
      * 转换后的Map形式支持通过键快速检索属性访问器，并保持类型化操作能力。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一（true表示键不可重复）
      * @return Map形式的类型化属性实例
@@ -53,7 +49,6 @@ public interface TypedProperties extends PropertyMapping<PropertyAccessor> {
      * <p>
      * 创建新的{@link ArrayTypedProperties}实例，可选择键唯一性约束。
      * 转换后的数组形式保持属性的插入顺序，支持通过索引访问属性，并保持类型化操作能力。
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一（true表示键不可重复）
      * @return 数组形式的类型化属性实例

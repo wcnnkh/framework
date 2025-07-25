@@ -19,7 +19,6 @@ import run.soeasy.framework.core.domain.Version;
  * <p>
  * 该转换器提供了常见类型的默认转换实现，包括基本类型、大数类型、枚举类型等。
  * 通过静态类型映射表，实现了高效的类型转换，并支持自定义转换器注册。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -28,7 +27,6 @@ import run.soeasy.framework.core.domain.Version;
  *   <li>类型安全：通过{@link TypeDescriptor}确保类型转换的安全性</li>
  *   <li>可扩展性：支持通过静态方法注册自定义类型转换器</li>
  * </ul>
- * </p>
  *
  * <p><b>使用示例：</b>
  * <pre>{@code
@@ -40,7 +38,6 @@ import run.soeasy.framework.core.domain.Version;
  *     TypeDescriptor.valueOf(Value.class), 
  *     TypeDescriptor.valueOf(Integer.class));
  * }</pre>
- * </p>
  *
  * @author soeasy.run
  * @see ReversibleConverter
@@ -59,7 +56,6 @@ public class ValueConverter extends AbstractConditionalConverter implements Reve
      * <p>
      * 注意：该映射表使用{@link HashMap}实现，不保证线程安全。
      * 在静态初始化块中完成所有初始化，避免运行时并发修改。
-     * </p>
      */
     private static Map<Class<?>, BiFunction<? super Value, ? super TypeDescriptor, ? extends Object>> typeMap = new HashMap<>();
 
@@ -85,7 +81,6 @@ public class ValueConverter extends AbstractConditionalConverter implements Reve
      * 检查指定类型是否支持转换。
      * <p>
      * 如果类型存在于内部类型映射表中，则返回true，否则返回false。
-     * </p>
      *
      * @param type 待检查的类型
      * @return 如果支持该类型的转换，返回true；否则返回false
@@ -100,7 +95,6 @@ public class ValueConverter extends AbstractConditionalConverter implements Reve
      * 如果源对象已经是Value类型，则直接返回；
      * 否则创建一个新的{@link CustomizeTypedValueAccessor}实例，
      * 设置源对象的值和类型描述符，并应用目标类型描述符进行映射转换。
-     * </p>
      *
      * @param source 源对象
      * @param sourceTypeDescriptor 源对象的类型描述符
@@ -129,7 +123,6 @@ public class ValueConverter extends AbstractConditionalConverter implements Reve
      * 如果未找到但Value是{@link TypedValue}的实例，
      * 则使用其map方法进行类型转换；
      * 否则抛出{@link ConverterNotFoundException}。
-     * </p>
      *
      * @param source 源Value对象
      * @param sourceTypeDescriptor 源Value的类型描述符

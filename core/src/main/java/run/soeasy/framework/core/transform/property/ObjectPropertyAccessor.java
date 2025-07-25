@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
  * <p>
  * 该类采用装饰器模式包装属性描述符（{@code T}），并绑定到特定目标对象，
  * 使属性描述符能够具体操作目标对象的属性值，实现属性访问的解耦和复用。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -19,13 +18,11 @@ import lombok.RequiredArgsConstructor;
  *   <li>装饰器模式：继承{@link PropertyWrapper}，可在不修改原属性的前提下扩展功能</li>
  *   <li>类型安全：通过泛型约束保证属性描述符的类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code T}：属性描述符类型，需实现{@link Property}接口</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -33,7 +30,6 @@ import lombok.RequiredArgsConstructor;
  *   <li>数据绑定：将外部数据（如配置、表单）映射到对象属性</li>
  *   <li>属性代理：实现属性访问的拦截和增强（如日志记录、权限控制）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyAccessor
@@ -56,7 +52,6 @@ public class ObjectPropertyAccessor<T extends Property> implements PropertyAcces
      * <p>
      * 该方法调用源属性的{@link Property#readFrom(Object)}方法，
      * 从绑定的目标对象中读取属性值。
-     * </p>
      * 
      * @return 属性值，若属性不可读或值为null则返回null
      */
@@ -70,7 +65,6 @@ public class ObjectPropertyAccessor<T extends Property> implements PropertyAcces
      * <p>
      * 该方法调用源属性的{@link Property#writeTo(Object, Object)}方法，
      * 将值写入绑定的目标对象的对应属性。
-     * </p>
      * 
      * @param value 要设置的属性值
      * @throws UnsupportedOperationException 若属性不可写

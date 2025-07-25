@@ -17,13 +17,12 @@ import run.soeasy.framework.core.execute.ParameterTemplate;
 import run.soeasy.framework.core.transform.property.PropertyDescriptor;
 
 /**
- * 可执行元素参数模板实现类，实现{@link ParameterTemplate}和{@link Provider<PropertyDescriptor>}接口，
+ * 可执行元素参数模板实现类，实现{@link ParameterTemplate}和{@link Provider}接口，
  * 用于封装可执行元素（Method/Constructor）的参数元数据，提供参数描述符的统一访问和参数名称的动态发现能力。
  * <p>
  * 该类通过反射获取可执行元素的参数信息，并结合{@link ParameterNameDiscoverer}解析参数名称，
  * 将参数转换为{@link PropertyDescriptor}体系，支持参数类型、名称等元数据的延迟加载和缓存，
  * 适用于参数绑定、反射调用、属性映射等需要参数元数据的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -33,7 +32,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  *   <li>线程安全缓存：使用双重检查锁实现参数描述符的线程安全加载和缓存</li>
  *   <li>可配置策略：支持自定义{@link ParameterNameDiscoverer}实现，灵活适配不同环境</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -43,7 +41,6 @@ import run.soeasy.framework.core.transform.property.PropertyDescriptor;
  *   <li>参数校验：基于参数类型和名称实现参数校验逻辑</li>
  *   <li>动态代理：生成包含参数元数据的代理方法</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ParameterTemplate
@@ -100,7 +97,6 @@ public class ExecutableParameterTemplate implements ParameterTemplate, Provider<
      *   <li>将参数转换为{@link ExecutableParameterDescriptor}并应用名称</li>
      *   <li>缓存结果供后续访问</li>
      * </ol>
-     * </p>
      * 
      * @param force 是否强制刷新缓存，true时忽略当前缓存状态
      * @return 是否成功加载新的参数描述符

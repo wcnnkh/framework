@@ -14,7 +14,6 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  * 该函数式接口继承自{@link Include}、{@link RegistrationWrapper}和{@link ProviderWrapper}，
  * 允许对服务包含实例进行包装转换，同时保持注册生命周期管理和服务提供能力，
  * 适用于需要对服务集合进行代理、增强或转换的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -9,7 +9,6 @@ import run.soeasy.framework.core.collection.Provider;
  * 该函数式接口定义了根据服务类型创建对应{@link Provider}的契约，
  * 支持通过不同实现策略（如JDK SPI、Spring容器等）动态获取服务实例，
  * 适用于需要解耦服务获取逻辑的场景。
- * </p>
  *
  * @author soeasy.run
  * @see Provider

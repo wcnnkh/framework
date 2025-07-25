@@ -9,7 +9,6 @@ import run.soeasy.framework.core.transform.property.PropertyTemplate;
  * <p>
  * 该接口定义了参数集合的标准访问方式，支持按顺序访问参数描述符，
  * 是{@link ExecutableMetadata}等可执行元素元数据接口的核心组成部分。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -18,13 +17,11 @@ import run.soeasy.framework.core.transform.property.PropertyTemplate;
  *   <li>可执行元素关联：作为可执行元素元数据的参数描述部分</li>
  *   <li>继承基础功能：继承{@link PropertyTemplate}的所有属性访问能力</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>元素类型为{@link PropertyDescriptor}，每个元素描述一个参数的元数据</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -33,7 +30,6 @@ import run.soeasy.framework.core.transform.property.PropertyTemplate;
  *   <li>动态代理：生成代理时获取原始方法的参数结构</li>
  *   <li>文档生成：基于参数模板自动生成API文档</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyTemplate

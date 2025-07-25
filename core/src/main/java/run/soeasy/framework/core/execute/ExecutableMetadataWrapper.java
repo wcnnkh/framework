@@ -18,7 +18,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>方法转发：默认方法将调用转发给被包装的源可执行元数据，保持原始行为</li>
  *   <li>类型安全：通过泛型约束确保包装器与被包装对象的类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>

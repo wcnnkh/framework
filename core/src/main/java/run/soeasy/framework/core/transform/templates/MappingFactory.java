@@ -12,10 +12,9 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>{@code S} 表示源对象类型</li>
  *   <li>{@code K} 表示映射键类型</li>
  *   <li>{@code V} 表示映射值类型（需实现{@link TypedValueAccessor}）</li>
- *   <li>{@code T} 表示生成的映射类型（需实现{@link Mapping<K, V>}）</li>
+ *   <li>{@code T} 表示生成的映射类型（需实现{@link Mapping}）</li>
  * </ul>
  * 适用于需要根据运行时类型动态生成映射规则的场景，如对象转换、数据映射框架等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -23,7 +22,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>函数式设计：作为函数式接口，支持通过lambda表达式快速实现</li>
  *   <li>默认支持判断：{@link #hasMapping(TypeDescriptor)}提供默认实现</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -32,12 +30,11 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>线程安全：实现类需自行保证映射创建的线程安全性</li>
  *   <li>空值处理：未对源对象{@code source}进行空值校验，实现类需自行处理</li>
  * </ul>
- * </p>
  *
  * @param <S> 源对象类型
  * @param <K> 映射键类型
  * @param <V> 映射值类型，需实现{@link TypedValueAccessor}
- * @param <T> 生成的映射类型，需实现{@link Mapping<K, V>}
+ * @param <T> 生成的映射类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see Mapping

@@ -13,7 +13,6 @@ import run.soeasy.framework.core.spi.ServiceMap;
  * 该类继承自{@link ServiceMap}，维护一个从目标类型到映射工厂的映射关系，
  * 支持根据给定的源对象和目标类型描述符动态查找并调用匹配的映射工厂，
  * 生成对应的映射实例。适用于需要根据不同目标类型采用不同映射策略的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -22,7 +21,6 @@ import run.soeasy.framework.core.spi.ServiceMap;
  *   <li>类型兼容匹配：支持查找与目标类型兼容的工厂（通过{@code assignableFrom}）</li>
  *   <li>泛型类型安全：通过泛型约束确保映射工厂和映射实例的类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -32,11 +30,10 @@ import run.soeasy.framework.core.spi.ServiceMap;
  *   <li>线程安全：未明确保证线程安全，多线程环境下注册/查找可能存在竞争</li>
  *   <li>异常处理：未对工厂返回null的情况进行处理</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
- * @param <T> 映射类型，必须实现{@link Mapping<K, V>}
+ * @param <T> 映射类型，必须实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see MappingFactory
@@ -53,7 +50,6 @@ public class MappingProvider<K, V extends TypedValueAccessor, T extends Mapping<
      * <p>
      * 查找与目标类型兼容的第一个映射工厂，并使用该工厂创建映射实例。
      * 若未找到匹配的工厂，返回null。
-     * </p>
      * 
      * @param source 源对象，不可为null
      * @param requiredType 目标类型描述符，不可为null
@@ -74,7 +70,6 @@ public class MappingProvider<K, V extends TypedValueAccessor, T extends Mapping<
      * 判断是否存在支持创建指定目标类型映射的工厂
      * <p>
      * 检查是否存在与目标类型兼容的映射工厂。
-     * </p>
      * 
      * @param requiredType 目标类型描述符，不可为null
      * @return 存在匹配的工厂返回true，否则false
@@ -90,7 +85,6 @@ public class MappingProvider<K, V extends TypedValueAccessor, T extends Mapping<
      * <p>
      * 将映射工厂注册到服务映射中，关联到指定的源类型。
      * 注意：该方法使用了未检查的类型转换，调用者需确保类型安全。
-     * </p>
      * 
      * @param <S> 源类型
      * @param requriedType 源类型的Class对象，不可为null

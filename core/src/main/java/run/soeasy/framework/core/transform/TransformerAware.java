@@ -5,7 +5,6 @@ package run.soeasy.framework.core.transform;
  * <p>
  * 实现该接口的类可以通过{@link #setTransformer(Transformer)}方法
  * 接收外部传入的转换器，从而在处理对象转换时使用该转换器。 适用于需要动态配置转换器的场景，如数据处理组件、对象映射器等。
- * </p>
  *
  * <p>
  * <b>核心特性：</b>
@@ -14,7 +13,6 @@ package run.soeasy.framework.core.transform;
  * <li>动态配置：允许在运行时动态设置转换器，提高组件灵活性</li>
  * <li>依赖解耦：通过接口解耦组件与具体转换器实现</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see Transformer

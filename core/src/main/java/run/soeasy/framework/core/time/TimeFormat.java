@@ -16,8 +16,7 @@ import run.soeasy.framework.core.convert.strings.StringConverter;
  * 时间格式转换器，实现字符串与日期对象的双向转换，支持自定义格式模式和区域设置。
  * <p>
  * 该类提供了线程不安全的日期格式转换功能，建议在需要频繁转换的场景中使用线程安全的替代方案或实例池。
- * 实现了{@link StringConverter<Date>}接口，可集成到框架的类型转换系统中。
- * </p>
+ * 实现了{@link StringConverter}接口，可集成到框架的类型转换系统中。
  *
  * <p><b>核心特性：</b>
  * <ul>

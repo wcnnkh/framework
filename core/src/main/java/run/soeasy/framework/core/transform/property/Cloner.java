@@ -25,7 +25,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>通过{@link MultiableInstanceFactory}支持多种实例创建方式，提升克隆兼容性</li>
  *   <li>区分基本类型与对象类型，对基本类型直接返回原值，对象类型则执行属性级复制</li>
  * </ul>
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -35,7 +34,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>反射字段访问：自动获取类的所有字段（包括接口私有变量）进行复制</li>
  *   <li>类型兼容判断：通过{@link #canConvert(TypeDescriptor, TypeDescriptor)}验证类型可克隆性</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -44,7 +42,6 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *   <li>集合元素的克隆，确保元素修改不影响原集合</li>
  *   <li>需要保留历史版本的对象复制，如命令模式中的命令对象</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyMapper
@@ -61,7 +58,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      * 实例工厂支持{@link InstanceFactorySupporteds#ALLOCATE}（分配内存）和
      * {@link InstanceFactorySupporteds#SERIALIZATION}（序列化）两种创建方式，
      * 以适应不同场景的对象实例化需求。
-     * </p>
      */
     public Cloner() {
         setInstanceFactory(new MultiableInstanceFactory(InstanceFactorySupporteds.ALLOCATE,
@@ -75,7 +71,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      * 过滤掉静态字段，并将每个字段包装为{@link ReflectionField}。
      * <p>
      * 特别处理：使用{@code withAll()}包含接口中的私有变量（适用于Java 9+接口私有成员）。
-     * </p>
      * 
      * @param requiredClass 目标类，不可为null
      * @return 类成员加载器，包含所有非静态字段
@@ -97,7 +92,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      * <p>
      * 实现为检查源类型是否可分配给目标类型（即源类型是目标类型的子类型），
      * 用于验证对象克隆的类型兼容性。
-     * </p>
      * 
      * @param sourceTypeDescriptor 源类型描述符，不可为null
      * @param targetTypeDescriptor 目标类型描述符，不可为null
@@ -119,7 +113,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      *   <li>根据目标类型窄化类型描述符</li>
      *   <li>调用重载方法执行具体克隆逻辑</li>
      * </ol>
-     * </p>
      * 
      * @param source 源对象，不可为null
      * @param sourceTypeDescriptor 源类型描述符，不可为null
@@ -168,7 +161,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      *   <li>对象数组创建新数组并递归克隆每个元素</li>
      *   <li>普通对象通过父类映射逻辑复制属性</li>
      * </ul>
-     * </p>
      * 
      * @param source 源对象，不可为null
      * @param sourceTypeDescriptor 源类型描述符，不可为null
@@ -216,7 +208,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      * <p>
      * 扩展父类逻辑，要求源类型与目标类型至少有一方是另一方的子类型，
      * 同时满足父类的转换条件，确保克隆操作的类型安全性。
-     * </p>
      * 
      * @param sourceTypeDescriptor 源类型描述符，不可为null
      * @param targetTypeDescriptor 目标类型描述符，不可为null
@@ -239,7 +230,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      *   <li>逐个元素克隆并设置到目标数组</li>
      * </ol>
      * 非数组情况委托给父类处理。
-     * </p>
      * 
      * @param source 源对象，不可为null
      * @param sourceTypeDescriptor 源类型描述符，不可为null
@@ -273,7 +263,6 @@ public class Cloner extends PropertyMapper<ReflectionField> {
      *   <li>deep=true：设置克隆器的转换器为自身，实现深拷贝</li>
      *   <li>deep=false：使用默认转换器，实现浅拷贝</li>
      * </ul>
-     * </p>
      * 
      * @param <T> 源对象类型
      * @param source 源对象，不可为null

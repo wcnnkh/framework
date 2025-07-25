@@ -31,7 +31,7 @@ import lombok.NonNull;
  *
  * @param <S> 源元素类型
  * @param <T> 目标元素类型
- * @param <W> 源提供者类型，必须实现Provider<S>接口
+ * @param <W> 源提供者类型，必须实现Provider&lt;S&gt;接口
  * @see ConvertedElements
  * @see Provider
  * @see Function

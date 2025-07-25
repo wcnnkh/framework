@@ -10,7 +10,6 @@ import run.soeasy.framework.core.type.ClassUtils;
  * <p>
  * 该接口是框架中反射调用的核心抽象，通过统一的调用接口屏蔽了方法和构造函数的差异，
  * 使调用逻辑更加简洁和统一，同时提供了参数类型匹配和动态调用的能力。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -19,7 +18,6 @@ import run.soeasy.framework.core.type.ClassUtils;
  *   <li>动态执行：基于反射机制实现方法的动态调用</li>
  *   <li>异常处理：直接抛出调用过程中产生的原始异常，便于上层处理</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -29,7 +27,6 @@ import run.soeasy.framework.core.type.ClassUtils;
  *   <li>依赖注入：通过反射调用构造函数或设置方法完成对象初始化</li>
  *   <li>命令模式：将方法调用封装为命令对象，支持撤销、记录等操作</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ExecutableDescriptor
@@ -43,7 +40,6 @@ public interface InvokableTemplate extends ExecutableDescriptor {
      * <p>
      * 该默认实现调用{@link #invoke(Object, Class[], Object...)}方法，
      * 传入空参数类型数组和空参数值数组，适用于无参数的方法或构造函数调用。
-     * </p>
      * 
      * @param target 目标对象，对于静态方法可为null
      * @return 可执行元素的调用结果
@@ -64,7 +60,6 @@ public interface InvokableTemplate extends ExecutableDescriptor {
      * </ul>
      * 调用前会检查参数类型与可执行元素的兼容性（通过{@link #canExecuted(Class[])}方法），
      * 若不兼容则可能抛出异常（具体实现决定）。
-     * </p>
      * 
      * @param target 目标对象，对于静态方法可为null
      * @param parameterTypes 参数类型数组，不可为null

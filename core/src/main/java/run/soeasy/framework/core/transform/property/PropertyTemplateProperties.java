@@ -15,7 +15,6 @@ import run.soeasy.framework.core.transform.templates.TemplateProperties;
  * <p>
  * 该类采用装饰器模式包装属性模板，通过映射函数将每个属性描述符转换为属性访问器，
  * 适用于需要统一访问和操作属性的场景，如对象属性映射、数据绑定等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -24,15 +23,13 @@ import run.soeasy.framework.core.transform.templates.TemplateProperties;
  *   <li>流式操作：实现{@link Iterable}和{@link Stream}接口，支持lambda表达式和流式处理</li>
  *   <li>类型安全：通过泛型确保属性描述符和访问器的类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code S}：属性描述符类型，需实现{@link PropertyDescriptor}</li>
- *   <li>{@code T}：属性模板类型，需实现{@link PropertyTemplate<S>}</li>
+ *   <li>{@code T}：属性模板类型，需实现{@link PropertyTemplate}</li>
  *   <li>{@code V}：属性访问器类型，需实现{@link PropertyAccessor}</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see PropertyMapping
@@ -58,7 +55,6 @@ public class PropertyTemplateProperties<S extends PropertyDescriptor, T extends 
      * <p>
      * 该迭代器会遍历属性模板中的所有描述符，
      * 并通过映射函数将每个描述符转换为对应的属性访问器。
-     * </p>
      * 
      * @return 属性访问器的迭代器
      */
@@ -73,7 +69,6 @@ public class PropertyTemplateProperties<S extends PropertyDescriptor, T extends 
      * <p>
      * 该流会映射属性模板中的所有描述符为对应的属性访问器，
      * 支持惰性操作和并行处理。
-     * </p>
      * 
      * @return 属性访问器的流
      */
@@ -87,7 +82,6 @@ public class PropertyTemplateProperties<S extends PropertyDescriptor, T extends 
      * <p>
      * 通过索引从属性模板中获取描述符，
      * 并使用映射函数将其转换为对应的属性访问器。
-     * </p>
      * 
      * @param index 索引位置
      * @return 对应位置的属性访问器，若索引超出范围则返回null
@@ -104,7 +98,6 @@ public class PropertyTemplateProperties<S extends PropertyDescriptor, T extends 
      * <p>
      * 通过名称从属性模板中获取唯一描述符，
      * 并使用映射函数将其转换为对应的属性访问器。
-     * </p>
      * 
      * @param name 属性名称
      * @return 对应名称的属性访问器，若不存在则返回null
@@ -122,7 +115,6 @@ public class PropertyTemplateProperties<S extends PropertyDescriptor, T extends 
      * 该方法会遍历所有属性描述符，
      * 先将其转换为属性访问器，再通过类型映射函数获取类型，
      * 最终返回类型数组。
-     * </p>
      * 
      * @param typeMapper 将属性访问器映射为类型的函数
      * @return 类型数组，顺序与属性顺序一致

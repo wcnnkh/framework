@@ -15,7 +15,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>执行额外的验证或转换逻辑</li>
  * </ul>
  * 所有过滤器执行完毕后，最终由内部的基础映射器执行实际的映射操作。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -24,7 +23,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>延迟执行：过滤器链在实际调用doMapping时才会执行</li>
  *   <li>类型安全：值类型{@code V}需实现{@link TypedValueAccessor}</li>
  * </ul>
- * </p>
  *
  * <p><b>使用示例：</b>
  * <pre>{@code
@@ -34,11 +32,10 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * // 临时添加额外过滤器
  * mapper.doMapping(sourceContext, targetContext, extraFilters);
  * }</pre>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
- * @param <T> 映射上下文的类型，需实现{@link Mapping<K, V>}
+ * @param <T> 映射上下文的类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
  * @see Mapper
@@ -62,7 +59,6 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
      * <p>
      * 该方法创建一个{@link ChainMapper}实例，将过滤器集合转换为迭代器，
      * 并设置基础映射器为最终处理器，然后执行链式映射处理。
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null
@@ -81,7 +77,6 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
      * <p>
      * 该方法创建一个新的{@link FilterableMapper}实例，将传入的过滤器集合与当前实例的过滤器组合，
      * 并将当前实例作为基础映射器，实现临时添加额外过滤器的功能。
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null

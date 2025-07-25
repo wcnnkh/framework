@@ -13,22 +13,18 @@ import run.soeasy.framework.core.exchange.container.map.DefaultMapContainer;
  * <p>
  * 该类采用读写锁机制实现并发控制，在多线程环境下保证数据一致性和高性能访问。
  * 当请求的模板不存在时，可通过配置的{@link ObjectTemplateFactory}动态生成并注册模板。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
  *   <li>模板缓存：基于Map结构缓存已注册的对象模板，提高重复访问效率</li>
  *   <li>线程安全：使用读写锁（{@link ReentrantReadWriteLock}）保证并发环境下的数据一致性</li>
  *   <li>懒加载：支持在首次访问时通过工厂动态生成模板并注册</li>
- *   <li>可配置性：通过{@link #setObjectTemplateFactory(ObjectTemplateFactory)}设置模板生成策略</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code E}：属性类型，需实现{@link Property}接口</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -36,7 +32,6 @@ import run.soeasy.framework.core.exchange.container.map.DefaultMapContainer;
  *   <li>多线程环境：在并发场景下安全地管理和获取对象模板</li>
  *   <li>动态扩展：支持运行时注册新的对象模板</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ObjectTemplateFactory
@@ -55,7 +50,6 @@ public class ObjectTemplateRegistry<E extends Property> extends DefaultMapContai
      * 构造对象模板注册表
      * <p>
      * 初始化读写锁以支持并发操作。
-     * </p>
      */
     public ObjectTemplateRegistry() {
         setReadWriteLock(new ReentrantReadWriteLock());
@@ -69,7 +63,6 @@ public class ObjectTemplateRegistry<E extends Property> extends DefaultMapContai
      *   <li>若存在则直接返回</li>
      *   <li>若不存在且配置了工厂，则使用双重检查锁定机制创建并注册模板</li>
      * </ol>
-     * </p>
      * 
      * @param objectClass 对象类，不可为null
      * @return 对应的属性模板，若不存在且无法生成则返回null

@@ -11,7 +11,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  * <p>
  * 该类采用责任链模式，依次尝试每个注册的发现器，返回第一个成功获取参数名称的结果，
  * 实现了参数名称解析的可插拔性和策略 fallback 机制，适用于需要兼容多种参数解析方式的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -20,7 +19,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  *   <li>可配置扩展：通过SPI机制动态加载发现器实现</li>
  *   <li>策略 fallback：当前策略失败时自动尝试下一个策略</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -29,7 +27,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  *   <li>复杂项目适配：混合使用不同字节码增强工具的项目</li>
  *   <li>动态策略切换：根据运行时环境动态选择最优解析策略</li>
  * </ul>
- * </p>
  *
  * <p><b>解析顺序：</b>
  * <ol>
@@ -37,7 +34,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  *   <li>其次使用SPI机制加载的发现器（META-INF/services下的配置）</li>
  *   <li>最终返回首个成功解析参数名的结果</li>
  * </ol>
- * </p>
  *
  * @author soeasy.run
  * @see ParameterNameDiscoverer
@@ -51,7 +47,6 @@ public class ConfigurableParameterNameDiscoverer extends ConfigurableServices<Pa
      * 构造函数，初始化可配置参数名称发现器
      * <p>
      * 自动设置服务类为{@link ParameterNameDiscoverer}，以便通过SPI机制加载实现类
-     * </p>
      */
     public ConfigurableParameterNameDiscoverer() {
         setServiceClass(ParameterNameDiscoverer.class);
@@ -66,7 +61,6 @@ public class ConfigurableParameterNameDiscoverer extends ConfigurableServices<Pa
      *   <li>发现器调用顺序与注册顺序一致</li>
      *   <li>支持通过{@link #register(Object)}动态添加发现器</li>
      * </ul>
-     * </p>
      * 
      * @param executable 可执行元素（Method/Constructor），不可为null
      * @return 参数字符串数组，所有发现器都失败时返回null

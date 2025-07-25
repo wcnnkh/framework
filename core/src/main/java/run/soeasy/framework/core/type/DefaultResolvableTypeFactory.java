@@ -39,7 +39,7 @@ import lombok.NonNull;
  * ResolvableType resolvableType = factory.createResolvableType(listOfStringType, null);
  * 
  * // 获取原始类型
- * Class<?> rawType = resolvableType.getRawType();
+ * Class&lt;?&gt; rawType = resolvableType.getRawType();
  * 
  * // 获取泛型参数
  * ResolvableType[] generics = resolvableType.getGenerics();

@@ -18,14 +18,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>链式访问：实现{@link TypedValue#value()}方法，支持链式操作</li>
  * </ul>
  * 
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：非线程安全实现，多线程环境下可能出现数据竞争</li>
- *   <li>类型转换异常：转换过程中可能抛出{@link run.soeasy.framework.core.convert.ConversionException}，未被捕获</li>
- *   <li>递归转换风险：若值本身是{@link TypedValueAccessor}，可能导致递归转换</li>
- *   <li>空值处理：当值为null时，类型推断可能失败</li>
- * </ul>
- * 
  * @author soeasy.run
  * @see TypedValueAccessor
  * @see Converter

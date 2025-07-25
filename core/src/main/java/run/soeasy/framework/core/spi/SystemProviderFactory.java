@@ -8,7 +8,6 @@ import run.soeasy.framework.core.collection.Provider;
  * <p>
  * 该工厂继承自{@link ConfigurableProviderFactory}，优先使用配置的服务发现策略，
  * 若未找到则回退到JDK原生{@link NativeProvider}实现，确保服务发现的兼容性和可扩展性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

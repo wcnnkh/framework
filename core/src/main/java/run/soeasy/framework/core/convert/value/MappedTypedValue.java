@@ -11,7 +11,6 @@ import run.soeasy.framework.core.convert.support.SystemConversionService;
  * <p>
  * 该类实现了{@link TypedValueWrapper}接口，通过指定的转换器将源类型化值转换为目标类型，
  * 支持类型安全的转换操作，并提供了默认的系统转换服务作为后备转换方案。
- * </p>
  *
  * <p><b>核心功能：</b>
  * <ul>
@@ -19,7 +18,6 @@ import run.soeasy.framework.core.convert.support.SystemConversionService;
  *   <li>后备转换机制：当指定转换器不支持时，使用系统转换服务</li>
  *   <li>透明包装：实现{@link TypedValueWrapper}接口，保持接口透明性</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -28,7 +26,6 @@ import run.soeasy.framework.core.convert.support.SystemConversionService;
  *   <li>异常处理：转换过程中未捕获异常，可能导致上层调用异常</li>
  *   <li>空值处理：未显式处理源值为null的场景</li>
  * </ul>
- * </p>
  *
  * @param <W> 被包装的源类型化值类型，需实现{@link TypedValue}
  * 

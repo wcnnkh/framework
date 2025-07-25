@@ -20,7 +20,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>当过滤器链执行完毕后，若存在最终映射器则委托其处理</li>
  * </ol>
  * 适用于需要分阶段处理映射逻辑的复杂场景，如数据验证、转换、拦截等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -29,7 +28,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>最终处理器：过滤器链执行完毕后可委托给最终映射器</li>
  *   <li>类型安全：值类型{@code V}需实现{@link TypedValueAccessor}</li>
  * </ul>
- * </p>
  *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
@@ -63,7 +61,6 @@ class ChainMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> impl
      *   <li>当过滤器链执行完毕且存在最终映射器时，委托其处理</li>
      *   <li>无过滤器且无最终映射器时返回false</li>
      * </ol>
-     * </p>
      * 
      * @param sourceContext 源映射上下文，不可为null
      * @param targetContext 目标映射上下文，不可为null

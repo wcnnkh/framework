@@ -6,7 +6,6 @@ package run.soeasy.framework.core.transform.property;
  * <p>
  * 该类采用装饰器模式包装源类型化属性，将属性访问器组织为Map结构，
  * 适用于需要通过键快速检索类型化属性的场景，如对象属性映射转换、动态属性访问等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -15,13 +14,11 @@ package run.soeasy.framework.core.transform.property;
  *   <li>装饰器模式：包装源类型化属性，保持原有功能的同时提供Map访问方式</li>
  *   <li>实例复用：{@link #asMap(boolean)}方法会复用实例，避免重复创建</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code W}：被包装的源类型化属性类型，需实现{@link TypedProperties}</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TypedProperties
@@ -49,7 +46,6 @@ public class MapTypedProperties<W extends TypedProperties> extends MapPropertyMa
      *   <li>若当前唯一性设置与参数一致，直接返回自身</li>
      *   <li>否则调用源属性的{@link TypedProperties#asMap(boolean)}方法</li>
      * </ul>
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return Map形式的类型化属性实例

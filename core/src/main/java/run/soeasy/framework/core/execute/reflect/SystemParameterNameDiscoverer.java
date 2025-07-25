@@ -6,7 +6,6 @@ package run.soeasy.framework.core.execute.reflect;
  * <p>
  * 该类在初始化时自动注册{@link NativeParameterNameDiscoverer}作为默认参数解析策略，
  * 支持通过父类的可配置服务机制动态添加其他解析策略，形成"原生优先"的参数名称发现链。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -15,7 +14,6 @@ package run.soeasy.framework.core.execute.reflect;
  *   <li>可扩展配置：继承自{@link ConfigurableParameterNameDiscoverer}，支持添加其他解析策略</li>
  *   <li>线程安全：使用双重检查锁实现单例初始化，确保多线程环境下的安全</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -24,7 +22,6 @@ package run.soeasy.framework.core.execute.reflect;
  *   <li>多策略兼容：在原生参数解析基础上，可动态添加其他解析策略</li>
  *   <li>性能敏感：单例模式避免重复创建解析器实例，提升性能</li>
  * </ul>
- * </p>
  *
  * <p><b>实现细节：</b>
  * <ul>
@@ -32,7 +29,6 @@ package run.soeasy.framework.core.execute.reflect;
  *   <li>双重检查锁：在单例初始化时使用同步块，兼顾性能与线程安全</li>
  *   <li>默认策略：优先使用Java 8+原生参数解析，保证现代JDK环境的兼容性</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ConfigurableParameterNameDiscoverer
@@ -57,7 +53,6 @@ public final class SystemParameterNameDiscoverer extends ConfigurableParameterNa
      *   <li>多线程环境下仅创建一个实例</li>
      *   <li>初始化完成后无需同步开销</li>
      * </ol>
-     * </p>
      * 
      * @return 系统参数名称发现器实例
      */

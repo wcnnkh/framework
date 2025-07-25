@@ -29,7 +29,7 @@ import lombok.NonNull;
  * Version original = new SemanticVersion("1.0.0");
  * 
  * // 包装版本并添加日志记录
- * VersionWrapper&lt;Version&gt; logged = version -> {
+ * VersionWrapper&lt;Version&gt; logged = version -&gt; {
  *     System.out.println("Compare version: " + version.getAsString());
  *     return original;
  * };

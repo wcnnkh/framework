@@ -34,13 +34,13 @@ import run.soeasy.framework.core.function.ValueThrowingOptional;
  * <p>示例用法：
  * <pre class="code">
  * // 创建包含100的上边界
- * Bound<Integer> upper = Bound.inclusive(100);
+ * Bound&lt;Integer&gt; upper = Bound.inclusive(100);
  * 
  * // 检查50是否小于等于100
  * boolean contains = upper.leftContains(50, Integer::compareTo);
  * 
  * // 创建不包含0的下边界
- * Bound<Long> lower = Bound.exclusive(0L);
+ * Bound&lt;Long&gt; lower = Bound.exclusive(0L);
  * 
  * // 比较两个边界
  * int result = upper.compare(lower, Integer::compareTo);
@@ -158,7 +158,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建包含指定值的边界实例（即<=或>=）。
+     * 创建包含指定值的边界实例（即&lt;=或&gt;=）。
      *
      * @param value 边界值，不可为null
      * @param <T>   边界值类型
@@ -169,7 +169,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建包含指定int值的边界实例（即<=或>=）。
+     * 创建包含指定int值的边界实例（即&lt;=或&gt;=）。
      *
      * @param value 边界值
      * @return 包含边界实例
@@ -179,7 +179,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建包含指定long值的边界实例（即<=或>=）。
+     * 创建包含指定long值的边界实例（即&lt;=或&gt;=）。
      *
      * @param value 边界值
      * @return 包含边界实例
@@ -189,7 +189,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建包含指定float值的边界实例（即<=或>=）。
+     * 创建包含指定float值的边界实例（即&lt;=或&gt;=）。
      *
      * @param value 边界值
      * @return 包含边界实例
@@ -199,7 +199,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建包含指定double值的边界实例（即<=或>=）。
+     * 创建包含指定double值的边界实例（即&lt;=或&gt;=）。
      *
      * @param value 边界值
      * @return 包含边界实例
@@ -209,7 +209,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建不包含指定值的边界实例（即<或>）。
+     * 创建不包含指定值的边界实例（即&lt;或&gt;）。
      *
      * @param value 边界值，不可为null
      * @param <T>   边界值类型
@@ -220,7 +220,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建不包含指定int值的边界实例（即<或>）。
+     * 创建不包含指定int值的边界实例（即&lt;或&gt;）。
      *
      * @param value 边界值
      * @return 不包含边界实例
@@ -230,7 +230,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建不包含指定long值的边界实例（即<或>）。
+     * 创建不包含指定long值的边界实例（即&lt;或&gt;）。
      *
      * @param value 边界值
      * @return 不包含边界实例
@@ -240,7 +240,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建不包含指定float值的边界实例（即<或>）。
+     * 创建不包含指定float值的边界实例（即&lt;或&gt;）。
      *
      * @param value 边界值
      * @return 不包含边界实例
@@ -250,7 +250,7 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     }
 
     /**
-     * 创建不包含指定double值的边界实例（即<或>）。
+     * 创建不包含指定double值的边界实例（即&lt;或&gt;）。
      *
      * @param value 边界值
      * @return 不包含边界实例

@@ -8,7 +8,6 @@ import run.soeasy.framework.core.collection.Provider;
  * <p>
  * 该类继承自{@link Services}，将多个{@link ProviderFactory}组合为一个复合工厂，
  * 实现服务提供者的链式查找，适用于需要整合多种服务发现机制的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

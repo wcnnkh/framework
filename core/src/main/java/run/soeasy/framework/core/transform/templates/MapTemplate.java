@@ -10,7 +10,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  * <p>
  * 该类通过包装源模板实例，将其转换为基于Map的实现，提供快速的键值访问能力。
  * 当启用唯一性约束时，插入重复键将覆盖原有值；否则允许存在重复键。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -19,7 +18,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>包装器模式：保留对源模板的引用，支持链式操作</li>
  *   <li>集合转换：可根据需要转换回其他集合形式</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -28,10 +26,9 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>线程安全：未实现线程安全机制，多线程环境下需外部同步</li>
  *   <li>空值处理：允许存储null值，可能导致空指针异常</li>
  * </ul>
- * </p>
  *
  * @param <E> 模板元素的类型，必须实现{@link AccessibleDescriptor}接口
- * @param <W> 源模板的类型，需实现{@link Template<E>}
+ * @param <W> 源模板的类型，需实现{@link Template}
  * 
  * @author soeasy.run
  * @see MapDictionary

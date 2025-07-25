@@ -16,7 +16,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  * <p>
  * 该访问器通过包装Map实例和键，提供对Map条目的统一访问接口，
  * 适用于需要将Map条目视为独立属性进行操作的场景，如数据绑定、表单处理等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -25,7 +24,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>读写支持：同时提供get和set操作，满足双向数据交互需求</li>
  *   <li>空值安全：通过{@link #isReadable()}方法判断条目是否存在</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -34,7 +32,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>动态属性访问（如配置项的读取与修改）</li>
  *   <li>数据转换过程中的Map条目处理</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TypedValueAccessor
@@ -67,7 +64,6 @@ public class MapEntryAccessor implements TypedValueAccessor {
      * <p>
      * 该方法从Map中获取指定键的值，若值存在则使用转换器将其转换为Map值类型，
      * 若值不存在或转换失败则抛出异常。
-     * </p>
      * 
      * @return 转换后的Map条目值
      * @throws ConversionException 当值存在但类型转换失败时抛出
@@ -83,7 +79,6 @@ public class MapEntryAccessor implements TypedValueAccessor {
      * <p>
      * 该方法将输入值转换为Map值类型后，设置到Map的指定键位置，
      * 若Map不支持修改操作则抛出异常。
-     * </p>
      * 
      * @param value 要设置的值
      * @throws UnsupportedOperationException 当Map不支持修改操作时抛出
@@ -100,7 +95,6 @@ public class MapEntryAccessor implements TypedValueAccessor {
      * <p>
      * 该方法通过检查Map是否包含指定键来判断条目是否可读，
      * 与{@link #get()}方法配合使用可避免空指针异常。
-     * </p>
      * 
      * @return 若Map包含指定键返回true，否则返回false
      */
@@ -114,7 +108,6 @@ public class MapEntryAccessor implements TypedValueAccessor {
      * <p>
      * 该方法始终返回true，因为Map理论上支持写操作，
      * 实际是否可写由Map实现决定（如不可变Map会在set时抛出异常）。
-     * </p>
      * 
      * @return 始终返回true
      */
@@ -127,7 +120,6 @@ public class MapEntryAccessor implements TypedValueAccessor {
      * 获取期望的值类型描述符
      * <p>
      * 返回Map值类型的描述符，用于指示set操作时期望的值类型。
-     * </p>
      * 
      * @return Map值类型的描述符
      */
@@ -140,7 +132,6 @@ public class MapEntryAccessor implements TypedValueAccessor {
      * 获取返回值的类型描述符
      * <p>
      * 返回Map值类型的描述符，用于指示get操作返回值的类型。
-     * </p>
      * 
      * @return Map值类型的描述符
      */

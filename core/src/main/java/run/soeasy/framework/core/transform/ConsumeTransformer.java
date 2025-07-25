@@ -14,7 +14,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  * <p>
  * 该转换器支持将源类型{S}的对象属性值消费并应用到目标类型{T}的对象，
  * 适用于需要自定义属性转换逻辑的简单场景，如函数式转换或属性映射。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -22,7 +21,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>函数式转换：使用{@link BiConsumer}定义具体的属性转换逻辑</li>
  *   <li>条件判断：基于预定义的类型映射实现转换可行性判断</li>
  * </ul>
- * </p>
  *
  * <p><b>潜在问题：</b>
  * <ul>
@@ -31,7 +29,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>线程安全：未实现线程安全机制，多线程环境下共享实例可能引发并发问题</li>
  *   <li>异常封装：转换过程中BiConsumer抛出的异常会直接向上传播，未做封装处理</li>
  * </ul>
- * </p>
  *
  * @param <S> 源对象类型
  * @param <T> 目标对象类型

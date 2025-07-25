@@ -8,7 +8,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  * <p>
  * 该类提供了对泛型类型数据的访问能力，支持获取和设置值，同时维护类型描述符信息。
  * 当类型描述符未显式设置时，会根据当前值动态推断类型。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -17,16 +16,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>值访问控制：实现了数据的读写操作接口</li>
  *   <li>值包装转换：可将当前数据转换为{@link TypedValue}实例</li>
  * </ul>
- * </p>
- *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：非线程安全实现，不适用于多线程环境</li>
- *   <li>类型描述符：若值为null且未显式设置类型描述符，可能导致类型推断错误</li>
- *   <li>空值处理：未对设置null值进行特殊处理，可能影响后续类型推断</li>
- *   <li>不可变类型：对于不可变类型，set操作可能导致数据不一致</li>
- * </ul>
- * </p>
  *
  * @param <T> 数据的泛型类型
  * 

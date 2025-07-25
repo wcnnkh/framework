@@ -28,7 +28,7 @@ public class InheritableScheduledExecutorService<A, B, I extends Inheriter<A, B>
 	 * @param callable  要执行的任务
 	 * @param delay     从现在开始延迟执行的时间
 	 * @param unit      延迟参数的时间单位
-	 * @param &lt;V&gt; 任务返回类型
+	 * @param <V> 任务返回类型
 	 * @return 表示任务的ScheduledFuture，该Future的{@code get}方法在成功完成时将返回任务的结果
 	 */
 	@Override

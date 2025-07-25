@@ -22,7 +22,6 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  * <p>
  * 该类整合了类成员模板注册表和对象模板注册表，提供灵活的属性映射能力，
  * 可处理包含继承关系的类结构，解决子类和父类存在相同字段时的映射问题。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -32,13 +31,11 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  *   <li>双向映射：支持源到目标和目标到源的双向属性映射</li>
  *   <li>类型安全：通过泛型约束保证属性类型一致性</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code E}：属性类型，需实现{@link Property}接口</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -47,7 +44,6 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  *   <li>数据格式转换：在不同数据模型之间进行属性映射</li>
  *   <li>ORM框架辅助：处理复杂对象关系的映射</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ClassMemberTemplateFactory

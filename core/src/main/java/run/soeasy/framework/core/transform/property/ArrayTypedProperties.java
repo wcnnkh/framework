@@ -6,7 +6,6 @@ package run.soeasy.framework.core.transform.property;
  * <p>
  * 该类采用装饰器模式包装源类型化属性，将属性访问器组织为数组结构，
  * 适用于需要保持属性顺序或通过索引快速访问类型化属性的场景，如批量属性操作、数据绑定等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -15,13 +14,11 @@ package run.soeasy.framework.core.transform.property;
  *   <li>装饰器模式：包装源类型化属性，保持原有功能的同时提供数组访问方式</li>
  *   <li>实例复用：{@link #asArray(boolean)}方法会复用实例，避免重复创建</li>
  * </ul>
- * </p>
  *
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>{@code W}：被包装的源类型化属性类型，需实现{@link TypedProperties}</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see TypedProperties
@@ -49,7 +46,6 @@ public class ArrayTypedProperties<W extends TypedProperties> extends ArrayProper
      *   <li>若当前唯一性设置与参数一致，直接返回自身</li>
      *   <li>否则调用源属性的{@link TypedProperties#asArray(boolean)}方法</li>
      * </ul>
-     * </p>
      * 
      * @param uniqueness 是否要求键唯一
      * @return 数组形式的类型化属性实例
