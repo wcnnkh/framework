@@ -21,14 +21,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>集合转换：可根据需要转换回其他集合形式</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>顺序与性能：启用顺序保持会增加内存开销，降低插入/删除性能</li>
- *   <li>哈希冲突：若键的哈希函数不合理，可能影响性能</li>
- *   <li>线程安全：未实现线程安全机制，多线程环境下需外部同步</li>
- *   <li>空值处理：允许存储null值，可能导致空指针异常</li>
- * </ul>
- *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}接口
  * @param <W> 源映射的类型，需实现{@link Mapping}

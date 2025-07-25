@@ -5,7 +5,6 @@ package run.soeasy.framework.core.exchange.event;
  * <p>
  * 该枚举定义了三种基本的数据变更类型，广泛应用于事件通知、数据同步、状态审计等场景，
  * 为系统提供统一的变更操作语义描述。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -14,7 +14,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * 允许使用目标类型进行注册操作，内部自动转换为源类型存储。
  * 实现了{@link Registry}和{@link ElementsWrapper}接口，
  * 支持注册管理和元素集合的包装转换。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

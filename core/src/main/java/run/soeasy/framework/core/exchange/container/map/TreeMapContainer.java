@@ -17,7 +17,6 @@ import run.soeasy.framework.core.exchange.event.ChangeType;
  * <p>
  * 该容器继承自{@link MapContainer}，使用TreeMap作为底层存储结构，
  * 提供按键排序的映射操作能力，并支持动态修改比较器以重新排序。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

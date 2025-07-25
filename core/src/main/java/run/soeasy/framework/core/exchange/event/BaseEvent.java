@@ -13,7 +13,6 @@ import run.soeasy.framework.sequences.UUIDSequence;
  * <p>
  * 该类继承自Java标准库的{@link EventObject}，提供事件唯一标识、时间戳等基础属性，
  * 并支持事件链式传递和上下文继承，是框架内所有事件的基类。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

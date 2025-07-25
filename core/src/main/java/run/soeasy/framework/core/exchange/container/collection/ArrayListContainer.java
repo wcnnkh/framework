@@ -12,7 +12,6 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * <p>
  * 该容器继承自{@link ListContainer}，使用{@link ArrayList}作为底层存储结构，
  * 支持元素的快速随机访问，并实现了{@link RandomAccess}接口以标识此特性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

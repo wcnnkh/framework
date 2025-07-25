@@ -8,7 +8,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该接口继承自{@link PayloadRegistration}和{@link LifecycleRegistration}，
  * 允许注册元素时携带有效载荷，并对注册对象进行生命周期控制（启动、停止）。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

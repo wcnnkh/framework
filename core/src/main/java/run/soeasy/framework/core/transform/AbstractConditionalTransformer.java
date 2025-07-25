@@ -17,13 +17,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>重写{@link #canTransform}方法，调用接口默认实现</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>未实现{@link ConditionalTransformer#getTransformableTypeMappings}抽象方法，子类必须实现</li>
- *   <li>{@link #canTransform}方法仅调用父接口默认实现，需结合{@link #getTransformableTypeMappings}使用</li>
- *   <li>未处理类型映射集合的线程安全问题，多线程环境需自行保证</li>
- * </ul>
- *
  * @author soeasy.run
  * @see AbstractTransformer
  * @see ConditionalTransformer

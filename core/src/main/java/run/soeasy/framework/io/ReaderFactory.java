@@ -41,7 +41,6 @@ public interface ReaderFactory<R extends Reader> {
      * <p>
      * 实现类必须提供此方法的具体实现，返回一个{@link Pipeline}实例，
      * 该实例定义了如何创建和处理特定类型的读取器。
-     * </p>
      * 
      * @return 读取器流水线，不可为null
      * @throws IOException 如果获取流水线过程中发生I/O错误
@@ -54,7 +53,6 @@ public interface ReaderFactory<R extends Reader> {
      * <p>
      * 此方法返回一个{@link ReaderPipeline}实例，它将工厂提供的
      * 读取器管道应用于所有读取操作，实现统一的处理流程。
-     * </p>
      * 
      * @return 基于流水线处理的读取器实例
      * @throws IOException 如果创建读取器过程中发生I/O错误
@@ -69,7 +67,6 @@ public interface ReaderFactory<R extends Reader> {
      * <p>
      * 该方法读取整个输入流并将其转换为字符序列，自动处理资源关闭。
      * 注意：对于大文件，可能会导致内存问题，建议使用流式处理方法。
-     * </p>
      * 
      * @return 读取器内容的字符序列表示
      * @throws IOException 如果读取过程中发生I/O错误
@@ -88,7 +85,6 @@ public interface ReaderFactory<R extends Reader> {
      * <p>
      * 该方法返回一个{@link Elements}实例，支持惰性读取和流式处理。
      * 流关闭时会自动释放读取器资源。
-     * </p>
      * 
      * @return 按行读取的元素流
      */
@@ -114,7 +110,6 @@ public interface ReaderFactory<R extends Reader> {
      * <p>
      * 该方法将当前读取器的全部内容传输到目标写入器，自动处理
      * 资源的打开和关闭，确保数据传输完成后所有资源被正确释放。
-     * </p>
      * 
      * @param dest 目标写入器工厂，不可为null
      * @return 传输的字符数

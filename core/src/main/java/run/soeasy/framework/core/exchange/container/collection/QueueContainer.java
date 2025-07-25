@@ -13,7 +13,6 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * <p>
  * 该容器继承自{@link CollectionContainer}并实现{@link Queue}接口，
  * 支持元素的队列式操作（如先进先出），同时具备注册生命周期管理和事件发布能力。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

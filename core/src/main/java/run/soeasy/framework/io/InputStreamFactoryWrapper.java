@@ -49,7 +49,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#decode(Charset)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码转换过程。
-     * </p>
      * 
      * @param charset 字符集，不可为null
      * @return 带字符集解码的输入流工厂
@@ -64,7 +63,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#decode(String)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码转换过程。
-     * </p>
      * 
      * @param charsetName 字符集名称，不可为null
      * @return 带字符集解码的输入流工厂
@@ -79,7 +77,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#decode(ThrowingFunction)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码转换过程。
-     * </p>
      * 
      * @param decoder 解码转换函数，不可为null
      * @param <T> 目标Reader类型
@@ -96,7 +93,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#getInputStream()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强输入流创建过程。
-     * </p>
      * 
      * @return 输入流实例
      * @throws IOException 如果创建输入流过程中发生I/O错误
@@ -111,7 +107,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#getInputStreamPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强流水线处理过程。
-     * </p>
      * 
      * @return 输入流流水线
      */
@@ -125,7 +120,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#getReaderPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强Reader创建过程。
-     * </p>
      * 
      * @return Reader流水线
      */
@@ -139,7 +133,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#isDecoded()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码状态判断。
-     * </p>
      * 
      * @return true表示已解码，false表示未解码
      */
@@ -153,7 +146,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#readableChannel()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强通道转换过程。
-     * </p>
      * 
      * @return 可读字节通道
      * @throws IOException 如果转换过程中发生I/O错误
@@ -168,7 +160,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#toByteArray()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强字节数组转换过程。
-     * </p>
      * 
      * @return 输入流内容的字节数组表示
      * @throws IOException 如果读取过程中发生I/O错误
@@ -183,7 +174,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#transferTo(File)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强数据传输过程。
-     * </p>
      * 
      * @param dest 目标文件，不可为null
      * @throws IOException 如果传输过程中发生I/O错误
@@ -199,7 +189,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#transferTo(OutputStreamFactory)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强数据传输过程。
-     * </p>
      * 
      * @param dest 目标输出流工厂，不可为null
      * @return 传输的字节数
@@ -216,7 +205,6 @@ public interface InputStreamFactoryWrapper<I extends InputStream, W extends Inpu
      * <p>
      * 该方法直接调用被包装工厂的{@link InputStreamFactory#transferTo(Path)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强数据传输过程。
-     * </p>
      * 
      * @param dest 目标路径，不可为null
      * @throws IOException 如果传输过程中发生I/O错误

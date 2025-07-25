@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
  * 实现了{@link KeyValueRegistration}接口，
  * 允许在注册被取消时执行特定的清理或处理操作，
  * 并提供键值对的访问能力。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

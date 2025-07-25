@@ -48,7 +48,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * <p>
      * 实现类必须提供此方法的具体实现，返回一个{@link Pipeline}实例，
      * 该实例定义了如何创建和处理特定类型的输出流。
-     * </p>
      * 
      * @return 输出流流水线，不可为null
      * @throws IOException 如果获取流水线过程中发生I/O错误
@@ -61,7 +60,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * <p>
      * 此方法返回一个{@link OutputStreamPipeline}实例，它将工厂提供的
      * 输出流管道应用于所有写入操作，实现统一的处理流程。
-     * </p>
      * 
      * @return 基于流水线处理的输出流实例
      * @throws IOException 如果创建输出流过程中发生I/O错误
@@ -76,7 +74,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * <p>
      * 该方法将输出流流水线映射为Writer流水线，使用{@link OutputStreamWriter}
      * 实现字节流到字符流的转换，并确保关闭时释放资源。
-     * </p>
      * 
      * @return Writer流水线
      */
@@ -89,7 +86,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * 判断输出流是否已编码。
      * <p>
      * 默认为false，表示未应用编码转换。子类可重写此方法以提供编码状态。
-     * </p>
      * 
      * @return true表示已编码，false表示未编码
      */
@@ -102,7 +98,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * <p>
      * 该方法返回一个新的输出流工厂，将原始输出流通过指定的编码器
      * 转换为目标Writer类型，支持自定义编码逻辑。
-     * </p>
      * 
      * @param encoder 编码转换函数，不可为null
      * @param <T> 目标Writer类型
@@ -118,7 +113,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * <p>
      * 该方法返回一个新的输出流工厂，使用指定的{@link Charset}
      * 将输出流转换为{@link OutputStreamWriter}。
-     * </p>
      * 
      * @param charset 字符集，不可为null
      * @return 带字符集编码的输出流工厂
@@ -132,7 +126,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * <p>
      * 该方法返回一个新的输出流工厂，使用指定的字符集名称
      * 将输出流转换为{@link OutputStreamWriter}。
-     * </p>
      * 
      * @param charsetName 字符集名称，不可为null
      * @return 带字符集编码的输出流工厂
@@ -147,7 +140,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * 该方法使用{@link Channels#newChannel(OutputStream)}
      * 将当前输出流转换为{@link WritableByteChannel}，
      * 适用于需要NIO通道操作的场景。
-     * </p>
      * 
      * @return 可写字节通道
      * @throws IOException 如果转换过程中发生I/O错误

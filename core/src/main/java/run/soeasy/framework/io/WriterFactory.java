@@ -36,7 +36,6 @@ public interface WriterFactory<T extends Writer> {
      * <p>
      * 此方法返回一个{@link WriterPipeline}实例，它将工厂提供的
      * 写入器管道应用于所有写入操作，实现统一的处理流程。
-     * </p>
      * 
      * @return 基于流水线处理的写入器实例
      * @throws IOException 如果创建写入器过程中发生I/O错误
@@ -51,7 +50,6 @@ public interface WriterFactory<T extends Writer> {
      * <p>
      * 实现类必须提供此方法的具体实现，返回一个{@link Pipeline}实例，
      * 该实例定义了如何创建和处理特定类型的写入器。
-     * </p>
      * 
      * @return 写入器流水线，不可为null
      * @throws IOException 如果获取流水线过程中发生I/O错误

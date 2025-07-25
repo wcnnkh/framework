@@ -11,7 +11,6 @@ import run.soeasy.framework.core.spi.ServiceInjectors;
  * 该类集成了{@link Converters}可配置转换器集合和{@link ConverterRegistry}注册表，
  * 支持动态注册转换器，并通过{@link ServiceInjectors}实现转换器的依赖注入，
  * 是框架类型转换体系的核心枢纽。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -9,7 +9,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该类继承自{@link PayloadRegistrationWrapped}，实现了{@link ElementRegistrationWrapper}接口，
  * 允许将元素注册对象包装为具有额外功能的注册实例，同时保持与源注册对象的行为一致性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -23,7 +23,6 @@ import run.soeasy.framework.core.exchange.container.collection.ArrayListContaine
  * <p>
  * 该类继承自{@link AbstractChannel}并实现{@link ListenableChannel}接口，
  * 支持事件的同步发布、监听器注册与过滤，是事件驱动架构中的核心组件。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

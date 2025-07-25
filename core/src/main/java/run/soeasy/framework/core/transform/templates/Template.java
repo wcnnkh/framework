@@ -22,14 +22,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>唯一性约束：通过参数控制键的唯一性</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>类型转换异常：当键为数值类型但索引越界时，可能抛出{@link IndexOutOfBoundsException}</li>
- *   <li>非唯一元素：当键对应多个元素且调用{@code get()}时，抛出{@link NoUniqueElementException}</li>
- *   <li>空值处理：未对键不存在的情况做特殊处理，可能返回null</li>
- *   <li>性能考虑：基于索引的访问依赖于内部元素顺序，可能影响性能</li>
- * </ul>
- *
  * @param <E> 模板元素的类型，必须实现{@link AccessibleDescriptor}接口
  * 
  * @author soeasy.run

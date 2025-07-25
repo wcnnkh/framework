@@ -7,7 +7,6 @@ import run.soeasy.framework.core.concurrent.limit.DisposableLimiter;
  * <p>
  * 该类继承自{@link LimitableRegistration}，实现了{@link EntryRegistration}接口，
  * 为键值对注册提供了基础实现，包括默认的可处置限制器和生命周期状态管理。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

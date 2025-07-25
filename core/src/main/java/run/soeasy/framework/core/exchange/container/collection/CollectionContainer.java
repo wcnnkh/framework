@@ -32,7 +32,6 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * <p>
  * 该容器继承自{@link AbstractContainer}并实现{@link Collection}接口，
  * 支持元素的注册、注销、查询等集合操作，同时具备生命周期管理和事件发布能力。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

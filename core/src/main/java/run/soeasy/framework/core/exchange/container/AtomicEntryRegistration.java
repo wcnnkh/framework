@@ -9,7 +9,6 @@ import lombok.Getter;
  * <p>
  * 该类继承自{@link AbstractEntryRegistration}，实现了{@link EntryRegistration}接口，
  * 使用{@link AtomicReference}确保值的操作具有原子性和线程安全性，适用于多线程环境下的键值对状态管理。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

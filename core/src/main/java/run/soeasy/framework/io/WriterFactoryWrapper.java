@@ -39,7 +39,6 @@ public interface WriterFactoryWrapper<T extends Writer, W extends WriterFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link WriterFactory#getWriter()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强写入器创建过程。
-     * </p>
      * 
      * @return 写入器实例
      * @throws IOException 如果创建写入器过程中发生I/O错误
@@ -54,7 +53,6 @@ public interface WriterFactoryWrapper<T extends Writer, W extends WriterFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link WriterFactory#getWriterPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强流水线处理过程。
-     * </p>
      * 
      * @return 写入器流水线
      */

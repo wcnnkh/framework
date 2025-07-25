@@ -17,14 +17,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>函数式设计：支持通过lambda表达式快速实现简单过滤逻辑</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>执行顺序依赖：过滤结果可能依赖于过滤器的注册顺序</li>
- *   <li>状态修改风险：修改上下文状态可能影响后续映射操作</li>
- *   <li>性能影响：链式过滤可能带来额外的调用开销</li>
- *   <li>异常处理：未定义异常处理机制，异常可能中断映射流程</li>
- * </ul>
- *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
  * @param <T> 映射类型，必须实现{@link Mapping}

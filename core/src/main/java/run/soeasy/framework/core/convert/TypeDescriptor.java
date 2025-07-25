@@ -27,7 +27,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  * <p>
  * 用于描述Java类型的详细信息，包括原始类型、泛型参数、数组/集合/映射类型的元素类型，
  * 以及类型关联的注解信息。该类是类型转换框架的核心数据结构，支持类型窄化、向上转型等操作。
- * </p>
  */
 @Getter
 public class TypeDescriptor extends MergedAnnotatedElement {
@@ -37,7 +36,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
      * 预缓存的常见类型数组，包含基本类型、包装类型和常用引用类型。
      * <p>
      * 用于提升常见类型的{@link TypeDescriptor}创建效率，避免重复反射操作。
-     * </p>
      */
     private static final Class<?>[] CACHED_COMMON_TYPES = { boolean.class, Boolean.class, byte.class, Byte.class,
             char.class, Character.class, double.class, Double.class, float.class, Float.class, int.class, Integer.class,
@@ -97,7 +95,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
      * <p>
      * 例如：{@code TypeDescriptor.forType(Collection.class).narrow(new ArrayList<String>())}
      * 将返回包含{@code String}泛型参数的{@code Collection}类型描述符。
-     * </p>
      * 
      * @param value 实际值（可为{@code null}，返回原描述符）
      * @return 窄化后的{@link TypeDescriptor}
@@ -216,7 +213,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
      * 获取元素类型描述符（适用于数组和集合）。
      * <p>
      * 示例：{@code List<String>}的元素类型描述符为{@code String}。
-     * </p>
      * 
      * @return 元素类型的{@link TypeDescriptor}
      */
@@ -250,7 +246,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
      * 获取映射键类型描述符。
      * <p>
      * 示例：{@code Map<String, Integer>}的键类型描述符为{@code String}。
-     * </p>
      * 
      * @return 键类型的{@link TypeDescriptor}
      */
@@ -273,7 +268,6 @@ public class TypeDescriptor extends MergedAnnotatedElement {
      * 获取映射值类型描述符。
      * <p>
      * 示例：{@code Map<String, Integer>}的值类型描述符为{@code Integer}。
-     * </p>
      * 
      * @return 值类型的{@link TypeDescriptor}
      */

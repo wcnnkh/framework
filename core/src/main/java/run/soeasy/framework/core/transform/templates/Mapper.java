@@ -18,14 +18,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>值访问控制：值类型必须实现{@link TypedValueAccessor}，提供类型化值操作</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>泛型约束限制：值类型必须实现{@link TypedValueAccessor}，可能限制使用场景</li>
- *   <li>上下文状态依赖：映射结果依赖上下文状态，可能导致隐式耦合</li>
- *   <li>异常处理：接口未定义异常处理机制，实现类需自行决定</li>
- *   <li>线程安全：未明确是否线程安全，多线程环境需外部同步</li>
- * </ul>
- *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
  * @param <T> 映射类型，必须实现{@link Mapping}

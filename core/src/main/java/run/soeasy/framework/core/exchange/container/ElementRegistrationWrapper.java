@@ -7,7 +7,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该接口继承自{@link ElementRegistration}、{@link PayloadRegistrationWrapper}和{@link LifecycleRegistrationWrapper}，
  * 提供对源注册对象的方法转发实现，确保包装器与源注册的行为一致性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

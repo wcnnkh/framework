@@ -7,7 +7,6 @@ import run.soeasy.framework.core.ObjectUtils;
  * <p>
  * 该类继承自{@link AbstractLifecycleRegistration}，实现了{@link PayloadRegistration}接口，
  * 将注册对象的身份和行为与其承载的负载对象绑定，默认使用负载对象的属性进行相等性判断。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -31,7 +30,6 @@ public abstract class AbstractPayloadRegistration<S> extends AbstractLifecycleRe
      * 该实现认为两个注册对象相等当且仅当其负载对象相等。
      * 特殊情况：若比较对象不是AbstractPayloadRegistration的实例，
      * 则直接比较当前注册的负载对象与该对象是否相等。
-     * </p>
      * 
      * @param obj 要比较的对象
      * @return 若对象相等则返回true，否则返回false

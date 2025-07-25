@@ -46,7 +46,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#getOutputStreamPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强流水线处理过程。
-     * </p>
      * 
      * @return 输出流流水线
      */
@@ -60,7 +59,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#getOutputStream()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强输出流创建过程。
-     * </p>
      * 
      * @return 输出流实例
      * @throws IOException 如果创建输出流过程中发生I/O错误
@@ -75,7 +73,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#getWriterPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强Writer创建过程。
-     * </p>
      * 
      * @return Writer流水线
      */
@@ -89,7 +86,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#encode(ThrowingFunction)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强编码转换过程。
-     * </p>
      * 
      * @param encoder 编码转换函数，不可为null
      * @param <T> 目标Writer类型
@@ -106,7 +102,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#encode(Charset)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强编码转换过程。
-     * </p>
      * 
      * @param charset 字符集，不可为null
      * @return 带字符集编码的输出流工厂
@@ -121,7 +116,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#encode(String)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强编码转换过程。
-     * </p>
      * 
      * @param charsetName 字符集名称，不可为null
      * @return 带字符集编码的输出流工厂
@@ -136,7 +130,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#isEncoded()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强编码状态判断。
-     * </p>
      * 
      * @return true表示已编码，false表示未编码
      */
@@ -150,7 +143,6 @@ public interface OutputStreamFactoryWrapper<O extends OutputStream, W extends Ou
      * <p>
      * 该方法直接调用被包装工厂的{@link OutputStreamFactory#writableChannel()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强通道转换过程。
-     * </p>
      * 
      * @return 可写字节通道
      * @throws IOException 如果转换过程中发生I/O错误

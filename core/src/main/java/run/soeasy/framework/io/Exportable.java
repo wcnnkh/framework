@@ -31,7 +31,6 @@ public interface Exportable {
      * <p>
      * 该方法负责将当前数据导出到实现了{@link Appendable}接口的目标对象，
      * 例如文件、字符串缓冲区或输出流。导出过程中若发生IO错误，将抛出异常。
-     * </p>
      * 
      * @param target 导出目标，必须实现{@link Appendable}接口
      * @throws IOException 当导出过程中发生IO错误时抛出

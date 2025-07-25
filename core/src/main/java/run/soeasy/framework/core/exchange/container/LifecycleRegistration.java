@@ -8,7 +8,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该接口继承自{@link Registration}和{@link Lifecycle}，
  * 允许对注册对象进行生命周期管理（启动、停止），适用于需要生命周期控制的注册场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

@@ -53,7 +53,6 @@ public interface InputSource extends InputStreamFactory<InputStream> {
      * <p>
      * 默认实现使用{@link Pipeline#forCloseable}创建一个可关闭的流水线，
      * 该流水线会在关闭时自动调用输入流的{@link InputStream#close()}方法。
-     * </p>
      * 
      * @return 输入流流水线
      */
@@ -67,7 +66,6 @@ public interface InputSource extends InputStreamFactory<InputStream> {
      * <p>
      * 该方法返回一个新的输入源，它会将读取的字节流按照指定的字符集
      * 转换为字符流，使用{@link InputStreamReader}实现转换。
-     * </p>
      * 
      * @param charset 字符集，不可为null
      * @return 带字符集解码的输入源
@@ -82,7 +80,6 @@ public interface InputSource extends InputStreamFactory<InputStream> {
      * <p>
      * 该方法返回一个新的输入源，它会将读取的字节流按照指定的字符集名称
      * 转换为字符流，使用{@link InputStreamReader}实现转换。
-     * </p>
      * 
      * @param charsetName 字符集名称，不可为null
      * @return 带字符集解码的输入源
@@ -97,7 +94,6 @@ public interface InputSource extends InputStreamFactory<InputStream> {
      * <p>
      * 该方法返回一个新的输入源，它会将读取的内容通过指定的解码器函数
      * 进行转换，允许实现自定义的解码逻辑。
-     * </p>
      * 
      * @param decoder 解码转换函数，不可为null
      * @param <T> 目标Reader类型

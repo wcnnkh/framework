@@ -36,7 +36,6 @@ public interface Property extends PropertyDescriptor {
      * <p>
      * 继承自{@link AccessibleDescriptor}，
      * 返回true表示可以通过{@link #readFrom(Object)}读取属性值
-     * </p>
      * 
      * @return 属性可读返回true，否则false
      */
@@ -48,7 +47,6 @@ public interface Property extends PropertyDescriptor {
      * <p>
      * 继承自{@link AccessibleDescriptor}，
      * 返回true表示可以通过{@link #writeTo(Object, Object)}写入属性值
-     * </p>
      * 
      * @return 属性可写返回true，否则false
      */
@@ -60,7 +58,6 @@ public interface Property extends PropertyDescriptor {
      * <p>
      * 该方法从指定目标对象中读取当前属性的值，
      * 实现者需处理目标对象为null或属性不存在的情况
-     * </p>
      * 
      * @param target 目标对象，可能为null
      * @return 属性值，目标对象为null或属性不可读时返回null
@@ -73,7 +70,6 @@ public interface Property extends PropertyDescriptor {
      * <p>
      * 该方法向指定目标对象的当前属性写入值，
      * 实现者需处理值类型与属性类型不匹配的情况
-     * </p>
      * 
      * @param target 目标对象，可能为null
      * @param value 要写入的值，可能为null
@@ -86,7 +82,6 @@ public interface Property extends PropertyDescriptor {
      * <p>
      * 创建并返回一个{@link PropertyAccessor}实例，
      * 封装当前属性和目标对象的访问能力
-     * </p>
      * 
      * @param target 目标对象
      * @return 属性访问器实例

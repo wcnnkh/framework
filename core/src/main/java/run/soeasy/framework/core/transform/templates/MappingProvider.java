@@ -22,15 +22,6 @@ import run.soeasy.framework.core.spi.ServiceMap;
  *   <li>泛型类型安全：通过泛型约束确保映射工厂和映射实例的类型一致性</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>类型擦除风险：泛型参数在运行时擦除，可能导致类型安全问题</li>
- *   <li>强制类型转换：{@code registerFactory}方法使用了未检查的类型转换</li>
- *   <li>工厂选择策略：当前实现仅返回第一个匹配的工厂，可能忽略更优选项</li>
- *   <li>线程安全：未明确保证线程安全，多线程环境下注册/查找可能存在竞争</li>
- *   <li>异常处理：未对工厂返回null的情况进行处理</li>
- * </ul>
- *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
  * @param <T> 映射类型，必须实现{@link Mapping}

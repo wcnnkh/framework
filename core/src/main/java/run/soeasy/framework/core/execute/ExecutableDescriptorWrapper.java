@@ -56,7 +56,6 @@ public interface ExecutableDescriptorWrapper<W extends ExecutableDescriptor>
      * 判断被包装的可执行元素是否可以使用指定参数类型执行
      * <p>
      * 该默认方法将调用转发给原始描述符的{@link ExecutableDescriptor#canExecuted(Class[])}方法。
-     * </p>
      * 
      * @param parameterTypes 参数类型数组，不可为null
      * @return 若被包装的可执行元素可以接受指定参数类型返回true，否则返回false

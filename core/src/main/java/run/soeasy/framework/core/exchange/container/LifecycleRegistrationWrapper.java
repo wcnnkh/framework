@@ -7,7 +7,6 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  * <p>
  * 该接口继承自{@link LifecycleRegistration}和{@link RegistrationWrapper}，
  * 提供对源注册对象的透明包装，并默认实现生命周期方法的转发。
- * </p>
  *
  * @param <W> 包装的目标注册类型，需继承LifecycleRegistration
  * @author soeasy.run

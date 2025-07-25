@@ -44,7 +44,6 @@ public interface InputSourceWrapper<W extends InputSource>
      * <p>
      * 该方法直接调用被包装输入源的{@link InputSource#getInputStream()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强输入流创建过程。
-     * </p>
      * 
      * @return 输入流实例
      * @throws IOException 如果创建输入流过程中发生I/O错误
@@ -59,7 +58,6 @@ public interface InputSourceWrapper<W extends InputSource>
      * <p>
      * 该方法直接调用被包装输入源的{@link InputSource#getInputStreamPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强流水线处理过程。
-     * </p>
      * 
      * @return 输入流流水线
      */
@@ -73,7 +71,6 @@ public interface InputSourceWrapper<W extends InputSource>
      * <p>
      * 该方法直接调用被包装输入源的{@link InputSource#decode(Charset)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码转换过程。
-     * </p>
      * 
      * @param charset 字符集，不可为null
      * @return 带字符集解码的输入源
@@ -88,7 +85,6 @@ public interface InputSourceWrapper<W extends InputSource>
      * <p>
      * 该方法直接调用被包装输入源的{@link InputSource#decode(String)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码转换过程。
-     * </p>
      * 
      * @param charsetName 字符集名称，不可为null
      * @return 带字符集解码的输入源
@@ -103,7 +99,6 @@ public interface InputSourceWrapper<W extends InputSource>
      * <p>
      * 该方法直接调用被包装输入源的{@link InputSource#decode(ThrowingFunction)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强解码转换过程。
-     * </p>
      * 
      * @param decoder 解码转换函数，不可为null
      * @param <T> 目标Reader类型

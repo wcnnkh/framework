@@ -15,7 +15,6 @@ import run.soeasy.framework.core.exchange.event.LifecycleDispatcher;
  * 该类继承自{@link LimitableRegistration}，提供了生命周期管理能力，
  * 实现了{@link LifecycleRegistration}和{@link Listenable}接口，
  * 允许注册生命周期监听器并管理注册对象的生命周期状态。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

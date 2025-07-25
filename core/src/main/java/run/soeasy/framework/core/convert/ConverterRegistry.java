@@ -15,7 +15,6 @@ import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
  * <p>
  * 该类继承自{@link TreeMapContainer}，以{@link TypeMapping}为键存储转换器，
  * 支持按源类型和目标类型快速查找匹配的转换器，适用于需要动态管理类型转换策略的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

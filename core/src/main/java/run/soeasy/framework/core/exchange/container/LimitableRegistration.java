@@ -13,7 +13,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该抽象类实现了{@link Registration}接口，通过集成{@link Limiter}机制，
  * 允许对注册的取消操作进行限制和控制，确保在特定条件下注册不可取消或需获取资源锁后才能取消。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

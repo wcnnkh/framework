@@ -41,7 +41,6 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
      * 配置实现类，封装服务发现配置的结果，实现{@link Configured}接口。
      * <p>
      * 该类负责管理单个{@link ProviderFactory}的配置状态，包括注册、取消注册和状态查询。
-     * </p>
      */
     @RequiredArgsConstructor
     private final class Configuration

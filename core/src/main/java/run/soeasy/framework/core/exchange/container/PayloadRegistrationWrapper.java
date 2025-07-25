@@ -9,7 +9,6 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  * 该接口继承自{@link RegistrationWrapper}和{@link PayloadRegistration}，
  * 允许将一个{@link PayloadRegistration}实例包装为新的注册对象，
  * 并提供默认的方法转发实现。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

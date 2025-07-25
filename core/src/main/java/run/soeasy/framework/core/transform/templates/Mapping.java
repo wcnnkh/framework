@@ -17,14 +17,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>唯一性控制：转换方法支持通过{@code uniqueness}参数控制键的唯一性</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>泛型约束限制：值类型{@code V}被强制约束为{@link TypedValueAccessor}，可能限制使用场景</li>
- *   <li>默认方法实现依赖：{@link #asMap(boolean)}和{@link #asArray(boolean)}依赖未公开的实现类</li>
- *   <li>唯一性逻辑不明确：{@code uniqueness}参数的具体语义未在接口中定义，依赖实现类解释</li>
- *   <li>函数式接口设计：作为函数式接口但未定义抽象方法（依赖父接口），可能导致设计混淆</li>
- * </ul>
- *
  * @param <K> 键的类型
  * @param <V> 值的类型，必须实现{@link TypedValueAccessor}接口
  * 

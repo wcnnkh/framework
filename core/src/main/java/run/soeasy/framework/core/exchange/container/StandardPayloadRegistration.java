@@ -9,7 +9,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该类继承自{@link RegistrationWrapped}，实现了{@link PayloadRegistration}接口，
  * 允许为注册对象包装有效载荷数据，适用于需要在注册过程中携带附加信息的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

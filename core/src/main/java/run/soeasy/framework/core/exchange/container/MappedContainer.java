@@ -11,7 +11,6 @@ import run.soeasy.framework.core.exchange.Receipt;
  * 实现了{@link Container}接口，提供元素注册、注销和集合管理功能。
  * 通过编解码器{@link Codec}实现目标类型{T}与源类型{S}的双向转换，
  * 允许使用目标类型进行容器操作，内部自动转换为源类型存储。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

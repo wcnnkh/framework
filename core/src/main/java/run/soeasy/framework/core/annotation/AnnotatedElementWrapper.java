@@ -12,7 +12,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  * <p>
  * 该接口作为函数式接口，允许通过Lambda表达式或方法引用来简洁地实现包装逻辑，
  * 适用于需要动态增强注解处理能力的场景，如注解值修改、条件注解过滤、注解元数据增强等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -48,7 +47,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#getAnnotation(Class)}方法，
      * 子类可覆盖此方法添加额外逻辑，如条件注解过滤或注解值修改。
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -64,7 +62,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#getDeclaredAnnotations()}方法，
      * 子类可覆盖此方法添加额外逻辑，如注解过滤或添加虚拟注解。
-     * </p>
      * 
      * @return 直接声明的注解数组
      */
@@ -78,7 +75,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#getAnnotations()}方法，
      * 子类可覆盖此方法添加额外逻辑，如注解增强或元数据合并。
-     * </p>
      * 
      * @return 所有注解数组
      */
@@ -92,7 +88,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#getAnnotationsByType(Class)}方法，
      * 子类可覆盖此方法添加额外逻辑，如重复注解处理或条件注解过滤。
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -108,7 +103,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#getDeclaredAnnotation(Class)}方法，
      * 子类可覆盖此方法添加额外逻辑，如注解代理或虚拟注解生成。
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -124,7 +118,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#getDeclaredAnnotationsByType(Class)}方法，
      * 子类可覆盖此方法添加额外逻辑，如注解合并或条件注解过滤。
-     * </p>
      * 
      * @param <T> 注解类型
      * @param annotationClass 注解类
@@ -140,7 +133,6 @@ public interface AnnotatedElementWrapper<W extends AnnotatedElement> extends Ann
      * <p>
      * 该默认实现将调用转发给被包装的源元素的{@link AnnotatedElement#isAnnotationPresent(Class)}方法，
      * 子类可覆盖此方法添加额外逻辑，如基于条件的注解判断。
-     * </p>
      * 
      * @param annotationClass 注解类
      * @return 存在则返回true，否则返回false

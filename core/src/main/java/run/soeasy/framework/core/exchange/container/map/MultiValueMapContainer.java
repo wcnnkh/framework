@@ -31,7 +31,6 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * <p>
  * 该容器继承自{@link AbstractContainer}，实现了{@link MultiValueMap}和{@link KeyValueRegistry}接口，
  * 允许通过键注册多个值，并提供生命周期管理和事件驱动能力。每个键对应一个子容器，用于管理该键的所有值注册。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

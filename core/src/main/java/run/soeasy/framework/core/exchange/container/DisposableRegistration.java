@@ -10,7 +10,6 @@ import lombok.NonNull;
  * 该类继承自{@link AbstractLifecycleRegistration}，
  * 允许在注册被取消时执行特定的清理或处理操作，
  * 确保资源释放或状态恢复。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

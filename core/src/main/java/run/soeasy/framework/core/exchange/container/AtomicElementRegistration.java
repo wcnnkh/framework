@@ -9,7 +9,6 @@ import lombok.Getter;
  * <p>
  * 该类继承自{@link AbstractPayloadRegistration}，使用{@link AtomicReference}确保对负载的原子性操作，
  * 实现了{@link ElementRegistration}接口，支持元素负载的获取、设置及生命周期控制。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

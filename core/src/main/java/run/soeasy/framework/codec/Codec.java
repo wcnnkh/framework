@@ -93,7 +93,7 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D> {
 	 * 
 	 * @return 反向编解码器实例
 	 */
-	default <T> Codec<E, D> reverse() {
+	default Codec<E, D> reverse() {
 		return new ChainCodec<E, E, D>() {
 
 			@Override

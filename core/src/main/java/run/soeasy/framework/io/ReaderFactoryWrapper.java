@@ -43,7 +43,6 @@ public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link ReaderFactory#getReader()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强读取器创建过程。
-     * </p>
      * 
      * @return 读取器实例
      * @throws IOException 如果创建读取器过程中发生I/O错误
@@ -58,7 +57,6 @@ public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link ReaderFactory#getReaderPipeline()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强流水线处理过程。
-     * </p>
      * 
      * @return 读取器流水线
      */
@@ -72,7 +70,6 @@ public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link ReaderFactory#toCharSequence()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强内容转换过程。
-     * </p>
      * 
      * @return 读取器内容的字符序列表示
      * @throws IOException 如果读取过程中发生I/O错误
@@ -87,7 +84,6 @@ public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link ReaderFactory#readLines()}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强行读取过程。
-     * </p>
      * 
      * @return 按行读取的元素流
      */
@@ -101,7 +97,6 @@ public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<
      * <p>
      * 该方法直接调用被包装工厂的{@link ReaderFactory#transferTo(WriterFactory)}方法，
      * 允许包装器在不改变原始逻辑的情况下拦截或增强数据传输过程。
-     * </p>
      * 
      * @param dest 目标写入器工厂，不可为null
      * @return 传输的字符数

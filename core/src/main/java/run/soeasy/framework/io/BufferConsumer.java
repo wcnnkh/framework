@@ -34,7 +34,6 @@ public interface BufferConsumer<T, E extends Throwable> {
 	 * 消费缓冲区数据的核心方法。
 	 * <p>
 	 * 该方法负责处理指定缓冲区的部分数据，通过偏移量和长度 精准定位处理范围，适用于需要分段处理大数据的场景。
-	 * </p>
 	 * 
 	 * @param buffer 待处理的缓冲区，具体类型由泛型<T>指定
 	 * @param offset 处理的起始偏移量

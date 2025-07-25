@@ -20,14 +20,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>集合转换：继承{@link Template}的集合转换方法，委托给源模板处理</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>空指针风险：若{@link #getSource()}返回null，所有操作将抛出NPE</li>
- *   <li>线程安全：未定义包装器的线程安全策略，依赖源模板的线程安全性</li>
- *   <li>性能损耗：每次操作均需经过包装器转发，可能带来额外开销</li>
- *   <li>递归包装：多次包装同一模板可能导致嵌套过深，影响性能和调试</li>
- * </ul>
- *
  * @param <E> 模板元素的类型，必须实现{@link AccessibleDescriptor}接口
  * @param <W> 包装器自身的类型，需实现{@link Template}
  * 

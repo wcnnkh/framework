@@ -21,14 +21,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>上下文创建：提供创建当前上下文和嵌套上下文的工厂方法</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>内存泄漏风险：深度嵌套的上下文可能导致长生命周期对象引用</li>
- *   <li>线程安全：非线程安全实现，多线程环境需外部同步</li>
- *   <li>泛型复杂性：多层泛型参数可能增加使用和维护难度</li>
- *   <li>空值处理：未对mapping和keyValue进行严格空值校验</li>
- * </ul>
- *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，需实现{@link TypedValueAccessor}
  * @param <T> 映射类型，需实现{@link Mapping}

@@ -8,7 +8,6 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  * <p>
  * 该接口继承自{@link RegistrationWrapper}和{@link KeyValueRegistration}，
  * 提供对源注册对象的方法转发实现，确保包装器与源注册的行为一致性。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

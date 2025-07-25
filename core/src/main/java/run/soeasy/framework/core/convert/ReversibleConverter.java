@@ -11,7 +11,6 @@ import run.soeasy.framework.core.type.ResolvableType;
  * <p>
  * 该接口继承自{@link ConditionalConverter}，在条件转换基础上增加双向转换能力，
  * 适用于需要支持类型往返转换的场景，如对象序列化/反序列化、数据格式转换等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

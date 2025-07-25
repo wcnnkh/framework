@@ -52,7 +52,6 @@ public interface OutputSource extends OutputStreamFactory<OutputStream> {
      * <p>
      * 默认实现使用{@link Pipeline#forCloseable}创建一个可关闭的流水线，
      * 该流水线会在关闭时自动调用输出流的{@link OutputStream#close()}方法。
-     * </p>
      * 
      * @return 输出流流水线
      */
@@ -66,7 +65,6 @@ public interface OutputSource extends OutputStreamFactory<OutputStream> {
      * <p>
      * 该方法返回一个新的输出源，它会将写入的字符流按照指定的字符集
      * 转换为字节流，使用{@link OutputStreamWriter}实现转换。
-     * </p>
      * 
      * @param charset 字符集，不可为null
      * @return 带字符集编码的输出源
@@ -81,7 +79,6 @@ public interface OutputSource extends OutputStreamFactory<OutputStream> {
      * <p>
      * 该方法返回一个新的输出源，它会将写入的字符流按照指定的字符集名称
      * 转换为字节流，使用{@link OutputStreamWriter}实现转换。
-     * </p>
      * 
      * @param charsetName 字符集名称，不可为null
      * @return 带字符集编码的输出源
@@ -96,7 +93,6 @@ public interface OutputSource extends OutputStreamFactory<OutputStream> {
      * <p>
      * 该方法返回一个新的输出源，它会将写入的内容通过指定的编码器函数
      * 进行转换，允许实现自定义的编码逻辑。
-     * </p>
      * 
      * @param encoder 编码转换函数，不可为null
      * @param <T> 目标Writer类型

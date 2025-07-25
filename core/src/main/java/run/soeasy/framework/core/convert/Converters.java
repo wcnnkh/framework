@@ -8,7 +8,6 @@ import run.soeasy.framework.core.spi.ConfigurableServices;
  * <p>
  * 该类管理多个{@link Converter}实例，通过遍历注册的转换器寻找匹配的类型转换实现，
  * 支持动态配置和扩展转换器，适用于需要多种类型转换策略的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

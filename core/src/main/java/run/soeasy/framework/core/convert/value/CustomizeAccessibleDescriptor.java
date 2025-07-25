@@ -19,14 +19,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>提供构造函数快速初始化类型描述符</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>字段{@code requried}存在拼写错误，应为{@code required}</li>
- *   <li>未对{@link TypeDescriptor}参数进行非空校验（依赖Lombok的{@code @NonNull}注解）</li>
- *   <li>序列化版本号{@code serialVersionUID}为1，未明确版本迭代策略</li>
- *   <li>未重写{@link Object#equals(Object)}和{@link Object#hashCode()}方法，可能导致逻辑错误</li>
- * </ul>
- *
  * @author soeasy.run
  * @see AccessibleDescriptor
  * @see TypeDescriptor
@@ -44,8 +36,7 @@ public class CustomizeAccessibleDescriptor implements AccessibleDescriptor, Seri
     @NonNull
     private TypeDescriptor requiredTypeDescriptor;
     
-    /** 是否为必需（存在拼写错误，应为required） */
-    private boolean requried = false;
+    private boolean required = false;
     
     /** 是否可读，默认true */
     private boolean readable = true;
@@ -93,7 +84,7 @@ public class CustomizeAccessibleDescriptor implements AccessibleDescriptor, Seri
      */
     @Override
     public boolean isRequired() {
-        return requried;
+        return required;
     }
 
     /**

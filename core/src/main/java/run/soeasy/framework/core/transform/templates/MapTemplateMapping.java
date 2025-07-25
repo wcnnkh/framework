@@ -17,14 +17,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>集合转换：可根据需要转换回其他集合形式</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>顺序丢失：Map不保证元素顺序，可能导致与源模板映射顺序不一致</li>
- *   <li>哈希冲突：若键的哈希函数不合理，可能影响性能</li>
- *   <li>线程安全：未实现线程安全机制，多线程环境下需外部同步</li>
- *   <li>空值处理：允许存储null值，可能导致空指针异常</li>
- * </ul>
- *
  * @param <E> 模板映射元素的类型，必须实现{@link TypedValueAccessor}接口
  * @param <W> 源模板映射的类型，需实现{@link TemplateMapping}
  * 

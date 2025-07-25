@@ -12,7 +12,6 @@ import run.soeasy.framework.core.collection.ArrayUtils;
  * <p>
  * 该类基于注解类型和属性元素实现了hashCode和equals方法，确保相同注解类型和属性值的实例相等，
  * 并提供了合理的哈希值计算方式，适用于需要统一处理注解属性映射的场景。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

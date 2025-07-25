@@ -10,7 +10,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该类继承自{@link PayloadRegistrationWrapped}，实现了{@link KeyValueRegistrationWrapper}接口，
  * 允许将一个基础键值对注册对象包装为具有额外功能的注册对象，如组合注册、条件取消等。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

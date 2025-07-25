@@ -11,7 +11,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该接口允许注册操作携带有效载荷（Payload），适用于需要在注册过程中传递数据的场景。
  * 提供了便捷的静态工厂方法创建成功/失败的注册实例，并支持载荷映射和注册组合操作。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

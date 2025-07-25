@@ -20,14 +20,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>默认实现：提供基于类型映射遍历的转换可行性判断</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>性能损耗：默认实现使用流式遍历所有类型映射，大数据量时可能影响性能</li>
- *   <li>线程安全：未定义类型映射集合的线程安全策略，多线程环境需自行保证</li>
- *   <li>映射顺序：类型映射的顺序可能影响判断结果，需注意定义顺序</li>
- *   <li>泛型匹配：类型映射的泛型参数匹配逻辑未明确，可能存在类型擦除风险</li>
- * </ul>
- *
  * @author soeasy.run
  * @see Transformer
  * @see TypeMapping

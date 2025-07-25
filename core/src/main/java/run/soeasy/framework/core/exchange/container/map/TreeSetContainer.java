@@ -18,7 +18,6 @@ import run.soeasy.framework.core.exchange.event.ChangeType;
  * <p>
  * 该容器继承自{@link CollectionContainer}，使用TreeSet作为底层存储结构，
  * 确保元素按指定顺序排列，并支持动态修改比较器以重新排序。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

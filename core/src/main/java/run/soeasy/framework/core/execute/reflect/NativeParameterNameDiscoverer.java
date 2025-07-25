@@ -12,7 +12,6 @@ import lombok.NonNull;
  * 该实现直接通过{@link Executable#getParameters()}获取参数数组，
  * 并检查每个参数的名称可用性（{@link Parameter#isNamePresent()}），
  * 仅在所有参数名称都可获取时返回名称数组，否则返回null。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
@@ -21,7 +20,6 @@ import lombok.NonNull;
  *   <li>零依赖实现：无需额外字节码工具或库支持</li>
  *   <li>性能高效：直接调用JDK原生方法，无额外开销</li>
  * </ul>
- * </p>
  *
  * <p><b>使用限制：</b>
  * <ul>
@@ -29,7 +27,6 @@ import lombok.NonNull;
  *   <li>编译参数要求：类必须使用{@code -parameters}标志编译以保留参数名称</li>
  *   <li>兼容性限制：无法获取匿名类、Lambda表达式的参数名称</li>
  * </ul>
- * </p>
  *
  * <p><b>使用场景：</b>
  * <ul>
@@ -38,7 +35,6 @@ import lombok.NonNull;
  *   <li>对依赖无要求的轻量级参数名称发现</li>
  *   <li>性能敏感型场景（如高频反射调用）</li>
  * </ul>
- * </p>
  *
  * @author soeasy.run
  * @see ParameterNameDiscoverer
@@ -56,7 +52,6 @@ class NativeParameterNameDiscoverer implements ParameterNameDiscoverer {
      *   <li>若所有参数名称都可用则收集返回，否则返回null</li>
      * </ol>
      * 注意：参数名称的可用性依赖于编译时是否使用{@code -parameters}标志
-     * </p>
      * 
      * @param executable 可执行元素（Method/Constructor），不可为null
      * @return 参数字符串数组，不可用时返回null

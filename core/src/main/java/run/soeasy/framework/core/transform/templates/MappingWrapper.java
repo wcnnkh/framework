@@ -20,15 +20,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>集合转换：继承{@link Mapping}的集合转换方法，委托给源映射处理</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>空指针风险：若{@link #getSource()}返回null，所有操作将抛出NPE</li>
- *   <li>线程安全：未定义包装器的线程安全策略，依赖源映射的线程安全性</li>
- *   <li>性能损耗：每次操作均需经过包装器转发，可能带来额外开销</li>
- *   <li>类型擦除：泛型参数在运行时擦除，可能导致类型安全问题</li>
- *   <li>递归包装：多次包装同一映射可能导致嵌套过深，影响性能和调试</li>
- * </ul>
- *
  * @param <K> 映射键的类型
  * @param <V> 映射值的类型，必须实现{@link TypedValueAccessor}
  * @param <W> 包装器自身的类型，需实现{@link Mapping}

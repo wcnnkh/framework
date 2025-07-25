@@ -23,14 +23,6 @@ import run.soeasy.framework.core.convert.value.TypedValueAccessor;
  *   <li>默认支持判断：{@link #hasMapping(TypeDescriptor)}提供默认实现</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>类型擦除风险：泛型参数在运行时可能被擦除，导致类型安全问题</li>
- *   <li>默认实现隐患：{@link #hasMapping(TypeDescriptor)}默认返回true，可能掩盖类型不支持的情况</li>
- *   <li>线程安全：实现类需自行保证映射创建的线程安全性</li>
- *   <li>空值处理：未对源对象{@code source}进行空值校验，实现类需自行处理</li>
- * </ul>
- *
  * @param <S> 源对象类型
  * @param <K> 映射键类型
  * @param <V> 映射值类型，需实现{@link TypedValueAccessor}

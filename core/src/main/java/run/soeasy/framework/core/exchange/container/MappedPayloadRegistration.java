@@ -12,7 +12,6 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  * 该类实现了{@link PayloadRegistration}和{@link RegistrationWrapper}接口，
  * 允许通过提供的映射函数将源注册的有效载荷从类型{S}转换为类型{T}，
  * 同时保持源注册的其他属性和行为不变。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

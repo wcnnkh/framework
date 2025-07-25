@@ -12,7 +12,6 @@ import run.soeasy.framework.core.exchange.Registration;
  * <p>
  * 该类继承自{@link InterceptableRegisration}，提供了批量注册的组合、拦截和批量处理能力，
  * 允许通过函数式接口定义注册组合逻辑和批量操作行为。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

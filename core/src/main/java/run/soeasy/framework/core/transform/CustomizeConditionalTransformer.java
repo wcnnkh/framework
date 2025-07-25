@@ -25,14 +25,6 @@ import run.soeasy.framework.core.convert.TypeMapping;
  *   <li>灵活配置：支持单类型映射或多类型映射配置</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>线程安全：未对transformableTypeMappings做线程安全处理，多线程环境需注意</li>
- *   <li>类型映射冲突：当类型映射集合和内部转换器的转换规则不一致时，可能导致逻辑冲突</li>
- *   <li>空值风险：transformer为null时调用transform方法会抛出NPE</li>
- *   <li>异常传播：直接将内部转换器的异常向上传播，未做额外处理</li>
- * </ul>
- *
  * @author soeasy.run
  * @see ConditionalTransformer
  * @see TypeMapping

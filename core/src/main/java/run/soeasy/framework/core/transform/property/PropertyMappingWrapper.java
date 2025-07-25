@@ -45,7 +45,6 @@ public interface PropertyMappingWrapper<V extends PropertyAccessor, W extends Pr
      * <p>
      * 该默认实现调用被包装源映射的{@link PropertyMapping#get(Object)}方法，
      * 子类可覆盖此方法实现自定义检索逻辑（如缓存、过滤）。
-     * </p>
      * 
      * @param key 检索键，支持数字、字符串或其他类型
      * @return 匹配的属性访问器

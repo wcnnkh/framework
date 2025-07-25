@@ -10,7 +10,6 @@ import run.soeasy.framework.core.exchange.LifecycleProcessor;
  * <p>
  * 该类继承自{@link EventDispatcher}，实现了{@link LifecycleProcessor}接口，
  * 提供了对生命周期状态（启动、停止、刷新、关闭）的管理能力，并在状态变更时发布对应的生命周期事件。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>

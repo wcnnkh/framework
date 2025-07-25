@@ -9,7 +9,6 @@ import run.soeasy.framework.core.domain.Wrapped;
  * <p>
  * 该类继承自{@link Wrapped}，在包装源对象的同时赋予其顺序优先级，
  * 适用于需要按特定顺序处理对象的场景（如事件处理、处理器链等）。
- * </p>
  *
  * @param <W> 被包装的源对象类型
  * 

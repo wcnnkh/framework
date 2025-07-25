@@ -20,14 +20,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  *   <li>集合转换：可根据需要转换为其他集合形式</li>
  * </ul>
  *
- * <p><b>潜在问题：</b>
- * <ul>
- *   <li>性能损耗：键查找为O(n)复杂度，不适合高频查找场景</li>
- *   <li>数组操作开销：插入/删除元素需移动后续元素，影响性能</li>
- *   <li>线程安全：未实现同步机制，多线程环境需外部同步</li>
- *   <li>空值风险：允许存储null值，取值时需额外校验</li>
- * </ul>
- *
  * @param <E> 模板元素类型，需实现{@link AccessibleDescriptor}
  * @param <W> 源模板类型，需实现{@link Template}
  * 

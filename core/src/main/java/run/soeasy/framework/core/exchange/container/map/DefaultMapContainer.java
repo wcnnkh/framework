@@ -13,7 +13,6 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * <p>
  * 该容器继承自{@link MapContainer}，使用HashMap作为底层存储结构，
  * 提供标准的映射操作能力，并支持键值对注册的生命周期管理和事件驱动机制。
- * </p>
  *
  * <p><b>核心特性：</b>
  * <ul>
