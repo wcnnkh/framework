@@ -17,11 +17,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  *   <li>类型安全：通过泛型约束确保包装器与被包装对象的类型一致性</li>
  * </ul>
  *
- * <p><b>泛型说明：</b>
- * <ul>
- *   <li>{@code W}：被包装的执行上下文类型，需实现{@link Execution}</li>
- * </ul>
- *
  * <p><b>使用场景：</b>
  * <ul>
  *   <li>参数修改：在执行前修改参数值（如敏感信息加密）</li>

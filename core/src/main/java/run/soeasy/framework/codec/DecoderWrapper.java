@@ -25,7 +25,7 @@ import run.soeasy.framework.core.domain.Wrapper;
  * @author soeasy.run
  * @param <E> 源数据类型（待解码类型）
  * @param <D> 解码后数据类型
- * @param <W> 被包装的解码器类型（必须实现{@link Decoder<E, D>}）
+ * @param <W> 被包装的解码器类型（必须实现{@link Decoder}）
  * @see Decoder
  * @see Wrapper
  */

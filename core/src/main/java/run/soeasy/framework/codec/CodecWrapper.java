@@ -41,7 +41,7 @@ public interface CodecWrapper<D, E, W extends Codec<D, E>>
      * 编码：D → [被包装编解码器] → E → [后置编解码器] → T
      * 解码：T → [后置编解码器] → E → [被包装编解码器] → D
      * </pre>
-     * 该方法实际调用{@link W#to(Codec)}。
+     * 该方法实际调用{@link Codec#to(Codec)}。
      * 
      * @param <T>   后置编解码器的目标类型
      * @param codec 后置编解码器，不可为null
@@ -60,7 +60,7 @@ public interface CodecWrapper<D, E, W extends Codec<D, E>>
      * 编码：F → [前置编解码器] → D → [被包装编解码器] → E
      * 解码：E → [被包装编解码器] → D → [前置编解码器] → F
      * </pre>
-     * 该方法实际调用{@link W#from(Codec)}。
+     * 该方法实际调用{@link Codec#from(Codec)}。
      * 
      * @param <F>   前置编解码器的源类型
      * @param codec 前置编解码器，不可为null

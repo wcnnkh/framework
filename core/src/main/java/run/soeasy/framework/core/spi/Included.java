@@ -11,7 +11,7 @@ import run.soeasy.framework.core.exchange.Receipted;
 /**
  * 服务包含实现类，包装服务提供者并提供配置结果反馈，实现{@link Configured}接口。
  * <p>
- * 该类继承自{@link Receipted}，用于封装服务提供者{@link Provider<S>}，
+ * 该类继承自{@link Receipted}，用于封装服务提供者{@link Provider}，
  * 同时提供操作结果状态（成功/失败）和流式转换能力，适用于服务配置流程的结果封装。
  *
  * @param <S> 服务实例的类型

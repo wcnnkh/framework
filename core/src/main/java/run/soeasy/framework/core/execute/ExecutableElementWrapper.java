@@ -17,11 +17,6 @@ import lombok.NonNull;
  *   <li>多层包装：同时继承元数据包装器和模板包装器，支持全方位功能扩展</li>
  * </ul>
  *
- * <p><b>泛型说明：</b>
- * <ul>
- *   <li>{@code W}：被包装的可执行元素类型，需实现{@link ExecutableElement}</li>
- * </ul>
- *
  * <p><b>使用场景：</b>
  * <ul>
  *   <li>日志增强：在执行前后记录方法调用日志</li>

@@ -37,7 +37,7 @@ import run.soeasy.framework.core.type.ReflectionUtils;
  *
  * <p><b>泛型说明：</b>
  * <ul>
- *   <li>{@code A}：合并的注解类型，必须是{@link Annotation}的子类</li>
+ *   <li>A：合并的注解类型，必须是{@link Annotation}的子类</li>
  * </ul>
  *
  * <p><b>使用场景：</b>

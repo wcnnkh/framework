@@ -26,8 +26,8 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  *
  * <p><b>泛型说明：</b>
  * <ul>
- *   <li>{@code A}：目标注解类型，必须是{@link Annotation}的子类</li>
- *   <li>{@code P}：源属性类型，必须是{@link TypedProperties}的子类</li>
+ *   <li>A：目标注解类型，必须是{@link Annotation}的子类</li>
+ *   <li>P：源属性类型，必须是{@link TypedProperties}的子类</li>
  * </ul>
  *
  * <p><b>使用场景：</b>

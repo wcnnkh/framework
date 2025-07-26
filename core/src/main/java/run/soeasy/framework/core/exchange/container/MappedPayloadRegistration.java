@@ -22,7 +22,7 @@ import run.soeasy.framework.core.exchange.RegistrationWrapper;
  *
  * @param <S> 源注册的有效载荷类型
  * @param <T> 目标注册的有效载荷类型
- * @param <W> 被包装的源注册类型，需继承{@link PayloadRegistration}<{@link S}>
+ * @param <W> 被包装的源注册类型，需继承{@link PayloadRegistration}
  * 
  * @author soeasy.run
  * @see PayloadRegistration

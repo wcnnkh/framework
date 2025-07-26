@@ -19,11 +19,6 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
  *   <li>类型安全：通过泛型约束确保包装器与被包装对象的类型一致性</li>
  * </ul>
  *
- * <p><b>泛型说明：</b>
- * <ul>
- *   <li>{@code W}：被包装的可执行元数据类型，需实现{@link ExecutableMetadata}</li>
- * </ul>
- *
  * <p><b>使用场景：</b>
  * <ul>
  *   <li>元数据增强：在运行时为可执行元素添加额外的元数据信息</li>

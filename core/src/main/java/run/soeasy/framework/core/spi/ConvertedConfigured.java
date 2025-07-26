@@ -11,16 +11,9 @@ import lombok.NonNull;
  * 该类继承自{@link ConvertedInclude}，在转换服务包含的基础上，
  * 提供配置结果状态的透传能力，适用于需要动态转换服务配置类型的场景。
  *
- * <p><b>核心特性：</b>
- * <ul>
- *   <li>类型转换：通过函数式接口将{@link Stream<S>}转换为{@link Stream<T>}</li>
- *   <li>状态透传：配置结果状态（完成、成功、失败原因）直接透传给目标配置实例</li>
- *   <li>链式转换：支持通过{@link #map}方法进行多层级配置类型转换</li>
- * </ul>
- *
  * @param <S> 源服务配置实例类型
  * @param <T> 目标服务配置实例类型
- * @param <W> 源配置实现类型（需实现{@link Configured<S>}）
+ * @param <W> 源配置实现类型（需实现{@link Configured}）
  * 
  * @author soeasy.run
  * @see ConvertedInclude

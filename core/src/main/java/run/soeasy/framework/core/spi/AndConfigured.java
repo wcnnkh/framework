@@ -11,7 +11,7 @@ import run.soeasy.framework.core.exchange.Registration;
  * 适用于需要同时管理多个配置操作生命周期的场景，如资源注册与配置的批量管理。
  *
  * @param <S> 服务实例的类型
- * @param <W> 被包装的配置实例类型（需实现{@link Configured<S>}）
+ * @param <W> 被包装的配置实例类型（需实现{@link Configured}）
  * 
  * @author soeasy.run
  * @see AndInclude

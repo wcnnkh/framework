@@ -52,7 +52,7 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  *
  * @param <K> 键的类型
  * @param <V> 值的类型
- * @param <M> 存储注册的Map类型，需继承{@link Map}&lt;{@link K}, {@link EntryRegistration}&lt;{@link K}, {@link V}&gt;&gt;
+ * @param <M> 存储注册的Map类型，需继承{@link Map}
  * 
  * @author soeasy.run
  * @see KeyValueRegistry

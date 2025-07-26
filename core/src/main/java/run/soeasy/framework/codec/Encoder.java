@@ -3,7 +3,6 @@ package run.soeasy.framework.codec;
 import java.util.function.BiPredicate;
 
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.collection.Elements;
 
 /**
  * 编码器接口，定义数据编码转换的标准，扩展自{@link BiPredicate}以支持编码结果验证，
@@ -14,7 +13,6 @@ import run.soeasy.framework.core.collection.Elements;
  * <ul>
  * <li>函数式设计：可作为lambda表达式或方法引用的目标类型</li>
  * <li>双向验证：通过{@link #test(Object, Object)}验证编码结果正确性</li>
- * <li>批量处理：通过{@link #encodeAll(Elements)}实现集合批量编码</li>
  * <li>链式组合：通过{@link #fromEncoder(Encoder)}和{@link #toEncoder(Encoder)}组合编码器</li>
  * <li>身份编码：通过{@link #identity()}获取不改变数据的编码器</li>
  * </ul>

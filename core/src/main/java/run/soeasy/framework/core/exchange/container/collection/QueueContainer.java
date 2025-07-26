@@ -23,7 +23,7 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * </ul>
  *
  * @param <E> 注册元素的类型
- * @param <Q> 存储注册元素的队列类型，需继承{@link Queue}&lt;{@link ElementRegistration}&lt;{@link E}&gt;&gt;
+ * @param <Q> 存储注册元素的队列类型，需继承{@link Queue}
  * 
  * @author soeasy.run
  * @see CollectionContainer

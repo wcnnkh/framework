@@ -24,7 +24,7 @@ package run.soeasy.framework.codec;
  * 
  * @author soeasy.run
  * @param <E> 编码数据类型（源数据和编码结果类型相同）
- * @param <W> 被包装的多重编码器类型（必须实现{@link MultipleEncoder<E>}）
+ * @param <W> 被包装的多重编码器类型（必须实现{@link MultipleEncoder}）
  * @see MultipleEncoder
  * @see EncoderWrapper
  */

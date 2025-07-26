@@ -22,8 +22,8 @@ import run.soeasy.framework.core.exchange.Receipt;
  *
  * @param <S> 源容器存储的类型（内部类型）
  * @param <T> 对外暴露的目标类型
- * @param <R> 源容器的注册类型，需继承{@link PayloadRegistration}&lt;{@link S}&gt;
- * @param <W> 被包装的源容器类型，需继承{@link Container}&lt;{@link S}, {@link R}&gt;
+ * @param <R> 源容器的注册类型，需继承{@link PayloadRegistration}
+ * @param <W> 被包装的源容器类型，需继承{@link Container}
  * 
  * @author soeasy.run
  * @see MappedRegistry

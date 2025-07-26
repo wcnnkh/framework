@@ -15,11 +15,6 @@ package run.soeasy.framework.core.execute;
  *   <li>类型安全：通过泛型约束确保包装器与被包装对象的类型一致性</li>
  * </ul>
  *
- * <p><b>泛型说明：</b>
- * <ul>
- *   <li>{@code W}：被包装的方法调用上下文类型，需实现{@link Invocation}</li>
- * </ul>
- *
  * <p><b>使用场景：</b>
  * <ul>
  *   <li>参数校验：在方法调用前验证参数合法性</li>

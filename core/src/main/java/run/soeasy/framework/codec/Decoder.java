@@ -1,7 +1,5 @@
 package run.soeasy.framework.codec;
 
-import run.soeasy.framework.core.collection.Elements;
-
 /**
  * 解码器接口，定义数据解码转换的标准，支持泛型类型参数实现不同类型数据的解码转换，
  * 适用于数据解密、格式解析等场景，与{@link Encoder}接口形成编解码闭环。
@@ -10,7 +8,6 @@ import run.soeasy.framework.core.collection.Elements;
  * <b>核心特性：</b>
  * <ul>
  * <li>函数式设计：可作为lambda表达式或方法引用的目标类型</li>
- * <li>批量处理：通过{@link #decodeAll(Elements)}实现集合批量解码</li>
  * <li>链式组合：通过{@link #fromDecoder(Decoder)}和{@link #toDecoder(Decoder)}组合解码器</li>
  * <li>身份解码：通过{@link #identity()}获取不改变数据的解码器</li>
  * </ul>

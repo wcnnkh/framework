@@ -43,7 +43,7 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * </ul>
  *
  * @param <E> 注册元素的类型
- * @param <C> 存储注册元素的集合类型，需继承{@link Collection}&lt;{@link ElementRegistration}&lt;{@link E}&gt;&gt;
+ * @param <C> 存储注册元素的集合类型，需继承{@link Collection}
  * 
  * @author soeasy.run
  * @see AbstractContainer

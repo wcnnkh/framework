@@ -24,7 +24,7 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * </ul>
  *
  * @param <E> 注册元素的类型
- * @param <C> 存储注册元素的列表类型，需继承{@link List}&lt;{@link ElementRegistration}&lt;{@link E}&gt;&gt;
+ * @param <C> 存储注册元素的列表类型
  * 
  * @author soeasy.run
  * @see CollectionContainer
