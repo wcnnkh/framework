@@ -412,9 +412,10 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
     /**
      * 在指定段上执行任务
      * 
+     * @param <T>  任务返回的结果类型
      * @param key  键
      * @param task 任务
-     * @return 任务执行结果
+     * @return 任务执行结果，类型为T
      */
     private <T> T doTask(Object key, Task<T> task) {
         int hash = getHash(key);
@@ -512,10 +513,11 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
         /**
          * 在段上执行任务，执行期间会锁定段
          * 
+         * @param <T>  任务返回的结果类型
          * @param hash 键的哈希值
          * @param key  键
          * @param task 任务
-         * @return 任务执行结果
+         * @return 任务执行结果，类型为T
          */
         public <T> T doTask(final int hash, final Object key, final Task<T> task) {
             boolean resize = task.hasOption(TaskOption.RESIZE);
@@ -702,17 +704,23 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
     protected interface Reference<K, V> {
 
         /**
-         * 获取引用的条目，若条目已被垃圾回收则返回null
+         * 获取引用的条目
+         * 
+         * @return 引用的条目；若条目已被垃圾回收，则返回null
          */
         Entry<K, V> get();
 
         /**
          * 获取引用的哈希值
+         * 
+         * @return 引用的哈希值，用于哈希表索引
          */
         int getHash();
 
         /**
          * 获取链表中的下一个引用
+         * 
+         * @return 链表中的下一个引用；若当前引用是链表末尾，则返回null
          */
         Reference<K, V> getNext();
 
@@ -1032,30 +1040,21 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
             this.nextReference = next;
         }
 
-        /**
-         * 返回此引用的哈希值，用于快速查找
-         * 
-         * @return 哈希值
-         */
+        @Override
+        public Entry<K, V> get() {
+            return super.get();
+        }
+
         @Override
         public int getHash() {
             return this.hash;
         }
 
-        /**
-         * 返回链表中的下一个引用，形成哈希冲突时的链表结构
-         * 
-         * @return 下一个引用，若无则返回null
-         */
         @Override
         public Reference<K, V> getNext() {
             return this.nextReference;
         }
 
-        /**
-         * 释放此引用，将其加入引用队列以便清理
-         * 同时清除引用以加速垃圾回收
-         */
         @Override
         public void release() {
             enqueue();
@@ -1079,30 +1078,21 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
             this.nextReference = next;
         }
 
-        /**
-         * 返回此引用的哈希值，用于快速查找
-         * 
-         * @return 哈希值
-         */
+        @Override
+        public Entry<K, V> get() {
+            return super.get();
+        }
+
         @Override
         public int getHash() {
             return this.hash;
         }
 
-        /**
-         * 返回链表中的下一个引用，形成哈希冲突时的链表结构
-         * 
-         * @return 下一个引用，若无则返回null
-         */
         @Override
         public Reference<K, V> getNext() {
             return this.nextReference;
         }
 
-        /**
-         * 释放此引用，将其加入引用队列以便清理
-         * 同时清除引用以加速垃圾回收
-         */
         @Override
         public void release() {
             enqueue();

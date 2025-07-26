@@ -13,8 +13,8 @@ import lombok.NonNull;
  * <ul>
  *   <li>键值访问：提供获取键和值的方法</li>
  *   <li>反转操作：通过{@link #reversed()}支持键值对的反转</li>
- *   <li>灵活创建：通过静态工厂方法{@link #of(Object, Object)}创建实例</li>
- *   <li>兼容性：通过{@link #wrap(Entry)}支持包装标准Map.Entry</li>
+ *   <li>灵活创建：通过静态工厂方法{@link KeyValue#of(Object, Object)}创建实例</li>
+ *   <li>兼容性：通过{@link KeyValue#wrap(Entry)}支持包装标准Map.Entry</li>
  * </ul>
  *
  * <p>使用场景：
@@ -49,32 +49,6 @@ import lombok.NonNull;
 public interface KeyValue<K, V> {
 
     /**
-     * 获取键值对的键。
-     *
-     * @return 键，可能为null（取决于具体实现）
-     */
-    K getKey();
-
-    /**
-     * 获取键值对的值。
-     *
-     * @return 值，可能为null（取决于具体实现）
-     */
-    V getValue();
-
-    /**
-     * 创建当前键值对的反转版本，即键变为值，值变为键。
-     * <p>
-     * 反转后的键值对类型为{@code KeyValue<V, K>}。
-     * 该操作不会修改原始键值对，而是返回一个新的实例。
-     *
-     * @return 反转后的键值对
-     */
-    default KeyValue<V, K> reversed() {
-        return new ReversedKeyValue<>(this);
-    }
-
-    /**
      * 创建一个包含指定键和值的键值对实例。
      * <p>
      * 该方法返回一个不可变的键值对实现，支持键和值为null。
@@ -103,5 +77,31 @@ public interface KeyValue<K, V> {
      */
     public static <K, V> KeyValue<K, V> wrap(@NonNull Entry<K, V> entry) {
         return (EntryWrapper<K, V, Entry<K, V>>) () -> entry;
+    }
+
+    /**
+     * 获取键值对的键。
+     *
+     * @return 键，可能为null（取决于具体实现）
+     */
+    K getKey();
+
+    /**
+     * 获取键值对的值。
+     *
+     * @return 值，可能为null（取决于具体实现）
+     */
+    V getValue();
+
+    /**
+     * 创建当前键值对的反转版本，即键变为值，值变为键。
+     * <p>
+     * 反转后的键值对类型为{@code KeyValue<V, K>}。
+     * 该操作不会修改原始键值对，而是返回一个新的实例。
+     *
+     * @return 反转后的键值对
+     */
+    default KeyValue<V, K> reversed() {
+        return new ReversedKeyValue<>(this);
     }
 }

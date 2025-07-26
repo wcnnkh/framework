@@ -270,6 +270,7 @@ public final class RandomUtils {
      * 新数组长度为newLength，元素从源数组中随机选取。
      * 源数组长度为0时返回同类型的空数组。
      *
+     * @param <T> 源级数泛型
      * @param random    随机数生成器，不可为null
      * @param sourceArray 源数组，不可为null
      * @param newLength 新数组长度，必须大于0

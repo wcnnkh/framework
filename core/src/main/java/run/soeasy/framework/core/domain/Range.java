@@ -93,7 +93,7 @@ public final class Range<T> implements Serializable {
      * @param <U>       目标类型
      * @return 转换后的新范围实例
      */
-    public <U, E> Range<U> convert(Function<? super T, ? extends U> converter) {
+    public <U> Range<U> convert(Function<? super T, ? extends U> converter) {
         return new Range<U>(lowerBound.convert(converter), upperBound.convert(converter));
     }
 

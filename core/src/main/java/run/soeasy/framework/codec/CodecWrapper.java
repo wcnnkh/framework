@@ -25,7 +25,7 @@ package run.soeasy.framework.codec;
  * @author soeasy.run
  * @param <D> 源数据类型（解码后类型，编码前类型）
  * @param <E> 目标数据类型（编码后类型，解码前类型）
- * @param <W> 被包装的编解码器类型（必须实现{@link Codec<D, E>}）
+ * @param <W> 被包装的编解码器类型（必须实现{@link Codec}）
  * @see Codec
  * @see EncoderWrapper
  * @see DecoderWrapper
