@@ -10,11 +10,11 @@ import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 /**
- * JDBC连接包装类，继承自{@link JdbcWrapped<Connection>}，用于包装数据库连接（{@link Connection}），
+ * JDBC连接包装类，继承自{@link JdbcWrapped}，用于包装数据库连接（{@link Connection}），
  * 提供创建各类Statement（{@link Statement}、{@link PreparedStatement}、{@link CallableStatement}）的便捷方法，
  * 结合{@link Pipeline}实现连接与语句的链式操作，统一管理数据库连接的生命周期与异常处理。
  * 
- * <p>该类通过包装连接的管道（{@link Pipeline<Connection, SQLException>}），将连接的操作转换为函数式管道调用，
+ * <p>该类通过包装连接的管道（{@link Pipeline}），将连接的操作转换为函数式管道调用，
  * 支持创建Statement时指定自定义创建逻辑，并自动绑定语句的关闭操作，简化JDBC连接与语句的联动管理。
  * 
  * @author soeasy.run

@@ -42,7 +42,7 @@ public class ExecutionInterceptorChain implements ExecutionInterceptor {
 	 * <p>
 	 * 处理逻辑： 1.
 	 * 若迭代器存在下一个拦截器，调用该拦截器的{@link ExecutionInterceptor#intercept(Execution)}方法，
-	 * 并将当前执行上下文传递给它（拦截器内部可通过{@link Execution#proceed()}继续触发后续流程）； 2.
+	 * 并将当前执行上下文传递给它（拦截器内部可通过{@link Execution#execute()}继续触发后续流程）； 2.
 	 * 若所有拦截器已执行完毕（迭代器无下一个元素），则执行{@code nextChain}（目标逻辑），
 	 * 若{@code nextChain}为null，返回null。
 	 * 

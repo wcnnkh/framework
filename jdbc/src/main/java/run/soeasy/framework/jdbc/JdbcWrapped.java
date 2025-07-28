@@ -12,7 +12,7 @@ import run.soeasy.framework.core.function.PipelineWrapper;
  * 用于包装处理JDBC结果的{@link Pipeline}对象，统一管理JDBC操作中的管道处理流程与异常（{@link SQLException}），
  * 提供JDBC场景下管道操作的标准化包装实现。
  * 
- * <p>该类通过包装{@link Pipeline<T, SQLException>}，将JDBC相关的结果处理、异常传递与管道模式结合，
+ * <p>该类通过包装{@link Pipeline}，将JDBC相关的结果处理、异常传递与管道模式结合，
  * 便于构建链式的JDBC操作流程（如查询结果处理、数据转换、异常捕获等）。
  * 
  * @param <T> 管道处理的结果类型

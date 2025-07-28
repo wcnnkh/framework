@@ -9,7 +9,7 @@ import run.soeasy.framework.core.execute.ExecutableTemplate;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**
- * AOP代理核心接口，继承自{@link ExecutableTemplate}和{@link AnnotatedElementWrapper<AnnotatedElement>}，
+ * AOP代理核心接口，继承自{@link ExecutableTemplate}和{@link AnnotatedElementWrapper}，
  * 定义了代理对象的执行规范与注解元素访问能力，是AOP框架中封装代理逻辑、执行目标方法并整合注解信息的核心契约。
  * 
  * <p>该接口整合了可执行模板（支持参数化执行）与注解元素包装（支持访问代理目标的注解信息），

@@ -99,7 +99,7 @@ public class ResultSetProperties implements TypedProperties {
      * <p>将输入索引（0-based）转换为ResultSet的列索引（1-based），创建{@link ResultSetColumnAccessor}，
      * 并设置预加载的元数据以避免重复获取，提高性能。
      * 
-     * @param index 列索引（0-based，需满足0 ≤ index < 列总数，否则抛出IndexOutOfBoundsException）
+     * @param index 列索引（0-based，需满足0 ≤ index &lt; 列总数，否则抛出IndexOutOfBoundsException）
      * @return 对应列的{@link ResultSetColumnAccessor}实例
      * @throws IndexOutOfBoundsException 当索引超出有效范围时抛出
      */

@@ -10,7 +10,7 @@ import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 
 /**
- * JDBC预编译语句包装类，继承自{@link StatementWrapped<T>}，泛型限定为{@link PreparedStatement}及其子类，
+ * JDBC预编译语句包装类，继承自{@link StatementWrapped}，泛型限定为{@link PreparedStatement}及其子类，
  * 封装了预编译语句（{@link PreparedStatement}）的核心操作（执行、更新、查询、参数设置、批处理等），
  * 结合{@link Pipeline}提供链式调用能力，统一处理预编译语句的生命周期与{@link SQLException}，
  * 是JDBC中参数化SQL执行的核心组件。

@@ -49,7 +49,7 @@ public interface InvocationInterceptor extends ExecutionInterceptor {
      * 拦截方法调用（核心方法，需由实现类提供具体增强逻辑）
      * 
      * <p>实现类通过此方法对方法调用进行增强，可通过{@link Invocation}获取调用详情（目标对象、方法、参数等），
-     * 并通过{@link Invocation#proceed()}触发后续执行（如调用目标方法或下一个拦截器）。
+     * 并通过{@link Invocation#execute()}触发后续执行（如调用目标方法或下一个拦截器）。
      * 
      * @param invocation 方法调用上下文（非空，包含方法调用的完整信息）
      * @return 方法调用结果（目标方法的返回值或经拦截器处理后的结果）
