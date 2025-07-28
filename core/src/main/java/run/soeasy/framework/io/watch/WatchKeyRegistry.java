@@ -8,7 +8,7 @@ import run.soeasy.framework.core.exchange.container.ElementRegistration;
 import run.soeasy.framework.core.exchange.container.collection.ArrayListContainer;
 
 /**
- * WatchKey注册容器，继承自{@link ArrayListContainer<WatchKey>}，专门用于管理{@link WatchKey}的注册与生命周期，
+ * WatchKey注册容器，继承自{@link ArrayListContainer}，专门用于管理{@link WatchKey}的注册与生命周期，
  * 核心功能是自动清理无效的{@link WatchKey}，确保容器中仅保留有效的监控键，适用于多目录文件系统监控场景（如批量管理WatchService的监控键）。
  * 
  * <p>设计目的：
@@ -37,7 +37,7 @@ public class WatchKeyRegistry extends ArrayListContainer<WatchKey> {
      * 
      * <p>清理逻辑：
      * 1. 调用父类{@link ArrayListContainer#cleanup()}执行基础清理；
-     * 2. 通过迭代器遍历所有注册的{@link ElementRegistration<WatchKey>}；
+     * 2. 通过迭代器遍历所有注册的{@link ElementRegistration}；
      * 3. 移除{@link WatchKey#isValid()}返回false的注册项（无效的WatchKey无法再接收事件，需清理）。
      * 
      * <p>注：{@link WatchKey}无效通常是因为对应的监控目录被删除、监控被取消或系统级错误，此时需从容器中移除以释放资源。

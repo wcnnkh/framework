@@ -62,8 +62,8 @@ public final class Bound<T> extends ValueThrowingOptional<T, RuntimeException> {
     /**
      * 边界包含标志：
      * <ul>
-     *   <li>true表示包含边界值（如<=或>=）</li>
-     *   <li>false表示不包含边界值（如<或>）</li>
+     *   <li>true表示包含边界值（如&lt;=或&gt;=）</li>
+     *   <li>false表示不包含边界值（如&lt;或&gt;）</li>
      * </ul>
      */
     private final boolean inclusive;

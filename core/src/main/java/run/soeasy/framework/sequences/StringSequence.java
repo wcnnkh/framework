@@ -3,7 +3,7 @@ package run.soeasy.framework.sequences;
 import lombok.NonNull;
 
 /**
- * 字符串序列生成器接口，扩展自{@link Sequence<String>}并标记为函数式接口，
+ * 字符串序列生成器接口，扩展自{@link Sequence}并标记为函数式接口，
  * 提供字符串序列生成功能，支持动态指定长度和链式调用，适用于ID生成、序列号生成等场景。
  * 
  * <p><b>核心特性：</b>

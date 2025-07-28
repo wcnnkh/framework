@@ -11,7 +11,7 @@ import run.soeasy.framework.io.Exportable;
 
 /**
  * 可格式化消息类，支持带占位符的消息格式化和导出，
- * 实现{@link Exportable}、{@link Serializable}和{@link Supplier<String>}接口，
+ * 实现{@link Exportable}、{@link Serializable}和{@link Supplier}接口，
  * 适用于日志消息、错误信息等需要动态填充参数的场景。
  * 
  * <p>

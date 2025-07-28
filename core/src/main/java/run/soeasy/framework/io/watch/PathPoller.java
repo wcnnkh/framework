@@ -63,7 +63,7 @@ public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
     }
 
     /**
-     * 将文件系统事件（{@link WatchEvent<Path>}）转换为资源变更事件（{@link ChangeEvent<T>}）
+     * 将文件系统事件（{@link WatchEvent}）转换为资源变更事件（{@link ChangeEvent<T>}）
      * 
      * <p>转换逻辑：
      * 1. 根据{@link WatchEvent#kind()}映射{@link ChangeType}（CREATE/DELETE/UPDATE）；
@@ -178,7 +178,7 @@ public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
     }
 
     /**
-     * 发布文件系统事件集合（{@link WatchEvent<Path>}），转换为{@link ChangeEvent}后通过发布者发布
+     * 发布文件系统事件集合（{@link WatchEvent}），转换为{@link ChangeEvent}后通过发布者发布
      * 
      * @param watchEvents 待发布的文件系统事件集合（非空）
      * @return 发布结果（{@link Receipt}），表示事件发布的状态
@@ -229,7 +229,7 @@ public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
      * 处理指定集合中的{@link WatchKey}，提取事件并发布
      * 
      * <p>处理逻辑：
-     * 对每个WatchKey创建{@link WatchKeyPoller<Path>}，调用其{@link WatchKeyPoller#run()}提取事件，
+     * 对每个WatchKey创建{@link WatchKeyPoller}，调用其{@link WatchKeyPoller#run()}提取事件，
      * 通过{@link #publishWatchEvents}发布转换后的变更事件。
      * 
      * @param watchKeys 待处理的WatchKey集合（非空）

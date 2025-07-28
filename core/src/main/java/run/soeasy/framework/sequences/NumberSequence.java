@@ -3,7 +3,7 @@ package run.soeasy.framework.sequences;
 import lombok.NonNull;
 
 /**
- * 数字序列生成器接口，扩展自{@link Sequence<Number>}接口， 专门用于生成数字类型的序列值，支持步长控制、范围限制和默认实现，
+ * 数字序列生成器接口，扩展自{@link Sequence}接口， 专门用于生成数字类型的序列值，支持步长控制、范围限制和默认实现，
  * 适用于需要生成连续数字序列的场景。
  * 
  * <p>

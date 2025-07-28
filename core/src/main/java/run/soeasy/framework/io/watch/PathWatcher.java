@@ -20,7 +20,7 @@ import run.soeasy.framework.io.FileResource;
 import run.soeasy.framework.io.PathResource;
 
 /**
- * 路径监控器，继承自{@link Poller}，实现{@link Registry<T>}、{@link Lifecycle}和{@link ElementsWrapper}接口，
+ * 路径监控器，继承自{@link Poller}，实现{@link Registry}、{@link Lifecycle}和{@link ElementsWrapper}接口，
  * 用于集中管理文件资源（{@link FileResource}）的监控逻辑，通过协调{@link PathPoller}和{@link WatchService}实现文件系统事件的批量处理，
  * 并将资源变更事件通过{@link Publisher}发布，适用于需要监控多个文件资源变化的场景（如目录下多文件监控、批量文件变更追踪）。
  * 
@@ -43,14 +43,14 @@ public class PathWatcher<T extends PathResource> extends Poller
 		implements Registry<T>, Lifecycle, ElementsWrapper<T, Elements<T>> {
 
     /**
-     * 内部注册中心，用于管理{@link PathPoller<T>}实例（每个文件资源对应一个PathPoller），
+     * 内部注册中心，用于管理{@link PathPoller}实例（每个文件资源对应一个PathPoller），
      * 负责PathPoller的注册、移除等生命周期管理，实现监控逻辑的分发。
      */
     @NonNull
     private final Registry<PathPoller<T>> registry;
 
     /**
-     * 变更事件发布者（非空），用于将文件资源的变更事件（{@link ChangeEvent<T>}）发布给订阅者，
+     * 变更事件发布者（非空），用于将文件资源的变更事件（{@link ChangeEvent}）发布给订阅者，
      * 实现监控结果的对外通知（如业务层可订阅事件进行后续处理）。
      */
     @NonNull
@@ -83,7 +83,7 @@ public class PathWatcher<T extends PathResource> extends Poller
     /**
      * 获取所有已注册的文件资源（{@link T}）集合
      * 
-     * <p>通过内部注册中心{@link #registry}的映射操作，将注册的{@link PathPoller<T>}转换为其关联的{@link T}资源，
+     * <p>通过内部注册中心{@link #registry}的映射操作，将注册的{@link PathPoller}转换为其关联的{@link T}资源，
      * 提供对监控目标资源的直接访问（如统计监控数量、展示监控列表）。
      * 
      * @return 已注册的文件资源集合（非空，可能为空集合）
@@ -100,7 +100,7 @@ public class PathWatcher<T extends PathResource> extends Poller
      * <p>执行流程：
      * 1. 调用{@link WatchService#poll(long, TimeUnit)}获取文件系统事件键（{@link WatchKey}），超时则返回null；
      * 2. 若获取事件时被中断（{@link InterruptedException}），直接返回（结束本次轮询）；
-     * 3. 遍历内部注册的所有{@link PathPoller<T>}，调用其{@code run(Elements.singleton(watchKey))}处理事件；
+     * 3. 遍历内部注册的所有{@link PathPoller}，调用其{@code run(Elements.singleton(watchKey))}处理事件；
      * 4. 无论事件处理结果如何，在finally块中调用{@link PathPoller#run()}执行后续操作（如状态更新）。
      * 
      * <p>注：此方法通过轮询持续获取事件，确保文件系统的变更能被及时捕获并处理。
@@ -144,9 +144,9 @@ public class PathWatcher<T extends PathResource> extends Poller
      * 批量注册文件资源（{@link T}）到监控器
      * 
      * <p>注册逻辑：
-     * 1. 对输入的每个{@link T}资源，创建对应的{@link PathPoller<T>}（关联资源和事件发布者{@link #publisher}）；
+     * 1. 对输入的每个{@link T}资源，创建对应的{@link PathPoller}（关联资源和事件发布者{@link #publisher}）；
      * 2. 若监控器尚未运行（{@link #isRunning()}为false），调用{@link #start()}启动监控；
-     * 3. 将创建的{@link PathPoller<T>}注册到内部{@link #registry}，完成资源与监控逻辑的绑定。
+     * 3. 将创建的{@link PathPoller}注册到内部{@link #registry}，完成资源与监控逻辑的绑定。
      * 
      * @param elements 待注册的文件资源集合（非空，包含一个或多个T实例）
      * @return 注册结果（{@link Registration}），表示批量注册的状态

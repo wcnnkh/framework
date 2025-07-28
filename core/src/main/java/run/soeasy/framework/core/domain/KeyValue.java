@@ -1,5 +1,6 @@
 package run.soeasy.framework.core.domain;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.NonNull;
@@ -13,8 +14,8 @@ import lombok.NonNull;
  * <ul>
  *   <li>键值访问：提供获取键和值的方法</li>
  *   <li>反转操作：通过{@link #reversed()}支持键值对的反转</li>
- *   <li>灵活创建：通过静态工厂方法{@link KeyValue#of(Object, Object)}创建实例</li>
- *   <li>兼容性：通过{@link KeyValue#wrap(Entry)}支持包装标准Map.Entry</li>
+ *   <li>灵活创建：通过静态工厂方法{@link #of(Object, Object)}创建实例</li>
+ *   <li>兼容性：通过{@link #wrap(Map.Entry)}支持包装标准Map.Entry</li>
  * </ul>
  *
  * <p>使用场景：
@@ -69,14 +70,14 @@ public interface KeyValue<K, V> {
      * 该方法提供了与Java标准库的兼容性，允许将Map中的Entry转换为KeyValue接口。
      * 包装后的实例会直接代理{@link Entry}的getKey()和getValue()方法。
      *
-     * @param <K>   键的类型
-     * @param <V>   值的类型
+     * @param <S>   键的类型
+     * @param <T>   值的类型
      * @param entry 要包装的Entry，不可为null
      * @return 包装后的KeyValue实例
      * @throws NullPointerException 如果entry为null
      */
-    public static <K, V> KeyValue<K, V> wrap(@NonNull Entry<K, V> entry) {
-        return (EntryWrapper<K, V, Entry<K, V>>) () -> entry;
+    public static <S, T> KeyValue<S, T> wrap(@NonNull Entry<S, T> entry) {
+        return (EntryWrapper<S, T, Entry<S, T>>) () -> entry;
     }
 
     /**
