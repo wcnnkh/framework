@@ -10,10 +10,10 @@ import lombok.NonNull;
  * 
  * <p>该类定义了以下自定义日志级别：
  * <ul>
- *   <li>{@link #TRACE}：比FINER更详细的跟踪日志（数值：{@value Level#FINER#intValue()}）</li>
- *   <li>{@link #DEBUG}：调试日志（数值：{@value Level#FINE#intValue()}）</li>
- *   <li>{@link #WARN}：警告日志（数值：{@value Level#WARNING#intValue()}）</li>
- *   <li>{@link #ERROR}：错误日志（数值：{@value Level#SEVERE#intValue()}）</li>
+ *   <li>{@link #TRACE}：比FINER更详细的跟踪日志（数值：{@link Level#FINER}）</li>
+ *   <li>{@link #DEBUG}：调试日志（数值：{@link Level#FINE}）</li>
+ *   <li>{@link #WARN}：警告日志（数值：{@link Level#WARNING}）</li>
+ *   <li>{@link #ERROR}：错误日志（数值：{@link Level#SEVERE}）</li>
  * </ul>
  * 
  * <p><b>核心特性：</b>

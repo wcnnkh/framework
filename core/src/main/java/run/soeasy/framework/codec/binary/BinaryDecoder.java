@@ -17,7 +17,7 @@ import run.soeasy.framework.io.BufferConsumer;
  * <b>核心特性：</b>
  * <ul>
  * <li>多源解码：支持从字节数组、{@link InputStream}、文件等数据源读取字节</li>
- * <li>多次解码：通过{@link #decode(byte[], int)}实现指定次数的连续解码</li>
+ * <li>多次解码：通过{@link MultipleDecoder#decode(Object, int)}实现指定次数的连续解码</li>
  * <li>流式处理：基于输入流/输出流的分段解码设计，支持大文件高效处理</li>
  * <li>组合扩展：通过{@link #fromDecoder}和{@link #toDecoder}组合多级解码器形成处理链</li>
  * </ul>
@@ -57,7 +57,7 @@ public interface BinaryDecoder extends FromBinaryDecoder<byte[]>, ToBinaryDecode
 	default byte[] decode(byte[] source) throws CodecException {
 		return FromBinaryDecoder.super.decode(source);
 	}
-
+	
 	@Override
 	default <S extends Throwable> void decode(byte[] source,
 			@NonNull BufferConsumer<? super byte[], ? extends S> target) throws CodecException, IOException, S {

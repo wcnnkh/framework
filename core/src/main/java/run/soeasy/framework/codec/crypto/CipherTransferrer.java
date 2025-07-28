@@ -21,7 +21,7 @@ import run.soeasy.framework.io.IOUtils;
  * 
  * <p>
  * 该类通过配置{@link #chunkSize}（分块大小）控制数据处理方式： 1.
- * 当chunkSize>0时，按指定分块大小读取数据并使用{@link Cipher#doFinal(byte[], int, int)}处理每个分块 2.
+ * 当chunkSize&gt;0时，按指定分块大小读取数据并使用{@link Cipher#doFinal(byte[], int, int)}处理每个分块 2.
  * 当chunkSize≤0时，使用{@link Cipher#update(byte[], int, int)}处理流式数据，最后通过{@link Cipher#doFinal()}处理收尾数据
  * 
  * @author soeasy.run
@@ -53,7 +53,7 @@ public class CipherTransferrer extends AlgorithmTransferrer<Cipher> {
 	 * <p>
 	 * 处理流程根据{@link #chunkSize}分为两种模式：
 	 * <ul>
-	 * <li><strong>分块模式（chunkSize>0）</strong>：
+	 * <li><strong>分块模式（chunkSize&gt;0）</strong>：
 	 * 按chunkSize读取输入流数据，对每个分块调用{@link Cipher#doFinal(byte[], int, int)}处理，
 	 * 并将处理结果通过{@link BufferConsumer}输出</li>
 	 * <li><strong>流式模式（chunkSize≤0）</strong>：

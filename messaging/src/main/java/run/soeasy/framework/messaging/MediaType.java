@@ -534,10 +534,10 @@ public class MediaType extends MimeType implements Serializable {
      * 按特异性排序MediaType列表（特异性高的优先）
      * 
      * <p>排序规则（优先级从高到低）：
-     * 1. 主类型非通配符 > 主类型通配符（如{@code text/*} > {@code *&#47;*}）；
-     * 2. 主类型相同，子类型非通配符 > 子类型通配符（如{@code text/plain} > {@code text/*}）；
-     * 3. 子类型相同，质量因子高的 > 质量因子低的（如{@code text/plain;q=0.9} > {@code text/plain;q=0.5}）；
-     * 4. 质量因子相同，参数多的 > 参数少的（如{@code text/plain;charset=UTF-8} > {@code text/plain}）。
+     * 1. 主类型非通配符 &gt; 主类型通配符（如{@code text/*} &gt; {@code *&#47;*}）；
+     * 2. 主类型相同，子类型非通配符 &gt; 子类型通配符（如{@code text/plain} &gt; {@code text/*}）；
+     * 3. 子类型相同，质量因子高的 &gt; 质量因子低的（如{@code text/plain;q=0.9} &gt; {@code text/plain;q=0.5}）；
+     * 4. 质量因子相同，参数多的 &gt; 参数少的（如{@code text/plain;charset=UTF-8} &gt; {@code text/plain}）。
      * 
      * @param mediaTypes 待排序的列表（非null）
      * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">RFC 7231 Section 5.3.2</a>
@@ -552,10 +552,10 @@ public class MediaType extends MimeType implements Serializable {
      * 按质量因子排序MediaType列表（质量因子高的优先）
      * 
      * <p>排序规则（优先级从高到低）：
-     * 1. 质量因子高的 > 质量因子低的；
-     * 2. 质量因子相同，主类型非通配符 > 主类型通配符；
-     * 3. 主类型相同，子类型非通配符 > 子类型通配符；
-     * 4. 子类型相同，参数多的 > 参数少的。
+     * 1. 质量因子高的 &gt; 质量因子低的；
+     * 2. 质量因子相同，主类型非通配符 &gt; 主类型通配符；
+     * 3. 主类型相同，子类型非通配符 &gt; 子类型通配符；
+     * 4. 子类型相同，参数多的 &gt; 参数少的。
      * 
      * @param mediaTypes 待排序的列表（非null）
      */

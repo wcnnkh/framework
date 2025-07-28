@@ -33,7 +33,7 @@ public interface BinaryTransferrerWrapper<W extends BinaryTransferrer> extends B
 	 * <ul>
 	 * <li>次数≤0：不执行任何传输</li>
 	 * <li>次数=1：直接使用被包装的传输器执行一次传输</li>
-	 * <li>次数>1：使用临时文件缓存中间结果，交替进行多次传输，最后将结果传输到目标</li>
+	 * <li>次数&gt;1：使用临时文件缓存中间结果，交替进行多次传输，最后将结果传输到目标</li>
 	 * </ul>
 	 * 
 	 * @param source     输入流，不可为null

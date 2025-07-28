@@ -314,7 +314,7 @@ public final class MimeTypeUtils {
     }
 
     /**
-     * 将MimeType列表转换为逗号分隔的字符串（如[text/plain, application/json] -> "text/plain, application/json"）
+     * 将MimeType列表转换为逗号分隔的字符串（如[text/plain, application/json] -&gt; "text/plain, application/json"）
      * 
      * @param mimeTypes 待转换的MimeType列表
      * @return 逗号分隔的MIME类型字符串（非null）
@@ -335,9 +335,9 @@ public final class MimeTypeUtils {
      * 按特异性排序MimeType列表（具体类型优先于通配符类型）
      * 
      * <p>排序规则（优先级从高到低）：
-     * 1. 主类型非通配符 > 主类型通配符（如{@code text/*} > {@code *&#47;*}）；
-     * 2. 主类型相同，子类型非通配符 > 子类型通配符（如{@code text/plain} > {@code text/*}）；
-     * 3. 子类型相同，参数多的 > 参数少的（如{@code text/plain;charset=UTF-8} > {@code text/plain}）；
+     * 1. 主类型非通配符 &gt; 主类型通配符（如{@code text/*} &gt; {@code *&#47;*}）；
+     * 2. 主类型相同，子类型非通配符 &gt; 子类型通配符（如{@code text/plain} &gt; {@code text/*}）；
+     * 3. 子类型相同，参数多的 &gt; 参数少的（如{@code text/plain;charset=UTF-8} &gt; {@code text/plain}）；
      * 4. 主类型或子类型不同时，视为同等优先级，保持原有顺序。
      * 
      * @param mimeTypes 待排序的MimeType列表（非null）

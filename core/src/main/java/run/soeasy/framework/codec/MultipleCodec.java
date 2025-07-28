@@ -34,8 +34,8 @@ public interface MultipleCodec<T> extends Codec<T, T>, MultipleEncoder<T>, Multi
 	 * 会自动执行当前编解码器指定次数的编码或解码操作，等价于：
 	 * 
 	 * <pre>
-	 * MultipleCodec<T> original = ...;
-	 * MultipleCodec<T> fixed = original.multiple(3);
+	 * MultipleCodec&lt;T&gt; original = ...;
+	 * MultipleCodec&lt;T&gt; fixed = original.multiple(3);
 	 * // 以下两者效果相同
 	 * fixed.encode(data);  // 等价于 original.encode(data, 3)
 	 * fixed.decode(data);  // 等价于 original.decode(data, 3)
@@ -43,7 +43,7 @@ public interface MultipleCodec<T> extends Codec<T, T>, MultipleEncoder<T>, Multi
 	 * 
 	 * @param count 固定编解码次数（≥0）
 	 * @return 新的多重编解码器实例
-	 * @throws IllegalArgumentException 当count<0时抛出
+	 * @throws IllegalArgumentException 当count&lt;0时抛出
 	 */
 	@Override
 	default MultipleCodec<T> multiple(int count) {

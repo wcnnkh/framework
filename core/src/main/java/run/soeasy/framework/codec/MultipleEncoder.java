@@ -31,7 +31,7 @@ public interface MultipleEncoder<E> extends Encoder<E, E> {
 	 * 
 	 * <pre>
 	 * E result = source;
-	 * for (int i = 0; i < count; i++) {
+	 * for (int i = 0; i &lt; count; i++) {
 	 * 	result = encode(result);
 	 * }
 	 * return result;
@@ -41,7 +41,6 @@ public interface MultipleEncoder<E> extends Encoder<E, E> {
 	 * @param count  编码次数（≥0）
 	 * @return 经过指定次数编码后的数据
 	 * @throws CodecException          当编码过程中发生错误时抛出
-	 * @throws IllegalArgumentException 当count<0时抛出
 	 */
 	default E encode(E source, int count) throws CodecException {
 		E e = source;
@@ -57,8 +56,8 @@ public interface MultipleEncoder<E> extends Encoder<E, E> {
 	 * 返回的新编码器在调用{@link #encode(Object)}时， 会自动执行当前编码器指定次数的编码操作，等价于：
 	 * 
 	 * <pre>
-	 * MultipleEncoder<E> original = ...;
-	 * MultipleEncoder<E> fixed = original.multiple(3);
+	 * MultipleEncoder&lt;E&gt; original = ...;
+	 * MultipleEncoder&lt;E&gt; fixed = original.multiple(3);
 	 * // 以下两者效果相同
 	 * fixed.encode(data);
 	 * original.encode(data, 3);
@@ -66,7 +65,6 @@ public interface MultipleEncoder<E> extends Encoder<E, E> {
 	 * 
 	 * @param count 固定编码次数（≥0）
 	 * @return 新的多重编码器实例
-	 * @throws IllegalArgumentException 当count<0时抛出
 	 */
 	default MultipleEncoder<E> multiple(int count) {
 		return new MultipleEncoderWrapper<E, MultipleEncoder<E>>() {

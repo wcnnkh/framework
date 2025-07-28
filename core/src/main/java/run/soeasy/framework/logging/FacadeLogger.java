@@ -7,7 +7,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.domain.Wrapper;
 
 /**
- * 日志器装饰器类，继承自{@link AbstractLogger}并实现{@link Wrapper<Logger>}接口，
+ * 日志器装饰器类，继承自{@link AbstractLogger}并实现{@link Wrapper}接口，
  * 采用装饰器模式包装目标日志器，提供日志级别过滤和动态切换功能。
  * 
  * <p><b>核心特性：</b>

@@ -9,7 +9,7 @@ import run.soeasy.framework.core.transform.property.PropertyMapper;
 import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
 
 /**
- * Bean映射工具类，继承自{@link PropertyMapper<BeanProperty>}，专门用于处理JavaBean之间的属性复制与转换，
+ * Bean映射工具类，继承自{@link PropertyMapper}，专门用于处理JavaBean之间的属性复制与转换，
  * 封装了基于{@link BeanInfoFactory}的属性元数据解析逻辑，提供静态方法简化Bean属性复制操作，
  * 支持自定义属性映射过滤器，适配不同的属性复制规则。
  * 

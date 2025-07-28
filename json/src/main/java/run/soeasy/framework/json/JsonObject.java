@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 /**
- * JSON对象实现类，继承自{@link LinkedHashMap<String, JsonElement>}并实现{@link JsonElement}接口，
+ * JSON对象实现类，继承自{@link LinkedHashMap}并实现{@link JsonElement}接口，
  * 用于表示JSON格式中的对象结构（键值对集合），通过LinkedHashMap保持键的插入顺序，符合JSON对象的特性。
  * 
  * <p>该类负责将键值对集合序列化为符合JSON规范的对象字符串，支持键的转义处理和键值对的格式化输出，
@@ -38,7 +38,7 @@ public class JsonObject extends LinkedHashMap<String, JsonElement> implements Js
      * 
      * <p>处理流程：
      * 1. 输出对象起始符'{'；
-     * 2. 遍历所有键值对（{@link Entry<String, JsonElement>}）：
+     * 2. 遍历所有键值对（{@link Entry}）：
      *    - 键用双引号（"）包裹，且通过{@link JsonElement#escaping(String)}处理特殊字符转义；
      *    - 键后添加冒号（:）分隔键与值；
      *    - 调用值的{@link JsonElement#export(Appendable)}方法导出值的JSON表示；

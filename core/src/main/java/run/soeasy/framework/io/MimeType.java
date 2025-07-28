@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
@@ -132,10 +133,10 @@ public class MimeType implements CharsetCapable, Comparable<MimeType>, Serializa
      * 
      * @param type 主类型（非空）
      * @param subtype 子类型（非空）
-     * @param charset 字符集（非空，如{@link Charset#forName("UTF-8")}）
+     * @param charset 字符集（非空）
      * @throws IllegalArgumentException 若主类型、子类型或字符集参数包含非法字符
      */
-    public MimeType(String type, String subtype, Charset charset) {
+    public MimeType(@NonNull String type, @NonNull String subtype, @NonNull Charset charset) {
         this(type, subtype, Collections.singletonMap(PARAM_CHARSET, charset.name()));
     }
 
@@ -547,7 +548,7 @@ public class MimeType implements CharsetCapable, Comparable<MimeType>, Serializa
     }
 
     /**
-     * 按字母顺序比较两个MIME类型（主类型 -> 子类型 -> 参数数量 -> 参数名 -> 参数值）
+     * 按字母顺序比较两个MIME类型（主类型 -&gt; 子类型 -&gt; 参数数量 -&gt; 参数名 -&gt; 参数值）
      * 
      * @param other 另一个MIME类型（非空）
      * @return 比较结果（负整数、零、正整数分别表示当前对象小于、等于、大于另一个对象）
@@ -640,9 +641,9 @@ public class MimeType implements CharsetCapable, Comparable<MimeType>, Serializa
      * MIME类型特异性比较器，用于按特异性排序（具体类型优先于通配符类型）
      * 
      * <p>排序优先级：
-     * 1. 主类型非通配符 > 主类型通配符；
-     * 2. 主类型相同，子类型非通配符 > 子类型通配符；
-     * 3. 子类型相同，参数多的 > 参数少的。
+     * 1. 主类型非通配符 &gt; 主类型通配符；
+     * 2. 主类型相同，子类型非通配符 &gt; 子类型通配符；
+     * 3. 子类型相同，参数多的 &gt; 参数少的。
      * 
      * @param <T> MimeType子类
      */

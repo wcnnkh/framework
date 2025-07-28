@@ -22,13 +22,6 @@ import run.soeasy.framework.io.Resource;
  *   <li>空安全处理：资源为null或不存在时直接返回，避免NPE</li>
  * </ul>
  * 
- * <p><b>扩展方式：</b>
- * <ul>
- *   <li>实现{@link PropertiesResolver}接口并添加SPI服务配置</li>
- *   <li>通过{@link #register(PropertiesResolver)}手动注册解析器</li>
- *   <li>继承此类并重写服务加载逻辑（如指定类路径）</li>
- * </ul>
- * 
  * @author soeasy.run
  * @see PropertiesResolver
  * @see ConfigurableServices

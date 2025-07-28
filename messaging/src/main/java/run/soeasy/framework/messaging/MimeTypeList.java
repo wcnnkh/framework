@@ -11,9 +11,9 @@ import run.soeasy.framework.io.MimeTypeUtils;
  * 媒体类型列表实现类，继承自{@link StandardListElements}以提供基于{@link MediaType}的列表操作，
  * 同时实现{@link MediaTypes}接口以支持媒体类型集合的标准行为，是存储和处理有序媒体类型列表的核心实现。
  * 
- * <p>该类封装了一个{@link List<MediaType>}作为数据源，提供以下特性：
+ * <p>该类封装了一个{@link List}作为数据源，提供以下特性：
  * - 基于元素值的无序相等性判断（忽略元素顺序，仅比较内容是否完全一致）；
- * - 重写{@link #toString()}方法，使用{@link MimeTypeUtils#toString(Collection)}生成符合HTTP规范的媒体类型字符串（如"text/plain, application/json"）；
+ * - 重写{@link #toString()}方法，使用{@link MimeTypeUtils#toString(Iterable)}生成符合HTTP规范的媒体类型字符串（如"text/plain, application/json"）；
  * - 继承{@link StandardListElements}的所有列表操作能力，同时遵循{@link MediaTypes}接口定义的媒体类型集合行为。
  * 
  * @author soeasy.run

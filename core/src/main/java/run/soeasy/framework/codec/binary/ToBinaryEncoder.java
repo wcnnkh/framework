@@ -45,8 +45,8 @@ import run.soeasy.framework.io.Resource;
  * @see Encoder
  * @see Base64
  * @see HexCodec
- * @see MD5
- * @see SHA1
+ * @see MessageDigestEncoder#MD5
+ * @see MessageDigestEncoder#SHA1
  */
 @FunctionalInterface
 public interface ToBinaryEncoder<D> extends Encoder<D, byte[]> {
@@ -90,9 +90,9 @@ public interface ToBinaryEncoder<D> extends Encoder<D, byte[]> {
 	 * @param source 待编码的源数据，不可为null
 	 * @param target 结果消费者，不可为null
 	 * @param <E>    消费者可能抛出的异常类型
-	 * @throws IOException     IO操作失败时抛出
+	 * @throws IOException    IO操作失败时抛出
 	 * @throws CodecException 编码逻辑失败时抛出
-	 * @throws E               消费者处理异常时抛出
+	 * @throws E              消费者处理异常时抛出
 	 */
 	default <E extends Throwable> void encode(D source, @NonNull BufferConsumer<? super byte[], ? extends E> target)
 			throws IOException, CodecException, E {
@@ -126,7 +126,7 @@ public interface ToBinaryEncoder<D> extends Encoder<D, byte[]> {
 	 * @param source 待编码的源数据，不可为null
 	 * @param target 目标输出源，不可为null
 	 * @throws CodecException 编码逻辑失败时抛出
-	 * @throws IOException     输出源操作失败时抛出
+	 * @throws IOException    输出源操作失败时抛出
 	 */
 	default void encode(D source, @NonNull OutputSource target) throws IOException, CodecException {
 		OutputStream outputStream = target.getOutputStream();
@@ -144,7 +144,7 @@ public interface ToBinaryEncoder<D> extends Encoder<D, byte[]> {
 	 * 
 	 * @param source 待编码的源数据，不可为null
 	 * @param target 目标输出流，不可为null
-	 * @throws IOException     输出流写入失败时抛出
+	 * @throws IOException    输出流写入失败时抛出
 	 * @throws CodecException 编码逻辑失败时抛出
 	 */
 	void encode(D source, @NonNull OutputStream target) throws IOException, CodecException;

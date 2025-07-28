@@ -23,8 +23,8 @@ import run.soeasy.framework.io.InputSource;
  * <ul>
  * <li>多源编码：支持从字节数组、{@link InputStream}、{@link File}等数据源读取字节并编码</li>
  * <li>流式处理：基于输入流的分段编码设计，支持GB级大文件高效处理</li>
- * <li>结果验证：通过{@link #verify}方法实现编码结果与预期目标的一致性校验</li>
- * <li>链式组合：通过{@link #toEncoder}组合其他编码器形成多级编码流程</li>
+ * <li>结果验证：通过{@link #test(byte[], Object)}方法实现编码结果与预期目标的一致性校验</li>
+ * <li>链式组合：通过{@link #toEncoder(Encoder)}组合其他编码器形成多级编码流程</li>
  * </ul>
  * 
  * <p>
@@ -163,7 +163,7 @@ public interface FromBinaryEncoder<E> extends Encoder<byte[], E> {
 	 * 执行流程：
 	 * <ol>
 	 * <li>从输入源获取输入流</li>
-	 * <li>调用{@link #verify(InputStream, int, Object)}执行验证</li>
+	 * <li>调用{@link #test(InputSource, int, Object)}执行验证</li>
 	 * <li>确保输入流被正确关闭（无论是否发生异常）</li>
 	 * </ol>
 	 * 

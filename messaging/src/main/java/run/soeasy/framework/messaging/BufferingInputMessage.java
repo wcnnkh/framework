@@ -61,7 +61,7 @@ public class BufferingInputMessage<W extends InputMessage> extends Wrapped<W> im
     /**
      * 获取输入流的处理管道，用于链式处理输入流
      * 
-     * <p>管道通过{@link Pipeline#forSupplier(java.util.function.Supplier)}创建，
+     * <p>管道通过{@link Pipeline#forSupplier(run.soeasy.framework.core.function.ThrowingSupplier)}创建，
      * 关联{@link #getInputStream()}方法，确保每次获取的都是缓冲后的输入流。
      * 
      * @return 输入流处理管道（非空）

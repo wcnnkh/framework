@@ -7,7 +7,7 @@ import run.soeasy.framework.core.exchange.container.map.TreeSetContainer;
  * 同时实现{@link MediaTypes}接口以支持媒体类型集合的标准操作，是管理系统支持的媒体类型的核心组件。
  * 
  * <p>该类默认使用{@link MediaType#SPECIFICITY_COMPARATOR}作为排序器，确保集合中的媒体类型
- * 始终按特异性排序（具体类型优先于通配符类型，如{@code text/plain} > {@code text/*} > {@code *&#47;*}）。
+ * 始终按特异性排序（具体类型优先于通配符类型，如{@code text/plain} &gt; {@code text/*} &gt; {@code *&#47;*}）。
  * 
  * <p>主要用途：
  * - 集中管理系统支持的媒体类型（如注册、查询、移除）；

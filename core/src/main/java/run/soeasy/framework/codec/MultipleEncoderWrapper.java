@@ -13,15 +13,6 @@ package run.soeasy.framework.codec;
  * <li>类型安全：保持泛型类型一致性，确保包装前后的编码行为兼容</li>
  * </ul>
  * 
- * <p>
- * <b>使用场景：</b>
- * <ul>
- * <li>次数限制：限制最大编码次数，防止无限循环</li>
- * <li>过程监控：记录每次编码的耗时和结果</li>
- * <li>结果缓存：对相同输入和次数的编码结果进行缓存</li>
- * <li>参数校验：验证编码次数是否在有效范围内</li>
- * </ul>
- * 
  * @author soeasy.run
  * @param <E> 编码数据类型（源数据和编码结果类型相同）
  * @param <W> 被包装的多重编码器类型（必须实现{@link MultipleEncoder}）
@@ -47,7 +38,7 @@ public interface MultipleEncoderWrapper<E, W extends MultipleEncoder<E>>
 	 * @param count  编码次数（≥0）
 	 * @return 经过指定次数编码后的数据
 	 * @throws CodecException          当编码过程中发生错误时抛出
-	 * @throws IllegalArgumentException 当count<0时抛出
+	 * @throws IllegalArgumentException 当count&lt;0时抛出
 	 */
 	@Override
 	default E encode(E source, int count) throws CodecException {
@@ -65,7 +56,7 @@ public interface MultipleEncoderWrapper<E, W extends MultipleEncoder<E>>
 	 * 
 	 * @param count 固定编码次数（≥0）
 	 * @return 新的多重编码器实例
-	 * @throws IllegalArgumentException 当count<0时抛出
+	 * @throws IllegalArgumentException 当count&lt;0时抛出
 	 */
 	@Override
 	default MultipleEncoder<E> multiple(int count) {

@@ -15,16 +15,6 @@ package run.soeasy.framework.codec;
  * <li>链式组合：支持与其他编解码器组合，形成复杂的编解码流程</li>
  * </ul>
  * 
- * <p>
- * <b>使用场景：</b>
- * <ul>
- * <li>次数限制：限制最大编解码次数，防止无限循环</li>
- * <li>过程监控：记录每次编解码的耗时和结果</li>
- * <li>结果缓存：对相同输入和次数的编解码结果进行缓存</li>
- * <li>参数校验：验证编解码次数是否在有效范围内</li>
- * <li>安全增强：在多次编解码前后添加安全检查或数据脱敏</li>
- * </ul>
- * 
  * @author soeasy.run
  * @param <T> 编解码数据类型（源数据和编解码结果类型相同）
  * @param <W> 被包装的多重编解码器类型（必须实现{@link MultipleCodec}）
@@ -60,7 +50,6 @@ public interface MultipleCodecWrapper<T, W extends MultipleCodec<T>>
 	 * 
 	 * @param count 固定编解码次数（≥0）
 	 * @return 新的多重编解码器实例
-	 * @throws IllegalArgumentException 当count<0时抛出
 	 */
 	@Override
 	default MultipleCodec<T> multiple(int count) {

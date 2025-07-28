@@ -104,7 +104,6 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 	 * 实现类必须提供此方法的具体实现，返回一个{@link Pipeline}实例， 该实例定义了如何创建和处理特定类型的输入流。
 	 * 
 	 * @return 输入流流水线，不可为null
-	 * @throws IOException 如果获取流水线过程中发生I/O错误
 	 */
 	@NonNull
 	Pipeline<I, IOException> getInputStreamPipeline();

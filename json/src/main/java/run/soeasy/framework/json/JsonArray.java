@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * JSON数组实现类，继承自{@link ArrayList<JsonElement>}并实现{@link JsonElement}接口，
+ * JSON数组实现类，继承自{@link ArrayList}并实现{@link JsonElement}接口，
  * 用于表示JSON格式中的数组结构，存储多个{@link JsonElement}元素（可包含对象、数组、基本类型等），
  * 支持将数组内容序列化为符合JSON语法的字符串。
  * 

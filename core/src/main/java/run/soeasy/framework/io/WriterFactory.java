@@ -52,7 +52,6 @@ public interface WriterFactory<T extends Writer> {
      * 该实例定义了如何创建和处理特定类型的写入器。
      * 
      * @return 写入器流水线，不可为null
-     * @throws IOException 如果获取流水线过程中发生I/O错误
      */
     @NonNull
     Pipeline<T, IOException> getWriterPipeline();

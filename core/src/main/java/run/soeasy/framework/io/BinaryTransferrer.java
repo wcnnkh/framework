@@ -270,7 +270,7 @@ public interface BinaryTransferrer {
      * </ol>
      * 
      * @param source     输入流，不可为null
-     * @param bufferSize 传输缓冲区大小（>0）
+     * @param bufferSize 传输缓冲区大小（&gt;0）
      * @param target     数据消费者，不可为null
      * @param <E>        消费者可能抛出的异常类型
      * @throws IOException 输入流读取失败时抛出

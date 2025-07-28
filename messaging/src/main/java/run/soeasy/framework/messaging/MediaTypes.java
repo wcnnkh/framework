@@ -127,7 +127,7 @@ public interface MediaTypes extends Elements<MediaType>, Comparable<MediaTypes> 
     /**
      * 获取当前媒体类型集合中所有元素的原始字符串表示（按排序后的顺序）
      * 
-     * @return 包含每个{@link MediaType#toString()}结果的{@link Elements<String>}（非空）
+     * @return 包含每个{@link MediaType#toString()}结果的{@link Elements}（非空）
      */
     default Elements<String> getRawElements() {
         if (isEmpty()) {

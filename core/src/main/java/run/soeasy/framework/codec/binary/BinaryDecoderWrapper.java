@@ -24,7 +24,7 @@ public interface BinaryDecoderWrapper<W extends BinaryDecoder> extends BinaryDec
     /**
      * 对二进制数据进行解码（代理实现）
      * 
-     * <p>默认通过{@link MultipleDecoderWrapper#super.decode(byte[])}代理到底层解码器
+     * <p>默认通过{@link MultipleDecoderWrapper#decode(Object)}代理到底层解码器
      * 
      * @param source 待解码的二进制数据
      * @return 解码后的二进制数据

@@ -89,7 +89,7 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
      * <p>步骤：
      * 1. 将源数据转换为{@link InputMessage}类型（通过类型转换器确保兼容性）；
      * 2. 复制输入消息的头信息到输出消息（通过{@link AbstractMessageConverter#writeHeader(Message, OutputMessage)}）；
-     * 3. 调用{@link InputMessage#transferTo(OutputMessage)}传输消息体内容（如输入流到输出流）。
+     * 3. 调用{@link InputMessage#transferTo(run.soeasy.framework.io.OutputStreamFactory)}传输消息体内容（如输入流到输出流）。
      * 
      * @param source 待写入的输入消息数据（非空，类型为{@link InputMessage}）
      * @param message 目标输出消息（非空）

@@ -36,7 +36,7 @@ public interface ChainFromBinaryEncoder<T, E> extends FromBinaryEncoder<E>, Chai
     /**
      * 将二进制数组编码为目标类型E（链式实现）
      * 
-     * <p>默认调用{@link ChainEncoder#super.encode(byte[])}，实现"byte[]→T→E"的链式编码
+     * <p>默认调用{@link ChainEncoder#encode(Object)}，实现"byte[]→T→E"的链式编码
      * 
      * @param source 待编码的二进制数组
      * @return 编码后的目标类型E实例

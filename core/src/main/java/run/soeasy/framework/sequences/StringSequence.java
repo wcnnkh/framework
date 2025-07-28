@@ -49,7 +49,6 @@ public interface StringSequence extends Sequence<String> {
      * 
      * @param length 目标字符串长度（≥0）
      * @return 新的固定长度序列生成器，不可为null
-     * @throws IllegalArgumentException 当length<0时抛出
      */
     default StringSequence length(int length) {
         return new SpecifiedLengthStringSequence<>(this, length);
@@ -81,7 +80,7 @@ public interface StringSequence extends Sequence<String> {
      * 
      * @param length 目标字符串长度（≥0）
      * @return 生成的字符串值，长度必须等于参数length，不可为null
-     * @throws UnsupportedOperationException 当length<0或无法生成有效字符串时抛出
+     * @throws UnsupportedOperationException 当length&lt;0或无法生成有效字符串时抛出
      */
     String next(int length) throws UnsupportedOperationException;
 }

@@ -62,7 +62,7 @@ public class WatchKeyRegistry extends ArrayListContainer<WatchKey> {
     /**
      * 重写获取元素方法，返回所有无效的{@link WatchKey}注册项
      * 
-     * <p>过滤逻辑：通过{@link Elements#filter()}保留{@link WatchKey#isValid()}返回false的注册项，
+     * <p>过滤逻辑：通过{@link Elements#filter(java.util.function.Predicate)}保留{@link WatchKey#isValid()}返回false的注册项，
      * 即仅返回无效的WatchKey注册信息，方便上层处理（如日志记录、重新注册监控等）。
      * 
      * @return 包含所有无效{@link WatchKey}注册项的{@link Elements}集合（非空，可能为空集合）

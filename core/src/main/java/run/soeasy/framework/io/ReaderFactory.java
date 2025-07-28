@@ -43,7 +43,6 @@ public interface ReaderFactory<R extends Reader> {
      * 该实例定义了如何创建和处理特定类型的读取器。
      * 
      * @return 读取器流水线，不可为null
-     * @throws IOException 如果获取流水线过程中发生I/O错误
      */
     @NonNull
     Pipeline<R, IOException> getReaderPipeline();

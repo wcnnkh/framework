@@ -1,8 +1,6 @@
 package run.soeasy.framework.messaging.convert.support;
 
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import run.soeasy.framework.messaging.convert.MessageConverter;
 import run.soeasy.framework.messaging.convert.MessageConverterAware;
 import run.soeasy.framework.messaging.convert.MessageConverters;
@@ -13,17 +11,14 @@ import run.soeasy.framework.messaging.convert.MessageConverters;
  * 
  * <p>
  * 核心特性： -
- * 内置一个{@link MessageConverter}实例，默认使用系统级转换器集合（{@link SystemMessageConverters#getInstance()}）；
+ * 内置一个{@link MessageConverter}实例，默认使用系统级转换器集合（{@link MessageConverters#system()}）；
  * - 实现{@link MessageConverterAware}接口，支持外部注入消息转换器，灵活替换嵌套的转换逻辑； -
  * 作为抽象类，需子类实现具体的消息读写逻辑，同时可利用嵌套的转换器处理子对象转换。
  * 
  * @author soeasy.run
  * @see AbstractMessageConverter
  * @see MessageConverterAware
- * @see SystemMessageConverters
  */
-@Getter
-@Setter
 public abstract class AbstractNestedMessageConverter extends AbstractMessageConverter implements MessageConverterAware {
 
 	/**
@@ -33,4 +28,12 @@ public abstract class AbstractNestedMessageConverter extends AbstractMessageConv
 	@NonNull
 	private MessageConverter messageConverter = MessageConverters.system();
 
+	public MessageConverter getMessageConverter() {
+		return messageConverter;
+	}
+
+	@Override
+	public void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
+	}
 }

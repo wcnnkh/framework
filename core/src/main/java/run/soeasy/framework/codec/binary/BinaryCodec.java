@@ -131,14 +131,14 @@ public interface BinaryCodec
 	 * 会自动执行当前编解码器指定次数的编解码操作，等价于：
 	 * 
 	 * <pre>
-	 * for (int i = 0; i < count; i++) {
+	 * for (int i = 0; i &lt; count; i++) {
 	 * 	data = encode(data); // 或 decode(data)
 	 * }
 	 * </pre>
 	 * 
 	 * @param count 固定编解码次数（≥0）
 	 * @return 新的多重编解码器实例
-	 * @throws IllegalArgumentException 当count<0时抛出
+	 * @throws IllegalArgumentException 当count&lt;0时抛出
 	 */
 	@Override
 	default BinaryCodec multiple(int count) {

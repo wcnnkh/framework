@@ -14,14 +14,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  *   <li>链式组合：支持与其他编码器组合，形成复杂的编码流程</li>
  * </ul>
  * 
- * <p><b>使用场景：</b>
- * <ul>
- *   <li>日志增强：包装编码器以记录编码过程和结果</li>
- *   <li>参数校验：在编码前对输入参数进行有效性检查</li>
- *   <li>性能监控：添加编码操作的耗时统计和性能指标收集</li>
- *   <li>异常转换：将底层编码器的异常转换为统一格式</li>
- * </ul>
- * 
  * @author soeasy.run
  * @param <D> 源数据类型（待编码类型）
  * @param <E> 编码后数据类型
@@ -69,7 +61,7 @@ public interface EncoderWrapper<D, E, W extends Encoder<D, E>> extends Encoder<D
      * <pre>
      * F → [前置编码器] → D → [被包装编码器] → E
      * </pre>
-     * 该方法实际调用{@link W#fromEncoder(Encoder)}。
+     * 该方法实际调用{@link Encoder#fromEncoder(Encoder)}。
      * 
      * @param <F>     前置编码器的源类型
      * @param encoder 前置编码器，不可为null
@@ -87,7 +79,7 @@ public interface EncoderWrapper<D, E, W extends Encoder<D, E>> extends Encoder<D
      * <pre>
      * D → [被包装编码器] → E → [后置编码器] → T
      * </pre>
-     * 该方法实际调用{@link W#toEncoder(Encoder)}。
+     * 该方法实际调用{@link Encoder#toEncoder(Encoder)}。
      * 
      * @param <T>     后置编码器的目标类型
      * @param encoder 后置编码器，不可为null

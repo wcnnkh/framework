@@ -15,7 +15,7 @@ import run.soeasy.framework.core.transform.templates.Mapping;
  * 扩展了默认的键值映射逻辑，支持通过{@link BeanMapper}解析Bean属性并转换为键值对流。
  * 
  * <p>该类通过注册Object类型的映射器，实现任意JavaBean对象到键值对集合的自动转换，结合分隔符、连接器和编解码器，
- * 完成Bean对象与特定格式字符串（如"key1=value1&key2=value2"）的相互转换。
+ * 完成Bean对象与特定格式字符串（如"key1=value1&amp;key2=value2"）的相互转换。
  * 
  * @author soeasy.run
  * @see KeyValueFormat
@@ -32,7 +32,7 @@ public class BeanFormat extends KeyValueFormat {
      * <p>初始化时注册Object类型的映射器，通过{@link BeanMapper}获取Bean的属性集合，
      * 将每个属性转换为{@link KeyValue}对象，实现Bean到键值对流的转换。
      * 
-     * @param delimiter 键值对之间的分隔符（如"&"）
+     * @param delimiter 键值对之间的分隔符（如"&amp;"）
      * @param connector 键与值之间的连接器（如"="）
      * @param keyCodec 键的编解码器（用于键的编码和解码）
      * @param valueCodec 值的编解码器（用于值的编码和解码）

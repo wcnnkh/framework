@@ -16,7 +16,7 @@ import run.soeasy.framework.io.BinaryTransferrer;
  * <b>核心特性：</b>
  * <ul>
  * <li>多源编码：支持从字节数组、{@link InputStream}、文件等数据源读取字节</li>
- * <li>多次编码：通过{@link #encode(byte[], int)}实现指定次数的连续编码</li>
+ * <li>多次编码：通过{@link MultipleEncoder#encode(Object, int)}实现指定次数的连续编码</li>
  * <li>流式处理：基于输入流/输出流的分段编码设计，支持大文件高效处理</li>
  * <li>组合扩展：通过父接口组合其他编码器形成多级编码流程</li>
  * </ul>

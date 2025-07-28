@@ -30,7 +30,7 @@ import run.soeasy.framework.core.match.StringMatcher;
  * <ul>
  *   <li>精确匹配：名称完全相同则直接返回对应级别</li>
  *   <li>规则匹配：通过StringMatcher实现自定义匹配（如前缀、后缀、正则等）</li>
- *   <li>优先级：精确匹配 > 规则匹配 > 默认级别</li>
+ *   <li>优先级：精确匹配 &gt; 规则匹配 &gt; 默认级别</li>
  * </ul>
  * 
  * @author soeasy.run

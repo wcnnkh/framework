@@ -50,7 +50,7 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
      * 
      * <p>通过{@link Serializer#deserialize(byte[], TypeDescriptor)}将字节数组转换为目标类型对象，
      * 传入目标类型描述符（{@link TargetDescriptor#getRequiredTypeDescriptor()}）以确保反序列化结果
-     * 与预期类型一致（解决泛型擦除、多态类型转换等问题，如将字节数组准确反序列化为List<String>而非List）。
+     * 与预期类型一致（解决泛型擦除、多态类型转换等问题，如将字节数组准确反序列化为List&lt;String&gt;而非List）。
      * 
      * @param body 待反序列化的字节数组（非空，二进制序列化数据）
      * @param targetDescriptor 目标类型描述符（非空，包含预期的对象类型信息）

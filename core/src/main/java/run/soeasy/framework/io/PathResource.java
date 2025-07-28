@@ -41,7 +41,7 @@ public interface PathResource extends Resource {
      * 
      * <p>实现逻辑：
      * 1. 若路径指向目录，抛出{@link FileNotFoundException}；
-     * 2. 否则通过{@link Files#newOutputStream(Path)}创建输出流（默认按"创建或覆盖"模式打开）。
+     * 2. 否则通过{@link Files#newOutputStream(Path, java.nio.file.OpenOption...)}创建输出流（默认按"创建或覆盖"模式打开）。
      * 
      * @return 可写入资源的输出流（非空）
      * @throws FileNotFoundException 若路径是目录时抛出
@@ -59,7 +59,7 @@ public interface PathResource extends Resource {
     /**
      * 获取资源的可读字节通道，用于高效读取资源内容（NIO通道方式）
      * 
-     * <p>通过{@link Files#newByteChannel(Path, StandardOpenOption)}以只读模式打开通道，
+     * <p>通过{@link Files#newByteChannel(Path, java.nio.file.OpenOption...)}以只读模式打开通道，
      * 适用于大文件或需要非阻塞读取的场景。
      * 
      * @return 可读字节通道（非空）
@@ -73,7 +73,7 @@ public interface PathResource extends Resource {
     /**
      * 获取资源的可写字节通道，用于高效写入资源内容（NIO通道方式）
      * 
-     * <p>通过{@link Files#newByteChannel(Path, StandardOpenOption)}以可写模式打开通道，
+     * <p>通过{@link Files#newByteChannel(Path, java.nio.file.OpenOption...)}以可写模式打开通道，
      * 适用于大文件或需要非阻塞写入的场景。
      * 
      * @return 可写字节通道（非空）
@@ -87,7 +87,7 @@ public interface PathResource extends Resource {
     /**
      * 判断资源是否存在于文件系统中
      * 
-     * <p>通过{@link Files#exists(Path)}检查路径是否存在，包括文件和目录。
+     * <p>通过{@link Files#exists(Path, java.nio.file.LinkOption...)}检查路径是否存在，包括文件和目录。
      * 
      * @return 资源存在返回true，否则返回false
      */
@@ -101,7 +101,7 @@ public interface PathResource extends Resource {
      * 
      * <p>可读条件：
      * 1. 路径可被当前进程读取（{@link Files#isReadable(Path)}）；
-     * 2. 路径指向的是文件而非目录（{@link Files#isDirectory(Path)}）。
+     * 2. 路径指向的是文件而非目录（{@link Files#isDirectory(Path, java.nio.file.LinkOption...)}）。
      * 
      * @return 资源可读且为文件返回true，否则返回false
      */
@@ -117,7 +117,7 @@ public interface PathResource extends Resource {
      * <p>实现逻辑：
      * 1. 若资源不存在，抛出{@link FileNotFoundException}；
      * 2. 若资源是目录，抛出{@link FileNotFoundException}；
-     * 3. 否则通过{@link Files#newInputStream(Path)}创建输入流（只读模式）。
+     * 3. 否则通过{@link Files#newInputStream(Path, java.nio.file.OpenOption...)}创建输入流（只读模式）。
      * 
      * @return 可读取资源的输入流（非空）
      * @throws FileNotFoundException 资源不存在或为目录时抛出
@@ -141,7 +141,7 @@ public interface PathResource extends Resource {
      * 
      * <p>可写条件：
      * 1. 路径可被当前进程写入（{@link Files#isWritable(Path)}）；
-     * 2. 路径指向的是文件而非目录（{@link Files#isDirectory(Path)}）。
+     * 2. 路径指向的是文件而非目录（{@link Files#isDirectory(Path, java.nio.file.LinkOption...)}）。
      * 
      * @return 资源可写且为文件返回true，否则返回false
      */
@@ -167,7 +167,7 @@ public interface PathResource extends Resource {
     /**
      * 获取资源的最后修改时间（毫秒时间戳）
      * 
-     * <p>通过{@link Files#getLastModifiedTime(Path)}获取文件的最后修改时间，
+     * <p>通过{@link Files#getLastModifiedTime(Path, java.nio.file.LinkOption...)}获取文件的最后修改时间，
      * 转换为毫秒级时间戳返回（与{@link System#currentTimeMillis()}兼容）。
      * 
      * @return 最后修改时间的毫秒时间戳

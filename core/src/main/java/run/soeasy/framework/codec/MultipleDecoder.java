@@ -31,7 +31,7 @@ public interface MultipleDecoder<D> extends Decoder<D, D> {
 	 * 
 	 * <pre>
 	 * D result = source;
-	 * for (int i = 0; i < count; i++) {
+	 * for (int i = 0; i &lt; count; i++) {
 	 * 	result = decode(result);
 	 * }
 	 * return result;
@@ -41,7 +41,6 @@ public interface MultipleDecoder<D> extends Decoder<D, D> {
 	 * @param count  解码次数（≥0）
 	 * @return 经过指定次数解码后的数据
 	 * @throws CodecException          当解码过程中发生错误时抛出
-	 * @throws IllegalArgumentException 当count<0时抛出
 	 */
 	default D decode(D source, int count) throws CodecException {
 		D v = source;
@@ -57,8 +56,8 @@ public interface MultipleDecoder<D> extends Decoder<D, D> {
 	 * 返回的新解码器在调用{@link #decode(Object)}时， 会自动执行当前解码器指定次数的解码操作，等价于：
 	 * 
 	 * <pre>
-	 * MultipleDecoder<D> original = ...;
-	 * MultipleDecoder<D> fixed = original.multiple(3);
+	 * MultipleDecoder&lt;D&gt; original = ...;
+	 * MultipleDecoder&lt;D&gt; fixed = original.multiple(3);
 	 * // 以下两者效果相同
 	 * fixed.decode(data);
 	 * original.decode(data, 3);
@@ -66,7 +65,6 @@ public interface MultipleDecoder<D> extends Decoder<D, D> {
 	 * 
 	 * @param count 固定解码次数（≥0）
 	 * @return 新的多重解码器实例
-	 * @throws IllegalArgumentException 当count<0时抛出
 	 */
 	default MultipleDecoder<D> multiple(int count) {
 		return new MultipleDecoderWrapper<D, MultipleDecoder<D>>() {

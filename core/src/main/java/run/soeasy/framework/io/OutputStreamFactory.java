@@ -50,7 +50,6 @@ public interface OutputStreamFactory<O extends OutputStream> extends WriterFacto
      * 该实例定义了如何创建和处理特定类型的输出流。
      * 
      * @return 输出流流水线，不可为null
-     * @throws IOException 如果获取流水线过程中发生I/O错误
      */
     @NonNull
     Pipeline<O, IOException> getOutputStreamPipeline();

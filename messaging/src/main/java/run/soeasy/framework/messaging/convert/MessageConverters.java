@@ -18,6 +18,7 @@ import run.soeasy.framework.messaging.MediaTypes;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
 import run.soeasy.framework.messaging.convert.support.ByteArrayMessageConverter;
+import run.soeasy.framework.messaging.convert.support.JsonMessageConverter;
 import run.soeasy.framework.messaging.convert.support.QueryStringMessageConveter;
 import run.soeasy.framework.messaging.convert.support.TextMessageConverter;
 

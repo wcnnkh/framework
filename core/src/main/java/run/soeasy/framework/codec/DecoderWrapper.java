@@ -14,14 +14,6 @@ import run.soeasy.framework.core.domain.Wrapper;
  *   <li>链式组合：支持与其他解码器组合，形成复杂的解码流程</li>
  * </ul>
  * 
- * <p><b>使用场景：</b>
- * <ul>
- *   <li>日志增强：包装解码器以记录解码过程和结果</li>
- *   <li>性能监控：添加解码操作的耗时统计和性能指标收集</li>
- *   <li>异常转换：将底层解码器的异常转换为统一格式</li>
- *   <li>缓存优化：为解码器添加结果缓存功能</li>
- * </ul>
- * 
  * @author soeasy.run
  * @param <E> 源数据类型（待解码类型）
  * @param <D> 解码后数据类型
@@ -53,7 +45,7 @@ public interface DecoderWrapper<E, D, W extends Decoder<E, D>> extends Decoder<E
      * <pre>
      * F → [前置解码器] → E → [被包装解码器] → D
      * </pre>
-     * 该方法实际调用{@link W#fromDecoder(Decoder)}。
+     * 该方法实际调用{@link Decoder#fromDecoder(Decoder)}。
      * 
      * @param <F>     前置解码器的源类型
      * @param decoder 前置解码器，不可为null
@@ -71,7 +63,7 @@ public interface DecoderWrapper<E, D, W extends Decoder<E, D>> extends Decoder<E
      * <pre>
      * E → [被包装解码器] → D → [后置解码器] → T
      * </pre>
-     * 该方法实际调用{@link W#toDecoder(Decoder)}。
+     * 该方法实际调用{@link Decoder#toDecoder(Decoder)}。
      * 
      * @param <T>     后置解码器的目标类型
      * @param decoder 后置解码器，不可为null

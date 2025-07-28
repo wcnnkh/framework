@@ -35,10 +35,10 @@ public interface BufferConsumer<T, E extends Throwable> {
 	 * <p>
 	 * 该方法负责处理指定缓冲区的部分数据，通过偏移量和长度 精准定位处理范围，适用于需要分段处理大数据的场景。
 	 * 
-	 * @param buffer 待处理的缓冲区，具体类型由泛型<T>指定
+	 * @param buffer 待处理的缓冲区
 	 * @param offset 处理的起始偏移量
 	 * @param length 处理的数据长度
-	 * @throws E 当消费过程中发生异常时抛出，类型由泛型<E>指定
+	 * @throws E 当消费过程中发生异常时抛出
 	 */
 	void accept(T buffer, int offset, int length) throws E;
 }

@@ -22,7 +22,7 @@ import run.soeasy.framework.messaging.OutputMessage;
  * <p>核心流程：
  * - 读取时：将字节数组按指定字符集转为字符串，再委托子类解析为目标对象；
  * - 写入时：将目标对象按指定字符集转为字符串，再编码为字节数组写入消息；
- * - 字符集优先级：消息中指定的字符集 > 媒体类型（{@link MediaType}）中包含的字符集 > 默认字符集（UTF-8）。
+ * - 字符集优先级：消息中指定的字符集 &gt; 媒体类型（{@link MediaType}）中包含的字符集 &gt; 默认字符集（UTF-8）。
  * 
  * @param <T> 支持的文本转换目标类型（如String、JsonObject等）
  * @author soeasy.run

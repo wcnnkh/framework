@@ -3,7 +3,7 @@ package run.soeasy.framework.json;
 import run.soeasy.framework.core.convert.strings.StringConverter;
 
 /**
- * JSON转换器接口，继承自{@link StringConverter<Object>}，负责对象与JSON格式的相互转换，
+ * JSON转换器接口，继承自{@link StringConverter}，负责对象与JSON格式的相互转换，
  * 扩展了字符串转换功能，提供将任意对象转换为{@link JsonElement}的核心方法，是JSON序列化与反序列化的基础接口。
  * 
  * <p>该接口默认实现了{@link #toJsonElement(Object)}方法，通过判断对象类型直接返回已有{@link JsonElement}，

@@ -24,7 +24,7 @@ public interface BinaryEncoderWrapper<W extends BinaryEncoder> extends BinaryEnc
     /**
      * 对二进制数据进行编码（代理实现）
      * 
-     * <p>默认通过{@link MultipleEncoderWrapper#super.encode(byte[])}代理到底层编码器
+     * <p>默认通过{@link MultipleEncoderWrapper#encode(Object)}代理到底层编码器
      * 
      * @param source 待编码的二进制数据
      * @return 编码后的二进制数据
