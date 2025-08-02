@@ -11,7 +11,7 @@ import lombok.NonNull;
  * <p>核心能力：
  * <ul>
  * <li>资源获取：通过继承的{@link #get()}方法获取资源</li>
- * <li>资源关闭：通过{@link #close(T)}方法释放资源</li>
+ * <li>资源关闭：通过{@link #close(Object)}方法释放资源</li>
  * <li>链式扩展：支持资源转换、异常处理、关闭回调等操作的链式调用</li>
  * <li>自动管理：结合{@link Pipeline}实现资源使用后的自动关闭</li>
  * </ul>
@@ -34,7 +34,7 @@ public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 
     /**
      * 对资源进行映射转换，并返回支持自动关闭的{@link Pipeline}。
-     * 映射后的流水线会在操作完成后自动调用当前Pool的{@link #close(T)}方法关闭原始资源，避免资源泄漏。
+     * 映射后的流水线会在操作完成后自动调用当前Pool的{@link #close(Object)}方法关闭原始资源，避免资源泄漏。
      *
      * @param <R> 映射后的资源类型
      * @param mapper 用于转换资源的函数，接收当前资源并返回转换后的资源，非空且可能抛出异常{@code E}
@@ -47,7 +47,7 @@ public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 
     /**
      * 注册资源关闭时的额外消费回调，返回新的{@link Pool}实例。
-     * 新实例在执行{@link #close(T)}时，会先调用原有关闭逻辑，再执行注册的消费回调，实现关闭增强。
+     * 新实例在执行{@link #close(Object)}时，会先调用原有关闭逻辑，再执行注册的消费回调，实现关闭增强。
      *
      * @param consumer 资源关闭时的消费操作，接收待关闭的资源并可能抛出异常{@code E}，非空
      * @return 包含新关闭逻辑的{@link Pool}实例
@@ -59,7 +59,7 @@ public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 
     /**
      * 注册资源关闭时的无参回调，返回支持链式操作的{@link Pipeline}。
-     * 该流水线在关闭时，会先通过当前Pool的{@link #close(T)}方法关闭资源，再执行注册的无参回调。
+     * 该流水线在关闭时，会先通过当前Pool的{@link #close(Object)}方法关闭资源，再执行注册的无参回调。
      *
      * @param closeable 资源关闭后执行的无参操作，可能抛出异常{@code E}，非空
      * @return 包含关闭回调的{@link Pipeline}实例
@@ -72,7 +72,7 @@ public interface Pool<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 
     /**
      * 创建支持自动关闭的{@link Pipeline}实例。
-     * 该流水线在资源使用完毕后，会自动调用当前Pool的{@link #close(T)}方法关闭资源，简化资源管理。
+     * 该流水线在资源使用完毕后，会自动调用当前Pool的{@link #close(Object)}方法关闭资源，简化资源管理。
      *
      * @return 支持自动关闭的{@link Pipeline}实例
      */

@@ -28,14 +28,6 @@ import lombok.RequiredArgsConstructor;
  *   <li>不可变设计：所有依赖项在构造时注入，保证线程安全</li>
  * </ul>
  *
- * <p>使用场景：
- * <ul>
- *   <li>需要多步类型转换并统一异常处理的复杂映射场景</li>
- *   <li>微服务间数据格式转换时的异常标准化处理</li>
- *   <li>需要将底层技术异常转换为业务异常的场景</li>
- *   <li>组合多个函数操作并确保资源清理的场景（需修复finally块）</li>
- * </ul>
- *
  * @param <S> 输入类型，即apply方法的参数类型
  * @param <T> 中间转换类型，compose函数的输出类型和andThen函数的输入类型
  * @param <E> 原始异常类型，即compose函数可能抛出的异常类型
