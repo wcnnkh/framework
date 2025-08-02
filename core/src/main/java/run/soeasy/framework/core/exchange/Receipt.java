@@ -6,7 +6,7 @@ import lombok.NonNull;
  * 操作回执接口
  * 表示异步操作的结果状态，支持操作取消和状态查询
  * 
- * @author shuchaowen
+ * @author soeasy.run
  */
 public interface Receipt extends Registration {
 

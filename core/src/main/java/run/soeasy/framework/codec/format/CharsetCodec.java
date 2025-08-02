@@ -7,12 +7,14 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Codec;
+import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.codec.binary.Gzip;
-import run.soeasy.framework.codec.binary.ToBytesCodec;
+import run.soeasy.framework.codec.binary.ToBinaryCodec;
 import run.soeasy.framework.codec.crypto.HmacMD5;
 import run.soeasy.framework.codec.crypto.HmacSHA1;
 import run.soeasy.framework.io.IOUtils;
@@ -23,7 +25,7 @@ import run.soeasy.framework.io.IOUtils;
  * @author soeasy.run
  *
  */
-public class CharsetCodec implements ToBytesCodec<String> {
+public class CharsetCodec implements ToBinaryCodec<String> {
 	/**
 	 * @see Charset#defaultCharset()
 	 */
@@ -61,7 +63,7 @@ public class CharsetCodec implements ToBytesCodec<String> {
 		}
 	}
 
-	public byte[] encode(String source) throws EncodeException {
+	public byte[] encode(String source) throws CodecException {
 		if (source == null) {
 			return null;
 		}
@@ -78,7 +80,7 @@ public class CharsetCodec implements ToBytesCodec<String> {
 	}
 
 	@Override
-	public void encode(String source, OutputStream target) throws IOException, EncodeException {
+	public void encode(String source, @NonNull OutputStream target) throws IOException, CodecException {
 		byte[] v = encode(source);
 		if (v == null) {
 			return;
@@ -87,11 +89,11 @@ public class CharsetCodec implements ToBytesCodec<String> {
 	}
 
 	@Override
-	public String decode(InputStream source, int bufferSize) throws IOException, DecodeException {
+	public String decode(InputStream source, int bufferSize) throws IOException, CodecException {
 		return decode(IOUtils.toByteArray(source));
 	}
 
-	public String decode(byte[] source) throws DecodeException {
+	public String decode(byte[] source) throws CodecException {
 		if (source == null) {
 			return null;
 		}
@@ -103,7 +105,7 @@ public class CharsetCodec implements ToBytesCodec<String> {
 				return new String(source, (String) charset);
 			}
 		} catch (UnsupportedEncodingException e) {
-			throw new EncodeException("charset=" + charset + ", source=" + source, e);
+			throw new DecodeException("charset=" + charset + ", source=" + source, e);
 		}
 	}
 

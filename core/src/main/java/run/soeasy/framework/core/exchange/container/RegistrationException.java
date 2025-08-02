@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.exchange.container;
 
 /**
- * 事件注册异常
+ * 注册异常
  * 
  * @author soeasy.run
  *

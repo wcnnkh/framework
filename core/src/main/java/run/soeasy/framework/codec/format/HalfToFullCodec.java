@@ -1,8 +1,7 @@
 package run.soeasy.framework.codec.format;
 
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
+import run.soeasy.framework.codec.CodecException;
 
 /**
  * 半角和全角的相互转换
@@ -14,7 +13,7 @@ public class HalfToFullCodec implements Codec<String, String> {
 	public static final HalfToFullCodec DEFAULT = new HalfToFullCodec();
 
 	@Override
-	public String encode(String source) throws EncodeException {
+	public String encode(String source) throws CodecException {
 		char c[] = source.toCharArray();
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] == ' ') {
@@ -28,7 +27,7 @@ public class HalfToFullCodec implements Codec<String, String> {
 	}
 
 	@Override
-	public String decode(String source) throws DecodeException {
+	public String decode(String source) throws CodecException {
 		char c[] = source.toCharArray();
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '\u3000') {

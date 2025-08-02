@@ -4,7 +4,7 @@ package run.soeasy.framework.core.exchange;
  * 发布者接口
  * 定义数据发布的标准行为，支持单条发布和批量发布模式
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
  * @param <T> 发布资源的类型
  */

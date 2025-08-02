@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * 可轮询的通道接口
  * 定义支持超时机制的数据拉取通道，继承自Pollable和Channel接口
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
  * @param <T> 通道传输的数据类型
  */

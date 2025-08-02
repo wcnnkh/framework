@@ -6,7 +6,7 @@ import run.soeasy.framework.core.collection.Elements;
 /**
  * 这是一个抽象的版本，意味的是可以进行比较的
  * 
- * @author shuchaowen
+ * @author soeasy.run
  *
  */
 public interface Version extends Value, Comparable<Value> {

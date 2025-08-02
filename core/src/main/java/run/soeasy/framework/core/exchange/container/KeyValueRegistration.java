@@ -29,6 +29,6 @@ public interface KeyValueRegistration<K, V> extends PayloadRegistration<KeyValue
 		if (registration == null || registration.isCancelled()) {
 			return this;
 		}
-		return new StandardKeyValueRegistrationWrapper<>(this, Elements.singleton(registration));
+		return new KeyValueRegistrationWrapped<>(this, Elements.singleton(registration));
 	}
 }

@@ -21,7 +21,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * 整合了{@link ParameterizedType}、{@link WildcardType}和{@link TypeVariableResolver}接口，
  * 用于处理Java泛型类型擦除后的类型信息解析，支持参数化类型、通配符类型、
  * 类型变量和数组类型的解析与操作。
- * </p>
  */
 public interface ResolvableType extends ParameterizedType, WildcardType, TypeVariableResolver {
 	
@@ -35,7 +34,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 优先加载通过{@link ServiceLoader}注册的{@link ResolvableTypeFactory}实现，
 	 * 无自定义实现时使用默认的{@link DefaultResolvableTypeFactory}。
-	 * </p>
 	 */
 	ResolvableTypeFactory RESOLVABLE_TYPE_FACTORY = CollectionUtils
 			.unknownSizeStream(ServiceLoader.load(ResolvableTypeFactory.class).iterator()).findFirst()
@@ -117,7 +115,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * 将当前类型转换为指定类型的{@link ResolvableType}，支持接口和父类转换。
 	 * <p>
 	 * 优先从接口中查找匹配类型，若未找到则从父类中查找。
-	 * </p>
 	 * 
 	 * @param type 目标类型（不可为{@code null}）
 	 * @return 转换后的{@link ResolvableType}，转换失败返回{@link #NONE}
@@ -144,7 +141,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 示例：{@code getActualTypeArgument(0, 1)} 表示获取第一层泛型的第0个参数的
 	 * 第二层泛型的第1个参数。
-	 * </p>
 	 * 
 	 * @param indexes 泛型参数索引路径（可变参数）
 	 * @return 泛型参数对应的{@link ResolvableType}，索引越界返回{@link #NONE}
@@ -177,7 +173,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 对于参数化类型（如{@code List<java.lang.String>}），返回泛型参数数组（如{@code [java.lang.String]}）；
 	 * 对于非参数化类型，返回空数组。
-	 * </p>
 	 * 
 	 * @return 泛型参数的{@link ResolvableType}数组，无泛型时返回空数组
 	 */
@@ -195,7 +190,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 对于数组类型（如{@code java.lang.String[]}），返回元素类型的{@link ResolvableType}（如{@code java.lang.String}）；
 	 * 对于非数组类型，返回{@link #NONE}。
-	 * </p>
 	 * 
 	 * @return 数组元素的{@link ResolvableType}，非数组类型返回{@link #NONE}
 	 */
@@ -206,7 +200,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 返回值为{@link ResolvableType}数组，包含所有接口的泛型信息；
 	 * 若无接口实现，返回{@link #EMPTY_TYPES_ARRAY}。
-	 * </p>
 	 * 
 	 * @return 接口的{@link ResolvableType}数组
 	 */
@@ -224,7 +217,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * 获取通配符类型的下界数组（如{@code ? super T}中的{@code T}）。
 	 * <p>
 	 * 对于非通配符类型，返回{@link #EMPTY_TYPES_ARRAY}。
-	 * </p>
 	 * 
 	 * @return 下界的{@link ResolvableType}数组
 	 */
@@ -275,7 +267,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * 获取内部类的所有者类型（外部类）。
 	 * <p>
 	 * 对于顶级类返回{@code null}，对于内部类返回外部类的{@link ResolvableType}。
-	 * </p>
 	 * 
 	 * @return 所有者类型的{@link ResolvableType}，无所有者返回{@code null}
 	 */
@@ -286,7 +277,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 对于参数化类型（如{@code List<java.lang.String>}），返回原始类型{@code List}；
 	 * 对于基本类型包装类，返回对应的基本类型（如{@code Integer}返回{@code int}）。
-	 * </p>
 	 * 
 	 * @return 原始{@link Class}对象，类型解析失败返回{@code null}
 	 */
@@ -297,7 +287,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <p>
 	 * 处理泛型父类的类型信息，返回包含泛型参数的父类{@link ResolvableType}；
 	 * 若无父类（如{@code Object}）返回{@link #NONE}。
-	 * </p>
 	 * 
 	 * @return 父类的{@link ResolvableType}，无父类返回{@link #NONE}
 	 */
@@ -351,7 +340,6 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * 获取通配符类型的上界数组（如{@code ? extends T}中的{@code T}）。
 	 * <p>
 	 * 对于非通配符类型，返回包含{@code Object}的数组（{@code ? extends Object}）。
-	 * </p>
 	 * 
 	 * @return 上界的{@link ResolvableType}数组
 	 */

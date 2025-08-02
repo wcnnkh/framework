@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2012 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package run.soeasy.framework.core.math;
 
 import java.math.BigDecimal;
@@ -27,24 +11,21 @@ import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 /**
- * Miscellaneous utility methods for number conversion and parsing. Mainly for
- * internal use within the framework; consider Jakarta's Commons Lang for a more
- * comprehensive suite of string utilities.
+ * 数字处理工具类，提供数字解析、类型判断、格式化、提取等功能。
+ * 支持多种数字类型（整数、浮点数、大数字等）的处理，包括十六进制、八进制等表示法的解析，
+ * 以及数字单位的格式化与解析。
  */
 public abstract class NumberUtils {
 	/**
-	 * Parse the given text into a number instance of the given target class, using
-	 * the corresponding {@code decode} / {@code valueOf} methods.
+	 * 将字符串解析为指定类型的数字，支持十进制、十六进制（0x/0X/#前缀）和八进制表示。
 	 * <p>
-	 * Trims the input {@code String} before attempting to parse the number.
-	 * Supports numbers in hex format (with leading "0x", "0X" or "#") as well.
+	 * 解析前会先去除字符串两端的空白，根据目标类型调用对应的解析方法（如{@link Integer#decode}、{@link BigDecimal#BigDecimal(String)}等）。
 	 * 
-	 * @param text        the text to convert
-	 * @param targetClass the target class to parse into
-	 * @return the parsed number
-	 * @throws IllegalArgumentException if the target class is not supported (i.e.
-	 *                                  not a standard Number subclass as included
-	 *                                  in the JDK)
+	 * @param <T>         数字类型泛型，必须是Number的子类（如Integer、Long、BigDecimal等），作为返回的数字类型
+	 * @param text        待解析的字符串，不可为null，会先去除两端空白
+	 * @param targetClass 目标数字类型的Class对象，不可为null（如Integer.class）
+	 * @return 解析后的数字对象，类型为T
+	 * @throws IllegalArgumentException 如果字符串无法解析为目标类型，或目标类型不支持
 	 * @see Byte#decode
 	 * @see Short#decode
 	 * @see Integer#decode
@@ -80,10 +61,10 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * 是否是数字类型
+	 * 判断指定的类是否为数字类型（包括基本数字类型和Number的子类）。
 	 * 
-	 * @param type
-	 * @return
+	 * @param type 待判断的类类型，可为null（返回false）
+	 * @return 如果是数字类型（如long.class、Integer.class、BigDecimal.class等）则返回true，否则返回false
 	 */
 	public static boolean isNumber(Class<?> type) {
 		return type == long.class || type == int.class || type == byte.class || type == short.class
@@ -91,10 +72,10 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * 是否是整数类型
+	 * 判断指定的类是否为整数类型（包括基本整数类型和BigInteger）。
 	 * 
-	 * @param type
-	 * @return
+	 * @param type 待判断的类类型，可为null（返回false）
+	 * @return 如果是整数类型（如long.class、Integer.class、BigInteger.class等）则返回true，否则返回false
 	 */
 	public static boolean isInteger(Class<?> type) {
 		return type == long.class || type == int.class || type == byte.class || type == short.class
@@ -102,9 +83,10 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * Determine whether the given value String indicates a hex number, i.e. needs
-	 * to be passed into {@code Integer.decode} instead of {@code Integer.valueOf}
-	 * (etc).
+	 * 判断给定的字符串是否表示十六进制数字（需要特殊解析，如0x、0X或#前缀）。
+	 * 
+	 * @param value 待判断的字符串
+	 * @return 如果是十六进制数字表示则返回true，否则返回false
 	 */
 	private static boolean isHexNumber(String value) {
 		int index = (value.startsWith("-") ? 1 : 0);
@@ -112,9 +94,10 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * Decode a {@link java.math.BigInteger} from a {@link String} value. Supports
-	 * decimal, hex and octal notation.
+	 * 从字符串解析BigInteger，支持十进制、十六进制和八进制表示。
 	 * 
+	 * @param value 待解析的字符串
+	 * @return 解析后的BigInteger
 	 * @see BigInteger#BigInteger(String, int)
 	 */
 	private static BigInteger decodeBigInteger(String value) {
@@ -122,13 +105,13 @@ public abstract class NumberUtils {
 		int index = 0;
 		boolean negative = false;
 
-		// Handle minus sign, if present.
+		// 处理负号
 		if (value.startsWith("-")) {
 			negative = true;
 			index++;
 		}
 
-		// Handle radix specifier, if present.
+		// 处理基数前缀（十六进制0x/0X/#，八进制0）
 		if (value.startsWith("0x", index) || value.startsWith("0X", index)) {
 			index += 2;
 			radix = 16;
@@ -145,22 +128,22 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * 是否是整数
+	 * 判断BigDecimal是否为整数（无小数部分或小数部分为0）。
 	 * 
-	 * @param number
-	 * @return
+	 * @param number 待判断的BigDecimal，不可为null
+	 * @return 如果是整数则返回true，否则返回false
 	 */
 	public static boolean isInteger(BigDecimal number) {
 		return number.signum() == 0 || number.scale() <= 0 || number.stripTrailingZeros().scale() <= 0;
 	}
 
 	/**
-	 * 清除无用的0
+	 * 清除BigDecimal尾部的无效零（如100.000变为100，123.4500变为123.45）。
 	 * 
+	 * @param number 待处理的BigDecimal，可为null（返回null）
+	 * @return 清除尾部零后的BigDecimal；如果原数为整数（如100.0），则返回整数形式（100）
 	 * @see BigDecimal#stripTrailingZeros()
 	 * @see BigDecimal#setScale(int)
-	 * @param number
-	 * @return
 	 */
 	public static BigDecimal stripTrailingZeros(BigDecimal number) {
 		if (number.signum() == 0 || number.scale() <= 0) {
@@ -175,21 +158,39 @@ public abstract class NumberUtils {
 		return number;
 	}
 
+	/**
+	 * 使用默认格式化器将BigDecimal按指定单位格式化（如单位为"元"、"角"等）。
+	 * <p>
+	 * 默认格式化器会清除尾部零并转为普通字符串（{@link #stripTrailingZeros(BigDecimal)}和{@link BigDecimal#toPlainString()}）。
+	 * 
+	 * @param number 待格式化的BigDecimal，不可为null
+	 * @param units  单位数组（如NumberUnit实例），定义格式化的单位及进制
+	 * @return 格式化后的字符串
+	 */
 	public static String format(BigDecimal number, NumberUnit... units) {
 		return format(number, (e) -> stripTrailingZeros(e).toPlainString(), units);
 	}
 
+	/**
+	 * 将字符串按指定单位解析为BigDecimal。
+	 * 
+	 * @param source 待解析的字符串
+	 * @param units  单位数组（如NumberUnit实例），定义解析的单位及进制
+	 * @return 解析后的BigDecimal
+	 */
 	public static BigDecimal parse(String source, NumberUnit... units) {
 		return parse(source, (e) -> new BigDecimal(e), units);
 	}
 
 	/**
-	 * 通过数字单位格式化数字(忽略正负符号)
+	 * 通过数字单位格式化BigDecimal（忽略正负符号），支持自定义格式化函数。
 	 * 
-	 * @param number
-	 * @param toString
-	 * @param units
-	 * @return
+	 * @param <E>      异常类型泛型，必须是Throwable的子类，为格式化函数可能抛出的异常类型
+	 * @param number   待格式化的BigDecimal，不可为null（取绝对值处理）
+	 * @param toString 自定义格式化函数，将BigDecimal转换为字符串，不可为null
+	 * @param units    单位数组（如NumberUnit实例），定义格式化的单位及进制，可为空
+	 * @return 格式化后的字符串
+	 * @throws E 格式化函数执行过程中可能抛出的异常
 	 */
 	public static <E extends Throwable> String format(@NonNull BigDecimal number,
 			@NonNull ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, NumberUnit... units)
@@ -203,6 +204,18 @@ public abstract class NumberUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * 递归格式化数字到字符串缓冲区，辅助{@link #format(BigDecimal, ThrowingFunction, NumberUnit...)}方法。
+	 * 
+	 * @param <E>              异常类型泛型，为格式化函数可能抛出的异常类型
+	 * @param sb               字符串缓冲区，用于拼接结果
+	 * @param number           待格式化的BigDecimal（绝对值）
+	 * @param toString         自定义格式化函数
+	 * @param startUnitsIndex  开始处理的单位索引
+	 * @param endUnitsIndex    结束处理的单位索引
+	 * @param units            单位数组
+	 * @throws E 格式化函数执行过程中可能抛出的异常
+	 */
 	private static <E extends Throwable> void format(StringBuilder sb, BigDecimal number,
 			ThrowingFunction<? super BigDecimal, ? extends String, ? extends E> toString, int startUnitsIndex,
 			int endUnitsIndex, NumberUnit... units) throws E {
@@ -251,8 +264,18 @@ public abstract class NumberUtils {
 		}
 	}
 
+	/**
+	 * 将字符串按指定单位解析为BigDecimal，支持自定义转换函数。
+	 * 
+	 * @param <E>        异常类型泛型，必须是Throwable的子类，为转换函数可能抛出的异常类型
+	 * @param source     待解析的字符串
+	 * @param converter  自定义转换函数，将字符串转换为BigDecimal，不可为null
+	 * @param units      单位数组（如NumberUnit实例），定义解析的单位及进制
+	 * @return 解析后的BigDecimal
+	 * @throws E 转换函数执行过程中可能抛出的异常
+	 */
 	public static <E extends Throwable> BigDecimal parse(String source,
-			ThrowingFunction<? super String, ? extends BigDecimal, ? extends E> converter, NumberUnit... units)
+			@NonNull ThrowingFunction<? super String, ? extends BigDecimal, ? extends E> converter, NumberUnit... units)
 			throws E {
 		for (NumberUnit unit : units) {
 			int index = source.indexOf(unit.getName());
@@ -272,11 +295,12 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * 保留小数点精度
+	 * 保留指定小数位数格式化double（如保留2位小数）。
 	 * 
-	 * @param number
-	 * @param len    保留多少位
-	 * @return
+	 * @param number 待格式化的double值
+	 * @param len    保留的小数位数，必须大于等于0
+	 * @return 格式化后的字符串
+	 * @throws IllegalStateException 如果len小于0
 	 */
 	public static String formatPrecision(double number, int len) {
 		if (len < 0) {
@@ -305,6 +329,15 @@ public abstract class NumberUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
+	/**
+	 * 从字符序列中提取符合指定基数和符号规则的数字字符串，支持自定义过滤函数。
+	 * 
+	 * @param radix    数字的基数（如10为十进制，16为十六进制）
+	 * @param unsigned 是否为无符号数字（无符号则不允许负号）
+	 * @param source   待提取的字符序列
+	 * @param filter   自定义过滤函数，判断字符是否保留，可为null（保留所有符合基数的字符）
+	 * @return 提取的数字字符串；如果无有效字符则返回null
+	 */
 	public static String extractNumberic(int radix, boolean unsigned, CharSequence source, IntPredicate filter) {
 		if (StringUtils.isEmpty(source)) {
 			return null;
@@ -315,9 +348,9 @@ public abstract class NumberUtils {
 		boolean findPoint = false;
 		for (int i = 0, len = source.length(); i < len; i++) {
 			char chr = source.charAt(i);
-			if (isNumberSign(chr)) {
+			if (chr == '-' || chr == '+') {
 				if (pos == 0) {
-					// 无符号类型的不应该存在符号
+					// 无符号类型的不应该存在负号
 					if (unsigned && chr == '-') {
 						// 不支持解析？
 						return null;
@@ -351,16 +384,28 @@ public abstract class NumberUtils {
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
+	/**
+	 * 从字符序列中提取符合指定基数和符号规则的数字字符串（默认过滤函数：字母数字字符）。
+	 * 
+	 * @param radix    数字的基数（如10为十进制，16为十六进制）
+	 * @param unsigned 是否为无符号数字（无符号则不允许负号）
+	 * @param source   待提取的字符序列
+	 * @return 提取的数字字符串；如果无有效字符则返回null
+	 */
 	public static String extractNumberic(int radix, boolean unsigned, CharSequence source) {
 		return extractNumberic(radix, unsigned, source,
 				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
 	}
 
-	public static boolean isNumeric(int radix, boolean unsigned, CharSequence source) {
-		return isNumeric(radix, unsigned, source,
-				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
-	}
-
+	/**
+	 * 判断字符序列是否为符合指定基数和符号规则的数字。
+	 * 
+	 * @param radix    数字的基数（如10为十进制，16为十六进制）
+	 * @param unsigned 是否为无符号数字（无符号则不允许负号）
+	 * @param source   待判断的字符序列
+	 * @param filter   自定义过滤函数，判断字符是否有效，可为null
+	 * @return 如果是有效的数字则返回true，否则返回false
+	 */
 	public static boolean isNumeric(int radix, boolean unsigned, CharSequence source, IntPredicate filter) {
 		if (StringUtils.isEmpty(source)) {
 			return false;
@@ -413,6 +458,25 @@ public abstract class NumberUtils {
 		return true;
 	}
 
+	/**
+	 * 判断字符序列是否为符合指定基数和符号规则的数字（默认过滤函数：字母数字字符）。
+	 * 
+	 * @param radix    数字的基数（如10为十进制，16为十六进制）
+	 * @param unsigned 是否为无符号数字（无符号则不允许负号）
+	 * @param source   待判断的字符序列
+	 * @return 如果是有效的数字则返回true，否则返回false
+	 */
+	public static boolean isNumeric(int radix, boolean unsigned, CharSequence source) {
+		return isNumeric(radix, unsigned, source,
+				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
+	}
+
+	/**
+	 * 判断字符是否为数字符号（正号+或负号-）。
+	 * 
+	 * @param chr 待判断的字符
+	 * @return 如果是+或-则返回true，否则返回false
+	 */
 	public static boolean isNumberSign(char chr) {
 		return chr == '-' || chr == '+';
 	}

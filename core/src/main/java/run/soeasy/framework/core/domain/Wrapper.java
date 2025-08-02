@@ -7,7 +7,7 @@ import lombok.NonNull;
  * 定义了一种递归解包机制，允许将对象层层包装并按需解包
  * 常用于实现装饰器模式或适配不同接口的场景
  *
- * @author shuchaowen
+ * @author soeasy.run
  *
  * @param <T> 被包装的源对象类型
  */

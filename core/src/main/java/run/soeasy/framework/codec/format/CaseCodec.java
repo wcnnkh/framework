@@ -3,8 +3,7 @@ package run.soeasy.framework.codec.format;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
+import run.soeasy.framework.codec.CodecException;
 
 /**
  * 大小写转换
@@ -24,7 +23,7 @@ public class CaseCodec implements Codec<String, String> {
 	private final int endIndex;
 
 	@Override
-	public String encode(String source) throws EncodeException {
+	public String encode(String source) throws CodecException {
 		char[] chars = source.toCharArray();
 		for (int i = formIndex; i < endIndex; i++) {
 			chars[i] = Character.toLowerCase(chars[i]);
@@ -33,7 +32,7 @@ public class CaseCodec implements Codec<String, String> {
 	}
 
 	@Override
-	public String decode(String source) throws DecodeException {
+	public String decode(String source) throws CodecException {
 		char[] chars = source.toCharArray();
 		for (int i = formIndex; i < endIndex; i++) {
 			chars[i] = Character.toUpperCase(chars[i]);

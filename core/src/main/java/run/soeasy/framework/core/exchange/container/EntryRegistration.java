@@ -13,6 +13,6 @@ public interface EntryRegistration<K, V> extends KeyValueRegistration<K, V>, Ent
 			return this;
 		}
 
-		return new StandardEntryRegistrationWrapper<>(this, Elements.singleton(registration));
+		return new EntryRegistrationWrapped<>(this, Elements.singleton(registration));
 	}
 }

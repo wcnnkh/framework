@@ -1,6 +1,6 @@
 package run.soeasy.framework.codec.format;
 
-import run.soeasy.framework.codec.EncodeException;
+import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.MultipleEncoder;
 
 public class UnicodeEncoder implements MultipleEncoder<CharSequence> {
@@ -8,7 +8,7 @@ public class UnicodeEncoder implements MultipleEncoder<CharSequence> {
 	public static final UnicodeEncoder DEFAULT = new UnicodeEncoder();
 
 	@Override
-	public CharSequence encode(CharSequence source) throws EncodeException {
+	public CharSequence encode(CharSequence source) throws CodecException {
 		if (source == null) {
 			return null;
 		}
