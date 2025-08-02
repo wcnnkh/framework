@@ -45,7 +45,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-class MappingThrowingConsumer<S, E extends Throwable, T, R extends Throwable> implements ThrowingConsumer<T, R> {
+class ChainThrowingConsumer<S, E extends Throwable, T, R extends Throwable> implements ThrowingConsumer<T, R> {
     
     /**
      * 类型映射函数，将输入类型T转换为中间类型S。

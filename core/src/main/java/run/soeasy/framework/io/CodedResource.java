@@ -78,6 +78,6 @@ class CodedResource<W extends Resource> extends EncodedOutputSource<Writer, W> i
                     } catch (IOException ignored) {
                         // 解码后的Reader关闭异常忽略
                     }
-                });
+                }).closeable();
     }
 }

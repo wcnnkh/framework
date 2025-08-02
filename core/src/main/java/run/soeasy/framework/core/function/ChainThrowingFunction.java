@@ -45,7 +45,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-class MappingThrowingFunction<S, T, E extends Throwable, V, R extends Throwable> implements ThrowingFunction<S, V, R> {
+class ChainThrowingFunction<S, T, E extends Throwable, V, R extends Throwable> implements ThrowingFunction<S, V, R> {
     
     /**
      * 前置转换函数，将输入类型S转换为中间类型T。

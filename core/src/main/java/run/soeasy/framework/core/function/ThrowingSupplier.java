@@ -28,100 +28,107 @@ import lombok.NonNull;
  *
  * @param <T> 供应结果的类型
  * @param <E> 可能抛出的异常类型，必须是Throwable的子类
- * @see java.util.function.Supplier
  * @see ThrowingFunction
  */
 @FunctionalInterface
 public interface ThrowingSupplier<T, E extends Throwable> {
 
-	/**
-	 * 获取供应的结果，可能抛出异常E。 该方法是函数式接口的抽象方法，必须由实现类提供具体实现。
-	 *
-	 * @return 供应的结果
-	 * @throws E 可能抛出的指定类型异常
-	 */
-	T get() throws E;
+    /**
+     * 获取供应的结果，可能抛出指定类型的异常
+     * 
+     * @return 供应的结果对象，类型为T
+     * @throws E 可能抛出的异常，类型为E
+     */
+    T get() throws E;
 
-	/**
-	 * 创建一个可关闭的管道，自动注册默认的关闭回调。 返回的Pipeline会在使用完毕后调用默认的忽略回调，适用于需要资源清理的场景。
-	 *
-	 * @return 配置了默认关闭回调的Pipeline实例
-	 */
-	default Pipeline<T, E> closeable() {
-		return new MappingThrowingSupplier<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
-				Function.identity(), false, ThrowingRunnable.ignore());
-	}
+    /**
+     * 创建一个支持资源关闭的管道（Pipeline），用于管理资源生命周期
+     * 
+     * @return 包含当前供应者的Pipeline实例，可进行后续的资源关闭操作
+     */
+    default Pipeline<T, E> closeable() {
+        return new ChainPipeline<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(), Function.identity(),
+                false, ThrowingRunnable.ignore());
+    }
 
-	/**
-	 * 创建一个可关闭的管道，注册自定义的关闭回调函数。 当Pipeline使用完毕时，会调用指定的consumer处理资源。
-	 *
-	 * @param consumer 关闭时执行的回调函数，不可为null
-	 * @return 配置了自定义关闭回调的Pipeline实例
-	 */
-	default Pipeline<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
-		return new MappingThrowingSupplier<>(this, ThrowingFunction.identity(), consumer, Function.identity(), false,
-				ThrowingRunnable.ignore());
-	}
+    /**
+     * 注册一个资源关闭时的消费回调，返回支持资源池操作的Pool实例
+     * 
+     * @param consumer 资源关闭时执行的消费操作，非空
+     * @return 包含当前供应者和关闭回调的Pool实例
+     */
+    default Pool<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
+        return new ChainPool<>(this, Function.identity(), consumer);
+    }
 
-	/**
-	 * 创建一个可关闭的管道，注册自定义的关闭操作。 当Pipeline使用完毕时，会调用指定的closeable操作。
-	 *
-	 * @param closeable 关闭时执行的操作，不可为null
-	 * @return 配置了自定义关闭操作的Pipeline实例
-	 */
-	default Pipeline<T, E> onClose(@NonNull ThrowingRunnable<? extends E> closeable) {
-		return new MappingThrowingSupplier<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
-				Function.identity(), false, closeable);
-	}
+    /**
+     * 注册一个资源关闭时的无参回调，返回支持管道操作的Pipeline实例
+     * 
+     * @param closeable 资源关闭时执行的无参操作，非空
+     * @return 包含当前供应者和关闭回调的Pipeline实例
+     */
+    default Pipeline<T, E> onClose(@NonNull ThrowingRunnable<? extends E> closeable) {
+        return new run.soeasy.framework.core.function.ChainPipeline<>(this, ThrowingFunction.identity(),
+                ThrowingConsumer.ignore(), Function.identity(), false, closeable);
+    }
 
-	/**
-	 * 对供应的结果进行映射转换，返回新的ThrowingSupplier。 该方法支持函数式编程的map操作，将T类型的结果转换为R类型。
-	 *
-	 * @param <R>    映射后的结果类型
-	 * @param mapper 映射函数，不可为null
-	 * @return 映射后的ThrowingSupplier实例
-	 */
-	default <R> ThrowingSupplier<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
-		return new MappingThrowingSupplier<>(this, mapper, ThrowingConsumer.ignore(), Function.identity(), false,
-				ThrowingRunnable.ignore());
-	}
+    /**
+     * 对供应结果进行映射转换，返回新的ThrowingSupplier实例
+     * 
+     * @param <R> 映射后的结果类型
+     * @param mapper 用于转换结果的函数，非空，可能抛出异常E
+     * @return 新的ThrowingSupplier，其结果为映射后的类型R
+     */
+    default <R> ThrowingSupplier<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
+        return new ChainThrowingSupplier<>(this, mapper, ThrowingConsumer.ignore(), Function.identity(), false);
+    }
 
-	/**
-	 * 转换异常类型，返回新的ThrowingSupplier。 该方法允许将原始异常E转换为新的异常类型R，实现异常类型的统一处理。
-	 *
-	 * @param <R>            新的异常类型，必须是Throwable的子类
-	 * @param throwingMapper 异常转换函数，不可为null
-	 * @return 异常类型转换后的ThrowingSupplier实例
-	 */
-	default <R extends Throwable> ThrowingSupplier<T, R> throwing(
-			@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new MappingThrowingSupplier<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
-				throwingMapper, false, ThrowingRunnable.ignore());
-	}
+    /**
+     * 转换异常类型，将原有异常E转换为新的异常类型R
+     * 
+     * @param <R> 转换后的异常类型，必须是Throwable的子类
+     * @param throwingMapper 用于转换异常的函数，非空
+     * @return 新的ThrowingSupplier，其异常类型为R
+     */
+    default <R extends Throwable> ThrowingSupplier<T, R> throwing(
+            @NonNull Function<? super E, ? extends R> throwingMapper) {
+        return new ChainThrowingSupplier<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(), throwingMapper,
+                false);
+    }
 
-	/**
-	 * 创建单例模式的Pipeline，确保结果只被获取一次。 返回的Pipeline会缓存结果，后续调用将返回相同的结果，适用于单例场景。
-	 *
-	 * @return 单例模式的Pipeline实例
-	 */
-	default Pipeline<T, E> singleton() {
-		return new MappingThrowingSupplier<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
-				Function.identity(), true, ThrowingRunnable.ignore());
-	}
+    /**
+     * 创建一个单例模式的ThrowingSupplier，确保结果只被计算一次
+     * 
+     * @return 单例模式的ThrowingSupplier实例
+     */
+    default ThrowingSupplier<T, E> singleton() {
+        return new ChainThrowingSupplier<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
+                Function.identity(), true);
+    }
 
-	/**
-	 * 将结果包装为ThrowingOptional，支持Optional风格的操作。
-	 * 返回的ThrowingOptional允许对可能为null的结果进行安全操作，并处理异常。
-	 *
-	 * @return ThrowingOptional实例
-	 */
-	default ThrowingOptional<T, E> optional() {
-		return new MappingThrowingOptional<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
-				Function.identity(), false, ThrowingRunnable.ignore());
-	}
+    /**
+     * 将供应结果包装为支持异常处理的Optional容器
+     * 
+     * @return 包含当前供应者的ThrowingOptional实例
+     */
+    default ThrowingOptional<T, E> optional() {
+        return new ChainThrowingOptional<>(this, ThrowingFunction.identity(), ThrowingConsumer.ignore(),
+                Function.identity(), false);
+    }
 
-	public static <A, B extends Throwable> ThrowingSupplier<A, B> cast(Class<A> requriedType, Class<B> throwingType,
-			@NonNull ThrowingSupplier<? extends A, ? extends B> throwingSupplier) {
-		return throwingSupplier.map(requriedType::cast).throwing(throwingType::cast);
-	}
+    /**
+     * 类型转换工具方法，将供应者的结果和异常转换为指定类型
+     * 
+     * @param <A> 目标结果类型
+     * @param <B> 目标异常类型
+     * @param requriedType 目标结果类型的Class对象
+     * @param throwingType 目标异常类型的Class对象
+     * @param throwingSupplier 待转换的ThrowingSupplier实例，非空
+     * @return 转换后的ThrowingSupplier，结果类型为A，异常类型为B
+     */
+    public static <A, B extends Throwable> ThrowingSupplier<A, B> cast(Class<A> requriedType, Class<B> throwingType,
+            @NonNull ThrowingSupplier<? extends A, ? extends B> throwingSupplier) {
+        return throwingSupplier.map(requriedType::cast).throwing(throwingType::cast);
+    }
 }
+    

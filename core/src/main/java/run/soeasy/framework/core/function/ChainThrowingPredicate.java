@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-class MergedThrowingPredicate<S, E extends Throwable, T, R extends Throwable> implements ThrowingPredicate<T, R> {
+class ChainThrowingPredicate<S, E extends Throwable, T, R extends Throwable> implements ThrowingPredicate<T, R> {
     
     /**
      * 映射函数，将原始输入值转换为目标谓词可处理的类型。

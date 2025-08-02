@@ -117,7 +117,8 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 	 */
 	@Override
 	default @NonNull Pipeline<Reader, IOException> getReaderPipeline() {
-		return getInputStreamPipeline().map((e) -> (Reader) new InputStreamReader(e)).onClose((e) -> e.close());
+		return getInputStreamPipeline().map((e) -> (Reader) new InputStreamReader(e)).onClose((e) -> e.close())
+				.closeable();
 	}
 
 	/**

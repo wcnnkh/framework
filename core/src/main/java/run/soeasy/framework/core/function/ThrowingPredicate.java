@@ -68,7 +68,7 @@ public interface ThrowingPredicate<S, E extends Throwable> {
      * @return 映射后的谓词实例
      */
     default <R> ThrowingPredicate<R, E> map(@NonNull ThrowingFunction<? super R, ? extends S, ? extends E> mapper) {
-        return new MergedThrowingPredicate<>(mapper, this, Function.identity(), ThrowingConsumer.ignore());
+        return new ChainThrowingPredicate<>(mapper, this, Function.identity(), ThrowingConsumer.ignore());
     }
 
     /**
@@ -113,7 +113,7 @@ public interface ThrowingPredicate<S, E extends Throwable> {
      */
     default <R extends Throwable> ThrowingPredicate<S, R> throwing(
             @NonNull Function<? super E, ? extends R> throwingMapper) {
-        return new MergedThrowingPredicate<>(ThrowingFunction.identity(), this, throwingMapper,
+        return new ChainThrowingPredicate<>(ThrowingFunction.identity(), this, throwingMapper,
                 ThrowingConsumer.ignore());
     }
 

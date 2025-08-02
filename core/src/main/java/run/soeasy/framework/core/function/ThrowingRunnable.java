@@ -52,7 +52,7 @@ public interface ThrowingRunnable<E extends Throwable> {
      * @return 组合后的任务实例
      */
     default ThrowingRunnable<E> compose(@NonNull ThrowingRunnable<? extends E> before) {
-        return new MappingThrowingRunnable<>(before, this, Function.identity(), ignore());
+        return new ChainThrowingRunnable<>(before, this, Function.identity(), ignore());
     }
 
     /**
@@ -63,7 +63,7 @@ public interface ThrowingRunnable<E extends Throwable> {
      * @return 组合后的任务实例
      */
     default ThrowingRunnable<E> andThen(@NonNull ThrowingRunnable<? extends E> after) {
-        return new MappingThrowingRunnable<>(this, after, Function.identity(), ignore());
+        return new ChainThrowingRunnable<>(this, after, Function.identity(), ignore());
     }
 
     /**
@@ -76,7 +76,7 @@ public interface ThrowingRunnable<E extends Throwable> {
      */
     default <R extends Throwable> ThrowingRunnable<R> throwing(
             @NonNull Function<? super E, ? extends R> throwingMapper) {
-        return new MappingThrowingRunnable<>(this, ignore(), throwingMapper, ignore());
+        return new ChainThrowingRunnable<>(this, ignore(), throwingMapper, ignore());
     }
 
     /**
@@ -87,7 +87,7 @@ public interface ThrowingRunnable<E extends Throwable> {
      * @return 注册回调后的任务实例
      */
     default ThrowingRunnable<E> onClose(@NonNull ThrowingRunnable<? extends E> endpoint) {
-        return new MappingThrowingRunnable<>(this, ignore(), Function.identity(), endpoint);
+        return new ChainThrowingRunnable<>(this, ignore(), Function.identity(), endpoint);
     }
 
     /**

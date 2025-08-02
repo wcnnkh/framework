@@ -104,7 +104,7 @@ public interface PipelineWrapper<T, E extends Throwable, W extends Pipeline<T, E
      * @return 注册回调后的流水线实例
      */
     @Override
-    default Pipeline<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
+    default Pool<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
         return getSource().onClose(consumer);
     }
 

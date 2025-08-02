@@ -94,7 +94,7 @@ class EncodedOutputStreamFactory<T extends OutputStream, R extends Writer, W ext
                     } catch (IOException ignored) {
                         // 编码后的Writer关闭异常忽略
                     }
-                });
+                }).closeable();
     }
 
     /**

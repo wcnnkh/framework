@@ -96,7 +96,7 @@ class DecodedInputStreamFactory<I extends InputStream, R extends Reader, W exten
                     } catch (IOException ignored) {
                         // 解码后的Reader关闭异常忽略
                     }
-                });
+                }).closeable();
     }
 
     /**

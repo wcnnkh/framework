@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-class MappingThrowingRunnable<E extends Throwable, R extends Throwable> implements ThrowingRunnable<R> {
+class ChainThrowingRunnable<E extends Throwable, R extends Throwable> implements ThrowingRunnable<R> {
     
     /**
      * 前置操作，在主操作执行前执行。

@@ -58,7 +58,7 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
      */
     default <R> ThrowingFunction<R, T, E> compose(
             @NonNull ThrowingFunction<? super R, ? extends S, ? extends E> before) {
-        return new MappingThrowingFunction<>(before, this, Function.identity(), ThrowingConsumer.ignore());
+        return new ChainThrowingFunction<>(before, this, Function.identity(), ThrowingConsumer.ignore());
     }
 
     /**
@@ -71,7 +71,7 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
      */
     default <R> ThrowingFunction<S, R, E> andThen(
             @NonNull ThrowingFunction<? super T, ? extends R, ? extends E> after) {
-        return new MappingThrowingFunction<>(this, after, Function.identity(), ThrowingConsumer.ignore());
+        return new ChainThrowingFunction<>(this, after, Function.identity(), ThrowingConsumer.ignore());
     }
 
     /**
@@ -84,7 +84,7 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
      */
     default <R extends Throwable> ThrowingFunction<S, T, R> throwing(
             @NonNull Function<? super E, ? extends R> throwingMapper) {
-        return new MappingThrowingFunction<>(this, identity(), throwingMapper, ThrowingConsumer.ignore());
+        return new ChainThrowingFunction<>(this, identity(), throwingMapper, ThrowingConsumer.ignore());
     }
 
     /**
@@ -95,7 +95,7 @@ public interface ThrowingFunction<S, T, E extends Throwable> {
      * @return 注册回调后的函数实例
      */
     default ThrowingFunction<S, T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> endpoint) {
-        return new MappingThrowingFunction<>(this, identity(), Function.identity(), endpoint);
+        return new ChainThrowingFunction<>(this, identity(), Function.identity(), endpoint);
     }
 
     /**

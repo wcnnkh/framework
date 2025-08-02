@@ -86,7 +86,7 @@ public interface ThrowingConsumer<S, E extends Throwable> {
      * @return 组合后的消费实例
      */
     default ThrowingConsumer<S, E> andThen(@NonNull ThrowingConsumer<? super S, ? extends E> after) {
-        return new MappingThrowingConsumer<>(ThrowingFunction.identity(), this, after, Function.identity(), ignore());
+        return new ChainThrowingConsumer<>(ThrowingFunction.identity(), this, after, Function.identity(), ignore());
     }
 
     /**
@@ -97,7 +97,7 @@ public interface ThrowingConsumer<S, E extends Throwable> {
      * @return 组合后的消费实例
      */
     default ThrowingConsumer<S, E> compose(@NonNull ThrowingConsumer<? super S, ? extends E> before) {
-        return new MappingThrowingConsumer<>(ThrowingFunction.identity(), before, this, Function.identity(), ignore());
+        return new ChainThrowingConsumer<>(ThrowingFunction.identity(), before, this, Function.identity(), ignore());
     }
 
     /**
@@ -109,7 +109,7 @@ public interface ThrowingConsumer<S, E extends Throwable> {
      * @return 映射后的消费实例
      */
     default <R> ThrowingConsumer<R, E> map(ThrowingFunction<? super R, ? extends S, ? extends E> mapper) {
-        return new MappingThrowingConsumer<>(mapper, this, ignore(), Function.identity(), ignore());
+        return new ChainThrowingConsumer<>(mapper, this, ignore(), Function.identity(), ignore());
     }
 
     /**
@@ -120,7 +120,7 @@ public interface ThrowingConsumer<S, E extends Throwable> {
      * @return 注册回调后的消费实例
      */
     default ThrowingConsumer<S, E> onClose(@NonNull ThrowingConsumer<? super S, ? extends E> endpoint) {
-        return new MappingThrowingConsumer<>(ThrowingFunction.identity(), this, ignore(), Function.identity(),
+        return new ChainThrowingConsumer<>(ThrowingFunction.identity(), this, ignore(), Function.identity(),
                 endpoint);
     }
 
@@ -134,6 +134,6 @@ public interface ThrowingConsumer<S, E extends Throwable> {
      */
     default <R extends Throwable> ThrowingConsumer<S, R> throwing(
             @NonNull Function<? super E, ? extends R> throwingMapper) {
-        return new MappingThrowingConsumer<>(ThrowingFunction.identity(), this, ignore(), throwingMapper, ignore());
+        return new ChainThrowingConsumer<>(ThrowingFunction.identity(), this, ignore(), throwingMapper, ignore());
     }
 }

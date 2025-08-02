@@ -47,7 +47,7 @@ public interface ConnectionFactory {
 	default ConnectionWrapped newPipeline() {
 		// 创建连接管道，绑定关闭操作，再包装为ConnectionWrapped
 		Pipeline<Connection, SQLException> connectionPipeline = Pipeline.forSupplier(this::getConnection)
-				.onClose(Connection::close);
+				.onClose(Connection::close).closeable();
 		return new ConnectionWrapped(connectionPipeline);
 	}
 }
