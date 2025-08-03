@@ -11,7 +11,7 @@ import lombok.NonNull;
  *
  * @param <T> 资源类型，与被包装的流水线一致
  * @param <E> 异常类型，与被包装的流水线一致
- * @param <W> 被包装的流水线类型，必须是{@link Pipeline<T, E>}的子类型
+ * @param <W> 被包装的流水线类型，必须是{@link Pipeline}的子类型
  * @see Pipeline
  * @see ThrowingSupplierWrapper
  */

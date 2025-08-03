@@ -44,7 +44,6 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 
 	/**
 	 * 基于资源供应者创建流水线实例，将供应者包装为流水线以支持后续的链式操作。
-	 * 新流水线会继承供应者的资源获取逻辑，并可通过{@link #onClose(...)}等方法添加关闭逻辑。
 	 *
 	 * @param <T>      资源类型
 	 * @param <E>      异常类型
@@ -90,8 +89,7 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 	}
 
 	/**
-	 * 关闭当前流水线，释放关联的资源。 具体关闭逻辑由流水线的实现决定，通常会执行所有通过{@link #onClose(...)}注册的回调操作，
-	 * 且保证关闭操作仅执行一次（线程安全）。
+	 * 关闭当前流水线，释放关联的资源。 且保证关闭操作仅执行一次（线程安全）。
 	 *
 	 * @throws E 关闭过程中可能抛出的异常
 	 */
