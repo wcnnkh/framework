@@ -5,35 +5,6 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 
-/**
- * 可抛出异常的Optional接口，扩展了Java标准库的Optional概念，允许在操作过程中抛出指定类型的异常。
- * 该接口提供了安全处理可能为null的值的机制，并支持在值不存在或处理过程中抛出异常的场景。
- *
- * <p>
- * 核心特性：
- * <ul>
- * <li>安全值处理：避免直接操作null值导致的NullPointerException</li>
- * <li>异常处理：允许在值获取、转换等操作中抛出指定异常</li>
- * <li>链式操作：提供filter/map/flatMap等方法实现函数式链式调用</li>
- * <li>空值处理：提供多种方式处理值不存在的情况</li>
- * <li>值存在检查：通过isPresent()方法安全检查值是否存在</li>
- * </ul>
- *
- * <p>
- * 使用场景：
- * <ul>
- * <li>可能返回null的方法调用结果处理</li>
- * <li>需要异常处理的资源获取操作</li>
- * <li>复杂对象图的安全导航</li>
- * <li>函数式编程中需要处理异常的场景</li>
- * <li>统一处理不同模块的异常类型</li>
- * </ul>
- *
- * @param <T> 包含的值的类型
- * @param <E> 可能抛出的异常类型，必须是Throwable的子类
- * @see java.util.Optional
- * @see ThrowingSupplier
- */
 public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSupplier<T, E> {
 
 	/**
@@ -155,7 +126,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	 */
 	@Override
 	default <R> ThrowingOptional<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
-		return new ChainThrowingOptional<>(this, mapper, ThrowingConsumer.ignore(), Function.identity(), false);
+		return new ChainThrowingOptional<>(this, ThrowingRunnable.ignore(), mapper, Function.identity());
 	}
 
 	/**
