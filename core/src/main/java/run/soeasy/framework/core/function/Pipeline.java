@@ -11,16 +11,6 @@ import lombok.NonNull;
  * 用于管理资源从获取、转换到释放的完整生命周期，支持通过链式调用组合多个操作，确保资源在使用后被正确释放，
  * 特别适用于文件、网络连接、数据库资源等需要显式关闭的场景。
  *
- * <p>
- * 核心功能：
- * <ul>
- * <li>资源管理：通过{@link #close()}方法和{@link #onClose(ThrowingRunnable)}回调确保资源释放</li>
- * <li>链式转换：通过{@link #map(ThrowingFunction)}实现资源的多级转换</li>
- * <li>异常处理：通过{@link #throwing(Function)}统一转换异常类型</li>
- * <li>空值安全：通过{@link #optional()}将结果包装为支持异常的Optional</li>
- * <li>适配标准资源：提供静态方法支持{@link Closeable}等标准资源类型</li>
- * </ul>
- *
  * @param <T> 流水线处理的资源类型
  * @param <E> 操作中可能抛出的异常类型，必须是{@link Throwable}的子类
  * @see ThrowingSupplier
