@@ -24,6 +24,6 @@ public class TimeUnitTest {
 	}
 
 	private void test(TimeUnit timeUnit, Date time) {
-		assertTrue(timeUnit.minValue(time).getTime() == timeUnit.parse(timeUnit.format(time)).getTime());
+		assertTrue(timeUnit.minValue(time).getTime() == timeUnit.decode(timeUnit.encode(time)).getTime());
 	}
 }

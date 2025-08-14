@@ -104,6 +104,6 @@ public class BaseEvent extends EventObject {
      */
     @Override
     public String toString() {
-        return Millisecond.DEFAULT.format(timestamp) + " on event " + id + " source " + source;
+        return Millisecond.DEFAULT.encode(timestamp) + " on event " + id + " source " + source;
     }
 }

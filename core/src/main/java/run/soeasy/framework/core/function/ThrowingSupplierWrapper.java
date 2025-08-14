@@ -65,7 +65,7 @@ public interface ThrowingSupplierWrapper<T, E extends Throwable, W extends Throw
 	 * @return 注册回调后的流水线实例
 	 */
 	@Override
-	default Pool<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
+	default Pipeline<T, E> onClose(@NonNull ThrowingConsumer<? super T, ? extends E> consumer) {
 		return getSource().onClose(consumer);
 	}
 
@@ -124,15 +124,5 @@ public interface ThrowingSupplierWrapper<T, E extends Throwable, W extends Throw
 	@Override
 	default ThrowingOptional<T, E> optional() {
 		return getSource().optional();
-	}
-
-	/**
-	 * 将当前供应者配置为单例模式，委托给源供应者的对应方法。
-	 *
-	 * @return 单例模式的流水线实例
-	 */
-	@Override
-	default ThrowingSupplier<T, E> singleton() {
-		return getSource().singleton();
 	}
 }
