@@ -424,7 +424,7 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 			type = Object.class;
 		}
 		TypeDescriptor desc = commonTypesCache.get(type);
-		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forType(type), null));
+		return (desc != null ? desc : forType(type));
 	}
 
 	/**
@@ -436,7 +436,7 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @return 带泛型的{@link TypeDescriptor}
 	 */
 	public static <T> TypeDescriptor forClassWithGenerics(Class<T> type, Type... generics) {
-		return new TypeDescriptor(ResolvableType.forClassWithGenerics(type, generics), null);
+		return forType(ResolvableType.forClassWithGenerics(type, generics));
 	}
 
 	/**
@@ -472,14 +472,10 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * 创建数组类型的{@link TypeDescriptor}。
 	 * 
 	 * @param elementTypeDescriptor 元素类型描述符
-	 * @return 数组类型描述符，{@code null}表示元素类型描述符为{@code null}
+	 * @return 数组类型描述符
 	 */
-	public static TypeDescriptor array(TypeDescriptor elementTypeDescriptor) {
-		if (elementTypeDescriptor == null) {
-			return null;
-		}
-		return new TypeDescriptor(ResolvableType.forArrayComponent(elementTypeDescriptor.resolvableType), null,
-				elementTypeDescriptor);
+	public static TypeDescriptor array(@NonNull TypeDescriptor elementTypeDescriptor) {
+		return forType(ResolvableType.forArrayComponent(elementTypeDescriptor.resolvableType), elementTypeDescriptor);
 	}
 
 	/**
@@ -490,10 +486,9 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 */
 	public static TypeDescriptor forMethodReturnType(@NonNull Executable executable) {
 		if (executable instanceof Method) {
-			return new TypeDescriptor(ResolvableType.forType(((Method) executable).getGenericReturnType()), null,
-					executable);
+			return forType(((Method) executable).getGenericReturnType(), executable);
 		}
-		return new TypeDescriptor(ResolvableType.forType(executable.getDeclaringClass()), null, executable);
+		return forType(executable.getDeclaringClass(), executable);
 	}
 
 	/**
@@ -503,7 +498,7 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @return 字段类型描述符
 	 */
 	public static TypeDescriptor forFieldType(@NonNull Field field) {
-		return new TypeDescriptor(ResolvableType.forType(field.getGenericType()), null, field);
+		return forType(field.getGenericType(), field);
 	}
 
 	/**
@@ -513,7 +508,7 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @return 参数类型描述符
 	 */
 	public static TypeDescriptor forParameter(@NonNull Parameter parameter) {
-		return new TypeDescriptor(ResolvableType.forType(parameter.getParameterizedType()), null, parameter);
+		return forType(parameter.getParameterizedType(), parameter);
 	}
 
 	/**
@@ -531,5 +526,23 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 		}
 		Parameter parameter = executable.getParameters()[index];
 		return forParameter(parameter);
+	}
+
+	/**
+	 * 为指定的类型和注解元素创建一个TypeDescriptor实例
+	 * 
+	 * TypeDescriptor用于描述Java类型的详细信息，包括泛型参数、注解等元数据，
+	 * 通常在需要处理类型信息的框架中使用（如Spring框架的类型转换系统）
+	 *
+	 * @param type              要描述的Java类型（如Class对象）
+	 * @param annotatedElements 与该类型相关的注解元素数组，可包含字段、方法等带有注解的元素
+	 * @return 新创建的TypeDescriptor实例，包含了指定类型的解析信息和相关注解
+	 */
+	public static TypeDescriptor forType(Type type, AnnotatedElement... annotatedElements) {
+		// 将普通Type转换为可解析的ResolvableType，便于处理泛型等复杂类型
+		ResolvableType resolvableType = ResolvableType.forType(type);
+
+		// 创建并返回TypeDescriptor实例，封装解析后的类型信息和注解元素
+		return new TypeDescriptor(resolvableType, null, annotatedElements);
 	}
 }
