@@ -19,16 +19,15 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * 可解析类型接口，提供泛型类型的解析、操作和查询功能。
  * <p>
  * 整合了{@link ParameterizedType}、{@link WildcardType}和{@link TypeVariableResolver}接口，
- * 用于处理Java泛型类型擦除后的类型信息解析，支持参数化类型、通配符类型、
- * 类型变量和数组类型的解析与操作。
+ * 用于处理Java泛型类型擦除后的类型信息解析，支持参数化类型、通配符类型、 类型变量和数组类型的解析与操作。
  */
 public interface ResolvableType extends ParameterizedType, WildcardType, TypeVariableResolver {
-	
+
 	/**
 	 * 空类型数组常量，避免重复创建。
 	 */
 	ResolvableType[] EMPTY_TYPES_ARRAY = new ResolvableType[0];
-	
+
 	/**
 	 * 可解析类型工厂，通过服务加载机制获取，支持扩展自定义类型解析实现。
 	 * <p>
@@ -38,7 +37,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	ResolvableTypeFactory RESOLVABLE_TYPE_FACTORY = CollectionUtils
 			.unknownSizeStream(ServiceLoader.load(ResolvableTypeFactory.class).iterator()).findFirst()
 			.orElse(DefaultResolvableTypeFactory.INSTANCE);
-	
+
 	/**
 	 * 表示无类型的特殊实例，用于空类型场景的返回值。
 	 */
@@ -76,8 +75,8 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	/**
 	 * 根据原始类型和类型变量解析器创建{@link ResolvableType}实例。
 	 * 
-	 * @param type       原始类型（不可为{@code null}）
-	 * @param resolver   类型变量解析器（可为{@code null}，使用默认解析器）
+	 * @param type     原始类型（不可为{@code null}）
+	 * @param resolver 类型变量解析器（可为{@code null}，使用默认解析器）
 	 * @return {@link ResolvableType}实例
 	 */
 	static ResolvableType forType(@NonNull Type type, TypeVariableResolver resolver) {
@@ -112,6 +111,25 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	}
 
 	/**
+	 * 判断两个类型是否存在赋值兼容性（即右类型是否可赋值给左类型）
+	 * 
+	 * 该方法通过ResolvableType处理泛型等复杂类型，提供比普通Class.isAssignableFrom()更全面的类型兼容性检查
+	 *
+	 * @param leftType 目标类型（赋值的接收方类型），不能为null
+	 * @param rightType 源类型（赋值的提供方类型），不能为null
+	 * @return 如果rightType可赋值给leftType则返回true，否则返回false
+	 */
+	public static boolean isAssignable(@NonNull Type leftType, @NonNull Type rightType) {
+	    // 将左类型转换为可解析类型，支持泛型等复杂类型处理
+	    ResolvableType leftResolvableType = ResolvableType.forType(leftType);
+	    // 将右类型转换为可解析类型，支持泛型等复杂类型处理
+	    ResolvableType rightResolvableType = ResolvableType.forType(rightType);
+	    
+	    // 检查左类型是否可从右类型赋值（即右类型是否与左类型兼容）
+	    return leftResolvableType.isAssignableFrom(rightResolvableType);
+	}
+
+	/**
 	 * 将当前类型转换为指定类型的{@link ResolvableType}，支持接口和父类转换。
 	 * <p>
 	 * 优先从接口中查找匹配类型，若未找到则从父类中查找。
@@ -139,8 +157,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	/**
 	 * 获取指定索引的泛型参数，支持多级索引查询。
 	 * <p>
-	 * 示例：{@code getActualTypeArgument(0, 1)} 表示获取第一层泛型的第0个参数的
-	 * 第二层泛型的第1个参数。
+	 * 示例：{@code getActualTypeArgument(0, 1)} 表示获取第一层泛型的第0个参数的 第二层泛型的第1个参数。
 	 * 
 	 * @param indexes 泛型参数索引路径（可变参数）
 	 * @return 泛型参数对应的{@link ResolvableType}，索引越界返回{@link #NONE}
@@ -241,7 +258,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * <li>泛型类型每一层级获取指定索引的泛型参数</li>
 	 * </ul>
 	 * 
-	 * @param nestingLevel    嵌套层级（从2开始，1表示当前层级）
+	 * @param nestingLevel        嵌套层级（从2开始，1表示当前层级）
 	 * @param typeIndexesPerLevel 层级-索引映射表，key为层级，value为对应索引
 	 * @return 嵌套后的{@link ResolvableType}，层级无效返回{@link #NONE}
 	 */

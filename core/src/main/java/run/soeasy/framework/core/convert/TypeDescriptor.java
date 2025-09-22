@@ -19,6 +19,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.annotation.MergedAnnotatedElement;
+import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.ResolvableType;
 
@@ -66,8 +67,8 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @param annotatedElements 注解元素数组（用于合并注解元数据）
 	 */
 	public TypeDescriptor(@NonNull ResolvableType resolvableType, Class<?> type,
-			@NonNull AnnotatedElement... annotatedElements) {
-		super(annotatedElements.length == 0 ? Collections.emptyList() : Arrays.asList(annotatedElements));
+			AnnotatedElement... annotatedElements) {
+		super(ArrayUtils.isEmpty(annotatedElements) ? Collections.emptyList() : Arrays.asList(annotatedElements));
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.getRawType());
 	}
@@ -531,8 +532,7 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	/**
 	 * 为指定的类型和注解元素创建一个TypeDescriptor实例
 	 * 
-	 * TypeDescriptor用于描述Java类型的详细信息，包括泛型参数、注解等元数据，
-	 * 通常在需要处理类型信息的框架中使用（如Spring框架的类型转换系统）
+	 * TypeDescriptor用于描述Java类型的详细信息，包括泛型参数、注解等元数据， 通常在需要处理类型信息的框架中使用
 	 *
 	 * @param type              要描述的Java类型（如Class对象）
 	 * @param annotatedElements 与该类型相关的注解元素数组，可包含字段、方法等带有注解的元素
