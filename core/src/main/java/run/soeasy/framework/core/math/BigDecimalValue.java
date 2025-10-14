@@ -33,7 +33,7 @@ import run.soeasy.framework.logging.Logger;
  * @see java.math.BigDecimal
  * @see run.soeasy.framework.core.domain.Value
  */
-public class BigDecimalValue extends RationalNumber {
+public class BigDecimalValue extends NumberValue {
 	private static final long serialVersionUID = 1L;
 
 	/**

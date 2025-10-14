@@ -15,12 +15,12 @@ import org.junit.Test;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.format.Base64;
 import run.soeasy.framework.codec.format.CharsetCodec;
-import run.soeasy.framework.core.math.RandomUtils;
+import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.sequences.UUIDSequence;
 
 public class RSATest {
 	public static String content = UUIDSequence.random().next()
-			+ new String(RandomUtils.randomArray(new Random(), "abcd".toCharArray(), 1024)) + "这是一段加解密测试内容!";
+			+ new String(NumberUtils.randomArray(new Random(), "abcd".toCharArray(), 1024)) + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 
 	@Test

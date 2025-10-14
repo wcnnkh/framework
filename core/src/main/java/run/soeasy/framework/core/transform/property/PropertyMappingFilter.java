@@ -32,7 +32,7 @@ import run.soeasy.framework.core.transform.templates.MappingFilter;
 public interface PropertyMappingFilter extends MappingFilter<Object, PropertyAccessor, TypedProperties> {
     
     /** 忽略空值属性的过滤器（源属性可读且值为null时过滤） */
-    PropertyMappingFilter IGNORE_NULL = predicate((s, t) -> s.isReadable() && s.get() == null);
+    PropertyMappingFilter IGNORE_NULL = predicate((s, t) -> s.isReadable() && s.get() != null);
 
     /**
      * 创建按属性名称过滤的过滤器

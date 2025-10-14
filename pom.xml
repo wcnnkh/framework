@@ -62,6 +62,11 @@
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
+				<artifactId>data</artifactId>
+				<version>0.0.7</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
 				<artifactId>jdbc</artifactId>
 				<version>0.0.7</version>
 			</dependency>
@@ -165,6 +170,7 @@
 		<module>json</module>
 		<module>beans</module>
 		<module>aop</module>
+		<module>data</module>
 	</modules>
 	<profiles>
 		<profile>

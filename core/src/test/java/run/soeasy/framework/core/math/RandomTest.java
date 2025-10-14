@@ -16,7 +16,7 @@ public class RandomTest {
 		list.add(3);
 
 		for (int i = 0; i < 1000000; i++) {
-			assertTrue(RandomUtils.random(list, (e) -> e, null) != null);
+			assertTrue(NumberUtils.random(list, (e) -> e, null) != null);
 		}
 	}
 }

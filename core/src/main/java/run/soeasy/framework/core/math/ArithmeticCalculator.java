@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * @author soeasy.run
  *
  */
-public enum ArithmeticOperation implements Calculator {
+public enum ArithmeticCalculator implements Calculator {
 	/**
 	 * 乘法
 	 */
@@ -38,7 +38,7 @@ public enum ArithmeticOperation implements Calculator {
 
 	private final String operator;
 
-	ArithmeticOperation(String operator) {
+	ArithmeticCalculator(String operator) {
 		this.operator = operator;
 	}
 

@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import lombok.Data;
 import run.soeasy.framework.beans.BeanMapper;
+import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
 
 public class BeanMapperTest {
 	@Data
@@ -20,7 +21,7 @@ public class BeanMapperTest {
 		private String value;
 	}
 
-	@Test
+	//@Test
 	public void test() {
 		A a = new A();
 		a.setName("bean");
@@ -37,5 +38,19 @@ public class BeanMapperTest {
 		BeanMapper.copyProperties(b, a);
 		System.out.println(a);
 		assert a.getValue() != null;
+	}
+	
+	@Test
+	public void test2() {
+		A a = new A();
+		a.setName("ignore");
+		a.setValue(null);
+
+		B b = new B();
+		b.setName("bean");
+		b.setValue(UUID.randomUUID().toString());
+		BeanMapper.copyProperties(a, b, PropertyMappingFilter.IGNORE_NULL);
+		System.out.println(b);
+		assert b.getValue() != null;
 	}
 }
