@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>run.soeasy.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>0.0.6</version>
+		<version>0.0.7</version>
 	</parent>
 	<artifactId>jdbc</artifactId>
 	<name>jdbc</name>
@@ -11,7 +11,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>data</artifactId>
 		</dependency>
 	</dependencies>
 </project>

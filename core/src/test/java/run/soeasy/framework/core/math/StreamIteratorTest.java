@@ -14,7 +14,7 @@ public class StreamIteratorTest {
 	public void test() {
 		List<Integer> list = new ArrayList<Integer>();
 		for (int i = 0; i < 100; i++) {
-			list.add(RandomUtils.random(0, 100));
+			list.add(NumberUtils.random(0, 100));
 		}
 
 		Stream<Integer> stream = list.stream().sorted();
