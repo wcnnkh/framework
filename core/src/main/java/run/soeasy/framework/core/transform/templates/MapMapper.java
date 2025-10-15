@@ -3,6 +3,7 @@ package run.soeasy.framework.core.transform.templates;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
@@ -22,7 +23,7 @@ import run.soeasy.framework.core.domain.KeyValue;
  * 
  * <p><b>核心特性详解：</b>
  * <ul>
- * <li><strong>键驱动的多值处理</strong>：基于键（K）的相等性（通过{@link ObjectUtils#equals}判断），
+ * <li><strong>键驱动的多值处理</strong>：基于键（K）的相等性（通过{@link ObjectUtils#equals(Object, Object)}判断），
  *     对目标键对应的所有源值执行映射，支持源集合中“一键多值”场景（如一个用户ID对应多条订单记录）；</li>
  * <li><strong>非消耗性映射</strong>：源集合中的值不会被移除，同一键的源值可被多个目标键（若存在相同键）重复映射，
  *     适用于需要多次复用源数据的场景（如统计分析中的多维度映射）；</li>
@@ -38,7 +39,7 @@ import run.soeasy.framework.core.domain.KeyValue;
  *     且禁止包含单键值对（{@link KeyValue}）—— 确保操作对象是键值对集合；</li>
  * <li><strong>目标键遍历</strong>：按目标集合的迭代顺序，逐个取出目标键值对（{@link KeyValue}）；</li>
  * <li><strong>源值聚合</strong>：对每个目标键，通过{@link Mapping#getValues(Object)}从源集合中获取所有同键值，
- *     封装为{@link Elements<V>}（可迭代的多值集合）；</li>
+ *     封装为{@link Elements}（可迭代的多值集合）；</li>
  * <li><strong>值级映射</strong>：遍历聚合后的源值，为每个值创建源上下文（包含当前键值对）和目标上下文（包含当前目标键值对），
  *     调用父类{@link #doFilterableMapping}执行过滤器链与内部映射器（单值转换逻辑）；</li>
  * <li><strong>结果判定</strong>：统计成功映射的源值数量，只要有一个值映射成功则返回true，否则返回false。</li>

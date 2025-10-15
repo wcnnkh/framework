@@ -185,6 +185,7 @@ public interface InputStreamFactory<I extends InputStream> extends ReaderFactory
 	 * <p>
 	 * 该方法将当前输入流的全部内容传输到目标输出流，自动处理 资源的打开和关闭，确保数据传输完成后所有资源被正确释放。
 	 * 
+	 * @param <R> OutputStream的类型
 	 * @param dest 目标输出流工厂，不可为null
 	 * @return 传输的字节数
 	 * @throws IOException 如果传输过程中发生I/O错误

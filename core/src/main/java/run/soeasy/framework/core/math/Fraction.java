@@ -10,68 +10,94 @@ import run.soeasy.framework.core.domain.Value;
 
 /**
  * 高精度分数实现类，继承自{@link NumberValue}，以“分子/分母”形式表示有理数，
- * 支持所有基础数学运算（加、减、乘、除、取模、幂运算等），且所有运算结果自动约分为最简形式，
- * 彻底避免浮点数精度丢失问题，是框架中跨类型精确数值计算的核心载体。
+ * 彻底解决浮点数精度丢失问题（如{@code 0.1 + 0.2 ≠ 0.3}），所有运算基于整数/高精度数操作，
+ * 是框架中跨类型（整数、小数、大数）精确 数值计算的核心载体。
  * 
- * <p>设计核心：通过“分子分母分离存储+统一约分逻辑”，将所有数值运算转化为整数/高精度数的操作，
- * 同时支持自定义最大公约数（GCD）计算算法，兼顾灵活性与精度要求。
+ * <p><strong>设计核心（三大核心约束）</strong>：
+ * <ul>
+ * <li><strong>分母恒正</strong>：通过“负号迁移”逻辑，将分母的负号转移至分子（如{@code 3/-2 → -3/2}），
+ * 避免后续运算中正负号混淆（如取模、约分的符号判断）；</li>
+ * <li><strong>自动约分可控</strong>：核心运算（加、减、乘、除）结果自动约分为最简形式，
+ * 非核心运算（幂运算）需手动调用{@link #reduction()}，平衡精度与性能；</li>
+ * <li><strong>类型无缝兼容</strong>：支持与任意{@link NumberValue}子类（{@link IntValue}、{@link BigDecimalValue}等）运算，
+ * 非分数类型自动转为“分母为1”的分数（如{@code 5 → 5/1}），统一运算逻辑。</li>
+ * </ul>
  *
  * <h3>核心特性</h3>
  * <ul>
- * <li><strong>无精度丢失运算</strong>：所有运算基于分子、分母的整数/高精度计算，不涉及浮点数转换，
- * 彻底解决0.1+0.2≠0.3等经典精度问题</li>
- * <li><strong>自动最简约分</strong>：运算结果通过配置的{@link GreatestCommonDivisor}算法自动约分，
- * 确保分子分母互质（如4/6自动转为2/3）</li>
- * <li><strong>灵活类型适配</strong>：支持与任意{@link NumberValue}子类（整数、小数）运算，
- * 自动将非分数类型转为“分母为1”的分数后统一处理</li>
- * <li><strong>可配置约分算法</strong>：通过{@link #greatestCommonDivisor}属性指定GCD计算方式（如欧几里得算法、更相减损术），
- * 适配不同性能或精度需求</li>
- * <li><strong>严格异常控制</strong>：分母为0、除数为0等非法操作会主动抛出异常，避免运行时隐藏错误</li>
- * <li><strong>完整类型转换</strong>：支持转为{@link BigDecimal}（小数）、{@link BigInteger}（整数），
- * 转换过程包含清晰的精度说明（如整数转换会截断小数部分）</li>
+ * <li><strong>无精度丢失运算</strong>：所有操作基于分子、分母的整数/高精度计算，不涉及浮点数转换，
+ * 支持无限循环小数（如{@code 1/3}）、有限小数（如{@code 1/2}）的精确表示；</li>
+ * <li><strong>灵活约分策略</strong>：通过{@link #greatestCommonDivisor}配置GCD算法（默认欧几里得算法），
+ * 支持自定义（如更相减损术），适配不同性能需求（如大数值场景更相减损术可能更优）；</li>
+ * <li><strong>严格异常控制</strong>：
+ *   - 分母为0（构造时）、零分数求倒数（分子为0）→ 抛{@link IllegalArgumentException}；
+ *   - 除数为0（除法、取模）→ 抛{@link ArithmeticException}；
+ *   避免运行时隐藏错误；</li>
+ * <li><strong>完整类型转换</strong>：
+ *   - 转{@link BigDecimal}：分子÷分母（可能存在精度丢失，如{@code 1/3 → 0.3333333333333333}）；
+ *   - 转{@link BigInteger}：截断小数部分（如{@code 7/3 → 2}，{@code -5/2 → -2}）；
+ *   - 转字符串：格式为“分子/分母”（嵌套分数带括号，如{@code (1/2)/3}）；</li>
+ * <li><strong>清晰运算语义</strong>：
+ *   - {@link #mod(NumberValue)}：结果非负（符合数学取模定义，如{@code -5/2 mod 3 → 1/2}）；
+ *   - {@link #remainder(NumberValue)}：结果符号与分子一致（如{@code -5/2 remainder 3 → -1/2}）；
+ *   明确区分“取模”与“取余”。</li>
  * </ul>
  *
  * <h3>适用场景</h3>
  * <ul>
- * <li>金融领域：货币计算（如订单金额拆分、利息计算）、税率换算，需精确到分/厘级</li>
- * <li>科学计算：物理/化学实验数据（如浓度、分子量）、工程测量（如尺寸、重量），不允许精度偏差</li>
- * <li>游戏开发：资源数值计算（如血量、道具数量）、概率公式（如暴击率、掉落率），需确保逻辑正确性</li>
- * <li>算法实现：几何计算（如分数坐标）、密码学（如基于分数的加密算法）、周期性任务（如取模调度）</li>
- * <li>数据校验：需精确比较的数值场景（如账单对账、库存核对），避免因精度丢失导致的匹配失败</li>
+ * <li>金融计算：货币拆分（如100元分3人，每人100/3元）、利息计算（如年利率3.5% → 7/200），避免分厘级误差；</li>
+ * <li>科学实验：浓度计算（如10g溶质溶于90g溶剂 → 1/10浓度）、工程测量（如3米长材料分7段 → 3/7米/段）；</li>
+ * <li>游戏开发：概率公式（如暴击率15% → 3/20）、资源分配（如5个道具分给8个玩家 → 5/8个/人，累计后无损耗）；</li>
+ * <li>数据对账：需精确比较的场景（如账单金额1/3元与0.33333333元，避免因精度丢失导致对账失败）。</li>
  * </ul>
  *
- * <h3>使用示例</h3>
- * 
+ * <h3>使用示例（含关键场景）</h3>
  * <pre class="code">
- * // 1. 创建分数实例（多种构造方式）
- * Fraction a = new Fraction(new IntValue(1), new IntValue(3)); // 1/3
- * Fraction b = new Fraction(new BigDecimal("0.4")); // 小数0.4自动转为2/5
- * Fraction c = new Fraction(new BigIntegerValue("7"), new IntValue(3)); // 7/3（超大整数分子）
+ * // 1. 构造分数（多种场景）
+ * Fraction f1 = new Fraction(new IntValue(1), new IntValue(3)); // 1/3（基础整数分子分母）
+ * Fraction f2 = new Fraction(new BigDecimal("0.1")); // 0.1 → 1/10（小数自动转分数）
+ * Fraction f3 = new Fraction(new BigIntegerValue("7"), new IntValue(2)); // 7/2（超大整数分子）
+ * Fraction f4 = new Fraction(new IntValue(3), new IntValue(-4)); // 负号迁移 → -3/4（分母恒正）
  *
- * // 2. 基础运算（结果自动约分）
- * Fraction sum = a.add(b); // 1/3 + 2/5 = 11/15（自动约分）
- * Fraction product = sum.multiply(c); // 11/15 * 7/3 = 77/45（未约分，需手动调用reduction()）
- * Fraction simplifiedProduct = product.reduction(); // 77/45（已是最简，返回自身）
+ * // 2. 基础运算（自动约分）
+ * Fraction sum = f1.add(f2); // 1/3 + 1/10 = (10+3)/30 = 13/30（自动约分，13与30互质）
+ * Fraction diff = f3.subtract(f1); // 7/2 - 1/3 = (21-2)/6 = 19/6（自动约分）
+ * Fraction product = sum.multiply(diff); // 13/30 × 19/6 = 247/180（自动约分，247=13×19，180=2²×3²，互质）
+ * Fraction quotient = product.divide(f4); // 247/180 ÷ (-3/4) = 247/180 × (-4/3) = -988/540 → 约分后-247/135
  *
- * // 3. 取模运算（结果非负，满足0 ≤ 余数 < |除数|）
- * NumberValue modResult = c.mod(new IntValue(2)); // 7/3 mod 2 = 1/3（2转为2/1，计算后约分）
+ * // 3. 取模与取余对比（关键区别）
+ * NumberValue modResult = f3.mod(new IntValue(2)); // 7/2 mod 2（=2/1）→ (7×1)mod(2×2)=7mod4=3 → 3/2（非负）
+ * NumberValue remResult = f3.remainder(new IntValue(2)); // 7/2 remainder 2 → 7%2=1 → 1/2（符号与分子一致）
+ * NumberValue negMod = new Fraction(new IntValue(-5), new IntValue(2)).mod(new IntValue(3)); // -5/2 mod3 → 1/2（非负）
  *
- * // 4. 类型转换与判断
- * BigDecimal decimalSum = sum.getAsBigDecimal(); // 11/15 → 0.7333...（存在循环小数，精度有限）
- * BigInteger intSum = sum.getAsBigInteger(); // 11/15 → 0（截断小数部分）
- * boolean isPositive = sum.isPositive(); // true（11/15 > 0）
+ * // 4. 幂运算（需手动约分）
+ * Fraction powResult = (Fraction) f2.pow(new IntValue(2)); // (1/10)² = 1/100（未约分，已最简）
+ * Fraction powResult2 = (Fraction) new Fraction(new IntValue(4), new IntValue(2)).pow(new IntValue(2)); // (4/2)²=16/4 → 需手动约分
+ * Fraction simplifiedPow = (Fraction) powResult2.reduction(); // 16/4 → 4/1
  *
- * // 5. 特殊操作（倒数、绝对值）
- * Fraction reciprocalA = a.reciprocal(); // 1/3的倒数 → 3/1
- * Fraction absNegative = new Fraction(new IntValue(-5), new IntValue(2)).abs(); // -5/2的绝对值 → 5/2
+ * // 5. 倒数（注意零分数不可用）
+ * Fraction reciprocalF1 = f1.reciprocal(); // 1/3 → 3/1
+ * // Fraction reciprocalZero = Fraction.ZERO.reciprocal(); // 抛IllegalArgumentException（分子为0，倒数分母为0）
+ *
+ * // 6. 类型转换
+ * BigDecimal bd = quotient.getAsBigDecimal(); // -247/135 ≈ -1.8296296296296295（存在精度丢失）
+ * BigInteger bi = quotient.getAsBigInteger(); // -247/135 → 截断小数 → -1
+ * String str = quotient.getAsString(); // "-247/135"（清晰格式）
  * </pre>
  *
+ * <h3>注意事项</h3>
+ * <ul>
+ * <li>单例常量{@link #ZERO}：不可调用{@link #reciprocal()}（抛异常），不可修改其{@link #greatestCommonDivisor}（影响全局）；</li>
+ * <li>幂运算{@link #pow(NumberValue)}：结果不自动约分，需手动调用{@link #reduction()}，如{@code (4/2)^2}需手动处理；</li>
+ * <li>嵌套分数：分子/分母为{@link Fraction}时，{@link #reduction()}会自动展开，如{@code (1/2)/3 → 1/6}，无需手动拆解；</li>
+ * <li>BigDecimal转换精度：{@link #getAsBigDecimal()}依赖默认精度（约15-17位有效数字），若需更高精度，需自行实现“分子÷分母”并指定精度（如{@code new BigDecimal(molecule).divide(new BigDecimal(denominator), 50, RoundingMode.HALF_UP)}）。</li>
+ * </ul>
+ *
  * @author soeasy.run
- * @see NumberValue 父类（数值抽象基类，定义基础运算与转换契约）
- * @see RationalNumber 有理数接口（约束有理数的核心行为，如分数运算）
- * @see GreatestCommonDivisor 最大公约数计算器（支撑自动约分逻辑）
- * @see BigDecimalValue 高精度小数实现（可与Fraction无缝运算）
- * @see BigIntegerValue 超大整数实现（可作为Fraction的分子/分母）
+ * @see NumberValue 父类（定义数值运算与转换的基础契约）
+ * @see GreatestCommonDivisor GCD算法接口（支撑约分逻辑，默认欧几里得算法）
+ * @see BigDecimalValue 高精度小数类（可无缝转为分数，如{@code 0.25 → 1/4}）
+ * @see BigIntegerValue 超大整数类（可作为分子/分母，支持超大数值分数）
  */
 @Getter
 @Setter
@@ -79,56 +105,64 @@ public class Fraction extends NumberValue {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 零分数常量（分子为0，分母为1），用于比较“数值为0”的场景，避免重复创建实例
+	 * 零分数单例常量（分子为{@link BigIntegerValue#ZERO}，分母为{@link BigIntegerValue#ONE}）
+	 * <p>用途：作为“数值为0”的基准（如比较运算、判断结果是否为0），避免重复创建零分数实例
+	 * <p><strong>禁忌</strong>：不可调用{@link #reciprocal()}（会抛{@link IllegalArgumentException}），不可修改其GCD算法
 	 */
 	public static final Fraction ZERO = new Fraction(BigIntegerValue.ZERO, BigIntegerValue.ONE);
 
 	/**
-	 * 分数的分子（不可变），支持任意{@link NumberValue}实现（如整数、小数、超大整数）
+	 * 分数的分子（不可变）
+	 * <p>特性：支持任意{@link NumberValue}类型（整数、小数、超大整数），负号统一存储于此（分母恒正）
 	 */
 	private final NumberValue molecule;
 	/**
-	 * 分数的分母（不可变，且非0），支持任意{@link NumberValue}实现，运算中始终保持正数（负号迁移至分子）
+	 * 分数的分母（不可变，恒正）
+	 * <p>特性：通过构造时的“负号迁移”确保非负，避免后续运算中符号判断复杂（如取模、约分）
 	 */
 	private final NumberValue denominator;
 
 	/**
-	 * 最大公约数（GCD）计算器，用于分数约分，默认使用欧几里得算法（{@link GreatestCommonDivisor#DIVISION_ALGORITHM}）
-	 * <p>可通过{@link #setGreatestCommonDivisor(GreatestCommonDivisor)}自定义算法，
-	 * 如更相减损术，适配不同性能需求
+	 * 最大公约数（GCD）计算器（默认：{@link GreatestCommonDivisor#DIVISION_ALGORITHM}（欧几里得算法））
+	 * <p>用途：控制{@link #reduction()}的约分逻辑，可替换为更相减损术等其他算法，适配不同数值场景
 	 */
 	@NonNull
 	private GreatestCommonDivisor greatestCommonDivisor = GreatestCommonDivisor.DIVISION_ALGORITHM;
 
 	/**
-	 * 从{@link BigDecimal}创建分数（小数自动转为分数形式）
-	 * <p>转换逻辑：根据BigDecimal的小数位数，将其转为“整数部分×10^n + 小数部分”作为分子，10^n作为分母，
-	 * 例如0.4 → 4/10（后续可通过{@link #reduction()}约分为2/5）、1.25 → 125/100（约分为5/4）
+	 * 从{@link BigDecimal}创建分数（小数→分数的自动转换）
+	 * <p>转换逻辑：
+	 * 1. 获取BigDecimal的小数位数{@code scale}（如0.1的scale=1，0.001的scale=3）；
+	 * 2. 分子 = 小数去掉小数点后的整数（如0.1→1，0.001→1，1.25→125）；
+	 * 3. 分母 = 10^scale（如scale=1→10，scale=3→1000，scale=2→100）；
+	 * 4. 最终分数未约分（后续可通过{@link #reduction()}优化，如0.25→25/100→1/4）。
 	 *
-	 * @param bigDecimal 待转换的小数（不可为null），支持任意精度的BigDecimal（如new BigDecimal("0.1000")）
+	 * @param bigDecimal 待转换的小数（不可为null，支持任意scale，如{@code new BigDecimal("0.100")}（scale=3））
 	 */
 	public Fraction(BigDecimal bigDecimal) {
 		this(new BigDecimalValue(bigDecimal), new BigDecimalValue(BigDecimal.ONE));
 	}
 
 	/**
-	 * 通用构造函数：通过分子和分母创建分数（最核心的构造方式）
-	 * <p>参数校验：分母不可为0（否则抛出{@link IllegalArgumentException}），分子允许为0（此时分数为零分数）
-	 * <p>隐含逻辑：分母的负号会自动迁移至分子（如分子3、分母-2 → 分子-3、分母2），确保分母始终为正
+	 * 核心构造：通过分子和分母创建分数（所有构造的最终入口）
+	 * <p>核心逻辑（两步校验与处理）：
+	 * 1. 分母非0校验：若分母为0，抛{@link IllegalArgumentException}（非法分数）；
+	 * 2. 负号迁移：若分母为负，将负号转移至分子（分子×-1，分母×-1），确保分母恒正（如分子3、分母-2 → 分子-3、分母2）。
 	 *
-	 * @param molecule    分数的分子（不可为null，支持任意NumberValue类型）
-	 * @param denominator 分数的分母（不可为null，支持任意NumberValue类型，且不能为0）
-	 * @throws IllegalArgumentException 如果分母数值等于0（非法分数）
+	 * @param molecule    分数的分子（不可为null，支持任意{@link NumberValue}类型，如{@link IntValue}、{@link BigIntegerValue}）
+	 * @param denominator 分数的分母（不可为null，支持任意{@link NumberValue}类型，且不能为0）
+	 * @throws IllegalArgumentException 若分母数值为0（{@code denominator.compareTo(NumberValue.ZERO) == 0}）
+	 * @throws NullPointerException     若molecule或denominator为null
 	 */
 	public Fraction(@NonNull NumberValue molecule, @NonNull NumberValue denominator) {
-		// 检查分母是否为零，避免创建非法分数
+		// 第一步：校验分母非0（非法分数拦截）
 		if (denominator.compareTo(NumberValue.ZERO) == 0) {
-			throw new IllegalArgumentException("The denominator cannot be zero (illegal fraction)");
+			throw new IllegalArgumentException("Denominator cannot be zero (illegal fraction, e.g., a/0)");
 		}
-		// 负号迁移：将分母的负号转移到分子，确保分母为正
+		// 第二步：负号迁移（确保分母恒正）
 		if (denominator.isNegative()) {
-			this.molecule = molecule.multiply(NumberValue.NEGATIVE_ONE);
-			this.denominator = denominator.abs();
+			this.molecule = molecule.multiply(NumberValue.NEGATIVE_ONE); // 分子承接负号
+			this.denominator = denominator.abs(); // 分母取绝对值
 		} else {
 			this.molecule = molecule;
 			this.denominator = denominator;
@@ -136,80 +170,85 @@ public class Fraction extends NumberValue {
 	}
 
 	/**
-	 * 将目标数值转为与当前分数“同分母”的分数（用于加减运算前的通分）
-	 * <p>转换逻辑：目标数值 × 当前分母 → 新分子，当前分母 → 新分母，
-	 * 例如当前分数为1/3，目标数值为2 → 转换后为6/3（2×3=6，分母保持3）
-	 * <p>核心作用：为分数加减法提供统一分母，避免不同分母直接运算导致的逻辑复杂
+	 * 将目标数值转为“与当前分数同分母”的分数（用于加减法通分）
+	 * <p>转换逻辑：
+	 * 新分子 = 目标数值 × 当前分母；
+	 * 新分母 = 当前分母；
+	 * （示例：当前分数1/3，目标数值2（=2/1）→ 新分子2×3=6，新分母3 → 6/3）
+	 * <p>注意：转换后的分数未约分（后续加减法会统一约分，避免重复计算）。
 	 *
-	 * @param value 待转换的数值（不可为null，支持任意NumberValue类型，如整数、小数）
-	 * @return 与当前分数同分母的新分数（未约分，需在运算后统一处理）
+	 * @param value 待转换的数值（不可为null，支持任意{@link NumberValue}类型，如整数、小数）
+	 * @return 同分母分数（未约分，分母与当前分数一致）
 	 */
 	public Fraction sameDenominator(NumberValue value) {
 		return new Fraction(value.multiply(this.denominator), denominator);
 	}
 
 	/**
-	 * 分数加法运算：当前分数 + 目标数值
-	 * <p>运算逻辑（分两种场景）：
-	 * <ol>
-	 * <li>若目标是{@link Fraction}：通分后分子相加（a/b + c/d = (a×d + c×b)/(b×d)），结果自动约分</li>
-	 * <li>若目标是其他NumberValue：先通过{@link #sameDenominator(NumberValue)}转为同分母分数，再执行加法</li>
-	 * </ol>
+	 * 分数加法：当前分数 + 目标数值（结果自动约分）
+	 * <p>运算逻辑（分场景）：
+	 * 1. 目标为{@link Fraction}（c/d）：
+	 *    公式：a/b + c/d = (a×d + c×b) / (b×d)；
+	 *    示例：1/3 + 1/10 = (1×10 + 1×3)/(3×10) = 13/30（自动约分，13与30互质）；
+	 * 2. 目标为其他{@link NumberValue}（如5→5/1）：
+	 *    先通过{@link #sameDenominator(NumberValue)}转为同分母分数，再执行上述加法。
 	 *
-	 * @param value 加数（不可为null，支持任意NumberValue类型）
-	 * @return 加法结果（已约分为最简分数，类型为Fraction）
+	 * @param value 加数（不可为null，支持任意{@link NumberValue}类型）
+	 * @return 加法结果（已约分为最简分数，分母恒正）
 	 */
 	@Override
 	public Fraction add(NumberValue value) {
 		if (value instanceof Fraction) {
 			Fraction summand = (Fraction) value;
-			// 分数相加公式：(a/b) + (c/d) = (a*d + c*b)/(b*d)
+			// 分数加法公式：(a/b) + (c/d) = (a×d + c×b)/(b×d)
 			NumberValue newMolecule = molecule.multiply(summand.denominator)
 					.add(summand.molecule.multiply(denominator));
 			NumberValue newDenominator = denominator.multiply(summand.denominator);
 			return new Fraction(newMolecule, newDenominator).reduction();
 		} else {
-			// 非分数类型先转为同分母分数，再递归调用加法
+			// 非分数类型→同分母分数→递归加法
 			return add(sameDenominator(value));
 		}
 	}
 
 	/**
-	 * 分数减法运算：当前分数 - 目标数值
-	 * <p>运算逻辑（分两种场景）：
-	 * <ol>
-	 * <li>若目标是{@link Fraction}：通分后分子相减（a/b - c/d = (a×d - c×b)/(b×d)），结果自动约分</li>
-	 * <li>若目标是其他NumberValue：先通过{@link #sameDenominator(NumberValue)}转为同分母分数，再执行减法</li>
-	 * </ol>
+	 * 分数减法：当前分数 - 目标数值（结果自动约分）
+	 * <p>运算逻辑（分场景）：
+	 * 1. 目标为{@link Fraction}（c/d）：
+	 *    公式：a/b - c/d = (a×d - c×b) / (b×d)；
+	 *    示例：7/2 - 1/3 = (7×3 - 1×2)/(2×3) = 19/6（自动约分）；
+	 * 2. 目标为其他{@link NumberValue}（如2→2/1）：
+	 *    先通过{@link #sameDenominator(NumberValue)}转为同分母分数，再执行上述减法。
 	 *
-	 * @param value 减数（不可为null，支持任意NumberValue类型）
-	 * @return 减法结果（已约分为最简分数，类型为Fraction）
+	 * @param value 减数（不可为null，支持任意{@link NumberValue}类型）
+	 * @return 减法结果（已约分为最简分数，分母恒正）
 	 */
 	@Override
 	public Fraction subtract(NumberValue value) {
 		if (value instanceof Fraction) {
 			Fraction minuend = (Fraction) value;
-			// 分数相减公式：(a/b) - (c/d) = (a*d - c*b)/(b*d)
+			// 分数减法公式：(a/b) - (c/d) = (a×d - c×b)/(b×d)
 			NumberValue newMolecule = molecule.multiply(minuend.denominator)
 					.subtract(minuend.molecule.multiply(denominator));
 			NumberValue newDenominator = denominator.multiply(minuend.denominator);
 			return new Fraction(newMolecule, newDenominator).reduction();
 		} else {
-			// 非分数类型先转为同分母分数，再递归调用减法
+			// 非分数类型→同分母分数→递归减法
 			return subtract(sameDenominator(value));
 		}
 	}
 
 	/**
-	 * 分数乘法运算：当前分数 × 目标数值
-	 * <p>运算逻辑（分两种场景）：
-	 * <ol>
-	 * <li>若目标是{@link Fraction}：分子×分子 → 新分子，分母×分母 → 新分母（a/b × c/d = (a×c)/(b×d)），结果自动约分</li>
-	 * <li>若目标是其他NumberValue：先转为“分母为1”的分数，再执行分子分母分别相乘</li>
-	 * </ol>
+	 * 分数乘法：当前分数 × 目标数值（结果自动约分）
+	 * <p>运算逻辑（分场景）：
+	 * 1. 目标为{@link Fraction}（c/d）：
+	 *    公式：a/b × c/d = (a×c)/(b×d)；
+	 *    示例：13/30 × 19/6 = 247/180（自动约分，247与180互质）；
+	 * 2. 目标为其他{@link NumberValue}（如5→5/1）：
+	 *    先转为“分母为1”的分数（new Fraction(value, NumberValue.ONE)），再执行上述乘法。
 	 *
-	 * @param value 乘数（不可为null，支持任意NumberValue类型）
-	 * @return 乘法结果（已约分为最简分数，类型为Fraction）
+	 * @param value 乘数（不可为null，支持任意{@link NumberValue}类型）
+	 * @return 乘法结果（已约分为最简分数，分母恒正）
 	 */
 	@Override
 	public Fraction multiply(NumberValue value) {
@@ -220,186 +259,182 @@ public class Fraction extends NumberValue {
 			NumberValue newDenominator = denominator.multiply(multiplicand.denominator);
 			return new Fraction(newMolecule, newDenominator).reduction();
 		} else {
-			// 非分数类型转为“分母为1”的分数，再递归调用乘法
+			// 非分数类型→分母为1的分数→递归乘法
 			return multiply(new Fraction(value, NumberValue.ONE));
 		}
 	}
 
 	/**
 	 * 计算当前分数的倒数（分子分母互换）
-	 * <p>倒数逻辑：原分数a/b → 倒数b/a，若原分数为零分数（分子为0），会间接抛出异常（分母为0）
-	 * <p>示例：3/4的倒数为4/3，-5/2的倒数为-2/5（负号保留在分子）
+	 * <p>倒数逻辑：原分数a/b → 倒数b/a（分母恒正，负号保留在分子）；
+	 * 示例：3/4→4/3，-5/2→-2/5，1/10→10/1。
+	 * <p>异常触发：若当前分数为{@link #ZERO}（分子为0），则倒数的分母为0，抛{@link IllegalArgumentException}。
 	 *
-	 * @return 当前分数的倒数（未约分，若需最简形式需调用{@link #reduction()}）
-	 * @throws IllegalArgumentException 如果当前分数是零分数（分子为0，倒数分母为0，非法）
+	 * @return 倒数分数（未约分，分母恒正）
+	 * @throws IllegalArgumentException 若当前分数为{@link #ZERO}（分子为0，倒数分母为0）
 	 */
 	public Fraction reciprocal() {
-		// 分子分母互换，若原分子为0，会触发Fraction构造的分母非0校验
+		// 分子分母互换，触发构造的分母非0校验（若原分子为0，会抛异常）
 		return new Fraction(denominator, molecule);
 	}
 
 	/**
-	 * 分数除法运算：当前分数 ÷ 目标数值
-	 * <p>运算逻辑（分两种场景）：
-	 * <ol>
-	 * <li>若目标是{@link Fraction}：转为乘以目标的倒数（a/b ÷ c/d = a/b × d/c），结果自动约分</li>
-	 * <li>若目标是其他NumberValue：先转为“分母为1”的分数，再乘以其倒数</li>
-	 * </ol>
+	 * 分数除法：当前分数 ÷ 目标数值（结果自动约分）
+	 * <p>运算逻辑（分场景）：
+	 * 1. 前置校验：若目标为0，抛{@link ArithmeticException}（除数为0）；
+	 * 2. 目标为{@link Fraction}（c/d）：
+	 *    转为乘法：a/b ÷ c/d = a/b × d/c（乘以除数的倒数）；
+	 *    示例：247/180 ÷ (-3/4) = 247/180 × (-4/3) = -988/540 → 约分后-247/135；
+	 * 3. 目标为其他{@link NumberValue}（如2→2/1）：
+	 *    先转为“分母为1”的分数，再乘以其倒数（如2的倒数为1/2）。
 	 *
-	 * @param value 除数（不可为null，支持任意NumberValue类型，且不能为0）
-	 * @return 除法结果（已约分为最简分数，类型为Fraction）
-	 * @throws ArithmeticException 如果除数为0（非法除法运算）
+	 * @param value 除数（不可为null，支持任意{@link NumberValue}类型，且不能为0）
+	 * @return 除法结果（已约分为最简分数，分母恒正）
+	 * @throws ArithmeticException  若目标数值为0（除数为0）
+	 * @throws NullPointerException 若value为null
 	 */
 	@Override
 	public Fraction divide(NumberValue value) {
-		// 先校验除数是否为0，提前抛出异常（避免后续倒数构造时才报错）
-		if (value.isZero()) {
-			throw new ArithmeticException("Division by zero (Fraction divide)");
+		// 前置校验：除数为0拦截
+		if (value == null) {
+			throw new NullPointerException("Divisor cannot be null (Fraction divide)");
 		}
+		if (value.isZero()) {
+			throw new ArithmeticException("Division by zero (Fraction divide, e.g., a/b ÷ 0)");
+		}
+
 		if (value instanceof Fraction) {
-			// 分数除法公式：(a/b) ÷ (c/d) = (a/b) × (d/c)（乘以除数的倒数）
+			// 分数除法→乘以除数的倒数
 			return multiply(((Fraction) value).reciprocal()).reduction();
 		} else {
-			// 非分数类型转为“分母为1”的分数，再乘以其倒数
+			// 非分数类型→分母为1的分数→乘以其倒数
 			return multiply(new Fraction(NumberValue.ONE, value)).reduction();
 		}
 	}
 
 	/**
-	 * 分数取模运算：当前分数对目标数值取模，结果满足<strong>0 ≤ 余数 < |除数|</strong>（非负特性）
-	 * <p>核心数学原理：将分数取模转化为整数取模（a/b mod c/d = [(a×d) mod (b×c)] / (b×d)），
-	 * 确保结果符合数学上的“取模”定义（区别于“取余”的符号规则）
-	 *
+	 * 分数取模：当前分数对目标数值取模（结果非负，符合数学取模定义）
+	 * <p>核心原理：将分数取模转化为整数取模（避免浮点数误差）：
+	 * 公式：(a/b) mod (c/d) = [(a×d) mod (b×c)] / (b×d)；
+	 * 示例：7/3 mod 2（=2/1）→ (7×1) mod (3×2) =7 mod6=1 → 分母3×1=3 → 结果1/3（非负）。
 	 * <p>运算步骤：
-	 * <ol>
-	 * <li>校验除数非0，避免非法运算；</li>
-	 * <li>若当前分数为0，直接返回零分数（0 mod 任何数都为0）；</li>
-	 * <li>将除数统一转为{@link Fraction}（整数→分母为1的分数）；</li>
-	 * <li>计算核心参数：a×d（分子×除数分母）、b×c（分母×除数分子）、b×d（余数分母）；</li>
-	 * <li>通过{@link NumberValue#mod(NumberValue)}计算余数分子（确保非负）；</li>
-	 * <li>构造余数分数，传递当前约分算法并自动约分，最后迁移负号（确保分母为正）。</li>
-	 * </ol>
+	 * 1. 校验除数非0；
+	 * 2. 目标数值转为{@link Fraction}（如2→2/1）；
+	 * 3. 计算分子部分：(a×d) mod (b×c)（确保非负）；
+	 * 4. 计算分母部分：b×d；
+	 * 5. 构造分数并约分，确保分母恒正。
 	 *
-	 * @param value 除数（不可为null，支持任意NumberValue类型，且不能为0）
-	 * @return 取模结果（非负、最简的Fraction实例）
-	 * @throws ArithmeticException 如果除数为0（非法取模运算）
-	 * @throws NullPointerException 如果value为null
+	 * @param value 除数（不可为null，支持任意{@link NumberValue}类型，且不能为0）
+	 * @return 取模结果（非负、最简分数，分母恒正）
+	 * @throws ArithmeticException  若除数为0
+	 * @throws NullPointerException 若value为null
 	 */
 	@Override
 	public NumberValue mod(NumberValue value) {
-		// 1. 校验除数非0，避免非法运算
+		// 步骤1：校验除数非0
 		if (value == null) {
 			throw new NullPointerException("Divisor cannot be null (Fraction mod)");
 		}
-		if (value.compareTo(NumberValue.ZERO) == 0) {
-			throw new ArithmeticException("Divisor cannot be zero for mod operation (Fraction mod)");
+		if (value.isZero()) {
+			throw new ArithmeticException("Divisor cannot be zero for mod (Fraction mod)");
 		}
 
-		// 2. 被除数为0时，余数直接为0（短路处理，提升性能）
+		// 步骤2：被除数为0→直接返回0
 		if (this.compareTo(Fraction.ZERO) == 0) {
 			return Fraction.ZERO;
 		}
 
-		// 3. 统一将除数转为Fraction（复用父类工具方法，确保类型一致）
+		// 步骤3：统一除数为Fraction（如2→2/1）
 		Fraction divisor = toFraction(value);
 
-		// 4. 提取分数的分子和分母（a/b：当前分数；c/d：除数）
-		NumberValue a = this.getMolecule();   // 被除数分子
-		NumberValue b = this.getDenominator(); // 被除数分母
-		NumberValue c = divisor.getMolecule(); // 除数分子
-		NumberValue d = divisor.getDenominator(); // 除数分母
+		// 步骤4：提取参数（a/b：当前分数；c/d：除数）
+		NumberValue a = this.molecule;   // 被除数分子
+		NumberValue b = this.denominator;// 被除数分母
+		NumberValue c = divisor.molecule;// 除数分子
+		NumberValue d = divisor.denominator;// 除数分母
 
-		// 5. 计算核心参数：a×d（余数分子基数）、b×c（取模除数）、b×d（余数分母）
-		NumberValue aTimesD = a.multiply(d);
-		NumberValue bTimesC = b.multiply(c);
-		NumberValue remainderDenominator = b.multiply(d);
+		// 步骤5：计算核心参数（分子基数、取模除数、结果分母）
+		NumberValue aTimesD = a.multiply(d);    // a×d（分子基数）
+		NumberValue bTimesC = b.multiply(c);    // b×c（取模除数）
+		NumberValue resultDenominator = b.multiply(d); // b×d（结果分母）
 
-		// 6. 断言：b×c 非0（b是当前分母，c是除数分子，均已校验非0，仅debug生效）
-		assert bTimesC.compareTo(NumberValue.ZERO) != 0 : "b×c cannot be zero (b and c are non-zero)";
+		// 步骤6：计算非负余数分子（依赖NumberValue.mod的非负特性）
+		NumberValue resultMolecule = aTimesD.mod(bTimesC);
 
-		// 7. 计算余数分子（依赖NumberValue.mod的非负特性）
-		NumberValue remainderNumerator = aTimesD.mod(bTimesC);
+		// 步骤7：构造结果并约分（沿用当前GCD算法）
+		Fraction result = new Fraction(resultMolecule, resultDenominator);
+		result.setGreatestCommonDivisor(this.greatestCommonDivisor);
+		result = result.reduction();
 
-		// 8. 构造余数分数，传递当前约分算法并约分
-		Fraction remainder = new Fraction(remainderNumerator, remainderDenominator);
-		remainder.setGreatestCommonDivisor(this.getGreatestCommonDivisor());
-		remainder = remainder.reduction();
-
-		// 9. 负号迁移：确保分母为正（同乘-1不改变分数值，且无需二次约分）
-		if (remainder.getDenominator().isNegative()) {
-			NumberValue negativeOne = NumberValue.NEGATIVE_ONE;
-			remainder = new Fraction(
-					remainder.getMolecule().multiply(negativeOne),
-					remainder.getDenominator().multiply(negativeOne)
-			);
+		// 步骤8：确保分母恒正（兜底处理，避免约分后意外出现负分母）
+		if (result.denominator.isNegative()) {
+			NumberValue negOne = NumberValue.NEGATIVE_ONE;
+			result = new Fraction(result.molecule.multiply(negOne), result.denominator.multiply(negOne));
 		}
 
-		return remainder;
+		return result;
 	}
 
 	/**
-	 * 重写父类{@link NumberValue#newFraction(NumberValue, NumberValue)}工厂方法，
-	 * 确保新创建的Fraction实例与当前实例使用<strong>相同的约分算法</strong>
-	 * <p>核心作用：解决父类创建Fraction时使用默认GCD算法，导致与当前实例约分逻辑不一致的问题，
-	 * 例如当前使用“更相减损术”，新创建的分数也应沿用该算法
+	 * 重写父类工厂方法：确保新创建的{@link Fraction}沿用当前的GCD算法
+	 * <p>核心作用：解决父类默认创建的Fraction使用“默认GCD算法”（欧几里得），与当前实例算法不一致的问题，
+	 * 例如当前用“更相减损术”，新创建的分数也会沿用，保证约分逻辑统一。
 	 *
 	 * @param molecule    新分数的分子（不可为null）
 	 * @param denominator 新分数的分母（不可为null，且非0）
 	 * @return 配置了当前GCD算法的Fraction实例
-	 * @throws IllegalArgumentException 如果分母为0（由Fraction构造函数抛出）
-	 * @throws NullPointerException 如果molecule或denominator为null
+	 * @throws IllegalArgumentException 若分母为0（由Fraction构造抛出）
 	 */
 	@Override
 	protected Fraction newFraction(@NonNull NumberValue molecule, @NonNull NumberValue denominator) {
-		// 调用父类方法创建基础Fraction，再设置当前的GCD算法
 		Fraction fraction = super.newFraction(molecule, denominator);
-		fraction.setGreatestCommonDivisor(this.greatestCommonDivisor);
+		fraction.setGreatestCommonDivisor(this.greatestCommonDivisor); // 继承当前GCD算法
 		return fraction;
 	}
 
 	/**
-	 * 计算“分子对分母的取余”（区别于{@link #mod(NumberValue)}的整体取模）
-	 * <p>逻辑：直接调用分子的{@link NumberValue#remainder(NumberValue)}方法，
-	 * 即“分子 ÷ 分母”的余数，符号与分子一致（取余规则）
-	 * <p>示例：分数7/3 → 分子7对分母3取余，结果为1；分数-5/2 → 分子-5对分母2取余，结果为-1
+	 * 分子对分母的取余（结果符号与分子一致，区别于{@link #mod(NumberValue)}）
+	 * <p>逻辑：直接调用分子的{@link NumberValue#remainder(NumberValue)}，即“分子 ÷ 分母”的取余；
+	 * 示例：7/3→7 remainder 3=1，-5/2→-5 remainder 2=-1，4/2→4 remainder 2=0。
+	 * <p>用途：需保留分子符号的场景（如负数分数的余数计算），非数学意义上的取模。
 	 *
-	 * @return 分子对分母的取余结果（类型与分子一致，如分子为IntValue则返回IntValue）
+	 * @return 取余结果（类型与分子一致，如分子为{@link IntValue}则返回{@link IntValue}）
 	 */
 	public NumberValue remainder() {
 		return molecule.remainder(denominator);
 	}
 
 	/**
-	 * 分数取余运算：将当前分数转为{@link BigDecimal}后执行取余（结果可能丢失精度）
-	 * <p>运算逻辑：先通过{@link #getAsBigDecimal()}将分数转为小数，
-	 * 再调用{@link BigDecimal#remainder(BigDecimal)}计算取余，符号与被除数一致
-	 * <p><strong>注意</strong>：此方法涉及浮点数转换，可能存在精度丢失（如1/3转为0.333...），
-	 * 仅适用于“无需严格精度”的场景，优先推荐使用{@link #mod(NumberValue)}（高精度取模）
+	 * 分数取余：基于{@link BigDecimal}的取余（可能丢失精度，慎用）
+	 * <p>逻辑：先将分数转为{@link BigDecimal}（分子÷分母），再调用{@link BigDecimal#remainder(BigDecimal)}；
+	 * 示例：1/3（≈0.3333）remainder 0.2 → 0.13333333333333333（存在精度丢失）。
+	 * <p><strong>警告</strong>：因涉及浮点数转换，结果可能偏离精确值，优先推荐{@link #mod(NumberValue)}或{@link #remainder()}。
 	 *
-	 * @param value 除数（不可为null，支持任意NumberValue类型，且非0）
-	 * @return 取余结果（BigDecimalValue类型，包含浮点数转换后的精度）
-	 * @throws ArithmeticException 如果除数为0（由BigDecimal.remainder抛出）
+	 * @param value 除数（不可为null，支持任意{@link NumberValue}类型，且非0）
+	 * @return 取余结果（{@link BigDecimalValue}类型，可能含精度丢失）
+	 * @throws ArithmeticException 若除数为0
 	 */
 	@Override
 	public NumberValue remainder(NumberValue value) {
-		// 转为BigDecimal后取余，结果封装为BigDecimalValue
-		BigDecimal thisDecimal = getAsBigDecimal();
-		BigDecimal valueDecimal = value.getAsBigDecimal();
-		return new BigDecimalValue(thisDecimal.remainder(valueDecimal));
+		if (value.isZero()) {
+			throw new ArithmeticException("Division by zero (Fraction remainder)");
+		}
+		// 转为BigDecimal后取余（精度依赖默认转换）
+		BigDecimal thisBd = getAsBigDecimal();
+		BigDecimal valueBd = value.getAsBigDecimal();
+		return new BigDecimalValue(thisBd.remainder(valueBd));
 	}
 
 	/**
-	 * 分数幂运算：当前分数的目标数值次幂（(a/b)^n = a^n / b^n）
-	 * <p>运算逻辑：分子、分母分别执行{@link NumberValue#pow(NumberValue)}幂运算，
-	 * 结果不自动约分（需手动调用{@link #reduction()}）
-	 * <p>支持场景：
-	 * <ul>
-	 * <li>整数幂：如(2/3)^2 = 4/9、(3/2)^-1 = 2/3（负指数转为倒数的正指数）</li>
-	 * <li>小数幂：如(4/1)^0.5 = 2/1（开平方），但需依赖分子/分母的pow方法支持小数指数</li>
-	 * </ul>
+	 * 分数幂运算：当前分数的目标数值次幂（结果未自动约分）
+	 * <p>运算逻辑：公式(a/b)^n = (a^n)/(b^n)；
+	 * 示例：
+	 * - 整数幂：(2/3)^2 = 4/9，(3/2)^-1 = 2/3（负指数→倒数的正指数）；
+	 * - 小数幂：(4/1)^0.5 = 2/1（开平方，依赖分子/分母的pow方法支持）。
+	 * <p>注意：结果未约分，需手动调用{@link #reduction()}（如(4/2)^2=16/4→需转为4/1）。
 	 *
-	 * @param value 指数（不可为null，支持任意NumberValue类型，如整数、小数）
-	 * @return 幂运算结果（未约分的Fraction实例，分子为原分子的幂，分母为原分母的幂）
+	 * @param value 指数（不可为null，支持任意{@link NumberValue}类型，如整数、小数）
+	 * @return 幂运算结果（未约分，分母恒正）
 	 */
 	@Override
 	public NumberValue pow(NumberValue value) {
@@ -410,30 +445,27 @@ public class Fraction extends NumberValue {
 	}
 
 	/**
-	 * 将分数转为{@link BigDecimal}（小数形式）
-	 * <p>转换逻辑：分子 ÷ 分母（调用{@link NumberValue#divide(NumberValue)}），
-	 * 再获取结果的BigDecimal表示
-	 * <p><strong>精度说明</strong>：
-	 * <ul>
-	 * <li>有限小数：如1/2 → 0.5（无精度丢失）；</li>
-	 * <li>无限循环小数：如1/3 → 0.3333333333333333（丢失部分精度，取决于BigDecimal的默认精度）；</li>
-	 * <li>无限不循环小数：如√2/2 → 0.7071067811865476（仅保留有限位，存在精度偏差）。</li>
-	 * </ul>
+	 * 将分数转为{@link BigDecimal}（可能丢失精度）
+	 * <p>转换逻辑：分子 ÷ 分母（调用{@link NumberValue#divide(NumberValue)}）；
+	 * 精度说明：
+	 * - 有限小数（如1/2=0.5）→ 无精度丢失；
+	 * - 无限循环小数（如1/3≈0.3333333333333333）→ 丢失部分精度；
+	 * - 无限不循环小数（如√2/2≈0.7071067811865476）→ 仅保留默认精度（15-17位）。
 	 *
-	 * @return 分数对应的BigDecimal（可能存在精度丢失）
+	 * @return 分数对应的{@link BigDecimal}（可能含精度丢失）
 	 */
 	@Override
 	public BigDecimal getAsBigDecimal() {
-		// 分子除以分母，转为小数后返回
+		// 分子÷分母，转为小数（精度依赖divide方法的默认实现）
 		return molecule.divide(denominator).getAsBigDecimal();
 	}
 
 	/**
-	 * 计算当前分数的绝对值（分子分母均取绝对值，结果非负）
-	 * <p>逻辑：分子的绝对值 → 新分子，分母的绝对值 → 新分母（分母本身已为正，故仅分子需处理）
-	 * <p>示例：-1/3 → 1/3，5/-2 → 5/2（分母负号已迁移至分子，故实际处理为-5/2 → 5/2）
+	 * 计算当前分数的绝对值（结果非负，已约分）
+	 * <p>逻辑：分子取绝对值，分母取绝对值（分母已恒正，故仅分子处理），结果自动约分；
+	 * 示例：-1/3→1/3，5/-2（已转为-5/2）→5/2，-7/6→7/6。
 	 *
-	 * @return 非负的最简分数（自动约分）
+	 * @return 非负的最简分数（分母恒正）
 	 */
 	public Fraction abs() {
 		NumberValue absMolecule = molecule.abs();
@@ -442,27 +474,24 @@ public class Fraction extends NumberValue {
 	}
 
 	/**
-	 * 私有工具方法：格式化NumberValue为字符串，处理嵌套分数的显示（避免歧义）
-	 * <p>逻辑：若目标是{@link Fraction}，则用括号包裹（如(1/2)），否则直接调用toString()，
-	 * 例如分子为1/2、分母为3 → 格式化后为"(1/2)/3"，避免误解为"1/(2/3)"
+	 * 工具方法：格式化数值为字符串（处理嵌套分数，避免歧义）
+	 * <p>逻辑：若数值是{@link Fraction}，用括号包裹（如(1/2)），否则直接调用toString()；
+	 * 示例：分子为1/2、分母为3 → 格式化后为"(1/2)/3"（避免误解为1/(2/3)）。
 	 *
 	 * @param value 待格式化的数值（不可为null）
-	 * @return 格式化后的字符串（嵌套分数带括号）
+	 * @return 格式化字符串（嵌套分数带括号）
 	 */
 	private String toString(NumberValue value) {
 		return (value instanceof Fraction) ? ("(" + value + ")") : value.toString();
 	}
 
 	/**
-	 * 获取分数的字符串表示，格式为“分子/分母”（支持嵌套分数的清晰显示）
+	 * 分数的字符串表示（格式：“分子/分母”，嵌套分数带括号）
 	 * <p>示例：
-	 * <ul>
-	 * <li>普通分数：1/3 → "1/3"；</li>
-	 * <li>嵌套分数：分子为2/5、分母为3 → "(2/5)/3"；</li>
-	 * <li>负分数：-3/4 → "(-3)/4"（分子为负，分母为正）。</li>
-	 * </ul>
+	 * - 普通分数：1/3 → "1/3"，-5/2 → "-5/2"；
+	 * - 嵌套分数：(1/2)/3 → "(1/2)/3"，2/(3/4) → "2/(3/4)"。
 	 *
-	 * @return 分数的字符串表示（无歧义）
+	 * @return 分数的字符串形式（无歧义）
 	 */
 	@Override
 	public String getAsString() {
@@ -470,56 +499,53 @@ public class Fraction extends NumberValue {
 	}
 
 	/**
-	 * 比较当前分数与目标Value的大小（仅支持数值类型比较）
+	 * 比较当前分数与目标数值的大小（基于数值相等性，非引用）
 	 * <p>比较逻辑（分场景）：
-	 * <ol>
-	 * <li>若目标是{@link Fraction}：通分后比较分子（a/b 与 c/d → 比较a×d与c×b，避免浮点数转换）；</li>
-	 * <li>若目标是其他NumberValue：先转为同分母分数，再比较分子；</li>
-	 * <li>若目标是非Number类型：调用父类{@link NumberValue#compareTo(Value)}，返回默认比较结果。</li>
-	 * </ol>
-	 * <p>返回值规则：负整数（当前 < 目标）、0（当前 = 目标）、正整数（当前 > 目标）
+	 * 1. 目标为null → 返回1（null小于任何数值）；
+	 * 2. 目标为数值类型（{@link Value#isNumber()}）：
+	 *    - 目标为{@link Fraction}：通分后比较分子（a/b 与 c/d → 比较a×d与c×b）；
+	 *    - 目标为其他类型：转为同分母分数，比较分子；
+	 * 3. 目标为非数值类型 → 调用父类比较（按类名哈希排序）。
+	 * <p>示例：1/3（≈0.333）&gt; 0.3 → true，2/3 == 4/6 → true。
 	 *
-	 * @param value 待比较的Value（可为null，null视为小于任何数值）
-	 * @return 比较结果（负整数、0、正整数）
+	 * @param value 待比较的{@link Value}（可为null）
+	 * @return 比较结果：负整数（当前&lt;目标）、0（当前=目标）、正整数（当前&gt;目标）
 	 */
 	public int compareTo(Value value) {
 		if (value == null) {
-			return 1; // null视为小于任何数值
+			return 1;
 		}
 		if (value.isNumber()) {
 			NumberValue numberValue = value.getAsNumber();
 			if (numberValue instanceof Fraction) {
 				Fraction target = (Fraction) numberValue;
-				// 分数比较公式：a/b 与 c/d → 比较 a×d 和 c×b
+				// 分数比较：a/b 与 c/d → 比较 a×d 和 c×b（避免浮点数转换）
 				NumberValue thisCross = this.molecule.multiply(target.denominator);
 				NumberValue targetCross = target.molecule.multiply(this.denominator);
 				return thisCross.compareTo(targetCross);
 			} else {
-				// 非分数类型转为同分母分数，再比较
+				// 非分数类型→同分母分数→比较分子
 				Fraction targetFraction = sameDenominator(numberValue);
 				return this.molecule.compareTo(targetFraction.getMolecule());
 			}
 		}
-		// 非数值类型，调用父类比较逻辑
+		// 非数值类型→父类逻辑
 		return super.compareTo(value);
 	}
 
 	/**
 	 * 将分数约分为最简形式（分子分母互质）
-	 * <p>约分逻辑（分步骤）：
-	 * <ol>
-	 * <li>处理嵌套分数：若分子/分母是Fraction，先展开为普通分数（如(1/2)/3 → 1/6）；</li>
-	 * <li>快速返回场景：分子为0 → 返回零分数，分子为1 → 返回自身（已最简）；</li>
-	 * <li>计算GCD：通过配置的{@link GreatestCommonDivisor}算法，计算分子、分母的最大公约数；</li>
-	 * <li>约分操作：分子、分母分别除以GCD，得到最简分数（若GCD为1，直接返回自身）。</li>
-	 * </ol>
-	 * <p><strong>注意</strong>：若分子/分母包含小数（如BigDecimalValue），会先转为BigDecimal后计算GCD，
-	 * 可能存在微小精度偏差（如0.1000000001与0.1视为不同值）
+	 * <p>约分步骤：
+	 * 1. 展开嵌套分数：若分子/分母是{@link Fraction}，先转为普通分数（如(1/2)/3 → 1/6）；
+	 * 2. 快速返回：分子为0→返回{@link #ZERO}，分子绝对值为1→返回自身（已最简）；
+	 * 3. 计算GCD：用配置的{@link #greatestCommonDivisor}算法，计算分子、分母的最大公约数；
+	 * 4. 约分操作：分子÷GCD，分母÷GCD（若GCD为1，直接返回自身）。
+	 * <p>示例：4/6 → GCD(4,6)=2 → 4÷2=2，6÷2=3 → 2/3。
 	 *
-	 * @return 最简分数（分子分母互质，分母为正）
+	 * @return 最简分数（分子分母互质，分母恒正）
 	 */
 	public Fraction reduction() {
-		// 场景1：分子是Fraction → 展开为 (分子的分子)/(分子的分母 × 当前分母)
+		// 步骤1：展开嵌套分数（分子是Fraction）
 		if (molecule instanceof Fraction) {
 			Fraction moleculeFraction = (Fraction) molecule;
 			NumberValue newMolecule = moleculeFraction.getMolecule();
@@ -527,7 +553,7 @@ public class Fraction extends NumberValue {
 			return new Fraction(newMolecule, newDenominator).reduction();
 		}
 
-		// 场景2：分母是Fraction → 展开为 (当前分子 × 分母的分母)/(分母的分子)
+		// 步骤1：展开嵌套分数（分母是Fraction）
 		if (denominator instanceof Fraction) {
 			Fraction denominatorFraction = (Fraction) denominator;
 			NumberValue newMolecule = this.molecule.multiply(denominatorFraction.getDenominator());
@@ -535,68 +561,70 @@ public class Fraction extends NumberValue {
 			return new Fraction(newMolecule, newDenominator).reduction();
 		}
 
-		// 转为BigDecimal计算GCD（统一处理整数/小数类型）
-		BigDecimal moleculeDecimal = this.molecule.getAsBigDecimal();
-		// 快速返回：分子为0 → 零分数
-		if (moleculeDecimal.compareTo(BigDecimal.ZERO) == 0) {
+		// 步骤2：转为BigDecimal（统一处理整数/小数类型）
+		BigDecimal moleculeBd = this.molecule.getAsBigDecimal();
+		BigDecimal denominatorBd = this.denominator.getAsBigDecimal();
+
+		// 步骤3：快速返回场景1：分子为0→零分数
+		if (moleculeBd.compareTo(BigDecimal.ZERO) == 0) {
 			return ZERO;
 		}
-		// 快速返回：分子绝对值为1 → 已最简（分母为正，且1与任何数互质）
-		if (moleculeDecimal.abs().compareTo(BigDecimal.ONE) == 0) {
+
+		// 步骤3：快速返回场景2：分子绝对值为1→已最简（1与任何数互质）
+		if (moleculeBd.abs().compareTo(BigDecimal.ONE) == 0) {
 			return this;
 		}
 
-		BigDecimal denominatorDecimal = this.denominator.getAsBigDecimal();
-		// 计算分子和分母的最大公约数
-		BigDecimal gcd = getGreatestCommonDivisor().apply(moleculeDecimal, denominatorDecimal);
-		// 若GCD为1，说明已最简，直接返回
+		// 步骤4：计算GCD（用配置的算法）
+		BigDecimal gcd = getGreatestCommonDivisor().apply(moleculeBd, denominatorBd);
+
+		// 步骤5：GCD为1→已最简
 		if (gcd.compareTo(BigDecimal.ONE) == 0) {
 			return this;
 		}
 
-		// 分子分母分别除以GCD，得到最简分数
-		BigDecimal simplifiedMolecule = moleculeDecimal.divide(gcd);
-		BigDecimal simplifiedDenominator = denominatorDecimal.divide(gcd);
+		// 步骤6：约分（分子÷GCD，分母÷GCD）
+		BigDecimal simplifiedMolecule = moleculeBd.divide(gcd);
+		BigDecimal simplifiedDenominator = denominatorBd.divide(gcd);
 		return new Fraction(new BigDecimalValue(simplifiedMolecule), new BigDecimalValue(simplifiedDenominator));
 	}
 
 	/**
-	 * 将分数转为{@link BigInteger}（整数形式）
+	 * 将分数转为{@link BigInteger}（截断小数部分，非四舍五入）
 	 * <p>转换逻辑：先执行“分子 ÷ 分母”（调用{@link NumberValue#divide(NumberValue)}），
-	 * 再截断小数部分，仅保留整数部分（无四舍五入）
-	 * <p>示例：7/3 → 2（截断小数0.333...），-5/2 → -2（截断小数0.5），4/2 → 2（无小数部分）
+	 * 再取结果的整数部分（截断小数）；
+	 * 示例：7/3→2，-5/2→-2，4/2→2，1/3→0。
 	 *
-	 * @return 分数对应的整数部分（BigInteger类型，截断小数）
+	 * @return 分数对应的整数部分（{@link BigInteger}类型）
 	 */
 	@Override
 	public BigInteger getAsBigInteger() {
-		// 分子除以分母后取整数部分
+		// 分子÷分母后取整数部分（截断小数）
 		return molecule.divide(denominator).getAsBigInteger();
 	}
 
 	/**
-	 * 计算分数的哈希值，确保“数值相等的分数哈希值一致”
-	 * <p>哈希逻辑：基于分子和分母的哈希值组合（分子哈希值 + 分母哈希值），
-	 * 因分数已确保分母为正且最简（运算后），故相同数值的分数会有相同哈希值
-	 * <p>示例：2/3 与 4/6（约分后为2/3） → 哈希值相同
+	 * 哈希值计算（基于约分后的分子和分母，符合equals-hashCode契约）
+	 * <p>逻辑：分子哈希值 + 分母哈希值（因约分后分子分母唯一，故相同数值的分数哈希一致）；
+	 * 示例：2/3 与 4/6（约分后均为2/3）→ 哈希值相同。
 	 *
-	 * @return 分数的哈希值（基于分子和分母的数值）
+	 * @return 分数的哈希值（与数值强关联）
 	 */
 	@Override
 	public int hashCode() {
-		return molecule.hashCode() + denominator.hashCode();
+		// 基于约分后的分子分母计算（确保相同数值哈希一致）
+		Fraction simplified = this.reduction();
+		return simplified.molecule.hashCode() + simplified.denominator.hashCode();
 	}
 
 	/**
-	 * 重写equals方法，基于数值相等性判断（而非对象引用）
+	 * equals判断（基于数值相等性，非引用）
 	 * <p>判断逻辑：
-	 * <ol>
-	 * <li>若参数为null或非Fraction类型 → false；</li>
-	 * <li>若当前分数与目标分数“约分后数值相同” → true（通过{@link #compareTo(Value)}判断）。</li>
-	 * </ol>
-	 * <p>示例：2/3 与 4/6 → equals返回true（约分后均为2/3）；2/3 与 3/2 → 返回false
+	 * 1. 目标为null或非{@link Fraction}类型 → false；
+	 * 2. 目标为{@link Fraction}类型 → 比较约分后的数值（通过{@link #compareTo(Value)} == 0）；
+	 * <p>示例：2/3 == 4/6 → true，-1/2 == 1/-2 → true（均约分后为-1/2）。
 	 *
-	 * @param obj 待比较的对象
+	 * @param obj 待比较的对象（可为null）
 	 * @return true：数值相等；false：对象为null/非Fraction/数值不相等
 	 */
 	@Override
@@ -607,6 +635,7 @@ public class Fraction extends NumberValue {
 		if (!(obj instanceof Fraction)) {
 			return false;
 		}
+		// 基于约分后的数值比较（确保相等性）
 		return this.compareTo((Fraction) obj) == 0;
 	}
 }
