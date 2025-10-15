@@ -110,6 +110,7 @@ public interface ReaderFactory<R extends Reader> {
      * 该方法将当前读取器的全部内容传输到目标写入器，自动处理
      * 资源的打开和关闭，确保数据传输完成后所有资源被正确释放。
      * 
+     * @param <T> Writer的具体类型
      * @param dest 目标写入器工厂，不可为null
      * @return 传输的字符数
      * @throws IOException 如果传输过程中发生I/O错误

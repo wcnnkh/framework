@@ -32,7 +32,7 @@ public class JdkLoggerFactory implements LoggerFactory {
     /**
      * 创建JDK日志器适配器实例。
      * <p>
-     * 调用JDK的{@link Logger#getLogger(String)}获取原生Logger，
+     * 调用JDK的{@link java.util.logging.Logger#getLogger(String)}获取原生Logger，
      * 无处理器时自动添加控制台处理器并禁用父处理器，
      * 最后包装为{@link JdkLogger}返回。
      * 
@@ -41,7 +41,7 @@ public class JdkLoggerFactory implements LoggerFactory {
      */
     @Override
     public run.soeasy.framework.logging.Logger getLogger(String name) {
-        Logger jdkLogger = Logger.getLogger(name);
+        Logger jdkLogger = java.util.logging.Logger.getLogger(name);
         if (jdkLogger.getHandlers().length == 0) {
             jdkLogger.addHandler(new ConsoleHandler());
             jdkLogger.setUseParentHandlers(false);

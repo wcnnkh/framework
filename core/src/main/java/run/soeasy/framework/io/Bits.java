@@ -80,34 +80,57 @@ public class Bits {
     }
 
     /**
-     * 从字节数组指定位置读取16位有符号短整数。
-     * <p>
-     * 采用大端字节序，高字节在前。
+     * 从字节数组的指定位置读取2字节，转换为16位有符号短整数（大端字节序）。
      * 
-     * @param b   源字节数组
-     * @param off 起始偏移量
-     * @return 短整数值
-     * @throws IndexOutOfBoundsException 如果偏移量超出数组范围
+     * @param buffer 字节数组（不可为null，且长度需至少为offset+2）
+     * @param offset 起始偏移量（从该位置开始读取2字节）
+     * @return 转换后的短整数
+     * @throws IndexOutOfBoundsException 若offset越界（如offset+1超出数组长度）
      */
-    public static short getShort(byte[] b, int off) {
-        return (short) ((b[off + 1] & 0xFF) + (b[off] << 8));
+    public static short getShort(byte[] buffer, int offset) {
+        // 高8位：buffer[offset] 转换为无符号值后左移8位
+        // 低8位：buffer[offset+1] 转换为无符号值
+        return (short) (
+            ((buffer[offset] & 0xFF) << 8) | 
+            (buffer[offset + 1] & 0xFF)
+        );
     }
 
     /**
-     * 从输入流读取2字节并转换为16位有符号短整数。
-     * <p>
-     * 采用大端字节序，高字节在前。
+     * 从输入流读取2字节并转换为16位有符号短整数（采用大端字节序，高字节在前）。
      * 
-     * @param source 输入流
-     * @return 短整数值
-     * @throws IOException 如果读取失败或已到达流末尾
+     * <p>大端字节序（Big-Endian）处理逻辑：
+     * 输入流中先读取的字节为高8位，后读取的字节为低8位，拼接为短整数：
+     * <pre>
+     * 字节序列：[b0, b1] → 短整数 = (b0 &lt;&lt; 8) | b1
+     * 其中，b0为高8位，b1为低8位（均需先转换为无符号字节值）
+     * </pre>
+     * 
+     * @param source 输入流（不可为null，否则抛出{@link NullPointerException}）
+     * @return 转换后的16位有符号短整数（范围：-32768 ~ 32767）
+     * @throws NullPointerException 若source为null（未传入有效输入流）
+     * @throws EOFException 若输入流已到达末尾，无法读取2字节（如实际读取字节数小于2）
+     * @throws IOException 若读取过程中发生IO错误（如流关闭、读取中断等）
+     * @see #getShort(byte[], int) 字节数组转短整数的具体实现（封装大端字节序转换逻辑）
      */
     public static short readShort(InputStream source) throws EOFException, IOException {
-        byte[] buff = new byte[2];
-        int size = source.read(buff);
-        if (size != buff.length) {
-            throw new EOFException("read buff=" + Arrays.toString(buff) + ", size=" + size);
+        // 参数非空校验，避免后续调用NPE
+        if (source == null) {
+            throw new NullPointerException("InputStream source cannot be null");
         }
+        
+        byte[] buff = new byte[2];
+        int readSize = source.read(buff);
+        
+        // 校验读取长度：必须读取到完整的2字节，否则视为流结束
+        if (readSize != buff.length) {
+            throw new EOFException(String.format(
+                "Failed to read 2 bytes (expected 2, actual %d), buffer content: %s",
+                readSize, Arrays.toString(buff)
+            ));
+        }
+        
+        // 委托getShort方法完成字节数组到短整数的转换（大端字节序）
         return getShort(buff, 0);
     }
 
