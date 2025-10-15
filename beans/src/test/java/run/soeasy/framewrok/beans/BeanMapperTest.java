@@ -21,7 +21,7 @@ public class BeanMapperTest {
 		private String value;
 	}
 
-	//@Test
+	@Test
 	public void test() {
 		A a = new A();
 		a.setName("bean");
@@ -42,15 +42,16 @@ public class BeanMapperTest {
 	
 	@Test
 	public void test2() {
-		A a = new A();
-		a.setName("ignore");
-		a.setValue(null);
-
 		B b = new B();
 		b.setName("bean");
-		b.setValue(UUID.randomUUID().toString());
-		BeanMapper.copyProperties(a, b, PropertyMappingFilter.IGNORE_NULL);
-		System.out.println(b);
-		assert b.getValue() != null;
+		
+		A a = new A();
+		a.setName("ignore");
+		a.setValue(UUID.randomUUID().toString());
+
+		
+		BeanMapper.copyProperties(b, a, PropertyMappingFilter.IGNORE_NULL);
+		System.out.println(a);
+		assert a.getValue() != null;
 	}
 }
