@@ -24,7 +24,7 @@
  
 --------------------
 
- 如果想看完整的实现和集成请移步[此分支](https://github.com/wcnnkh/framework/tree/base.io)。  
+ 此版本为无依赖版本，如果想看早期完整的实现和集成请移步[此分支](https://github.com/wcnnkh/framework/tree/base.io)。  
  此项目起源于2016年，很多东西受限于作者认知和精力不再维护，现仅供参考和学习未经验证请勿在生产中使用。  
  市面上已经有很多优秀的框架(如spring, netty等)我就不再继续重复造轮子了，谢谢！  
 
