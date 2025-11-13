@@ -616,4 +616,31 @@ public class ClassUtils {
         return (clazz.isSynthetic() && (clazz.getSuperclass() == Object.class) && (clazz.getInterfaces().length > 0)
                 && clazz.getName().contains("$$Lambda"));
     }
+    
+    /**
+	 * 判断指定的类是否为数字类型（包含原生数字类型和{@link Number}子类）
+	 * <p>
+	 * 支持的数字类型清单：
+	 * <ul>
+	 * <li>原生基本类型：long.class、int.class、byte.class、short.class、float.class、double.class；</li>
+	 * <li>包装类及子类：Integer.class、Long.class、BigInteger.class、BigDecimal.class、Float.class、Double.class等（需是Number的直接/间接子类）。</li>
+	 * </ul>
+	 * <p>
+	 * 注意：CharSequence、String等非Number子类即使能表示数字，也不视为数字类型。
+	 *
+	 * @param type 待判断的类类型（可为null，null时返回false）
+	 * @return true：是数字类型；false：非数字类型或type为null
+	 */
+	public static boolean isNumber(Class<?> type) {
+		if (type == null) {
+			return false;
+		}
+		// 匹配原生数字类型
+		if (type == long.class || type == int.class || type == byte.class || type == short.class || type == float.class
+				|| type == double.class) {
+			return true;
+		}
+		// 匹配Number的子类（包装类、高精度类等）
+		return Number.class.isAssignableFrom(type);
+	}
 }

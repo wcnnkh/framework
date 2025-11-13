@@ -7,9 +7,9 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.domain.NumberValue;
 import run.soeasy.framework.core.domain.ValueWrapper;
 import run.soeasy.framework.core.domain.Version;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * 类型化值包装器接口，用于装饰{@link TypedValue}实现，支持透明代理和功能增强。

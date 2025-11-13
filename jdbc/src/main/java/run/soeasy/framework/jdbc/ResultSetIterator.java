@@ -71,7 +71,7 @@ public class ResultSetIterator<T> extends JdbcWrapped<ResultSet> implements Clos
      * @throws JdbcException 当ResultSet操作失败时抛出（如结果集已关闭、数据库连接异常等）
      */
     @Override
-    public boolean hasNext() {
+    public boolean hasNext() throws JdbcException{
         synchronized (this) {
             if (error) {
                 return false;

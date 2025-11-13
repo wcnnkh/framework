@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * 值包装器接口，用于包装{@link Value}实例并委托所有操作，

@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.domain.BigDecimalValue;
+import run.soeasy.framework.core.domain.IntValue;
+import run.soeasy.framework.core.domain.LongValue;
+import run.soeasy.framework.core.domain.NumberValue;
 import run.soeasy.framework.core.domain.Value;
-import run.soeasy.framework.core.math.BigDecimalValue;
-import run.soeasy.framework.core.math.IntValue;
-import run.soeasy.framework.core.math.LongValue;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * JSON基本类型实现类，实现{@link JsonElement}和{@link Value}接口，用于表示JSON中的基本数据类型，

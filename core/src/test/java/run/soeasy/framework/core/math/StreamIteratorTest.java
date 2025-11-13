@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -14,7 +15,7 @@ public class StreamIteratorTest {
 	public void test() {
 		List<Integer> list = new ArrayList<Integer>();
 		for (int i = 0; i < 100; i++) {
-			list.add(NumberUtils.random(0, 100));
+			list.add(ThreadLocalRandom.current().nextInt(100));
 		}
 
 		Stream<Integer> stream = list.stream().sorted();

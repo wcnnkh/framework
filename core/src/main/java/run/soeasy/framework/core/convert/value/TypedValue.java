@@ -10,12 +10,12 @@ import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.Enumerable;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.domain.BigDecimalValue;
 import run.soeasy.framework.core.domain.CharSequenceTemplate;
+import run.soeasy.framework.core.domain.NumberValue;
 import run.soeasy.framework.core.domain.Value;
 import run.soeasy.framework.core.domain.Version;
-import run.soeasy.framework.core.math.BigDecimalValue;
-import run.soeasy.framework.core.math.NumberUtils;
-import run.soeasy.framework.core.math.NumberValue;
+import run.soeasy.framework.core.type.ClassUtils;
 
 /**
  * 类型化值接口，整合类型化数据与值对象功能，提供统一的类型安全值访问和转换能力。
@@ -603,7 +603,7 @@ public interface TypedValue extends TypedData<Object>, Value {
      */
     default boolean isNumber() {
         TypeDescriptor typeDescriptor = getReturnTypeDescriptor();
-        if (NumberUtils.isNumber(typeDescriptor.getType())) {
+        if (ClassUtils.isNumber(typeDescriptor.getType())) {
             return true;
         }
 

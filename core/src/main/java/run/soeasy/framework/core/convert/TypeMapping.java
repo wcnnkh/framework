@@ -20,7 +20,7 @@ import run.soeasy.framework.core.type.ClassUtils;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class TypeMapping implements KeyValue<Class<?>, Class<?>>, Convertable, Comparable<TypeMapping> {
+public class TypeMapping implements KeyValue<Class<?>, Class<?>>, Convertible, Comparable<TypeMapping> {
     @NonNull
     private final Class<?> key;       // 源类型（映射的键）
     @NonNull

@@ -11,12 +11,12 @@ import lombok.NonNull;
  * 
  * <p>此接口采用函数式接口设计，允许通过lambda表达式实现简单的转换器。
  * 
- * @see Convertable
+ * @see Convertible
  * @see TypeDescriptor
  * @see ConversionException
  */
 @FunctionalInterface
-public interface Converter extends Convertable{
+public interface Converter extends Convertible{
     /**
      * 返回一个基于类型兼容性的转换器实例。
      * 该转换器仅支持Java类型系统中允许的直接赋值转换。

@@ -45,7 +45,7 @@ public class ResultSetColumnAccessor extends AbstractResultSetAccessor {
      * @throws JdbcException 当ResultSet操作失败时抛出（如列索引无效、结果集已关闭等）
      */
     @Override
-    public Object get() {
+    public Object get() throws JdbcException{
         try {
             return getResultSet().getObject(columnIndex);
         } catch (SQLException e) {
@@ -69,7 +69,7 @@ public class ResultSetColumnAccessor extends AbstractResultSetAccessor {
      * @throws JdbcException 当获取元数据或列名失败时抛出
      */
     @Override
-    public String getName() {
+    public String getName() throws JdbcException{
         try {
             return JdbcUtils.lookupColumnName(getResultSetMetaData(), columnIndex);
         } catch (SQLException e) {
@@ -111,7 +111,7 @@ public class ResultSetColumnAccessor extends AbstractResultSetAccessor {
      * @throws JdbcException 当ResultSet更新操作失败时抛出（如列不可更新、索引无效等）
      */
     @Override
-    public synchronized void set(Object value) {
+    public synchronized void set(Object value) throws JdbcException{
         try {
             getResultSet().updateObject(this.columnIndex, value);
         } catch (SQLException e) {

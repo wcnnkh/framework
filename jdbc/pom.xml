@@ -11,7 +11,14 @@
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>
-			<artifactId>data</artifactId>
+			<artifactId>core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.45.2.0</version> <!-- 最新稳定版，可按需更新 -->
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

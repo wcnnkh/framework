@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.math.BigDecimalValue;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * 字符序列模板类，实现{@link CharSequence}和{@link Version}接口，

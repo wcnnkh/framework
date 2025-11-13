@@ -51,13 +51,15 @@ class ChainThrowingSupplier<S, V, E extends Throwable, T extends Throwable, W ex
 	public V get() throws T {
 		S value;
 		try {
-			value = this.source.get();
-		} catch (Throwable e) {
-			throw throwingMapper.apply((E) e);
+			try {
+				value = this.source.get();
+			} catch (Throwable e) {
+				throw throwingMapper.apply((E) e);
+			}
+			return mapper.apply(value);
 		} finally {
 			closeable.run();
 		}
-		return mapper.apply(value);
 	}
 
 	/**

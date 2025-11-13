@@ -1,7 +1,7 @@
 package run.soeasy.framework.sequences;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.math.LongValue;
+import run.soeasy.framework.core.domain.LongValue;
 
 /**
  * 长整型序列生成器接口，扩展自{@link NumberSequence}接口，

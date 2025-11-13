@@ -51,7 +51,7 @@ public class ResultSetProperties implements TypedProperties {
      * @return 结果集的元数据（包含列数、列名、类型等信息）
      * @throws JdbcException 当获取元数据时发生SQL错误时抛出
      */
-    public synchronized ResultSetMetaData getResultSetMetaData() {
+    public synchronized ResultSetMetaData getResultSetMetaData() throws JdbcException{
         if (resultSetMetaData == null) {
             try {
                 resultSetMetaData = resultSet.getMetaData();
@@ -81,7 +81,7 @@ public class ResultSetProperties implements TypedProperties {
      * @throws JdbcException 当获取列总数时发生SQL错误时抛出
      */
     @Override
-    public Iterator<PropertyAccessor> iterator() {
+    public Iterator<PropertyAccessor> iterator() throws JdbcException{
         ResultSetMetaData resultSetMetaData = getResultSetMetaData();
         int columnCount;
         try {

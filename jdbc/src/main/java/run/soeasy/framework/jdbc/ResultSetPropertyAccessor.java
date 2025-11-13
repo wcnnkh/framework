@@ -46,7 +46,7 @@ public class ResultSetPropertyAccessor extends AbstractResultSetAccessor {
      * @throws JdbcException 当ResultSet操作失败时抛出（如列名不存在、结果集已关闭等）
      */
     @Override
-    public synchronized Object get() {
+    public synchronized Object get() throws JdbcException{
         try {
             return getResultSet().getObject(name);
         } catch (SQLException e) {
@@ -73,7 +73,7 @@ public class ResultSetPropertyAccessor extends AbstractResultSetAccessor {
      * @throws JdbcException 当ResultSet更新操作失败时抛出（如列不可更新、列名无效等）
      */
     @Override
-    public synchronized void set(Object value) {
+    public synchronized void set(Object value) throws JdbcException{
         try {
             getResultSet().updateObject(this.name, value);
         } catch (SQLException e) {

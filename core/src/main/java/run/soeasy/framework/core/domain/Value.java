@@ -20,7 +20,6 @@ import run.soeasy.framework.core.convert.strings.StringToFloatConverter;
 import run.soeasy.framework.core.convert.strings.StringToIntegerConverter;
 import run.soeasy.framework.core.convert.strings.StringToLongConverter;
 import run.soeasy.framework.core.convert.strings.StringToShortConverter;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * 统一值接口，定义了从单一数据源获取不同类型值的标准方法，支持数字、字符串、布尔值等类型的转换。
