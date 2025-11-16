@@ -1,5 +1,8 @@
 package run.soeasy.framework.jdbc;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -33,5 +36,11 @@ public class ConnectionFactoryTest {
 		connectionFactory.newPipeline().prepareStatement(querySql).query().rows((rs) -> JdbcUtils.getResultSetMapper().convert(rs, User.class)).forEach((user) -> {
 			System.out.println(user);
 		});
+		
+		try {
+			Files.deleteIfExists(Paths.get("embedded_sqlite.db"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
