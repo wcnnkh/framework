@@ -12,13 +12,13 @@ import org.junit.Test;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import run.soeasy.framework.beans.BeanMapper;
+import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 
 public class QueryStringFormatTest {
 	@Test
 	public void test() {
-		BeanMapper.getInstane().getObjectTemplate(QueryStringObject.class).forEach((e) -> {
+		BeanUtils.getBeanMapper().getObjectTemplate(QueryStringObject.class).forEach((e) -> {
 			System.out.println(e);
 		});
 		

@@ -92,7 +92,7 @@ public class PropertyMapper<E extends Property> extends DefaultMapper<Object, Pr
      */
     @Override
     public boolean hasMapping(@NonNull TypeDescriptor requiredType) {
-        return hasObjectTemplate(requiredType.getType()) || super.hasMapping(requiredType);
+        return super.hasMapping(requiredType) || hasObjectTemplate(requiredType.getType());
     }
 
     /**
@@ -104,11 +104,14 @@ public class PropertyMapper<E extends Property> extends DefaultMapper<Object, Pr
      */
     @Override
     public TypedProperties getMapping(@NonNull Object source, @NonNull TypeDescriptor requiredType) {
-        PropertyTemplate<E> propertyTemplate = getObjectTemplate(requiredType.getType());
-        if (propertyTemplate != null) {
-            return new ObjectProperties<>(propertyTemplate, source);
+        TypedProperties typedProperties = super.getMapping(source, requiredType);
+        if(typedProperties == null) {
+        	PropertyTemplate<E> propertyTemplate = getObjectTemplate(requiredType.getType());
+            if (propertyTemplate != null) {
+            	typedProperties = new ObjectProperties<>(propertyTemplate, source);
+            }
         }
-        return super.getMapping(source, requiredType);
+        return typedProperties;
     }
 
     /**

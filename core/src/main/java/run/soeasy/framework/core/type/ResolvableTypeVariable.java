@@ -133,13 +133,12 @@ public class ResolvableTypeVariable extends AbstractResolvableType<TypeVariable<
     /**
      * 获取类型变量的下界（等同于边界约束）。
      * <p>
-     * 对于Java类型变量，其下界由边界约束定义，因此直接返回getBounds()的结果。
      *
      * @return 类型变量的下界约束的ResolvableType数组
      */
     @Override
     public final ResolvableType[] getLowerBounds() {
-        return getBounds();
+    	return ResolvableType.EMPTY_TYPES_ARRAY;
     }
 
     /**

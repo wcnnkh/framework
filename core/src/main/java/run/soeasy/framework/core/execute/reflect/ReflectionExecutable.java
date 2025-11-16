@@ -174,7 +174,7 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
         if (returnTypeDescriptor == null) {
             synchronized (this) {
                 if (returnTypeDescriptor == null) {
-                    returnTypeDescriptor = TypeDescriptor.forMethodReturnType(getSource());
+                    returnTypeDescriptor = TypeDescriptor.forExecutableReturnType(getSource());
                 }
             }
         }

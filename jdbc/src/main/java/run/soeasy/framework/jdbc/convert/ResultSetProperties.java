@@ -1,4 +1,4 @@
-package run.soeasy.framework.jdbc;
+package run.soeasy.framework.jdbc.convert;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.NoUniqueElementException;
 import run.soeasy.framework.core.transform.property.PropertyAccessor;
 import run.soeasy.framework.core.transform.property.TypedProperties;
+import run.soeasy.framework.jdbc.JdbcException;
 
 /**
  * 基于ResultSet的类型化属性集合实现类，实现{@link TypedProperties}接口，

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 
 public class ResolvableTypeTest {
-
+	
 	@Test
 	public void testB() {
 		GenericSuper genericSuper = new GenericSuper();

@@ -5,10 +5,10 @@ import java.util.UUID;
 import org.junit.Test;
 
 import lombok.Data;
-import run.soeasy.framework.beans.BeanMapper;
+import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
 
-public class BeanMapperTest {
+public class BeanUtilsTest {
 	@Data
 	private static class A {
 		private String name;
@@ -29,13 +29,13 @@ public class BeanMapperTest {
 
 		B b = new B();
 
-		BeanMapper.copyProperties(a, b);
+		BeanUtils.copyProperties(a, b);
 		System.out.println(b);
 		assert b.getValue() == null;
 
 		b.setValue(UUID.randomUUID().toString());
 		a = new A();
-		BeanMapper.copyProperties(b, a);
+		BeanUtils.copyProperties(b, a);
 		System.out.println(a);
 		assert a.getValue() != null;
 	}
@@ -50,7 +50,7 @@ public class BeanMapperTest {
 		a.setValue(UUID.randomUUID().toString());
 
 		
-		BeanMapper.copyProperties(b, a, PropertyMappingFilter.IGNORE_NULL);
+		BeanUtils.copyProperties(b, a, PropertyMappingFilter.IGNORE_NULL);
 		System.out.println(a);
 		assert a.getValue() != null;
 	}

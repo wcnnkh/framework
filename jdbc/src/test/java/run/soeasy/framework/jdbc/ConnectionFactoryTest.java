@@ -5,7 +5,16 @@ import java.sql.SQLException;
 
 import org.junit.Test;
 
+import lombok.Data;
+
 public class ConnectionFactoryTest {
+	@Data
+	private static class User{
+		private Long id;
+		private String name;
+		private Integer age;
+	}
+	
 	@Test
 	public void test() throws SQLException {
 		String createTableSql = "CREATE TABLE IF NOT EXISTS user (" + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -15,9 +24,14 @@ public class ConnectionFactoryTest {
 		System.out.println(executed);
 		int value = connectionFactory.newPipeline().prepareStatement("insert into user (name, age) values (?,?)").setParams("soeasy.run", 1).executeUpdate();
 		System.out.println(value);
-		ResultSet resultSet = connectionFactory.newPipeline().prepareStatement("select * from user").query().get();
+		String querySql = "select * from user";
+		ResultSet resultSet = connectionFactory.newPipeline().prepareStatement(querySql).query().get();
 		System.out.println(resultSet.isClosed());
 		System.out.println(JdbcUtils.getRowValueMap(resultSet));
 		resultSet.close();
+		System.out.println("---------");
+		connectionFactory.newPipeline().prepareStatement(querySql).query().rows((rs) -> JdbcUtils.getResultSetMapper().convert(rs, User.class)).forEach((user) -> {
+			System.out.println(user);
+		});
 	}
 }

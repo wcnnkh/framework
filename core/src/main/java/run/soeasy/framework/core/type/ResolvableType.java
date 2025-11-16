@@ -1,6 +1,10 @@
 package run.soeasy.framework.core.type;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -21,7 +25,8 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * 整合了{@link ParameterizedType}、{@link WildcardType}和{@link TypeVariableResolver}接口，
  * 用于处理Java泛型类型擦除后的类型信息解析，支持参数化类型、通配符类型、 类型变量和数组类型的解析与操作。
  */
-public interface ResolvableType extends ParameterizedType, WildcardType, TypeVariableResolver {
+public interface ResolvableType
+		extends ParameterizedType, WildcardType, TypeVariableResolver, Comparable<ResolvableType> {
 
 	/**
 	 * 空类型数组常量，避免重复创建。
@@ -63,6 +68,98 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	}
 
 	/**
+	 * 为可执行元素（方法/构造器）的参数类型创建带泛型解析能力的 ResolvableType 数组
+	 * <p>
+	 * 核心特性： 1. 自动集成可执行元素的完整泛型解析能力（通过
+	 * {@link CompositeTypeVariableResolver#forExecutable(Executable)}），
+	 * 支持解析方法/构造器级泛型（如 {@code <T> void method(T param)} 中的 T）和类级泛型（如 {@code class
+	 * Service<T> { void method(T param) }} 中的 T） 2.
+	 * 严格保持参数类型顺序与可执行元素声明一致，确保参数与解析结果一一对应 3. 依赖
+	 * {@link #toResolvableTypes(TypeVariableResolver, Type...)}
+	 * 完成类型转换，遵循框架统一的类型处理规则
+	 * <p>
+	 * 适用场景：反射获取方法/构造器参数类型时，需要保留泛型信息并自动解析泛型变量（如依赖注入参数匹配、动态代理参数处理、接口适配校验）
+	 *
+	 * @param executable 目标可执行元素（支持 {@link Method} 方法和
+	 *                   {@link java.lang.reflect.Constructor} 构造器，不可为 null）
+	 * @return 与参数声明顺序一致的 ResolvableType 数组，无参数时返回 {@link #EMPTY_TYPES_ARRAY}（非
+	 *         null）
+	 * @see #toResolvableTypes(TypeVariableResolver, Type...)
+	 * @see CompositeTypeVariableResolver#forExecutable(Executable)
+	 */
+	static ResolvableType[] forExecutableParameterTypes(@NonNull Executable executable) {
+		return toResolvableTypes(CompositeTypeVariableResolver.forExecutable(executable),
+				executable.getParameterTypes());
+	}
+
+	/**
+	 * 为可执行元素（方法/构造器）的返回类型创建带泛型解析能力的 ResolvableType
+	 * <p>
+	 * 差异化处理逻辑： 1. 若为 {@link Method} 方法：使用 {@link Method#getGenericReturnType()}
+	 * 获取带泛型的返回类型（如 {@code List<String>}）， 结合可执行元素的泛型解析器解析其中的类型变量（如方法级泛型、类级泛型） 2. 若为
+	 * {@link java.lang.reflect.Constructor} 构造器：返回类型默认为构造器所在类的类型（如
+	 * {@code new UserService()} 的返回类型为 {@code UserService}）， 支持解析类级泛型变量（如
+	 * {@code class UserService<T>} 的返回类型为 {@code UserService<T>} 并解析 T）
+	 * <p>
+	 * 适用场景：反射获取方法返回类型或构造器"隐式返回类型"时，需要保留泛型信息（如序列化结果类型匹配、接口返回值适配、动态代理返回值生成）
+	 *
+	 * @param executable 目标可执行元素（支持 {@link Method} 方法和
+	 *                   {@link java.lang.reflect.Constructor} 构造器，不可为 null）
+	 * @return 可执行元素返回类型对应的 ResolvableType（非 null），构造器返回其声明类的泛型解析结果
+	 * @see #forType(Type, TypeVariableResolver)
+	 * @see CompositeTypeVariableResolver#forExecutable(Executable)
+	 */
+	static ResolvableType forExecutableReturnType(@NonNull Executable executable) {
+		TypeVariableResolver typeVariableResolver = CompositeTypeVariableResolver.forExecutable(executable);
+		if (executable instanceof Method) {
+			return ResolvableType.forType(((Method) executable).getGenericReturnType(), typeVariableResolver);
+		}
+		return ResolvableType.forType(executable.getDeclaringClass(), typeVariableResolver);
+	}
+
+	/**
+	 * 为字段创建带泛型解析能力的 ResolvableType
+	 * <p>
+	 * 核心特性： 1. 使用 {@link Field#getGenericType()} 获取字段的泛型类型（如
+	 * {@code List<T>}），而非原始类型（{@code List}），确保泛型信息不丢失 2. 传入字段所在类的 ResolvableType
+	 * 作为泛型解析器，自动解析字段类型中的类级泛型变量（如 {@code class UserService<T> { private T value; }}
+	 * 中的 T） 3. 遵循框架统一的类型转换规则，与其他 {@link ResolvableType} 创建方法语义一致
+	 * <p>
+	 * 适用场景：反射获取字段类型时，需要保留泛型信息并解析类级泛型（如 ORM 字段类型映射、配置属性绑定、序列化/反序列化字段处理）
+	 *
+	 * @param field 目标字段（不可为 null）
+	 * @return 字段泛型类型对应的 ResolvableType（非 null），包含类级泛型变量的解析结果
+	 * @see #forType(Type, TypeVariableResolver)
+	 * @see Field#getGenericType()
+	 */
+	static ResolvableType forField(@NonNull Field field) {
+		return ResolvableType.forType(field.getGenericType(), ResolvableType.forType(field.getDeclaringClass()));
+	}
+
+	/**
+	 * 为方法/构造器的参数（{@link Parameter}）创建带泛型解析能力的 ResolvableType
+	 * <p>
+	 * 核心特性：
+	 * 1. 基于 {@link Parameter#getParameterizedType()} 获取参数的泛型类型（如 {@code List<String>}、{@code T}），确保泛型信息不丢失
+	 * 2. 自动集成参数所属可执行元素（方法/构造器）的完整泛型解析能力（通过 {@link CompositeTypeVariableResolver#forExecutable(Executable)}），
+	 *    支持解析方法/构造器级泛型（如 {@code <T> void method(T param)} 中的 T）和类级泛型（如 {@code class Service<T> { void method(T param) }} 中的 T）
+	 * 3. 与 {@link #forExecutableParameterTypes(Executable)} 语义一致，专为单个 {@link Parameter} 实例提供精准解析
+	 * <p>
+	 * 适用场景：反射获取单个方法/构造器参数的类型时，需要保留泛型信息并自动解析泛型变量（如参数校验、注解处理器解析参数类型、动态参数绑定）
+	 *
+	 * @param parameter 目标参数实例（不可为 null），关联方法/构造器的单个参数
+	 * @return 该参数泛型类型对应的 ResolvableType（非 null），包含泛型变量的完整解析结果
+	 * @see #forType(Type, TypeVariableResolver)
+	 * @see Parameter#getParameterizedType()
+	 * @see CompositeTypeVariableResolver#forExecutable(Executable)
+	 * @see #forExecutableParameterTypes(Executable)
+	 */
+	static ResolvableType forParameter(@NonNull Parameter parameter) {
+	    return ResolvableType.forType(parameter.getParameterizedType(),
+	            CompositeTypeVariableResolver.forExecutable(parameter.getDeclaringExecutable()));
+	}
+
+	/**
 	 * 根据原始类型创建{@link ResolvableType}实例，使用默认类型变量解析器。
 	 * 
 	 * @param type 原始类型（不可为{@code null}）
@@ -94,7 +191,7 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 */
 	static ResolvableType forArrayComponent(@NonNull ResolvableType componentType) {
 		Class<?> arrayClass = Array.newInstance(componentType.getRawType(), 0).getClass();
-		return forClassWithGenerics(arrayClass, componentType);
+		return new ArrayType(arrayClass, componentType, componentType);
 	}
 
 	/**
@@ -115,18 +212,18 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * 
 	 * 该方法通过ResolvableType处理泛型等复杂类型，提供比普通Class.isAssignableFrom()更全面的类型兼容性检查
 	 *
-	 * @param leftType 目标类型（赋值的接收方类型），不能为null
+	 * @param leftType  目标类型（赋值的接收方类型），不能为null
 	 * @param rightType 源类型（赋值的提供方类型），不能为null
 	 * @return 如果rightType可赋值给leftType则返回true，否则返回false
 	 */
 	public static boolean isAssignable(@NonNull Type leftType, @NonNull Type rightType) {
-	    // 将左类型转换为可解析类型，支持泛型等复杂类型处理
-	    ResolvableType leftResolvableType = ResolvableType.forType(leftType);
-	    // 将右类型转换为可解析类型，支持泛型等复杂类型处理
-	    ResolvableType rightResolvableType = ResolvableType.forType(rightType);
-	    
-	    // 检查左类型是否可从右类型赋值（即右类型是否与左类型兼容）
-	    return leftResolvableType.isAssignableFrom(rightResolvableType);
+		// 将左类型转换为可解析类型，支持泛型等复杂类型处理
+		ResolvableType leftResolvableType = ResolvableType.forType(leftType);
+		// 将右类型转换为可解析类型，支持泛型等复杂类型处理
+		ResolvableType rightResolvableType = ResolvableType.forType(rightType);
+
+		// 检查左类型是否可从右类型赋值（即右类型是否与左类型兼容）
+		return leftResolvableType.isAssignableFrom(rightResolvableType);
 	}
 
 	/**
@@ -338,13 +435,20 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 */
 	default String getTypeName() {
 		if (isArray()) {
-			return getComponentType() + "[]";
+			ResolvableType component = getComponentType();
+			String componentName = (component == null || component == NONE) ? "?" : component.getTypeName();
+			return componentName + "[]";
 		}
+
 		if (this == NONE) {
 			return "?";
 		}
 
-		String rawName = getRawType().getName();
+		Class<?> rawType = getRawType();
+		if (rawType == null) {
+			return "?"; // 或返回"?"，根据设计预期调整
+		}
+		String rawName = rawType.getName();
 		if (hasActualTypeArguments()) {
 			ResolvableType[] actualTypeArguments = getActualTypeArguments();
 			return rawName + '<' + Arrays.asList(actualTypeArguments).stream().map(Type::getTypeName)
@@ -437,13 +541,16 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 	 * @return 解析后的{@link ResolvableType}，未找到返回{@code null}
 	 */
 	default ResolvableType resolveTypeVariable(TypeVariable<?> typeVariable) {
-		TypeVariable<?>[] typeParameters = getRawType().getTypeParameters();
-		if (typeParameters.length != 0) {
-			for (int i = 0; i < typeParameters.length; i++) {
-				if (StringUtils.equals(typeParameters[i].getName(), typeVariable.getName())) {
-					ResolvableType resolved = getActualTypeArgument(i);
-					if (resolved != null && resolved != NONE) {
-						return resolved;
+		Class<?> rawType = getRawType();
+		if (rawType != null) {
+			TypeVariable<?>[] typeParameters = rawType.getTypeParameters();
+			if (typeParameters.length != 0) {
+				for (int i = 0; i < typeParameters.length; i++) {
+					if (StringUtils.equals(typeParameters[i].getName(), typeVariable.getName())) {
+						ResolvableType resolved = getActualTypeArgument(i);
+						if (resolved != null && resolved != NONE) {
+							return resolved;
+						}
 					}
 				}
 			}
@@ -471,5 +578,151 @@ public interface ResolvableType extends ParameterizedType, WildcardType, TypeVar
 			}
 		}
 		return null;
+	}
+
+	@Override
+	default int compareTo(ResolvableType o) {
+		// 1. 处理 null：当前非 null 时优先级更高
+		if (o == null) {
+			return 1;
+		}
+
+		// 2. 处理 NONE：普通类型优先级高于 NONE
+		boolean isThisNone = this == NONE;
+		boolean isONone = o == NONE;
+		if (isThisNone != isONone) {
+			return isThisNone ? -1 : 1;
+		}
+		if (isThisNone && isONone) {
+			return 0;
+		}
+
+		// 3. 比较原始类型（核心维度，类名字典序保证稳定性）
+		Class<?> thisRaw = this.getRawType();
+		Class<?> oRaw = o.getRawType();
+		int rawTypeCompare = 0;
+		if (thisRaw == null && oRaw == null) {
+			rawTypeCompare = 0;
+		} else if (thisRaw == null) {
+			rawTypeCompare = -1;
+		} else if (oRaw == null) {
+			rawTypeCompare = 1;
+		} else {
+			rawTypeCompare = thisRaw.getName().compareTo(oRaw.getName());
+		}
+		if (rawTypeCompare != 0) {
+			return rawTypeCompare;
+		}
+
+		// 4. 比较是否为数组：数组优先级高于非数组
+		boolean isThisArray = this.isArray();
+		boolean isOArray = o.isArray();
+		if (isThisArray != isOArray) {
+			return isThisArray ? 1 : -1;
+		}
+
+		// 5. 数组组件类型比较（仅数组场景，递归调用 compareTo）
+		if (isThisArray) {
+			ResolvableType thisComponent = this.getComponentType();
+			ResolvableType oComponent = o.getComponentType();
+			// 处理组件为 NONE 的情况
+			if (thisComponent == NONE && oComponent == NONE) {
+				// 组件均为 NONE，继续后续比较
+			} else if (thisComponent == NONE) {
+				return -1;
+			} else if (oComponent == NONE) {
+				return 1;
+			} else {
+				int componentCompare = thisComponent.compareTo(oComponent);
+				if (componentCompare != 0) {
+					return componentCompare;
+				}
+			}
+		}
+
+		// 6. 泛型参数比较（先个数，再逐个递归比较）
+		boolean thisHasGenerics = this.hasActualTypeArguments();
+		boolean oHasGenerics = o.hasActualTypeArguments();
+		if (thisHasGenerics != oHasGenerics) {
+			return thisHasGenerics ? 1 : -1;
+		}
+		if (thisHasGenerics && oHasGenerics) {
+			ResolvableType[] thisGenerics = this.getActualTypeArguments();
+			ResolvableType[] oGenerics = o.getActualTypeArguments();
+			// 比较泛型参数个数
+			if (thisGenerics.length != oGenerics.length) {
+				return Integer.compare(thisGenerics.length, oGenerics.length);
+			}
+			// 逐个递归比较泛型参数
+			for (int i = 0; i < thisGenerics.length; i++) {
+				ResolvableType thisGeneric = thisGenerics[i];
+				ResolvableType oGeneric = oGenerics[i];
+				// 处理泛型参数为 NONE 的情况
+				if (thisGeneric == NONE && oGeneric == NONE) {
+					continue;
+				} else if (thisGeneric == NONE) {
+					return -1;
+				} else if (oGeneric == NONE) {
+					return 1;
+				}
+				int genericCompare = thisGeneric.compareTo(oGeneric);
+				if (genericCompare != 0) {
+					return genericCompare;
+				}
+			}
+		}
+
+		// 7. 通配符上界比较（逐个递归比较）
+		ResolvableType[] thisUpperBounds = this.getUpperBounds();
+		ResolvableType[] oUpperBounds = o.getUpperBounds();
+		// 比较上界数组长度
+		if (thisUpperBounds.length != oUpperBounds.length) {
+			return Integer.compare(thisUpperBounds.length, oUpperBounds.length);
+		}
+		// 逐个递归比较上界
+		for (int i = 0; i < thisUpperBounds.length; i++) {
+			ResolvableType thisUpper = thisUpperBounds[i];
+			ResolvableType oUpper = oUpperBounds[i];
+			// 处理上界为 NONE 的情况
+			if (thisUpper == NONE && oUpper == NONE) {
+				continue;
+			} else if (thisUpper == NONE) {
+				return -1;
+			} else if (oUpper == NONE) {
+				return 1;
+			}
+			int upperCompare = thisUpper.compareTo(oUpper);
+			if (upperCompare != 0) {
+				return upperCompare;
+			}
+		}
+
+		// 8. 通配符下界比较（逐个递归比较）
+		ResolvableType[] thisLowerBounds = this.getLowerBounds();
+		ResolvableType[] oLowerBounds = o.getLowerBounds();
+		// 比较下界数组长度
+		if (thisLowerBounds.length != oLowerBounds.length) {
+			return Integer.compare(thisLowerBounds.length, oLowerBounds.length);
+		}
+		// 逐个递归比较下界
+		for (int i = 0; i < thisLowerBounds.length; i++) {
+			ResolvableType thisLower = thisLowerBounds[i];
+			ResolvableType oLower = oLowerBounds[i];
+			// 处理下界为 NONE 的情况
+			if (thisLower == NONE && oLower == NONE) {
+				continue;
+			} else if (thisLower == NONE) {
+				return -1;
+			} else if (oLower == NONE) {
+				return 1;
+			}
+			int lowerCompare = thisLower.compareTo(oLower);
+			if (lowerCompare != 0) {
+				return lowerCompare;
+			}
+		}
+
+		// 所有维度一致，返回 0（equals 必为 true）
+		return 0;
 	}
 }

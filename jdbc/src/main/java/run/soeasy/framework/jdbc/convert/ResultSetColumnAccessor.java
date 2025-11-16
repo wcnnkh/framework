@@ -1,4 +1,4 @@
-package run.soeasy.framework.jdbc;
+package run.soeasy.framework.jdbc.convert;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.jdbc.AbstractResultSetAccessor;
+import run.soeasy.framework.jdbc.JdbcException;
+import run.soeasy.framework.jdbc.JdbcUtils;
 
 /**
  * 基于列索引的ResultSet属性访问器，继承自{@link AbstractResultSetAccessor}，

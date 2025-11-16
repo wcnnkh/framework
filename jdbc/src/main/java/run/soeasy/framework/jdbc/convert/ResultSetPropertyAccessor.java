@@ -1,9 +1,11 @@
-package run.soeasy.framework.jdbc;
+package run.soeasy.framework.jdbc.convert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import lombok.NonNull;
+import run.soeasy.framework.jdbc.AbstractResultSetAccessor;
+import run.soeasy.framework.jdbc.JdbcException;
 
 /**
  * 基于列名的ResultSet属性访问器，继承自{@link AbstractResultSetAccessor}，

@@ -2,6 +2,8 @@ package run.soeasy.framework.core.type;
 
 import java.lang.reflect.TypeVariable;
 
+import lombok.NonNull;
+
 /**
  * 类型变量解析器，用于将Java反射中的{@link TypeVariable}解析为具体的{@link ResolvableType}。
  * 该接口在泛型类型解析中起核心作用，负责将泛型类型变量（如T、E）映射到实际类型。
@@ -66,5 +68,5 @@ public interface TypeVariableResolver {
      * @param typeVariable 需要解析的类型变量（如T、E）
      * @return 解析后的可解析类型，若无法解析则返回null
      */
-    ResolvableType resolveTypeVariable(TypeVariable<?> typeVariable);
+    ResolvableType resolveTypeVariable(@NonNull TypeVariable<?> typeVariable);
 }
