@@ -7,14 +7,16 @@ import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.NumberUtils;
+import run.soeasy.framework.core.match.Operator;
+import run.soeasy.framework.core.match.Operators;
 
 /**
  * 通用运算计算器：支持算术、比较、逻辑（二元+单目）运算，可扩展其他运算类型
  * <p>
  * 核心特性： 1. 线程安全（ConcurrentHashMap 存储运算逻辑）； 2. 严格非空校验（lombok @NonNull）； 3.
  * 内置所有指定运算符运算逻辑： - 算术运算（+、-、*、/、%）：BigDecimal 高精度，支持异常处理； -
- * 比较运算（==、!=、>、>=、<、<=）：返回 1（true）/0（false）； -
- * 逻辑运算（&&、||、!）：二元与/或，单目非，按“非0为true”规则； 4. 支持自定义覆盖（手动注册可覆盖内置运算）； 5.
+ * 比较运算（==、!=、&gt;、&gt;=、&lt;、&lt;=）：返回 1（true）/0（false）； -
+ * 逻辑运算（&amp;&amp;、||、!）：二元与/或，单目非，按&quot;非0为true&quot;规则； 4. 支持自定义覆盖（手动注册可覆盖内置运算）； 5.
  * 预留扩展空间，可新增三元等其他运算类型。
  * </p>
  *
@@ -60,8 +62,8 @@ public class Calculator {
 	/**
 	 * 注册二元运算符及其运算逻辑
 	 *
-	 * @param operator       二元运算符（不可为 null）
-	 * @param binaryOperator 二元运算逻辑（不可为 null，精度/返回值由实现者负责）
+	 * @param operator       二元运算符（不可为 &quot;null&quot;）
+	 * @param binaryOperator 二元运算逻辑（不可为 &quot;null&quot;，精度/返回值由实现者负责）
 	 */
 	public void registerBinary(@NonNull Operator operator, @NonNull BinaryOperator<Number> binaryOperator) {
 		binaryOperationMap.put(operator, binaryOperator);
@@ -70,8 +72,8 @@ public class Calculator {
 	/**
 	 * 执行二元运算（算术、比较、逻辑与/或）
 	 *
-	 * @param left     左操作数（不可为 null，Number 子类均可）
-	 * @param right    右操作数（不可为 null，Number 子类均可）
+	 * @param left     左操作数（不可为 &quot;null&quot;，Number 子类均可）
+	 * @param right    右操作数（不可为 &quot;null&quot;，Number 子类均可）
 	 * @param operator 目标运算符（需提前注册）
 	 * @return 运算结果：算术运算返回 BigDecimal，比较/逻辑运算返回 Integer（1=true/0=false）
 	 * @throws IllegalStateException 运算符未注册
@@ -94,8 +96,8 @@ public class Calculator {
 	/**
 	 * 注册单目运算符及其运算逻辑
 	 *
-	 * @param operator      单目运算符（不可为 null）
-	 * @param unaryOperator 单目运算逻辑（不可为 null）
+	 * @param operator      单目运算符（不可为 &quot;null&quot;）
+	 * @param unaryOperator 单目运算逻辑（不可为 &quot;null&quot;）
 	 */
 	public void registerUnary(@NonNull Operator operator, @NonNull UnaryOperator<Number> unaryOperator) {
 		unaryOperationMap.put(operator, unaryOperator);
@@ -108,7 +110,7 @@ public class Calculator {
 	/**
 	 * 执行单目运算（当前仅支持逻辑非 !）
 	 *
-	 * @param operand  操作数（不可为 null，Number 子类均可）
+	 * @param operand  操作数（不可为 &quot;null&quot;，Number 子类均可）
 	 * @param operator 目标运算符（需提前注册）
 	 * @return 运算结果：Integer（1=true/0=false）
 	 * @throws IllegalStateException 运算符未注册
@@ -129,6 +131,7 @@ public class Calculator {
 	 * 1. 语义契约：底层除法（Operators.DIVIDE）需遵循Java原生「向零取整」规则，取模（Operators.MOD）需遵循本框架 {@link ModOperation} 规则（余数符号与被除数一致）；
 	 * 2. 精度契约：底层运算（DIVIDE/MOD/MINUS）均为无限精度，无精度损失；
 	 * 3. 类型契约：不同类型混合运算时（如int+long），底层 {@link #calculateBinary} 需做类型提升（如int→long），确保运算结果类型一致。
+	 * </p>
 	 * <p>
 	 * 结果特性：
 	 * - 数学关系：商 × 除数 + 余数 = 被除数（严格成立）；
@@ -137,6 +140,7 @@ public class Calculator {
 	 *   - 被除数为0 → 商=0、余数=0；
 	 *   - 除数为1 → 商=被除数、余数=0；
 	 *   - 被除数=除数 → 商=1、余数=0。
+	 * </p>
 	 *
 	 * @param left 被除数（非空，任意Number类型）
 	 * @param right 除数（非空，任意Number类型，不能为0）

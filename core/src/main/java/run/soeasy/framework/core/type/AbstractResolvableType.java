@@ -42,7 +42,7 @@ public abstract class AbstractResolvableType<T extends Type> implements Resolvab
     /**
      * 类型变量解析器（可为null）
      * <p>
-     * 用于解析泛型类型中的类型变量（如<T>），补充默认解析逻辑的不足，支持自定义变量绑定
+     * 用于解析泛型类型中的类型变量（如&lt;T&gt;），补充默认解析逻辑的不足，支持自定义变量绑定
      */
     private TypeVariableResolver typeVariableResolver;
 
@@ -51,7 +51,7 @@ public abstract class AbstractResolvableType<T extends Type> implements Resolvab
      * <p>
      * 解析优先级：先调用ResolvableType接口的默认解析逻辑，解析失败时使用当前类的类型变量解析器（若存在）
      *
-     * @param typeVariable 待解析的类型变量（如泛型中的<T>、<E>）
+     * @param typeVariable 待解析的类型变量（如泛型中的&lt;T&gt;、&lt;E&gt;）
      * @return 解析后的可解析类型，解析失败返回null
      */
     @Override
@@ -68,7 +68,7 @@ public abstract class AbstractResolvableType<T extends Type> implements Resolvab
      * <p>
      * 直接复用getTypeName的结果，确保类型的字符串表示包含泛型、数组等完整信息
      *
-     * @return 类型的完整名称字符串（如"java.util.List<java.lang.String>"、"java.lang.String[]"）
+     * @return 类型的完整名称字符串（如"java.util.List&lt;java.lang.String&gt;"、"java.lang.String[]"）
      */
     @Override
     public final String toString() {

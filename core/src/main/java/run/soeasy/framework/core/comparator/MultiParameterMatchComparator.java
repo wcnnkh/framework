@@ -54,6 +54,12 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
     }
 
     // ------------------------------ 核心比较逻辑 ------------------------------
+    /**
+     * 比较两个候选参数列表与目标参数列表的匹配度，返回排序结果
+     * @param candidateParamsA 候选参数列表A
+     * @param candidateParamsB 候选参数列表B
+     * @return 负整数（A靠前）、零（匹配度相同）、正整数（B靠前）
+     */
     @Override
     public int compare(List<ResolvableType> candidateParamsA, List<ResolvableType> candidateParamsB) {
         // 空列表安全处理：null转为空不可变列表，避免空指针
@@ -86,8 +92,10 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
     }
 
     /**
-     * 计算单个候选参数列表的匹配信息
+     * 计算单个候选参数列表的匹配信息（数量匹配状态、总得分、最低分等）
      * 核心优化：双迭代器并行遍历，兼容所有List实现（ArrayList/LinkedList等），保证O(n)性能
+     * @param candidateParams 候选参数列表
+     * @return 封装匹配信息的 ParameterMatchInfo 对象（不可变）
      */
     private ParameterMatchInfo calculateMatchInfo(List<ResolvableType> candidateParams) {
         int targetParamCount = targetParameterTypes.size();
@@ -126,6 +134,9 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
 
     /**
      * 计算单个参数的匹配得分（委托给得分计算器，补充空值校验）
+     * @param targetType 目标参数类型
+     * @param candidateType 候选参数类型
+     * @return 匹配得分（0-100分，分数越高匹配度越高）
      */
     private int calculateSingleParamScore(ResolvableType targetType, ResolvableType candidateType) {
         if (targetType == null || candidateType == null) {
@@ -136,6 +147,8 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
 
     /**
      * 构建参数类型签名（用于兜底排序，保证稳定性）
+     * @param paramTypes 参数类型列表
+     * @return 逗号分隔的类型名称字符串（如 "java.lang.String,java.lang.Integer"）
      */
     private String buildTypeSignature(List<ResolvableType> paramTypes) {
         return paramTypes.stream()
@@ -161,7 +174,7 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
      * 单个类型匹配得分计算器（独立逻辑，支持自定义扩展）
      */
     public static class SingleTypeMatchScorer {
-        /** 基本类型拓宽顺序：byte < short < char < int < long < float < double */
+        /** 基本类型拓宽顺序：byte &lt; short &lt; char &lt; int &lt; long &lt; float &lt; double */
         private static final Map<Class<?>, Integer> PRIMITIVE_WIDENING_ORDER;
 
         /** 高精度数值类型（BigDecimal/BigInteger），语义优先级高于普通数值 */
@@ -187,6 +200,9 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
          *  70分：普通数值→高精度数值（如 int→BigDecimal，语义优先级高于普通赋值）
          *  50分：强制转换兼容（无继承关系但语义可转换，如 Object→String、数组→Iterable）
          *   0分：不匹配（无任何兼容关系）
+         * @param sourceType 源类型（候选参数类型）
+         * @param targetType 目标类型（期望匹配的类型）
+         * @return 匹配得分（0-100分，分数越高匹配度越高）
          */
         public int calculateMatchScore(ResolvableType sourceType, ResolvableType targetType) {
             if (isExactMatch(sourceType, targetType)) {
@@ -195,8 +211,13 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
             if (isPrimitiveWideningMatch(sourceType, targetType)) {
                 return 90;
             }
-            if (isAssignableCompatible(sourceType, targetType)) {
-                return isNumberToHighPrecisionMatch(sourceType, targetType) ? 70 : 80;
+            // 先判断普通赋值兼容，再检查高精度数值匹配（避免优先级倒置）
+            boolean assignable = isAssignableCompatible(sourceType, targetType);
+            if (assignable && isNumberToHighPrecisionMatch(sourceType, targetType)) {
+                return 70;
+            }
+            if (assignable) {
+                return 80;
             }
             if (isForceConvertibleMatch(sourceType, targetType)) {
                 return 50;
@@ -204,7 +225,12 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
             return 0;
         }
 
-        /** 完全匹配判断（类型+泛型一致，或基本类型与包装类互认） */
+        /**
+         * 完全匹配判断（类型+泛型一致，或基本类型与包装类互认）
+         * @param sourceType 源类型（候选参数类型）
+         * @param targetType 目标类型（期望匹配的类型）
+         * @return true=完全匹配，false=不完全匹配
+         */
         private boolean isExactMatch(ResolvableType sourceType, ResolvableType targetType) {
             // 1. 类型+泛型完全一致（如 List<String> == List<String>、String[] == String[]）
             if (sourceType.equals(targetType)) {
@@ -221,7 +247,12 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
                     || (targetRaw.isPrimitive() && ClassUtils.getPrimitiveWrapper(targetRaw).equals(sourceRaw));
         }
 
-        /** 基本类型拓宽匹配判断（仅适用于基本类型，遵循Java拓宽规则） */
+        /**
+         * 基本类型拓宽匹配判断（仅适用于基本类型，遵循Java拓宽规则）
+         * @param sourceType 源类型（候选参数类型）
+         * @param targetType 目标类型（期望匹配的类型）
+         * @return true=符合拓宽规则，false=不符合
+         */
         private boolean isPrimitiveWideningMatch(ResolvableType sourceType, ResolvableType targetType) {
             Class<?> sourceRaw = sourceType.getRawType();
             Class<?> targetRaw = targetType.getRawType();
@@ -235,16 +266,26 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
             return sourceOrder != null && targetOrder != null && sourceOrder <= targetOrder;
         }
 
-        /** 赋值兼容判断（依赖 ResolvableType 原生能力，支持继承/实现/泛型兼容） */
+        /**
+         * 赋值兼容判断（依赖 ResolvableType 原生能力，支持继承/实现/泛型兼容）
+         * @param sourceType 源类型（候选参数类型）
+         * @param targetType 目标类型（期望匹配的类型）
+         * @return true=赋值兼容（source 可赋值给 target），false=不兼容
+         */
         private boolean isAssignableCompatible(ResolvableType sourceType, ResolvableType targetType) {
             if (sourceType == ResolvableType.NONE || targetType == ResolvableType.NONE) {
                 return false;
             }
-            // 直接复用 ResolvableType.isAssignableFrom，无需手动处理泛型/数组逻辑
+            // 复用 ResolvableType 内置的赋值兼容判断，无需手动处理泛型/数组逻辑
             return targetType.isAssignableFrom(sourceType);
         }
 
-        /** 普通数值→高精度数值匹配判断（语义优先级高于普通赋值兼容） */
+        /**
+         * 普通数值→高精度数值匹配判断（语义优先级高于普通赋值兼容）
+         * @param sourceType 源类型（候选参数类型）
+         * @param targetType 目标类型（期望匹配的类型）
+         * @return true=普通数值类型匹配高精度数值类型，false=不匹配
+         */
         private boolean isNumberToHighPrecisionMatch(ResolvableType sourceType, ResolvableType targetType) {
             Class<?> sourceRaw = sourceType.getRawType();
             Class<?> targetRaw = targetType.getRawType();
@@ -253,7 +294,9 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
             }
 
             // 源类型：普通数值类型（基本类型/包装类/Number子类，排除高精度数值）
-            if (!ClassUtils.isNumber(sourceRaw) || BigDecimal.class.equals(sourceRaw) || BigInteger.class.equals(sourceRaw)) {
+            if (!ClassUtils.isNumber(sourceRaw) 
+                    || BigDecimal.class.equals(sourceRaw) 
+                    || BigInteger.class.equals(sourceRaw)) {
                 return false;
             }
 
@@ -266,7 +309,12 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
             return false;
         }
 
-        /** 强制转换兼容判断（无继承关系，但语义可转换，依赖业务约定） */
+        /**
+         * 强制转换兼容判断（无继承关系但语义可转换，依赖业务约定）
+         * @param sourceType 源类型（候选参数类型）
+         * @param targetType 目标类型（期望匹配的类型）
+         * @return true=强制转换兼容，false=不兼容
+         */
         private boolean isForceConvertibleMatch(ResolvableType sourceType, ResolvableType targetType) {
             Class<?> sourceRaw = sourceType.getRawType();
             Class<?> targetRaw = targetType.getRawType();
@@ -301,6 +349,7 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
     /**
      * 快速创建比较器（可变参数入参，简化无泛型场景使用）
      * @param targetParameterTypes 目标参数类型可变参数（支持 null 入参=无参场景）
+     * @return 多参数类型匹配比较器实例
      */
     public static MultiParameterMatchComparator of(ResolvableType... targetParameterTypes) {
         List<ResolvableType> paramList = targetParameterTypes == null
@@ -312,6 +361,7 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
     /**
      * 快速创建比较器（列表入参，支持复杂泛型/数组类型）
      * @param targetParameterTypes 目标参数类型列表
+     * @return 多参数类型匹配比较器实例
      */
     public static MultiParameterMatchComparator of(List<ResolvableType> targetParameterTypes) {
         return new MultiParameterMatchComparator(safeImmutableList(targetParameterTypes));
@@ -319,6 +369,8 @@ public class MultiParameterMatchComparator implements Comparator<List<Resolvable
 
     /**
      * 静态工具方法：安全处理列表（供工厂方法使用，统一逻辑）
+     * @param list 原始列表（可能为null）
+     * @return 不可变列表（null输入返回空不可变列表）
      */
     private static List<ResolvableType> safeImmutableList(List<ResolvableType> list) {
         return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);

@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 /**
  * 原生整数实现类，继承自{@link NumberAdder}，基于Java原生{@code int}类型存储数值，
- * 聚焦**int范围（-2³¹~2³¹-1，即-2147483648~2147483647）** 内的高效运算，
+ * 聚焦<strong>int范围（-2³¹~2³¹-1，即-2147483648~2147483647）</strong>内的高效运算，
  * 相比{@link BigIntegerValue}省去高精度对象的内存与运算开销，是框架中处理普通整数场景（如计数、索引、有限范围数值）的首选轻量组件。
  * 
  * <p>
@@ -22,13 +22,18 @@ import java.math.BigInteger;
  * <h3>核心特性</h3>
  * <ul>
  * <li><strong>原生运算性能</strong>：加法、类型转换（如{@link #getAsInt()}）均无额外对象创建，直接操作原生值，适合对性能敏感的场景（如实时监控计数）；</li>
- * <li><strong>严格溢出防护</strong>： -
- * {@link #add(long)}先通过{@link Math#toIntExact(long)}校验参数是否超int范围； -
- * 再通过{@link Math#addExact(int, int)}校验累加结果是否超int范围； 双重防护确保数值始终在int内；</li>
- * <li><strong>无缝类型兼容</strong>： -
- * 转{@link BigDecimal}/{@link BigInteger}：无精度丢失，支持与高精度类型运算； -
- * 转{@link String}：原生十进制格式（如{@code -123}→"{@code -123}"），无多余格式符；
- * 适配框架内所有数值类型的交互；</li>
+ * <li><strong>严格溢出防护</strong>：
+ *   <ul>
+ *   <li>{@link #add(long)}先通过{@link Math#toIntExact(long)}校验参数是否超int范围；</li>
+ *   <li>再通过{@link Math#addExact(int, int)}校验累加结果是否超int范围；</li>
+ *   </ul>
+ *   双重防护确保数值始终在int内；</li>
+ * <li><strong>无缝类型兼容</strong>：
+ *   <ul>
+ *   <li>转{@link BigDecimal}/{@link BigInteger}：无精度丢失，支持与高精度类型运算；</li>
+ *   <li>转{@link String}：原生十进制格式（如{@code -123}→"{@code -123}"），无多余格式符；</li>
+ *   </ul>
+ *   适配框架内所有数值类型的交互；</li>
  * <li><strong>范围感知比较</strong>：{@link #compareTo(Value)}可处理目标值超int范围的场景（如目标是{@link BigIntegerValue}），
  * 自动判断“当前int值”与“超范围值”的大小（如int最大值&lt;超int值），避免比较逻辑错误。</li>
  * </ul>
@@ -38,7 +43,6 @@ import java.math.BigInteger;
  * <li>普通计数场景：接口调用次数、列表元素索引、订单序号（通常≤千万级，远低于int上限）；</li>
  * <li>有限范围数值：年龄（0~150）、考试分数（0~100）、商品库存（通常≤1e9，未达int上限）；</li>
  * <li>性能敏感场景：高频交易中的订单数量统计、实时日志的行数计数，需避免高精度类的性能损耗；</li>
- * <li>基础组件依赖：作为{@link Fraction}的分子/分母（小整数）、{@link NumberValue}的基础实现，支撑复杂数值运算的“轻量单元”。</li>
  * </ul>
  *
  * <h3>使用示例（含关键场景）</h3>
@@ -79,7 +83,7 @@ import java.math.BigInteger;
  * int compareRes2 = counter.compareTo(another); // 42 == 42 → 返回0
  *
  * // 6. 类型转换（无精度丢失/范围扩展）
- * BigDecimal bd = counter.getAsBigDecimal(); // 42.0（无精度丢失，支持小数运算）
+ * BigDecimal bd = counter.getAsBigDecimal(); // 42（无精度丢失，支持小数运算）
  * BigInteger bi = counter.getAsBigInteger(); // 42（扩展为大整数，支持超int运算）
  * String str = counter.getAsString(); // "42"（用于展示/序列化）
  * </pre>
@@ -88,12 +92,9 @@ import java.math.BigInteger;
  * <ul>
  * <li><strong>范围严格限制</strong>：仅支持int范围数值，超出需替换为{@link BigIntegerValue}，避免强行使用导致溢出异常；</li>
  * <li><strong>线程安全警告</strong>：类内无同步机制（如{@code synchronized}、{@link java.util.concurrent.atomic.AtomicInteger}），
- * 多线程并发修改需外部加锁（如{@code synchronized (counter) { counter.add(1);
- * }}），或改用线程安全的原子类（若无需框架{@link Value}接口）；</li>
+ * 多线程并发修改需外部加锁（如{@code synchronized (counter) { counter.add(1); }}），或改用线程安全的原子类（若无需框架{@link Value}接口）；</li>
  * <li><strong>异常必须处理</strong>：{@link #add(long)}会主动抛出{@link ArithmeticException}，业务层需根据场景捕获（如“库存超上限时提示用户”），
  * 避免未处理异常导致服务中断；</li>
- * <li><strong>{@link #getAsBigInteger()}优化建议</strong>：当前实现为{@code new BigInteger("" + value)}，可优化为{@code BigInteger.valueOf(value)}，
- * 两者语义一致，但后者避免字符串拼接，性能更优（推荐项目编译前替换）。</li>
  * </ul>
  *
  * @author soeasy.run
@@ -102,6 +103,8 @@ import java.math.BigInteger;
  * @see BigIntegerValue 超大整数实现类（数值超int范围时的替代方案）
  * @see BigDecimalValue 高精度小数实现类（需与小数交互时的适配类）
  * @see Math#addExact(int, int) 用于精确累加的原生方法（支撑溢出防护）
+ * @see Math#toIntExact(long) 用于校验long参数是否在int范围内的原生方法
+ * @see BigInteger#valueOf(long) 高效构建BigInteger实例的原生方法（当前类{@link #getAsBigInteger()}已采用）
  */
 public class IntValue extends NumberAdder {
 	private static final long serialVersionUID = 1L;
@@ -128,8 +131,9 @@ public class IntValue extends NumberAdder {
 	/**
 	 * 构造方法：通过原生int初始值创建实例
 	 * <p>
-	 * 核心逻辑： 1. 存储初始值到{@link #initialValue}（不可变，作为后续重置的基准）； 2.
-	 * 调用{@link #reset()}将{@link #value}初始化为初始值，确保实例创建即处于可用状态。
+	 * 核心逻辑：
+	 * 1. 存储初始值到{@link #initialValue}（不可变，作为后续重置的基准）；
+	 * 2. 调用{@link #reset()}将{@link #value}初始化为初始值，确保实例创建即处于可用状态。
 	 *
 	 * @param initialValue 初始数值（必须在int范围内：-2147483648~2147483647，超出会导致构造时即触发溢出，但JVM编译时会拦截超范围字面量）
 	 */
@@ -141,7 +145,8 @@ public class IntValue extends NumberAdder {
 	/**
 	 * 重置当前数值为创建时的初始值
 	 * <p>
-	 * 实现逻辑：直接将{@link #value}赋值为{@link #initialValue}，无任何计算或对象创建， 时间复杂度O(1)，效率极高；
+	 * 实现逻辑：直接将{@link #value}赋值为{@link #initialValue}，无任何计算或对象创建，
+	 * 时间复杂度O(1)，效率极高；
 	 * <p>
 	 * 适用场景：循环复用实例（如线程池中的局部计数变量），避免重复创建{@link IntValue}导致的GC压力。
 	 */
@@ -153,12 +158,12 @@ public class IntValue extends NumberAdder {
 	/**
 	 * 累加指定long数值到当前值（核心修改方法，含双重溢出防护）
 	 * <p>
-	 * 执行步骤（严格顺序）： 1.
-	 * <strong>参数校验</strong>：通过{@link Math#toIntExact(long)}将long参数转为int，
-	 * 若参数&lt;-2147483648或&gt;2147483647，立即抛出{@link ArithmeticException}（参数溢出）； 2.
-	 * <strong>精确累加</strong>：通过{@link Math#addExact(int, int)}计算“当前value +
-	 * 转换后的int参数”， 若结果超int范围，抛出{@link ArithmeticException}（结果溢出）； 3.
-	 * <strong>状态更新</strong>：将累加结果赋值给{@link #value}，完成状态修改。
+	 * 执行步骤（严格顺序）：
+	 * 1. <strong>参数校验</strong>：通过{@link Math#toIntExact(long)}将long参数转为int，
+	 *    若参数&lt;-2147483648或&gt;2147483647，立即抛出{@link ArithmeticException}（参数溢出）；
+	 * 2. <strong>精确累加</strong>：通过{@link Math#addExact(int, int)}计算“当前value + 转换后的int参数”，
+	 *    若结果超int范围，抛出{@link ArithmeticException}（结果溢出）；
+	 * 3. <strong>状态更新</strong>：将累加结果赋值给{@link #value}，完成状态修改。
 	 * <p>
 	 * 特殊处理：若参数为负数（如-5），等价于“当前值减去参数绝对值”（即value = value - 5），无需额外判断。
 	 *
@@ -176,8 +181,7 @@ public class IntValue extends NumberAdder {
 	/**
 	 * 将当前int值转为{@link BigDecimal}（无精度丢失）
 	 * <p>
-	 * 转换逻辑：通过{@link BigDecimal#BigDecimal(int)}直接构造，
-	 * 数值与当前{@link #value}完全一致（如value=123→BigDecimal(123.0)），无任何精度偏差；
+	 * 数值与当前{@link #value}完全一致（如value=123→BigDecimal(123)，无小数位冗余），无任何精度偏差；
 	 * <p>
 	 * 适用场景：需与{@link BigDecimalValue}（高精度小数）进行运算，或需保留小数位的场景（如金额计算中的单位转换）。
 	 *
@@ -185,22 +189,22 @@ public class IntValue extends NumberAdder {
 	 */
 	@Override
 	public BigDecimal getAsBigDecimal() {
-		return new BigDecimal(value);
+		return BigDecimal.valueOf(value);
 	}
 
 	/**
-	 * 将当前int值转为{@link BigInteger}（范围扩展）
+	 * 将当前int值转为{@link BigInteger}（范围扩展，高效实现）
 	 * <p>
-	 * 转换逻辑：通过字符串拼接（{@code "" + value}）构造BigInteger，
-	 * 等价于更高效的{@code BigInteger.valueOf(value)}（推荐优化）；
+	 * 转换逻辑：通过{@link BigInteger#valueOf(long)}直接构造，避免字符串拼接开销，性能最优；
+	 * 该方法为BigInteger推荐的高效构建方式，当入参在long范围内时直接复用缓存实例，进一步提升性能；
 	 * <p>
-	 * 作用：突破int范围限制，支持后续与超大整数（如{@link BigIntegerValue}）的运算。
+	 * 作用：突破int范围限制，支持后续与超大整数（如{@link BigIntegerValue}）的运算，且无精度丢失。
 	 *
-	 * @return 与当前值等价的{@link BigInteger}实例（非null，范围无限制）
+	 * @return 与当前值等价的{@link BigInteger}实例（非null，范围无限制，性能最优）
 	 */
 	@Override
 	public BigInteger getAsBigInteger() {
-		return new BigInteger("" + value);
+		return BigInteger.valueOf(value);
 	}
 
 	/**
@@ -220,12 +224,14 @@ public class IntValue extends NumberAdder {
 	/**
 	 * 比较当前int值与目标{@link Value}的大小（支持目标值超int范围）
 	 * <p>
-	 * 比较规则（分场景优先级）： 1.
-	 * 若目标{@code o}非数值类型（{@link Value#isNumber()}为false）：委托父类{@link NumberAdder#compareTo(Value)}处理；
-	 * 2. 若目标{@code o}是数值类型： a. 提取目标的{@link BigInteger}值（突破int范围，统一比较标准）； b. 目标值
-	 * &gt; {@link Integer#MAX_VALUE} → 当前int值更小，返回-1； c. 目标值 &lt;
-	 * {@link Integer#MIN_VALUE} → 当前int值更大，返回1； d. 目标值在int范围内 →
-	 * 调用{@link Integer#compare(int, int)}比较原生int值，返回结果（负整数=当前小，0=相等，正整数=当前大）。
+	 * 比较规则（分场景优先级）：
+	 * 1. 若目标{@code o}为null：按框架约定，null视为小于任何数值类型，返回1；
+	 * 2. 若目标{@code o}非数值类型（{@link Value#isNumber()}为false）：委托父类{@link NumberAdder#compareTo(Value)}处理；
+	 * 3. 若目标{@code o}是数值类型：
+	 *    a. 提取目标的{@link BigInteger}值（突破int范围，统一比较标准）；
+	 *    b. 目标值 &gt; {@link Integer#MAX_VALUE} → 当前int值更小，返回-1；
+	 *    c. 目标值 &lt; {@link Integer#MIN_VALUE} → 当前int值更大，返回1；
+	 *    d. 目标值在int范围内 → 调用{@link Integer#compare(int, int)}比较原生int值，返回结果（负整数=当前小，0=相等，正整数=当前大）。
 	 *
 	 * @param o 待比较的{@link Value}对象（可为null，null视为小于任何数值类型）
 	 * @return int：比较结果（负整数=当前&lt;目标，0=当前=目标，正整数=当前&gt;目标）
@@ -252,8 +258,10 @@ public class IntValue extends NumberAdder {
 	/**
 	 * 将当前int值转为十进制字符串（原生格式，无多余符号）
 	 * <p>
-	 * 转换逻辑：委托{@link Integer#toString(int)}实现，输出格式与原生int一致： - 正数（如42）→ "{@code 42}"；
-	 * - 负数（如-123）→ "{@code -123}"； - 零（0）→ "{@code 0}"；
+	 * 转换逻辑：委托{@link Integer#toString(int)}实现，输出格式与原生int一致：
+	 * - 正数（如42）→ "{@code 42}"；
+	 * - 负数（如-123）→ "{@code -123}"；
+	 * - 零（0）→ "{@code 0}"；
 	 * <p>
 	 * 适用场景：日志打印、前端页面展示、JSON序列化（避免科学计数法）。
 	 *

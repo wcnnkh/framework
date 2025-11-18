@@ -2,6 +2,7 @@ package run.soeasy.framework.math;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.NumberUtils;
+import run.soeasy.framework.core.match.Operators;
 
 /**
  * 数值单位接口：定义统一的单位转换核心规范，支持「纯比例转换」（长度、重量）和「偏移+比例转换」（温度、角度），

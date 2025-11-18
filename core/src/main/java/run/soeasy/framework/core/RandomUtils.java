@@ -36,19 +36,19 @@ import lombok.experimental.UtilityClass;
  * CharSequence charSource = "ABCDEFG";
  * RandomUtils.chars(charSource)
  *            .limit(5)
- *            .mapToObj(c -> (char) c)
- *            .forEach(System.out::print); // 输出示例：B E G A D（随机顺序）
+ *            .mapToObj(c -&gt; (char) c)
+ *            .forEach(System.out::print);
  *
  * // 2. 生成6位随机密码（包含大小写字母和数字）
  * CharSequence pwdSource = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
  * String randomPwd = RandomUtils.random(pwdSource, 6);
- * System.out.println("随机密码：" + randomPwd); // 输出示例：x7Q2z9
+ * System.out.println("随机密码：" + randomPwd);
  *
  * // 3. 生成随机对象流（从商品数组中随机抽取3个商品并打印）
  * String[] goods = {"手机", "电脑", "耳机", "平板"};
  * RandomUtils.objects(goods)
  *            .limit(3)
- *            .forEach(System.out::println); // 输出示例：耳机、手机、平板（随机顺序，可能重复）
+ *            .forEach(System.out::println);
  * </pre>
  *
  * @author soeasy.run
@@ -111,11 +111,11 @@ public class RandomUtils {
      *
      * @param array 源数组（不可为 null，若长度为 0 会生成空流）
      * @param <T>   数组元素类型
-     * @return 包含随机元素的 Stream<T>，线程安全且可无限流（需手动限制长度）
+     * @return 包含随机元素的 Stream&lt;T&gt;，线程安全且可无限流（需手动限制长度）
      * @throws NullPointerException 若 array 为 null，由 {@link NonNull} 注解自动触发
      */
     @SafeVarargs
-	public static <T> Stream<T> objects(@NonNull T... array) {
+    public static <T> Stream<T> objects(@NonNull T... array) {
         return ThreadLocalRandom.current()
                                 .ints(0, array.length) // 生成 [0, array.length()) 区间的随机索引
                                 .mapToObj((e) -> array[e]); // 索引映射为数组元素
@@ -132,7 +132,7 @@ public class RandomUtils {
      * 2. 格式：返回字符串由小写字母（a-f）和数字（0-9）组成，无任何分隔符；
      * 3. 线程安全：{@link UUID#randomUUID()} 是线程安全方法，整个方法无状态，支持多线程并发调用。
      *
-     * @return 长度为32的无分隔符UUID字符串，示例："a1b2c3d41234567890abcdef01234567"
+     * @return 长度为32的无分隔符UUID字符串
      * @see UUID#randomUUID() 底层依赖的标准UUID生成方法
      */
     public static String uuid() {

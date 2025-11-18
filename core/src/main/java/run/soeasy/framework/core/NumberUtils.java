@@ -98,10 +98,6 @@ public class NumberUtils {
      * @return 清除尾部无效零后的 BigDecimal；输入为 null 时返回 null
      * @see BigDecimal#stripTrailingZeros() 原生尾部零清除方法
      * @see BigDecimal#setScale(int) 小数位数设置（用于规避科学计数法）
-     * @example 示例1：stripTrailingZeros(new BigDecimal("123.4500")) → 123.45
-     * @example 示例2：stripTrailingZeros(new BigDecimal("100.000")) → 100（而非 1E2）
-     * @example 示例3：stripTrailingZeros(new BigDecimal("0.000")) → BigDecimal.ZERO（而非 0.000）
-     * @example 示例4：stripTrailingZeros(new BigDecimal("0E10")) → BigDecimal.ZERO（而非 0E10）
      */
     public static BigDecimal stripTrailingZeros(BigDecimal number) {
         if (number == null) {
@@ -138,9 +134,6 @@ public class NumberUtils {
      * @throws NullPointerException 若输入 bigInteger 为 null（由 {@link NonNull} 注解自动触发）
      * @see BigInteger#toByteArray() 数值转字节数组（深拷贝核心依赖）
      * @see BigInteger#BigInteger(byte[]) 字节数组构造实例（深拷贝核心依赖）
-     * @example 示例：BigInteger original = BigInteger.valueOf(100); BigInteger copy = NumberUtils.newBigInteger(original);
-     *          System.out.println(original.equals(copy)); // true（数值一致）
-     *          System.out.println(original == copy); // false（引用独立）
      */
     public static BigInteger newBigInteger(@NonNull BigInteger bigInteger) {
         return new BigInteger(bigInteger.toByteArray());
@@ -168,10 +161,6 @@ public class NumberUtils {
      * @throws IllegalArgumentException 若输入为 Double/Float 类型的 NaN 或 Infinity
      * @throws NumberFormatException    若自定义 Number 子类的 toString() 非标准数值格式（如 "123a"）
      * @see #validateLegalFloat(Number) 非法浮点值前置校验
-     * @example 示例1：toBigDecimal(0.1d) → BigDecimal("0.1")（无精度丢失）
-     * @example 示例2：toBigDecimal(new AtomicLong(100)) → BigDecimal("100")（高效转换）
-     * @example 示例3：toBigDecimal(Double.NaN) → 抛出 IllegalArgumentException
-     * @example 示例4：toBigDecimal(16777217) → BigDecimal("16777217")（整数完整保留精度）
      */
     public static BigDecimal toBigDecimal(Number number) {
         if (number == null) {
@@ -217,10 +206,6 @@ public class NumberUtils {
      * @throws IllegalArgumentException 若任一数值为 Double/Float 类型的 NaN 或 Infinity
      * @see NumberComparator 跨类型数值比较器（核心依赖，确保精准比较）
      * @see #validateLegalFloat(Number) 非法浮点值校验（前置依赖）
-     * @example 示例1：equals(Integer.valueOf(100), Long.valueOf(100)) → true
-     * @example 示例2：equals(BigDecimal.valueOf(0.1), Double.valueOf(0.1)) → true（无精度丢失）
-     * @example 示例3：equals(null, null) → true；equals(null, 1) → false
-     * @example 示例4：equals(Double.NaN, 0) → 抛出 IllegalArgumentException（非法浮点值）
      */
     public static boolean equals(Number left, Number right) {
         if (left == null ^ right == null) {
@@ -247,8 +232,6 @@ public class NumberUtils {
      * @return true=数值为 0（如 0、0.0、BigDecimal.ZERO、BigInteger.ZERO）；false=非 0 或 null
      * @throws IllegalArgumentException 若数值为 Double/Float 类型的 NaN 或 Infinity
      * @see #equals(Number, Number) 精准比较核心依赖
-     * @example 示例1：isZero(0) → true；isZero(0.0d) → true；isZero(BigDecimal.ZERO) → true
-     * @example 示例2：isZero(1) → false；isZero(-0.1f) → false；isZero(null) → false
      */
     public static boolean isZero(Number number) {
         return equals(number, 0);
@@ -266,8 +249,6 @@ public class NumberUtils {
      * @throws IllegalArgumentException 若数值为 Double/Float 类型的 NaN 或 Infinity
      * @see NumberComparator 精准比较核心依赖
      * @see #validateLegalFloat(Number) 非法浮点值校验
-     * @example 示例1：isPositive(10) → true；isPositive(0.0001) → true；isPositive(BigDecimal.ONE) → true
-     * @example 示例2：isPositive(0) → false；isPositive(-5) → false；isPositive(null) → false
      */
     public static boolean isPositive(Number number) {
         if (number == null) {
@@ -289,8 +270,6 @@ public class NumberUtils {
      * @throws IllegalArgumentException 若数值为 Double/Float 类型的 NaN 或 Infinity
      * @see NumberComparator 精准比较核心依赖
      * @see #validateLegalFloat(Number) 非法浮点值校验
-     * @example 示例1：isNegative(-5) → true；isNegative(-0.001) → true；isNegative(BigInteger.valueOf(-100)) → true
-     * @example 示例2：isNegative(0) → false；isNegative(3) → false；isNegative(null) → false
      */
     public static boolean isNegative(Number number) {
         if (number == null) {
@@ -319,9 +298,6 @@ public class NumberUtils {
      * @see Double#isInfinite() Double 无穷大校验
      * @see Float#isNaN() Float 非数字校验
      * @see Float#isInfinite() Float 无穷大校验
-     * @example 示例1：validateLegalFloat(Double.NaN) → 抛出 IllegalArgumentException（非法浮点值不支持数值操作：NaN）
-     * @example 示例2：validateLegalFloat(Float.POSITIVE_INFINITY) → 抛出 IllegalArgumentException（非法浮点值不支持数值操作：Infinity）
-     * @example 示例3：validateLegalFloat(10.0d) → 无动作（合法浮点值）
      */
     public static void validateLegalFloat(Number number) throws IllegalArgumentException {
         if (!isLegalFloat(number)) {
@@ -348,11 +324,6 @@ public class NumberUtils {
      * @see Double#isInfinite() Double 无穷大校验
      * @see Float#isNaN() Float 非数字校验
      * @see Float#isInfinite() Float 无穷大校验
-     * @example 示例1：isLegalFloat(Double.NaN) → false（非法浮点值）
-     * @example 示例2：isLegalFloat(Float.POSITIVE_INFINITY) → false（非法浮点值）
-     * @example 示例3：isLegalFloat(10.0d) → true（合法浮点值）
-     * @example 示例4：isLegalFloat(null) → true（null 需调用方自行处理）
-     * @example 示例5：isLegalFloat(100) → true（非浮点类型，天然合法）
      */
     public static boolean isLegalFloat(Number number) {
         if (number == null) {
@@ -391,9 +362,6 @@ public class NumberUtils {
      * @return true：存在有效小数部分；false：无有效小数（整数或非法值）
      * @throws IllegalArgumentException 若输入 number 为 null
      * @throws NumberFormatException    若自定义 Number 子类转换 BigDecimal 失败（如 toString() 返回非数值格式）
-     * @example 示例1：isDecimalHasEffectiveFraction(10.5d) → true；isDecimalHasEffectiveFraction(10) → false
-     * @example 示例2：isDecimalHasEffectiveFraction(0.1f) → true；isDecimalHasEffectiveFraction(BigInteger.valueOf(100)) → false
-     * @example 示例3：isDecimalHasEffectiveFraction(Double.NaN) → false；isDecimalHasEffectiveFraction(null) → 抛出异常
      */
     public static boolean isDecimalHasEffectiveFraction(@NonNull Number number) {
         if (!isLegalFloat(number)) {
@@ -426,9 +394,6 @@ public class NumberUtils {
      * @throws NumberFormatException    若自定义 Number 子类的 toString() 非标准数值格式
      * @see #toBigDecimal(Number) 无精度丢失的 BigDecimal 转换（兜底依赖）
      * @see BigDecimal#toBigIntegerExact() 精确转 BigInteger（禁止小数截断）
-     * @example 示例1：toBigInteger(100L) → BigInteger("100")；toBigInteger(new AtomicInteger(200)) → BigInteger("200")
-     * @example 示例2：toBigInteger(300.0d) → BigInteger("300")；toBigInteger(new BigDecimal("400")) → BigInteger("400")
-     * @example 示例3：toBigInteger(500.5f) → 抛出 ArithmeticException（存在有效小数部分）
      */
     public static BigInteger toBigInteger(Number number) {
         if (number == null) {
@@ -462,10 +427,6 @@ public class NumberUtils {
      * @param number 待转换的 Number 实例（可为 null）
      * @return 转换后的 Long；输入为 null 时返回 null
      * @throws ArithmeticException 若数值超出 Long 范围、包含有效小数部分（精度丢失）
-     * @example 示例1：toLong(100) → 100L；toLong(new AtomicInteger(200000)) → 200000L（无精度丢失）
-     * @example 示例2：toLong(BigInteger.valueOf(9223372036854775807L)) → 9223372036854775807L（边界值正常转换）
-     * @example 示例3：toLong(BigInteger.valueOf(9223372036854775808L)) → 抛出 ArithmeticException（超出 Long 范围）
-     * @example 示例4：toLong(100.5d) → 抛出 ArithmeticException（存在有效小数部分）
      */
     public static Long toLong(Number number) throws ArithmeticException {
         if (number == null) {
@@ -495,10 +456,6 @@ public class NumberUtils {
      * @param number 待转换的 Number 实例（可为 null）
      * @return 转换后的 Integer；输入为 null 时返回 null
      * @throws ArithmeticException 若数值超出 Integer 范围、包含有效小数部分（精度丢失）
-     * @example 示例1：toInteger(1000) → 1000；toInteger(new Short((short) 32767)) → 32767（无精度丢失）
-     * @example 示例2：toInteger(BigInteger.valueOf(2147483647)) → 2147483647（边界值正常转换）
-     * @example 示例3：toInteger(BigInteger.valueOf(2147483648)) → 抛出 ArithmeticException（超出 Integer 范围）
-     * @example 示例4：toInteger(50.5f) → 抛出 ArithmeticException（存在有效小数部分）
      */
     public static Integer toInteger(Number number) throws ArithmeticException {
         if (number == null) {
@@ -529,10 +486,6 @@ public class NumberUtils {
      * @return 转换后的 Double；输入为 null 时返回 null
      * @throws ArithmeticException      若数值超出 Double 范围、有效数字超界、无法精确表示
      * @throws IllegalArgumentException 若输入为 Double/Float 类型的 NaN 或 Infinity（由 {@link #toBigDecimal(Number)} 间接触发）
-     * @example 示例1：toDouble(1000000000L) → 1000000000.0d（无精度丢失，≤2^53）
-     * @example 示例2：toDouble(BigInteger.valueOf(9007199254740991L)) → 9007199254740991.0d（无精度丢失，2^53-1）
-     * @example 示例3：toDouble(BigInteger.valueOf(9007199254740993L)) → 抛出 ArithmeticException（超出 Double 整数精确范围）
-     * @example 示例4：toDouble(new BigDecimal("0.123456789012345678")) → 抛出 ArithmeticException（有效数字超17位）
      */
     public static Double toDouble(Number number) throws ArithmeticException {
         if (number == null) {
@@ -596,10 +549,6 @@ public class NumberUtils {
      * @return 转换后的 Float；输入为 null 时返回 null
      * @throws ArithmeticException      若数值超出 Float 范围、有效数字超界、无法精确表示
      * @throws IllegalArgumentException 若输入为 Double/Float 类型的 NaN 或 Infinity（由 {@link #toBigDecimal(Number)} 间接触发）
-     * @example 示例1：toFloat((short) 32767) → 32767.0f（无精度丢失）
-     * @example 示例2：toFloat(16777215) → 16777215.0f（无精度丢失，2^24-1）
-     * @example 示例3：toFloat(16777217) → 抛出 ArithmeticException（超出 Float 整数精确范围）
-     * @example 示例4：toFloat(new BigDecimal("0.12345678")) → 抛出 ArithmeticException（有效数字超7位）
      */
     public static Float toFloat(Number number) throws ArithmeticException {
         if (number == null) {
@@ -659,10 +608,6 @@ public class NumberUtils {
      * @param number 待转换的 Number 实例（可为 null）
      * @return 转换后的 Short；输入为 null 时返回 null
      * @throws ArithmeticException 若数值超出 Short 范围、包含有效小数部分（精度丢失）
-     * @example 示例1：toShort(1000) → (short) 1000；toShort(new Byte((byte) 127)) → (short) 127（无精度丢失）
-     * @example 示例2：toShort(BigInteger.valueOf(32767)) → (short) 32767（边界值正常转换）
-     * @example 示例3：toShort(BigInteger.valueOf(32768)) → 抛出 ArithmeticException（超出 Short 范围）
-     * @example 示例4：toShort(10.5d) → 抛出 ArithmeticException（存在有效小数部分）
      */
     public static Short toShort(Number number) throws ArithmeticException {
         if (number == null) {
@@ -691,10 +636,6 @@ public class NumberUtils {
      * @param number 待转换的 Number 实例（可为 null）
      * @return 转换后的 Byte；输入为 null 时返回 null
      * @throws ArithmeticException 若数值超出 Byte 范围、包含有效小数部分（精度丢失）
-     * @example 示例1：toByte(100) → (byte) 100；toByte(BigInteger.valueOf(127)) → (byte) 127（无精度丢失）
-     * @example 示例2：toByte(BigInteger.valueOf(-128)) → (byte) -128（边界值正常转换）
-     * @example 示例3：toByte(BigInteger.valueOf(128)) → 抛出 ArithmeticException（超出 Byte 范围）
-     * @example 示例4：toByte(5.5f) → 抛出 ArithmeticException（存在有效小数部分）
      */
     public static Byte toByte(Number number) throws ArithmeticException {
         if (number == null) {
@@ -723,10 +664,6 @@ public class NumberUtils {
      * @param number 待转换的 Number 实例（不可为 null）
      * @return 转换后的 Character；输入为 null 时返回 null
      * @throws ArithmeticException 若数值超出 Character 编码范围、包含有效小数部分（精度丢失）
-     * @example 示例1：toCharacter(65) → 'A'；toCharacter(20013) → '中'（Unicode 编码对应字符）
-     * @example 示例2：toCharacter(65535) → '\uffff'（边界值正常转换）
-     * @example 示例3：toCharacter(65536) → 抛出 ArithmeticException（超出 Character 编码范围）
-     * @example 示例4：toCharacter(65.5d) → 抛出 ArithmeticException（存在有效小数部分）
      */
     public static Character toCharacter(Number number) throws ArithmeticException {
         if (number == null) {
@@ -756,9 +693,6 @@ public class NumberUtils {
      * @return false=数值为 0；true=数值非 0；null=输入为 null
      * @throws IllegalArgumentException 若数值为 Double/Float 类型的 NaN 或 Infinity
      * @see #isZero(Number) 零值判定核心依赖
-     * @example 示例1：toBoolean(0) → false；toBoolean(100) → true；toBoolean(-5.5d) → true
-     * @example 示例2：toBoolean(0.0f) → false；toBoolean(BigDecimal.ZERO) → false
-     * @example 示例3：toBoolean(null) → null；toBoolean(Double.NaN) → 抛出 IllegalArgumentException
      */
     public static Boolean toBoolean(Number number) {
         if (number == null) {

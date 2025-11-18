@@ -1,4 +1,4 @@
-package run.soeasy.framework.math;
+package run.soeasy.framework.core.match;
 
 import java.util.regex.Pattern;
 
@@ -25,7 +25,7 @@ public interface Operator extends Ordered {
 	 * 运算符去重校验（避免重复注册同符号运算符）； 3. 表达式抽象语法树（AST）的节点标识
 	 * </p>
 	 * <p>
-	 * 约束：返回值非空且不可重复，建议使用简短字符串（1-3个字符），示例："+"、"*"、"("、">="
+	 * 约束：返回值非空且不可重复，建议使用简短字符串（1-3个字符）
 	 * </p>
 	 *
 	 * @return 运算符唯一符号标识（非空字符串）
@@ -38,12 +38,9 @@ public interface Operator extends Ordered {
 	 * 核心作用是在数学表达式字符串中精准识别当前运算符，需解决多字符匹配、符号冲突、部分匹配等问题
 	 * </p>
 	 * <p>
-	 * 实现约束： 1. 基于 {@link #getSymbol()} 生成，确保匹配规则与符号标识一致性； 2. 避免部分匹配（如 "+" 需排除
-	 * "++"、"+= " 等场景，可使用负向断言）； 3. 支持多字符运算符（如 ">="、"<<" 需完整匹配）； 4.
+	 * 实现约束： 1. 基于 {@link #getSymbol()} 生成，确保匹配规则与符号标识一致性； 2. 避免部分匹配（如 &quot;+&quot; 需排除
+	 * &quot;++&quot;、&quot;+= &quot; 等场景，可使用负向断言）； 3. 支持多字符运算符（如 &quot;&gt;=&quot;、&quot;&lt;&lt;&quot; 需完整匹配）； 4.
 	 * 模式为无状态设计，保证线程安全（可复用）
-	 * </p>
-	 * <p>
-	 * 示例：符号为 "+" 时，推荐模式 {@code Pattern.compile("(?<!\\+)\\+(?!\\+)")}（匹配独立的 "+"）
 	 * </p>
 	 *
 	 * @return 运算符的正则匹配模式（非空，线程安全）
@@ -57,8 +54,8 @@ public interface Operator extends Ordered {
 	 * 优先级直接决定表达式解析时的运算执行顺序，核心规则：返回值越小，优先级越高
 	 * </p>
 	 * <p>
-	 * 推荐优先级分配（参考数学运算行业标准）： 1. 分组运算符（如 "()"）：10（最高优先级）； 2. 乘除类运算符（如 "*"、"/"、"%"）：2；
-	 * 3. 加减类运算符（如 "+"、"-"）：1； 4. 逻辑运算符（如 "&&"、"||"）：0（最低优先级）
+	 * 推荐优先级分配（参考数学运算行业标准）： 1. 分组运算符（如 &quot;()&quot;）：10（最高优先级）； 2. 乘除类运算符（如 &quot;*&quot;、&quot;/&quot;、&quot;%&quot;）：2；
+	 * 3. 加减类运算符（如 &quot;+&quot;、&quot;-&quot;）：1； 4. 逻辑运算符（如 &quot;&amp;&amp;&quot;、&quot;||&quot;）：0（最低优先级）
 	 * </p>
 	 * <p>
 	 * 可参考框架常量：{@link Ordered#HIGHEST_PRECEDENCE}（最高）、{@link Ordered#LOWEST_PRECEDENCE}（最低）
@@ -72,14 +69,14 @@ public interface Operator extends Ordered {
 	/**
 	 * 判断当前运算符是否为分组运算符
 	 * <p>
-	 * 分组运算符的核心作用是改变默认运算优先级，解析时需优先计算分组内的表达式（如括号 "()"）
+	 * 分组运算符的核心作用是改变默认运算优先级，解析时需优先计算分组内的表达式（如括号 &quot;()&quot;）
 	 * </p>
 	 * <p>
-	 * 约束：分组运算符通常需满足 {@link #getOrder()} 返回最高优先级，且 {@link #getSymbol()} 为成对符号（如 "("
-	 * 和 ")" 需分别实现）
+	 * 约束：分组运算符通常需满足 {@link #getOrder()} 返回最高优先级，且 {@link #getSymbol()} 为成对符号（如 &quot;(&quot;
+	 * 和 &quot;)&quot; 需分别实现）
 	 * </p>
 	 *
-	 * @return true - 分组运算符（如 "("、")"）；false - 普通运算符（如 "+"、"*"）
+	 * @return true - 分组运算符（如 &quot;(&quot;、&quot;)&quot;）；false - 普通运算符（如 &quot;+&quot;、&quot;*&quot;）
 	 */
 	boolean isGroup();
 }

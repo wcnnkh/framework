@@ -1,6 +1,9 @@
 package run.soeasy.framework.core.type;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +39,7 @@ public class CompositeTypeVariableResolver implements TypeVariableResolver {
 	 * 示例：
 	 * 
 	 * <pre>
-	 * // 优先级：methodResolver > classResolver > customResolver
+	 * // 优先级：methodResolver &gt; classResolver &gt; customResolver
 	 * CompositeTypeVariableResolver resolver = new CompositeTypeVariableResolver(methodResolver, classResolver,
 	 * 		customResolver);
 	 * </pre>
@@ -128,7 +131,7 @@ public class CompositeTypeVariableResolver implements TypeVariableResolver {
 	 * @param executable 目标可执行元素（支持 {@link Method} 方法和 {@link Constructor} 构造器，不可为 {@code null}）
 	 * @return 聚合了「可执行元素泛型+类泛型」解析能力的 {@link CompositeTypeVariableResolver}，非 {@code null}
 	 * @see TypeParameterTypeVariableResolver
-	 * @see ResolvableType#forType(Class)
+	 * @see ResolvableType#forType(Type)
 	 * @see CompositeTypeVariableResolver
 	 */
 	public static CompositeTypeVariableResolver forExecutable(Executable executable) {
