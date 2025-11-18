@@ -163,7 +163,7 @@ public class FileUtils {
 	 * @param directory 目标目录，不可为null且必须是目录
 	 * @param maxDepth  最大迭代深度：-1表示不限制（递归所有子目录），0表示不递归（仅当前目录），≥1表示指定深度
 	 * @return 包含迭代范围内所有文件的元素集合（仅文件，不包含目录）
-	 * @throws IllegalArgumentException 当directory不是目录或maxDepth < -1时抛出
+	 * @throws IllegalArgumentException 当directory不是目录或maxDepth &lt; -1时抛出
 	 */
 	public static Elements<File> listFiles(@NonNull File directory, int maxDepth) {
 		Assert.isTrue(directory.isDirectory(), () -> directory + " is not a directory");
@@ -298,12 +298,6 @@ public class FileUtils {
 	 * @throws ZipException 当ZIP文件格式错误、损坏或不支持的压缩算法时抛出
 	 * @throws IOException  当目标目录无写入权限、父目录创建失败、路径校验失败或IO操作失败时抛出
 	 * @throws IllegalArgumentException 当bufferSize ≤ 0时抛出
-	 * @example
-	 * <pre>
-	 * try (ZipFile zipFile = new ZipFile("source.zip")) {
-	 *     FileUtils.unZip(zipFile, 8192, new File("targetDir"));
-	 * }
-	 * </pre>
 	 */
 	public static void unZip(@NonNull ZipFile zip, int bufferSize, @NonNull File target)
 			throws ZipException, IOException {
@@ -353,14 +347,6 @@ public class FileUtils {
 	 * @param target  ZIP输出流（需调用者手动关闭，建议使用try-with-resources），不可为null
 	 * @param filter  过滤规则：返回true表示需要压缩，false表示跳过，不可为null
 	 * @throws IOException 当源文件/目录无读取权限、ZIP写入失败或IO操作失败时抛出
-	 * @example
-	 * <pre>
-	 * // 压缩目录，跳过隐藏文件（以"."开头的文件/目录）
-	 * try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("target.zip"))) {
-	 *     Path sourcePath = Paths.get("sourceDir");
-	 *     FileUtils.zip(sourcePath, zos, path -> !path.getFileName().toString().startsWith("."));
-	 * }
-	 * </pre>
 	 */
 	public static void zip(@NonNull Path source, @NonNull ZipOutputStream target,
 			@NonNull Predicate<? super Path> filter) throws IOException {
@@ -410,7 +396,6 @@ public class FileUtils {
 	 *
 	 * @param files 待删除的文件/空目录集合，支持null元素（自动过滤）
 	 * @throws IOException 当文件/目录不存在、无删除权限、为非空目录或IO操作失败时抛出
-	 * @note 仅支持删除文件或空目录，非空目录需先调用{@link #listAllFiles(File)}获取所有文件删除后，再删除目录
 	 */
 	public static void delete(Collection<? extends File> files) throws IOException {
 		if (CollectionUtils.isEmpty(files)) {
@@ -431,7 +416,6 @@ public class FileUtils {
 	 *
 	 * @param files 待删除的文件/空目录集合，支持null元素（自动过滤）
 	 * @return 成功删除的文件/空目录数量（仅文件存在且删除成功时计数）
-	 * @note 仅支持删除文件或空目录，非空目录会自动跳过（不会抛出异常）
 	 */
 	public static int deleteQuietly(Collection<? extends File> files) {
 		if (CollectionUtils.isEmpty(files)) {
