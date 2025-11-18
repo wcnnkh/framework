@@ -48,7 +48,7 @@ class ChainThrowingSupplier<S, V, E extends Throwable, T extends Throwable, W ex
 	 */
 	@Override
 	public V get() throws T {
-		return flatMap(ThrowingFunction.identity());
+		return flatMap((e) -> e);
 	}
 
 	@SuppressWarnings("unchecked")
