@@ -34,24 +34,6 @@ class ChainThrowingOptional<S, V, E extends Throwable, T extends Throwable, W ex
 	}
 
 	/**
-	 * 对当前值执行扁平映射转换，直接返回映射函数的结果（可能为null）。
-	 * 若当前值为null，映射函数不会被执行，直接返回null；否则将当前值传入映射函数并返回其结果。
-	 *
-	 * @param <R>    扁平映射后的结果类型
-	 * @param <X>    映射函数可能抛出的异常类型
-	 * @param mapper 扁平映射函数，接收当前目标值（V类型）并返回新结果（R类型），不可为null
-	 * @return 映射后的结果（R类型），若当前值为null则返回null
-	 * @throws T 原始操作或异常转换可能抛出的目标异常
-	 * @throws X 映射函数执行过程中可能抛出的异常
-	 */
-	@Override
-	public <R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super V, ? extends R, ? extends X> mapper)
-			throws T, X {
-		V target = super.get();
-		return target != null ? mapper.apply(target) : null;
-	}
-
-	/**
 	 * 添加额外的映射转换步骤，返回包含组合转换逻辑的新ThrowingOptional实例。
 	 * 新实例会先执行当前实例的映射函数，再应用新的映射函数，保持原有的源供应者、关闭操作和异常转换逻辑。
 	 *

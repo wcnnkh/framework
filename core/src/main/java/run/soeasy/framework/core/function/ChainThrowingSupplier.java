@@ -46,9 +46,14 @@ class ChainThrowingSupplier<S, V, E extends Throwable, T extends Throwable, W ex
 	 * @return 映射转换后的目标值（V类型）
 	 * @throws T 可能抛出的目标异常（经{@code throwingMapper}转换后）
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public V get() throws T {
+		return flatMap(ThrowingFunction.identity());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <R, X extends Throwable> R flatMap(@NonNull ThrowingFunction<? super V, ? extends R, ? extends X> mapper)
+			throws T, X {
 		S value;
 		try {
 			try {
@@ -56,7 +61,8 @@ class ChainThrowingSupplier<S, V, E extends Throwable, T extends Throwable, W ex
 			} catch (Throwable e) {
 				throw throwingMapper.apply((E) e);
 			}
-			return mapper.apply(value);
+			V source = this.mapper.apply(value);
+			return source == null ? null : mapper.apply(source);
 		} finally {
 			closeable.run();
 		}
