@@ -40,7 +40,7 @@ public class BeanUtils {
     /**
      * 属性复制（显式指定源/目标类）：适用于需精确控制源/目标类型解析的场景（如多态、接口适配）
      * <p>
-     * 核心逻辑：将属性复制请求委托给 {@link BeanMapper#transform(Object, TypeDescriptor, Object, TypeDescriptor, java.util.List)}，
+     * 核心逻辑：将属性复制请求委托给 {@link BeanMapper}，
      * 传入指定的源类/目标类、属性过滤器，具体复制策略（如空值处理、属性匹配规则）由 {@link BeanMapper} 实现类定义。
      *
      * @param <S>         源对象泛型类型
