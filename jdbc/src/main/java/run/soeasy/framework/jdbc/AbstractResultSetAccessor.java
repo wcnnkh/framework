@@ -47,7 +47,7 @@ public abstract class AbstractResultSetAccessor implements PropertyAccessor {
      * @return ResultSet的元数据（包含列信息、类型等）
      * @throws JdbcException 当获取元数据失败时抛出
      */
-    public synchronized ResultSetMetaData getResultSetMetaData() {
+    public synchronized ResultSetMetaData getResultSetMetaData() throws JdbcException{
         if (resultSetMetaData == null) {
             try {
                 resultSetMetaData = resultSet.getMetaData();

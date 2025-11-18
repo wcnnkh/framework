@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.math.NumberValue;
 
 /**
  * 组合版本实现，用于将多个{@link Version}对象组合为一个复合版本。

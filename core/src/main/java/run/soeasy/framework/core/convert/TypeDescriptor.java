@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -485,11 +484,8 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @param executable 可执行方法（构造方法或普通方法）
 	 * @return 返回值类型描述符
 	 */
-	public static TypeDescriptor forMethodReturnType(@NonNull Executable executable) {
-		if (executable instanceof Method) {
-			return forType(((Method) executable).getGenericReturnType(), executable);
-		}
-		return forType(executable.getDeclaringClass(), executable);
+	public static TypeDescriptor forExecutableReturnType(@NonNull Executable executable) {
+		return forType(ResolvableType.forExecutableReturnType(executable), executable);
 	}
 
 	/**
@@ -498,8 +494,8 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @param field 字段对象
 	 * @return 字段类型描述符
 	 */
-	public static TypeDescriptor forFieldType(@NonNull Field field) {
-		return forType(field.getGenericType(), field);
+	public static TypeDescriptor forField(@NonNull Field field) {
+		return forType(ResolvableType.forField(field), field);
 	}
 
 	/**
@@ -509,7 +505,7 @@ public class TypeDescriptor extends MergedAnnotatedElement {
 	 * @return 参数类型描述符
 	 */
 	public static TypeDescriptor forParameter(@NonNull Parameter parameter) {
-		return forType(parameter.getParameterizedType(), parameter);
+		return forType(ResolvableType.forParameter(parameter), parameter);
 	}
 
 	/**

@@ -1,0 +1,82 @@
+package run.soeasy.framework.core.match;
+
+import java.util.regex.Pattern;
+
+import run.soeasy.framework.core.comparator.Ordered;
+
+/**
+ * 通用数学运算框架的运算符顶层接口
+ * <p>
+ * 定义所有运算符的核心特性契约，包含符号标识、匹配规则、优先级、分组属性四大核心能力， 所有具体运算符（如算术运算符、分组运算符、逻辑运算符等）需实现此接口
+ * </p>
+ * <p>
+ * 设计原则：遵循接口隔离原则，仅暴露运算符必需的抽象能力，不包含具体运算逻辑， 支持固定运算符（枚举实现）和自定义运算符（普通类实现）的灵活扩展
+ * </p>
+ *
+ * @author soeasy.run
+ * @see Ordered 框架排序规范接口，定义优先级基础能力
+ */
+public interface Operator extends Ordered {
+
+	/**
+	 * 获取运算符的唯一符号标识
+	 * <p>
+	 * 符号需与表达式中实际使用的字符完全一致，具备直观性和唯一性，用于： 1. 日志打印、用户交互展示（如表达式解析错误提示）； 2.
+	 * 运算符去重校验（避免重复注册同符号运算符）； 3. 表达式抽象语法树（AST）的节点标识
+	 * </p>
+	 * <p>
+	 * 约束：返回值非空且不可重复，建议使用简短字符串（1-3个字符）
+	 * </p>
+	 *
+	 * @return 运算符唯一符号标识（非空字符串）
+	 */
+	String getSymbol();
+
+	/**
+	 * 获取用于匹配当前运算符的正则模式
+	 * <p>
+	 * 核心作用是在数学表达式字符串中精准识别当前运算符，需解决多字符匹配、符号冲突、部分匹配等问题
+	 * </p>
+	 * <p>
+	 * 实现约束： 1. 基于 {@link #getSymbol()} 生成，确保匹配规则与符号标识一致性； 2. 避免部分匹配（如 &quot;+&quot; 需排除
+	 * &quot;++&quot;、&quot;+= &quot; 等场景，可使用负向断言）； 3. 支持多字符运算符（如 &quot;&gt;=&quot;、&quot;&lt;&lt;&quot; 需完整匹配）； 4.
+	 * 模式为无状态设计，保证线程安全（可复用）
+	 * </p>
+	 *
+	 * @return 运算符的正则匹配模式（非空，线程安全）
+	 * @see Pattern Java 正则模式，用于创建匹配器（Matcher）
+	 */
+	Pattern getPattern();
+
+	/**
+	 * 定义运算优先级，遵循框架 {@link Ordered} 接口规范
+	 * <p>
+	 * 优先级直接决定表达式解析时的运算执行顺序，核心规则：返回值越小，优先级越高
+	 * </p>
+	 * <p>
+	 * 推荐优先级分配（参考数学运算行业标准）： 1. 分组运算符（如 &quot;()&quot;）：10（最高优先级）； 2. 乘除类运算符（如 &quot;*&quot;、&quot;/&quot;、&quot;%&quot;）：2；
+	 * 3. 加减类运算符（如 &quot;+&quot;、&quot;-&quot;）：1； 4. 逻辑运算符（如 &quot;&amp;&amp;&quot;、&quot;||&quot;）：0（最低优先级）
+	 * </p>
+	 * <p>
+	 * 可参考框架常量：{@link Ordered#HIGHEST_PRECEDENCE}（最高）、{@link Ordered#LOWEST_PRECEDENCE}（最低）
+	 * </p>
+	 *
+	 * @return 优先级顺序值（非负整数，取值范围建议 0-10，值越小优先级越高）
+	 */
+	@Override
+	int getOrder();
+
+	/**
+	 * 判断当前运算符是否为分组运算符
+	 * <p>
+	 * 分组运算符的核心作用是改变默认运算优先级，解析时需优先计算分组内的表达式（如括号 &quot;()&quot;）
+	 * </p>
+	 * <p>
+	 * 约束：分组运算符通常需满足 {@link #getOrder()} 返回最高优先级，且 {@link #getSymbol()} 为成对符号（如 &quot;(&quot;
+	 * 和 &quot;)&quot; 需分别实现）
+	 * </p>
+	 *
+	 * @return true - 分组运算符（如 &quot;(&quot;、&quot;)&quot;）；false - 普通运算符（如 &quot;+&quot;、&quot;*&quot;）
+	 */
+	boolean isGroup();
+}

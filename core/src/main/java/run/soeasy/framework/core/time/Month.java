@@ -7,7 +7,7 @@ import lombok.NonNull;
 /**
  * 月份时间单位实现，提供月份级的时间处理能力。
  * <p>
- * 该类继承自{@link TimeUnit}，定义了时间单位为月份，
+ * 该类继承自{@link TimeUnitRange}，定义了时间单位为月份，
  * 下一级时间单位为天（{@link Day}），适用于需要按月份处理时间的场景。
  *
  * <p><b>核心特性：</b>
@@ -25,11 +25,11 @@ import lombok.NonNull;
  * </ul>
  *
  * @author soeasy.run
- * @see TimeUnit
+ * @see TimeUnitRange
  * @see Day
  * @see Calendar#MONTH
  */
-public class Month extends TimeUnit {
+public class Month extends TimeUnitRange {
     
     /** 全局默认的月份时间单位实例，建议优先使用该实例以避免重复创建 */
     public static final Month DEFAULT = new Month();

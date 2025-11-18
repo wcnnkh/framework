@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.domain.Wrapper;
-import run.soeasy.framework.sequences.UUIDSequence;
 
 /**
  * 二进制传输器包装器接口，提供重复传输功能的实现
@@ -60,9 +60,9 @@ public interface BinaryTransferrerWrapper<W extends BinaryTransferrer> extends B
 		File[] files = new File[2];
 		try {
 			// 创建两个临时文件
-			files[0] = File.createTempFile(UUIDSequence.random().next(),
+			files[0] = File.createTempFile(RandomUtils.uuid(),
 					BinaryTransferrerWrapper.class.getSimpleName());
-			files[1] = File.createTempFile(UUIDSequence.random().next(),
+			files[1] = File.createTempFile(RandomUtils.uuid(),
 					BinaryTransferrerWrapper.class.getSimpleName());
 			// 初始传输：从输入流到第一个文件
 			getSource().transferTo(source, bufferSize, Resource.forFile(files[0]));

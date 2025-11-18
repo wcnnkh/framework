@@ -271,4 +271,9 @@ public interface ResolvableTypeWrapper<W extends ResolvableType> extends Resolva
     default boolean isAssignableFrom(ResolvableType other) {
         return getSource().isAssignableFrom(other);
     }
+    
+    @Override
+    default int compareTo(ResolvableType o) {
+    	return getSource().compareTo(o);
+    }
 }

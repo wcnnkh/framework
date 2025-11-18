@@ -23,7 +23,7 @@ public class TimeUnitTest {
 		test(Millisecond.DEFAULT, time);
 	}
 
-	private void test(TimeUnit timeUnit, Date time) {
+	private void test(TimeUnitRange timeUnit, Date time) {
 		assertTrue(timeUnit.minValue(time).getTime() == timeUnit.decode(timeUnit.encode(time)).getTime());
 	}
 }

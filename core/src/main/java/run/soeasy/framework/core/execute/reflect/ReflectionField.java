@@ -161,7 +161,7 @@ public class ReflectionField implements Property, Serializable {
                 if (typeDescriptor == null) {
                     Field field = getField();
                     typeDescriptor = field == null ? TypeDescriptor.valueOf(Object.class)
-                            : TypeDescriptor.forFieldType(getField());
+                            : TypeDescriptor.forField(getField());
                 }
             }
         }

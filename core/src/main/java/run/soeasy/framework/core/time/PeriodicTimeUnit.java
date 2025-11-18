@@ -8,7 +8,7 @@ import lombok.NonNull;
 /**
  * 周期性时间单位处理器，支持基于固定毫秒周期的时间离散化和距离计算。
  * <p>
- * 该类继承自{@link TimeUnit}，通过指定周期毫秒数（millseconds）定义时间单位，
+ * 该类继承自{@link TimeUnitRange}，通过指定周期毫秒数（millseconds）定义时间单位，
  * 适用于需要处理固定时间间隔（如秒、分钟、小时）的场景，提供了统一的时间距离计算和范围获取能力。
  *
  * <p><b>核心特性：</b>
@@ -20,11 +20,11 @@ import lombok.NonNull;
  * </ul>
  *
  * @author soeasy.run
- * @see TimeUnit
+ * @see TimeUnitRange
  * @see TimeDiscrete
  */
 @Getter
-public class PeriodicTimeUnit extends TimeUnit {
+public class PeriodicTimeUnit extends TimeUnitRange {
     
     /** 时间单位的周期毫秒数，如1000表示1秒 */
     private final long millseconds;
@@ -39,7 +39,7 @@ public class PeriodicTimeUnit extends TimeUnit {
      * @throws NullPointerException 若pattern为null
      * @throws IllegalArgumentException 若millseconds≤0
      */
-    public PeriodicTimeUnit(@NonNull String pattern, int calendarField, TimeUnit nextTimeUnit, long millseconds) {
+    public PeriodicTimeUnit(@NonNull String pattern, int calendarField, TimeUnitRange nextTimeUnit, long millseconds) {
         super(pattern, calendarField, nextTimeUnit);
         if (millseconds <= 0) {
             throw new IllegalArgumentException("Milliseconds must be greater than 0");

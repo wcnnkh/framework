@@ -89,7 +89,7 @@ public interface AnnotationProperties<A extends Annotation> extends TypedPropert
         if (hasKey(method.getName())) {
             TypedValue typedValue = get(method.getName());
             return typedValue == null ? null
-                    : typedValue.map(TypeDescriptor.forMethodReturnType(method), Converter.assignable()).get();
+                    : typedValue.map(TypeDescriptor.forExecutableReturnType(method), Converter.assignable()).get();
         }
         throw new IllegalArgumentException(
                 String.format("Method [%s] is unsupported for synthesized annotation type [%s]", method, getType()));

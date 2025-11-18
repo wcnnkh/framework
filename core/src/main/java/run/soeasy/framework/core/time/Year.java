@@ -6,7 +6,7 @@ import lombok.NonNull;
 /**
  * 年时间单位实现，提供年份级的时间处理能力。
  * <p>
- * 该类继承自{@link TimeUnit}，定义了时间单位为年，
+ * 该类继承自{@link TimeUnitRange}，定义了时间单位为年，
  * 下一级时间单位为月（{@link Month}），适用于需要按年份处理时间的场景。
  *
  * <p><b>核心特性：</b>
@@ -25,11 +25,11 @@ import lombok.NonNull;
  * </ol>
  *
  * @author soeasy.run
- * @see TimeUnit
+ * @see TimeUnitRange
  * @see Month
  * @see Calendar#YEAR
  */
-public class Year extends TimeUnit {
+public class Year extends TimeUnitRange {
     
     /** 全局默认的年时间单位实例，建议优先使用该实例以避免重复创建 */
     public static final Year DEFAULT = new Year();

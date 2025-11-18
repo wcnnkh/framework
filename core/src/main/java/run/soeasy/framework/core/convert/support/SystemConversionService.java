@@ -6,6 +6,8 @@ import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.number.NumberToEnumConverter;
+import run.soeasy.framework.core.convert.number.NumberToNumberConverter;
+import run.soeasy.framework.core.convert.number.NumberToBooleanConverter;
 import run.soeasy.framework.core.convert.strings.StringToBigDecimalConverter;
 import run.soeasy.framework.core.convert.strings.StringToBigIntegerConverter;
 import run.soeasy.framework.core.convert.strings.StringToBooleanConverter;
@@ -48,6 +50,8 @@ public class SystemConversionService extends ConversionService {
 	}
 
 	public SystemConversionService() {
+		register(ValueConverter.DEFAULT);
+
 		register(StringToBigDecimalConverter.DEFAULT);
 		register(StringToBigIntegerConverter.DEFAULT);
 		register(StringToBooleanConverter.DEFAULT);
@@ -65,8 +69,9 @@ public class SystemConversionService extends ConversionService {
 		register(StringToShortConverter.DEFAULT);
 		register(StringToTimeZoneConverter.DEFAULT);
 		register(NumberToEnumConverter.DEFAULT);
-		register(ValueConverter.DEFAULT);
-
+		register(NumberToBooleanConverter.INSTANCE);
+		register(NumberToNumberConverter.INSTANCE);
+		
 		getConverters().register(new ObjectToCollectionConverter());
 		getConverters().register(new ArrayToArrayConverter());
 		getConverters().register(new ArrayToCollectionConverter());
