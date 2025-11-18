@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import lombok.NonNull;
-import run.soeasy.framework.sequences.UUIDSequence;
+import run.soeasy.framework.core.RandomUtils;
 
 /**
  * 链式二进制传输器接口，继承自{@link BinaryTransferrer}，
@@ -20,7 +20,6 @@ import run.soeasy.framework.sequences.UUIDSequence;
  * 
  * @author soeasy.run
  * @see BinaryTransferrer
- * @see UUIDSequence
  */
 public interface ChainBinaryTransferrer extends BinaryTransferrer {
 
@@ -57,7 +56,7 @@ public interface ChainBinaryTransferrer extends BinaryTransferrer {
     @Override
     default <E extends Throwable> void transferTo(@NonNull InputStream source, int bufferSize,
             @NonNull BufferConsumer<? super byte[], ? extends E> target) throws IOException, E {
-        File tempFile = File.createTempFile(UUIDSequence.random().next(), ChainBinaryTransferrer.class.getSimpleName());
+        File tempFile = File.createTempFile(RandomUtils.uuid(), ChainBinaryTransferrer.class.getSimpleName());
         try {
             getFromStreamTransferrer().transferTo(source, bufferSize, Resource.forFile(tempFile));
             getToStreamTransferrer().transferTo(Resource.forFile(tempFile), bufferSize, target);

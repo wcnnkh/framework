@@ -4,11 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import run.soeasy.framework.aop.jdk.JdkProxyFactory;
+import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.execute.Execution;
-import run.soeasy.framework.sequences.UUIDSequence;
 
 /**
  * AOP核心组件，继承自{@link JdkProxyFactory}，提供基于JDK动态代理的AOP功能实现，
@@ -70,7 +70,7 @@ public class Aop extends JdkProxyFactory {
      * 构造AOP实例，生成唯一标识ID
      */
     public Aop() {
-        this.id = UUIDSequence.random().next();
+        this.id = RandomUtils.uuid();
     }
 
     /**

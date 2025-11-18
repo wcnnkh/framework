@@ -1,5 +1,6 @@
 package run.soeasy.framework.core;
 
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -113,9 +114,28 @@ public class RandomUtils {
      * @return 包含随机元素的 Stream<T>，线程安全且可无限流（需手动限制长度）
      * @throws NullPointerException 若 array 为 null，由 {@link NonNull} 注解自动触发
      */
-    public static <T> Stream<T> objects(@NonNull T[] array) {
+    @SafeVarargs
+	public static <T> Stream<T> objects(@NonNull T... array) {
         return ThreadLocalRandom.current()
                                 .ints(0, array.length) // 生成 [0, array.length()) 区间的随机索引
                                 .mapToObj((e) -> array[e]); // 索引映射为数组元素
+    }
+
+    /**
+     * 生成去除横线分隔符的32位随机UUID字符串（UUID版本4）。
+     *
+     * <p>该方法基于 {@link UUID#randomUUID()} 生成标准的36位UUID（格式：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx），
+     * 并移除其中的4个横线（'-'）分隔符，最终返回长度为32的纯字母数字组合字符串，保持UUID的唯一性特性。
+     *
+     * <p>特性说明：
+     * 1. 唯一性：依赖UUID版本4的随机算法，在分布式系统中具备极高的唯一性（碰撞概率可忽略）；
+     * 2. 格式：返回字符串由小写字母（a-f）和数字（0-9）组成，无任何分隔符；
+     * 3. 线程安全：{@link UUID#randomUUID()} 是线程安全方法，整个方法无状态，支持多线程并发调用。
+     *
+     * @return 长度为32的无分隔符UUID字符串，示例："a1b2c3d41234567890abcdef01234567"
+     * @see UUID#randomUUID() 底层依赖的标准UUID生成方法
+     */
+    public static String uuid() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

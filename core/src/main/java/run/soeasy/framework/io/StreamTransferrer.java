@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import lombok.NonNull;
-import run.soeasy.framework.sequences.UUIDSequence;
+import run.soeasy.framework.core.RandomUtils;
 
 /**
  * 流传输器接口，继承自{@link BinaryTransferrer}，采用函数式接口设计，
@@ -52,7 +52,7 @@ public interface StreamTransferrer extends BinaryTransferrer {
     @Override
     default <E extends Throwable> void transferTo(@NonNull InputStream source, int bufferSize,
             @NonNull BufferConsumer<? super byte[], ? extends E> target) throws IOException, E {
-        File tempFile = File.createTempFile(UUIDSequence.random().next(), StreamTransferrer.class.getSimpleName());
+        File tempFile = File.createTempFile(RandomUtils.uuid(), StreamTransferrer.class.getSimpleName());
         try {
             transferTo(source, bufferSize, Resource.forFile(tempFile));
             FileUtils.copy(tempFile, bufferSize, target);
