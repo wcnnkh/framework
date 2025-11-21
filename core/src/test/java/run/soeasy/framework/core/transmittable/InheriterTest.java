@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
+import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.transmittable.registry.AnyInheriterRegistry;
-import run.soeasy.framework.sequences.UUIDSequence;
 
 public class InheriterTest {
 	private ThreadLocal<Object> threadLocal = new ThreadLocal<>();
@@ -24,17 +24,17 @@ public class InheriterTest {
 			executor.execute(() -> {
 				System.out.println("1" + threadLocal.get());
 				assertTrue(threadLocal.get() == null);
-				threadLocal.set(UUIDSequence.random().next());
+				threadLocal.set(RandomUtils.uuid());
 			});
 		}
 
-		String id = UUIDSequence.random().next();
+		String id = RandomUtils.uuid();
 		threadLocal.set(id);
 		for (int i = 0; i < 10; i++) {
 			executor.execute(() -> {
 				System.out.println("2:" + threadLocal.get());
 				assertEquals(id, threadLocal.get());
-				threadLocal.set(UUIDSequence.random().next());
+				threadLocal.set(RandomUtils.uuid());
 			});
 		}
 	}

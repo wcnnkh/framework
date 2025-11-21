@@ -15,10 +15,9 @@ import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.format.Base64;
 import run.soeasy.framework.codec.format.CharsetCodec;
 import run.soeasy.framework.core.RandomUtils;
-import run.soeasy.framework.sequences.UUIDSequence;
 
 public class RSATest {
-	public static String content = UUIDSequence.random().next()
+	public static String content = RandomUtils.uuid()
 			+ new String(RandomUtils.random("abcd", 1024)) + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 

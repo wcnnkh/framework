@@ -7,16 +7,16 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.ToString;
+import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.transform.property.Cloner;
-import run.soeasy.framework.sequences.UUIDSequence;
 import run.soeasy.framework.serializer.SerializerException;
 
 public class ReflectionClonerTest {
 	@Test
 	public void list() throws ClassNotFoundException, SerializerException {
 		TestList bean = new TestList();
-		bean.add(UUIDSequence.random().next());
-		bean.setV(UUIDSequence.random().next());
+		bean.add(RandomUtils.uuid());
+		bean.setV(RandomUtils.uuid());
 		System.out.println(bean);
 		TestList clone = Cloner.clone(bean, false);
 		System.out.println(clone);
@@ -26,8 +26,8 @@ public class ReflectionClonerTest {
 	@Test
 	public void map() {
 		TestMap bean = new TestMap();
-		bean.put(UUIDSequence.random().next(), UUIDSequence.random().next());
-		bean.setV(UUIDSequence.random().next());
+		bean.put(RandomUtils.uuid(), RandomUtils.uuid());
+		bean.setV(RandomUtils.uuid());
 		System.out.println(bean);
 		TestMap clone = Cloner.clone(bean, false);
 		System.out.println(clone);
