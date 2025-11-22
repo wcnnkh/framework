@@ -1,86 +1,31 @@
 package run.soeasy.framework.sequences;
 
-import lombok.NonNull;
+import run.soeasy.framework.core.domain.Range;
 
 /**
- * 字符串序列生成器接口，扩展自{@link Sequence}并标记为函数式接口，
- * 提供字符串序列生成功能，支持动态指定长度和链式调用，适用于ID生成、序列号生成等场景。
- * 
- * <p><b>核心特性：</b>
- * <ul>
- *   <li>函数式设计：可作为lambda表达式或方法引用的目标类型</li>
- *   <li>长度控制：通过{@link #next(int)}指定生成字符串长度，{@link #getLength()}获取默认长度</li>
- *   <li>链式调用：通过{@link #length(int)}创建固定长度的新序列生成器</li>
- *   <li>默认实现：{@link #next()}方法使用默认长度生成字符串</li>
- * </ul>
- * 
- * <p><b>使用场景：</b>
- * <ul>
- *   <li>随机ID生成：生成指定长度的随机字符串（如"a3x5"）</li>
- *   <li>有序序列号：生成递增的字符串序列（如"ORD001", "ORD002"）</li>
- *   <li>安全令牌：生成固定长度的加密令牌</li>
- *   <li>业务编号：生成包含业务规则的字符串编号（如日期+流水号）</li>
- * </ul>
- * 
- * @author soeasy.run
+ * 字符串序列生成器接口。
+ * <p>
+ * 此接口继承自通用的 {@link Sequence} 接口，专门用于生成字符串类型的序列值。
+ * 它在通用序列接口的基础上，增加了一个重要的约定：所有生成的字符串都必须符合
+ * 由 {@link #getLengthRange()} 方法指定的长度范围。
+ *
+ * @author  soeasy.run
+ * @see     Sequence
+ * @see     Range
  */
-@FunctionalInterface
 public interface StringSequence extends Sequence<String> {
-    /**
-     * 获取默认字符串长度（默认返回0表示未知长度）。
-     * <p>
-     * 实现类可覆盖此方法返回默认长度：
-     * <ul>
-     *   <li>返回0：表示长度由{@link #next()}的调用方决定</li>
-     *   <li>返回正数：表示{@link #next()}使用该长度生成字符串</li>
-     * </ul>
-     * 
-     * @return 字符串长度，0表示未知
-     */
-    default int getLength() {
-        return 0;
-    }
 
     /**
-     * 创建固定长度的字符串序列生成器（装饰器模式）。
+     * 获取此序列生成器所生成字符串的长度范围。
      * <p>
-     * 返回一个新的{@link StringSequence}实例，其{@link #next()}方法
-     * 将始终使用指定长度生成字符串，等价于调用{@code next(length)}。
-     * 
-     * @param length 目标字符串长度（≥0）
-     * @return 新的固定长度序列生成器，不可为null
-     */
-    default StringSequence length(int length) {
-        return new SpecifiedLengthStringSequence<>(this, length);
-    }
-
-    /**
-     * 获取下一个字符串序列值（默认实现）。
+     * 该方法返回一个 {@link Range} 对象，用于定义所有生成的字符串必须满足的长度约束。
+     * 例如，如果返回的范围是 [5, 10]，则生成的每一个字符串的长度都必须大于等于5且小于等于10。
      * <p>
-     * 调用{@link #next(int)}并使用{@link #getLength()}的返回值，
-     * 若{@link #getLength()}=0则由实现类决定长度。
-     * 
-     * @return 下一个字符串值，不可为null
-     * @throws UnsupportedOperationException 当无法生成有效字符串时抛出
+     * 这个约束是强制性的，任何实现此接口的类都必须确保其生成的字符串长度符合该范围。
+     * 范围的上下界可以是闭区间（包含）或开区间（不包含），具体由 {@link Range} 对象决定。
+     * 如果返回 {@link Range#unbounded()}，则表示对字符串长度没有任何限制（这不太常见）。
+     *
+     * @return 一个 {@link Range} 对象，指定了生成字符串的长度范围，该范围的上下界均为整数。
      */
-    @Override
-    default @NonNull String next() throws UnsupportedOperationException {
-        return next(getLength());
-    }
-
-    /**
-     * 获取指定长度的字符串序列值（核心方法）。
-     * <p>
-     * 实现类应根据长度生成符合规则的字符串，常见实现包括：
-     * <ul>
-     *   <li>数字序列："0001"（length=4）</li>
-     *   <li>字母数字混合："aB3c"（length=4）</li>
-     *   <li>时间戳序列："20231101"（length=8）</li>
-     * </ul>
-     * 
-     * @param length 目标字符串长度（≥0）
-     * @return 生成的字符串值，长度必须等于参数length，不可为null
-     * @throws UnsupportedOperationException 当length&lt;0或无法生成有效字符串时抛出
-     */
-    String next(int length) throws UnsupportedOperationException;
+    Range<Integer> getLengthRange();
 }
