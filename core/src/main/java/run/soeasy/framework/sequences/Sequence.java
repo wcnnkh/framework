@@ -25,7 +25,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * <li><b>组合优于继承</b>：通过函数式转换和装饰器模式实现功能扩展。</li>
  * <li><b>无缝集成</b>：继承自{@link Iterator}，使其能自然融入Java集合框架。</li>
  * </ul>
- * </p>
  *
  * <p>
  * <strong>核心功能与API概览：</strong>
@@ -38,7 +37,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * <li><b>快照创建</b>：{@link #snapshot(long)}</li>
  * <li><b>适配器</b>：{@link #unknownSize(Iterator)}</li>
  * </ol>
- * </p>
  *
  * <p>
  * <strong>实现者指南：</strong>
@@ -49,7 +47,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
  * <li><b>线程安全</b>：如果序列可能被多个线程并发访问，实现者必须确保{@link #next()}方法的线程安全性，或在文档中明确说明其非线程安全特性。</li>
  * <li><b>空值禁止</b>：{@link #next()}方法绝对不能返回{@code null}。</li>
  * </ul>
- * </p>
  *
  * <p>
  * <strong>典型应用场景：</strong>
@@ -73,13 +70,11 @@ public interface Sequence<T> extends Iterator<T> {
 	/**
 	 * <p>
 	 * 一个静态工厂方法，用于将任意{@link Iterator}适配为{@code Sequence}。
-	 * </p>
 	 * <p>
 	 * 这是一个非常实用的适配器，可以将现有的迭代器（例如来自集合、流或其他数据源）无缝桥接到
 	 * {@code Sequence}框架中，从而利用{@code Sequence}提供的丰富功能（如{@link #map},
 	 * {@link #withPrefetch}等）。
 	 * 生成的{@code Sequence}是有限的，其{@link #hasNext()}方法会委托给原始迭代器。
-	 * </p>
 	 *
 	 * @param <E>      迭代器元素的类型
 	 * @param iterator 要被适配的迭代器，不能为{@code null}
@@ -150,11 +145,9 @@ public interface Sequence<T> extends Iterator<T> {
 	/**
 	 * <p>
 	 * 返回一个被截断的序列，其最大元素数量不超过指定的{@code maxSize}。
-	 * </p>
 	 * <p>
 	 * 这是一种便捷的方式来创建一个有限的序列。它对于处理无限序列或限制从大型序列中获取的元素数量非常有用。
 	 * 新序列的{@link #hasNext()}方法会在返回了{@code maxSize}个元素后返回{@code false}。
-	 * </p>
 	 *
 	 * @param maxSize 新序列所能包含的最大元素数量
 	 * @return 一个包含当前序列前{@code maxSize}个元素的新{@code Sequence}
@@ -170,11 +163,9 @@ public interface Sequence<T> extends Iterator<T> {
 	 * <p>
 	 * 此方法会从当前序列中获取最多{@code maxSize}个元素，将它们存入一个线程安全的队列中，
 	 * 并返回一个基于此队列的新{@code Sequence}。这个新序列是原始序列的一个独立副本。
-	 * </p>
 	 * <p>
 	 * 与{@link #withPrefetch(long)}不同，{@code snapshot}是一个一次性操作，它会立即消耗原始序列中的元素。
 	 * 而{@code withPrefetch}是一个装饰器，它会在后台动态、按需地预取元素。
-	 * </p>
 	 *
 	 * @param maxSize 要获取的快照元素数量
 	 * @return 一个包含快照元素的新{@code Sequence}
@@ -191,11 +182,9 @@ public interface Sequence<T> extends Iterator<T> {
 	 * <p>
 	 * 这是一个强大的性能优化工具。通过批量预取并缓存一定数量的元素，可以显著减少对底层序列（特别是那些
 	 * 获取成本高昂的序列，如数据库或网络调用）的频繁访问，从而在高并发场景下极大地提升吞吐量和响应速度。
-	 * </p>
 	 * <p>
 	 * 与{@link #snapshot(long)}不同，{@code withPrefetch}是一个装饰器，它不会立即消耗原始序列。
 	 * 它会在内部维护一个缓存，只有当缓存耗尽时，才会从原始序列中预取下一批元素。
-	 * </p>
 	 *
 	 * @param batchSize 每次从当前序列预取的元素数量，必须大于0。
 	 * @return 一个新的、带有预取功能的装饰器{@link Sequence}。
@@ -212,10 +201,8 @@ public interface Sequence<T> extends Iterator<T> {
 	 * 通过一个映射函数将当前序列的元素转换为另一种类型，返回一个新的序列。
 	 * <p>
 	 * 这是一种函数式转换，新序列的元素是通过对原序列的每个元素应用{@code mapper}函数得到的。 新序列的耗尽特性（有限或无限）与原序列一致。
-	 * </p>
 	 * <p>
 	 * 此方法遵循延迟执行（lazy evaluation）原则，即映射操作是在新序列的{@link #next()}方法被调用时才执行的。
-	 * </p>
 	 *
 	 * @param <R>    新序列元素的类型
 	 * @param mapper 一个非空的函数，用于将类型{@code T}的元素映射到类型{@code R}
