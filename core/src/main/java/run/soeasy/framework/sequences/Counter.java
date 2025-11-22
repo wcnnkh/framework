@@ -26,19 +26,10 @@ import run.soeasy.framework.core.domain.Range;
  * </ul>
  *
  * <p>
- * <b>默认方法实现说明：</b>
- * <ul>
- * <li>{@link #next()} 的默认实现会调用 {@link #next(getStep())}，即使用当前的默认步长。</li>
- * <li>{@link #hasNext()} 的默认实现会调用
- * {@link #hasNext(getStep())}，即检查使用默认步长是否会导致序列超出范围。</li>
- * </ul>
- *
- * <p>
  * <b>典型应用场景：</b>
  * <ul>
  * <li><b>分页查询</b>：默认步长为每页记录数，通过 {@code next()} 生成下一页的起始索引。</li>
  * <li><b>双向迭代器</b>：通过调用 {@code next(1)} 向前移动，调用 {@code next(-1)} 向后移动。</li>
- * <li><b>动态步长调整</b>：实现类可以提供 {@code setStep(Number)} 方法，允许在运行时根据业务需求改变默认步长。</li>
  * <li><b>循环计数器</b>：当序列达到上界时，可以自动回绕到下界，形成一个环形缓冲区（Circular Buffer）。</li>
  * </ul>
  *
@@ -97,7 +88,6 @@ public interface Counter<T extends Number> extends Sequence<T> {
 
     /**
      * 使用当前的默认步长生成并返回下一个序列值。
-     * <p>
      * 此方法的默认实现等价于：{@code return next(getStep());}
      *
      * @return 序列中的下一个数值，不可为 {@code null}。

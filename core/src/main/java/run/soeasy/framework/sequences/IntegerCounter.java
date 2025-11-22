@@ -78,18 +78,6 @@ public interface IntegerCounter extends Counter<Integer> {
      * 获取当前计数器的快照，返回一个包含指定大小的连续整数的序列。
      * <p>
      * 该方法通过原子操作从当前计数器获取一个连续的数值块，并将原计数器的值原子地向前推进。
-     * 具体行为如下：
-     * <ol>
-     * <li> 调用 {@link #next(Integer)} 方法，以 {@code size} 为步长获取一个值，这个值将作为新序列的上界（不包含）{@code max}。
-     *      调用后，原计数器的值会增加 {@code size}。</li>
-     * <li> 计算新序列的下界（包含）{@code min = max - size}。</li>
-     * <li> 返回一个新的 {@link Sequence} 对象，该对象包含从 {@code min} 到 {@code max} 的所有整数。
-     *      新序列的 {@link Sequence#next()} 方法将从 {@code min} 开始，依次返回每个整数，直到 {@code max}。</li>
-     * </ol>
-     * <p>
-     * <strong>注意：</strong> 此方法会将传入的 {@code size} 参数通过 {@link Math#toIntExact(long)} 转换为 {@code int}。
-     * 如果 {@code size} 超过了 {@link Integer#MAX_VALUE}，将抛出 {@link ArithmeticException}。
-     *
      * <p>
      * <strong>示例：</strong>
      * <ul>

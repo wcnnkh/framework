@@ -78,14 +78,6 @@ public interface LongCounter extends Counter<Long> {
      * 获取当前计数器的快照，返回一个包含指定大小的连续长整数的序列。
      * <p>
      * 该方法通过原子操作获取一个范围为 {@code [min, max]} 的连续序列，并将原计数器的值原子地增加 {@code size}。
-     * 具体行为如下：
-     * <ol>
-     * <li> 调用 {@link #next(long)} 方法，以 {@code size} 为步长获取下一个值，这个值将作为新序列的 {@code max}。</li>
-     * <li> 计算 {@code min = max - size}。</li>
-     * <li> 返回一个新的 {@link Sequence} 对象，该对象包含从 {@code min} 到 {@code max} 的所有整数。
-     *      新序列的 {@link Sequence#next()} 方法将从 {@code min} 开始，依次返回每个整数，直到 {@code max}。</li>
-     * </ol>
-     *
      * <p>
      * <strong>示例：</strong>
      * <ul>

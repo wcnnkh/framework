@@ -142,7 +142,7 @@ public final class Bound<T> implements Serializable {
      * 2. 两个有界边界根据其值和类型进行比较：
      *    a. 值不同时，直接比较值。
      *    b. 值相同时，排他性边界大于包含性边界。
-     *       例如：[5] < (5)
+     *       例如：[5] &lt; (5)
      *
      * @param other      另一个要比较的边界
      * @param comparator 用于比较边界值的比较器
