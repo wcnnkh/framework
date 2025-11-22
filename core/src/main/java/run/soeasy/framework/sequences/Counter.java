@@ -7,19 +7,20 @@ import run.soeasy.framework.core.domain.Range;
  * 一个支持自定义步长和范围的序列生成器。
  *
  * <p>
- * {@code Counter} 接口扩展了 {@link Sequence} 接口，提供了更强大和灵活的数值序列生成能力。
- * 它允许使用者：
+ * {@code Counter} 接口扩展了 {@link Sequence} 接口，提供了更强大和灵活的数值序列生成能力。 它允许使用者：
  * <ol>
  * <li><b>按指定步长递增/递减</b>：通过 {@link #next(Number)} 方法，可以灵活地控制每次序列值变化的幅度和方向。</li>
  * <li><b>定义默认步长</b>：通过 {@link #getStep()} 方法提供一个默认步长，简化常规的、固定步长的序列生成。</li>
- * <li><b>检查序列边界</b>：通过 {@link #hasNext()} 和 {@link #hasNext(Number)} 方法，可以在生成下一个值之前，预判序列是否会超出预定义的范围。</li>
+ * <li><b>检查序列边界</b>：通过 {@link #hasNext()} 和 {@link #hasNext(Number)}
+ * 方法，可以在生成下一个值之前，预判序列是否会超出预定义的范围。</li>
  * <li><b>获取序列范围</b>：通过 {@link #getRange()} 方法，可以获取该计数器的有效数值区间。</li>
  * </ol>
  *
  * <p>
  * 该接口通过 Java 8 的默认方法（Default Method）提供了核心方法的标准实现，这带来了以下好处：
  * <ul>
- * <li><b>减少样板代码</b>：实现类无需重复编写 {@link #next()} 和 {@link #hasNext()} 的逻辑，只需专注于核心的带参方法。</li>
+ * <li><b>减少样板代码</b>：实现类无需重复编写 {@link #next()} 和 {@link #hasNext()}
+ * 的逻辑，只需专注于核心的带参方法。</li>
  * <li><b>保持 API 一致性</b>：确保所有实现类都遵循 "无参方法使用默认步长" 的统一契约。</li>
  * <li><b>增强扩展性</b>：未来可以在接口中增加新的默认方法，而不会破坏现有的实现。</li>
  * </ul>
@@ -28,7 +29,8 @@ import run.soeasy.framework.core.domain.Range;
  * <b>默认方法实现说明：</b>
  * <ul>
  * <li>{@link #next()} 的默认实现会调用 {@link #next(getStep())}，即使用当前的默认步长。</li>
- * <li>{@link #hasNext()} 的默认实现会调用 {@link #hasNext(getStep())}，即检查使用默认步长是否会导致序列超出范围。</li>
+ * <li>{@link #hasNext()} 的默认实现会调用
+ * {@link #hasNext(getStep())}，即检查使用默认步长是否会导致序列超出范围。</li>
  * </ul>
  *
  * <p>
@@ -53,8 +55,7 @@ public interface Counter<T extends Number> extends Sequence<T> {
     /**
      * 返回此计数器的有效数值范围。
      * <p>
-     * 这个范围定义了计数器的活动边界。当使用 {@link #next(Number)} 生成下一个值时，
-     * 实现类可以选择：
+     * 这个范围定义了计数器的活动边界。当使用 {@link #next(Number)} 生成下一个值时， 实现类可以选择：
      * <ul>
      * <li>在超出范围时抛出异常（如 {@link IllegalStateException}）。</li>
      * <li>或根据特定策略（如循环）调整值，使其保持在范围内。</li>
@@ -64,6 +65,23 @@ public interface Counter<T extends Number> extends Sequence<T> {
      */
     @NonNull
     Range<T> getRange();
+
+    /**
+     * 返回当前计数器是否启用循环模式。
+     * <p>
+     * 当启用循环模式（{@code true}）时，当计数器的值超出 {@link #getRange()} 定义的范围时，
+     * 它会自动回绕到范围的另一端。例如，如果范围是 [1, 100]，当前值是 100，步长是 1，
+     * 那么下一个值将是 1。
+     * <p>
+     * 当禁用循环模式（{@code false}）时，计数器在超出范围时通常会抛出异常。
+     * <p>
+     * 此方法的默认实现返回 {@code true}，即默认支持循环。
+     *
+     * @return 如果计数器支持循环，则返回 {@code true}，否则返回 {@code false}。
+     */
+    default boolean isCycle() {
+        return true;
+    }
 
     /**
      * 返回当前的默认步长。
@@ -95,8 +113,8 @@ public interface Counter<T extends Number> extends Sequence<T> {
      * <p>
      * 此方法的默认实现等价于：{@code return hasNext(getStep());}
      * <p>
-     * <strong>注意：</strong> 由于并发环境的特性，此方法的返回结果只是一个瞬时快照，
-     * 它无法 100% 保证后续调用 {@link #next()} 的成功。
+     * <strong>注意：</strong> 由于并发环境的特性，此方法的返回结果只是一个瞬时快照， 它无法 100% 保证后续调用
+     * {@link #next()} 的成功。
      *
      * @return 如果预计下一个值有效（在范围内或支持循环），则返回 {@code true}，否则返回 {@code false}。
      */
@@ -110,8 +128,8 @@ public interface Counter<T extends Number> extends Sequence<T> {
      * <p>
      * 实现此方法时，应基于当前序列值、指定步长和 {@link #getRange()} 来进行预判。
      * <p>
-     * <strong>注意：</strong> 由于并发环境的特性，此方法的返回结果只是一个瞬时快照，
-     * 它无法 100% 保证后续调用 {@link #next(Number)} 的成功。
+     * <strong>注意：</strong> 由于并发环境的特性，此方法的返回结果只是一个瞬时快照， 它无法 100% 保证后续调用
+     * {@link #next(Number)} 的成功。
      *
      * @param step 用于判断的步长，不可为 {@code null}。
      * @return 如果预计下一个值有效（在范围内或支持循环），则返回 {@code true}，否则返回 {@code false}。

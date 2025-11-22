@@ -28,7 +28,6 @@ public class AtomicLongCounter extends AtomicLong implements LongCounter {
 	private final long min;
 	private final long max;
 	private final long rangeSize;
-	private final long step;
 	private final boolean cycle;
 
 	/**
@@ -61,7 +60,7 @@ public class AtomicLongCounter extends AtomicLong implements LongCounter {
 	 * @param max          范围的最大值（包含）。
 	 */
 	public AtomicLongCounter(long initialValue, long min, long max) {
-		this(initialValue, min, max, 1, false);
+		this(initialValue, min, max, false);
 	}
 
 	/**
@@ -72,15 +71,13 @@ public class AtomicLongCounter extends AtomicLong implements LongCounter {
 	 * @param initialValue 初始值，必须在指定的范围内。
 	 * @param min          范围的最小值（包含）。
 	 * @param max          范围的最大值（包含）。
-	 * @param step         每次递增的步长。
 	 * @param cycle        是否在超出范围时自动回绕（循环）。
 	 */
-	public AtomicLongCounter(long initialValue, long min, long max, long step, boolean cycle) {
+	public AtomicLongCounter(long initialValue, long min, long max, boolean cycle) {
 		super(initialValue);
 		this.range = Range.closed(min, max);
 		this.max = max;
 		this.min = min;
-		this.step = step;
 		this.cycle = cycle;
 		// 计算范围大小，当范围为 [Long.MIN_VALUE, Long.MAX_VALUE] 时会溢出为 0
 		this.rangeSize = max - min + 1;
@@ -89,12 +86,6 @@ public class AtomicLongCounter extends AtomicLong implements LongCounter {
 			throw new IllegalArgumentException(
 					String.format("Initial value %d is out of the specified range [%d, %d].", initialValue, min, max));
 		}
-	}
-
-	@Override
-	@NonNull
-	public Long getStep() {
-		return step;
 	}
 
 	/**
