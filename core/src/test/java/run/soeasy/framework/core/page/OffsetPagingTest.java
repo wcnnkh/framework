@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.sequences.UUIDSequence;
+import run.soeasy.framework.core.RandomUtils;
 
 public class OffsetPagingTest {
 	@Test
@@ -14,7 +14,7 @@ public class OffsetPagingTest {
 		int count = 100;
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < count; i++) {
-			list.add(UUIDSequence.random().next());
+			list.add(RandomUtils.uuid());
 		}
 
 		for (int i = 1; i < count; i++) {

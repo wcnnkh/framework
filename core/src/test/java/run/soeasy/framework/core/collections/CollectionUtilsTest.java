@@ -7,15 +7,15 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
+import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.sequences.UUIDSequence;
 
 public class CollectionUtilsTest {
 	@Test
 	public void test() {
 		TreeMap<String, String> map = new TreeMap<String, String>((e1, e2) -> e2.compareTo(e1));
 		for (int i = 0; i < 100; i++) {
-			String value = UUIDSequence.random().next();
+			String value = RandomUtils.uuid();
 			map.put(value, value);
 		}
 		assertTrue(CollectionUtils.equals(map.keySet(), map.values(), Objects::equals));

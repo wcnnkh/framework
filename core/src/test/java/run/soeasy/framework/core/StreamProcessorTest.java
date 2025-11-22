@@ -7,8 +7,6 @@ import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
-import run.soeasy.framework.sequences.UUIDSequence;
-
 public class StreamProcessorTest {
 	@Test
 	public void test() throws Throwable {
@@ -16,19 +14,19 @@ public class StreamProcessorTest {
 		List<String> list = new LinkedList<>();
 		list.add(a);
 		for (int i = 0; i < 10; i++) {
-			list.add(UUIDSequence.random().next());
+			list.add(RandomUtils.uuid());
 		}
 
 		Stream<String> stream = StreamSupport.stream(list.spliterator(), false).map((value) -> {
 			System.out.println("s1");
-			return "s1" + UUIDSequence.random().next();
+			return "s1" + RandomUtils.uuid();
 		}).onClose(() -> {
 			System.out.println("关闭s1");
 		});
 
 		stream = stream.map((value) -> {
 			System.out.println("s2");
-			return "s2-" + UUIDSequence.random().next();
+			return "s2-" + RandomUtils.uuid();
 		}).onClose(() -> {
 			System.out.println("关闭s2");
 		});

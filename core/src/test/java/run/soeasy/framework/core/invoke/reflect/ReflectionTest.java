@@ -8,15 +8,15 @@ import java.util.Map;
 import org.junit.Test;
 
 import lombok.ToString;
+import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.transform.property.Cloner;
-import run.soeasy.framework.sequences.UUIDSequence;
 
 public class ReflectionTest {
 	@Test
 	public void test() {
 		Map<String, Object> map = new HashMap<>();
-		map.put(UUIDSequence.random().next(), UUIDSequence.random().next());
+		map.put(RandomUtils.uuid(), RandomUtils.uuid());
 		Map<String, Object> cloneMap = Cloner.clone(map, true);
 		System.out.println(cloneMap);
 		assertTrue(map.equals(cloneMap));
@@ -25,7 +25,7 @@ public class ReflectionTest {
 	@Test
 	public void cloneA() {
 		CloneA cloneA = new CloneA();
-		cloneA.a = UUIDSequence.random().next();
+		cloneA.a = RandomUtils.uuid();
 		CloneA c = cloneA.clone();
 		assertTrue(StringUtils.equals(cloneA.a, c.a));
 	}

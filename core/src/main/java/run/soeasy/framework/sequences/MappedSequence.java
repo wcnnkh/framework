@@ -1,6 +1,7 @@
 package run.soeasy.framework.sequences;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,8 +18,18 @@ class MappedSequence<S, T, W extends Sequence<S>> extends Wrapped<W> implements 
 	}
 
 	@Override
-	public @NonNull T next() throws UnsupportedOperationException {
+	public @NonNull T next() {
 		S source = getSource().next();
 		return mapper.apply(source);
+	}
+
+	@Override
+	public boolean hasNext() {
+		return getSource().hasNext();
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return getSource().stream().map(mapper);
 	}
 }

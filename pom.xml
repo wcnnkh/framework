@@ -5,8 +5,8 @@
 	<!-- 批量修改模块系统中的版本号 http://www.mojohaus.org/versions-maven-plugin/set-mojo.html -->
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
-	<!-- mvn versions:set -DnewVersion=0.0.8 -DgenerateBackupPoms=false -->
-	<version>0.0.8</version>
+	<!-- mvn versions:set -DnewVersion=0.0.9 -DgenerateBackupPoms=false -->
+	<version>0.0.9</version>
 	<packaging>pom</packaging>
 	<name>framework</name>
 	<description>为自定义框架提供抽象和基础实现</description>
@@ -20,7 +20,7 @@
 	<developers>
 		<developer>
 			<email>247044007@qq.com</email>
-			<name>chaowen.shu</name>
+			<name>wcnnkh</name>
 			<url>https://github.com/wcnnkh/${project.name}</url>
 			<id>wcnnkh</id>
 		</developer>
@@ -53,47 +53,47 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>core</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>beans</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>jdbc</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>json</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>messaging</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>slf4j</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>dom</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>aop</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>xml</artifactId>
-				<version>0.0.8</version>
+				<version>0.0.9</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

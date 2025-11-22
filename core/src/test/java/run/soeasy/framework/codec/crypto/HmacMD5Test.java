@@ -6,10 +6,10 @@ import org.junit.Test;
 
 import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.codec.format.CharsetCodec;
-import run.soeasy.framework.sequences.UUIDSequence;
+import run.soeasy.framework.core.RandomUtils;
 
 public class HmacMD5Test {
-	public static String content = UUIDSequence.random().next() + "这是一段加解密测试内容!";
+	public static String content = RandomUtils.uuid() + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 
 	@Test
