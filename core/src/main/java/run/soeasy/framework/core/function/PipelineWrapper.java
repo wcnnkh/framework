@@ -77,12 +77,12 @@ public interface PipelineWrapper<T, E extends Throwable, W extends Pipeline<T, E
 	 * 转换逻辑由源流水线实现，返回新的映射后流水线。
 	 *
 	 * @param <R>      转换后的资源类型
-	 * @param pipeline 映射函数，接收当前资源并返回转换后资源，非空
+	 * @param mapper 映射函数，接收当前资源并返回转换后资源，非空
 	 * @return 源流水线执行映射后的{@link Pipeline}实例
 	 */
 	@Override
-	default <R> Pipeline<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> pipeline) {
-		return getSource().map(pipeline);
+	default <R> Pipeline<R, E> map(@NonNull ThrowingFunction<? super T, ? extends R, E> mapper) {
+		return getSource().map(mapper);
 	}
 
 	/**
