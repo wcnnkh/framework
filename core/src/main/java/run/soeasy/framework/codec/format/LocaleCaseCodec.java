@@ -8,7 +8,7 @@ import run.soeasy.framework.codec.CodecException;
 /**
  * 大小写转换,默认是小写--&gt;大写
  * 
- * @author soeay.run
+ * @author soeasy.run
  *
  */
 public class LocaleCaseCodec implements Codec<String, String> {

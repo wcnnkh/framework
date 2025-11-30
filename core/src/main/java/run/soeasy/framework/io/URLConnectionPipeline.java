@@ -14,8 +14,7 @@ import run.soeasy.framework.core.function.ThrowingSupplier;
  * 提供类型转换、单实例创建、基于供应商创建等便捷能力，简化URLConnection相关的IO异常处理流程。
  *
  * @param <T> 管道中处理的核心类型，限定为URLConnection的子类
- * @author YourName（建议补充作者信息）
- * @since 1.0.0（建议补充版本号）
+ * @author soeasy.run
  */
 public class URLConnectionPipeline<T extends URLConnection> extends Wrapped<Pipeline<T, IOException>>
 		implements PipelineWrapper<T, IOException, Pipeline<T, IOException>> {
