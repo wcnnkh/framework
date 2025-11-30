@@ -34,6 +34,18 @@
 		<developerConnection>scm:git@https://github.com/wcnnkh/${project.name}.git</developerConnection>
 		<url>https://github.com/wcnnkh/${project.name}.git</url>
 	</scm>
+	
+	<modules>
+		<module>core</module>
+		<module>slf4j</module>
+		<module>dom</module>
+		<module>xml</module>
+		<module>messaging</module>
+		<module>jdbc</module>
+		<module>json</module>
+		<module>beans</module>
+		<module>aop</module>
+	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -155,17 +167,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>core</module>
-		<module>slf4j</module>
-		<module>dom</module>
-		<module>xml</module>
-		<module>messaging</module>
-		<module>jdbc</module>
-		<module>json</module>
-		<module>beans</module>
-		<module>aop</module>
-	</modules>
 	<profiles>
 		<profile>
 			<!-- mvn clean deploy -Pdeploy -->
