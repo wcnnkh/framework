@@ -15,7 +15,7 @@ public class PageIteratorTest {
 		}
 
 		for (int pageSize = 200; pageSize < 2002; pageSize++) {
-			PageIterator<UUID> pageIterator = new PageIterator<>(list.iterator(), pageSize);
+			PageIterator<UUID> pageIterator = new PageIterator<>(pageSize, list.iterator());
 			long total = 0;
 			while (pageIterator.hasNext()) {
 				total += pageIterator.next().getElements().count();

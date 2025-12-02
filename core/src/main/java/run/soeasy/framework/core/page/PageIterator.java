@@ -6,15 +6,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.Listable;
 
 @RequiredArgsConstructor
 public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
+	@Getter
+	private final int pageSize;
 	@NonNull
 	private final Iterator<? extends E> iterator;
-	private final int pageSize;
 	private volatile int page = 0;
 	private volatile Supplier<Pageable<Long, E>> supplier;
 
@@ -27,7 +29,8 @@ public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 			}
 
 			long offset = page * pageSize;
-			Pageable<Long, E> pageable = new Cursor<Long, E>(offset, Listable.forCollection(list), offset + pageSize);
+			Pageable<Long, E> pageable = new Cursor<Long, E>(offset, Listable.forCollection(list), offset + pageSize,
+					null);
 			supplier = () -> pageable;
 		}
 		return supplier != null;

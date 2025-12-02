@@ -291,7 +291,7 @@ public class ClassUtils {
 		return new CursorPaging<Class<?>, Class<?>>(sourceClass, (clazz, size) -> {
 			Class<?>[] interfaces = clazz.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new Cursor<>(clazz, Listable.forCollection(list), clazz.getSuperclass());
+			return new Cursor<>(clazz, Listable.forCollection(list), clazz.getSuperclass(), null);
 		});
 	}
 
@@ -513,22 +513,25 @@ public class ClassUtils {
 	 * <p>
 	 * 核心逻辑：
 	 * <ul>
-	 *   <li>输入为 Java 标准基本类型（byte/short/int/long/float/double/boolean/char）：
-	 *       通过内部预定义的映射表（{@code primitiveTypeToWrapperMap}）快速匹配，返回对应的包装类（如 {@code int.class → Integer.class}、{@code boolean.class → Boolean.class}）；
-	 *   <li>输入为非基本类型（如包装类、普通类、接口、数组等）：
-	 *       不进行转换，直接返回输入类型本身（如 {@code Integer.class → Integer.class}、{@code String.class → String.class}）。
+	 * <li>输入为 Java 标准基本类型（byte/short/int/long/float/double/boolean/char）：
+	 * 通过内部预定义的映射表（{@code primitiveTypeToWrapperMap}）快速匹配，返回对应的包装类（如
+	 * {@code int.class → Integer.class}、{@code boolean.class → Boolean.class}）；
+	 * <li>输入为非基本类型（如包装类、普通类、接口、数组等）： 不进行转换，直接返回输入类型本身（如
+	 * {@code Integer.class → Integer.class}、{@code String.class → String.class}）。
 	 * </ul>
-	 * 该方法设计初衷是简化“基本类型与包装类”的统一处理逻辑，避免因输入类型差异导致的额外判断，同时保证返回结果非 null（除非输入为 null，但已通过 {@code @NonNull} 限制）。
+	 * 该方法设计初衷是简化“基本类型与包装类”的统一处理逻辑，避免因输入类型差异导致的额外判断，同时保证返回结果非 null（除非输入为 null，但已通过
+	 * {@code @NonNull} 限制）。
 	 *
 	 * @param type 输入类型（支持基本类型、包装类、普通类、接口等），不可为 null
 	 * @return 基本类型返回对应包装类；非基本类型返回自身
 	 * @throws NullPointerException 若传入的 {@code type} 为 null
 	 * @see Class#isPrimitive() 用于判断输入是否为基本类型的核心方法
-	 * @see Integer#TYPE 基本类型对应的 Class 对象（如 {@code Integer.TYPE} 等价于 {@code int.class}）
+	 * @see Integer#TYPE 基本类型对应的 Class 对象（如 {@code Integer.TYPE} 等价于
+	 *      {@code int.class}）
 	 * @see java.lang.Boolean#TYPE 布尔基本类型对应的 Class 对象示例
 	 */
 	public static Class<?> getPrimitiveWrapper(@NonNull Class<?> type) {
-	    return type.isPrimitive() ? primitiveTypeToWrapperMap.get(type) : type;
+		return type.isPrimitive() ? primitiveTypeToWrapperMap.get(type) : type;
 	}
 
 	/**
@@ -654,9 +657,9 @@ public class ClassUtils {
 			return false;
 		}
 		// 匹配原生数字类型
-		if(type.isPrimitive()) {
-			if (type == long.class || type == int.class || type == byte.class || type == short.class || type == float.class
-					|| type == double.class) {
+		if (type.isPrimitive()) {
+			if (type == long.class || type == int.class || type == byte.class || type == short.class
+					|| type == float.class || type == double.class) {
 				return true;
 			}
 		}

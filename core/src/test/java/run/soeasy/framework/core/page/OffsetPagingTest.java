@@ -18,7 +18,7 @@ public class OffsetPagingTest {
 		}
 
 		for (int i = 1; i < count; i++) {
-			OffsetPaging<String> paginations = new OffsetPaging<String>(0, i, list);
+			OffsetPaging<String> paginations = OffsetPaging.of(0, i, list);
 			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getElements().count() == 0);
 			Assert.assertTrue(!paginations.jumpToPage(paginations.getPages()).hasNextPage());
 			String[] leftArray = list.toArray(new String[0]);

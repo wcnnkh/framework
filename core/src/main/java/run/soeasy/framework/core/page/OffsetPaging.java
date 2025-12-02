@@ -1,11 +1,12 @@
 package run.soeasy.framework.core.page;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.Listable;
 
 /**
@@ -16,52 +17,27 @@ import run.soeasy.framework.core.collection.Listable;
  * @param <V> 分页内容的元素类型
  */
 public class OffsetPaging<V> extends CursorPaging<Long, V> {
-	/**
-	 * 在内存中对list进行分页
-	 * 
-	 * @param offset   偏移量，从0开始
-	 * @param pageSize 每页大小
-	 * @param elements 原始数据列表
-	 */
-	public OffsetPaging(long offset, int pageSize, List<V> elements) {
-		this(elements.size(), offset, pageSize, (cursorId, length) -> {
-			int fromIndex = Math.toIntExact(cursorId);
-			if (fromIndex >= elements.size()) {
-				return Listable.empty();
-			}
-			List<V> list = elements.subList(fromIndex, Math.min(Math.addExact(fromIndex, length), elements.size()));
-			return Listable.forCollection(list);
-		});
-	}
 
-	/**
-	 * 未知数量的构造
-	 * 
-	 * @param offset      偏移量，从0开始
-	 * @param pageSize    每页大小
-	 * @param pagingQuery 分页查询器，不可为null
-	 */
-	public OffsetPaging(long offset, int pageSize, @NonNull PagingQuery<Long, Listable<V>> pagingQuery) {
+	public <T> OffsetPaging(long offset, int pageSize, @NonNull PagingQuery<Long, ? extends T> offsetQuery,
+			@NonNull Function<? super T, ? extends Listable<V>> elementMapper,
+			@NonNull Function<? super T, ? extends Number> totalMapper) {
 		super(offset, pageSize, (cursorId, length) -> {
-			Listable<V> listable = pagingQuery.query(cursorId, length);
-			long nextCursorId = Math.addExact(cursorId, length);// 应该给异常还是返回没有下一页？
-			return new Cursor<>(cursorId, listable, listable.hasElements() ? nextCursorId : null);
-		});
-	}
-
-	/**
-	 * 已知总数的构造
-	 * 
-	 * @param total       总记录数
-	 * @param offset      偏移量，从0开始
-	 * @param pageSize    每页大小
-	 * @param pagingQuery 分页查询器，不可为null
-	 */
-	public OffsetPaging(long total, long offset, int pageSize, @NonNull PagingQuery<Long, Listable<V>> pagingQuery) {
-		super(total, offset, pageSize, (cursorId, length) -> {
-			long nextCursorId = Math.addExact(cursorId, length);
-			return new Cursor<>(cursorId, pagingQuery.query(cursorId, length),
-					nextCursorId < total ? nextCursorId : null);
+			T result = offsetQuery.query(cursorId, length);
+			Listable<V> elements = result == null ? null : elementMapper.apply(result);
+			if (elements == null) {
+				elements = Listable.empty();
+			}
+			Number totalNumber = result == null ? null : totalMapper.apply(result);
+			Long total = totalNumber == null ? null : totalNumber.longValue();
+			Long nextCursorId;
+			if (total == null) {
+				// 未知数量
+				nextCursorId = elements.hasElements() ? Math.addExact(cursorId, length) : null;
+			} else {
+				// 已知数量
+				nextCursorId = (total - cursorId) > 1 ? Math.addExact(cursorId, length) : null;
+			}
+			return new Cursor<>(cursorId, elements, nextCursorId, total);
 		});
 	}
 
@@ -91,78 +67,47 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 		return Math.multiplyExact((pageNumber - 1), pageSize);
 	}
 
-	/**
-	 * 基于偏移量创建OffsetPaging实例（未知总条数）
-	 * 
-	 * @param <E>         分页元素类型
-	 * @param offset      偏移量，从0开始
-	 * @param pageSize    每页大小，需大于0
-	 * @param offsetQuery 偏移量查询器，入参为偏移量和每页大小，返回对应数据集
-	 * @return 未知总条数的OffsetPaging实例
-	 */
-	public static <E> OffsetPaging<E> of(long offset, int pageSize,
-			PagingQuery<Long, ? extends Collection<E>> offsetQuery) {
-		return new OffsetPaging<>(offset, pageSize, (o, limit) -> {
-			Collection<E> elements = offsetQuery.query(o, limit);
-			if (CollectionUtils.isEmpty(elements)) {
-				return Listable.empty();
+	public static <E> OffsetPaging<E> of(long offset, int pageSize, List<E> elements) {
+		return of(offset, pageSize, (cursorId, length) -> {
+			int fromIndex = Math.toIntExact(cursorId);
+			if (fromIndex >= elements.size()) {
+				return Collections.emptyList();
 			}
-			return Listable.forCollection(elements);
-		});
+			return elements.subList(fromIndex, Math.min(Math.addExact(fromIndex, length), elements.size()));
+		}, Function.identity(), (e) -> elements.size());
 	}
 
-	/**
-	 * 基于页码创建OffsetPaging实例（未知总条数）
-	 * 
-	 * @param <E>         分页元素类型
-	 * @param pageNumber  页码，从1开始
-	 * @param pageSize    每页大小，需大于0
-	 * @param pageQuery   页码查询器，入参为页码和每页大小，返回对应数据集
-	 * @return 未知总条数的OffsetPaging实例
-	 */
-	public static <E> OffsetPaging<E> ofUnknownPageNumber(long pageNumber, int pageSize,
-			PagingQuery<Long, ? extends Collection<E>> pageQuery) {
+	public static <E> OffsetPaging<E> ofPageNumber(long pageNumber, int pageSize, List<E> elements) {
+		return of(getPageNumber(pageNumber, pageSize), pageSize, elements);
+	}
+
+	public static <T, E> OffsetPaging<E> of(long offset, int pageSize,
+			@NonNull PagingQuery<Long, ? extends T> offsetQuery,
+			@NonNull Function<? super T, ? extends Collection<E>> elementMapper,
+			@NonNull Function<? super T, ? extends Number> totalMapper) {
+		return new OffsetPaging<>(offset, pageSize, offsetQuery, (e) -> {
+			Collection<E> elements = elementMapper.apply(e);
+			return elements == null ? null : Listable.forCollection(elements);
+		}, totalMapper);
+	}
+
+	public static <T, E> OffsetPaging<E> ofPageNumber(long pageNumber, int pageSize,
+			@NonNull PagingQuery<Long, ? extends T> pageNumberQuery,
+			@NonNull Function<? super T, ? extends Collection<E>> elementMapper,
+			@NonNull Function<? super T, ? extends Number> totalMapper) {
 		return of(getOffset(pageNumber, pageSize), pageSize, (offset, limit) -> {
-			return pageQuery.query(getPageNumber(offset, limit), pageSize);
-		});
+			return pageNumberQuery.query(getPageNumber(offset, limit), limit);
+		}, elementMapper, totalMapper);
 	}
 
-	/**
-	 * 基于偏移量和总条数创建OffsetPaging实例（已知总条数）
-	 * 
-	 * @param <E>         分页元素类型
-	 * @param total       总记录数，需大于等于0
-	 * @param offset      偏移量，从0开始
-	 * @param pageSize    每页大小，需大于0
-	 * @param offsetQuery 偏移量查询器，入参为偏移量和每页大小，返回对应数据集
-	 * @return 已知总条数的OffsetPaging实例
-	 */
-	public static <E> OffsetPaging<E> of(long total, long offset, int pageSize,
-			PagingQuery<Long, ? extends Collection<E>> offsetQuery) {
-		return new OffsetPaging<>(total, offset, pageSize, (o, limit) -> {
-			Collection<E> elements = offsetQuery.query(o, limit);
-			if (CollectionUtils.isEmpty(elements)) {
-				return Listable.empty();
-			}
-			return Listable.forCollection(elements);
-		});
+	public static <T, E> OffsetPaging<E> of(long offset, int pageSize,
+			@NonNull PagingQuery<Long, ? extends Collection<E>> offsetQuery, Long total) {
+		return of(offset, pageSize, offsetQuery, Function.identity(), (e) -> total);
 	}
 
-	/**
-	 * 基于页码和总条数创建OffsetPaging实例（已知总条数）
-	 * 
-	 * @param <E>         分页元素类型
-	 * @param total       总记录数，需大于等于0
-	 * @param pageNumber  页码，从1开始
-	 * @param pageSize    每页大小，需大于0
-	 * @param pageQuery   页码查询器，入参为页码和每页大小，返回对应数据集
-	 * @return 已知总条数的OffsetPaging实例
-	 */
-	public static <E> OffsetPaging<E> ofPageNumber(long total, long pageNumber, int pageSize,
-			PagingQuery<Long, ? extends Collection<E>> pageQuery) {
-		return of(total, getOffset(pageNumber, pageSize), pageSize, (offset, limit) -> {
-			return pageQuery.query(getPageNumber(offset, limit), pageSize);
-		});
+	public static <T, E> OffsetPaging<E> ofPageNumber(long pageNumber, int pageSize,
+			@NonNull PagingQuery<Long, ? extends Collection<E>> offsetQuery, Long total) {
+		return ofPageNumber(pageNumber, pageSize, offsetQuery, Function.identity(), (e) -> total);
 	}
 
 	/**
@@ -192,6 +137,7 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	 * @return 新的OffsetPaging实例
 	 */
 	public OffsetPaging<V> jumpToPage(long pageNumber, int pageSize) {
-		return new OffsetPaging<>(getTotal(), getOffset(pageNumber, pageSize), pageSize, this::query);
+		return new OffsetPaging<>(getOffset(pageNumber, pageSize), pageSize, this::query, Function.identity(),
+				(e) -> e.isKnowTotal() ? e.getTotal() : null);
 	}
 }
