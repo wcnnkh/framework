@@ -53,7 +53,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * 
 	 * @return 当前页的Pageable对象
 	 */
-	public final Pageable<K, V> getCurrentPage() {
+	private Pageable<K, V> getCurrentPage() {
 		if (currentPage == null) {
 			synchronized (this) {
 				if (currentPage == null) {
@@ -120,6 +120,6 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 
 	@Override
 	public Paging<K, V> query(K cursorId, int pageSize) {
-		return new CursorPaging<>(total, cursorId, pageSize, pagingQuery);
+		return new CursorPaging<>(isKnowTotal() ? getTotal() : total, cursorId, pageSize, pagingQuery);
 	}
 }
