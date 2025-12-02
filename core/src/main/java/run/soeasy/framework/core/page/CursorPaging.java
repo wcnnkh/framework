@@ -99,8 +99,8 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 			return total;
 		}
 
-		if (currentPage != null && currentPage.isKnowTotal()) {
-			return currentPage.getTotal();
+		if (getCurrentPage().isKnowTotal()) {
+			return getCurrentPage().getTotal();
 		}
 
 		long total = 0;
