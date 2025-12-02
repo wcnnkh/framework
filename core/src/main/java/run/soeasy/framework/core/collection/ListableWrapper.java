@@ -12,27 +12,26 @@ import run.soeasy.framework.core.domain.Wrapper;
  * @see Listable
  * @see Wrapper
  */
+@FunctionalInterface
 public interface ListableWrapper<E, W extends Listable<E>> extends Listable<E>, Wrapper<W> {
-    
-    /**
-     * 获取被包装的元素集合。
-     * 该方法代理调用源Listable的getElements()方法，返回其元素集合。
-     *
-     * @return 被包装的元素集合实例
-     */
-    @Override
-    default Elements<E> getElements() {
-        return getSource().getElements();
-    }
 
-    /**
-     * 判断被包装的元素集合是否包含元素。
-     * 该方法代理调用源Listable的hasElements()方法，返回其判断结果。
-     *
-     * @return true表示元素集合为空，false表示包含元素
-     */
-    @Override
-    default boolean hasElements() {
-        return getSource().hasElements();
-    }
+	/**
+	 * 获取被包装的元素集合。 该方法代理调用源Listable的getElements()方法，返回其元素集合。
+	 *
+	 * @return 被包装的元素集合实例
+	 */
+	@Override
+	default Elements<E> getElements() {
+		return getSource().getElements();
+	}
+
+	/**
+	 * 判断被包装的元素集合是否包含元素。 该方法代理调用源Listable的hasElements()方法，返回其判断结果。
+	 *
+	 * @return true表示元素集合为空，false表示包含元素
+	 */
+	@Override
+	default boolean hasElements() {
+		return getSource().hasElements();
+	}
 }

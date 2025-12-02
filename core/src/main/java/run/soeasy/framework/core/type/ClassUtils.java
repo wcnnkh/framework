@@ -17,7 +17,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.collection.Listable;
-import run.soeasy.framework.core.page.Cursor;
+import run.soeasy.framework.core.page.CursorPage;
 import run.soeasy.framework.core.page.CursorPaging;
 import run.soeasy.framework.core.page.Paging;
 
@@ -291,7 +291,7 @@ public class ClassUtils {
 		return new CursorPaging<Class<?>, Class<?>>(sourceClass, (clazz, size) -> {
 			Class<?>[] interfaces = clazz.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new Cursor<>(clazz, Listable.forCollection(list), clazz.getSuperclass(), null);
+			return new CursorPage<>(clazz, Listable.forCollection(list), clazz.getSuperclass(), null);
 		});
 	}
 
