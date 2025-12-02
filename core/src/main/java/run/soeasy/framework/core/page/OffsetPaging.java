@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.NumberUtils;
 import run.soeasy.framework.core.collection.Listable;
 
 /**
@@ -47,10 +48,10 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	/**
 	 * 基于偏移量和内存列表创建OffsetPaging实例
 	 * 
-	 * @param <E>       分页元素类型
-	 * @param offset    偏移量，从0开始
-	 * @param pageSize  每页大小，需大于0
-	 * @param elements  原始数据列表，基于该列表进行内存分页
+	 * @param <E>      分页元素类型
+	 * @param offset   偏移量，从0开始
+	 * @param pageSize 每页大小，需大于0
+	 * @param elements 原始数据列表，基于该列表进行内存分页
 	 * @return OffsetPaging<E> 内存分页后的实例
 	 */
 	public static <E> OffsetPaging<E> of(long offset, int pageSize, List<E> elements) {
@@ -66,12 +67,12 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	/**
 	 * 基于偏移量和指定总数创建OffsetPaging实例
 	 * 
-	 * @param <T>        分页查询结果类型（元素集合）
-	 * @param <E>        分页元素类型
-	 * @param offset     偏移量，从0开始
-	 * @param pageSize   每页大小，需大于0
+	 * @param <T>         分页查询结果类型（元素集合）
+	 * @param <E>         分页元素类型
+	 * @param offset      偏移量，从0开始
+	 * @param pageSize    每页大小，需大于0
 	 * @param offsetQuery 分页查询器：入参为偏移量、每页大小，返回元素集合Collection<E>
-	 * @param total      总记录数（可为null，表示未知总数）
+	 * @param total       总记录数（可为null，表示未知总数）
 	 * @return OffsetPaging<E> 分页实例
 	 */
 	public static <T, E> OffsetPaging<E> of(long offset, int pageSize,
@@ -117,12 +118,12 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	/**
 	 * 基于页码和指定总数创建OffsetPaging实例
 	 * 
-	 * @param <T>        分页查询结果类型（元素集合）
-	 * @param <E>        分页元素类型
-	 * @param pageNumber 页码，从1开始
-	 * @param pageSize   每页大小，需大于0
+	 * @param <T>         分页查询结果类型（元素集合）
+	 * @param <E>         分页元素类型
+	 * @param pageNumber  页码，从1开始
+	 * @param pageSize    每页大小，需大于0
 	 * @param offsetQuery 分页查询器：入参为页码、每页大小，返回元素集合Collection<E>
-	 * @param total      总记录数（可为null，表示未知总数）
+	 * @param total       总记录数（可为null，表示未知总数）
 	 * @return OffsetPaging<E> 分页实例
 	 */
 	public static <T, E> OffsetPaging<E> ofPageNumber(long pageNumber, int pageSize,
@@ -165,20 +166,21 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 			@NonNull Function<? super T, ? extends Listable<V>> elementMapper,
 			@NonNull Function<? super T, ? extends Number> totalMapper) {
 		super(offset, pageSize, (cursorId, length) -> {
+			Assert.isTrue(offset >= 0, "Offset must be greater than or equal to 0");
 			T result = offsetQuery.query(cursorId, length);
 			Listable<V> elements = result == null ? null : elementMapper.apply(result);
 			if (elements == null) {
 				elements = Listable.empty();
 			}
 			Number totalNumber = result == null ? null : totalMapper.apply(result);
-			Long total = totalNumber == null ? null : totalNumber.longValue();
+			Long total = totalNumber == null ? null : NumberUtils.toLong(totalNumber);
 			Long nextCursorId;
 			if (total == null) {
 				// 未知数量
 				nextCursorId = elements.hasElements() ? Math.addExact(cursorId, length) : null;
 			} else {
 				// 已知数量
-				nextCursorId = (total - cursorId) > 1 ? Math.addExact(cursorId, length) : null;
+				nextCursorId = (total - cursorId) > length ? Math.addExact(cursorId, length) : null;
 			}
 			return new Cursor<>(cursorId, elements, nextCursorId, total);
 		});

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.NonNull;
+import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.Listable;
 import run.soeasy.framework.core.collection.ListableWrapper;
 
@@ -28,4 +29,12 @@ public class Cursor<K, V> implements Pageable<K, V>, ListableWrapper<V, Listable
 	private final K nextCursorId;
 
 	private final Long total;
+
+	public Cursor(K cursorId, @NonNull Listable<V> source, K nextCursorId, Long total) {
+		Assert.isTrue(total == null || total >= 0, "Total must be greater than or equal to 0");
+		this.cursorId = cursorId;
+		this.source = source;
+		this.nextCursorId = nextCursorId;
+		this.total = total;
+	}
 }
