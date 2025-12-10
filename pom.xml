@@ -37,7 +37,6 @@
 	
 	<modules>
 		<module>core</module>
-		<module>slf4j</module>
 		<module>dom</module>
 		<module>xml</module>
 		<module>messaging</module>
@@ -85,11 +84,6 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>messaging</artifactId>
-				<version>1.0.1</version>
-			</dependency>
-			<dependency>
-				<groupId>run.soeasy.framework</groupId>
-				<artifactId>slf4j</artifactId>
 				<version>1.0.1</version>
 			</dependency>
 			<dependency>

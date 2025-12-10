@@ -7,6 +7,8 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.exchange.ChangeEvent;
@@ -15,8 +17,6 @@ import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.PathResource;
-import run.soeasy.framework.logging.LogManager;
-import run.soeasy.framework.logging.Logger;
 
 /**
  * 路径资源轮询器，基于JDK {@link WatchService} 实现文件系统事件驱动监控，同时继承 {@link ResourcePoller}
@@ -24,15 +24,19 @@ import run.soeasy.framework.logging.Logger;
  * 
  * <h3>核心特性</h3>
  * <ul>
- * <li><b>双重监控机制</b>：WatchService 事件驱动（实时捕获文件系统原生事件）+ 父类定期轮询（兜底检查资源状态，避免事件丢失）；</li>
- * <li><b>事件标准化</b>：将 {@link StandardWatchEventKinds}（ENTRY_CREATE/DELETE/MODIFY）转换为统一的 {@link ChangeType}；</li>
+ * <li><b>双重监控机制</b>：WatchService 事件驱动（实时捕获文件系统原生事件）+
+ * 父类定期轮询（兜底检查资源状态，避免事件丢失）；</li>
+ * <li><b>事件标准化</b>：将
+ * {@link StandardWatchEventKinds}（ENTRY_CREATE/DELETE/MODIFY）转换为统一的
+ * {@link ChangeType}；</li>
  * <li><b>路径适配</b>：自动向上查找有效父目录（WatchService 仅支持监控目录），适配文件/目录两种监控场景；</li>
- * <li><b>生命周期安全</b>：通过 {@link WatchKeyRegistry} 管理 {@link WatchKey} 注册/清理，避免资源泄漏；</li>
- * <li><b>线程安全</b>：懒加载的监控路径（watchable）采用volatile + 双重检查锁初始化，WatchKey 管理线程安全；</li>
+ * <li><b>生命周期安全</b>：通过 {@link WatchKeyRegistry} 管理 {@link WatchKey}
+ * 注册/清理，避免资源泄漏；</li>
+ * <li><b>线程安全</b>：懒加载的监控路径（watchable）采用volatile + 双重检查锁初始化，WatchKey
+ * 管理线程安全；</li>
  * </ul>
  * 
- * <h3>适用场景</h3>
- * 适用于需要实时监控文件/目录变更的场景（如配置文件热加载、目录文件新增/删除监听），兼顾实时性与可靠性。
+ * <h3>适用场景</h3> 适用于需要实时监控文件/目录变更的场景（如配置文件热加载、目录文件新增/删除监听），兼顾实时性与可靠性。
  * 
  * @param <T> 资源类型，必须继承自 {@link PathResource}，确保具备路径操作能力
  * @author soeasy.run
@@ -44,7 +48,7 @@ import run.soeasy.framework.logging.Logger;
  * @see WatchKeyRegistry
  */
 public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
-	private static final Logger logger = LogManager.getLogger(PathPoller.class);
+	private static Logger logger = Logger.getLogger(PathPoller.class.getName());
 
 	/**
 	 * 可被WatchService监控的目录路径（WatchService仅支持监控目录，文件需关联其父目录）。
@@ -79,10 +83,10 @@ public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
 	 * <ol>
 	 * <li>事件类型映射：ENTRY_CREATE→CREATE、ENTRY_DELETE→DELETE、ENTRY_MODIFY→UPDATE，未知类型（如OVERFLOW）返回null；</li>
 	 * <li>路径匹配规则（eventPath为相对监控目录的路径）：
-	 *   <ul>
-	 *   <li>监控目录：eventPath为该目录的子路径即视为相关事件；</li>
-	 *   <li>监控文件：eventPath需与文件的绝对/相对路径完全匹配才视为相关事件；</li>
-	 *   </ul>
+	 * <ul>
+	 * <li>监控目录：eventPath为该目录的子路径即视为相关事件；</li>
+	 * <li>监控文件：eventPath需与文件的绝对/相对路径完全匹配才视为相关事件；</li>
+	 * </ul>
 	 * </li>
 	 * <li>非匹配/未知事件返回null，实现无效事件过滤。</li>
 	 * </ol>
@@ -188,7 +192,8 @@ public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
 			return watchableDir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
 					StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 		} catch (IOException e) {
-			logger.error(e, "Failed to register watch for resource: {}", getResource().getDescription());
+			logger.log(Level.WARNING, e,
+					() -> "Failed to register watch for resource:" + getResource().getDescription());
 			return null;
 		}
 	}

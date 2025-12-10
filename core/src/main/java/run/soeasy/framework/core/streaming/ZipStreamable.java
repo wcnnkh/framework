@@ -10,14 +10,12 @@ import java.util.stream.StreamSupport;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.streaming.ZipIterator.Rule;
-import run.soeasy.framework.logging.LogManager;
-import run.soeasy.framework.logging.Logger;
 
 @RequiredArgsConstructor
 @Getter
 public class ZipStreamable<L, R, E> implements Streamable<E> {
-	private static Logger logger = LogManager.getLogger(ZipStreamable.class);
 	@NonNull
 	private final Streamable<? extends L> leftStreamable;
 	@NonNull
@@ -38,15 +36,15 @@ public class ZipStreamable<L, R, E> implements Streamable<E> {
 				Iterator<E> zipIterator = new ZipIterator<>(leftIter, rightIter, rule, combiner);
 				Stream<E> resultStream = StreamSupport
 						.stream(Spliterators.spliteratorUnknownSize(zipIterator, Spliterator.ORDERED), false);
-				resultStream = resultStream.onClose(() -> closeStreamQuietly(leftStream));
-				resultStream = resultStream.onClose(() -> closeStreamQuietly(rightStream));
+				resultStream = resultStream.onClose(() -> ObjectUtils.closeQuietly(leftStream));
+				resultStream = resultStream.onClose(() -> ObjectUtils.closeQuietly(rightStream));
 				return resultStream;
 			} catch (Exception e) {
-				closeStreamQuietly(rightStream);
+				ObjectUtils.closeQuietly(rightStream);
 				throw e;
 			}
 		} catch (Throwable e) {
-			closeStreamQuietly(leftStream);
+			ObjectUtils.closeQuietly(leftStream);
 			throw e;
 		}
 	}
@@ -92,16 +90,5 @@ public class ZipStreamable<L, R, E> implements Streamable<E> {
 	@Override
 	public Streamable<E> reload() {
 		return new ZipStreamable<>(leftStreamable.reload(), rightStreamable.reload(), rule, combiner);
-	}
-
-	// 仅保留核心关闭工具方法
-	private void closeStreamQuietly(Stream<?> stream) {
-		if (stream == null)
-			return;
-		try {
-			stream.close();
-		} catch (Exception e) {
-			logger.error(e, "closeStreamQuietly");
-		}
 	}
 }

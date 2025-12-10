@@ -92,6 +92,6 @@ public final class SystemServiceDiscoverer extends CompositeServiceDiscoverer {
 		// 优先从配置的复合发现器链中查找服务
 		Streamable<S> services = super.getServices(requiredType);
 		// 兜底：若配置链无结果，使用JDK SPI加载（保证返回非null）
-		return services.isEmpty() ? ServiceDiscoverer.load(requiredType) : services;
+		return (services == null || services.isEmpty()) ? ServiceDiscoverer.load(requiredType) : services;
 	}
 }

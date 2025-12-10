@@ -1,6 +1,8 @@
 package run.soeasy.framework.messaging.convert;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
@@ -11,8 +13,7 @@ import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.MimeType;
-import run.soeasy.framework.logging.LogManager;
-import run.soeasy.framework.logging.Logger;
+import run.soeasy.framework.logging.FormatableMessage;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -43,7 +44,7 @@ import run.soeasy.framework.messaging.convert.support.TextMessageConverter;
  * @see QueryStringMessageConveter
  */
 public class MessageConverters extends ConfigurableServices<MessageConverter> implements MessageConverter {
-	private static final Logger logger = LogManager.getLogger(MessageConverters.class);
+	private static Logger log = Logger.getLogger(MessageConverter.class.getName());
 
 	/**
 	 * 系统级默认消息转换器集合（单例），预注册基础转换器，供全局使用
@@ -187,10 +188,8 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 				return converter.readFrom(targetDescriptor, message, contentType);
 			}
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("No converter found for reading: descriptor={}, contentType={}", targetDescriptor,
-					contentType);
-		}
+		log.log(Level.FINER, () -> "No converter found for reading: descriptor=" + targetDescriptor + " , contentType="
+				+ contentType);
 		return null;
 	}
 
@@ -229,16 +228,14 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 			throws IOException {
 		for (MessageConverter converter : this) {
 			if (converter.isWriteable(source, message, contentType)) {
-				if (logger.isTraceEnabled()) {
-					logger.trace("Using converter {} for writing: source={}, contentType={}",
-							converter.getClass().getSimpleName(), source, contentType);
-				}
+				log.log(Level.FINEST,
+						FormatableMessage.create("Using converter {} for writing: source={}, contentType={}",
+								converter.getClass().getSimpleName(), source, contentType));
 				converter.writeTo(source, message, contentType);
 				return;
 			}
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("No converter found for writing: source={}, contentType={}", source, contentType);
-		}
+		log.log(Level.FINEST, FormatableMessage.create("No converter found for writing: source={}, contentType={}",
+				source, contentType));
 	}
 }

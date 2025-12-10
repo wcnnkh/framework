@@ -2,10 +2,10 @@ package run.soeasy.framework.core.exchange;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lombok.NonNull;
-import run.soeasy.framework.logging.LogManager;
-import run.soeasy.framework.logging.Logger;
 
 /**
  * 一次性事件分发器，确保每个监听器仅接收一次事件后即被移除。 该分发器采用FIFO队列存储监听器，在事件发布时按顺序触发监听器，
@@ -34,7 +34,7 @@ import run.soeasy.framework.logging.Logger;
  * @see ListenableChannel
  */
 public class DisposableDispatcher<T> extends AbstractChannel<T> implements ListenableChannel<T> {
-	private static final Logger logger = LogManager.getLogger(DisposableDispatcher.class);
+	private static Logger logger = Logger.getLogger(DisposableDispatcher.class.getName());
 	/** 监听器注册表，使用队列容器确保FIFO顺序处理 */
 	private final CollectionContainer<Listener<T>, Queue<Listener<T>>> registry = new CollectionContainer<>(
 			new ConcurrentLinkedQueue<>());
@@ -78,7 +78,8 @@ public class DisposableDispatcher<T> extends AbstractChannel<T> implements Liste
 	 * @param e        抛出的异常
 	 */
 	protected void handleError(Listener<? super T> listener, T resource, Throwable e) {
-		logger.error(e, "Error occurred while processing listener {} with resource {}", listener, resource);
+		logger.log(Level.SEVERE, e,
+				() -> "Error occurred while processing listener " + listener + " with resource " + resource);
 	}
 
 	/**
