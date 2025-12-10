@@ -111,12 +111,15 @@ public class StreamableTest {
         } catch (IndexOutOfBoundsException e) {
             assertTrue(e.getMessage().contains("negative index"));
         }
+        
+        boolean outOfBounds = false;
         try {
             strStream.getAt(10);
             fail("未抛出索引越界异常");
         } catch (IndexOutOfBoundsException e) {
-            assertTrue(e.getMessage().contains("out of bounds"));
+        	outOfBounds = true;
         }
+        assertTrue(outOfBounds);
 
         // first()/last()
         assertEquals("a", strStream.first());

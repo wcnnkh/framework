@@ -38,7 +38,7 @@ public class BeanInfoMapping extends StreamablePropertyMapping<BeanProperty> {
 	public PropertyMapping<BeanProperty> standard() {
 		return new BeanInfoMapping(this.elements().filter((property) -> {
 			return property.getReadMethod() != null && property.getReadMethod().getSource() != null
-					&& ReflectionUtils.isObjectMethod(property.getReadMethod().getSource());
+					&& !ReflectionUtils.isObjectMethod(property.getReadMethod().getSource());
 		})).toMultiMapped();
 	}
 }

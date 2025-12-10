@@ -23,7 +23,6 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @author soeasy.run
  * @see CompositeServiceDiscoverer 复合服务发现器（父类，提供多发现器管理能力）
  * @see ServiceDiscoverer 基础服务发现器接口（定义服务查找契约）
- * @since 1.0.0
  */
 public final class SystemServiceDiscoverer extends CompositeServiceDiscoverer {
 	/**

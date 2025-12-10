@@ -114,6 +114,9 @@ public class PropertyMapper<E extends Property>
 			PropertyMapping<E> propertyTemplate = getObjectTemplate(requiredType.getType());
 			if (propertyTemplate != null) {
 				typedProperties = new ObjectMapping<>(propertyTemplate, source);
+				if(propertyTemplate.isMapped()) {
+					typedProperties = typedProperties.toMultiMapped();
+				}
 			}
 		}
 		return typedProperties;
@@ -150,7 +153,7 @@ public class PropertyMapper<E extends Property>
 		PropertyMapping<E> sourcePropertyTemplate = new StreamablePropertyMapping<>(classMembers);
 		// 创建对象属性集合
 		ObjectMapping<E, PropertyMapping<E>> objectProperties = new ObjectMapping<>(sourcePropertyTemplate, object);
-		return objectProperties;
+		return sourcePropertyTemplate.isMapped() ? objectProperties.toMultiMapped() : objectProperties;
 	}
 
 	/**

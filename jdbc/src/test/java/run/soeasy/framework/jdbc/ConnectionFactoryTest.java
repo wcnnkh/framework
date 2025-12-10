@@ -35,6 +35,7 @@ public class ConnectionFactoryTest {
 		System.out.println("---------");
 		connectionFactory.newPipeline().prepareStatement(querySql).query().rows((rs) -> JdbcUtils.getResultSetMapper().convert(rs, User.class)).forEach((user) -> {
 			System.out.println(user);
+			assert user.getAge() == 1;
 		});
 		
 		try {

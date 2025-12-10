@@ -56,9 +56,9 @@ public class CachedStreamable<E, W extends Streamable<? extends E>> implements S
 
 	protected boolean isReloadable() {
 		if (source == null || collectionFactory == null) {
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	@Override

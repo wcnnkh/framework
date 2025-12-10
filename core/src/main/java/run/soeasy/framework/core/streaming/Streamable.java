@@ -603,16 +603,29 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 获取流中最后一个元素，无元素时返回null。
+	 * 获取流中最后一个元素
 	 * <p>
-	 * 实现逻辑：转为串行流后通过归约操作（(a,b)->b）获取最后一个元素，空流返回null。
+	 * 核心规则：
+	 * 1. 空流 → 返回 null；
+	 * 2. 流含元素（包括元素为 null）→ 返回最后一个元素（无论元素是否为 null）；
+	 * 3. 无限流 → 无限阻塞（需避免使用）。
 	 * <p>
-	 * 注意：对于无限流，此方法会无限阻塞，需避免使用。
+	 * 实现逻辑：
+	 * 1. 先转为串行流保证线程安全；
+	 * 2. 通过extract方法获取流的迭代器，遍历迭代器至最后一个元素（遍历过程保留null元素）；
+	 * 3. 遍历结束后返回最后一次迭代的元素（无元素时返回null）。
 	 * 
-	 * @return 流的最后一个元素，空流返回null
+	 * @return 流的最后一个元素（可能为null），空流返回null
 	 */
 	default E last() {
-		return sequential().reduce((a, b) -> b).orElse(null);
+		return sequential().extract((stream) -> {
+			Iterator<E> iterator = stream.iterator();
+			E last = null;
+			while(iterator.hasNext()) {
+				last = iterator.next();
+			}
+			return last;
+		});
 	}
 
 	/**
