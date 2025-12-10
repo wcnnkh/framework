@@ -38,7 +38,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  */
 @RequiredArgsConstructor
 @Getter
-public class MapRegistry<K, V, D extends Map<K, V>> implements KeyValueRegistry<K, V> {
+public class MapContainer<K, V, D extends Map<K, V>> implements KeyValueRegistry<K, V> {
 	/**
 	 * 底层存储容器：存储键值对，天然保证键唯一性
 	 * <p>

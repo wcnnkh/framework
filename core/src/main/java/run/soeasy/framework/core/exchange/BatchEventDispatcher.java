@@ -38,11 +38,11 @@ public class BatchEventDispatcher<T> extends EventDispatcher<Streamable<T>> impl
 	/**
 	 * 无参构造函数，使用默认配置
 	 * <p>
-	 * 初始化时使用{@link CollectionRegistry}作为监听器注册表，
+	 * 初始化时使用{@link CollectionContainer}作为监听器注册表，
 	 * 并使用{@link Filter#identity()}作为默认过滤器。
 	 */
 	public BatchEventDispatcher() {
-		this(new CollectionRegistry<>(new CopyOnWriteArrayList<>()), Filter.identity());
+		this(new CollectionContainer<>(new CopyOnWriteArrayList<>()), Filter.identity());
 	}
 
 	/**

@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import lombok.Getter;
 import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
-import run.soeasy.framework.core.exchange.MapRegistry;
+import run.soeasy.framework.core.exchange.MapContainer;
 import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.streaming.Streamable;
 
 @Getter
-public class ServiceMap<K, S> extends MapRegistry<K, S, ConcurrentSkipListMap<K, S>>
+public class ServiceMap<K, S> extends MapContainer<K, S, ConcurrentSkipListMap<K, S>>
 		implements ServiceInjector<S> {
 	private final ServiceInjectors<S> injectors = new ServiceInjectors<>();
 

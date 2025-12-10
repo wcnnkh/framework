@@ -7,7 +7,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
-import run.soeasy.framework.core.exchange.CollectionRegistry;
+import run.soeasy.framework.core.exchange.CollectionContainer;
 import run.soeasy.framework.core.exchange.Registry;
 import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.Headers;
@@ -36,7 +36,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	 * 媒体类型注册表，用于管理当前转换器支持的所有媒体类型（如"application/json"、"text/plain"），
 	 * 支持添加、查询、筛选等操作，是判断媒体类型兼容性的核心依据。
 	 */
-	private final Registry<MediaType> mediaTypeRegistry = new CollectionRegistry<MediaType, TreeSet<MediaType>>(
+	private final Registry<MediaType> mediaTypeRegistry = new CollectionContainer<MediaType, TreeSet<MediaType>>(
 			new TreeSet<>(MediaType.SPECIFICITY_COMPARATOR));
 
 	public Registry<MediaType> getMediaTypeRegistry() {

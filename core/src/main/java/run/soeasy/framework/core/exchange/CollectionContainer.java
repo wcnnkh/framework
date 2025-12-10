@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class CollectionRegistry<E, D extends Collection<E>> implements Registry<E>, Iterable<E> {
+public class CollectionContainer<E, D extends Collection<E>> implements Registry<E>, Iterable<E> {
 	/**
 	 * 底层存储容器：直接存储业务元素
 	 * <p>

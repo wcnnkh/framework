@@ -36,7 +36,7 @@ import run.soeasy.framework.logging.Logger;
 public class DisposableDispatcher<T> extends AbstractChannel<T> implements ListenableChannel<T> {
 	private static final Logger logger = LogManager.getLogger(DisposableDispatcher.class);
 	/** 监听器注册表，使用队列容器确保FIFO顺序处理 */
-	private final CollectionRegistry<Listener<T>, Queue<Listener<T>>> registry = new CollectionRegistry<>(
+	private final CollectionContainer<Listener<T>, Queue<Listener<T>>> registry = new CollectionContainer<>(
 			new ConcurrentLinkedQueue<>());
 
 	/**

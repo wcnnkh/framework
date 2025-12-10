@@ -194,13 +194,13 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 				nextCursor = (totalCount - cursor) > length ? Math.addExact(cursor, length) : null;
 			}
 
-			return new CursorPage<>(cursor, elements, nextCursor, totalCount);
+			return new CursorSlice<>(cursor, elements, nextCursor, totalCount);
 		});
 	}
 
 	@Override
-	public Page<Long, V> getCurrentPage() {
-		return new Page<>(super.getCurrentPage(), getPageNumber(), getPageSize());
+	public Page<Long, V> getSource() {
+		return new Page<>(super.getSource(), getPageNumber(), getPageSize());
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	 * @throws IllegalArgumentException 页码≤0或每页大小≤0时抛出
 	 */
 	public OffsetPaging<V> jumpToPage(long pageNumber, int pageSize) {
-		return new OffsetPaging<>(getOffset(pageNumber, pageSize), pageSize, this::query, (e) -> e.getElements(),
-				(e) -> e.isKnownTotal() ? e.getTotalCount() : null);
+		return new OffsetPaging<>(getOffset(pageNumber, pageSize), pageSize, this::query, Function.identity(),
+				(e) -> e.isTotalCountKnown() ? e.getTotalCount() : null);
 	}
 }

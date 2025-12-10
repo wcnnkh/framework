@@ -13,7 +13,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @param <K> 游标类型，用于标识分页起始位置（如Long/String/复合标识）
  * @param <V> 分页内容的元素类型（如业务实体类）
  */
-public interface Paging<K, V> extends Pageable<K, V>, PagingQuery<K, Paging<K, V>> {
+public interface Paging<K, V> extends Slice<K, V>, PagingQuery<K, Paging<K, V>> {
 	/**
 	 * 计算总页数（适配大数据量，避免数值溢出）
 	 * <p>
@@ -67,8 +67,8 @@ public interface Paging<K, V> extends Pageable<K, V>, PagingQuery<K, Paging<K, V
 	 * @return 下一页的分页对象
 	 * @throws NoSuchElementException 如果没有下一页数据时抛出
 	 */
-	default Paging<K, V> nextPage() {
-		if (!hasNextPage()) {
+	default Paging<K, V> next() {
+		if (!hasNext()) {
 			throw new NoSuchElementException("There is no next page");
 		}
 		return jumpTo(getNextCursor());
@@ -80,7 +80,7 @@ public interface Paging<K, V> extends Pageable<K, V>, PagingQuery<K, Paging<K, V
 	 * @return 包含所有页的延迟加载元素集合
 	 */
 	default Streamable<Paging<K, V>> pages() {
-		return Streamable.of(() -> new LinkedIterator<>(this, Paging::hasNextPage, Paging::nextPage));
+		return Streamable.of(() -> new LinkedIterator<>(this, Paging::hasNext, Paging::next));
 	}
 
 	/**

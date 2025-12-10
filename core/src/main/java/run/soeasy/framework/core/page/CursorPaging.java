@@ -18,14 +18,14 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @param <K> 游标的类型，用于标识分页位置（如Long型偏移量、String型唯一标识等）
  * @param <V> 分页内容的元素类型
  */
-public class CursorPaging<K, V> implements Paging<K, V> {
+public class CursorPaging<K, V> implements Paging<K, V>, SliceWrapper<K, V, Slice<K, V>> {
 	/**
 	 * 当前页数据，使用双重检查锁定机制延迟初始化
 	 * <p>
-	 * 首次调用{@link #getCurrentPage()}时执行实际查询，查询后缓存结果
+	 * 首次调用{@link #getSource()}时执行实际查询，查询后缓存结果
 	 * </p>
 	 */
-	private volatile Pageable<K, V> currentPage;
+	private volatile Slice<K, V> source;
 
 	/**
 	 * 当前页的游标
@@ -50,7 +50,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * </p>
 	 */
 	@NonNull
-	private final PagingQuery<K, Pageable<K, V>> pagingQuery;
+	private final PagingQuery<K, Slice<K, V>> pagingQuery;
 
 	/**
 	 * 总记录数，null表示总数未知，需遍历所有页计算
@@ -70,7 +70,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * @param pagingQuery 分页查询器，不可为null，封装实际查询逻辑
 	 * @throws IllegalArgumentException 若pagingQuery为null时抛出（由@NonNull注解触发）
 	 */
-	public CursorPaging(K cursor, @NonNull PagingQuery<K, Pageable<K, V>> pagingQuery) {
+	public CursorPaging(K cursor, @NonNull PagingQuery<K, Slice<K, V>> pagingQuery) {
 		this(cursor, Integer.MAX_VALUE, pagingQuery);
 	}
 
@@ -82,7 +82,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * @param pagingQuery 分页查询器，不可为null，封装实际查询逻辑
 	 * @throws IllegalArgumentException 若pageSize≤0或pagingQuery为null时抛出
 	 */
-	public CursorPaging(K cursor, int pageSize, @NonNull PagingQuery<K, Pageable<K, V>> pagingQuery) {
+	public CursorPaging(K cursor, int pageSize, @NonNull PagingQuery<K, Slice<K, V>> pagingQuery) {
 		Assert.isTrue(pageSize > 0, "Page size must be greater than 0, cannot be 0 or negative");
 		this.cursor = cursor;
 		this.pageSize = pageSize;
@@ -100,19 +100,20 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * 
 	 * @return 当前页的Pageable对象，永不返回null（无数据时返回空Pageable）
 	 */
-	public Pageable<K, V> getCurrentPage() {
-		if (currentPage == null) {
+	@Override
+	public Slice<K, V> getSource() {
+		if (source == null) {
 			synchronized (this) {
-				if (currentPage == null) {
-					currentPage = pagingQuery.query(cursor, pageSize);
-					if (currentPage == null) {
+				if (source == null) {
+					source = pagingQuery.query(cursor, pageSize);
+					if (source == null) {
 						// 处理无数据情况
-						currentPage = new CursorPage<>(cursor, Streamable.empty(), null, null);
+						source = new CursorSlice<>(cursor, Streamable.empty(), null, null);
 					}
 				}
 			}
 		}
-		return currentPage;
+		return source;
 	}
 
 	/**
@@ -123,35 +124,6 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	@Override
 	public final K getCurrentCursor() {
 		return cursor;
-	}
-
-	/**
-	 * 获取当前页的元素列表（懒加载）
-	 * <p>
-	 * 首次调用时触发{@link #getCurrentPage()}执行实际查询，后续调用返回缓存数据
-	 * </p>
-	 * 
-	 * @return 当前页的元素集合Elements<V>，永不返回null（无数据时返回空Elements）
-	 */
-	@Override
-	public final Streamable<V> getElements() {
-		return getCurrentPage().getElements();
-	}
-
-	/**
-	 * 获取下一页的游标（懒加载）
-	 * <p>
-	 * 首次调用时触发{@link #getCurrentPage()}执行实际查询，后续调用返回缓存结果
-	 * </p>
-	 * <p>
-	 * 返回null表示无下一页数据
-	 * </p>
-	 * 
-	 * @return 下一页的游标，null表示无下一页
-	 */
-	@Override
-	public final K getNextCursor() {
-		return getCurrentPage().getNextCursor();
 	}
 
 	/**
@@ -187,8 +159,8 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 			return totalCount;
 		}
 
-		if (getCurrentPage().isKnownTotal()) {
-			return getCurrentPage().getTotalCount();
+		if (getSource().isTotalCountKnown()) {
+			return getSource().getTotalCount();
 		}
 
 		long total = 0;
@@ -196,26 +168,13 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 			Iterator<Paging<K, V>> iterator = stream.iterator();
 			while (iterator.hasNext()) {
 				Paging<K, V> page = iterator.next();
-				if (page.isKnownTotal()) {
+				if (page.isTotalCountKnown()) {
 					return page.getTotalCount();
 				}
-				total = Math.addExact(page.getElements().count(), total);
+				total = Math.addExact(page.count(), total);
 			}
 		}
 		return total;
-	}
-
-	/**
-	 * 判断是否存在下一页（懒加载）
-	 * <p>
-	 * 首次调用时触发{@link #getCurrentPage()}执行实际查询，后续调用返回缓存结果
-	 * </p>
-	 * 
-	 * @return true表示存在下一页，false表示无下一页
-	 */
-	@Override
-	public final boolean hasNextPage() {
-		return getCurrentPage().hasNextPage();
 	}
 
 	/**
@@ -228,8 +187,8 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * @return true表示已知总记录数，false表示未知
 	 */
 	@Override
-	public boolean isKnownTotal() {
-		return totalCount != null || getCurrentPage().isKnownTotal();
+	public boolean isTotalCountKnown() {
+		return totalCount != null || SliceWrapper.super.isTotalCountKnown();
 	}
 
 	/**
@@ -247,7 +206,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	@Override
 	public Paging<K, V> query(K cursor, int pageSize) {
 		CursorPaging<K, V> paging = new CursorPaging<>(cursor, pageSize, pagingQuery);
-		paging.setTotalCount(isKnownTotal() ? getTotalCount() : totalCount);
+		paging.setTotalCount(isTotalCountKnown() ? getTotalCount() : totalCount);
 		return paging;
 	}
 

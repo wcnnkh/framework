@@ -56,7 +56,7 @@ public class EventDispatcher<T> extends AbstractChannel<T> implements Listenable
 	 * 并使用{@link Filter#identity()}作为默认过滤器。
 	 */
 	public EventDispatcher() {
-		this(new CollectionRegistry<>(new CopyOnWriteArrayList<>()), Filter.identity());
+		this(new CollectionContainer<>(new CopyOnWriteArrayList<>()), Filter.identity());
 	}
 
 	/**

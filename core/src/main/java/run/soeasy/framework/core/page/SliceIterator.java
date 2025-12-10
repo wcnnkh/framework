@@ -13,14 +13,14 @@ import run.soeasy.framework.core.streaming.Streamable;
 /**
  * 基于元素迭代器的分页迭代器
  * <p>
- * 将单元素迭代器（Iterator<E>）拆分为按页划分的Pageable<Long, E>迭代器，
+ * 将单元素迭代器（Iterator<E>）拆分为按页划分的Slice<Long, E>迭代器，
  * 每次迭代返回包含指定数量元素的分页对象，分页位置通过偏移量（offset）标识
  * </p>
  *
  * @param <E> 分页元素的类型
  * @author soeasy.run
  */
-public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
+public class SliceIterator<E> implements Iterator<Slice<Long, E>> {
 	/**
 	 * 每页大小，需大于0
 	 */
@@ -41,7 +41,7 @@ public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 	/**
 	 * 缓存下一页的分页对象，减少重复计算
 	 */
-	private Pageable<Long, E> nextPageable;
+	private Slice<Long, E> nextPageable;
 
 	/**
 	 * 创建分页迭代器
@@ -51,7 +51,7 @@ public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 	 * @throws IllegalArgumentException 若pageSize≤0时抛出
 	 * @throws NullPointerException     若iterator为null时抛出
 	 */
-	public PageIterator(int pageSize, @NonNull Iterator<? extends E> iterator) {
+	public SliceIterator(int pageSize, @NonNull Iterator<? extends E> iterator) {
 		Assert.isTrue(pageSize > 0, "PageSize must be greater than 0");
 		this.pageSize = pageSize;
 		this.iterator = iterator;
@@ -97,7 +97,7 @@ public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 		}
 
 		// 构建分页对象并缓存
-		nextPageable = new CursorPage<>(offset, Streamable.of(currentPageElements), nextCursorId, null);
+		nextPageable = new CursorSlice<>(offset, Streamable.of(currentPageElements), nextCursorId, null);
 		return true;
 	}
 
@@ -108,12 +108,12 @@ public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 	 * @throws NoSuchElementException 若不存在下一页时抛出
 	 */
 	@Override
-	public synchronized Pageable<Long, E> next() {
+	public synchronized Slice<Long, E> next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException("No more pages available");
 		}
 		// 取出缓存的分页对象并清空缓存
-		Pageable<Long, E> currentPage = nextPageable;
+		Slice<Long, E> currentPage = nextPageable;
 		nextPageable = null;
 		return currentPage;
 	}

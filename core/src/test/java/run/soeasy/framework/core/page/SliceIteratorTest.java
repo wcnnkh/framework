@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-public class PageIteratorTest {
+public class SliceIteratorTest {
 	@Test
 	public void test() {
 		List<UUID> list = new ArrayList<>();
@@ -15,10 +15,10 @@ public class PageIteratorTest {
 		}
 
 		for (int pageSize = 200; pageSize < 2002; pageSize++) {
-			PageIterator<UUID> pageIterator = new PageIterator<>(pageSize, list.iterator());
+			SliceIterator<UUID> pageIterator = new SliceIterator<>(pageSize, list.iterator());
 			long total = 0;
 			while (pageIterator.hasNext()) {
-				total += pageIterator.next().getElements().count();
+				total += pageIterator.next().count();
 			}
 			assert total == list.size();
 		}

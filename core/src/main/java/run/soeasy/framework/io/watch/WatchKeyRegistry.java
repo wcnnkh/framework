@@ -4,7 +4,7 @@ import java.nio.file.WatchKey;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import run.soeasy.framework.core.exchange.CollectionRegistry;
+import run.soeasy.framework.core.exchange.CollectionContainer;
 
 /**
  * WatchKey注册容器, 专门用于管理{@link WatchKey}的注册与生命周期，
@@ -17,7 +17,7 @@ import run.soeasy.framework.core.exchange.CollectionRegistry;
  * @author soeasy.run
  * @see WatchKey
  */
-public class WatchKeyRegistry extends CollectionRegistry<WatchKey, CopyOnWriteArrayList<WatchKey>> {
+public class WatchKeyRegistry extends CollectionContainer<WatchKey, CopyOnWriteArrayList<WatchKey>> {
 
 	/**
 	 * 初始化WatchKey注册容器

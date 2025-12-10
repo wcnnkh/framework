@@ -4,11 +4,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.exchange.MapRegistry;
+import run.soeasy.framework.core.exchange.MapContainer;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 
 /**
- * 类成员模板注册表，继承自{@link MapRegistry}并实现{@link ClassMemberTemplateFactory}，
+ * 类成员模板注册表，继承自{@link MapContainer}并实现{@link ClassMemberTemplateFactory}，
  * 用于缓存和管理类与类成员属性模板之间的映射关系，支持线程安全的模板注册和获取操作。
  * <p>
  * 该类采用读写锁机制实现并发控制，在多线程环境下保证数据一致性和高性能访问。
@@ -39,12 +39,12 @@ import run.soeasy.framework.core.type.ClassMembersLoader;
  * @author soeasy.run
  * @see ClassMemberTemplateFactory
  * @see ClassMembersLoader
- * @see MapRegistry
+ * @see MapContainer
  */
 @Getter
 @Setter
 public class ClassMemberTemplateRegistry<E extends Property>
-		extends MapRegistry<Class<?>, ClassMembersLoader<E>, ConcurrentHashMap<Class<?>, ClassMembersLoader<E>>>
+		extends MapContainer<Class<?>, ClassMembersLoader<E>, ConcurrentHashMap<Class<?>, ClassMembersLoader<E>>>
 		implements ClassMemberTemplateFactory<E> {
 
 	/** 用于动态生成类成员属性模板的工厂，可为null */
