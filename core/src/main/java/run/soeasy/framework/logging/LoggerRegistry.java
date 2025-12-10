@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 日志器注册表，继承自{@link LevelRegistry}并实现{@link LoggerFactory}接口，
@@ -71,8 +71,8 @@ public class LoggerRegistry extends LevelRegistry implements LoggerFactory {
      * 
      * @return 日志器元素集合
      */
-    public Elements<FacadeLogger> getLoggers() {
-        return Elements.of(loggerMap.values());
+    public Streamable<FacadeLogger> getLoggers() {
+        return Streamable.of(loggerMap.values());
     }
 
     /**
@@ -95,7 +95,7 @@ public class LoggerRegistry extends LevelRegistry implements LoggerFactory {
             }
         }
     }
-
+    
     /**
      * 根据名称获取日志器。
      * <p>

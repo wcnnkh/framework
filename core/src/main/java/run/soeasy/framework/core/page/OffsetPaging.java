@@ -8,7 +8,7 @@ import java.util.function.Function;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.NumberUtils;
-import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 基于偏移量的分页实现 基于偏移量(offset)和每页大小(pageSize)实现的分页机制，继承游标分页体系（偏移量作为Long型游标）
@@ -106,7 +106,7 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 			@NonNull Function<? super T, ? extends Number> totalMapper) {
 		return new OffsetPaging<>(offset, pageSize, offsetQuery, (e) -> {
 			Collection<E> elements = elementMapper.apply(e);
-			return elements == null ? null : Listable.forCollection(elements);
+			return elements == null ? null : Streamable.of(elements);
 		}, totalMapper);
 	}
 
@@ -170,26 +170,26 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	 * @param offset        偏移量，必须≥0（从0开始）
 	 * @param pageSize      每页大小，必须>0（不允许为0或负数）
 	 * @param offsetQuery   分页查询器：入参为偏移量、每页大小，返回原始查询结果T（不可为null）
-	 * @param elementMapper 结果映射器：将原始查询结果T转换为分页元素列表Listable<V>（不可为null）
+	 * @param elementMapper 结果映射器：将原始查询结果T转换为分页元素列表Streamable&lt;V&gt;（不可为null）
 	 * @param totalMapper   总数映射器：将原始查询结果T转换为总记录数（Number类型，不可为null）
 	 * @throws IllegalArgumentException 偏移量<0或每页大小≤0时抛出
 	 */
 	public <T> OffsetPaging(long offset, int pageSize, @NonNull PagingQuery<Long, ? extends T> offsetQuery,
-			@NonNull Function<? super T, ? extends Listable<V>> elementMapper,
+			@NonNull Function<? super T, ? extends Streamable<V>> elementMapper,
 			@NonNull Function<? super T, ? extends Number> totalMapper) {
 		super(offset, pageSize, (cursor, length) -> {
 			Assert.isTrue(offset >= 0, "Offset must be greater than or equal to 0");
 			T result = offsetQuery.query(cursor, length);
 
-			Listable<V> elements = result == null ? Listable.empty() : elementMapper.apply(result);
-			elements = elements == null ? Listable.empty() : elements;
+			Streamable<V> elements = result == null ? Streamable.empty() : elementMapper.apply(result);
+			elements = elements == null ? Streamable.empty() : elements;
 
 			Number totalNumber = result == null ? null : totalMapper.apply(result);
 			Long totalCount = totalNumber == null ? null : NumberUtils.toLong(totalNumber);
 
 			Long nextCursor;
 			if (totalCount == null) {
-				nextCursor = elements.hasElements() ? Math.addExact(cursor, length) : null;
+				nextCursor = elements.isEmpty() ? null : Math.addExact(cursor, length);
 			} else {
 				nextCursor = (totalCount - cursor) > length ? Math.addExact(cursor, length) : null;
 			}
@@ -232,7 +232,7 @@ public class OffsetPaging<V> extends CursorPaging<Long, V> {
 	 * @throws IllegalArgumentException 页码≤0或每页大小≤0时抛出
 	 */
 	public OffsetPaging<V> jumpToPage(long pageNumber, int pageSize) {
-		return new OffsetPaging<>(getOffset(pageNumber, pageSize), pageSize, this::query, Function.identity(),
+		return new OffsetPaging<>(getOffset(pageNumber, pageSize), pageSize, this::query, (e) -> e.getElements(),
 				(e) -> e.isKnownTotal() ? e.getTotalCount() : null);
 	}
 }

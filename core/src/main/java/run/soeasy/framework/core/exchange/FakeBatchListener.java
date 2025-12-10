@@ -1,13 +1,13 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.streaming.Streamable;
 
 @FunctionalInterface
-public interface FakeBatchListener<T, W extends Listener<? super T>> extends BatchListener<T>, Wrapper<W> {
+interface FakeBatchListener<T, W extends Listener<? super T>> extends BatchListener<T>, Wrapper<W> {
 
 	@Override
-	default void accept(Elements<T> source) {
+	default void accept(Streamable<T> source) {
 		source.forEach(getSource());
 	}
 }

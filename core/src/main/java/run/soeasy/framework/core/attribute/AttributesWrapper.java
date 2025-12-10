@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.attribute;
 
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 属性包装器接口，用于对Attributes实例进行统一封装和操作委托。
@@ -49,7 +49,7 @@ public interface AttributesWrapper<K, V, W extends Attributes<K, V>> extends Att
      * @return 属性名称的Elements集合
      */
     @Override
-    default Elements<K> getAttributeNames() {
+    default Streamable<K> getAttributeNames() {
         return getSource().getAttributeNames();
     }
 }

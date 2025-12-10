@@ -1,9 +1,11 @@
 package run.soeasy.framework.core.page;
 
+import java.util.Iterator;
+import java.util.stream.Stream;
+
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 基于游标的分页实现 使用懒加载机制，首次访问数据时执行实际查询
@@ -105,7 +107,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 					currentPage = pagingQuery.query(cursor, pageSize);
 					if (currentPage == null) {
 						// 处理无数据情况
-						currentPage = new CursorPage<>(cursor, Listable.empty(), null, null);
+						currentPage = new CursorPage<>(cursor, Streamable.empty(), null, null);
 					}
 				}
 			}
@@ -132,7 +134,7 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 	 * @return 当前页的元素集合Elements<V>，永不返回null（无数据时返回空Elements）
 	 */
 	@Override
-	public final Elements<V> getElements() {
+	public final Streamable<V> getElements() {
 		return getCurrentPage().getElements();
 	}
 
@@ -190,11 +192,15 @@ public class CursorPaging<K, V> implements Paging<K, V> {
 		}
 
 		long total = 0;
-		for (Paging<K, V> paging : pages()) {
-			if (paging.isKnownTotal()) {
-				return paging.getTotalCount();
+		try (Stream<Paging<K, V>> stream = pages().stream()) {
+			Iterator<Paging<K, V>> iterator = stream.iterator();
+			while (iterator.hasNext()) {
+				Paging<K, V> page = iterator.next();
+				if (page.isKnownTotal()) {
+					return page.getTotalCount();
+				}
+				total = Math.addExact(page.getElements().count(), total);
 			}
-			total = Math.addExact(paging.getElements().count(), total);
 		}
 		return total;
 	}

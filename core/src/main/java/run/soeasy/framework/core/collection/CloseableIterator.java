@@ -22,5 +22,5 @@ public interface CloseableIterator<E> extends AutoCloseable, Iterator<E> {
      * @throws Exception 如果无法成功释放资源
      */
     @Override
-    void close() throws Exception;
+    void close();
 }

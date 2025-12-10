@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量监听器接口，定义处理批量事件的基本契约。
@@ -28,7 +30,7 @@ import run.soeasy.framework.core.collection.Elements;
  * @see Listener
  * @see Elements
  */
-public interface BatchListener<T> extends Listener<Elements<T>> {
+public interface BatchListener<T> extends Listener<Streamable<T>> {
 
     /**
      * 将当前批量监听器转换为单条处理监听器

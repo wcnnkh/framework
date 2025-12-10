@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量可监听通道接口，定义支持批量消息处理和监听器管理的高级通道。
@@ -32,7 +34,7 @@ import run.soeasy.framework.core.collection.Elements;
  * @see Elements
  */
 public interface BatchListenableChannel<T>
-        extends ListenableChannel<Elements<T>>, BatchChannel<T>, BatchDispatcher<T> {
+        extends ListenableChannel<Streamable<T>>, BatchChannel<T>, BatchDispatcher<T> {
 
     /**
      * 将当前批量可监听通道转换为单条处理模式

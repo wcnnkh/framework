@@ -1,7 +1,7 @@
 package run.soeasy.framework.beans;
 
 import lombok.Getter;
-import run.soeasy.framework.core.transform.property.PropertyMapper;
+import run.soeasy.framework.core.mapping.property.PropertyMapper;
 
 /**
  * Bean映射工具类，继承自{@link PropertyMapper}，专门用于处理JavaBean之间的属性复制与转换，

@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import lombok.experimental.UtilityClass;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.CharSequenceSplitIterator;
 import run.soeasy.framework.core.domain.CharSequenceTemplate;
 import run.soeasy.framework.core.domain.Range;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 字符串工具类 提供字符串操作的各种实用方法，包括查找、替换、分割、比较等功能
@@ -792,7 +792,7 @@ public class StringUtils {
 	 * @param filters           分隔符序列
 	 * @return 分割后的元素集合
 	 */
-	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, boolean trimTokens,
+	public static Streamable<CharSequenceTemplate> split(CharSequence charSequence, boolean trimTokens,
 			boolean ignoreEmptyTokens, CharSequence... filters) {
 		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
@@ -805,9 +805,9 @@ public class StringUtils {
 	 * @param filters      分隔符序列
 	 * @return 分割后的元素集合
 	 */
-	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, CharSequence... filters) {
+	public static Streamable<CharSequenceTemplate> split(CharSequence charSequence, CharSequence... filters) {
 		if (charSequence == null) {
-			return Elements.empty();
+			return Streamable.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
@@ -819,10 +819,10 @@ public class StringUtils {
 	 * @param filters      分隔符集合
 	 * @return 分割后的元素集合
 	 */
-	public static Elements<CharSequenceTemplate> split(CharSequence charSequence,
+	public static Streamable<CharSequenceTemplate> split(CharSequence charSequence,
 			Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
-			return Elements.empty();
+			return Streamable.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
@@ -836,10 +836,10 @@ public class StringUtils {
 	 * @param filters      分隔符集合
 	 * @return 分割后的元素集合
 	 */
-	public static Elements<CharSequenceTemplate> split(CharSequence charSequence, int beginIndex, int endIndex,
+	public static Streamable<CharSequenceTemplate> split(CharSequence charSequence, int beginIndex, int endIndex,
 			Collection<? extends CharSequence> filters) {
 		if (StringUtils.isEmpty(charSequence)) {
-			return Elements.empty();
+			return Streamable.empty();
 		}
 
 		boolean find = false;
@@ -851,9 +851,9 @@ public class StringUtils {
 		}
 
 		if (!find) {
-			return Elements.singleton(new CharSequenceTemplate(charSequence));
+			return Streamable.singleton(new CharSequenceTemplate(charSequence));
 		}
-		return Elements.of(() -> new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
+		return Streamable.of(() -> new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
 	}
 
 	/**
@@ -952,9 +952,9 @@ public class StringUtils {
 	 * @param delimiters 分隔符
 	 * @return 分词后的元素集合
 	 */
-	public static Elements<String> tokenize(String text, String delimiters) {
+	public static Streamable<String> tokenize(String text, String delimiters) {
 		if (StringUtils.isEmpty(text)) {
-			return Elements.empty();
+			return Streamable.empty();
 		}
 
 		return tokenize(new StringTokenizer(text, delimiters));
@@ -969,7 +969,7 @@ public class StringUtils {
 	 * @param ignoreEmptyTokens 是否忽略空标记
 	 * @return 分词后的元素集合
 	 */
-	public static Elements<String> tokenize(String str, String delimiters, boolean trimTokens,
+	public static Streamable<String> tokenize(String str, String delimiters, boolean trimTokens,
 			boolean ignoreEmptyTokens) {
 		return tokenize(str, delimiters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
@@ -981,12 +981,12 @@ public class StringUtils {
 	 * @param tokenizer 字符串分词器
 	 * @return 分词后的元素集合
 	 */
-	public static Elements<String> tokenize(StringTokenizer tokenizer) {
+	public static Streamable<String> tokenize(StringTokenizer tokenizer) {
 		if (tokenizer == null) {
-			return Elements.empty();
+			return Streamable.empty();
 		}
 
-		return Elements.of(() -> new Iterator<String>() {
+		return Streamable.of(() -> new Iterator<String>() {
 			@Override
 			public boolean hasNext() {
 				return tokenizer.hasMoreTokens();

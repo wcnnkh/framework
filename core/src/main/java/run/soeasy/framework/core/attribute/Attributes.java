@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.attribute;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 属性访问接口，定义了属性的基本操作契约。
@@ -47,5 +49,5 @@ public interface Attributes<K, V> {
      *
      * @return 属性名称的集合，不会返回null
      */
-    Elements<K> getAttributeNames();
+    Streamable<K> getAttributeNames();
 }

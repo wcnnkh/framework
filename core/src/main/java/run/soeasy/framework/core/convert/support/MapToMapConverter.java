@@ -47,7 +47,7 @@ class MapToMapConverter extends AbstractConditionalConverter {
 		}
 
 		Map<Object, Object> targetMap = CollectionUtils.createMap(targetType.getType(),
-				(keyDesc != null ? keyDesc.getType() : null), sourceMap.size());
+				(keyDesc != null ? keyDesc.getType() : null));
 		for (KeyValue<?, ?> entry : targetEntries) {
 			targetMap.put(entry.getKey(), entry.getValue());
 		}

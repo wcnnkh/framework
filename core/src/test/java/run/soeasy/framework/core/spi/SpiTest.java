@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.collection.Provider;
+import run.soeasy.framework.core.streaming.Streamable;
 
 public class SpiTest implements SpiTestInterface {
 	private static final String TEST_TEXT = "hello";
@@ -16,7 +16,7 @@ public class SpiTest implements SpiTestInterface {
 
 	@Test
 	public void run() {
-		Provider<SpiTestInterface> spiServiceLoader = NativeProvider.load(SpiTestInterface.class);
+		Streamable<SpiTestInterface> spiServiceLoader = ServiceDiscoverer.load(SpiTestInterface.class);
 		SpiTestInterface spiTestInterface = spiServiceLoader.first();
 		String text = spiTestInterface.test();
 		assertTrue(TEST_TEXT.equals(text));

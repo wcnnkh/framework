@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量可监听接口，定义支持批量事件注册和分发的能力。
@@ -28,7 +30,7 @@ import run.soeasy.framework.core.collection.Elements;
  * @see Listenable
  * @see Elements
  */
-public interface BatchListenable<T> extends Listenable<Elements<T>> {
+public interface BatchListenable<T> extends Listenable<Streamable<T>> {
 
     /**
      * 将当前批量可监听对象转换为单条处理模式

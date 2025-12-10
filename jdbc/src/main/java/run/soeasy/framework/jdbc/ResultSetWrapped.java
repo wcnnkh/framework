@@ -3,12 +3,14 @@ package run.soeasy.framework.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.lang.model.util.Elements;
+
 import lombok.Getter;
 import lombok.Setter;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * JDBC结果集包装类，继承自{@link JdbcWrapped}，用于包装{@link ResultSet}的管道（{@link Pipeline}），
@@ -50,10 +52,10 @@ public class ResultSetWrapped extends JdbcWrapped<ResultSet> {
      * @param mapper 行映射函数，用于将{@link ResultSet}的当前行转换为T类型对象（可能抛出{@link SQLException}）
      * @return 包含转换后元素的{@link Elements}实例，可用于遍历或流式处理结果集数据
      */
-    public <T> Elements<T> rows(ThrowingFunction<? super ResultSet, ? extends T, ? extends SQLException> mapper) {
+    public <T> Streamable<T> rows(ThrowingFunction<? super ResultSet, ? extends T, ? extends SQLException> mapper) {
         // 创建结果集迭代器，关联当前管道与映射函数
         ResultSetIterator<T> iterator = new ResultSetIterator<>(this, mapper);
         // 将迭代器转换为Elements集合，支持流式处理
-        return Elements.of(() -> CollectionUtils.unknownSizeStream(iterator));
+        return Streamable.of(() -> CollectionUtils.unknownSizeStream(iterator));
     }
 }

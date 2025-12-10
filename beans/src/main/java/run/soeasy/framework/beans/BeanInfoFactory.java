@@ -4,8 +4,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.transform.property.ObjectTemplateFactory;
-import run.soeasy.framework.core.transform.property.PropertyTemplate;
+import run.soeasy.framework.core.mapping.property.ObjectTemplateFactory;
+import run.soeasy.framework.core.mapping.property.PropertyMapping;
 
 /**
  * Bean信息工厂接口，继承自{@link ObjectTemplateFactory}，定义获取JavaBean信息（{@link BeanInfo}）和创建Bean属性模板的规范，
@@ -46,7 +46,7 @@ public interface BeanInfoFactory extends ObjectTemplateFactory<BeanProperty> {
 	 * @return 针对该Bean类的{@link BeanPropertyTemplate}实例
 	 */
 	@Override
-	default PropertyTemplate<BeanProperty> getObjectTemplate(Class<?> objectClass) {
-		return new BeanPropertyTemplate(objectClass, this);
+	default PropertyMapping<BeanProperty> getObjectTemplate(Class<?> objectClass) {
+		return new BeanInfoMapping(objectClass, this).standard();
 	}
 }

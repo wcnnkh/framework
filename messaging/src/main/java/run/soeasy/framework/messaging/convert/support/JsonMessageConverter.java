@@ -1,7 +1,6 @@
 package run.soeasy.framework.messaging.convert.support;
 
-import java.util.Arrays;
-
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.messaging.MediaType;
 
 /**
@@ -34,8 +33,8 @@ public class JsonMessageConverter extends TextMessageConverter {
      *    覆盖常见JSON使用场景。
      */
     public JsonMessageConverter() {
-        getMediaTypeRegistry().clear();
-        getMediaTypeRegistry().addAll(Arrays.asList(
+        getMediaTypeRegistry().reset();
+        getMediaTypeRegistry().registerAll(Streamable.array(
             MediaType.APPLICATION_JSON,  // 标准JSON类型（application/json）
             JSON_ALL                     // 扩展JSON类型（application/*+json）
         ));

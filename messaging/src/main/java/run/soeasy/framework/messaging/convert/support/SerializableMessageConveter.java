@@ -1,11 +1,12 @@
 package run.soeasy.framework.messaging.convert.support;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import lombok.NonNull;
+import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedData;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -41,7 +42,7 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
     public SerializableMessageConveter(Serializer serializer) {
         super(Object.class); // 支持任意对象类型作为转换目标
         // 注册支持的媒体类型：二进制流（application/octet-stream）
-        getMediaTypeRegistry().addAll(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+        getMediaTypeRegistry().registerAll(Streamable.array(MediaType.APPLICATION_OCTET_STREAM));
         this.serializer = serializer;
     }
 

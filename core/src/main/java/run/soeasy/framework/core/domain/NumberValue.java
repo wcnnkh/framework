@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
+import javax.lang.model.util.Elements;
+
 import lombok.NonNull;
 import run.soeasy.framework.core.NumberUtils;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 框架统一数值处理抽象基类，整合 Java 原生 {@link Number} 接口的类型转换能力与自定义 {@link Version} 接口的版本比较能力，
@@ -397,8 +399,8 @@ public abstract class NumberValue extends Number implements Version {
 	 * @return 包含当前实例的 {@link Elements} 集合（非 null，size=1）
 	 */
 	@Override
-	public Elements<NumberValue> getAsElements() {
-		return Elements.singleton(this);
+	public Streamable<NumberValue> getAsElements() {
+		return Streamable.singleton(this);
 	}
 
 	/**

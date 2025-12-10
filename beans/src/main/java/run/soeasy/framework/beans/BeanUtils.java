@@ -5,9 +5,9 @@ import java.util.Arrays;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
-import run.soeasy.framework.core.transform.property.PropertyTemplate;
-import run.soeasy.framework.core.transform.property.TypedProperties;
+import run.soeasy.framework.core.mapping.property.PropertyAccessor;
+import run.soeasy.framework.core.mapping.property.PropertyMapping;
+import run.soeasy.framework.core.mapping.property.PropertyMappingFilter;
 
 /**
  * Bean 操作工具类：基于 {@link BeanMapper} 封装 Bean 属性核心操作，提供「属性复制、属性提取、属性模板获取」三大核心能力，
@@ -17,17 +17,17 @@ import run.soeasy.framework.core.transform.property.TypedProperties;
  * 1. 线程安全：通过双重检查锁单例模式初始化 {@link BeanMapper}，保证多线程环境下实例唯一性；
  * 2. 灵活扩展：支持自定义 {@link PropertyMappingFilter} 过滤属性或自定义映射规则；
  * 3. 类型适配：支持显式指定源/目标类（应对多态场景）和自动推断类型（简化常规调用）；
- * 4. 元数据支持：提供属性模板（{@link PropertyTemplate}）和带类型信息的属性集合（{@link TypedProperties}）提取能力。
+ * 4. 元数据支持：提供属性模板（{@link PropertyMapping}）和带类型信息的属性集合（{@link PropertyMapping}）提取能力。
  * <p>
  * 依赖说明：
  * - 核心依赖：{@link BeanMapper}（属性映射核心实现，所有操作最终委托其执行）；
  * - 扩展依赖：{@link PropertyMappingFilter}（属性映射过滤/自定义）、{@link TypeDescriptor}（类型描述）；
- * - 元数据依赖：{@link TypedProperties}（带类型的属性集合）、{@link PropertyTemplate}（属性模板）。
+ * - 元数据依赖：{@link PropertyMapping}（带类型的属性集合）、{@link PropertyMapping}（属性模板）。
  *
  * @author soeasy.run
  * @see BeanMapper 属性映射核心实现类（具体执行策略由其定义）
- * @see TypedProperties 带类型信息的属性集合
- * @see PropertyTemplate Bean 属性元数据模板
+ * @see PropertyMapping 带类型信息的属性集合
+ * @see PropertyMapping Bean 属性元数据模板
  */
 @UtilityClass
 public class BeanUtils {
@@ -103,11 +103,11 @@ public class BeanUtils {
      * 自动通过 Bean 实例生成 {@link TypeDescriptor}，具体属性提取规则由 {@link BeanMapper} 实现类定义。
      *
      * @param bean 待提取属性的 Bean 对象（非空，具体支持的对象类型由 {@link BeanMapper} 定义）
-     * @return 带类型信息的属性集合 {@link TypedProperties}，具体返回格式由 {@link BeanMapper#getMapping} 定义
+     * @return 带类型信息的属性集合 {@link PropertyMapping}，具体返回格式由 {@link BeanMapper#getMapping} 定义
      * @throws NullPointerException 若 bean 为 null
-     * @see TypedProperties 带类型信息的属性集合（支持类型安全的属性取值）
+     * @see PropertyMapping 带类型信息的属性集合（支持类型安全的属性取值）
      */
-    public static TypedProperties getProperties(@NonNull Object bean) {
+    public static PropertyMapping<PropertyAccessor> getProperties(@NonNull Object bean) {
         return getProperties(bean, TypeDescriptor.forObject(bean));
     }
 
@@ -119,11 +119,11 @@ public class BeanUtils {
      *
      * @param bean           待提取属性的 Bean 对象（具体支持的空值处理、对象类型由 {@link BeanMapper} 定义）
      * @param typeDescriptor 类型描述器（非空，用于 {@link BeanMapper} 精确解析属性元数据，支持泛型、参数化类型）
-     * @return 带类型信息的属性集合 {@link TypedProperties}，具体返回格式由 {@link BeanMapper#getMapping} 定义
+     * @return 带类型信息的属性集合 {@link PropertyMapping}，具体返回格式由 {@link BeanMapper#getMapping} 定义
      * @throws NullPointerException 若 typeDescriptor 为 null
      * @see TypeDescriptor 类型描述器（封装类类型、泛型信息等）
      */
-    public static TypedProperties getProperties(Object bean, @NonNull TypeDescriptor typeDescriptor) {
+    public static PropertyMapping<PropertyAccessor> getProperties(Object bean, @NonNull TypeDescriptor typeDescriptor) {
         return getBeanMapper().getMapping(bean, typeDescriptor);
     }
 
@@ -134,12 +134,12 @@ public class BeanUtils {
      * 具体元数据解析规则、缓存策略由 {@link BeanMapper} 实现类定义。
      *
      * @param beanClass Bean 的类对象（非空，具体支持的类类型由 {@link BeanMapper} 定义）
-     * @return Bean 的属性模板 {@link PropertyTemplate}，具体模板内容由 {@link BeanMapper#getObjectTemplate} 定义
+     * @return Bean 的属性模板 {@link PropertyMapping}，具体模板内容由 {@link BeanMapper#getObjectTemplate} 定义
      * @throws NullPointerException 若 beanClass 为 null
-     * @see PropertyTemplate 属性模板（缓存 Bean 的属性元数据，提升重复操作性能）
+     * @see PropertyMapping 属性模板（缓存 Bean 的属性元数据，提升重复操作性能）
      * @see BeanProperty 单个属性的元数据（包含属性名、类型、getter/setter 等）
      */
-    public static PropertyTemplate<BeanProperty> getTemplate(@NonNull Class<?> beanClass) {
+    public static PropertyMapping<BeanProperty> getTemplate(@NonNull Class<?> beanClass) {
         return getBeanMapper().getObjectTemplate(beanClass);
     }
 }

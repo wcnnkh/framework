@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import lombok.Data;
 import run.soeasy.framework.beans.BeanUtils;
-import run.soeasy.framework.core.transform.property.PropertyMappingFilter;
+import run.soeasy.framework.core.mapping.property.PropertyMappingFilter;
 
 public class BeanUtilsTest {
 	@Data

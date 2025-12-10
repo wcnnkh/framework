@@ -77,9 +77,8 @@ public abstract class AbstractInputMessageConverter<T extends InputMessage> exte
     @Override
     public boolean isWriteable(@NonNull SourceDescriptor sourceDescriptor, @NonNull Message message,
             MimeType contentType) {
-        // 校验源类型是否为InputMessage的子类，且消息头可写
+        // 校验源类型是否为InputMessage的子类
         return InputMessage.class.isAssignableFrom(sourceDescriptor.getReturnTypeDescriptor().getType())
-                && !message.getHeaders().isReadyOnly() 
                 && super.isWriteable(sourceDescriptor, message, contentType);
     }
 

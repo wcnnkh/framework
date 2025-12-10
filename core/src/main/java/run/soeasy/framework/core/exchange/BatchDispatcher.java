@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量分发器接口，定义支持批量消息处理和监听器管理的能力。
@@ -31,7 +33,7 @@ import run.soeasy.framework.core.collection.Elements;
  * @see BatchListenable
  * @see Elements
  */
-public interface BatchDispatcher<T> extends Dispatcher<Elements<T>>, BatchPublisher<T>, BatchListenable<T> {
+public interface BatchDispatcher<T> extends Dispatcher<Streamable<T>>, BatchPublisher<T>, BatchListenable<T> {
 
     /**
      * 将当前批量分发器转换为单条处理分发器

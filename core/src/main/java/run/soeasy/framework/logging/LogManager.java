@@ -1,7 +1,7 @@
 package run.soeasy.framework.logging;
 
 import lombok.experimental.UtilityClass;
-import run.soeasy.framework.core.exchange.Receipt;
+import run.soeasy.framework.core.exchange.Operation;
 
 /**
  * 日志管理工具类，提供日志系统的统一入口和管理功能，
@@ -29,7 +29,7 @@ public class LogManager {
     /** 可配置的日志工厂实例，用于创建日志器 */
     private static final ConfigurableLoggerFactory CONFIGURABLE = new ConfigurableLoggerFactory();
     /** 配置状态收据，记录日志工厂配置是否成功 */
-    private static volatile Receipt receipt;
+    private static volatile Operation receipt;
 
     /**
      * 获取日志工厂配置状态。
@@ -39,7 +39,7 @@ public class LogManager {
      * 
      * @return 配置状态收据（成功/失败）
      */
-    public static Receipt getReceipt() {
+    public static Operation getReceipt() {
         if (receipt == null) {
             synchronized (CONFIGURABLE) {
                 if (receipt == null) {
@@ -58,9 +58,9 @@ public class LogManager {
      * 
      * @return 重新加载后的配置状态收据
      */
-    public static Receipt reloadReceipt() {
+    public static Operation reloadReceipt() {
         synchronized (CONFIGURABLE) {
-            Receipt receipt = CONFIGURABLE.configure();
+        	Operation receipt = CONFIGURABLE.configure();
             LogManager.receipt = receipt;
             return receipt;
         }
@@ -98,7 +98,7 @@ public class LogManager {
      * @return 对应的Logger实例，不可为null
      */
     public static Logger getLogger(String name) {
-        Receipt receipt = getReceipt();
+    	Operation receipt = getReceipt();
         if (!receipt.isSuccess()) {
             reloadReceipt();
         }

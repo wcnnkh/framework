@@ -3,7 +3,7 @@ package run.soeasy.framework.core.domain;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 值包装器接口，用于包装{@link Value}实例并委托所有操作，
@@ -116,7 +116,7 @@ public interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
      * @see Value#getAsElements()
      */
     @Override
-    default Elements<? extends Value> getAsElements() {
+    default Streamable<? extends Value> getAsElements() {
         return getSource().getAsElements();
     }
 

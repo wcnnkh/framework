@@ -2,7 +2,7 @@ package run.soeasy.framework.core.convert;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.spi.ServiceInjectors;
 
 /**
@@ -49,7 +49,7 @@ public class ConversionService implements Converter {
                 ConverterAware converterAware = (ConverterAware) service;
                 converterAware.setConverter(this);
             }
-            return Registration.SUCCESS;
+            return Operation.SUCCESS;
         });
     }
 
@@ -106,8 +106,8 @@ public class ConversionService implements Converter {
      * @return 注册句柄，用于取消注册
      * @throws NullPointerException 若converter为null
      */
-    public Registration register(@NonNull Converter converter) {
-        Registration registration = converter instanceof ConditionalConverter
+    public Operation register(@NonNull Converter converter) {
+    	Operation registration = converter instanceof ConditionalConverter
                 ? registry.register((ConditionalConverter) converter)
                 : converters.register(converter);
         if (!registration.isCancelled()) {

@@ -33,8 +33,8 @@ public class QueryStringMessageConveter extends TextMessageConverter {
      * 确保仅处理表单编码的查询字符串消息。
      */
     public QueryStringMessageConveter() {
-        getMediaTypeRegistry().clear();
-        getMediaTypeRegistry().add(MediaType.APPLICATION_FORM_URLENCODED);
+        getMediaTypeRegistry().reset();
+        getMediaTypeRegistry().register(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     /**

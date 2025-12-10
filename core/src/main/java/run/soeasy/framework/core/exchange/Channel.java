@@ -56,7 +56,7 @@ public interface Channel<T> extends Publisher<T> {
      * @return 发布操作的回执，用于跟踪操作状态
      */
     @Override
-    default Receipt publish(T resource) {
+    default Operation publish(T resource) {
         return publish(resource, INDEFINITE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
@@ -68,5 +68,5 @@ public interface Channel<T> extends Publisher<T> {
      * @param timeUnit 超时时间单位
      * @return 发布操作的回执，用于跟踪操作状态
      */
-    Receipt publish(T resource, long timeout, TimeUnit timeUnit);
+    Operation publish(T resource, long timeout, TimeUnit timeUnit);
 }

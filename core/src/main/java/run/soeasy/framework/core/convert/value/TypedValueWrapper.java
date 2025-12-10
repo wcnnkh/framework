@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.domain.NumberValue;
 import run.soeasy.framework.core.domain.ValueWrapper;
 import run.soeasy.framework.core.domain.Version;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 类型化值包装器接口，用于装饰{@link TypedValue}实现，支持透明代理和功能增强。
@@ -106,7 +106,7 @@ public interface TypedValueWrapper<W extends TypedValue>
      * @return 被包装类型化值的元素集合表示
      */
     @Override
-    default Elements<? extends TypedValue> getAsElements() {
+    default Streamable<? extends TypedValue> getAsElements() {
         return getSource().getAsElements();
     }
 

@@ -10,7 +10,7 @@ import org.junit.Test;
 import lombok.ToString;
 import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.transform.property.Cloner;
+import run.soeasy.framework.core.mapping.property.Cloner;
 
 public class ReflectionTest {
 	@Test

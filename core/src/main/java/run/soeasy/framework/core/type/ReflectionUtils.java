@@ -12,9 +12,9 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.comparator.ExecutableMatchComparator;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 反射工具类，提供一系列简化Java反射操作的静态方法。 该类封装了反射相关的常用操作，包括类成员查找、访问权限设置、方法调用等，
@@ -85,7 +85,7 @@ public class ReflectionUtils {
 			@NonNull ThrowingFunction<? super Class<?>, ? extends T, ? extends ReflectiveOperationException> finder) {
 		return search(clazz, (e) -> {
 			T element = finder.apply(e);
-			return element == null ? Elements.empty() : Elements.singleton(element);
+			return element == null ? Streamable.empty() : Streamable.singleton(element);
 		});
 	}
 
@@ -297,7 +297,7 @@ public class ReflectionUtils {
 			@NonNull ThrowingFunction<? super Class<?>, ? extends T[], ? extends ReflectiveOperationException> loader) {
 		return search(clazz, (e) -> {
 			T[] array = loader.apply(e);
-			return ArrayUtils.isEmpty(array) ? Elements.empty() : Elements.forArray(array);
+			return ArrayUtils.isEmpty(array) ? Streamable.empty() : Streamable.array(array);
 		});
 	}
 
@@ -571,12 +571,12 @@ public class ReflectionUtils {
 	 * @return 类成员加载器
 	 */
 	public static <T> ClassMembersLoader<T> search(@NonNull Class<?> clazz,
-			@NonNull ThrowingFunction<? super Class<?>, ? extends Elements<T>, ? extends ReflectiveOperationException> searcher) {
+			@NonNull ThrowingFunction<? super Class<?>, ? extends Streamable<T>, ? extends ReflectiveOperationException> searcher) {
 		return new ClassMembersLoader<>(clazz, (c) -> {
 			try {
 				return searcher.apply(c);
 			} catch (ReflectiveOperationException | SecurityException e) {
-				return Elements.empty();
+				return Streamable.empty();
 			}
 		});
 	}

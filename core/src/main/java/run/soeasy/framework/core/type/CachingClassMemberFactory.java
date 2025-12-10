@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.ConcurrentReferenceHashMap;
-import run.soeasy.framework.core.collection.Provider;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 带缓存的类成员工厂，用于缓存类成员提供者以提高频繁反射操作的性能。
@@ -51,7 +51,7 @@ import run.soeasy.framework.core.collection.Provider;
 @Getter
 public class CachingClassMemberFactory<T> implements ClassMemberFactory<T> {
     /** 缓存映射表：类对象 -> 类成员提供者，使用弱引用避免内存泄漏 */
-    private final ConcurrentReferenceHashMap<Class<?>, Provider<T>> cacheMap = new ConcurrentReferenceHashMap<>();
+    private final ConcurrentReferenceHashMap<Class<?>, Streamable<T>> cacheMap = new ConcurrentReferenceHashMap<>();
     
     /** 被包装的基础类成员工厂，用于实际创建成员提供者 */
     @NonNull
@@ -72,11 +72,11 @@ public class CachingClassMemberFactory<T> implements ClassMemberFactory<T> {
      * @return 类成员提供者（可能来自缓存或新创建）
      */
     @Override
-    public Provider<T> getClassMemberProvider(@NonNull Class<?> declaringClass) {
-        Provider<T> provider = cacheMap.get(declaringClass);
+    public Streamable<T> getClassMemberProvider(@NonNull Class<?> declaringClass) {
+    	Streamable<T> provider = cacheMap.get(declaringClass);
         if (provider == null) {
             provider = classMemberFactory.getClassMemberProvider(declaringClass);
-            Provider<T> old = cacheMap.putIfAbsent(declaringClass, provider);
+            Streamable<T> old = cacheMap.putIfAbsent(declaringClass, provider);
             if (old == null) {
                 // 仅在首次插入时清理过期缓存，减少清理频率
                 cacheMap.purgeUnreferencedEntries();

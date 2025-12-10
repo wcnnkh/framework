@@ -2,21 +2,21 @@ package run.soeasy.framework.aop;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.execute.Execution;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 执行拦截器集合，实现{@link ExecutionInterceptor}接口，用于管理一组组拦截器并形成拦截链，
  * 将多个拦截器按顺序执行，简化多拦截器场景的配置与调用，是AOP框架中批量管理拦截器的工具类。
  * 
- * <p>该类持有一个拦截器元素集合（{@link Elements}），在拦截执行时，通过创建{@link ExecutionInterceptorChain}
+ * <p>该类持有一个拦截器元素集合（{@link Streamable}），在拦截执行时，通过创建{@link ExecutionInterceptorChain}
  * 将拦截器集合转换为拦截链，按迭代顺序依次执行每个拦截器，最终触发{@code nextChain}（目标执行逻辑），
  * 实现多拦截器的有序增强。
  * 
  * @author soeasy.run
  * @see ExecutionInterceptor
  * @see ExecutionInterceptorChain
- * @see Elements
+ * @see Streamable
  */
 @Data
 public class ExecutionInterceptors implements ExecutionInterceptor {
@@ -25,7 +25,7 @@ public class ExecutionInterceptors implements ExecutionInterceptor {
      * 拦截器元素集合（非空），包含需要按序执行的拦截器
      */
     @NonNull
-    private final Elements<? extends ExecutionInterceptor> executionInterceptors;
+    private final Streamable<? extends ExecutionInterceptor> executionInterceptors;
 
     /**
      * 拦截链执行完毕后触发的下一个执行节点（通常为目标业务逻辑）
@@ -47,7 +47,7 @@ public class ExecutionInterceptors implements ExecutionInterceptor {
     @Override
     public Object intercept(@NonNull Execution function) throws Throwable {
         // 创建拦截器链，关联当前拦截器集合与下一个执行节点
-        ExecutionInterceptorChain chain = new ExecutionInterceptorChain(executionInterceptors.iterator(), nextChain);
+        ExecutionInterceptorChain chain = new ExecutionInterceptorChain(executionInterceptors.toList().iterator(), nextChain);
         // 执行拦截链
         return chain.intercept(function);
     }

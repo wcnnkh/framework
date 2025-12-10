@@ -10,8 +10,11 @@ import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import javax.lang.model.util.Elements;
+
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 数组工具类 提供数组操作的各种实用方法，包括克隆、比较、合并、转换等功能
@@ -600,10 +603,10 @@ public class ArrayUtils {
 	 * @return Elements对象，包含数组元素的惰性访问接口
 	 * @see Elements 元素容器接口
 	 */
-	public static Elements<Object> elements(Object array) {
+	public static Streamable<Object> elements(Object array) {
 		if (array == null) {
-			return Elements.empty(); // 处理null输入，返回空Elements
+			return Streamable.empty(); // 处理null输入，返回空Elements
 		}
-		return Elements.of(() -> stream(array)); // 封装Stream供给函数
+		return Streamable.of(() -> stream(array)); // 封装Stream供给函数
 	}
 }

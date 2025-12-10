@@ -4,13 +4,15 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.List;
 
+import javax.lang.model.util.Elements;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.concurrent.Poller;
 import run.soeasy.framework.core.exchange.Publisher;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * WatchKey事件轮询器，继承自{@link Poller}，用于通过轮询方式处理{@link WatchKey}中的文件系统事件（{@link WatchEvent}），
@@ -47,18 +49,18 @@ public class WatchKeyPoller<T> extends Poller {
      * @return 符合条件的事件集合（非空，可能为空集合）
      */
     @SuppressWarnings("unchecked")
-    public static <T> Elements<WatchEvent<T>> pollEvents(WatchKey watchKey, Class<T> contextType) {
+    public static <T> Streamable<WatchEvent<T>> pollEvents(WatchKey watchKey, Class<T> contextType) {
         if (!watchKey.isValid()) {
-            return Elements.empty();
+            return Streamable.empty();
         }
 
         List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
         if (CollectionUtils.isEmpty(watchEvents)) {
-            return Elements.empty();
+            return Streamable.empty();
         }
 
         // 过滤上下文类型匹配的事件，并转换为泛型类型
-        return Elements.of(watchEvents)
+        return Streamable.of(watchEvents)
                 .filter(event -> contextType.isInstance(event.context()))
                 .map(event -> (WatchEvent<T>) event);
     }
@@ -80,14 +82,14 @@ public class WatchKeyPoller<T> extends Poller {
      * 实现事件的分发与处理解耦（如后续可扩展为日志记录、业务处理等）。
      */
     @NonNull
-    private final Publisher<? super Elements<WatchEvent<T>>> watchEventProducer;
+    private final Publisher<? super Streamable<WatchEvent<T>>> watchEventProducer;
 
     /**
      * 从当前WatchKey中提取并过滤符合上下文类型的事件，调用静态{@link #pollEvents(WatchKey, Class)}实现
      * 
      * @return 符合条件的事件集合（非空，可能为空集合）
      */
-    public Elements<WatchEvent<T>> pollEvents() {
+    public Streamable<WatchEvent<T>> pollEvents() {
         return pollEvents(watchKey, contextType);
     }
 
@@ -111,7 +113,7 @@ public class WatchKeyPoller<T> extends Poller {
      */
     @Override
     public void run() {
-        Elements<WatchEvent<T>> events = pollEvents();
+    	Streamable<WatchEvent<T>> events = pollEvents();
         try {
             watchEventProducer.publish(events);
         } finally {

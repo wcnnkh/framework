@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.collection.Listable;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 基于元素迭代器的分页迭代器
@@ -97,7 +97,7 @@ public class PageIterator<E> implements Iterator<Pageable<Long, E>> {
 		}
 
 		// 构建分页对象并缓存
-		nextPageable = new CursorPage<>(offset, Listable.forCollection(currentPageElements), nextCursorId, null);
+		nextPageable = new CursorPage<>(offset, Streamable.of(currentPageElements), nextCursorId, null);
 		return true;
 	}
 

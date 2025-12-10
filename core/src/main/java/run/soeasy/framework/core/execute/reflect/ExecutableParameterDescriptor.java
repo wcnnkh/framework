@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.property.PropertyDescriptor;
+import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
 
 /**
  * 可执行元素参数描述符，实现{@link PropertyDescriptor}接口，

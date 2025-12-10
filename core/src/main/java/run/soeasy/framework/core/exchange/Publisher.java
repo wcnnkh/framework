@@ -38,5 +38,5 @@ public interface Publisher<T> {
      * @param resource 待发布的资源对象
      * @return 发布操作的收据，包含操作结果信息
      */
-    Receipt publish(T resource);
+    Operation publish(T resource);
 }

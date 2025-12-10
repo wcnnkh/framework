@@ -5,11 +5,11 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.concurrent.Poller;
+import run.soeasy.framework.core.exchange.ChangeEvent;
+import run.soeasy.framework.core.exchange.ChangeType;
 import run.soeasy.framework.core.exchange.Publisher;
-import run.soeasy.framework.core.exchange.event.ChangeEvent;
-import run.soeasy.framework.core.exchange.event.ChangeType;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.Resource;
 import run.soeasy.framework.logging.LogManager;
 import run.soeasy.framework.logging.Logger;
@@ -46,7 +46,7 @@ public class ResourcePoller<T extends Resource> extends Poller {
      * 支持事件的分发与处理解耦（如后续可扩展为异步通知、多订阅者等）。
      */
     @NonNull
-    private final Publisher<? super Elements<ChangeEvent<T>>> changeEventProducer;
+    private final Publisher<? super Streamable<ChangeEvent<T>>> changeEventProducer;
 
     /**
      * 上一次记录的资源最后修改时间（毫秒时间戳），初始值为0，
@@ -114,6 +114,6 @@ public class ResourcePoller<T extends Resource> extends Poller {
         }
 
         // 将事件包装为单元素集合并发布（Elements用于支持批量事件，此处兼容单事件场景）
-        changeEventProducer.publish(Elements.singleton(changeEvent));
+        changeEventProducer.publish(Streamable.singleton(changeEvent));
     }
 }

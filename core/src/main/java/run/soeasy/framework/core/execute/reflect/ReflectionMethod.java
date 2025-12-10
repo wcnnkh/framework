@@ -7,7 +7,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.execute.InvodableElement;
-import run.soeasy.framework.core.transform.property.Property;
+import run.soeasy.framework.core.mapping.property.Property;
 import run.soeasy.framework.core.type.ReflectionUtils;
 
 /**
@@ -142,7 +142,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
         if (!isWriteable()) {
             throw new UnsupportedOperationException(getSource().toString());
         }
-        return getParameterTemplate().first().getReturnTypeDescriptor();
+        return getParameterMapping().elements().first().getReturnTypeDescriptor();
     }
 
     /**
@@ -152,7 +152,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      */
     @Override
     public boolean isReadable() {
-        return getParameterTemplate().isEmpty();
+        return getParameterMapping().isEmpty();
     }
 
     /**
@@ -162,7 +162,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
      */
     @Override
     public boolean isWriteable() {
-        return getParameterTemplate().count() == 1;
+        return getParameterMapping().count() == 1;
     }
 
     /**

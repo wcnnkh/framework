@@ -3,8 +3,8 @@ package run.soeasy.framework.core.page;
 import java.util.NoSuchElementException;
 
 import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.collection.LinkedIterator;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 基于游标的分页接口 定义基于游标的分页查询机制，支持获取分页元数据、页跳转及全量页的延迟遍历
@@ -79,8 +79,8 @@ public interface Paging<K, V> extends Pageable<K, V>, PagingQuery<K, Paging<K, V
 	 * 
 	 * @return 包含所有页的延迟加载元素集合
 	 */
-	default Elements<Paging<K, V>> pages() {
-		return Elements.of(() -> new LinkedIterator<>(this, Paging::hasNextPage, Paging::nextPage));
+	default Streamable<Paging<K, V>> pages() {
+		return Streamable.of(() -> new LinkedIterator<>(this, Paging::hasNextPage, Paging::nextPage));
 	}
 
 	/**

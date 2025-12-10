@@ -16,10 +16,10 @@ import java.util.Set;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.Listable;
 import run.soeasy.framework.core.page.CursorPage;
 import run.soeasy.framework.core.page.CursorPaging;
 import run.soeasy.framework.core.page.Paging;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 类工具类，提供一系列处理Java类和类型的静态方法。 该类封装了类加载、类型检查、类型转换、类信息获取等功能，
@@ -291,7 +291,7 @@ public class ClassUtils {
 		return new CursorPaging<Class<?>, Class<?>>(sourceClass, (clazz, size) -> {
 			Class<?>[] interfaces = clazz.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new CursorPage<>(clazz, Listable.forCollection(list), clazz.getSuperclass(), null);
+			return new CursorPage<>(clazz, Streamable.of(list), clazz.getSuperclass(), null);
 		});
 	}
 

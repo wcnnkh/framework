@@ -5,9 +5,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.stream.Stream;
 
+import javax.lang.model.util.Elements;
+
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 读取器工厂接口，用于创建具有特定处理流程的{@link Reader}实例。
@@ -87,8 +89,8 @@ public interface ReaderFactory<R extends Reader> {
      * 
      * @return 按行读取的元素流
      */
-    default Elements<String> readLines() {
-        return Elements.of(() -> {
+    default Streamable<String> readLines() {
+        return Streamable.of(() -> {
             try {
                 Pipeline<R, IOException> channel = getReaderPipeline();
                 return IOUtils.readLines(channel.get()).onClose(() -> {

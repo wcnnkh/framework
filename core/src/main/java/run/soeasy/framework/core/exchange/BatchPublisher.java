@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量发布器接口，定义发布批量消息的基本契约。
@@ -28,7 +30,7 @@ import run.soeasy.framework.core.collection.Elements;
  * @see Publisher
  * @see Elements
  */
-public interface BatchPublisher<T> extends Publisher<Elements<T>> {
+public interface BatchPublisher<T> extends Publisher<Streamable<T>> {
 
     /**
      * 将当前批量发布器转换为单条发布器

@@ -1,13 +1,13 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
+import run.soeasy.framework.core.streaming.Streamable;
 
 @FunctionalInterface
-public interface FakeBatchPublisher<T, W extends Publisher<T>> extends BatchPublisher<T>, Wrapper<W> {
+interface FakeBatchPublisher<T, W extends Publisher<T>> extends BatchPublisher<T>, Wrapper<W> {
 	@Override
-	default Receipts<?> publish(Elements<T> resource) {
-		Elements<Receipt> elemnets = resource.map((e) -> getSource().publish(e)).toList();
-		return Receipts.of(elemnets);
+	default Operation publish(Streamable<T> elements) {
+		return Operation.batch(elements, Mode.AND, getSource()::publish);
 	}
 }

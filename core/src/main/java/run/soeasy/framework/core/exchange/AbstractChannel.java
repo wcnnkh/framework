@@ -3,8 +3,6 @@ package run.soeasy.framework.core.exchange;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-import run.soeasy.framework.core.exchange.future.ListenableFutureTask;
-
 /**
  * 通道抽象基类，提供消息通道的基本实现框架。
  * 该类实现了{@link Channel}接口，支持同步和异步消息发布模式，
@@ -77,10 +75,10 @@ public abstract class AbstractChannel<T> implements Channel<T> {
      * @return 发布操作的回执，同步模式返回SUCCESS，异步模式返回ListenableFutureTask
      */
     @Override
-    public Receipt publish(T resource, long timeout, TimeUnit timeUnit) {
+    public Operation publish(T resource, long timeout, TimeUnit timeUnit) {
         if (publishExecutor == null) {
             syncPublish(resource);
-            return Receipt.SUCCESS;
+            return Operation.success();
         } else {
             ListenableFutureTask<?> task = new ListenableFutureTask<>(() -> syncPublish(resource), null);
             publishExecutor.execute(task);

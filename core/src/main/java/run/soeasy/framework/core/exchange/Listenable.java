@@ -28,5 +28,5 @@ public interface Listenable<T> {
      * @param listener 待注册的监听器
      * @return 注册操作的句柄，用于后续取消注册
      */
-    Registration registerListener(@NonNull Listener<T> listener);
+    Operation registerListener(@NonNull Listener<T> listener);
 }

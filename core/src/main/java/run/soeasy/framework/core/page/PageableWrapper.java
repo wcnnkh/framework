@@ -1,9 +1,10 @@
 package run.soeasy.framework.core.page;
 
-import run.soeasy.framework.core.collection.ListableWrapper;
+import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.streaming.Streamable;
 
 @FunctionalInterface
-public interface PageableWrapper<K, V, W extends Pageable<K, V>> extends Pageable<K, V>, ListableWrapper<V, W> {
+public interface PageableWrapper<K, V, W extends Pageable<K, V>> extends Pageable<K, V>, Wrapper<W> {
 	@Override
 	default K getCurrentCursor() {
 		return getSource().getCurrentCursor();
@@ -12,6 +13,11 @@ public interface PageableWrapper<K, V, W extends Pageable<K, V>> extends Pageabl
 	@Override
 	default K getNextCursor() {
 		return getSource().getNextCursor();
+	}
+
+	@Override
+	default Streamable<V> getElements() {
+		return getSource().getElements();
 	}
 
 	@Override

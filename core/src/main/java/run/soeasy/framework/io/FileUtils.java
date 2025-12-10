@@ -20,11 +20,13 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.lang.model.util.Elements;
+
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 文件操作工具类，提供基于Java IO和NIO的文件系统操作工具方法。
@@ -137,7 +139,7 @@ public class FileUtils {
 	 * @throws IllegalArgumentException 当directory不是目录时抛出
 	 * @see #listFiles(File, int) 支持深度控制的重载方法
 	 */
-	public static Elements<File> listAllFiles(@NonNull File directory) {
+	public static Streamable<File> listAllFiles(@NonNull File directory) {
 		return listFiles(directory, -1);
 	}
 
@@ -151,7 +153,7 @@ public class FileUtils {
 	 * @throws IllegalArgumentException 当directory不是目录时抛出
 	 * @see #listFiles(File, int) 支持深度控制的重载方法
 	 */
-	public static Elements<File> listFiles(@NonNull File directory) {
+	public static Streamable<File> listFiles(@NonNull File directory) {
 		return listFiles(directory, 0);
 	}
 
@@ -165,10 +167,10 @@ public class FileUtils {
 	 * @return 包含迭代范围内所有文件的元素集合（仅文件，不包含目录）
 	 * @throws IllegalArgumentException 当directory不是目录或maxDepth &lt; -1时抛出
 	 */
-	public static Elements<File> listFiles(@NonNull File directory, int maxDepth) {
+	public static Streamable<File> listFiles(@NonNull File directory, int maxDepth) {
 		Assert.isTrue(directory.isDirectory(), () -> directory + " is not a directory");
 		Assert.isTrue(maxDepth >= -1, () -> "maxDepth must be ≥ -1, but got " + maxDepth);
-		return Elements.of(() -> new ListFileIterator(directory, maxDepth));
+		return Streamable.of(() -> new ListFileIterator(directory, maxDepth));
 	}
 
 	/**

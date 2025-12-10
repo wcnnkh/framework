@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 @FunctionalInterface
-public interface FakeSingleListenableChannel<T, W extends ListenableChannel<Elements<T>>>
+interface FakeSingleListenableChannel<T, W extends ListenableChannel<Streamable<T>>>
 		extends ListenableChannel<T>, FakeSingleChannel<T, W>, FakeSingleDispatcher<T, W> {
 }

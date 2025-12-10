@@ -72,7 +72,7 @@ public class ConstructorInstanceFactory implements InstanceFactory {
      */
     @Override
     public boolean canInstantiated(@NonNull ResolvableType requiredType) {
-        for (Constructor<?> constructor : constructorFactory.getClassMemberProvider(requiredType.getRawType())) {
+        for (Constructor<?> constructor : constructorFactory.getClassMemberProvider(requiredType.getRawType()).toCollection()) {
             if (predicate.test(constructor)) {
                 return true;
             }
@@ -94,7 +94,7 @@ public class ConstructorInstanceFactory implements InstanceFactory {
      */
     @Override
     public Object newInstance(@NonNull ResolvableType requiredType) {
-        for (Constructor<?> constructor : constructorFactory.getClassMemberProvider(requiredType.getRawType())) {
+        for (Constructor<?> constructor : constructorFactory.getClassMemberProvider(requiredType.getRawType()).toCollection()) {
             if (predicate.test(constructor)) {
                 return ReflectionUtils.newInstance(constructor);
             }

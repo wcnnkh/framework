@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.domain;
 
-import run.soeasy.framework.core.collection.Elements;
+import javax.lang.model.util.Elements;
+
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 父节点发现接口，定义了具有父子层级关系的对象的父节点访问和遍历能力。
@@ -71,8 +73,8 @@ public interface ParentDiscover<T extends ParentDiscover<T>> {
      *
      * @return 包含所有父节点的元素集合，若没有父节点则返回空集合
      */
-    default Elements<T> parents() {
-        return Elements.of(() -> new ParentIterator<>(this));
+    default Streamable<T> parents() {
+        return Streamable.of(() -> new ParentIterator<>(this));
     }
 
     /**
