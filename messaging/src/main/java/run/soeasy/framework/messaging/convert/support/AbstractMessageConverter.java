@@ -1,19 +1,18 @@
 package run.soeasy.framework.messaging.convert.support;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
+import run.soeasy.framework.core.exchange.CollectionContainer;
+import run.soeasy.framework.core.exchange.Registry;
 import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.Headers;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;
-import run.soeasy.framework.messaging.MediaTypeRegistry;
-import run.soeasy.framework.messaging.MediaTypes;
 import run.soeasy.framework.messaging.Message;
 import run.soeasy.framework.messaging.OutputMessage;
 import run.soeasy.framework.messaging.convert.MessageConverter;
@@ -22,14 +21,14 @@ import run.soeasy.framework.messaging.convert.MessageConverter;
  * 消息转换器抽象基类，实现{@link MessageConverter}接口并提供通用功能， 为具体消息转换器实现提供基础骨架，减少重复代码。
  * 
  * <p>
- * 该类通过{@link MediaTypeRegistry}管理支持的媒体类型，
+ * 该类通过{@link Registry}管理支持的媒体类型，
  * 并定义抽象方法{@link #doRead(TargetDescriptor, InputMessage, MimeType)}和
  * {@link #doWrite(TypedValue, OutputMessage, MediaType)}，
  * 由子类实现具体的消息读写逻辑，同时提供消息头复制、媒体类型匹配等通用实现。
  * 
  * @author soeasy.run
  * @see MessageConverter
- * @see MediaTypeRegistry
+ * @see Registry
  */
 public abstract class AbstractMessageConverter implements MessageConverter {
 
@@ -37,9 +36,10 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	 * 媒体类型注册表，用于管理当前转换器支持的所有媒体类型（如"application/json"、"text/plain"），
 	 * 支持添加、查询、筛选等操作，是判断媒体类型兼容性的核心依据。
 	 */
-	private final MediaTypeRegistry mediaTypeRegistry = new MediaTypeRegistry();
+	private final Registry<MediaType> mediaTypeRegistry = new CollectionContainer<MediaType, TreeSet<MediaType>>(
+			new TreeSet<>(MediaType.SPECIFICITY_COMPARATOR));
 
-	public MediaTypeRegistry getMediaTypeRegistry() {
+	public Registry<MediaType> getMediaTypeRegistry() {
 		return mediaTypeRegistry;
 	}
 
@@ -81,7 +81,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 	 * @return 支持的媒体类型集合（非空，由注册表管理）
 	 */
 	@Override
-	public MediaTypes getSupportedMediaTypes() {
+	public Registry<MediaType> getSupportedMediaTypes() {
 		return mediaTypeRegistry;
 	}
 
@@ -109,11 +109,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 
 		Headers headers = inputMessage.getHeaders();
 		if (headers != null) {
-			for (Entry<String, List<String>> entry : headers.entrySet()) {
-				for (String value : entry.getValue()) {
-					outputMessage.getHeaders().add(entry.getKey(), value);
-				}
-			}
+			outputMessage.getHeaders().registerAll(headers);
 		}
 	}
 
@@ -136,12 +132,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 			return true;
 		}
 
-		for (MimeType mimeType : mediaTypeRegistry) {
-			if (mimeType.includes(contentType)) {
-				return true;
-			}
-		}
-		return false;
+		return mediaTypeRegistry.anyMatch((mimeType) -> mimeType.includes(contentType));
 	}
 
 	/**
@@ -164,12 +155,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 			return true;
 		}
 
-		for (MimeType mimeType : mediaTypeRegistry) {
-			if (mimeType.isCompatibleWith(contentType)) {
-				return true;
-			}
-		}
-		return false;
+		return mediaTypeRegistry.anyMatch((mimeType) -> mimeType.isCompatibleWith(contentType));
 	}
 
 	/**

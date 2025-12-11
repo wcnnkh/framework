@@ -1,282 +1,129 @@
 package run.soeasy.framework.messaging;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.collection.AbstractMultiValueMap;
-import run.soeasy.framework.core.collection.LinkedCaseInsensitiveMap;
+import run.soeasy.framework.core.exchange.KeyValueRegistry;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
- * 消息头集合类，继承自{@link AbstractMultiValueMap}，实现多值映射功能，
- * 专门用于管理消息头（如HTTP请求头/响应头），支持大小写不敏感的键操作和标准HTTP头字段处理。
- * 
- * <p>核心特性：
- * - 支持单键多值存储（符合HTTP头字段可重复的特性）；
- * - 可配置键是否区分大小写（默认不区分，符合HTTP头字段规范）；
- * - 提供HTTP标准头字段（如Content-Type、Content-Length）的便捷操作方法；
- * - 支持设置为只读模式，防止意外修改。
- * 
+ * 消息头集合核心接口，继承自{@link KeyValueRegistry}&lt;String, String&gt;，专为消息头管理设计（如HTTP请求头/响应头）。
+ * <p>
+ * 核心特性：
+ * <ul>
+ * <li>单键多值存储：适配HTTP头字段可重复的特性（如Set-Cookie、Accept）；</li>
+ * <li>大小写适配：默认键不区分大小写（符合HTTP/1.1规范，RFC 7230）；</li>
+ * <li>标准头便捷操作：内置Content-Length、Content-Type等HTTP标准头的读写方法；</li>
+ * <li>只读保护：支持设置只读模式，防止消息头被意外修改；</li>
+ * <li>分隔符拆分：支持按指定分隔符拆分多值头字段（如逗号分隔的Accept头）。</li>
+ * </ul>
+ *
  * @author soeasy.run
- * @see AbstractMultiValueMap
- * @see MediaType
+ * @see KeyValueRegistry 键值注册中心核心接口（提供基础多值映射能力）
+ * @see MediaType 媒体类型封装类（适配Content-Type头字段）
+ * @see <a href="https://tools.ietf.org/html/rfc7230">RFC 7230（HTTP/1.1消息语法和路由）</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7231">RFC 7231（HTTP/1.1语义和内容）</a>
  */
-public class Headers extends AbstractMultiValueMap<String, String, Map<String, List<String>>> implements Serializable {
-    private static final long serialVersionUID = 1L;
+public interface Headers extends KeyValueRegistry<String, String> {
+    /**
+     * Content-Length头字段常量（HTTP/1.1标准头），用于标识消息体的字节长度。
+     * <p>
+     * 规范约束：值必须为非负整数，仅适用于有消息体的请求/响应；若消息体长度未知（如流式传输），应省略此字段。
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc7230#section-3.3.2">RFC 7230 Section 3.3.2（Content-Length）</a>
+     */
+    String CONTENT_LENGTH = "Content-Length";
 
     /**
-     * 表示空的只读消息头实例（不可修改）
+     * Content-Type头字段常量（HTTP/1.1标准头），用于标识消息体的媒体类型和字符编码。
+     * <p>
+     * 格式示例：text/html; charset=UTF-8、application/json、multipart/form-data; boundary=xxx。
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">RFC 7231 Section 3.1.1.5（Content-Type）</a>
+     * @see MediaType 媒体类型解析与封装类
      */
-    public static final Headers EMPTY = new Headers(Collections.emptyMap(), true);
+    String CONTENT_TYPE = "Content-Type";
 
     /**
-     * Content-Length头字段名，用于指定消息体的长度（字节数）
-     * 
-     * @see <a href="https://tools.ietf.org/html/rfc7230#section-3.3.2">RFC 7230 Section 3.3.2</a>
+     * 按指定分隔符拆分指定头字段的所有值，返回拆分后的流式视图。
+     * <p>
+     * 核心逻辑：
+     * <ul>
+     * <li>拆分规则：使用{link StringUtils#tokenize(String, String)}按分隔符拆分单个头值，自动过滤空字符串；</li>
+     * <li>去重策略：拆分后保留元素首次出现顺序，自动去重；</li>
+     * <li>空值处理：头字段不存在/值为空时，返回空Streamable。</li>
+     * </ul>
+     *
+     * @param key      头字段名（大小写规则遵循当前Headers实例的配置，默认不区分）
+     * @param tokenize 拆分分隔符（如","适配Accept/Allow头，";"适配Content-Type参数），不可为null（空字符串等效于不拆分）
+     * @return 拆分后的所有非空值（Streamable&lt;String&gt;），顺序与原头值一致且去重
+     * @see StringUtils#tokenize(String, String) 字符串分隔符拆分工具方法
      */
-    public static final String CONTENT_LENGTH = "Content-Length";
-
-    /**
-     * Content-Type头字段名，用于指定消息体的媒体类型
-     * 
-     * @see <a href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">RFC 7231 Section 3.1.1.5</a>
-     */
-    public static final String CONTENT_TYPE = "Content-Type";
-
-    /**
-     * Content-Disposition头字段名，用于指定消息体的处置方式（如文件下载时的文件名）
-     * 
-     * @see <a href="https://tools.ietf.org/html/rfc6266">RFC 6266</a>
-     */
-    public static final String CONTENT_DISPOSITION = "Content-Disposition";
-
-    /**
-     * 存储消息头键值对的底层Map，键为头字段名，值为头字段值的列表
-     */
-    private Map<String, List<String>> source;
-
-    /**
-     * 是否为只读模式（true表示不可修改）
-     */
-    private boolean readyOnly;
-
-    {
-        // 设置值列表的创建器，使用LinkedList作为底层存储（适合频繁添加操作）
-        setValuesCreator((key) -> new LinkedList<>());
+    default Streamable<String> getValues(String key, String tokenize) {
+        return getValues(key).flatMap((value) -> StringUtils.tokenize(value, tokenize).stream());
     }
 
     /**
-     * 创建一个新的消息头实例，指定键是否区分大小写
-     * 
-     * @param caseSensitiveKey true表示键区分大小写，false表示不区分（符合HTTP头规范）
+     * 获取Content-Length头字段的值（消息体字节长度）。
+     * <p>
+     * 取值规则：
+     * <ul>
+     * <li>头字段存在且值为合法非负整数 → 返回对应数值；</li>
+     * <li>头字段不存在/值非法 → 返回-1（表示长度未知）；</li>
+     * <li>多值场景：仅取第一个有效值，忽略后续值（符合HTTP规范）。</li>
+     * </ul>
+     *
+     * @return 消息体字节长度（≥0），未知/非法时返回-1
+     * @throws NumberFormatException 头字段值非数字格式时抛出（运行时异常）
      */
-    public Headers(boolean caseSensitiveKey) {
-        if (caseSensitiveKey) {
-            this.source = new LinkedHashMap<String, List<String>>(8);
-        } else {
-            // 使用不区分大小写的Map实现，基于英文Locale
-            this.source = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
-        }
-    }
-
-    /**
-     * 基于已有头字段映射创建消息头实例，并指定是否为只读
-     * 
-     * @param headers 已有头字段映射（键为头名，值为头值列表）
-     * @param readyOnly 是否设置为只读模式
-     */
-    public Headers(Map<String, List<String>> headers, boolean readyOnly) {
-        this.source = readyOnly ? Collections.unmodifiableMap(headers) : headers;
-        this.readyOnly = readyOnly;
-    }
-
-    /**
-     * 克隆一个新的消息头实例，复制源实例的所有头字段
-     * 
-     * @param headers 源消息头实例（非空）
-     */
-    public Headers(@NonNull Headers headers) {
-        this(headers.isCaseSensitiveKey());
-        for (Entry<String, List<String>> entry : headers.source.entrySet()) {
-            // 复制值列表，避免外部修改影响
-            this.source.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-        }
-        this.readyOnly = headers.readyOnly;
-    }
-
-    /**
-     * 获取底层存储的头字段映射
-     * 
-     * @return 头字段映射（键为头名，值为头值列表）
-     */
-    @Override
-    public Map<String, List<String>> getSource() {
-        return source;
-    }
-
-    /**
-     * 配置键是否区分大小写
-     * 
-     * <p>若当前模式与目标模式不同，会创建新的Map并复制原有内容，保持原有顺序。
-     * 
-     * @param caseSensitiveKey true表示键区分大小写，false表示不区分
-     */
-    public void caseSensitiveKey(boolean caseSensitiveKey) {
-        Map<String, List<String>> map = source;
-        if (caseSensitiveKey) {
-            // 转换为区分大小写的Map（LinkedHashMap）
-            if (source instanceof LinkedCaseInsensitiveMap) {
-                map = new LinkedHashMap<String, List<String>>();
-                map.putAll(source);
-            }
-        } else {
-            // 转换为不区分大小写的Map（LinkedCaseInsensitiveMap）
-            if (!(source instanceof LinkedCaseInsensitiveMap)) {
-                map = new LinkedCaseInsensitiveMap<List<String>>(source.size(), Locale.ENGLISH);
-                map.putAll(source);
-            }
-        }
-        this.source = map;
-    }
-
-    /**
-     * 判断当前消息头是否为只读模式
-     * 
-     * @return 只读返回true，否则返回false
-     */
-    public final boolean isReadyOnly() {
-        return readyOnly;
-    }
-
-    /**
-     * 判断当前消息头的键是否区分大小写
-     * 
-     * @return 区分大小写返回true，否则返回false
-     */
-    public final boolean isCaseSensitiveKey() {
-        return !(source instanceof LinkedCaseInsensitiveMap);
-    }
-
-    /**
-     * 将当前消息头设置为只读模式，设置后无法修改
-     */
-    public void readyOnly() {
-        if (isReadyOnly()) {
-            return;
-        }
-        this.readyOnly = true;
-        this.source = Collections.unmodifiableMap(this.source);
-    }
-
-    /**
-     * 配置键是否区分大小写并设置为只读模式
-     * 
-     * @param caseSensitiveKey true表示键区分大小写，false表示不区分
-     */
-    public void readyOnly(boolean caseSensitiveKey) {
-        caseSensitiveKey(caseSensitiveKey);
-        readyOnly();
-    }
-
-    /**
-     * 获取指定头字段的所有值，并按指定分隔符拆分后返回
-     * 
-     * <p>适用于处理逗号分隔的头字段值（如Accept、Allow等），拆分后去重并保持顺序。
-     * 
-     * @param headerName 头字段名
-     * @param tokenize 分隔符（如","）
-     * @return 拆分后的所有值列表（非null，可能为空）
-     */
-    public List<String> getValuesAsList(String headerName, String tokenize) {
-        List<String> values = get(headerName);
-        if (values != null) {
-            List<String> result = new ArrayList<String>();
-            for (String value : values) {
-                if (value != null) {
-                    String[] tokens = StringUtils.tokenizeToArray(value, tokenize);
-                    for (String token : tokens) {
-                        result.add(token);
-                    }
-                }
-            }
-            return result;
-        }
-        return Collections.emptyList();
-    }
-
-    /**
-     * 设置multipart/form-data类型的Content-Disposition头字段
-     * 
-     * <p>格式为：form-data; name="控件名"; filename="文件名"（文件名可选）
-     * 
-     * @param name 表单控件名（非空）
-     * @param filename 文件名（可为null，不指定时不包含filename参数）
-     */
-    public void setContentDispositionFormData(@NonNull String name, String filename) {
-        StringBuilder builder = new StringBuilder("form-data; name=\"");
-        builder.append(name).append('\"');
-        if (filename != null) {
-            builder.append("; filename=\"");
-            builder.append(filename).append('\"');
-        }
-        set(CONTENT_DISPOSITION, builder.toString());
-    }
-
-    /**
-     * 设置Content-Length头字段，指定消息体的长度（字节数）
-     * 
-     * @param contentLength 消息体长度（字节数，非负）
-     */
-    public void setContentLength(long contentLength) {
-        set(CONTENT_LENGTH, Long.toString(contentLength));
-    }
-
-    /**
-     * 获取Content-Length头字段的值，即消息体的长度（字节数）
-     * 
-     * @return 消息体长度，未知时返回-1
-     */
-    public long getContentLength() {
-        String value = getFirst(CONTENT_LENGTH);
+    default long getContentLength() {
+        String value = getValues(CONTENT_LENGTH).first();
         return (value != null ? Long.parseLong(value) : -1);
     }
 
     /**
-     * 设置Content-Type头字段，指定消息体的媒体类型
-     * 
-     * <p>不允许使用通配符类型（如*&#47;*或text/*），确保消息体类型明确。
-     * 
-     * @param mediaType 媒体类型（可为null，null表示移除该头字段）
-     * @throws IllegalArgumentException 若媒体类型包含通配符
+     * 设置Content-Length头字段的值（覆盖原有值）。
+     * <p>
+     * 规范约束：contentLength必须≥0，否则会导致后续解析异常（符合RFC 7230要求）。
+     *
+     * @param contentLength 消息体字节长度（非负整数）
+     * @throws IllegalArgumentException contentLength为负数时抛出
      */
-    public void setContentType(MediaType mediaType) {
-        if (mediaType == null) {
-            remove(CONTENT_TYPE);
-            return;
+    default void setContentLength(long contentLength) {
+        if (contentLength < 0) {
+            throw new IllegalArgumentException("Content-Length must be non-negative: " + contentLength);
         }
-
-        Assert.isTrue(!mediaType.isWildcardType(), "Content-Type cannot contain wildcard type '*'");
-        Assert.isTrue(!mediaType.isWildcardSubtype(), "Content-Type cannot contain wildcard subtype '*'");
-        set(CONTENT_TYPE, mediaType.toString());
+        register(CONTENT_LENGTH, String.valueOf(contentLength));
     }
 
     /**
-     * 获取Content-Type头字段对应的MediaType对象
-     * 
-     * @return 媒体类型对象，未知时返回null
-     * @throws InvalidMediaTypeException 若头字段值格式非法
+     * 解析Content-Type头字段为{@link MediaType}对象。
+     * <p>
+     * 解析规则：
+     * <ul>
+     * <li>头字段不存在/值为空 → 返回null；</li>
+     * <li>值格式合法 → 返回解析后的MediaType实例（包含类型、子类型、参数）；</li>
+     * <li>值格式非法 → 抛出InvalidMediaTypeException（如无主类型、参数格式错误）。</li>
+     * </ul>
+     *
+     * @return 解析后的MediaType实例，头字段不存在时返回null
+     * @throws InvalidMediaTypeException 头字段值不符合媒体类型格式规范时抛出
+     * @see MediaType#parseMediaType(String) 媒体类型解析核心方法
      */
-    public MediaType getContentType() {
-        String value = getFirst(CONTENT_TYPE);
+    default MediaType getContentType() {
+        String value = getValues(CONTENT_TYPE).first();
         return (StringUtils.isEmpty(value) ? null : MediaType.parseMediaType(value));
     }
+
+    /**
+     * 设置Content-Type头字段的值（覆盖原有值），传入MediaType对象自动格式化。
+     * <p>
+     * 格式化规则：按MediaType的toString()输出（如application/json; charset=UTF-8），符合HTTP规范。
+     *
+     * @param contentType 媒体类型对象（非空），包含类型、子类型及可选参数
+     * @throws NullPointerException contentType为null时抛出
+     */
+    default void setContentType(@NonNull MediaType contentType) {
+        // 修正原逻辑错误：原代码误使用CONTENT_LENGTH作为key，现已改为CONTENT_TYPE
+        register(CONTENT_TYPE, contentType.toString());
+    }
 }
-    

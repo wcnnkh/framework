@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.property.PropertyAccessor;
+import run.soeasy.framework.core.mapping.property.PropertyAccessor;
 
 /**
  * ResultSet属性访问器的抽象基类，实现{@link PropertyAccessor}接口，

@@ -22,7 +22,7 @@ class ArrayToCollectionConverter extends AbstractConditionalConverter {
 		int length = Array.getLength(source);
 		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
 		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
-				(elementDesc != null ? elementDesc.getType() : null), length);
+				(elementDesc != null ? elementDesc.getType() : null));
 
 		if (elementDesc == null) {
 			for (int i = 0; i < length; i++) {

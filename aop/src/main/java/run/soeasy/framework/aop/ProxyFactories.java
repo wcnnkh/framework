@@ -2,6 +2,7 @@ package run.soeasy.framework.aop;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ServiceComparator;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**
@@ -23,7 +24,7 @@ public class ProxyFactories extends ConfigurableServices<ProxyFactory> implement
      * 构造代理工厂集合，指定服务类为{@link ProxyFactory}
      */
     public ProxyFactories() {
-        setServiceClass(ProxyFactory.class);
+    	super(ServiceComparator.defaultServiceComparator());
     }
 
     /**

@@ -1,3 +1,4 @@
+
 package run.soeasy.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -5,12 +6,13 @@ import java.lang.annotation.Annotation;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.transform.property.TypedProperties;
-import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
+import run.soeasy.framework.core.mapping.property.PropertyAccessor;
+import run.soeasy.framework.core.mapping.property.PropertyMapping;
+import run.soeasy.framework.core.mapping.property.PropertyMappingWrapper;
 
 /**
  * 自定义注解属性映射器，继承自{@link AbstractAnnotationPropertyMapping}，
- * 实现{@link AnnotationProperties}和{@link TypedPropertiesWrapper}接口，
+ * 实现{@link AnnotationProperties}和{@link PropertyMappingWrapper}接口，
  * 用于将任意类型的属性包装为注解属性，支持自定义注解类型与属性的映射关系。
  * <p>
  * 该类通过组合模式将外部属性源与注解类型绑定，实现注解属性的动态访问，
@@ -18,7 +20,7 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  *
  * <p><b>核心特性：</b>
  * <ul>
- *   <li>属性包装：将任意{@link TypedProperties}实现包装为注解属性</li>
+ *   <li>属性包装：将任意{@link PropertyMapping}实现包装为注解属性</li>
  *   <li>类型安全：通过泛型约束确保注解类型与属性的一致性</li>
  *   <li>自定义映射：支持自定义注解类型与属性源的映射关系</li>
  *   <li>接口适配：实现TypedPropertiesWrapper接口，保持与属性体系的兼容性</li>
@@ -27,7 +29,7 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  * <p><b>泛型说明：</b>
  * <ul>
  *   <li>A：目标注解类型，必须是{@link Annotation}的子类</li>
- *   <li>P：源属性类型，必须是{@link TypedProperties}的子类</li>
+ *   <li>P：源属性类型，必须是{@link PropertyMapping}的子类</li>
  * </ul>
  *
  * <p><b>使用场景：</b>
@@ -41,13 +43,12 @@ import run.soeasy.framework.core.transform.property.TypedPropertiesWrapper;
  *
  * @author soeasy.run
  * @see AnnotationProperties
- * @see TypedPropertiesWrapper
  * @see AbstractAnnotationPropertyMapping
  */
 @Getter
 @RequiredArgsConstructor
-public class CustomizeAnnotationPropertyMapping<A extends Annotation, P extends TypedProperties>
-        extends AbstractAnnotationPropertyMapping<A> implements AnnotationProperties<A>, TypedPropertiesWrapper<P> {
+public class CustomizeAnnotationPropertyMapping<A extends Annotation, P extends PropertyMapping<PropertyAccessor>>
+        extends AbstractAnnotationPropertyMapping<A> implements AnnotationProperties<A>, PropertyMappingWrapper<PropertyAccessor, P> {
     /**
      * 目标注解类型
      */
@@ -59,4 +60,6 @@ public class CustomizeAnnotationPropertyMapping<A extends Annotation, P extends 
      */
     @NonNull
     private final P source;
+    
+    
 }

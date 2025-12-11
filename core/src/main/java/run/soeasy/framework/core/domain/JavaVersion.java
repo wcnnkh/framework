@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * Java版本工具类，用于解析和比较Java版本信息。
@@ -84,7 +84,7 @@ public final class JavaVersion extends JoinVersion implements Serializable {
         
         // 提取主版本号（master version），通常是第二位（索引1）
         Version master = array.length > 1 ? array[1] : array[0];
-        return new JavaVersion(Elements.forArray(array), versionTemplate.getDelimiter(), master);
+        return new JavaVersion(Streamable.array(array), versionTemplate.getDelimiter(), master);
     }
 
     /** 主版本号，用于兼容性判断的核心依据 */
@@ -97,7 +97,7 @@ public final class JavaVersion extends JoinVersion implements Serializable {
      * @param delimiter 版本号分隔符
      * @param master 主版本号
      */
-    private JavaVersion(Elements<Version> elements, CharSequence delimiter, Version master) {
+    private JavaVersion(Streamable<Version> elements, CharSequence delimiter, Version master) {
         super(elements, delimiter);
         this.master = Objects.requireNonNull(master, "主版本号不能为null");
     }

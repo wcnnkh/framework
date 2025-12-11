@@ -36,15 +36,12 @@ public class MessageConverterComparator implements Comparator<MessageConverter> 
      */
     @Override
     public int compare(MessageConverter o1, MessageConverter o2) {
-        for (MimeType mimeType1 : o1.getSupportedMediaTypes()) {
-            for (MimeType mimeType2 : o2.getSupportedMediaTypes()) {
-                // 若o1的媒体类型与o2相等，或被o2包含，则o1更具体，优先级更高
-                if (mimeType1.equals(mimeType2) || mimeType2.includes(mimeType1)) {
-                    return -1;
-                }
+    	return o1.getSupportedMediaTypes().zip(o2.getSupportedMediaTypes(), (mimeType1, mimeType2) -> {
+    		 // 若o1的媒体类型与o2相等，或被o2包含，则o1更具体，优先级更高
+            if (mimeType1.equals(mimeType2) || mimeType2.includes(mimeType1)) {
+                return -1;
             }
-        }
-        // 未找到o1更具体的情况，默认o2优先级更高
-        return 1;
+            return 0;
+    	}).filter((e) -> e == -1).findAny().isPresent()? -1:1;
     }
 }

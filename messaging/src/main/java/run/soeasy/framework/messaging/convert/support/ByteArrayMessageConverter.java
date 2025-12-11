@@ -1,7 +1,6 @@
 package run.soeasy.framework.messaging.convert.support;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
@@ -33,7 +32,8 @@ public class ByteArrayMessageConverter extends AbstractBinaryMessageConverter<by
     public ByteArrayMessageConverter() {
         super(byte[].class);
         // 注册支持的媒体类型：二进制流和所有类型
-        getMediaTypeRegistry().addAll(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL));
+        getMediaTypeRegistry().register(MediaType.APPLICATION_OCTET_STREAM);
+        getMediaTypeRegistry().register(MediaType.ALL);
     }
 
     /**

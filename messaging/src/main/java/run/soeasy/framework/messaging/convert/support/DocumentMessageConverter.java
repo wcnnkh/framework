@@ -1,7 +1,6 @@
 package run.soeasy.framework.messaging.convert.support;
 
-import java.util.Arrays;
-
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.messaging.MediaType;
 
 /**
@@ -32,7 +31,7 @@ public class DocumentMessageConverter extends TextMessageConverter {
      * 为XML格式的文档转换提供明确的类型标识。
      */
     public DocumentMessageConverter() {
-        getMediaTypeRegistry().addAll(Arrays.asList(
+        getMediaTypeRegistry().registerAll(Streamable.array(
             MediaType.APPLICATION_XML,
             MediaType.APPLICATION_ATOM_XML,
             MediaType.APPLICATION_XHTML_XML,

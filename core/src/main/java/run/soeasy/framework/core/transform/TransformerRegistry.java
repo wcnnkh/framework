@@ -1,17 +1,17 @@
 package run.soeasy.framework.core.transform;
 
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;
-import run.soeasy.framework.core.exchange.Registration;
-import run.soeasy.framework.core.exchange.Registrations;
-import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
+import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
+import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.spi.ServiceMap;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 转换器注册表，用于注册、管理和查找{@link Transformer}实例，
@@ -34,7 +34,11 @@ import run.soeasy.framework.core.exchange.container.map.TreeMapContainer;
  * @see TypeMapping
  * @see Transformer
  */
-public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transformer> implements ConditionalTransformer {
+public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> implements ConditionalTransformer {
+
+	public TransformerRegistry() {
+		super(TypeMapping::compareTo);
+	}
 
 	/**
 	 * 根据源类型和目标类型查找匹配的转换器（支持双向查找）
@@ -57,7 +61,7 @@ public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transform
 			transformer = getTransformerByHash(targetTypeDescriptor, sourceTypeDescriptor);
 		}
 
-		for (Entry<TypeMapping, Transformer> entry : entrySet()) {
+		for (Entry<TypeMapping, Transformer> entry : getContainer().entrySet()) {
 			if (entry.getValue().canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
 				return entry.getValue();
 			}
@@ -75,7 +79,7 @@ public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transform
 	private Transformer getTransformerByHash(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		TypeMapping typeMapping = new TypeMapping(sourceTypeDescriptor.getType(), targetTypeDescriptor.getType());
-		return get(typeMapping);
+		return getContainer().get(typeMapping);
 	}
 
 	/**
@@ -118,7 +122,7 @@ public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transform
 	 */
 	@Override
 	public Set<TypeMapping> getTransformableTypeMappings() {
-		return keySet();
+		return getContainer().keySet();
 	}
 
 	/**
@@ -127,11 +131,9 @@ public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transform
 	 * @param conditionalTransformer 条件转换器，不可为null
 	 * @return 注册句柄，可用于后续取消注册
 	 */
-	public Registration register(ConditionalTransformer conditionalTransformer) {
+	public Operation register(ConditionalTransformer conditionalTransformer) {
 		Set<TypeMapping> typeMappings = conditionalTransformer.getTransformableTypeMappings();
-		List<Registration> registrations = typeMappings.stream().map((e) -> register(e, conditionalTransformer))
-				.collect(Collectors.toList());
-		return Registrations.forList(registrations);
+		return Operation.batch(Streamable.of(typeMappings), Mode.AND, (e) -> register(e, conditionalTransformer));
 	}
 
 	/**
@@ -144,7 +146,7 @@ public class TransformerRegistry extends TreeMapContainer<TypeMapping, Transform
 	 * @param consumer   转换逻辑函数，参数为(源对象, 目标对象)
 	 * @return 注册句柄，可用于后续取消注册
 	 */
-	public <S, T> Registration register(Class<S> sourceType, Class<T> targetType,
+	public <S, T> Operation register(Class<S> sourceType, Class<T> targetType,
 			BiConsumer<? super S, ? super T> consumer) {
 		ConsumeTransformer<S, T> transformer = new ConsumeTransformer<>(sourceType, targetType, consumer);
 		return register(transformer);

@@ -36,7 +36,7 @@ class CollectionToCollectionConverter extends AbstractConditionalConverter {
 		// At this point, we need a collection copy in any case, even if just for
 		// finding out about element copies...
 		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
-				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
+				(elementDesc != null ? elementDesc.getType() : null));
 		if (elementDesc == null) {
 			target.addAll(sourceCollection);
 		} else {

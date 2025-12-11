@@ -16,7 +16,6 @@ public interface PagingQuery<S, T> {
      * @param cursorId 起始游标位置，用于标识从何处开始查询数据
      *                 首次查询时可为null，表示从第一条数据开始
      * @param pageSize 每页返回的记录数量上限
-     *                 0表示使用默认的每页大小（由具体实现决定）
      * @return 返回一个包含查询结果的分页对象
      */
     T query(S cursorId, int pageSize);

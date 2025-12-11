@@ -81,7 +81,6 @@ public abstract class AbstractEntityMessageConverter<T extends Entity<?>> extend
             MimeType contentType) {
         // 校验源类型是否为Entity的子类，且消息头可写
         return Entity.class.isAssignableFrom(sourceDescriptor.getReturnTypeDescriptor().getType())
-                && !message.getHeaders().isReadyOnly() 
                 && super.isWriteable(sourceDescriptor, message, contentType);
     }
 

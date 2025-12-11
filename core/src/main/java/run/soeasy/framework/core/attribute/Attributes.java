@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.attribute;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 属性访问接口，定义了属性的基本操作契约。
@@ -25,7 +25,6 @@ import run.soeasy.framework.core.collection.Elements;
  *
  * @param <K> 属性键的类型
  * @param <V> 属性值的类型
- * @see Elements
  * @see AttributesWrapper
  */
 public interface Attributes<K, V> {
@@ -47,5 +46,5 @@ public interface Attributes<K, V> {
      *
      * @return 属性名称的集合，不会返回null
      */
-    Elements<K> getAttributeNames();
+    Streamable<K> getAttributeNames();
 }

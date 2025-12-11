@@ -6,6 +6,7 @@ import java.beans.Introspector;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ServiceComparator;
 
 /**
  * 可配置的Bean信息工厂，继承自{@link ConfigurableServices}并实现{@link BeanInfoFactory}，
@@ -26,6 +27,7 @@ class ConfigurableBeanInfoFactory extends ConfigurableServices<BeanInfoFactory> 
      * 用于后续通过SPI机制加载该接口的实现类。
      */
     ConfigurableBeanInfoFactory() {
+    	super(ServiceComparator.defaultServiceComparator());
         setServiceClass(BeanInfoFactory.class);
     }
 

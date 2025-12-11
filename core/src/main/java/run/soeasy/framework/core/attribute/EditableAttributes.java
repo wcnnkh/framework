@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.attribute;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 可编辑属性接口，扩展Attributes接口，支持属性的修改操作。
@@ -99,7 +99,7 @@ public interface EditableAttributes<K, V> extends Attributes<K, V> {
      * @param attributes 包含要设置属性的Attributes实例，不可为null
      */
     default void setAttributes(Attributes<K, ? extends V> attributes) {
-        Elements<? extends K> keys = attributes.getAttributeNames();
+    	Streamable<? extends K> keys = attributes.getAttributeNames();
         keys.forEach((key) -> setAttribute(key, attributes.getAttribute(key)));
     }
 }

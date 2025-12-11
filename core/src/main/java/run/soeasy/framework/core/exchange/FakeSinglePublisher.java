@@ -1,14 +1,14 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.streaming.Streamable;
 
 @FunctionalInterface
-public interface FakeSinglePublisher<T, W extends Publisher<Elements<T>>> extends Publisher<T>, Wrapper<W> {
+interface FakeSinglePublisher<T, W extends Publisher<Streamable<T>>> extends Publisher<T>, Wrapper<W> {
 
 	@Override
-	default Receipt publish(T resource) {
-		return getSource().publish(Elements.singleton(resource));
+	default Operation publish(T resource) {
+		return getSource().publish(Streamable.singleton(resource));
 	}
 
 }

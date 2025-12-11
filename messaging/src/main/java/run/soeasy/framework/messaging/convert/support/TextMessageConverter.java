@@ -2,7 +2,6 @@ package run.soeasy.framework.messaging.convert.support;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.Converter;
@@ -12,6 +11,7 @@ import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedData;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
@@ -59,7 +59,7 @@ public class TextMessageConverter extends AbstractTextMessageConverter<Object> i
 	 */
 	public TextMessageConverter() {
 		super(Object.class);
-		getMediaTypeRegistry().addAll(Arrays.asList(MediaType.TEXT_PLAIN, TEXT_ALL));
+		getMediaTypeRegistry().registerAll(Streamable.array(MediaType.TEXT_PLAIN, TEXT_ALL));
 	}
 
 	/**

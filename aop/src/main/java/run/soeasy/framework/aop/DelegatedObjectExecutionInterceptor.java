@@ -44,7 +44,7 @@ class DelegatedObjectExecutionInterceptor implements InvocationInterceptor, Seri
     @Override
     public Object intercept(@NonNull Invocation executor) throws Throwable {
         // 判断是否为获取代理容器ID的方法调用（方法名匹配且无参数）
-        if (executor.getMetadata().getParameterTemplate().isEmpty()
+        if (executor.getMetadata().getParameterMapping().isEmpty()
                 && executor.getMetadata().getName().equals(DelegatedObject.PROXY_CONTAINER_ID_METHOD_NAME)) {
             return id; // 返回预设的代理容器ID
         }

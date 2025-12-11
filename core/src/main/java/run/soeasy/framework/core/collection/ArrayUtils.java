@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 数组工具类 提供数组操作的各种实用方法，包括克隆、比较、合并、转换等功能
@@ -594,16 +595,16 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * 将数组转换为Elements对象 支持对象数组和基本类型数组，提供惰性加载的元素访问方式
+	 * 将数组转换为Streamable对象 支持对象数组和基本类型数组，提供惰性加载的元素访问方式
 	 * 
 	 * @param array 待转换的数组，可为null
-	 * @return Elements对象，包含数组元素的惰性访问接口
-	 * @see Elements 元素容器接口
+	 * @return Streamable对象，包含数组元素的惰性访问接口
+	 * @see Streamable
 	 */
-	public static Elements<Object> elements(Object array) {
+	public static Streamable<Object> elements(Object array) {
 		if (array == null) {
-			return Elements.empty(); // 处理null输入，返回空Elements
+			return Streamable.empty(); // 处理null输入，返回空Streamable
 		}
-		return Elements.of(() -> stream(array)); // 封装Stream供给函数
+		return Streamable.of(() -> stream(array)); // 封装Stream供给函数
 	}
 }

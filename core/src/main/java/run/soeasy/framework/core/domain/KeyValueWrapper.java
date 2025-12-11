@@ -65,4 +65,9 @@ public interface KeyValueWrapper<K, V, W extends KeyValue<K, V>> extends KeyValu
     default V getValue() {
         return getSource().getValue();
     }
+    
+    @Override
+    default KeyValue<V, K> reversed() {
+    	return getSource().reversed();
+    }
 }

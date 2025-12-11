@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.domain;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 这是一个抽象的版本，意味的是可以进行比较的
@@ -19,7 +19,7 @@ public interface Version extends Value, Comparable<Value> {
 	}
 
 	default Version join(@NonNull Version version) {
-		return new JoinVersion(Elements.forArray(this, version), null);
+		return new JoinVersion(Streamable.array(this, version), null);
 	}
 
 	@Override

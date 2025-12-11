@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量分发器接口，定义支持批量消息处理和监听器管理的能力。
@@ -9,7 +9,7 @@ import run.soeasy.framework.core.collection.Elements;
  *
  * <p>核心特性：
  * <ul>
- *   <li>批量操作：通过Elements集合一次性处理多个消息</li>
+ *   <li>批量操作：通过Streamable集合一次性处理多个消息</li>
  *   <li>模式转换：通过single()方法可转换为单条处理模式</li>
  *   <li>双向通信：支持批量消息的发布和监听</li>
  *   <li>原子性保证：实现类可选择保证批量操作的原子性</li>
@@ -29,9 +29,9 @@ import run.soeasy.framework.core.collection.Elements;
  * @see Dispatcher
  * @see BatchPublisher
  * @see BatchListenable
- * @see Elements
+ * @see Streamable
  */
-public interface BatchDispatcher<T> extends Dispatcher<Elements<T>>, BatchPublisher<T>, BatchListenable<T> {
+public interface BatchDispatcher<T> extends Dispatcher<Streamable<T>>, BatchPublisher<T>, BatchListenable<T> {
 
     /**
      * 将当前批量分发器转换为单条处理分发器

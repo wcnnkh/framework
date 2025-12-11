@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.transform.property.Property;
+import run.soeasy.framework.core.mapping.property.Property;
 
 /**
  * 反射属性实现类，继承自{@link ReflectionField}并实现{@link Property}接口，

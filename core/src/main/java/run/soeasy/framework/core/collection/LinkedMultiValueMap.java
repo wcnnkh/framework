@@ -1,24 +1,25 @@
 package run.soeasy.framework.core.collection;
 
-import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import lombok.NonNull;
+import java.util.Map;
 
 /**
  * 基于LinkedHashMap的多值映射实现，支持一个键对应多个值。
  * 该类将每个键映射到一个LinkedList值列表，保持插入顺序，并提供了便捷的多值操作方法。
  *
- * <p>核心特性：
+ * <p>
+ * 核心特性：
  * <ul>
- *   <li>有序性：使用LinkedHashMap存储键值对，保持插入顺序</li>
- *   <li>多值支持：每个键对应一个LinkedList值列表，允许重复值</li>
- *   <li>便捷操作：提供add/removeFirst/set等多值专用方法</li>
- *   <li>线程不安全：设计用于单线程环境，如HTTP请求参数处理</li>
+ * <li>有序性：使用LinkedHashMap存储键值对，保持插入顺序</li>
+ * <li>多值支持：每个键对应一个LinkedList值列表，允许重复值</li>
+ * <li>便捷操作：提供add/removeFirst/set等多值专用方法</li>
+ * <li>线程不安全：设计用于单线程环境，如HTTP请求参数处理</li>
  * </ul>
  *
- * <p>使用示例：
+ * <p>
+ * 使用示例：
+ * 
  * <pre>{@code
  * LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
  * map.add("key", "value1");
@@ -31,55 +32,67 @@ import lombok.NonNull;
  * @param <K> 键的类型
  * @param <V> 值的类型
  * @see MultiValueMap
- * @see DefaultMultiValueMap
  */
-public class LinkedMultiValueMap<K, V> extends DefaultMultiValueMap<K, V, LinkedHashMap<K, List<V>>>
-        implements Serializable {
-    private static final long serialVersionUID = 3801124242820219131L;
+public class LinkedMultiValueMap<K, V> extends LinkedHashMap<K, List<V>> implements MultiValueMap<K, V> {
+	private static final long serialVersionUID = 3801124242820219131L;
 
-    /**
-     * 创建空的LinkedMultiValueMap实例，使用默认初始容量(16)和负载因子(0.75)。
-     */
-    public LinkedMultiValueMap() {
-        this(new LinkedHashMap<>());
-    }
+	/**
+	 * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance with
+	 * the specified initial capacity and load factor.
+	 *
+	 * @param initialCapacity the initial capacity
+	 * @param loadFactor      the load factor
+	 * @throws IllegalArgumentException if the initial capacity is negative or the
+	 *                                  load factor is nonpositive
+	 */
+	public LinkedMultiValueMap(int initialCapacity, float loadFactor) {
+		super(initialCapacity, loadFactor);
+	}
 
-    /**
-     * 创建指定初始容量的LinkedMultiValueMap实例。
-     *
-     * @param initialCapacity 初始容量
-     */
-    public LinkedMultiValueMap(int initialCapacity) {
-        this(new LinkedHashMap<>(initialCapacity));
-    }
+	/**
+	 * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance with
+	 * the specified initial capacity and a default load factor (0.75).
+	 *
+	 * @param initialCapacity the initial capacity
+	 * @throws IllegalArgumentException if the initial capacity is negative
+	 */
+	public LinkedMultiValueMap(int initialCapacity) {
+		super(initialCapacity);
+	}
 
-    /**
-     * 创建指定初始容量和负载因子的LinkedMultiValueMap实例。
-     *
-     * @param initialCapacity 初始容量
-     * @param loadFactor      负载因子
-     */
-    public LinkedMultiValueMap(int initialCapacity, float loadFactor) {
-        this(new LinkedHashMap<>(initialCapacity, loadFactor));
-    }
+	/**
+	 * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance with
+	 * the default initial capacity (16) and load factor (0.75).
+	 */
+	public LinkedMultiValueMap() {
+		super();
+	}
 
-    /**
-     * 创建指定初始容量、负载因子和访问顺序的LinkedMultiValueMap实例。
-     *
-     * @param initialCapacity 初始容量
-     * @param loadFactor      负载因子
-     * @param accessOrder     访问顺序(true表示按访问顺序，false表示按插入顺序)
-     */
-    public LinkedMultiValueMap(int initialCapacity, float loadFactor, boolean accessOrder) {
-        this(new LinkedHashMap<>(initialCapacity, loadFactor, accessOrder));
-    }
+	/**
+	 * Constructs an insertion-ordered <tt>LinkedHashMap</tt> instance with the same
+	 * mappings as the specified map. The <tt>LinkedHashMap</tt> instance is created
+	 * with a default load factor (0.75) and an initial capacity sufficient to hold
+	 * the mappings in the specified map.
+	 *
+	 * @param m the map whose mappings are to be placed in this map
+	 * @throws NullPointerException if the specified map is null
+	 */
+	public LinkedMultiValueMap(Map<? extends K, ? extends List<V>> m) {
+		super(m);
+	}
 
-    /**
-     * 基于现有LinkedHashMap创建LinkedMultiValueMap实例，共享底层数据结构。
-     *
-     * @param source 源LinkedHashMap，不可为null
-     */
-    public LinkedMultiValueMap(@NonNull LinkedHashMap<K, List<V>> source) {
-        super(source);
-    }
+	/**
+	 * Constructs an empty <tt>LinkedHashMap</tt> instance with the specified
+	 * initial capacity, load factor and ordering mode.
+	 *
+	 * @param initialCapacity the initial capacity
+	 * @param loadFactor      the load factor
+	 * @param accessOrder     the ordering mode - <tt>true</tt> for access-order,
+	 *                        <tt>false</tt> for insertion-order
+	 * @throws IllegalArgumentException if the initial capacity is negative or the
+	 *                                  load factor is nonpositive
+	 */
+	public LinkedMultiValueMap(int initialCapacity, float loadFactor, boolean accessOrder) {
+		super(initialCapacity, loadFactor, accessOrder);
+	}
 }

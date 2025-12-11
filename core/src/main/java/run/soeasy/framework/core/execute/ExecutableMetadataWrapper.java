@@ -1,8 +1,10 @@
 package run.soeasy.framework.core.execute;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
+import run.soeasy.framework.core.mapping.property.PropertyMapping;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 可执行元数据包装器函数式接口，继承自{@link ExecutableMetadata}和{@link ExecutableDescriptorWrapper}，
@@ -72,7 +74,7 @@ public interface ExecutableMetadataWrapper<W extends ExecutableMetadata>
      * @return 异常类型描述符的元素集合
      */
     @Override
-    default Elements<TypeDescriptor> getExceptionTypeDescriptors() {
+    default Streamable<TypeDescriptor> getExceptionTypeDescriptors() {
         return getSource().getExceptionTypeDescriptors();
     }
 
@@ -92,13 +94,13 @@ public interface ExecutableMetadataWrapper<W extends ExecutableMetadata>
     /**
      * 获取被包装的可执行元素的参数模板
      * <p>
-     * 该默认实现将调用转发给被包装的源可执行元数据的{@link ExecutableMetadata#getParameterTemplate()}方法，
+     * 该默认实现将调用转发给被包装的源可执行元数据的{@link ExecutableMetadata#getParameterMapping()}方法，
      * 子类可覆盖此方法返回自定义的参数模板（如包装后的参数描述符）。
      * 
      * @return 参数模板
      */
     @Override
-    default ParameterTemplate getParameterTemplate() {
-        return getSource().getParameterTemplate();
+    default PropertyMapping<PropertyDescriptor> getParameterMapping() {
+        return getSource().getParameterMapping();
     }
 }

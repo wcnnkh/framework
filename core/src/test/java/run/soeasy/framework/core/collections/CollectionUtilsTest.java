@@ -18,6 +18,6 @@ public class CollectionUtilsTest {
 			String value = RandomUtils.uuid();
 			map.put(value, value);
 		}
-		assertTrue(CollectionUtils.equals(map.keySet(), map.values(), Objects::equals));
+		assertTrue(CollectionUtils.equalsInOrder(map.keySet(), map.values(), Objects::equals));
 	}
 }

@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.exchange;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量通道接口，定义支持批量消息处理的通道。
@@ -9,7 +9,7 @@ import run.soeasy.framework.core.collection.Elements;
  *
  * <p>核心特性：
  * <ul>
- *   <li>批量处理：通过Elements集合一次性处理多个消息</li>
+ *   <li>批量处理：通过Streamable集合一次性处理多个消息</li>
  *   <li>模式转换：通过single()方法可转换为单条处理模式</li>
  *   <li>双向能力：同时支持发布和接收批量消息</li>
  * </ul>
@@ -27,9 +27,9 @@ import run.soeasy.framework.core.collection.Elements;
  * @author soeasy.run
  * @see Channel
  * @see BatchPublisher
- * @see Elements
+ * @see Streamable
  */
-public interface BatchChannel<T> extends Channel<Elements<T>>, BatchPublisher<T> {
+public interface BatchChannel<T> extends Channel<Streamable<T>>, BatchPublisher<T> {
 
     /**
      * 将当前批量通道转换为单条处理通道

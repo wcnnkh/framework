@@ -24,7 +24,7 @@ class ObjectToCollectionConverter extends AbstractConditionalConverter {
 
 		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
 		Collection<Object> target = CollectionUtils.createCollection(targetType.getType(),
-				(elementDesc != null ? elementDesc.getType() : null), 1);
+				(elementDesc != null ? elementDesc.getType() : null));
 
 		if (elementDesc == null || elementDesc.isCollection()) {
 			target.add(source);

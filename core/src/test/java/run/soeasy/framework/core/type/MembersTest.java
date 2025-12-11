@@ -15,9 +15,9 @@ public class MembersTest {
 		assertTrue(members.count() == 5);
 		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).count() == 2);
 
-		for (ClassMembers<Field> classMembers : members.getElements()) {
+		members.getElements().forEach((classMembers) -> {
 			System.out.println(classMembers.getDeclaringClass() + "," + classMembers.count());
-		}
+		});
 	}
 
 	public static class A {

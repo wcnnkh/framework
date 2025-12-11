@@ -5,10 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.format.KeyValueFormat;
-import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.transform.property.TypedProperties;
-import run.soeasy.framework.core.transform.templates.Mapping;
 
 /**
  * 基于JavaBean的键值格式化器，继承自{@link KeyValueFormat}，专门用于将JavaBean对象与键值对格式（如查询字符串、表单数据）进行互转，
@@ -46,13 +43,7 @@ public class BeanFormat extends KeyValueFormat {
 		// 注册Object类型的映射器：将任意Bean转换为键值对流
 		getKeyValueMapper().getMappingProvider().register(Object.class, (bean, type) -> {
 			// 通过BeanMapper获取Bean的类型化属性集合
-			TypedProperties typedProperties = BeanUtils.getProperties(bean, type);
-
-			// 定义Bean到键值对流的映射逻辑
-			Mapping<Object, TypedValueAccessor> mapping = () -> typedProperties.getElements()
-					.map(property -> KeyValue.of(property.getKey(), property.getValue()));
-
-			return mapping;
+			return BeanUtils.getProperties(bean, type);
 		});
 	}
 }

@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.NumberUtils;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 框架统一数值处理抽象基类，整合 Java 原生 {@link Number} 接口的类型转换能力与自定义 {@link Version} 接口的版本比较能力，
@@ -88,7 +88,6 @@ import run.soeasy.framework.core.collection.Elements;
  * @see Version 版本比较接口（定义版本化能力规范，支持版本号分段比较）
  * @see Number Java 原生数值接口（定义基础类型转换契约，确保接口兼容性）
  * @see NumberUtils 高精度数值处理工具类（核心依赖，提供安全转换与校验能力）
- * @see Elements 框架集合工具类（支持单值集合封装，适配多值统一处理场景）
  */
 public abstract class NumberValue extends Number implements Version {
 	private static final long serialVersionUID = 1L;
@@ -392,13 +391,13 @@ public abstract class NumberValue extends Number implements Version {
 
 	/**
 	 * 获取包含当前数值的单元素集合（实现 {@link Value} 接口契约）
-	 * <p>返回 {@link Elements} 单例集合（size=1），便于业务层统一处理"单值/多值"场景（如批量迭代、统一存储）
+	 * <p>返回 {@link Streamable} 单例集合（size=1），便于业务层统一处理"单值/多值"场景（如批量迭代、统一存储）
 	 *
-	 * @return 包含当前实例的 {@link Elements} 集合（非 null，size=1）
+	 * @return 包含当前实例的 {@link Streamable} 集合（非 null，size=1）
 	 */
 	@Override
-	public Elements<NumberValue> getAsElements() {
-		return Elements.singleton(this);
+	public Streamable<NumberValue> getAsElements() {
+		return Streamable.singleton(this);
 	}
 
 	/**

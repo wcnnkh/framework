@@ -2,7 +2,8 @@ package run.soeasy.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
 
-import run.soeasy.framework.core.transform.property.TypedProperties;
+import run.soeasy.framework.core.mapping.property.PropertyAccessor;
+import run.soeasy.framework.core.mapping.property.PropertyMapping;
 
 /**
  * 合成注解接口，作为动态合成注解的标记接口，提供静态工厂方法用于生成合成注解实例，
@@ -53,7 +54,7 @@ public interface SynthesizedAnnotation extends Annotation {
     /**
      * 基于属性集合合成新的注解实例
      * <p>
-     * 该方法将属性集合映射为注解的属性值，支持任意{@link TypedProperties}实现，
+     * 该方法将属性集合映射为注解的属性值，支持任意{@link PropertyMapping}实现，
      * 适用于将配置属性、元数据等转换为注解表示的场景，如动态构造注解实例。
      * 
      * @param <A> 合成的注解类型，必须是{@link Annotation}的子类
@@ -62,7 +63,7 @@ public interface SynthesizedAnnotation extends Annotation {
      * @return 合成的注解实例
      * @see CustomizeAnnotationPropertyMapping
      */
-    public static <A extends Annotation> A synthesize(Class<A> annotationType, TypedProperties properties) {
+    public static <A extends Annotation> A synthesize(Class<A> annotationType, PropertyMapping<PropertyAccessor> properties) {
         return new CustomizeAnnotationPropertyMapping<>(annotationType, properties).synthesize();
     }
 }

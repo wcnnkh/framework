@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
+import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
@@ -36,6 +37,7 @@ import run.soeasy.framework.io.Exportable;
  * @see Exportable
  * @see Supplier
  */
+@Getter
 public final class FormatableMessage implements Exportable, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;
 	/** 默认占位符（{}），用于标识参数替换位置 */
@@ -81,14 +83,14 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 	 * 按顺序替换消息中的占位符，支持{@link Exportable}类型参数的特殊处理。
 	 * 
 	 * @param appendable  目标写入器
-	 * @param format      消息模板
+	 * @param template      消息模板
 	 * @param placeholder 占位符
 	 * @param args        替换参数
 	 * @throws IOException 当写入Appendable时发生IO错误
 	 */
-	public static void formatPlaceholder(@NonNull Appendable appendable, Object format, String placeholder,
+	public static void formatPlaceholder(@NonNull Appendable appendable, Object template, String placeholder,
 			Object... args) throws IOException {
-		String text = format == null ? null : format.toString();
+		String text = template == null ? null : template.toString();
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
 			return;
@@ -122,7 +124,7 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 	}
 
 	/** 消息模板（支持占位符） */
-	private final Object msg;
+	private final Object template;
 	/** 替换参数数组 */
 	private final Object[] args;
 	/** 占位符字符串（默认{@link #PLACEHOLDER}） */
@@ -131,41 +133,14 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 	/**
 	 * 构造可格式化消息实例。
 	 * 
-	 * @param msg         消息模板（如"用户{0}访问{1}失败"）
+	 * @param template         消息模板（如"用户{0}访问{1}失败"）
 	 * @param placeholder 占位符（如"{}"）
 	 * @param args        替换参数（如new Object[]{"admin", "API"}）
 	 */
-	public FormatableMessage(Object msg, String placeholder, Object[] args) {
-		this.msg = msg;
+	public FormatableMessage(Object template, String placeholder, Object[] args) {
+		this.template = template;
 		this.placeholder = placeholder;
 		this.args = args;
-	}
-
-	/**
-	 * 获取消息模板。
-	 * 
-	 * @return 原始消息模板对象
-	 */
-	public Object getMsg() {
-		return msg;
-	}
-
-	/**
-	 * 获取替换参数数组。
-	 * 
-	 * @return 参数数组（可能为null）
-	 */
-	public Object[] getArgs() {
-		return args;
-	}
-
-	/**
-	 * 获取占位符字符串。
-	 * 
-	 * @return 占位符（如"{}"）
-	 */
-	public String getPlaceholder() {
-		return placeholder;
 	}
 
 	/**
@@ -179,7 +154,7 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 	 */
 	@Override
 	public void export(Appendable target) throws IOException {
-		formatPlaceholder(target, msg, placeholder, args);
+		formatPlaceholder(target, template, placeholder, args);
 	}
 
 	/**
@@ -208,5 +183,9 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 			throw new IllegalStateException("Internal IO exception", e);
 		}
 		return sb.toString();
+	}
+
+	public static FormatableMessage create(Object template, Object... args) {
+		return new FormatableMessage(template, PLACEHOLDER, args);
 	}
 }

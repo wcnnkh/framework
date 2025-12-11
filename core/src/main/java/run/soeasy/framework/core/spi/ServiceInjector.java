@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.spi;
 
-import run.soeasy.framework.core.exchange.Registration;
+import run.soeasy.framework.core.exchange.Operation;
 
 /**
  * 服务注入功能接口，定义服务实例的注入操作契约。
@@ -11,7 +11,7 @@ import run.soeasy.framework.core.exchange.Registration;
  * @param <S> 服务实例的类型，即被注入的服务对象类型
  * 
  * @author soeasy.run
- * @see Registration
+ * @see Operation
  * @see ServiceInjectors
  */
 @FunctionalInterface
@@ -26,5 +26,5 @@ public interface ServiceInjector<S> {
      * @return 注册句柄，可用于取消注入或监听注入状态
      * @throws NullPointerException 若service为null
      */
-    Registration inject(S service);
+    Operation inject(S service);
 }

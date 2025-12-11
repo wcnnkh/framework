@@ -1,6 +1,6 @@
 package run.soeasy.framework.core.domain;
 
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 父节点发现接口，定义了具有父子层级关系的对象的父节点访问和遍历能力。
@@ -33,14 +33,14 @@ import run.soeasy.framework.core.collection.Elements;
  * Directory parent = file.getParent(); // subDir
  * 
  * // 遍历所有父节点
- * Elements&lt;Directory&gt; allParents = file.parents(); // [subDir, root]
+ * Streamable&lt;Directory&gt; allParents = file.parents(); // [subDir, root]
  * 
  * // 判断是否为父节点
  * boolean isParent = file.isParents(root); // true
  * </pre>
  *
  * @param <T> 具体实现类的类型，必须实现ParentDiscover接口自身
- * @see Elements
+ * @see Streamable
  */
 public interface ParentDiscover<T extends ParentDiscover<T>> {
     
@@ -71,8 +71,8 @@ public interface ParentDiscover<T extends ParentDiscover<T>> {
      *
      * @return 包含所有父节点的元素集合，若没有父节点则返回空集合
      */
-    default Elements<T> parents() {
-        return Elements.of(() -> new ParentIterator<>(this));
+    default Streamable<T> parents() {
+        return Streamable.of(() -> new ParentIterator<>(this));
     }
 
     /**

@@ -3,6 +3,7 @@ package run.soeasy.framework.aop;
 import lombok.NonNull;
 import run.soeasy.framework.core.execute.Execution;
 import run.soeasy.framework.core.spi.ConfigurableServices;
+import run.soeasy.framework.core.spi.ServiceComparator;
 
 /**
  * 执行拦截器注册中心，继承自{@link ConfigurableServices}并实现{@link ExecutionInterceptor}接口，
@@ -30,7 +31,7 @@ public class ExecutionInterceptorRegistry extends ConfigurableServices<Execution
      * 构造执行拦截器注册中心，指定服务类为{@link ExecutionInterceptor}
      */
 	public ExecutionInterceptorRegistry() {
-		setServiceClass(ExecutionInterceptor.class);
+		super(ServiceComparator.defaultServiceComparator());
 	}
 
     /**

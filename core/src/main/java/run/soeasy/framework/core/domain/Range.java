@@ -10,7 +10,7 @@ import java.util.function.Function;
 import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 范围模型，用于表示由下界和上界定义的连续区间。
@@ -261,7 +261,7 @@ public final class Range<T> implements Serializable {
     public Range<T> union(@NonNull Range<T> other, @NonNull Comparator<T> comparator) {
         this.checkValidity(comparator);
         other.checkValidity(comparator);
-        return unionAll(Elements.forArray(this, other), comparator);
+        return unionAll(Streamable.array(this, other), comparator);
     }
 
     /**
@@ -273,7 +273,7 @@ public final class Range<T> implements Serializable {
      * @param <R>        范围值类型
      * @return 合并后的范围
      */
-    public static <R> Range<R> unionAll(@NonNull Elements<? extends Range<R>> ranges, @NonNull Comparator<R> comparator) {
+    public static <R> Range<R> unionAll(@NonNull Streamable<? extends Range<R>> ranges, @NonNull Comparator<R> comparator) {
         Assert.isTrue(!ranges.isEmpty(), "Cannot union an empty collection of ranges.");
 
         Bound<R> mergedLower = ranges.stream()

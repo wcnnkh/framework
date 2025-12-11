@@ -7,8 +7,8 @@ import run.soeasy.framework.aop.jdk.JdkProxyFactory;
 import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.execute.Execution;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * AOP核心组件，继承自{@link JdkProxyFactory}，提供基于JDK动态代理的AOP功能实现，
@@ -119,12 +119,12 @@ public class Aop extends JdkProxyFactory {
                 this.id);
         
         // 合并拦截器：标识拦截器 + 全局注册拦截器 + 自定义拦截器
-        Elements<? extends ExecutionInterceptor> executionInterceptors;
+        Streamable<? extends ExecutionInterceptor> executionInterceptors;
         if (executionInterceptor == null) {
-            executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+            executionInterceptors = Streamable.array(delegatedObjectExecutionInterceptor,
                     getExecutionInterceptorRegistry());
         } else {
-            executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+            executionInterceptors = Streamable.array(delegatedObjectExecutionInterceptor,
                     getExecutionInterceptorRegistry(), executionInterceptor);
         }
         
@@ -177,12 +177,12 @@ public class Aop extends JdkProxyFactory {
                 this.id);
         
         // 合并拦截器
-        Elements<? extends ExecutionInterceptor> executionInterceptors;
+        Streamable<? extends ExecutionInterceptor> executionInterceptors;
         if (executionInterceptor == null) {
-            executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+            executionInterceptors = Streamable.array(delegatedObjectExecutionInterceptor,
                     getExecutionInterceptorRegistry());
         } else {
-            executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+            executionInterceptors = Streamable.array(delegatedObjectExecutionInterceptor,
                     getExecutionInterceptorRegistry(), executionInterceptor);
         }
         
@@ -225,11 +225,11 @@ public class Aop extends JdkProxyFactory {
                 source);
         
         // 合并拦截器：切换目标拦截器 + 自定义拦截器
-        Elements<? extends ExecutionInterceptor> executionInterceptors;
+        Streamable<? extends ExecutionInterceptor> executionInterceptors;
         if (executionInterceptor == null) {
-            executionInterceptors = Elements.forArray(switchableTargetExecutionInterceptor);
+            executionInterceptors = Streamable.array(switchableTargetExecutionInterceptor);
         } else {
-            executionInterceptors = Elements.forArray(switchableTargetExecutionInterceptor, executionInterceptor);
+            executionInterceptors = Streamable.array(switchableTargetExecutionInterceptor, executionInterceptor);
         }
         
         // 包装为拦截器集合并创建代理

@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import lombok.Data;
-import run.soeasy.framework.core.collection.Elements;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 简单属性实现类，基于LinkedHashMap实现可编辑属性功能。
@@ -31,7 +31,6 @@ import run.soeasy.framework.core.collection.Elements;
  * @param <K> 属性键的类型
  * @param <V> 属性值的类型
  * @see EditableAttributes
- * @see Elements
  */
 @Data
 public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
@@ -75,8 +74,8 @@ public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
      * @return 属性名称的集合，若映射表未初始化则返回空集合
      */
     @Override
-    public Elements<K> getAttributeNames() {
-        return attributeMap == null ? Elements.empty() : Elements.of(attributeMap.keySet());
+    public Streamable<K> getAttributeNames() {
+        return attributeMap == null ? Streamable.empty() : Streamable.of(attributeMap.keySet());
     }
 
     /**

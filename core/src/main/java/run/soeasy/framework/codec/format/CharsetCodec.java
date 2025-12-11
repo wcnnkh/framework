@@ -15,8 +15,7 @@ import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.codec.binary.Gzip;
 import run.soeasy.framework.codec.binary.ToBinaryCodec;
-import run.soeasy.framework.codec.crypto.HmacMD5;
-import run.soeasy.framework.codec.crypto.HmacSHA1;
+import run.soeasy.framework.codec.crypto.MAC;
 import run.soeasy.framework.io.IOUtils;
 
 /**
@@ -117,12 +116,8 @@ public class CharsetCodec implements ToBinaryCodec<String> {
 		return gzip(HexCodec.DEFAULT);
 	}
 
-	public Encoder<String, String> toHmacMD5(String secretKey) {
-		return toEncoder(new HmacMD5(encode(secretKey)).toEncoder(HexCodec.DEFAULT));
-	}
-
-	public Encoder<String, String> toHmacSHA1(String secretKey) {
-		return toEncoder(new HmacSHA1(encode(secretKey)).toEncoder(HexCodec.DEFAULT));
+	public Encoder<String, byte[]> toMac(String algorithm, String secretKey) {
+		return toEncoder(new MAC(algorithm, encode(secretKey)));
 	}
 
 	public static CharsetCodec charset(Charset charset) {

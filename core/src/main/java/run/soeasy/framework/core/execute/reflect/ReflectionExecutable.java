@@ -5,9 +5,10 @@ import java.lang.reflect.Executable;
 import lombok.NonNull;
 import run.soeasy.framework.core.annotation.AnnotatedElementWrapper;
 import run.soeasy.framework.core.annotation.AnnotationArrayAnnotatedElement;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.execute.ParameterTemplate;
+import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
+import run.soeasy.framework.core.mapping.property.PropertyMapping;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
@@ -62,12 +63,12 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * 异常类型描述符集合，使用双重检查锁延迟初始化
      */
     @NonNull
-    private transient volatile Elements<TypeDescriptor> exceptionTypeDescriptors;
+    private transient volatile Streamable<TypeDescriptor> exceptionTypeDescriptors;
 
     /**
      * 参数模板，使用双重检查锁延迟初始化
      */
-    private transient volatile ParameterTemplate parameterTemplate;
+    private transient volatile PropertyMapping<PropertyDescriptor> parameterMapping;
 
     /**
      * 返回类型描述符，使用双重检查锁延迟初始化
@@ -94,7 +95,7 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
         super.setSource(source);
         this.declaringTypeDescriptor = null;
         this.exceptionTypeDescriptors = null;
-        this.parameterTemplate = null;
+        this.parameterMapping = null;
         this.returnTypeDescriptor = null;
     }
 
@@ -130,7 +131,7 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * @return 异常类型描述符集合
      */
     @Override
-    public Elements<TypeDescriptor> getExceptionTypeDescriptors() {
+    public Streamable<TypeDescriptor> getExceptionTypeDescriptors() {
         if (exceptionTypeDescriptors == null) {
             synchronized (this) {
                 if (exceptionTypeDescriptors == null) {
@@ -150,15 +151,15 @@ public class ReflectionExecutable<T extends Executable> extends AbstractReflecti
      * @return 参数模板
      */
     @Override
-    public ParameterTemplate getParameterTemplate() {
-        if (parameterTemplate == null) {
+    public PropertyMapping<PropertyDescriptor> getParameterMapping() {
+        if (parameterMapping == null) {
             synchronized (this) {
-                if (parameterTemplate == null) {
-                    parameterTemplate = new ExecutableParameterTemplate(getSource());
+                if (parameterMapping == null) {
+                	parameterMapping = new ExecutableParameterMapping(getSource());
                 }
             }
         }
-        return parameterTemplate;
+        return parameterMapping;
     }
 
     /**

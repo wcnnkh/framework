@@ -6,8 +6,6 @@ import java.util.Collection;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.collection.ArrayUtils;
-import run.soeasy.framework.core.collection.Elements;
-import run.soeasy.framework.core.collection.Enumerable;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.domain.BigDecimalValue;
@@ -15,6 +13,7 @@ import run.soeasy.framework.core.domain.CharSequenceTemplate;
 import run.soeasy.framework.core.domain.NumberValue;
 import run.soeasy.framework.core.domain.Value;
 import run.soeasy.framework.core.domain.Version;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.type.ClassUtils;
 
 /**
@@ -283,28 +282,23 @@ public interface TypedValue extends TypedData<Object>, Value {
      * </ol>
      */
     @Override
-    default Elements<? extends TypedValue> getAsElements() {
+    default Streamable<? extends TypedValue> getAsElements() {
         Object value = get();
         TypeDescriptor typeDescriptor = getReturnTypeDescriptor();
         if (value instanceof Collection) {
             Collection<?> collection = (Collection<?>) value;
             TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
-            return Elements.of(collection).map((v) -> TypedValue.of(v, elementTypeDescriptor));
+            return Streamable.of(collection).map((v) -> TypedValue.of(v, elementTypeDescriptor));
         } else if (value instanceof Iterable) {
             Iterable<?> iterable = (Iterable<?>) value;
             TypeDescriptor elementTypeDescriptor = typeDescriptor.upcast(Iterable.class)
                     .map((e) -> e.getActualTypeArgument(0));
-            return Elements.of(iterable).map((v) -> TypedValue.of(v, elementTypeDescriptor));
-        } else if (value instanceof Enumerable) {
-            Enumerable<?> enumerable = (Enumerable<?>) value;
-            TypeDescriptor elementTypeDescriptor = typeDescriptor.upcast(Enumerable.class)
-                    .map((e) -> e.getActualTypeArgument(0));
-            return Elements.of(enumerable).map((v) -> TypedValue.of(v, elementTypeDescriptor));
+            return Streamable.of(iterable).map((v) -> TypedValue.of(v, elementTypeDescriptor));
         } else if (value.getClass().isArray()) {
             TypeDescriptor elementTypeDescriptor = typeDescriptor.getElementTypeDescriptor();
-            return Elements.of(() -> ArrayUtils.stream(value).map((e) -> TypedValue.of(e, elementTypeDescriptor)));
+            return Streamable.of(() -> ArrayUtils.stream(value).map((e) -> TypedValue.of(e, elementTypeDescriptor)));
         }
-        return Elements.singleton(TypedValue.of(value, typeDescriptor));
+        return Streamable.singleton(TypedValue.of(value, typeDescriptor));
     }
 
     /**
@@ -584,8 +578,7 @@ public interface TypedValue extends TypedData<Object>, Value {
     default boolean isMultiple() {
         TypeDescriptor typeDescriptor = getReturnTypeDescriptor();
         return typeDescriptor.isCollection() || typeDescriptor.isArray()
-                || Iterable.class.isAssignableFrom(typeDescriptor.getType())
-                || Enumerable.class.isAssignableFrom(typeDescriptor.getType());
+                || Iterable.class.isAssignableFrom(typeDescriptor.getType());
     }
 
     /**

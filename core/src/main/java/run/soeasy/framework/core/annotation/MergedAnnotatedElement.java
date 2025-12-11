@@ -189,7 +189,7 @@ public class MergedAnnotatedElement implements AnnotatedElement {
         }
 
         if (obj instanceof MergedAnnotatedElement) {
-            return CollectionUtils.equals(annotatedElements, ((MergedAnnotatedElement) obj).annotatedElements,
+            return CollectionUtils.equalsInAnyOrder(annotatedElements, ((MergedAnnotatedElement) obj).annotatedElements,
                     ObjectUtils::equals);
         }
         return false;

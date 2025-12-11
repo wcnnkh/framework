@@ -63,8 +63,19 @@ public enum InstanceFactorySupporteds implements InstanceFactory {
      */
     ALLOCATE(
         new AllocateInstanceFactory()
-    );
+    ),
+	
+    /**
+     * 创建一个指定的集合
+     */
+	COLLECTION(new CollectionInstanceFactory()),
+	
+	/**
+	 * 全部
+	 */
+	ALL(new MultiableInstanceFactory(REFLECTION, SERIALIZATION, ALLOCATE, COLLECTION))
 
+	;
     /** 封装的实例工厂实现 */
     private final InstanceFactory instanceFactory;
 

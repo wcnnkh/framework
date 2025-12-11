@@ -5,9 +5,9 @@ import java.io.Reader;
 import java.io.Writer;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.collection.Elements;
 import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 读取器工厂包装器接口，用于装饰和增强现有{@link ReaderFactory}实例。
@@ -88,7 +88,7 @@ public interface ReaderFactoryWrapper<R extends Reader, W extends ReaderFactory<
      * @return 按行读取的元素流
      */
     @Override
-    default Elements<String> readLines() {
+    default Streamable<String> readLines() {
         return getSource().readLines();
     }
 

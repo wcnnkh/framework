@@ -40,7 +40,7 @@ public class ResultSetColumnAccessor extends AbstractResultSetAccessor {
         super(resultSet);
         this.columnIndex = columnIndex;
     }
-
+    
     /**
      * 获取当前列的列值（通过列索引）
      * 

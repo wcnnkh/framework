@@ -40,7 +40,7 @@ class IgnorePublisher<T> implements Publisher<T> {
      * @return 表示操作成功的回执
      */
     @Override
-    public Receipt publish(T resource) {
-        return Receipt.SUCCESS;
+    public Operation publish(T resource) {
+        return Operation.success();
     }
 }
