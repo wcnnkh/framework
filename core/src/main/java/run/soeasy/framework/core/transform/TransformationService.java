@@ -51,6 +51,8 @@ public class TransformationService implements Transformer {
             }
             return Operation.SUCCESS;
         });
+        transformers.getInjectors().register(injectors);
+		registry.getInjectors().register(injectors);
     }
 
     /**

@@ -15,6 +15,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.mapping.DefaultMapper;
 import run.soeasy.framework.core.mapping.MappingFilter;
+import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.type.ClassMembers;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 
@@ -67,6 +68,11 @@ public class PropertyMapper<E extends Property>
 	/** 对象模板注册表，用于缓存和管理对象类与属性模板的映射关系 */
 	private final ObjectTemplateRegistry<E> objectTemplateRegistry = new ObjectTemplateRegistry<>();
 
+	public PropertyMapper() {
+		getMappingProvider().registerFactory(Mapping.class,
+				(a, b) -> new AnyPropertyMapping(a, b, getMapper().getConverter()));
+	}
+
 	/**
 	 * 检查是否存在指定对象类的属性模板
 	 * 
@@ -114,7 +120,7 @@ public class PropertyMapper<E extends Property>
 			PropertyMapping<E> propertyTemplate = getObjectTemplate(requiredType.getType());
 			if (propertyTemplate != null) {
 				typedProperties = new ObjectMapping<>(propertyTemplate, source);
-				if(propertyTemplate.isMapped()) {
+				if (propertyTemplate.isMapped()) {
 					typedProperties = typedProperties.toMultiMapped();
 				}
 			}

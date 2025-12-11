@@ -17,8 +17,8 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.page.CursorPaging;
-import run.soeasy.framework.core.page.Paging;
 import run.soeasy.framework.core.page.CursorSlice;
+import run.soeasy.framework.core.page.Paging;
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -562,6 +562,19 @@ public class ClassUtils {
 	 */
 	public static boolean isString(Type type) {
 		return type == String.class;
+	}
+
+	/**
+	 * 是否是枚举类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isEnum(Type type) {
+		if (type instanceof Class) {
+			return ((Class<?>) type).isEnum();
+		}
+		return false;
 	}
 
 	/**

@@ -24,7 +24,7 @@ public class MapMapping implements PropertyMapping<PropertyAccessor> {
 	/** Map的类型描述符，用于获取值的类型信息，不可为null */
 	@NonNull
 	private final TypeDescriptor typeDescriptor;
-
+	
 	/** 类型转换器，用于Map值的类型转换，默认为系统转换服务 */
 	private Converter converter = SystemConversionService.getInstance();
 	
@@ -80,7 +80,7 @@ public class MapMapping implements PropertyMapping<PropertyAccessor> {
 		@Override
 		public Object get() throws ConversionException {
 			Object value = map.get(key);
-			return converter.convert(value, typeDescriptor.getMapValueTypeDescriptor());
+			return converter.convert(value, getReturnTypeDescriptor());
 		}
 
 		/**
@@ -94,7 +94,7 @@ public class MapMapping implements PropertyMapping<PropertyAccessor> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void set(Object value) throws UnsupportedOperationException {
-			Object target = converter.convert(value, typeDescriptor.getMapValueTypeDescriptor());
+			Object target = converter.convert(value, getReturnTypeDescriptor());
 			((Map<Object, Object>) map).put(key, target);
 		}
 
@@ -131,7 +131,8 @@ public class MapMapping implements PropertyMapping<PropertyAccessor> {
 		 */
 		@Override
 		public TypeDescriptor getRequiredTypeDescriptor() {
-			return typeDescriptor.getMapValueTypeDescriptor();
+			TypeDescriptor required = typeDescriptor.getMapValueTypeDescriptor();
+			return required == null? TypeDescriptor.valueOf(Object.class):required;
 		}
 
 		/**
@@ -142,8 +143,8 @@ public class MapMapping implements PropertyMapping<PropertyAccessor> {
 		 * @return Map值类型的描述符
 		 */
 		@Override
-		public TypeDescriptor getReturnTypeDescriptor() {
-			return typeDescriptor.getMapValueTypeDescriptor();
+		public final TypeDescriptor getReturnTypeDescriptor() {
+			return getRequiredTypeDescriptor();
 		}
 
 		@Override

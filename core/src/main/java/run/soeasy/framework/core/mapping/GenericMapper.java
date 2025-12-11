@@ -131,7 +131,7 @@ public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 			// 子策略：源是Map类型→用MapMapper，否则用ArrayMapper
 			if (sourceContext.getMapping().isMapped()) {
 				// 创建MapMapper，传入当前过滤器和this（自引用）作为基础映射器，支持嵌套
-				MappedMapper<K, V, T> mapMapper = new MappedMapper<>(filters, this);
+   				MappedMapper<K, V, T> mapMapper = new MappedMapper<>(filters, this);
 				return mapMapper.doMapping(sourceContext, targetContext);
 			} else {
 				// 创建StreamableMapper，同理支持嵌套

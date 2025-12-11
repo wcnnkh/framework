@@ -22,11 +22,11 @@ public class MultiMappedMapping<K, V, W extends Mapping<K, V>> implements Mappin
 	private static final long serialVersionUID = 1L;
 
 	protected final transient W source;
-	protected volatile Map<? extends K, ? extends Collection<V>> map;
+	protected volatile Map<K, ? extends Collection<V>> map;
 	protected final transient Supplier<Map<K, Collection<V>>> mapFactory;
 	protected final transient Supplier<Collection<V>> collectionFactory;
 
-	private Map<? extends K, ? extends Collection<V>> getMap() {
+	private Map<K, ? extends Collection<V>> getMap() {
 		if (!isReloadable()) {
 			return map == null ? Collections.emptyMap() : map;
 		}
@@ -62,6 +62,11 @@ public class MultiMappedMapping<K, V, W extends Mapping<K, V>> implements Mappin
 	@Override
 	public boolean hasKey(K key) {
 		return getMap().containsKey(key);
+	}
+	
+	@Override
+	public Streamable<K> keys() {
+		return Streamable.of(getMap().keySet());
 	}
 
 	@Override

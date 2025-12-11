@@ -2,6 +2,7 @@ package run.soeasy.framework.core.type;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.streaming.Streamable;
@@ -134,6 +135,10 @@ public class SerializationConstructorFactory implements ClassMemberFactory<Const
 	 */
 	@Override
 	public Streamable<Constructor<?>> getClassMemberProvider(@NonNull Class<?> declaringClass) {
+		if(Modifier.isAbstract(declaringClass.getModifiers())) {
+			return Streamable.empty();
+		}
+		
 		if (getReflectionFactory() != null && getNewConstructorForSerialization() != null) {
 			Constructor<?> constructor = (Constructor<?>) ReflectionUtils.invoke(getNewConstructorForSerialization(),
 					getReflectionFactory(), declaringClass, objectConstructor);

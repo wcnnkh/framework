@@ -76,7 +76,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	 * @param <V>           值类型
 	 * @return 多值Map型Mapping实例
 	 */
-	public static <K, V> Mapping<K, V> ofMultiMapped(@NonNull Map<? extends K, ? extends Collection<V>> multiValueMap) {
+	public static <K, V> Mapping<K, V> ofMultiMapped(@NonNull Map<K, ? extends Collection<V>> multiValueMap) {
 		MultiMappedMapping<K, V, Mapping<K, V>> mapping = new MultiMappedMapping<>(null, null, null);
 		mapping.map = multiValueMap;
 		return mapping;
@@ -90,7 +90,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	 * @param <V> 值类型
 	 * @return 单值Map型Mapping实例
 	 */
-	public static <K, V> Mapping<K, V> ofMapped(@NonNull Map<? extends K, ? extends V> map) {
+	public static <K, V> Mapping<K, V> ofMapped(@NonNull Map<K, ? extends V> map) {
 		MappedMapping<K, V, Mapping<K, V>> mapping = new MappedMapping<>(null, null, null);
 		mapping.map = map;
 		return mapping;

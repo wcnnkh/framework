@@ -95,14 +95,18 @@ public class KeyValueJoiner<K, V> implements Joiner<KeyValue<? extends K, ? exte
         CharSequence key = keyEncoder.apply(element.getKey());
         CharSequence value = valueEncoder.apply(element.getValue());
         
-        // 跳过键或值为null的情况
-        if (key == null || value == null) {
+        // 跳过键为null的情况
+        if (key == null) {
             return 0;
         }
         
         // 非首个元素前添加分隔符
         if (count != 0) {
             appendable.append(delimiter);
+        }
+        
+        if(value == null) {
+        	value = "";
         }
         
         // 拼接键、连接符、值

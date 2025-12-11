@@ -68,8 +68,8 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 
 	/** 实例工厂，用于创建目标对象实例，默认使用反射实现 */
 	@NonNull
-	private InstanceFactory instanceFactory = InstanceFactorySupporteds.REFLECTION;
-
+	private InstanceFactory instanceFactory = InstanceFactorySupporteds.ALL;
+	
 	/** 映射提供者，负责管理和获取对象的映射关系 */
 	private final MappingProvider<K, V, T> mappingProvider = new MappingProvider<>();
 

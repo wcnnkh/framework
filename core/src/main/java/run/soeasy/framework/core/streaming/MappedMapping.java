@@ -19,11 +19,11 @@ import run.soeasy.framework.core.domain.KeyValue;
 public class MappedMapping<K, V, W extends Mapping<K, V>> implements Mapping<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;
 	protected final transient W source;
-	protected volatile Map<? extends K, ? extends V> map;
+	protected volatile Map<K, ? extends V> map;
 	protected final transient BinaryOperator<V> mergeFunction;
 	protected final transient Supplier<Map<K, V>> mapFactory;
 
-	private Map<? extends K, ? extends V> getMap() {
+	private Map<K, ? extends V> getMap() {
 		if (!isReloadable()) {
 			return map == null ? Collections.emptyMap() : map;
 		}
@@ -78,6 +78,11 @@ public class MappedMapping<K, V, W extends Mapping<K, V>> implements Mapping<K, 
 	@Override
 	public boolean hasKey(K key) {
 		return getMap().containsKey(key);
+	}
+	
+	@Override
+	public Streamable<K> keys() {
+		return Streamable.of(getMap().keySet());
 	}
 
 	@Override
