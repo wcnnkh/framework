@@ -38,7 +38,7 @@ import java.util.function.Function;
  * @see LinkedHashMap
  * @see Locale
  */
-public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable, Cloneable {
+public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable, Cloneable, MapRegistry<String, V> {
     private static final long serialVersionUID = 1L;
 
     /** 存储原始键值对的LinkedHashMap，保持插入顺序 */

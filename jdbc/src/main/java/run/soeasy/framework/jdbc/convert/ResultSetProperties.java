@@ -18,7 +18,7 @@ import run.soeasy.framework.jdbc.JdbcException;
 /**
  * 基于JDBC {@link ResultSet} 的标准化属性映射实现类
  * <p>
- * 实现{@link PropertyMapping} 接口（泛型参数为{@link PropertyAccessor}），将数据库结果集的列数据封装为统一的
+ * 实现{link PropertyMapping}&lt;{@link PropertyAccessor}&gt; 接口，将数据库结果集的列数据封装为统一的
  * {@link PropertyAccessor} 视图，提供“按索引/按名称”访问列数据的标准化入口，适配框架的属性访问体系，
  * 简化JDBC结果集的列操作与批量处理。
  * <p>
@@ -29,7 +29,7 @@ import run.soeasy.framework.jdbc.JdbcException;
  * 4. 性能优化：预加载元数据并传递给{@link PropertyAccessor} 实现类，减少重复获取元数据的开销。
  *
  * @author soeasy.run
- * @see PropertyMapping 属性映射核心接口（当前实现泛型为PropertyAccessor）
+ * @see PropertyMapping 属性映射核心接口（当前实现泛型为{@link PropertyAccessor}）
  * @see PropertyAccessor 属性访问器接口（适配列数据读取）
  * @see ResultSet 数据库结果集核心类
  * @see ResultSetMetaData 结果集元数据（列信息载体）
@@ -96,9 +96,9 @@ public class ResultSetProperties implements PropertyMapping<PropertyAccessor> {
      * 核心逻辑：
      * 1. 先获取元数据并确定列总数；
      * 2. 生成0~列总数-1的索引流，逐个转换为{@link ResultSetColumnAccessor}；
-     * 3. 返回的{@link Streamable} 为惰性加载（泛型为PropertyAccessor），仅在遍历/消费时生成访问器实例。
+     * 3. 返回的{@link Streamable} 为惰性加载（泛型为{@link PropertyAccessor}），仅在遍历/消费时生成访问器实例。
      *
-     * @return 包含所有列属性访问器的Streamable（泛型为PropertyAccessor，顺序与ResultSet列顺序一致）
+     * @return 包含所有列属性访问器的{@link Streamable}&lt;{@link PropertyAccessor}&gt;（顺序与ResultSet列顺序一致）
      * @throws JdbcException 获取列总数失败时抛出
      */
     @Override
@@ -120,12 +120,12 @@ public class ResultSetProperties implements PropertyMapping<PropertyAccessor> {
      * 严格按索引获取列属性访问器（0-based）
      * <p>
      * 核心规则：
-     * 1. 索引校验：0 ≤ index < 列总数，否则抛出IndexOutOfBoundsException；
+     * 1. 索引校验：0 ≤ index &lt; 列总数，否则抛出IndexOutOfBoundsException；
      * 2. 索引转换：自动将0-based索引转为ResultSet的1-based列索引；
      * 3. 性能优化：将已缓存的元数据传递给访问器，避免重复获取。
      *
      * @param index 列索引（0-based，与Java数组/集合索引规则一致）
-     * @return 包含列名和{@link ResultSetColumnAccessor}的{@link KeyValue}对象（非空，泛型为<String, PropertyAccessor>）
+     * @return 包含列名和{@link ResultSetColumnAccessor}的{@link KeyValue}&lt;String, {@link PropertyAccessor}&gt;对象（非空）
      * @throws IndexOutOfBoundsException 索引为负数或≥列总数时抛出
      * @throws JdbcException 获取列总数/元数据失败时抛出
      */
@@ -135,7 +135,7 @@ public class ResultSetProperties implements PropertyMapping<PropertyAccessor> {
             int columnCount = getResultSetMetaData().getColumnCount();
             if (index < 0 || index >= columnCount) {
                 throw new IndexOutOfBoundsException(
-                        String.format("Column index %d out of bounds (0 ≤ index < %d)", index, columnCount)
+                        String.format("Column index %d out of bounds (0 ≤ index &lt; %d)", index, columnCount)
                 );
             }
         } catch (SQLException e) {
@@ -154,7 +154,7 @@ public class ResultSetProperties implements PropertyMapping<PropertyAccessor> {
      * 与{@link #getAt(int)} 区别：索引越界时返回空{@link Optional}，不抛出异常，适配“容错性访问”场景。
      *
      * @param index 列索引（0-based，允许负数/超出列总数）
-     * @return 存在则返回包含KeyValue的Optional（泛型为KeyValue<String, PropertyAccessor>），否则返回Optional.empty()
+     * @return 存在则返回包含{@link KeyValue}&lt;String, {@link PropertyAccessor}&gt;的{@link Optional}，否则返回Optional.empty()
      * @throws JdbcException 获取元数据/列信息失败时抛出（非索引越界场景）
      */
     @Override
@@ -172,12 +172,12 @@ public class ResultSetProperties implements PropertyMapping<PropertyAccessor> {
      * 核心逻辑：
      * 1. 创建{@link ResultSetPropertyAccessor} 绑定指定列名；
      * 2. 传递已缓存的元数据，优化列名校验/类型获取性能；
-     * 3. 返回单例{@link Streamable}（泛型为PropertyAccessor，列名唯一，仅对应一个访问器）。
+     * 3. 返回单例{@link Streamable}&lt;{@link PropertyAccessor}&gt;（列名唯一，仅对应一个访问器）。
      * <p>
      * 注意：列名匹配规则遵循JDBC规范（通常大小写不敏感，具体取决于数据库驱动）。
      *
      * @param key 列名（非空，需与ResultSet元数据中的列名匹配）
-     * @return 包含该列属性访问器的单例Streamable（泛型为PropertyAccessor，非空）
+     * @return 包含该列属性访问器的单例{@link Streamable}&lt;{@link PropertyAccessor}&gt;（非空）
      * @throws JdbcException 元数据传递/访问器创建失败时抛出
      */
     @Override

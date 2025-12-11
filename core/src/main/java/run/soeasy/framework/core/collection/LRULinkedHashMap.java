@@ -35,7 +35,7 @@ import java.util.Map;
  * @param <V> 值的类型
  * @see LinkedHashMap
  */
-public class LRULinkedHashMap<K, V> extends LinkedHashMap<K, V> {
+public class LRULinkedHashMap<K, V> extends LinkedHashMap<K, V> implements MapRegistry<K, V>{
     private static final long serialVersionUID = 1L;
     private final int maxCapacity;
 

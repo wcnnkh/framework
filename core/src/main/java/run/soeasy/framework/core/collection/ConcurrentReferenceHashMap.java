@@ -48,7 +48,7 @@ import run.soeasy.framework.core.ObjectUtils;
  * @see SoftReference
  * @see WeakReference
  */
-public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
+public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V>, MapRegistry<K, V> {
 
     /** 默认初始容量 */
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
