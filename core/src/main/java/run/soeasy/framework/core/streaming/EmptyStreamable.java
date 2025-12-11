@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 /**
  * 空流实现类，提供无元素的Streamable接口实现。
- * 该类为单例模式，通过{@link #EMPTY_STREAMABLE}静态实例获取空流对象。
+ * 该类为单例模式，通过{@link #INSTANCE}静态实例获取空流对象。
  * 
  * @author soeasy.run
  * @param <E> 流元素类型（实际无元素）

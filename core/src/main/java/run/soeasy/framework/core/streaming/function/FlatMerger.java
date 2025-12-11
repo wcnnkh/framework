@@ -1,7 +1,5 @@
 package run.soeasy.framework.core.streaming.function;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -11,7 +9,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @author soeasy.run
  * @param <E> 元素类型
  * @see Merger
- * @see Elements
+ * @see Streamable
  */
 public class FlatMerger<E> implements Merger<Streamable<? extends E>> {
 

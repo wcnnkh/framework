@@ -1,7 +1,5 @@
 package run.soeasy.framework.core.mapping;
 
-import javax.lang.model.util.Elements;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -123,7 +121,7 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * 执行带额外过滤器的映射转换（合并初始过滤器与额外过滤器）
 	 * <p>
 	 * 与{@link #doMapping(MappingContext, MappingContext)}的区别：
-	 * 不创建新的FilterableMapper实例，而是通过{@link Elements#concat(Elements)}将初始过滤器与额外过滤器合并为新的过滤器链，
+	 * 不创建新的FilterableMapper实例，而是通过{@link Streamable#concat(Streamable)}将初始过滤器与额外过滤器合并为新的过滤器链，
 	 * 适用于临时扩展映射逻辑的场景（如特定请求需额外权限校验）。
 	 * 
 	 * @param sourceContext 源映射上下文，不可为null，包含待映射的源数据、键值关联规则等信息

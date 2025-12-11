@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  *   <li>超时控制：支持带超时的发布操作，避免无限等待</li>
  *   <li>批量处理：通过{@link BatchChannel}支持批量消息发布</li>
- *   <li>异步回执：返回{@link Receipt}跟踪发布操作状态</li>
  * </ul>
  *
  * <p>典型应用场景：
@@ -27,7 +26,6 @@ import java.util.concurrent.TimeUnit;
  * @author soeasy.run
  * @see Publisher
  * @see BatchChannel
- * @see Receipt
  */
 public interface Channel<T> extends Publisher<T> {
 

@@ -85,8 +85,8 @@ public class KeyValueFormat extends KeyValueSplitter
 
 	/**
 	 * 构造键值对格式处理器
-	 * @param delimiter  键值对之间的分隔符（如 "&"、","），不可为 null
-	 * @param connector  键与值之间的连接符（如 "="、":"），不可为 null
+	 * @param delimiter  键值对之间的分隔符（如 &quot;&amp;&quot;、&quot;,&quot;），不可为 null
+	 * @param connector  键与值之间的连接符（如 &quot;=&quot;、&quot;:&quot;），不可为 null
 	 * @param keyCodec   键的编解码器，不可为 null
 	 * @param valueCodec 值的编解码器，不可为 null
 	 */

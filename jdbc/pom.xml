@@ -17,7 +17,14 @@
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.45.2.0</version> <!-- 最新稳定版，可按需更新 -->
+			<version>3.45.2.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.36</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -4,8 +4,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.List;
 
-import javax.lang.model.util.Elements;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +39,7 @@ public class WatchKeyPoller<T> extends Poller {
      * 1. 检查{@link WatchKey}是否有效（{@link WatchKey#isValid()}），无效则返回空集合；
      * 2. 通过{@link WatchKey#pollEvents()}获取所有事件；
      * 3. 过滤出上下文对象类型匹配{@code contextType}的事件，并转换为泛型{@link WatchEvent}；
-     * 4. 用{@link Elements}包装过滤后的事件集合（支持集合操作）。
+     * 4. 用{@link Streamable}包装过滤后的事件集合（支持集合操作）。
      * 
      * @param watchKey 待提取事件的WatchKey（非空，关联到特定目录的监控）
      * @param contextType 事件上下文的目标类型（非空，如Path.class，用于过滤事件）

@@ -17,7 +17,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * <ul>
  * <li>参数类型匹配：通过{@link #canExecuted(Class[])}方法实现参数类型兼容性检查</li>
  * <li>完整元数据：提供可执行元素的名称、声明类型、异常类型等完整元数据</li>
- * <li>参数模板访问：通过{@link #getParameterTemplate()}获取参数属性描述集合</li>
+ * <li>参数模板访问：通过{@link #getParameterMapping()}获取参数属性描述集合</li>
  * <li>类型安全：通过{@link TypeDescriptor}确保元数据的类型安全性</li>
  * </ul>
  *

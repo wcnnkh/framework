@@ -61,7 +61,7 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 			transformer = getTransformerByHash(targetTypeDescriptor, sourceTypeDescriptor);
 		}
 
-		for (Entry<TypeMapping, Transformer> entry : getDelegate().entrySet()) {
+		for (Entry<TypeMapping, Transformer> entry : getContainer().entrySet()) {
 			if (entry.getValue().canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
 				return entry.getValue();
 			}
@@ -79,7 +79,7 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	private Transformer getTransformerByHash(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		TypeMapping typeMapping = new TypeMapping(sourceTypeDescriptor.getType(), targetTypeDescriptor.getType());
-		return getDelegate().get(typeMapping);
+		return getContainer().get(typeMapping);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	 */
 	@Override
 	public Set<TypeMapping> getTransformableTypeMappings() {
-		return getDelegate().keySet();
+		return getContainer().keySet();
 	}
 
 	/**

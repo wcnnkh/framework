@@ -3,8 +3,6 @@ package run.soeasy.framework.core.type;
 import java.util.Collections;
 import java.util.function.Function;
 
-import javax.lang.model.util.Elements;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +11,8 @@ import run.soeasy.framework.core.streaming.StreamableWrapper;
 
 /**
  * 类成员解析器，用于加载和管理类的成员（如字段、方法、构造函数等），
- * 实现{@link ReloadableElementsWrapper}接口以支持成员的延迟加载和重新加载。
- * 该类通过函数式接口动态加载类成员，支持从父类和接口继承成员的解析， 适用于反射操作、类结构分析、框架元数据管理等场景。
+ * 实现{@link StreamableWrapper}接口以支持成员的延迟加载和重新加载。
+ * 该类通过函数式接口动态加载类成员，支持从父类和接口继承成员的解析，适用于反射操作、类结构分析、框架元数据管理等场景。
  *
  * <p>
  * 核心特性：
@@ -38,29 +36,29 @@ import run.soeasy.framework.core.streaming.StreamableWrapper;
  *
  * <p>
  * 示例用法：
- * 
- * <pre class="code">
+ * <pre>
  * // 定义字段加载器
- * Function&lt;Class&lt;?&gt;, Elements&lt;Field&gt;&gt; fieldLoader = clazz -&gt; Elements.of(clazz.getDeclaredFields());
+ * Function&lt;Class&lt;?&gt;, Streamable&lt;Field&gt;&gt; fieldLoader = clazz -&gt; Streamable.array(clazz.getDeclaredFields());
  * 
  * // 创建类成员解析器
  * ClassMembers&lt;Field&gt; classMembers = new ClassMembers&lt;&gt;(User.class, fieldLoader);
  * 
  * // 获取字段列表
- * Elements&lt;Field&gt; fields = classMembers.getSource();
+ * Streamable&lt;Field&gt; fields = classMembers.getSource();
  * System.out.println("字段数量: " + fields.size());
  * 
  * // 获取父类成员
  * ClassMembers&lt;Field&gt; superclassMembers = classMembers.getSuperclass();
  * if (superclassMembers != null) {
- * 	Elements&lt;Field&gt; superFields = superclassMembers.getSource();
- * 	System.out.println("父类字段数量: " + superFields.size());
+ *     Streamable&lt;Field&gt; superFields = superclassMembers.getSource();
+ *     System.out.println("父类字段数量: " + superFields.size());
  * }
  * </pre>
  *
  * @param <E> 类成员的类型（如Field, Method, Constructor等）
- * @see ReloadableElementsWrapper
- * @see Elements
+ * @see StreamableWrapper
+ * @see Streamable
+ * @see Function
  */
 @RequiredArgsConstructor
 public class ClassMembers<E> implements StreamableWrapper<E, Streamable<E>> {
@@ -83,10 +81,10 @@ public class ClassMembers<E> implements StreamableWrapper<E, Streamable<E>> {
 	 * 实现逻辑：
 	 * <ol>
 	 * <li>检查缓存是否存在，不存在则触发加载</li>
-	 * <li>返回加载后的成员集合，空集合会被转换为Elements.empty()</li>
+	 * <li>返回加载后的成员集合，空集合会被转换为Streamable.empty()</li>
 	 * </ol>
 	 *
-	 * @return 类成员的Elements集合，不会为null
+	 * @return 类成员的Streamable集合，不会为null
 	 */
 	@Override
 	public Streamable<E> getSource() {
@@ -130,10 +128,10 @@ public class ClassMembers<E> implements StreamableWrapper<E, Streamable<E>> {
 	 * <ol>
 	 * <li>获取当前类实现的所有接口Class数组</li>
 	 * <li>将每个接口转换为对应的ClassMembers实例</li>
-	 * <li>返回接口成员解析器的Elements集合</li>
+	 * <li>返回接口成员解析器的Streamable集合</li>
 	 * </ol>
 	 *
-	 * @return 接口成员解析器的Elements集合，可能为空集合
+	 * @return 接口成员解析器的Streamable集合，可能为空集合
 	 */
 	public Streamable<ClassMembers<E>> getInterfaces() {
 		return Streamable.of(() -> {

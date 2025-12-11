@@ -94,7 +94,7 @@ public interface ExecutableMetadataWrapper<W extends ExecutableMetadata>
     /**
      * 获取被包装的可执行元素的参数模板
      * <p>
-     * 该默认实现将调用转发给被包装的源可执行元数据的{@link ExecutableMetadata#getParameterTemplate()}方法，
+     * 该默认实现将调用转发给被包装的源可执行元数据的{@link ExecutableMetadata#getParameterMapping()}方法，
      * 子类可覆盖此方法返回自定义的参数模板（如包装后的参数描述符）。
      * 
      * @return 参数模板

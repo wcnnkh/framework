@@ -1,18 +1,16 @@
 package run.soeasy.framework.core.streaming.function;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 元素选择器接口，用于从元素集合中选择单个元素。
  * 该接口扩展自Filter接口，允许将选择器作为特殊的过滤器使用，
- * 选择结果会被包装成包含零个或一个元素的Elements集合。
+ * 选择结果会被包装成包含零个或一个元素的Streamable集合。
  *
  * @author soeasy.run
  * @param <T> 元素类型
  * @see Filter
- * @see Elements
+ * @see Streamable
  */
 public interface Selector<T> extends Filter<T> {
     
@@ -27,13 +25,13 @@ public interface Selector<T> extends Filter<T> {
     T select(Streamable<T> elements);
 
     /**
-     * 将选择器转换为过滤器，返回包含单个选择元素的Elements集合。
-     * 该方法实现了Filter接口的apply方法，将select方法的结果包装为Elements集合：
-     * - 如果选择的元素为null，返回空的Elements集合
-     * - 否则返回只包含该元素的Elements集合
+     * 将选择器转换为过滤器，返回包含单个选择元素的Streamable集合。
+     * 该方法实现了Filter接口的apply方法，将select方法的结果包装为Streamable集合：
+     * - 如果选择的元素为null，返回空的Streamable集合
+     * - 否则返回只包含该元素的Streamable集合
      *
      * @param elements 元素集合，不可为null
-     * @return 包含零个或一个元素的Elements集合
+     * @return 包含零个或一个元素的Streamable集合
      */
     @Override
     default Streamable<T> apply(Streamable<T> elements) {

@@ -1,17 +1,15 @@
 package run.soeasy.framework.core.exchange;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 批量监听器接口，定义处理批量事件的基本契约。
- * 该接口继承自{@link Listener}，但处理的事件类型为{@link Elements}，
+ * 该接口继承自{@link Listener}，但处理的事件类型为{@link Streamable}，
  * 允许一次性处理多个事件，提高处理效率。
  *
  * <p>核心特性：
  * <ul>
- *   <li>批量处理：通过Elements集合一次性处理多个事件</li>
+ *   <li>批量处理：通过Streamable集合一次性处理多个事件</li>
  *   <li>模式转换：通过single()方法可转换为单条处理模式</li>
  *   <li>原子性保证：实现类可选择保证批量处理的原子性</li>
  * </ul>
@@ -28,7 +26,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * 
  * @author soeasy.run
  * @see Listener
- * @see Elements
+ * @see Streamable
  */
 public interface BatchListener<T> extends Listener<Streamable<T>> {
 

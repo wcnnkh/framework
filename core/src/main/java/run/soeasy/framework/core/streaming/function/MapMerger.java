@@ -3,8 +3,6 @@ package run.soeasy.framework.core.streaming.function;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.streaming.Streamable;
 
@@ -16,7 +14,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @param <K> 键类型
  * @param <V> 值类型
  * @see Merger
- * @see Elements
+ * @see Streamable
  */
 public class MapMerger<K, V> implements Merger<Map<K, V>> {
 

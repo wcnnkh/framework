@@ -1,7 +1,5 @@
 package run.soeasy.framework.core.domain;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -35,14 +33,14 @@ import run.soeasy.framework.core.streaming.Streamable;
  * Directory parent = file.getParent(); // subDir
  * 
  * // 遍历所有父节点
- * Elements&lt;Directory&gt; allParents = file.parents(); // [subDir, root]
+ * Streamable&lt;Directory&gt; allParents = file.parents(); // [subDir, root]
  * 
  * // 判断是否为父节点
  * boolean isParent = file.isParents(root); // true
  * </pre>
  *
  * @param <T> 具体实现类的类型，必须实现ParentDiscover接口自身
- * @see Elements
+ * @see Streamable
  */
 public interface ParentDiscover<T extends ParentDiscover<T>> {
     

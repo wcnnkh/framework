@@ -1,7 +1,5 @@
 package run.soeasy.framework.core.attribute;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -27,7 +25,6 @@ import run.soeasy.framework.core.streaming.Streamable;
  *
  * @param <K> 属性键的类型
  * @param <V> 属性值的类型
- * @see Elements
  * @see AttributesWrapper
  */
 public interface Attributes<K, V> {

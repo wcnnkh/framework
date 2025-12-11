@@ -22,7 +22,7 @@ import run.soeasy.framework.core.streaming.Mapping;
  * <ul>
  * <li><strong>智能策略路由</strong>：无需手动指定映射器，通过上下文的两个核心方法自动判断场景：
  *     - 单键值对场景：{@link MappingContext#hasKeyValue()} 为 true，直接调用父类逻辑；
- *     - 集合场景：{@link MappingContext#hasMapping()} 为 true，再通过 {@link Mapping#isMap()} 判断是否为Map类型，
+ *     - 集合场景：{@link MappingContext#hasMapping()} 为 true，再通过 {@link Mapping#isMapped()} 判断是否为Map类型，
  *       是则用{@link MappedMapper}，否则用{@link StreamableMapper}；</li>
  * <li><strong>递归嵌套处理</strong>：内部创建子映射器（Array/MapMapper）时，将当前{@code GenericMapper}实例作为基础映射器（{@code mapper}参数），
  *     当遇到嵌套结构（如Map的值是数组、数组的元素是Map）时，子映射器会再次调用GenericMapper的策略路由逻辑，实现多层级自动映射；</li>
@@ -92,7 +92,7 @@ import run.soeasy.framework.core.streaming.Mapping;
  * @see FilterableMapper 父类，提供全局过滤器链与基础映射能力
  * @see StreamableMapper 子映射器，处理非Map类型的集合（如列表、数组）
  * @see MappedMapper 子映射器，处理Map类型的集合（一键多值场景）
- * @see Mapping#isMap() 判定集合是否为Map类型的核心方法
+ * @see Mapping#isMapped() 判定集合是否为Map类型的核心方法
  * @see MappingContext#hasKeyValue() 判定是否为单键值对场景的核心方法
  */
 @Getter

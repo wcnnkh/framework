@@ -1,3 +1,4 @@
+
 package run.soeasy.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -42,7 +43,6 @@ import run.soeasy.framework.core.mapping.property.PropertyMappingWrapper;
  *
  * @author soeasy.run
  * @see AnnotationProperties
- * @see TypedPropertiesWrapper
  * @see AbstractAnnotationPropertyMapping
  */
 @Getter

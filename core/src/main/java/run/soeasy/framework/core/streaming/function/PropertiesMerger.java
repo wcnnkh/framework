@@ -3,8 +3,6 @@ package run.soeasy.framework.core.streaming.function;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -15,7 +13,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @author soeasy.run
  * @see Merger
  * @see Properties
- * @see Elements
+ * @see Streamable
  */
 public class PropertiesMerger implements Merger<Properties> {
     

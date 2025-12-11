@@ -3,7 +3,7 @@ package run.soeasy.framework.core.mapping.property;
 import lombok.NonNull;
 
 /**
- * 对象属性集合，继承自{@link PropertyTemplateProperties}并实现{@link PropertyAccessorMapping}，
+ * 对象属性集合，继承自{@link StreamablePropertyMapping}，
  * 用于将对象的属性描述符转换为可访问的属性访问器集合，支持类型化属性操作。
  * <p>
  * 该类通过包装属性模板和目标对象，将模板中的每个属性描述符映射为
@@ -13,7 +13,7 @@ import lombok.NonNull;
  * <b>核心特性：</b>
  * <ul>
  * <li>对象绑定：绑定目标对象，使属性访问器能够读取和修改该对象的属性值</li>
- * <li>类型安全：实现{@link PropertyAccessorMapping}接口，支持类型化属性访问</li>
+ * <li>类型安全：实现{@link PropertyMapping}接口，支持类型化属性访问</li>
  * <li>延迟计算：属性值在访问时动态获取，保证与目标对象状态的实时一致性</li>
  * <li>统一接口：通过属性访问器提供一致的属性读写方式，屏蔽底层实现差异</li>
  * </ul>
@@ -34,9 +34,7 @@ import lombok.NonNull;
  * </ul>
  *
  * @author soeasy.run
- * @see PropertyTemplateProperties
- * @see PropertyAccessorMapping
- * @see ObjectPropertyAccessor
+ * @see StreamablePropertyMapping
  */
 public class ObjectMapping<S extends Property, T extends PropertyMapping<S>>
 		extends StreamablePropertyMapping<PropertyAccessor> {

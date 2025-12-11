@@ -2,7 +2,6 @@ package run.soeasy.framework.core.exchange;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.lang.model.util.Elements;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.streaming.Streamable;
@@ -11,24 +10,24 @@ import run.soeasy.framework.core.streaming.function.Filter;
 /**
  * 批量事件分发器，支持一次性处理和分发多个事件对象。
  * <p>
- * 该类继承自{@link EventDispatcher}，专门用于处理批量事件（{@link Elements}），
+ * 该类继承自{@link EventDispatcher}，专门用于处理批量事件（{@link Streamable}），
  * 实现了{@link BatchListenableChannel}接口以提供批量事件的发布和监听能力， 适用于需要批量处理事件的高性能场景。
  *
  * <p>
  * <b>核心特性：</b>
  * <ul>
- * <li>批量事件处理：支持一次性发布和处理{@link Elements}类型的批量事件</li>
+ * <li>批量事件处理：支持一次性发布和处理{@link Streamable}类型的批量事件</li>
  * <li>单批量转换：通过{@link #single()}方法支持批量与单事件通道的转换</li>
  * <li>高效分发：批量事件分发可减少事件调度开销，提升高并发场景下的性能</li>
  * <li>监听器管理：继承自父类的监听器注册、过滤和生命周期管理能力</li>
  * </ul>
  *
- * @param <T> 事件元素的类型，批量事件为{@link Elements}
+ * @param <T> 事件元素的类型，批量事件为{@link Streamable}
  * 
  * @author soeasy.run
  * @see EventDispatcher
  * @see BatchListenableChannel
- * @see Elements
+ * @see Streamable
  */
 public class BatchEventDispatcher<T> extends EventDispatcher<Streamable<T>> implements BatchListenableChannel<T> {
 

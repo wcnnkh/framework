@@ -97,7 +97,7 @@ public class ConverterRegistry extends ServiceMap<TypeMapping, Converter> implem
 		}
 
 		// 最后遍历所有转换器进行条件匹配
-		for (Entry<TypeMapping, Converter> entry : getDelegate().entrySet()) {
+		for (Entry<TypeMapping, Converter> entry : getContainer().entrySet()) {
 			if (entry.getValue().canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
 				return entry.getValue();
 			}
@@ -115,7 +115,7 @@ public class ConverterRegistry extends ServiceMap<TypeMapping, Converter> implem
 	private Converter getConverterByHash(@NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		TypeMapping typeMapping = new TypeMapping(sourceTypeDescriptor.getType(), targetTypeDescriptor.getType());
-		return getDelegate().get(typeMapping);
+		return getContainer().get(typeMapping);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class ConverterRegistry extends ServiceMap<TypeMapping, Converter> implem
 	 */
 	@Override
 	public Set<TypeMapping> getConvertibleTypeMappings() {
-		return getDelegate().keySet();
+		return getContainer().keySet();
 	}
 
 	/**

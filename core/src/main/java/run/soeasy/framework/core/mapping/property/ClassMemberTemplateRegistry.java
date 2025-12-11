@@ -74,13 +74,13 @@ public class ClassMemberTemplateRegistry<E extends Property>
 	@Override
 	public ClassMembersLoader<E> getClassPropertyTemplate(Class<?> requiredClass) {
 		// 第一次检查（无锁）
-		ClassMembersLoader<E> classMembersLoader = getDelegate().get(requiredClass);
+		ClassMembersLoader<E> classMembersLoader = getContainer().get(requiredClass);
 		if (classMembersLoader == null && classPropertyTemplateFactory != null
 				&& classPropertyTemplateFactory.hasClassPropertyTemplate(requiredClass)) {
 			// 创建并注册模板
 			classMembersLoader = classPropertyTemplateFactory.getClassPropertyTemplate(requiredClass);
 			if (classMembersLoader != null) {
-				ClassMembersLoader<E> oldClassMembersLoader = getDelegate().putIfAbsent(requiredClass,
+				ClassMembersLoader<E> oldClassMembersLoader = getContainer().putIfAbsent(requiredClass,
 						classMembersLoader);
 				if (oldClassMembersLoader != null) {
 					classMembersLoader = oldClassMembersLoader;

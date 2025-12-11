@@ -13,7 +13,7 @@ public class TypeServiceMap<S> extends ServiceMap<Class<?>, S> {
 	}
 
 	public Streamable<S> assignableFrom(Class<?> requiredType) {
-		S service = getDelegate().get(requiredType);
+		S service = getContainer().get(requiredType);
 		if (service != null) {
 			return Streamable.singleton(service);
 		}

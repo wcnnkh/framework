@@ -38,7 +38,7 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 * 建议使用并发安全实现类，避免多线程场景下的并发修改异常
 	 */
 	@NonNull
-	private final D delegate;
+	private final D container;
 
 	/**
 	 * 判断当前注册表是否支持回滚操作
@@ -53,7 +53,7 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 * @return true=支持回滚，false=不支持回滚
 	 */
 	public final boolean isRollbackSupported() {
-		return delegate instanceof Set;
+		return container instanceof Set;
 	}
 
 	// --------------------- 注册表核心操作 ---------------------
@@ -66,7 +66,7 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 */
 	@Override
 	public Stream<E> stream() {
-		return delegate.stream();
+		return container.stream();
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	@Override
 	public Operation register(E element) {
 		try {
-			boolean addSuccess = delegate.add(element);
+			boolean addSuccess = container.add(element);
 			if (!addSuccess) {
 				return Operation.failure(new RuntimeException(String.format("注册失败：元素添加失败（可能已存在），元素=%s", element)));
 			}
@@ -122,7 +122,7 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	@Override
 	public Operation deregister(E element) {
 		try {
-			boolean removeSuccess = delegate.remove(element);
+			boolean removeSuccess = container.remove(element);
 			if (!removeSuccess) {
 				return Operation.failure(new RuntimeException(String.format("注销失败：元素不存在或删除失败，元素=%s", element)));
 			}
@@ -150,7 +150,7 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 */
 	@Override
 	public boolean isEmpty() {
-		return delegate.isEmpty();
+		return container.isEmpty();
 	}
 
 	/**
@@ -163,32 +163,32 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 */
 	@Override
 	public boolean contains(Object element) {
-		return delegate.contains(element);
+		return container.contains(element);
 	}
 
 	@Override
 	public Operation reset() {
-		delegate.clear();
+		container.clear();
 		return Operation.success();
 	}
 
 	@Override
 	public String toString() {
-		return delegate.toString();
+		return container.toString();
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		return delegate.iterator();
+		return container.iterator();
 	}
 
 	@Override
 	public void forEach(Consumer<? super E> action) {
-		delegate.forEach(action);
+		container.forEach(action);
 	}
 
 	@Override
 	public boolean isRandomAccess() {
-		return delegate instanceof RandomAccess;
+		return container instanceof RandomAccess;
 	}
 }

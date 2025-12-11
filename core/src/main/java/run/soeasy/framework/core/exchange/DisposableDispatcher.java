@@ -59,7 +59,7 @@ public class DisposableDispatcher<T> extends AbstractChannel<T> implements Liste
 	public void syncPublish(T resource) {
 		Listener<? super T> listener;
 		// 按FIFO顺序处理所有监听器
-		while ((listener = registry.getDelegate().poll()) != null) {
+		while ((listener = registry.getContainer().poll()) != null) {
 			try {
 				// 触发监听器处理事件
 				listener.accept(resource);

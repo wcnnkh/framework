@@ -46,7 +46,6 @@ import run.soeasy.framework.core.function.ThrowingFunction;
  * @see Streamable
  * @see Wrapper
  * @see CloseableIterator
- * @see CloseableEnumeration
  */
 public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamable<E>, Wrapper<W> {
 

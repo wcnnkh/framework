@@ -57,13 +57,13 @@ public interface InvodableElement extends ExecutableMetadata, InvokableTemplate 
      * 仅带参数值调用可执行元素（依赖元数据匹配参数类型）
      * <p>
      * 该方法通过可执行元素的元数据自动匹配参数类型，适用于参数类型已知或可推断的场景。
-     * 实现类应根据元数据中的参数模板（{@link #getParameterTemplate()}）进行参数类型匹配和转换。
+     * 实现类应根据元数据中的参数模板（{@link #getParameterMapping()}）进行参数类型匹配和转换。
      * 
      * @param target 目标对象，对于静态方法可为null
      * @param args 参数值数组，不可为null
      * @return 可执行元素的调用结果
      * @throws Throwable 调用过程中抛出的任何异常
-     * @see #getParameterTemplate()
+     * @see #getParameterMapping()
      */
     Object invoke(Object target, @NonNull Object... args) throws Throwable;
 }

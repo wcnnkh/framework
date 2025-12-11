@@ -223,7 +223,7 @@ public class PathPoller<T extends PathResource> extends ResourcePoller<T> {
 	 * 注册成功后，WatchKey会被加入{@link #watchKeyRegistry}统一管理；注册失败返回failure类型的Operation。
 	 * 
 	 * @param watchService 文件系统监控服务（非空）
-	 * @return 注册结果：成功返回{@link WatchKeyRegistry#register(WatchKey)}的执行结果，失败返回含异常的failure
+	 * @return 注册结果
 	 * @throws NullPointerException watchService为null时抛出
 	 */
 	public Operation registerTo(WatchService watchService) {

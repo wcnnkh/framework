@@ -6,7 +6,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * 可监听未来结果包装器接口，定义对ListenableFuture的包装器模式实现。
- * 该接口继承自{@link ListenableFuture}和{@link ListenableReceiptWrapper}，
+ * 该接口继承自{@link ListenableFuture}和{@link ListenableOperationWrapper}，
  * 允许在不修改原有未来结果实例的情况下增强其功能，如添加日志记录、结果转换或状态监控等。
  *
  * <p>
@@ -31,7 +31,6 @@ import java.util.concurrent.TimeoutException;
  * 
  * @author soeasy.run
  * @see ListenableFuture
- * @see ListenableReceiptWrapper
  */
 @FunctionalInterface
 public interface ListenableFutureWrapper<V, W extends ListenableFuture<V>>

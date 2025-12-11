@@ -3,28 +3,26 @@ package run.soeasy.framework.core.streaming.function;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.lang.model.util.Elements;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
- * 元素过滤器函数式接口，用于对Elements集合执行过滤操作。
- * 该接口扩展了Java Function接口，接收一个Elements集合并返回过滤后的Elements集合。
+ * 元素过滤器函数式接口，用于对Streamable集合执行过滤操作。
+ * 该接口扩展了Java Function接口，接收一个Streamable集合并返回过滤后的Streamable集合。
  * 提供了基于Predicate的过滤器实现和常用的静态工厂方法。
  *
  * @author soeasy.run
  * @param <T> 元素类型
  * @see Function
- * @see Elements
+ * @see Streamable
  */
 @FunctionalInterface
 public interface Filter<T> extends Function<Streamable<T>, Streamable<T>> {
     
     /**
      * 基于Predicate实现的过滤器。
-     * 该类将Predicate应用于Elements的filter方法，实现元素过滤功能。
+     * 该类将Predicate应用于Streamable的filter方法，实现元素过滤功能。
      */
     @RequiredArgsConstructor
     public static class PredicateFilter<T> implements Filter<T> {
@@ -40,8 +38,8 @@ public interface Filter<T> extends Function<Streamable<T>, Streamable<T>> {
         private final Predicate<? super T> predicate;
 
         /**
-         * 对Elements集合应用过滤条件。
-         * 该方法调用Elements的filter方法，并传入Predicate进行元素过滤。
+         * 对Streamable集合应用过滤条件。
+         * 该方法调用Streamable的filter方法，并传入Predicate进行元素过滤。
          *
          * @param elements 待过滤的元素集合，不可为null
          * @return 过滤后的元素集合
@@ -88,7 +86,7 @@ public interface Filter<T> extends Function<Streamable<T>, Streamable<T>> {
     }
 
     /**
-     * 对Elements集合应用过滤操作。
+     * 对Streamable集合应用过滤操作。
      * 该方法是Filter接口的函数式方法，由具体实现类实现过滤逻辑。
      *
      * @param elements 待过滤的元素集合

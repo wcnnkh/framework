@@ -7,8 +7,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.convert.number.NumberToEnumConverter;
 import run.soeasy.framework.core.convert.strings.StringToBigDecimalConverter;
 import run.soeasy.framework.core.convert.strings.StringToBigIntegerConverter;
@@ -58,7 +56,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * </pre>
  *
  * @see NumberValue
- * @see Elements
+ * @see Streamable
  */
 public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, BooleanSupplier {
 

@@ -27,7 +27,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * <ul>
  * <li>双维度访问：支持按属性名（String）或索引（Number）获取唯一属性描述符，返回{@link Optional}避免空指针；</li>
  * <li>流式兼容：继承{@link Mapping}和{@link Streamable}的所有流式操作（过滤、映射、遍历等），无额外内存开销；</li>
- * <li>类型安全：泛型约束属性描述符类型，需实现{link PropertyDescriptor}接口，保证属性名、类型等核心信息可获取；</li>
+ * <li>类型安全：泛型约束属性描述符类型，需实现{@link PropertyDescriptor}接口，保证属性名、类型等核心信息可获取；</li>
  * <li>无侵入适配：通过{@link #elements()}抽象属性描述符源，子类可灵活实现基于集合/反射/配置的属性加载。</li>
  * </ul>
  *
@@ -44,7 +44,7 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	 * <p>
 	 * 子类需实现此方法，提供属性描述符的流式访问能力，空集合需返回{@link Streamable#empty()}而非null。
 	 *
-	 * @return 非null的{@link Streamable}<E>实例，空集合返回{@link Streamable#empty()}
+	 * @return 非null的{@link Streamable}&lt;E&gt;实例，空集合返回{@link Streamable#empty()}
 	 */
 	Streamable<E> elements();
 
@@ -54,8 +54,8 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	 * 常用于反射调用（如{@link java.lang.reflect.Method#invoke(Object, Object...)}）的参数类型匹配、
 	 * ORM字段类型校验等场景，空流返回空数组而非null。
 	 *
-	 * @param typeMapper 属性描述符到类型的映射函数（非null），需保证返回值非null（可返回{@link Object.class}兜底）
-	 * @return 非null的类型数组，空流返回空数组
+	 * @param typeMapper 属性描述符到类型的映射函数（非null），需保证返回值非null（可返回{@link Object}.class兜底）
+	 * @return 非null的类型数组，空流返回空数组（类型为Class&lt;?&gt;[]）
 	 */
 	default Class<?>[] getTypes(Function<? super E, ? extends Class<?>> typeMapper) {
 		return elements().map(typeMapper).toArray(Class<?>[]::new);
@@ -64,9 +64,9 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	/**
 	 * 重写{@link Streamable#stream()}，将属性描述符映射为「属性名-描述符」的键值对流。
 	 * <p>
-	 * 保证与{@link Mapping<String, E>}的泛型约束一致，底层通过{@link #elements()}映射实现，无数据拷贝。
+	 * 保证与{@link Mapping}&lt;String, E&gt;的泛型约束一致，底层通过{@link #elements()}映射实现，无数据拷贝。
 	 *
-	 * @return 「属性名-描述符」的键值对流，非null
+	 * @return 「属性名-描述符」的键值对流（{@link Stream}&lt;{KeyValue}&lt;String, E&gt;&gt;），非null
 	 */
 	@Override
 	default Stream<KeyValue<String, E>> stream() {
@@ -124,7 +124,7 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	 * <ul>
 	 * <li><b>Number类型</b>：通过{@link NumberUtils#toInteger(Number)}转为整数索引，调用{@link Streamable#at(int)}按索引获取，
 	 * 索引越界/无元素返回{@link Optional#empty()}；</li>
-	 * <li><b>String类型</b>：按属性名匹配，调用{@link #getValues(String)}后通过{@link Streamable#unique()}获取唯一元素，
+	 * <li><b>String类型</b>：按属性名匹配，调用{@link #getValues(Object)}后通过{@link Streamable#unique()}获取唯一元素，
 	 * 无匹配/多匹配返回{@link Optional#empty()}；</li>
 	 * <li><b>其他类型</b>：直接返回{@link Optional#empty()}。</li>
 	 * </ul>
@@ -138,12 +138,12 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	 * </ul>
 	 *
 	 * @param key 索引（Number）或属性名（String），非null
-	 * @return 唯一属性描述符的{@link Optional}，无匹配/多匹配/不支持的key类型返回{@link Optional#empty()}
+	 * @return 唯一属性描述符的{@link Optional}&lt;E&gt;，无匹配/多匹配/不支持的key类型返回{@link Optional#empty()}
 	 * @throws IllegalArgumentException 若Number类型无法转为合法整数（如数值溢出）
 	 * @see NumberUtils#toInteger(Number)
 	 * @see Streamable#at(int)
 	 * @see Streamable#unique()
-	 * @see #getValues(String)
+	 * @see #getValues(Object)
 	 */
 	default Optional<E> uniqueProperty(@NonNull Object key) {
 		if (key instanceof Number) {

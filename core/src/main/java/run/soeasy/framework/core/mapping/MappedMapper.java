@@ -3,8 +3,6 @@ package run.soeasy.framework.core.mapping;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import javax.lang.model.util.Elements;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -48,7 +46,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * 且禁止包含单键值对（{@link KeyValue}）—— 确保操作对象是键值对集合；</li>
  * <li><strong>目标键遍历</strong>：按目标集合的迭代顺序，逐个取出目标键值对（{@link KeyValue}）；</li>
  * <li><strong>源值聚合</strong>：对每个目标键，通过{@link Mapping#getValues(Object)}从源集合中获取所有同键值，
- * 封装为{@link Elements}（可迭代的多值集合）；</li>
+ * 封装为{@link Streamable}（可迭代的多值集合）；</li>
  * <li><strong>值级映射</strong>：遍历聚合后的源值，为每个值创建源上下文（包含当前键值对）和目标上下文（包含当前目标键值对），
  * 调用父类{@link #doFilterableMapping}执行过滤器链与内部映射器（单值转换逻辑）；</li>
  * <li><strong>结果判定</strong>：统计成功映射的源值数量，只要有一个值映射成功则返回true，否则返回false。</li>
@@ -150,8 +148,8 @@ public class MappedMapper<K, V extends TypedValueAccessor, T extends Mapping<K, 
 			Iterator<KeyValue<K, V>> iterator = sourceStream.iterator();
 			while (iterator.hasNext()) {
 				KeyValue<K, V> source = iterator.next();
-				Streamable<V> targetElements = targetContext.getMapping().getValues(source.getKey());
-				try (Stream<V> targetStream = targetElements.stream()) {
+				Streamable<V> targetStreamable = targetContext.getMapping().getValues(source.getKey());
+				try (Stream<V> targetStream = targetStreamable.stream()) {
 					Iterator<V> targetIterator = targetStream.iterator();
 					while (targetIterator.hasNext()) {
 						V targetValue = targetIterator.next();

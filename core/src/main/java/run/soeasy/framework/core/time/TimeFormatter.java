@@ -34,7 +34,7 @@ public class TimeFormatter extends Converters {
 	@Override
 	public Object convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
-		for (Converter converter : getDelegate()) {
+		for (Converter converter : getContainer()) {
 			if (converter.canConvert(sourceTypeDescriptor, targetTypeDescriptor)) {
 				try {
 					return converter.convert(source, sourceTypeDescriptor, targetTypeDescriptor);

@@ -72,11 +72,11 @@ public class ObjectTemplateRegistry<E extends Property>
 	@Override
 	public PropertyMapping<E> getObjectTemplate(Class<?> objectClass) {
 		// 第一次检查（无锁）
-		PropertyMapping<E> propertyTemplate = getDelegate().get(objectClass);
+		PropertyMapping<E> propertyTemplate = getContainer().get(objectClass);
 		if (propertyTemplate == null && objectTemplateFactory != null
 				&& objectTemplateFactory.hasObjectTemplate(objectClass)) {
 			propertyTemplate = objectTemplateFactory.getObjectTemplate(objectClass);
-			getDelegate().put(objectClass, propertyTemplate);
+			getContainer().put(objectClass, propertyTemplate);
 		}
 		return propertyTemplate;
 	}

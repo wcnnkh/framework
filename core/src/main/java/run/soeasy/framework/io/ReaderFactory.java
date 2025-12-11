@@ -5,8 +5,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.stream.Stream;
 
-import javax.lang.model.util.Elements;
-
 import lombok.NonNull;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.streaming.Streamable;
@@ -84,7 +82,7 @@ public interface ReaderFactory<R extends Reader> {
     /**
      * 按行读取内容并返回元素流。
      * <p>
-     * 该方法返回一个{@link Elements}实例，支持惰性读取和流式处理。
+     * 该方法返回一个{@link Streamable}实例，支持惰性读取和流式处理。
      * 流关闭时会自动释放读取器资源。
      * 
      * @return 按行读取的元素流

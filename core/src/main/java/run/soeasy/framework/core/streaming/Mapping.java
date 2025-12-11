@@ -22,7 +22,7 @@ import run.soeasy.framework.core.domain.KeyValue;
  * <ul>
  * <li>灵活创建：支持基于单值Map、多值Map、索引List、Streamable快速创建（无数据拷贝，直接适配）；</li>
  * <li>结构转换：一键转为索引型（优化按位置访问）、单值Map型（优化按键访问）、多值Map型（多值映射）；</li>
- * <li>高效访问：按键获取值集合（{@link #getValues(K)}）、判断键存在（{@link #hasKey(K)}）， 可通过
+ * <li>高效访问：按键获取值集合（{@link #getValues(Object)}）、判断键存在（{@link #hasKey(Object)}）， 可通过
  * {@link #isMapped()} 识别底层Map存储以优化访问复杂度（Map型O(1)，非Map型O(n)）；</li>
  * <li>数据重载：支持 {@link #reload()} 重写实现数据刷新，默认返回自身；</li>
  * <li>流式特性：继承 {@link Streamable} 所有流式操作（过滤、映射、遍历等），无额外内存开销。</li>
@@ -61,7 +61,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	 *
 	 * @param <K> 键类型
 	 * @param <V> 值类型
-	 * @return 空Mapping单例
+	 * @return 空Mapping&lt;K, V&gt;单例
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> Mapping<K, V> empty() {
@@ -71,10 +71,10 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 基于已有多值Map快速创建Mapping（无数据拷贝，直接适配）。
 	 *
-	 * @param multiValueMap 多值Map（键对应值集合）
+	 * @param multiValueMap 多值Map（键对应值集合），类型为Map&lt;K, ? extends Collection&lt;V&gt;&gt;
 	 * @param <K>           键类型
 	 * @param <V>           值类型
-	 * @return 多值Map型Mapping实例
+	 * @return 多值Map型Mapping&lt;K, V&gt;实例
 	 */
 	public static <K, V> Mapping<K, V> ofMultiMapped(@NonNull Map<K, ? extends Collection<V>> multiValueMap) {
 		MultiMappedMapping<K, V, Mapping<K, V>> mapping = new MultiMappedMapping<>(null, null, null);
@@ -85,10 +85,10 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 基于已有单值Map快速创建Mapping（无数据拷贝，直接适配）。
 	 *
-	 * @param map 单值Map（键对应单个值）
+	 * @param map 单值Map（键对应单个值），类型为Map&lt;K, ? extends V&gt;
 	 * @param <K> 键类型
 	 * @param <V> 值类型
-	 * @return 单值Map型Mapping实例
+	 * @return 单值Map型Mapping&lt;K, V&gt;实例
 	 */
 	public static <K, V> Mapping<K, V> ofMapped(@NonNull Map<K, ? extends V> map) {
 		MappedMapping<K, V, Mapping<K, V>> mapping = new MappedMapping<>(null, null, null);
@@ -99,10 +99,10 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 基于已有索引List快速创建Mapping（无数据拷贝，直接适配）。
 	 *
-	 * @param list 索引化的键值对列表
+	 * @param list 索引化的键值对列表，类型为List&lt;KeyValue&lt;K, V&gt;&gt;
 	 * @param <K>  键类型
 	 * @param <V>  值类型
-	 * @return 索引型Mapping实例
+	 * @return 索引型Mapping&lt;K, V&gt;实例
 	 */
 	public static <K, V> Mapping<K, V> ofIndexed(@NonNull List<KeyValue<K, V>> list) {
 		IndexedMapping<K, V, Mapping<K, V>> mapping = new IndexedMapping<>(null, null);
@@ -111,12 +111,12 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	}
 
 	/**
-	 * 将Streamable<KeyValue<K,V>>适配为Mapping（接口桥接，无数据拷贝）。
+	 * 将Streamable&lt;KeyValue&lt;K,V&gt;&gt;适配为Mapping（接口桥接，无数据拷贝）。
 	 *
-	 * @param streamable Streamable类型的键值对集合
+	 * @param streamable Streamable类型的键值对集合，类型为Streamable&lt;KeyValue&lt;K, V&gt;&gt;
 	 * @param <K>        键类型
 	 * @param <V>        值类型
-	 * @return Mapping实例
+	 * @return Mapping&lt;K, V&gt;实例
 	 */
 	public static <K, V> Mapping<K, V> forStreamable(@NonNull Streamable<KeyValue<K, V>> streamable) {
 		return new StreamableMapping<>(streamable);
@@ -129,7 +129,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	 * </p>
 	 *
 	 * @param key 查找的键（允许为null）
-	 * @return 匹配的值集合（非null，无匹配时返回空Streamable）
+	 * @return 匹配的值集合（非null，无匹配时返回空Streamable&lt;V&gt;）
 	 */
 	default Streamable<V> getValues(K key) {
 		return filter(e -> Objects.equals(key, e.getKey())).map(KeyValue::getValue);
@@ -138,7 +138,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 重载数据（默认返回自身，实现类可重写以支持数据刷新）。
 	 *
-	 * @return 当前Mapping实例
+	 * @return 当前Mapping&lt;K, V&gt;实例
 	 */
 	@Override
 	default Mapping<K, V> reload() {
@@ -161,7 +161,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 获取所有键的集合。
 	 *
-	 * @return 键的Streamable集合（非null）
+	 * @return 键的Streamable&lt;K&gt;集合（非null）
 	 */
 	default Streamable<K> keys() {
 		return map(KeyValue::getKey);
@@ -171,7 +171,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为索引型Mapping（默认基于ArrayList，优化按位置访问性能）。
 	 *
-	 * @return 索引型Mapping实例
+	 * @return 索引型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toIndexed() {
 		return toIndexed(ArrayList::new);
@@ -180,8 +180,8 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为索引型Mapping（自定义List工厂）。
 	 *
-	 * @param collectionFactory List工厂（如LinkedList::new）
-	 * @return 索引型Mapping实例
+	 * @param collectionFactory List工厂（如LinkedList::new），生产List&lt;KeyValue&lt;K, V&gt;&gt;类型集合
+	 * @return 索引型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toIndexed(@NonNull Supplier<? extends List<KeyValue<K, V>>> collectionFactory) {
 		return new IndexedMapping<>(this, collectionFactory);
@@ -191,7 +191,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为单值Map型Mapping（默认LinkedHashMap，重复key抛异常）。
 	 *
-	 * @return 单值Map型Mapping实例
+	 * @return 单值Map型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toMapped() {
 		return toMapped((a, b) -> {
@@ -202,8 +202,8 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为单值Map型Mapping（自定义重复key合并策略，默认LinkedHashMap）。
 	 *
-	 * @param mergeFunction 重复key合并策略
-	 * @return 单值Map型Mapping实例
+	 * @param mergeFunction 重复key合并策略，类型为BinaryOperator&lt;V&gt;
+	 * @return 单值Map型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toMapped(@NonNull BinaryOperator<V> mergeFunction) {
 		return toMapped(mergeFunction, LinkedHashMap::new);
@@ -212,9 +212,9 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为单值Map型Mapping（自定义重复key合并策略+Map工厂）。
 	 *
-	 * @param mergeFunction 重复key合并策略
-	 * @param mapFactory    Map工厂（如HashMap::new）
-	 * @return 单值Map型Mapping实例
+	 * @param mergeFunction 重复key合并策略，类型为BinaryOperator&lt;V&gt;
+	 * @param mapFactory    Map工厂（如HashMap::new），生产Map&lt;K, V&gt;类型映射
+	 * @return 单值Map型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toMapped(@NonNull BinaryOperator<V> mergeFunction, @NonNull Supplier<Map<K, V>> mapFactory) {
 		return new MappedMapping<>(this, mergeFunction, mapFactory);
@@ -224,7 +224,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为多值Map型Mapping（默认LinkedHashMap+ArrayList）。
 	 *
-	 * @return 多值Map型Mapping实例
+	 * @return 多值Map型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toMultiMapped() {
 		return toMultiMapped(LinkedHashMap::new);
@@ -233,8 +233,8 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为多值Map型Mapping（自定义Map工厂，默认ArrayList存储值）。
 	 *
-	 * @param mapFactory Map工厂（如ConcurrentHashMap::new）
-	 * @return 多值Map型Mapping实例
+	 * @param mapFactory Map工厂（如ConcurrentHashMap::new），生产Map&lt;K, Collection&lt;V&gt;&gt;类型映射
+	 * @return 多值Map型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toMultiMapped(@NonNull Supplier<Map<K, Collection<V>>> mapFactory) {
 		return toMultiMapped(mapFactory, ArrayList::new);
@@ -243,9 +243,9 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	/**
 	 * 转为多值Map型Mapping（自定义Map工厂+值集合工厂）。
 	 *
-	 * @param mapFactory        Map工厂
-	 * @param collectionFactory 值集合工厂（如HashSet::new）
-	 * @return 多值Map型Mapping实例
+	 * @param mapFactory        Map工厂，生产Map&lt;K, Collection&lt;V&gt;&gt;类型映射
+	 * @param collectionFactory 值集合工厂（如HashSet::new），生产Collection&lt;V&gt;类型集合
+	 * @return 多值Map型Mapping&lt;K, V&gt;实例
 	 */
 	default Mapping<K, V> toMultiMapped(@NonNull Supplier<Map<K, Collection<V>>> mapFactory,
 			@NonNull Supplier<Collection<V>> collectionFactory) {
@@ -258,7 +258,7 @@ public interface Mapping<K, V> extends Streamable<KeyValue<K, V>> {
 	 * 语义说明：
 	 * <ul>
 	 * <li>true：底层基于Map存储（如{@link MappedMapping}/{@link MultiMappedMapping}），
-	 * {@link #getValues(K)}、{@link #hasKey(K)}等按键操作为O(1)复杂度；</li>
+	 * {@link #getValues(Object)}、{@link #hasKey(Object)}等按键操作为O(1)复杂度；</li>
 	 * <li>false：底层非Map存储（如{@link IndexedMapping}/{@link StreamableMapping}），
 	 * 按键操作为O(n)的流式遍历复杂度。</li>
 	 * </ul>

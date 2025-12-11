@@ -27,7 +27,7 @@ import run.soeasy.framework.core.execute.ExecutableMetadata;
  * 子类需实现以下核心方法：
  * <ul>
  *   <li>{@link #canExecuted(Class[])}：判断是否可以使用指定参数类型执行</li>
- *   <li>{@link #getParameterTemplate()}：获取参数模板描述</li>
+ *   <li>{@link #getParameterMapping()}：获取参数模板描述</li>
  *   <li>{@link #getExceptionTypeDescriptors()}：获取异常类型描述符集合</li>
  * </ul>
  *

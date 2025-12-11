@@ -19,7 +19,6 @@ import run.soeasy.framework.core.streaming.Streamable;
  * <ul>
  * <li>递归加载：自动加载当前类、父类和接口的成员</li>
  * <li>延迟初始化：成员数据在首次访问时加载，提高性能</li>
- * <li>合并策略：使用{@link MergedElements}合并多层级成员</li>
  * <li>可重新加载：支持强制刷新所有层级的成员数据</li>
  * <li>类型安全：通过泛型确保加载成员的类型一致性</li>
  * </ul>

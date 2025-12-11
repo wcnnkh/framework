@@ -20,8 +20,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import javax.lang.model.util.Elements;
-
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.Assert;
@@ -132,7 +130,7 @@ public class FileUtils {
 	/**
 	 * 递归迭代目录下的所有文件（不限制深度）。
 	 * <p>
-	 * 会遍历目标目录及其所有子目录下的文件，返回的{@link Elements}支持迭代、流式处理。
+	 * 会遍历目标目录及其所有子目录下的文件，返回的{@link Streamable}支持迭代、流式处理。
 	 *
 	 * @param directory 目标目录，不可为null且必须是目录
 	 * @return 包含所有文件的元素集合（仅文件，不包含目录）

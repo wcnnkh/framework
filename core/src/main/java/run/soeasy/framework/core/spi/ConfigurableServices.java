@@ -24,39 +24,59 @@ import run.soeasy.framework.core.type.ResolvableType;
  * <li>无旧配置 → 直接执行首次配置；</li>
  * </ul>
  * </li>
- * <li>空值防御：全链路非空校验，精准异常提示，避免空指针风险。</li>
+ * <li>空值防御：全链路非空校验，避免空指针风险。</li>
  * </ul>
  *
  * @param <S> 服务接口/抽象类的泛型类型
  * @author soeasy.run
- * @see Services 基础服务容器（提供注册/注入能力）
- * @see Configurable 可配置接口（定义标准化配置契约）
- * @see ServiceDiscoverer 服务发现器（配置时依赖其获取服务实例）
+ * @see Services
+ * @see Configurable
+ * @see ServiceDiscoverer
  */
 public class ConfigurableServices<S> extends Services<S> implements Configurable {
-	/** JDK原生日志（日志内容为英文，便于调试） */
+	/** JDK原生日志组件，用于记录配置容器的运行日志 */
 	private static final Logger log = Logger.getLogger(ConfigurableServices.class.getName());
 
 	/**
-	 * 目标服务类（泛型对应的实际类型）
+	 * 目标服务类（泛型{S}对应的实际类型）
 	 * <p>
-	 * volatile保证多线程下的可见性，支持自动解析（泛型）和手动设置两种方式
+	 * 1. volatile修饰保证多线程下的可见性，避免DCL场景下的指令重排问题；
+	 * 2. 支持两种设置方式：自动解析（基于{@link ResolvableType}解析泛型）、手动设置（{@link #setServiceClass(Class)}）；
+	 * 3. 优先级：手动设置的值 &gt; 自动解析的泛型类型。
 	 * </p>
 	 */
 	private volatile Class<? extends S> serviceClass;
 
+	/**
+	 * 构造可配置服务容器，指定服务实例的比较器。
+	 * <p>
+	 * 比较器决定服务实例的排序规则，影响服务注入时的优先级。
+	 * </p>
+	 *
+	 * @param comparator 服务实例的比较器，不可为null
+	 * @throws NullPointerException 若comparator为null时抛出
+	 */
 	public ConfigurableServices(@NonNull Comparator<? super S> comparator) {
 		super(comparator);
 	}
 
 	/**
-	 * 获取目标服务类（自动解析泛型+双重检查锁定）
+	 * 获取目标服务类（自动解析泛型+双重检查锁定保证线程安全）
 	 * <p>
-	 * 优先级：手动设置的serviceClass > 自动解析泛型类型；
-	 * 自动解析逻辑：通过{@link ResolvableType}解析当前类的泛型参数（ConfigurableServices<S>的S），
-	 * 解析失败时返回null（需通过setServiceClass手动设置）。
+	 * 核心逻辑：
+	 * <ol>
+	 * <li>优先级：手动设置的serviceClass &gt; 自动解析的泛型类型；</li>
+	 * <li>自动解析流程：
+	 *   <ul>
+	 *   <li>通过{@link ResolvableType#forType(java.lang.reflect.Type)}获取当前类的类型信息；</li>
+	 *   <li>转换为{@link ConfigurableServices}类型，提取第0个泛型参数（即{S}）；</li>
+	 *   <li>获取泛型参数对应的原始类型，转换为{@code Class&lt;? extends S&gt;}；</li>
+	 *   </ul>
+	 * </li>
+	 * <li>异常处理：解析失败时记录WARNING日志，返回null。</li>
+	 * </ol>
 	 *
-	 * @return 目标服务类（可能为null，需通过setServiceClass手动设置）
+	 * @return 目标服务类，泛型解析失败时返回null
 	 */
 	@SuppressWarnings("unchecked")
 	public Class<? extends S> getServiceClass() {
@@ -84,28 +104,52 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	/**
 	 * 手动设置目标服务类（覆盖自动解析的泛型类型）
 	 * <p>
-	 * 设置后不会自动刷新配置，需手动调用configure方法重新执行配置
+	 * 注意事项：设置后不会自动触发配置刷新，需手动调用{@link #configure(ServiceDiscoverer)}重新执行配置。
 	 * </p>
 	 *
-	 * @param serviceClass 目标服务类（不可为null，由lombok @NonNull强制校验）
+	 * @param serviceClass 目标服务类，不可为null，需为泛型{S}的实现类/子类
+	 * @throws NullPointerException 若serviceClass为null时抛出
 	 */
 	public void setServiceClass(@NonNull Class<? extends S> serviceClass) {
 		this.serviceClass = serviceClass;
 		log.fine("Manually set service class to: " + serviceClass.getName());
 	}
 
-	/** 配置结果缓存（每次调用configure都会尝试更新为最新结果） */
+	/**
+	 * 配置结果缓存，键为{@link ServiceDiscoverer}，值为{@link Operation}
+	 * <p>
+	 * 1. 基于{@link ConcurrentHashMap}实现，保证多线程下的并发安全；
+	 * 2. 每次调用{@link #configure(ServiceDiscoverer)}都会尝试更新该缓存；
+	 * 3. 缓存值记录配置操作的结果，并支持回滚能力判断。
+	 * </p>
+	 */
 	private final ConcurrentHashMap<ServiceDiscoverer, Operation> configurationMap = new ConcurrentHashMap<>();
 
 	/**
-	 * 执行/刷新配置（每次调用都会触发配置逻辑，但需满足刷新规则）
+	 * 执行/刷新服务配置（实现{@link Configurable#configure(ServiceDiscoverer)}接口）
 	 * <p>
-	 * 刷新核心规则： 1. 优先校验旧配置的回滚能力，不支持回滚则直接返回旧配置，拒绝刷新； 2. 支持回滚则先执行旧配置的回滚操作，再执行新配置逻辑； 3.
-	 * 无旧配置时直接执行首次配置，无回滚步骤。
-	 * </p>
+	 * 刷新核心规则：
+	 * <ol>
+	 * <li>前置校验：获取目标服务类，若为null则返回失败的{@link Operation}；</li>
+	 * <li>旧配置校验：
+	 *   <ul>
+	 *   <li>旧配置存在 &amp;&amp; 不支持回滚 → 拒绝刷新，返回旧配置；</li>
+	 *   <li>旧配置存在 &amp;&amp; 支持回滚 → 先执行回滚，再执行新配置；</li>
+	 *   <li>无旧配置 → 直接执行首次配置；</li>
+	 *   </ul>
+	 * </li>
+	 * <li>新配置执行：通过服务发现器获取服务实例，注册到容器并返回新的{@link Operation}；</li>
+	 * <li>异常处理：配置过程中抛出异常时，记录SEVERE日志并返回失败的{@link Operation}。</li>
+	 * </ol>
 	 *
-	 * @param serviceDiscoverer 服务发现器（非null）
-	 * @return 最新配置结果（若拒绝刷新则返回旧配置结果）
+	 * @param serviceDiscoverer 服务发现器，不可为null，用于获取待注册的服务实例
+	 * @return 配置操作结果：
+	 *         <ul>
+	 *         <li>成功：包含注册的服务实例数量、回滚能力等信息；</li>
+	 *         <li>失败：包含异常信息、失败原因；</li>
+	 *         <li>拒绝刷新：返回旧配置的{@link Operation}；</li>
+	 *         </ul>
+	 * @throws NullPointerException 若serviceDiscoverer为null时抛出
 	 */
 	@Override
 	public Operation configure(@NonNull ServiceDiscoverer serviceDiscoverer) {

@@ -11,9 +11,11 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import run.soeasy.framework.core.function.PredicateRegistry;
+
 /**
  * 不可变类型注册器，采用单例模式设计，预注册Java中核心的不可变类型匹配规则。
- * 继承自{@link TypePredicateRegistry}，复用父类{@link #registerType(Type)}方法
+ * 继承自{@link PredicateRegistry}，复用父类{@link #registerEqual(Type)}方法
  * 完成具体不可变类型的注册，实现不可变类型的统一匹配。
  * <p>
  * 核心能力：
@@ -27,12 +29,16 @@ import java.util.UUID;
  *
  * @author soeasy.run
  */
-public class ImmutableTypeRegistry extends TypePredicateRegistry {
+public class ImmutableTypeRegistry extends PredicateRegistry<Type> {
 
     /**
      * 全局单例实例，volatile修饰保证多线程下的可见性
      */
     private static volatile ImmutableTypeRegistry registry;
+    
+    public ImmutableTypeRegistry() {
+    	super(MatchRules.ANY);
+	}
 
     /**
      * 获取全局唯一的不可变类型注册器单例（线程安全）。
@@ -51,16 +57,16 @@ public class ImmutableTypeRegistry extends TypePredicateRegistry {
                     registry.register(ClassUtils::isEnum);
 
                     // 3. 注册：单个不可变类型（复用父类registerType方法）
-                    registry.registerType(String.class);
-                    registry.registerType(BigInteger.class);
-                    registry.registerType(BigDecimal.class);
-                    registry.registerType(LocalDate.class);
-                    registry.registerType(LocalTime.class);
-                    registry.registerType(LocalDateTime.class);
-                    registry.registerType(ZonedDateTime.class);
-                    registry.registerType(Instant.class);
-                    registry.registerType(UUID.class);
-                    registry.registerType(URI.class);
+                    registry.registerEqual(String.class);
+                    registry.registerEqual(BigInteger.class);
+                    registry.registerEqual(BigDecimal.class);
+                    registry.registerEqual(LocalDate.class);
+                    registry.registerEqual(LocalTime.class);
+                    registry.registerEqual(LocalDateTime.class);
+                    registry.registerEqual(ZonedDateTime.class);
+                    registry.registerEqual(Instant.class);
+                    registry.registerEqual(UUID.class);
+                    registry.registerEqual(URI.class);
                 }
             }
         }

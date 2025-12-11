@@ -31,7 +31,7 @@ public class WatchKeyRegistry extends CollectionContainer<WatchKey, CopyOnWriteA
 	 * 
 	 */
 	public void cleanup() {
-		Iterator<WatchKey> iterator = getDelegate().iterator();
+		Iterator<WatchKey> iterator = getContainer().iterator();
 		while (iterator.hasNext()) {
 			WatchKey watchKey = iterator.next();
 			if (!watchKey.isValid()) {

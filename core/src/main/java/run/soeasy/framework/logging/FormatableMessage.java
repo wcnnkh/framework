@@ -83,7 +83,7 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 	 * 按顺序替换消息中的占位符，支持{@link Exportable}类型参数的特殊处理。
 	 * 
 	 * @param appendable  目标写入器
-	 * @param format      消息模板
+	 * @param template      消息模板
 	 * @param placeholder 占位符
 	 * @param args        替换参数
 	 * @throws IOException 当写入Appendable时发生IO错误
@@ -133,7 +133,7 @@ public final class FormatableMessage implements Exportable, Serializable, Suppli
 	/**
 	 * 构造可格式化消息实例。
 	 * 
-	 * @param msg         消息模板（如"用户{0}访问{1}失败"）
+	 * @param template         消息模板（如"用户{0}访问{1}失败"）
 	 * @param placeholder 占位符（如"{}"）
 	 * @param args        替换参数（如new Object[]{"admin", "API"}）
 	 */

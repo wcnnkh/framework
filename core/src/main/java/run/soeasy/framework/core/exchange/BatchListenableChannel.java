@@ -1,7 +1,5 @@
 package run.soeasy.framework.core.exchange;
 
-import javax.lang.model.util.Elements;
-
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -11,7 +9,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  *
  * <p>核心特性：
  * <ul>
- *   <li>批量操作：通过Elements集合一次性处理多个消息</li>
+ *   <li>批量操作：通过Streamable集合一次性处理多个消息</li>
  *   <li>模式转换：通过single()方法可转换为单条处理模式</li>
  *   <li>全方位通信：支持批量消息的发布、监听、接收和分发</li>
  *   <li>原子性保证：实现类可选择保证批量操作的原子性</li>
@@ -31,7 +29,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @see ListenableChannel
  * @see BatchChannel
  * @see BatchDispatcher
- * @see Elements
+ * @see Streamable
  */
 public interface BatchListenableChannel<T>
         extends ListenableChannel<Streamable<T>>, BatchChannel<T>, BatchDispatcher<T> {

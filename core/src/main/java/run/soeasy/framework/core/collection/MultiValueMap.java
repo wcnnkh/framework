@@ -17,25 +17,31 @@ import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
- * 多值映射扩展接口（K→List<V>），接口层原子性保障
- * 
+ * 多值映射接口，定义K→List&lt;V&gt;类型的多值映射能力，接口层保障操作的原子性。
  * <p>核心规则：
- * 1. 修改操作调用链：add→adds、set→setAll、setAll→put（put由子类实现）；
- * 2. 接口层强制使用CopyOnWriteArrayList封装值，保证add/remove原子性；
- * 3. 只读操作返回不可变视图，天然原子安全；
- * 4. 空值交由底层容器原生处理，不手动干预；
- * 5. 子类需实现put方法，接口层不关心其原子性实现。
- * 
+ * <ol>
+ * <li>修改操作调用链：add→adds、set→setAll、setAll→put（put由子类实现）；</li>
+ * <li>接口层强制使用CopyOnWriteArrayList封装值，保证add/remove操作的原子性；</li>
+ * <li>只读操作返回不可变视图，具备天然的原子安全性；</li>
+ * <li>空值交由底层容器原生处理，不手动干预；</li>
+ * <li>子类需实现put方法，接口层不约束其原子性实现。</li>
+ * </ol>
+ *
  * @author soeasy.run
  * @param <K> 键类型
  * @param <V> 值类型
+ * @see Map
+ * @see List
+ * @see CopyOnWriteArrayList
  */
 public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, KeyValueRegistry<K, V> {
     // ========== 单值添加（原子化） ==========
     /**
-     * 原子添加单个值，复用adds逻辑
-     * @param key 键
-     * @param value 值（非空）
+     * 原子化添加单个值，复用adds方法的逻辑。
+     *
+     * @param key  键
+     * @param value 值，不可为null
+     * @throws IllegalArgumentException 当value为null时抛出
      */
     default void add(K key, V value) {
         if (value == null) {
@@ -46,8 +52,9 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, Key
 
     // ========== 批量添加其他Map（原子化） ==========
     /**
-     * 原子批量添加多值映射，无先查后改非原子步骤
-     * @param map 待添加的多值映射Map（非空）
+     * 原子化批量添加多值映射，无先查后改的非原子步骤。
+     *
+     * @param map 待添加的多值映射Map，不可为null
      */
     default void addAll(@NonNull Map<? extends K, ? extends Collection<V>> map) {
         if (map.isEmpty()) {
@@ -71,9 +78,10 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, Key
 
     // ========== 单键多值添加（原子化） ==========
     /**
-     * 原子添加单个键的多个值，复用addAll逻辑
-     * @param key 键
-     * @param values 值集合（非空）
+     * 原子化添加单个键对应的多个值，复用addAll方法的逻辑。
+     *
+     * @param key  键
+     * @param values 值集合，不可为null且不能为空
      */
     default void adds(K key, Collection<V> values) {
         if (values == null || values.isEmpty()) {
@@ -84,9 +92,11 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, Key
 
     // ========== 单值覆盖（原子化） ==========
     /**
-     * 原子设置单个值（覆盖原有值），复用setAll逻辑
-     * @param key 键
-     * @param value 值（非空）
+     * 原子化设置单个值（覆盖指定键原有值），复用setAll方法的逻辑。
+     *
+     * @param key  键
+     * @param value 值，不可为null
+     * @throws IllegalArgumentException 当value为null时抛出
      */
     default void set(K key, V value) {
         if (value == null) {
@@ -97,8 +107,9 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, Key
 
     // ========== 批量覆盖（原子化） ==========
     /**
-     * 原子批量设置值（覆盖原有值），调用子类put方法
-     * @param map 待设置的键值对Map（非空）
+     * 原子化批量设置值（覆盖指定键原有值），调用子类实现的put方法。
+     *
+     * @param map 待设置的键值对Map，不可为null
      */
     default void setAll(@NonNull Map<? extends K, ? extends V> map) {
         if (map.isEmpty()) {
@@ -123,9 +134,10 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, Key
     }
 
     /**
-     * 获取指定键的第一个值
+     * 获取指定键对应的第一个值。
+     *
      * @param key 键
-     * @return 第一个值，无则返回null
+     * @return 该键对应的第一个值，无值时返回null
      */
     default V getFirst(K key) {
         List<V> values = get(key);
@@ -140,8 +152,9 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>>, Mapping<K, V>, Key
     }
 
     /**
-     * 转换为单值映射Map（取每个键的第一个值）
-     * @return 不可变单值映射Map
+     * 转换为单值映射Map（取每个键对应的第一个值）。
+     *
+     * @return 不可变的单值映射Map
      */
     default Map<K, V> toSingleValueMap() {
         if (isEmpty()) {
