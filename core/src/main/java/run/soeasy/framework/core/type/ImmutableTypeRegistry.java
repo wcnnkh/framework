@@ -15,7 +15,7 @@ import run.soeasy.framework.core.function.PredicateRegistry;
 
 /**
  * 不可变类型注册器，采用单例模式设计，预注册Java中核心的不可变类型匹配规则。
- * 继承自{@link PredicateRegistry}，复用父类{@link #registerEqual(Type)}方法
+ * 继承自{@link PredicateRegistry}，复用父类{@link PredicateRegistry#registerEqual(Object)}方法
  * 完成具体不可变类型的注册，实现不可变类型的统一匹配。
  * <p>
  * 核心能力：
