@@ -5,12 +5,23 @@ import java.io.IOException;
 import run.soeasy.framework.io.Exportable;
 
 /**
- * JSON元素的基础接口，所有JSON相关元素（对象、数组、基本类型、null）都应实现此接口，
- * 定义了判断元素类型、转换为特定类型以及JSON序列化的核心方法，继承自{@link Exportable}支持数据导出。
+ * JSON元素的抽象根接口，定义所有JSON元素（对象、数组、基本类型、Null）的通用行为契约。
  * 
- * <p>该接口提供了类型判断的默认方法（如{@link #isJsonObject()}）和类型转换方法（如{@link #getAsJsonObject()}），
- * 以及JSON字符串序列化（{@link #toJsonString()}）和字符串转义（{@link #escaping(String)}）功能，
- * 为所有JSON元素提供统一的操作规范。
+ * <h3>核心设计目标</h3>
+ * <ul>
+ * <li>统一JSON元素的类型判定与类型安全转换能力，避免强制类型转换的类型安全问题</li>
+ * <li>整合{@link Exportable}接口实现JSON数据的流式导出，支持高效序列化</li>
+ * <li>提供标准化的JSON字符串序列化与字符串转义工具方法，保证JSON语法合规性</li>
+ * </ul>
+ * 
+ * <h3>元素类型体系</h3>
+ * 所有实现类需归属以下四类之一，通过接口默认方法完成类型判定与转换：
+ * <ul>
+ * <li>{@link JsonObject}：JSON对象（键值对集合）</li>
+ * <li>{@link JsonArray}：JSON数组（有序元素集合）</li>
+ * <li>{@link JsonPrimitive}：JSON基本类型（字符串、数字、布尔值）</li>
+ * <li>{@link JsonNull}：JSON空值（显式的null表示）</li>
+ * </ul>
  * 
  * @author soeasy.run
  * @see JsonObject
@@ -22,19 +33,24 @@ import run.soeasy.framework.io.Exportable;
 public interface JsonElement extends Exportable {
 
     /**
-     * 判断当前元素是否为JSON对象（{@link JsonObject}）
+     * 判断当前元素是否为JSON对象类型（{@link JsonObject}）
      * 
-     * @return 是JSON对象则返回true，否则返回false
+     * <p>默认实现基于{@code instanceof}判定，无额外性能损耗，可直接用于条件分支判断</p>
+     * 
+     * @return {@code true} - 当前元素是{@link JsonObject}实例；{@code false} - 非JSON对象类型
      */
     default boolean isJsonObject() {
         return this instanceof JsonObject;
     }
 
     /**
-     * 将当前元素转换为{@link JsonObject}
+     * 将当前元素安全转换为{@link JsonObject}类型
      * 
-     * @return 当前元素对应的{@link JsonObject}实例
-     * @throws IllegalStateException 当当前元素不是JSON对象时抛出
+     * <p>转换前会通过{@link #isJsonObject()}校验类型，校验失败时抛出明确的类型不匹配异常，
+     * 异常信息包含当前元素的字符串表示，便于定位类型错误</p>
+     * 
+     * @return 当前元素对应的{@link JsonObject}实例（非null）
+     * @throws IllegalStateException 当当前元素不是JSON对象类型时抛出，包含具体的类型不匹配信息
      */
     default JsonObject getAsJsonObject() {
         if (isJsonObject()) {
@@ -44,19 +60,24 @@ public interface JsonElement extends Exportable {
     }
 
     /**
-     * 判断当前元素是否为JSON数组（{@link JsonArray}）
+     * 判断当前元素是否为JSON数组类型（{@link JsonArray}）
      * 
-     * @return 是JSON数组则返回true，否则返回false
+     * <p>默认实现基于{@code instanceof}判定，无额外性能损耗，可直接用于条件分支判断</p>
+     * 
+     * @return {@code true} - 当前元素是{@link JsonArray}实例；{@code false} - 非JSON数组类型
      */
     default boolean isJsonArray() {
         return this instanceof JsonArray;
     }
 
     /**
-     * 将当前元素转换为{@link JsonArray}
+     * 将当前元素安全转换为{@link JsonArray}类型
      * 
-     * @return 当前元素对应的{@link JsonArray}实例
-     * @throws IllegalStateException 当当前元素不是JSON数组时抛出
+     * <p>转换前会通过{@link #isJsonArray()}校验类型，校验失败时抛出明确的类型不匹配异常，
+     * 异常信息包含当前元素的字符串表示，便于定位类型错误</p>
+     * 
+     * @return 当前元素对应的{@link JsonArray}实例（非null）
+     * @throws IllegalStateException 当当前元素不是JSON数组类型时抛出，包含具体的类型不匹配信息
      */
     default JsonArray getAsJsonArray() {
         if (isJsonArray()) {
@@ -66,19 +87,24 @@ public interface JsonElement extends Exportable {
     }
 
     /**
-     * 判断当前元素是否为JSON null（{@link JsonNull}）
+     * 判断当前元素是否为JSON空值类型（{@link JsonNull}）
      * 
-     * @return 是JSON null则返回true，否则返回false
+     * <p>默认实现基于{@code instanceof}判定，无额外性能损耗，可直接用于条件分支判断</p>
+     * 
+     * @return {@code true} - 当前元素是{@link JsonNull}实例；{@code false} - 非JSON空值类型
      */
     default boolean isJsonNull() {
         return this instanceof JsonNull;
     }
 
     /**
-     * 将当前元素转换为{@link JsonNull}
+     * 将当前元素安全转换为{@link JsonNull}类型
      * 
-     * @return 当前元素对应的{@link JsonNull}实例
-     * @throws IllegalStateException 当当前元素不是JSON null时抛出
+     * <p>转换前会通过{@link #isJsonNull()}校验类型，校验失败时抛出明确的类型不匹配异常，
+     * 异常信息包含当前元素的字符串表示，便于定位类型错误</p>
+     * 
+     * @return 当前元素对应的{@link JsonNull}实例（非null）
+     * @throws IllegalStateException 当当前元素不是JSON空值类型时抛出，包含具体的类型不匹配信息
      */
     default JsonNull getAsJsonNull() {
         if (isJsonNull()) {
@@ -88,19 +114,25 @@ public interface JsonElement extends Exportable {
     }
 
     /**
-     * 判断当前元素是否为JSON基本类型（{@link JsonPrimitive}，如字符串、数字、布尔值）
+     * 判断当前元素是否为JSON基本类型（{@link JsonPrimitive}）
      * 
-     * @return 是JSON基本类型则返回true，否则返回false
+     * <p>JSON基本类型包含字符串、整数、浮点数、布尔值四种基础类型，
+     * 默认实现基于{@code instanceof}判定，无额外性能损耗</p>
+     * 
+     * @return {@code true} - 当前元素是{@link JsonPrimitive}实例；{@code false} - 非JSON基本类型
      */
     default boolean isJsonPrimitive() {
         return this instanceof JsonPrimitive;
     }
 
     /**
-     * 将当前元素转换为{@link JsonPrimitive}
+     * 将当前元素安全转换为{@link JsonPrimitive}类型
      * 
-     * @return 当前元素对应的{@link JsonPrimitive}实例
-     * @throws IllegalStateException 当当前元素不是JSON基本类型时抛出
+     * <p>转换前会通过{@link #isJsonPrimitive()}校验类型，校验失败时抛出明确的类型不匹配异常，
+     * 异常信息包含当前元素的字符串表示，便于定位类型错误</p>
+     * 
+     * @return 当前元素对应的{@link JsonPrimitive}实例（非null）
+     * @throws IllegalStateException 当当前元素不是JSON基本类型时抛出，包含具体的类型不匹配信息
      */
     default JsonPrimitive getAsJsonPrimitive() {
         if (isJsonPrimitive()) {
@@ -110,45 +142,27 @@ public interface JsonElement extends Exportable {
     }
 
     /**
-     * 将当前JSON元素序列化为JSON格式字符串
+     * 将当前JSON元素序列化为标准JSON格式字符串
      * 
-     * <p>通过{@link Exportable#export(Appendable)}方法导出数据到字符串构建器，
-     * 忽略序列化过程中可能出现的{@link IOException}（因操作内存缓冲区，通常不会发生）。
+     * <h4>实现说明</h4>
+     * <ul>
+     * <li>基于{@link Exportable#export(Appendable)}实现流式导出，保证序列化效率</li>
+     * <li>使用{@link StringBuilder}作为内存缓冲区，理论上不会抛出{@link IOException}，
+     * 若意外抛出则包装为{@link IllegalStateException}，避免上层处理不必要的受检异常</li>
+     * <li>序列化结果严格遵循JSON语法规范，可直接用于JSON数据传输或存储</li>
+     * </ul>
      * 
-     * @return 序列化后的JSON字符串
+     * @return 标准化的JSON格式字符串（非null，空元素会返回对应空表示，如空对象"{}"、空数组"[]"）
+     * @throws IllegalStateException 当序列化过程中发生IO异常时抛出（理论上不会触发），包含原始异常信息
      */
     default String toJsonString() {
         StringBuilder sb = new StringBuilder();
         try {
             export(sb);
         } catch (IOException e) {
-            // 操作内存缓冲区时异常概率极低，此处忽略
+            throw new IllegalStateException("export error", e);
         }
         return sb.toString();
     }
-
-    /**
-     * 对JSON字符串进行转义处理，确保符合JSON语法规范
-     * 
-     * <p>当前实现转义双引号（"）和反斜杠（\），可根据需要扩展以支持更多控制字符（如换行符、制表符等）。
-     * 
-     * @param value 待转义的字符串
-     * @return 转义后的字符串
-     */
-    public static String escaping(String value) {
-        int size = value.length();
-        // 预分配1.25倍长度的缓冲区，减少扩容次数
-        StringBuilder sb = new StringBuilder(Math.toIntExact(Math.round(size * 1.25)));
-        for (int i = 0; i < size; i++) {
-            char c = value.charAt(i);
-            if (c == '"') {
-                sb.append("\\\""); // 转义双引号
-            } else if (c == '\\') {
-                sb.append("\\\\"); // 转义反斜杠
-            } else {
-                sb.append(c); // 其他字符直接追加
-            }
-        }
-        return sb.toString();
-    }
+    
 }

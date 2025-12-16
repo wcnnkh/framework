@@ -55,7 +55,7 @@ public class BeanUtils {
      */
     public static <S, T> boolean copyProperties(S source, @NonNull Class<? extends S> sourceClass, T target,
             @NonNull Class<? extends T> targetClass, @NonNull PropertyMappingFilter... filters) {
-        return getBeanMapper().transform(source, TypeDescriptor.valueOf(sourceClass), target,
+        return getMapper().transform(source, TypeDescriptor.valueOf(sourceClass), target,
                 TypeDescriptor.valueOf(targetClass), Arrays.asList(filters));
     }
 
@@ -85,7 +85,7 @@ public class BeanUtils {
      *
      * @return 全局唯一的 {@link BeanMapper} 实例（非空）
      */
-    public static BeanMapper getBeanMapper() {
+    public static BeanMapper getMapper() {
         if (beanMapper == null) {
             synchronized (BeanMapper.class) {
                 if (beanMapper == null) {
@@ -124,7 +124,7 @@ public class BeanUtils {
      * @see TypeDescriptor 类型描述器（封装类类型、泛型信息等）
      */
     public static PropertyMapping<PropertyAccessor> getProperties(Object bean, @NonNull TypeDescriptor typeDescriptor) {
-        return getBeanMapper().getMapping(bean, typeDescriptor);
+        return getMapper().getMapping(bean, typeDescriptor);
     }
 
     /**
@@ -140,6 +140,6 @@ public class BeanUtils {
      * @see BeanProperty 单个属性的元数据（包含属性名、类型、getter/setter 等）
      */
     public static PropertyMapping<BeanProperty> getTemplate(@NonNull Class<?> beanClass) {
-        return getBeanMapper().getObjectTemplate(beanClass);
+        return getMapper().getObjectTemplate(beanClass);
     }
 }

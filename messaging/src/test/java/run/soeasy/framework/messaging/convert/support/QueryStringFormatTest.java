@@ -18,7 +18,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 public class QueryStringFormatTest {
 	@Test
 	public void test() {
-		BeanUtils.getBeanMapper().getObjectTemplate(QueryStringObject.class).forEach((e) -> {
+		BeanUtils.getMapper().getObjectTemplate(QueryStringObject.class).forEach((e) -> {
 			System.out.println(e);
 		});
 		

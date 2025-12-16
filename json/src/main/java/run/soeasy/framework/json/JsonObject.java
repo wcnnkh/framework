@@ -57,7 +57,7 @@ public class JsonObject extends LinkedHashMap<String, JsonElement> implements Js
             
             // 处理键：添加双引号并转义特殊字符
             target.append('"');
-            target.append(JsonElement.escaping(entry.getKey()));
+            target.append(JsonEscaping.DEFAULT.encode(entry.getKey()));
             target.append('"');
             
             // 键值分隔符

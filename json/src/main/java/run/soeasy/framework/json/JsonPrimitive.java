@@ -45,7 +45,7 @@ public class JsonPrimitive implements JsonElement, Value {
      */
     @Override
     public void export(Appendable target) throws IOException {
-        String str = JsonElement.escaping(getAsString());
+        String str = JsonEscaping.DEFAULT.encode(getAsString());
         if (this.value instanceof String) {
             // 字符串类型需用双引号包裹
             target.append('"');

@@ -496,8 +496,8 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default <K, V> Mapping<K, V> toKeyValues(@NonNull Function<? super E, ? extends KeyValue<K, V>> mapper) {
-		return getSource().toKeyValues(mapper);
+	default <K, V> Mapping<K, V> toMapping(@NonNull Function<? super E, ? extends KeyValue<K, V>> mapper) {
+		return getSource().toMapping(mapper);
 	}
 
 	@Override
@@ -521,9 +521,9 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default <K, V> Mapping<K, V> toKeyValues(@NonNull Function<? super E, ? extends K> keyMapper,
+	default <K, V> Mapping<K, V> toMapping(@NonNull Function<? super E, ? extends K> keyMapper,
 			@NonNull Function<? super E, ? extends V> valueMapper) {
-		return getSource().toKeyValues(keyMapper, valueMapper);
+		return getSource().toMapping(keyMapper, valueMapper);
 	}
 
 }
