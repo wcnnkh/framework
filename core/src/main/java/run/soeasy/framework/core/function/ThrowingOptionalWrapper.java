@@ -33,7 +33,7 @@ import lombok.NonNull;
  * @see ThrowingSupplierWrapper
  */
 @FunctionalInterface
-public interface ThrowingOptionalWrapper<T, E extends Throwable, W extends ThrowingOptional<T, E>>
+public interface ThrowingOptionalWrapper<T, E extends Exception, W extends ThrowingOptional<T, E>>
         extends ThrowingOptional<T, E>, ThrowingSupplierWrapper<T, E, W> {
 
     /**
@@ -131,7 +131,7 @@ public interface ThrowingOptionalWrapper<T, E extends Throwable, W extends Throw
      * @throws X 供应者可能抛出的异常
      */
     @Override
-    default <X extends Throwable> T orElseGet(@NonNull ThrowingSupplier<? extends T, ? extends X> suppler) throws E, X {
+    default <X extends Exception> T orElseGet(@NonNull ThrowingSupplier<? extends T, ? extends X> suppler) throws E, X {
         return getSource().orElseGet(suppler);
     }
 
@@ -145,7 +145,7 @@ public interface ThrowingOptionalWrapper<T, E extends Throwable, W extends Throw
      * @throws X 值不存在时抛出的异常
      */
     @Override
-    default <X extends Throwable> T orElseThrow(ThrowingSupplier<? extends X, ? extends X> exceptionSupplier)
+    default <X extends Exception> T orElseThrow(ThrowingSupplier<? extends X, ? extends X> exceptionSupplier)
             throws E, X {
         return getSource().orElseThrow(exceptionSupplier);
     }

@@ -1,5 +1,6 @@
 package run.soeasy.framework.core;
 
+import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,6 +11,7 @@ import run.soeasy.framework.core.domain.CharSequenceSplitIterator;
 import run.soeasy.framework.core.domain.CharSequenceTemplate;
 import run.soeasy.framework.core.domain.Range;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 字符串工具类 提供字符串操作的各种实用方法，包括查找、替换、分割、比较等功能
@@ -1074,5 +1076,23 @@ public class StringUtils {
 			values[vIndex++] = v;
 		}
 		return new String(values, 0, vIndex);
+	}
+
+	public static char[] toArray(CharSequence sequence) {
+		if (sequence instanceof String) {
+			return ((String) sequence).toCharArray();
+		} else if (sequence instanceof CharBuffer) {
+			return IOUtils.toArray((CharBuffer) sequence);
+		} else {
+			char[] array = new char[sequence.length()];
+			for (int i = 0; i < array.length; i++) {
+				array[i] = sequence.charAt(i);
+			}
+			return array;
+		}
+	}
+	
+	public static CharBuffer wrap(CharSequence sequence) {
+		return sequence instanceof CharBuffer ? ((CharBuffer) sequence) : CharBuffer.wrap(sequence);
 	}
 }

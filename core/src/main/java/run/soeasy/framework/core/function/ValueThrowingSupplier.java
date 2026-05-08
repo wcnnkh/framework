@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-class ValueThrowingSupplier<T, E extends Throwable> implements ThrowingSupplier<T, E>, Serializable {
+class ValueThrowingSupplier<T, E extends Exception> implements ThrowingSupplier<T, E>, Serializable {
     private static final long serialVersionUID = 1L;
     
     /**

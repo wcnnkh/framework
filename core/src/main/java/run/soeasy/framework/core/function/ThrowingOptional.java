@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 
-public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSupplier<T, E> {
+public interface ThrowingOptional<T, E extends Exception> extends ThrowingSupplier<T, E> {
 
 	/**
 	 * 从ThrowingSupplier创建ThrowingOptional实例。
@@ -16,7 +16,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	 * @param supplier 供应者，不可为null
 	 * @return ThrowingOptional实例
 	 */
-	public static <U, E extends Throwable> ThrowingOptional<U, E> forSupplier(
+	public static <U, E extends Exception> ThrowingOptional<U, E> forSupplier(
 			@NonNull ThrowingSupplier<U, E> supplier) {
 		if (supplier instanceof ThrowingOptional) {
 			return (ThrowingOptional<U, E>) supplier;
@@ -32,7 +32,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	 * @param value 值，可以为null
 	 * @return 包含值的ThrowingOptional或空的ThrowingOptional
 	 */
-	public static <U, E extends Throwable> ThrowingOptional<U, E> forValue(U value) {
+	public static <U, E extends Exception> ThrowingOptional<U, E> forValue(U value) {
 		if (value == null) {
 			return empty();
 		}
@@ -47,7 +47,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	 * @return 空的ThrowingOptional实例
 	 */
 	@SuppressWarnings("unchecked")
-	public static <U, E extends Throwable> ThrowingOptional<U, E> empty() {
+	public static <U, E extends Exception> ThrowingOptional<U, E> empty() {
 		return (ThrowingOptional<U, E>) ValueThrowingOptional.EMPTY;
 	}
 
@@ -149,7 +149,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	 * @throws E 原始异常类型
 	 * @throws X 供应者可能抛出的异常
 	 */
-	default <X extends Throwable> T orElseGet(@NonNull ThrowingSupplier<? extends T, ? extends X> suppler) throws E, X {
+	default <X extends Exception> T orElseGet(@NonNull ThrowingSupplier<? extends T, ? extends X> suppler) throws E, X {
 		return flatMap((e) -> e != null ? e : suppler.get());
 	}
 
@@ -162,7 +162,7 @@ public interface ThrowingOptional<T, E extends Throwable> extends ThrowingSuppli
 	 * @throws E 原始异常类型
 	 * @throws X 值不存在时抛出的异常
 	 */
-	default <X extends Throwable> T orElseThrow(ThrowingSupplier<? extends X, ? extends X> exceptionSupplier)
+	default <X extends Exception> T orElseThrow(ThrowingSupplier<? extends X, ? extends X> exceptionSupplier)
 			throws E, X {
 		return flatMap((e) -> {
 			if (e == null) {

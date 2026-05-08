@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
  * @see ThrowingSupplier
  */
 @RequiredArgsConstructor
-class ChainThrowingSupplier<S, V, E extends Throwable, T extends Throwable, W extends ThrowingSupplier<S, E>>
+class ChainThrowingSupplier<S, V, E extends Exception, T extends Exception, W extends ThrowingSupplier<S, E>>
 		implements ThrowingSupplier<V, T> {
 	/**
 	 * 源值供应者，提供原始值的获取逻辑，是整个链式操作的数据源，不可为null
@@ -89,9 +89,7 @@ class ChainThrowingSupplier<S, V, E extends Throwable, T extends Throwable, W ex
 	 */
 	@Override
 	public Pipeline<V, T> closeable() {
-		Pipeline<V, T> pipline = new ChainPipeline<>(this.source, this.mapper, this.throwingMapper, null,
-				ThrowingRunnable.ignore());
-		return pipline.onClose(this.closeable);
+		return new ChainPipeline<>(this.source, this.mapper, this.throwingMapper, null, this.closeable);
 	}
 
 	/**

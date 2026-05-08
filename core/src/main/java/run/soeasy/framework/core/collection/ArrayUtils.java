@@ -607,4 +607,59 @@ public class ArrayUtils {
 		}
 		return Streamable.of(() -> stream(array)); // 封装Stream供给函数
 	}
+
+	public static Object newInstance(@NonNull Class<?> componentType, int length) {
+		if (length < 0) {
+			throw new IllegalArgumentException("length cannot be negative: " + length);
+		}
+
+		if (componentType == int.class) {
+			return new int[length];
+		} else if (componentType == char.class) {
+			return new char[length];
+		} else if (componentType == byte.class) {
+			return new byte[length];
+		} else if (componentType == short.class) {
+			return new short[length];
+		} else if (componentType == long.class) {
+			return new long[length];
+		} else if (componentType == float.class) {
+			return new float[length];
+		} else if (componentType == double.class) {
+			return new double[length];
+		} else if (componentType == boolean.class) {
+			return new boolean[length];
+		} else if (componentType == Object.class) {
+			return new Object[length];
+		}
+		return Array.newInstance(componentType, length);
+	}
+
+	public static int getLength(@NonNull Object array) {
+		if (!array.getClass().isArray()) {
+			throw new IllegalArgumentException("Argument is not an array");
+		}
+
+		if (array instanceof int[]) {
+			return ((int[]) array).length;
+		} else if (array instanceof char[]) {
+			return ((char[]) array).length;
+		} else if (array instanceof Object[]) {
+			return ((Object[]) array).length;
+		} else if (array instanceof byte[]) {
+			return ((byte[]) array).length;
+		} else if (array instanceof short[]) {
+			return ((short[]) array).length;
+		} else if (array instanceof long[]) {
+			return ((long[]) array).length;
+		} else if (array instanceof float[]) {
+			return ((float[]) array).length;
+		} else if (array instanceof double[]) {
+			return ((double[]) array).length;
+		} else if (array instanceof boolean[]) {
+			return ((boolean[]) array).length;
+		} else {
+			return Array.getLength(array);
+		}
+	}
 }

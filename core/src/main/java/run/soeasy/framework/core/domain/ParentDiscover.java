@@ -74,35 +74,4 @@ public interface ParentDiscover<T extends ParentDiscover<T>> {
     default Streamable<T> parents() {
         return Streamable.of(() -> new ParentIterator<>(this));
     }
-
-    /**
-     * 判断指定节点是否为当前节点的父节点（包括直接父节点和所有上级父节点）。
-     * <p>
-     * 判断逻辑：
-     * <ol>
-     *   <li>若指定节点为null或当前节点没有父节点，返回false</li>
-     *   <li>逐级向上检查每个父节点，直到找到匹配节点或到达根节点</li>
-     * </ol>
-     *
-     * @param parent 待检查的父节点，可为null
-     * @return true如果指定节点是当前节点的父节点，false否则
-     */
-    default boolean isParents(T parent) {
-        if (parent == null || !hasParent()) {
-            return false;
-        }
-
-        T p = getParent();
-        while (true) {
-            if (p == parent || parent.equals(p)) {
-                return true;
-            }
-
-            if (!p.hasParent()) {
-                return false;
-            }
-
-            p = p.getParent();
-        }
-    }
 }

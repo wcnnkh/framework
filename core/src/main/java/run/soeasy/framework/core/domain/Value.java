@@ -343,4 +343,8 @@ public interface Value extends IntSupplier, LongSupplier, DoubleSupplier, Boolea
      * @return 字符串值，不会为null
      */
     String getAsString();
+    
+    default boolean isNull() {
+    	return false;
+    }
 }

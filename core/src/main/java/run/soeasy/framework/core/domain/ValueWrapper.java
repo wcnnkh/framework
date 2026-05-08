@@ -18,14 +18,6 @@ import run.soeasy.framework.core.streaming.Streamable;
  *   <li>函数式支持：作为函数式接口，可通过lambda表达式创建轻量级包装器</li>
  * </ul>
  *
- * <p>使用场景：
- * <ul>
- *   <li>值访问日志记录：记录所有值获取操作的访问日志</li>
- *   <li>值转换缓存：缓存频繁访问的值转换结果</li>
- *   <li>值验证增强：在获取值前进行合法性验证</li>
- *   <li>事务性值操作：为值操作添加事务边界</li>
- * </ul>
- *
  * <p>示例用法：
  * <pre class="code">
  * // 包装值并添加日志记录
@@ -230,5 +222,10 @@ public interface ValueWrapper<W extends Value> extends Value, Wrapper<W> {
     @Override
     default boolean isNumber() {
         return getSource().isNumber();
+    }
+    
+    @Override
+    default boolean isNull() {
+    	return getSource().isNull();
     }
 }

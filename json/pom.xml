@@ -11,7 +11,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>run.soeasy.framework</groupId>
-			<artifactId>beans</artifactId>
+			<artifactId>codec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>run.soeasy.framework</groupId>
+			<artifactId>dom</artifactId>
 		</dependency>
 	</dependencies>
 </project>

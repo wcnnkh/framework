@@ -17,7 +17,7 @@ import lombok.NonNull;
  * @see ThrowingOptional
  * @see ChainThrowingSupplier
  */
-class ChainThrowingOptional<S, V, E extends Throwable, T extends Throwable, W extends ThrowingSupplier<S, E>>
+class ChainThrowingOptional<S, V, E extends Exception, T extends Exception, W extends ThrowingSupplier<S, E>>
 		extends ChainThrowingSupplier<S, V, E, T, W> implements ThrowingOptional<V, T> {
 
 	/**

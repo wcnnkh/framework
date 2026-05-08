@@ -15,8 +15,8 @@ import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.Registry;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.streaming.StreamableWrapper;
-import run.soeasy.framework.io.FileResource;
-import run.soeasy.framework.io.PathResource;
+import run.soeasy.framework.io.source.FileResource;
+import run.soeasy.framework.io.source.PathResource;
 
 /**
  * 路径监控器，继承自{@link Poller}，实现{@link Registry}、{@link Lifecycle}接口，

@@ -4,13 +4,13 @@ import java.nio.charset.Charset;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.NonNull;
-import run.soeasy.framework.beans.BeanFormat;
+import run.soeasy.framework.codec.format.KeyValueFormat;
 import run.soeasy.framework.codec.format.URLCodec;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.exchange.MapContainer;
 
 /**
- * 查询字符串格式化工具类，继承自{@link BeanFormat}，专注于URL查询字符串（如key1=value1&amp;key2=value2）的格式化与解析，
+ * 查询字符串格式化工具类，继承自{@link KeyValueFormat}，专注于URL查询字符串（如key1=value1&amp;key2=value2）的格式化与解析，
  * 支持对象与查询字符串之间的双向转换，并集成URL编码/解码（通过{@link URLCodec}）处理特殊字符。
  * 
  * <p>
@@ -19,11 +19,11 @@ import run.soeasy.framework.core.exchange.MapContainer;
  * 支持自定义字符集（{@link Charset}），适配不同编码场景（如UTF-8、ISO-8859-1）。
  * 
  * @author soeasy.run
- * @see BeanFormat
+ * @see KeyValueFormat
  * @see URLCodec
  * @see Charset
  */
-public class QueryStringFormat extends BeanFormat {
+public class QueryStringFormat extends KeyValueFormat {
 	/**
 	 * 线程安全的查询字符串格式化实例缓存，值为对应字符集的{@link QueryStringFormat}实例，
 	 * 用于复用实例，提高性能（避免频繁创建编码解码器）。

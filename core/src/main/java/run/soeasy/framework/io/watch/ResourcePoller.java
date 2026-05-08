@@ -12,7 +12,7 @@ import run.soeasy.framework.core.exchange.ChangeEvent;
 import run.soeasy.framework.core.exchange.ChangeType;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.streaming.Streamable;
-import run.soeasy.framework.io.Resource;
+import run.soeasy.framework.io.source.Resource;
 
 /**
  * 资源轮询监控器，继承自{@link Poller}，通过定期检测资源的最后修改时间追踪资源状态变化（创建、更新、删除），

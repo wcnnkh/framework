@@ -9,11 +9,10 @@ import org.junit.Test;
 import lombok.ToString;
 import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.mapping.property.Cloner;
-import run.soeasy.framework.serializer.SerializerException;
 
 public class ReflectionClonerTest {
 	@Test
-	public void list() throws ClassNotFoundException, SerializerException {
+	public void list() throws ClassNotFoundException {
 		TestList bean = new TestList();
 		bean.add(RandomUtils.uuid());
 		bean.setV(RandomUtils.uuid());

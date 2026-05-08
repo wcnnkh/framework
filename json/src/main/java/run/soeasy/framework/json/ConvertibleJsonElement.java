@@ -10,6 +10,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.streaming.Mapping;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 可转换的JSON元素包装类，实现{@link JsonElement}接口，用于适配通过{@link JsonConverter}转换的任意JSON数据源（如原始字符串、集合、映射等），
@@ -107,6 +109,7 @@ final class ConvertibleJsonElement implements JsonElement {
      */
     @Override
     public JsonPrimitive getAsJsonPrimitive() {
+    	 String content = jsonConverter.convert(json, String.class);
         return new JsonPrimitive(json);
     }
 
@@ -139,8 +142,8 @@ final class ConvertibleJsonElement implements JsonElement {
                 // 转换为List并构建JsonArray
                 List<Object> collection = (List<Object>) jsonConverter.convert(
                         json, TypeDescriptor.collection(ArrayList.class, Object.class));
-                JsonArray jsonArray = new JsonArray();
-                collection.forEach(value -> jsonArray.add(jsonConverter.toJsonElement(value)));
+                JsonArrayContainer jsonArray = new JsonArrayContainer();
+                collection.forEach(value -> jsonArray.getContainer().add(jsonConverter.toJsonElement(value)));
                 this.jsonArray = jsonArray;
             }
         }
@@ -191,8 +194,8 @@ final class ConvertibleJsonElement implements JsonElement {
                 // 转换为Map并构建JsonObject
                 Map<String, Object> map = (Map<String, Object>) jsonConverter.convert(
                         json, TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class));
-                JsonObject jsonObject = new JsonObject();
-                map.forEach((key, value) -> jsonObject.put(key, jsonConverter.toJsonElement(value)));
+                JsonObjectContainer jsonObject = new JsonObjectContainer();
+                map.forEach((key, value) -> jsonObject.getContainer().put(key, jsonConverter.toJsonElement(value)));
                 this.jsonObject = jsonObject;
             }
         }

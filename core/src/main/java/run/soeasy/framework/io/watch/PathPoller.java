@@ -16,7 +16,7 @@ import run.soeasy.framework.core.exchange.ChangeType;
 import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.streaming.Streamable;
-import run.soeasy.framework.io.PathResource;
+import run.soeasy.framework.io.source.PathResource;
 
 /**
  * 路径资源轮询器，基于JDK {@link WatchService} 实现文件系统事件驱动监控，同时继承 {@link ResourcePoller}

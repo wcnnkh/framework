@@ -16,7 +16,7 @@ import lombok.NonNull;
  * @see ThrowingSupplierWrapper
  */
 @FunctionalInterface
-public interface PipelineWrapper<T, E extends Throwable, W extends Pipeline<T, E>>
+public interface PipelineWrapper<T, E extends Exception, W extends Pipeline<T, E>>
 		extends Pipeline<T, E>, ThrowingSupplierWrapper<T, E, W> {
 
 	/**
@@ -118,7 +118,7 @@ public interface PipelineWrapper<T, E extends Throwable, W extends Pipeline<T, E
 	 * @return 源流水线执行异常转换后的{@link Pipeline}实例
 	 */
 	@Override
-	default <R extends Throwable> Pipeline<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
+	default <R extends Exception> Pipeline<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return getSource().throwing(throwingMapper);
 	}
 

@@ -44,6 +44,8 @@
 		<module>json</module>
 		<module>beans</module>
 		<module>aop</module>
+		<module>codec</module>
+		<module>math</module>
 	</modules>
 
 	<properties>
@@ -99,6 +101,11 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>xml</artifactId>
+				<version>1.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>codec</artifactId>
 				<version>1.0.2</version>
 			</dependency>
 		</dependencies>

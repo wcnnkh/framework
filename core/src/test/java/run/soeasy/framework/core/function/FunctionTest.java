@@ -5,7 +5,7 @@ import org.junit.Test;
 public class FunctionTest {
 	@Test
 	public void test() throws Throwable {
-		ThrowingSupplier<Object, Throwable> source = () -> {
+		ThrowingSupplier<Object, Exception> source = () -> {
 			long t = System.currentTimeMillis();
 			System.out.println("get:" + t);
 			return t;
@@ -17,7 +17,7 @@ public class FunctionTest {
 		}).onClose((e) -> System.out.println("e:" + e)).closeable().autoCloseable().get();
 		
 		System.out.println("--------");
-		Pipeline<String, Throwable> pipeline = source.onClose((e) -> System.out.println("close1:" + e))
+		Pipeline<String, Exception> pipeline = source.onClose((e) -> System.out.println("close1:" + e))
 				.map((e) -> "-" + e + "-").onClose((e) -> System.out.println("close2:" + e)).closeable();
 		System.out.println(pipeline.get());
 		System.out.println("--------");
