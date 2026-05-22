@@ -5,7 +5,6 @@ import java.io.Reader;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.io.source.InputSourceWrapper;
 
 /**
  * 输入消息包装器接口，继承{@link InputMessage}、{@link MessageWrapper}和{@link InputSourceWrapper}，

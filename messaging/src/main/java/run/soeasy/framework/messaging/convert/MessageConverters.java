@@ -12,7 +12,7 @@ import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 import run.soeasy.framework.core.streaming.Streamable;
-import run.soeasy.framework.io.MimeType;
+import run.soeasy.framework.io.mime.MimeType;
 import run.soeasy.framework.logging.FormatableMessage;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;

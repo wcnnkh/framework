@@ -35,7 +35,7 @@ import run.soeasy.framework.core.StringUtils;
  * @see Readable
  */
 @Data
-class SplitReadableIterator implements Iterator<CharSequence> {
+final class SplitReadableIterator implements Iterator<CharSequence> {
     /**
      * 底层可读数据源
      */

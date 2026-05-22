@@ -1,106 +1,97 @@
 package run.soeasy.framework.io.source;
 
+import lombok.NonNull;
+import run.soeasy.framework.core.function.ThrowingFunction;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 
-import lombok.NonNull;
-import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.core.function.ThrowingFunction;
-
 /**
- * 输出源接口，表示一个可写的输出目标，扩展自{@link OutputStreamFactory}。
- * 该接口提供了便捷的方法来获取输出流，并支持流式处理和编码转换功能。
- * 
- * <p><b>核心特性：</b>
+ * 输出源接口，用于延迟提供 {@link OutputStream} 实例。
+ *
+ * <p>本接口是 {@link WriterSource} 的字节特化版本，充当字节流与字符流之间的桥梁。
+ * 它定义了字节输出源的标准契约，并提供了向 NIO 通道和字符流转换的能力。
+ *
+ * <p><b>核心契约：</b>
  * <ul>
- *   <li>统一接口：简化不同输出目标的操作</li>
- *   <li>流水线支持：通过{@link Pipeline}实现流式处理</li>
- *   <li>编码转换：提供多种编码方式将字节流转换为字符流</li>
- *   <li>链式调用：支持连续的编码和转换操作</li>
+ *   <li>实现类必须保证 {@link #getOutputStream()} 返回有效的输出流</li>
+ *   <li>调用方负责关闭返回的流或通道</li>
+ *   <li>编码操作不应改变原始字节源的状态</li>
  * </ul>
- * 
- * <p><b>使用场景：</b>
- * <ul>
- *   <li>文件输出：将内容写入文件</li>
- *   <li>网络输出：将内容发送到网络连接</li>
- *   <li>内存输出：将内容写入内存缓冲区</li>
- *   <li>需要编码转换的输出场景</li>
- * </ul>
- * 
+ *
+ * @param <O> 具体的输出流类型，必须是 {@link OutputStream} 的子类
  * @author soeasy.run
- * @see OutputStreamFactory
- * @see EncodedOutputSource
  */
-public interface OutputSource extends OutputStreamFactory<OutputStream> {
-    /**
-     * 获取输出流实例，用于向此输出源写入数据。
-     * 
-     * <p>每次调用此方法都会返回一个新的输出流实例，
-     * 通常需要在使用后调用{@link OutputStream#close()}关闭流。
-     * 
-     * @return 输出流实例
-     * @throws IOException 如果创建输出流时发生I/O错误
-     */
-    @Override
-    OutputStream getOutputStream() throws IOException;
+@FunctionalInterface
+public interface OutputSource<O extends OutputStream> extends WriterSource<Writer> {
 
     /**
-     * 获取用于创建输出流的流水线。
-     * <p>
-     * 默认实现使用{@link Pipeline#forCloseable}创建一个可关闭的流水线，
-     * 该流水线会在关闭时自动调用输出流的{@link OutputStream#close()}方法。
-     * 
-     * @return 输出流流水线
+     * 获取输出流实例。
+     *
+     * @return 输出流实例（不可为 null）
+     * @throws IOException 如果获取输出流失败
      */
-    @Override
-    default @NonNull Pipeline<OutputStream, IOException> getOutputStreamPipeline() {
-        return Pipeline.forCloseable(this::getOutputStream);
+    @NonNull
+    O getOutputStream() throws IOException;
+
+    /**
+     * 将输出流适配为 NIO 可写通道。
+     *
+     * <p>默认实现基于 {@link java.nio.channels.Channels#newChannel(OutputStream)}。
+     * 这是字节输出源向 NIO 体系转换的标准方式。
+     *
+     * @return 可写字节通道
+     * @throws IOException 如果获取输出流失败
+     */
+    @NonNull
+    default WritableByteChannel writableChannel() throws IOException {
+        return Channels.newChannel(getOutputStream());
     }
 
     /**
-     * 为输出源添加指定字符集的编码转换。
-     * <p>
-     * 该方法返回一个新的输出源，它会将写入的字符流按照指定的字符集
-     * 转换为字节流，使用{@link OutputStreamWriter}实现转换。
-     * 
-     * @param charset 字符集，不可为null
-     * @return 带字符集编码的输出源
+     * 获取字符写入器。
+     *
+     * <p>默认实现使用平台默认字符集将字节流包装为 {@link OutputStreamWriter}。
+     * 这是从字节到字符的最基础转换。
+     *
+     * @return 字符写入器
+     * @throws IOException 如果获取输出流失败
      */
+    @NonNull
     @Override
-    default OutputSource encode(Charset charset) {
-        return new EncodedOutputSource<>(this, charset, (e) -> new OutputStreamWriter(e, charset));
+    default Writer getWriter() throws IOException {
+        return new OutputStreamWriter(getOutputStream());
     }
 
     /**
-     * 为输出源添加指定字符集名称的编码转换。
-     * <p>
-     * 该方法返回一个新的输出源，它会将写入的字符流按照指定的字符集名称
-     * 转换为字节流，使用{@link OutputStreamWriter}实现转换。
-     * 
-     * @param charsetName 字符集名称，不可为null
-     * @return 带字符集编码的输出源
+     * 使用自定义编码函数将字符流转换为字节流。
+     *
+     * <p>适用于需要复杂处理逻辑的场景（如压缩、加密、协议封装）。
+     *
+     * @param encoder 编码函数，接收原始输出流并返回处理后的字符流
+     * @param <W>     目标字符流类型
+     * @return 新的 WriterSource，提供编码后的字符流
      */
-    @Override
-    default OutputSource encode(String charsetName) {
-        return new EncodedOutputSource<>(this, charsetName, (e) -> new OutputStreamWriter(e, charsetName));
+    default <W extends Writer> WriterSource<W> encode(
+            @NonNull ThrowingFunction<? super O, ? extends W, ? extends IOException> encoder
+    ) {
+        return () -> encoder.apply(getOutputStream());
     }
 
     /**
-     * 为输出源添加自定义编码转换。
-     * <p>
-     * 该方法返回一个新的输出源，它会将写入的内容通过指定的编码器函数
-     * 进行转换，允许实现自定义的编码逻辑。
-     * 
-     * @param encoder 编码转换函数，不可为null
-     * @param <T> 目标Writer类型
-     * @return 带自定义编码的输出源
+     * 使用指定字符集将字符流编码为字节流。
+     *
+     * <p>这是最常用的编码方式，返回一个语义明确的输出源包装器。
+     *
+     * @param charset 字符集
+     * @return 支持指定字符集编码的 OutputSource
      */
-    @Override
-    default <T extends Writer> OutputSource encode(
-            @NonNull ThrowingFunction<? super OutputStream, ? extends T, IOException> encoder) {
-        return new EncodedOutputSource<>(this, null, encoder);
+    default OutputSource<O> encode(@NonNull Charset charset) {
+        return new EncodeOutputSource<>(this, charset);
     }
 }

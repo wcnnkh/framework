@@ -3,8 +3,8 @@ package run.soeasy.framework.messaging;
 import java.nio.charset.Charset;
 
 import run.soeasy.framework.core.StringUtils;
-import run.soeasy.framework.core.domain.CharsetCapable;
-import run.soeasy.framework.io.MimeType;
+import run.soeasy.framework.io.source.CharsetCapable;
+import run.soeasy.framework.io.mime.MimeType;
 
 /**
  * 消息接口，定义了消息的基本契约，整合消息头部元数据与字符集处理能力，

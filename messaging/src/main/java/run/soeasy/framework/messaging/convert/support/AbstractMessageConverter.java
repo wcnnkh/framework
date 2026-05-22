@@ -9,7 +9,7 @@ import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
 import run.soeasy.framework.core.exchange.CollectionContainer;
 import run.soeasy.framework.core.exchange.Registry;
-import run.soeasy.framework.io.MimeType;
+import run.soeasy.framework.io.mime.MimeType;
 import run.soeasy.framework.messaging.Headers;
 import run.soeasy.framework.messaging.InputMessage;
 import run.soeasy.framework.messaging.MediaType;

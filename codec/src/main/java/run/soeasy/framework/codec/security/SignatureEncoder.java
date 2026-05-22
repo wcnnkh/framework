@@ -2,6 +2,7 @@ package run.soeasy.framework.codec.security;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -13,6 +14,8 @@ import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.io.BufferConsumer;
 import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.transfer.BufferReader;
+import run.soeasy.framework.io.transfer.BufferWriter;
 
 /**
  * 数字签名编码器，继承自{@link AlgorithmSigner}，基于Java安全框架的{@link Signature}实现数字签名的生成与验证，
@@ -107,29 +110,12 @@ public class SignatureEncoder extends AlgorithmSigner<Signature> {
         return algorithm.verify(target);
     }
 
-    /**
-     * 生成数字签名（实现具体签名逻辑）
-     * 
-     * <p>流程：
-     * 1. 通过{@link IOUtils}将输入流数据传输到签名算法（更新待签名数据）
-     * 2. 调用{@link Signature#sign()}生成签名字节数组
-     * 3. 将签名数据传递给缓冲区消费者
-     * 
-     * @param <E> 消费者可能抛出的异常类型
-     * @param algorithm 签名生成算法实例（已通过私钥初始化）
-     * @param source 待签名的原始数据输入流
-     * @param bufferSize 读取缓冲区大小
-     * @param target 接收签名数据的缓冲区消费者
-     * @throws IOException 输入流读取失败时抛出
-     * @throws E 消费者处理签名数据时抛出
-     * @throws GeneralSecurityException 签名生成算法执行失败时抛出（如私钥错误、算法不支持等）
-     */
+    test
+
     @Override
-    public <E extends Throwable> void transferTo(Signature algorithm, @NonNull InputStream source, int bufferSize,
-            @NonNull BufferConsumer<? super byte[], ? extends E> target)
-            throws IOException, E, GeneralSecurityException {
-        IOUtils.transferTo(source, bufferSize, algorithm::update);
+    public void execute(Signature algorithm, @NonNull BufferReader<? super ByteBuffer> reader, @NonNull BufferWriter<? super ByteBuffer> writer) throws IOException, GeneralSecurityException {
+        IOUtils.binary().transfer(reader, algorithm::update);
         byte[] data = algorithm.sign();
-        target.accept(data, 0, data.length);
+        writer.write(ByteBuffer.wrap(data));
     }
 }

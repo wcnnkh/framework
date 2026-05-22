@@ -6,7 +6,6 @@ import java.io.Reader;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.io.source.InputSource;
 
 /**
  * 输入消息接口，继承{@link Message}和{@link InputSource}接口，

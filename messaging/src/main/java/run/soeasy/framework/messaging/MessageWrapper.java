@@ -2,7 +2,7 @@ package run.soeasy.framework.messaging;
 
 import java.nio.charset.Charset;
 
-import run.soeasy.framework.core.domain.CharsetCapableWrapper;
+import run.soeasy.framework.io.source.CharsetCapableWrapper;
 
 /**
  * 消息包装器接口，继承自{@link Message}和{@link CharsetCapableWrapper}，

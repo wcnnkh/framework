@@ -13,8 +13,7 @@ import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
 import run.soeasy.framework.codec.Encoder;
-import run.soeasy.framework.codec.binary.Gzip;
-import run.soeasy.framework.codec.binary.ToBinaryCodec;
+import run.soeasy.framework.codec.stream.Gzip;
 import run.soeasy.framework.codec.crypto.MAC;
 import run.soeasy.framework.io.IOUtils;
 
@@ -24,7 +23,7 @@ import run.soeasy.framework.io.IOUtils;
  * @author soeasy.run
  *
  */
-public class CharsetCodec implements ToBinaryCodec<String> {
+public class CharsetCodec implements Codec<String, byte[]> {
 	/**
 	 * @see Charset#defaultCharset()
 	 */
@@ -78,20 +77,6 @@ public class CharsetCodec implements ToBinaryCodec<String> {
 		}
 	}
 
-	@Override
-	public void encode(String source, @NonNull OutputStream target) throws IOException, CodecException {
-		byte[] v = encode(source);
-		if (v == null) {
-			return;
-		}
-		target.write(v);
-	}
-
-	@Override
-	public String decode(InputStream source, int bufferSize) throws IOException, CodecException {
-		return decode(IOUtils.toByteArray(source));
-	}
-
 	public String decode(byte[] source) throws CodecException {
 		if (source == null) {
 			return null;
@@ -106,14 +91,6 @@ public class CharsetCodec implements ToBinaryCodec<String> {
 		} catch (UnsupportedEncodingException e) {
 			throw new DecodeException("charset=" + charset + ", source=" + source, e);
 		}
-	}
-
-	public Codec<String, String> gzip(Codec<byte[], String> codec) {
-		return to(Gzip.DEFAULT).to(codec);
-	}
-
-	public Codec<String, String> gzip() {
-		return gzip(HexCodec.DEFAULT);
 	}
 
 	public Encoder<String, byte[]> toMac(String algorithm, String secretKey) {

@@ -14,9 +14,9 @@ import lombok.NonNull;
 import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.io.InvalidMimeTypeException;
-import run.soeasy.framework.io.MimeType;
-import run.soeasy.framework.io.MimeTypeUtils;
+import run.soeasy.framework.io.mime.InvalidMimeTypeException;
+import run.soeasy.framework.io.mime.MimeType;
+import run.soeasy.framework.io.mime.MimeTypeUtils;
 
 /**
  * MediaType类继承自{@link MimeType}，扩展了对媒体类型质量因子（q参数）的支持，

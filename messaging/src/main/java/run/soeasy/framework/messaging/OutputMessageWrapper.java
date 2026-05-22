@@ -5,7 +5,6 @@ import java.io.Writer;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.io.source.OutputSourceWrapper;
 
 /**
  * 可输出消息包装器接口，继承自{@link OutputMessage}、{@link MessageWrapper}和{@link OutputSourceWrapper}，

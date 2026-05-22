@@ -6,7 +6,6 @@ import java.io.Writer;
 import lombok.NonNull;
 import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.Pipeline;
-import run.soeasy.framework.io.source.OutputSource;
 
 /**
  * 可输出消息接口，继承自{@link Message}和{@link OutputSource}，

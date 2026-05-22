@@ -1,10 +1,13 @@
 package run.soeasy.framework.codec.security;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.codec.binary.BinaryEncoder;
+import run.soeasy.framework.codec.CodecException;
+import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.io.BinaryTransferrer;
 
@@ -23,7 +26,7 @@ import run.soeasy.framework.io.BinaryTransferrer;
  * @see AlgorithmFactory
  */
 @Getter
-public abstract class AlgorithmEncoder<T> extends AlgorithmTransferrer<T> implements BinaryEncoder {
+public abstract class AlgorithmEncoder<T> extends AlgorithmTransferrer<T> implements Encoder<byte[], byte[]> {
 
     /**
      * 构造基于指定编码算法工厂的编码器
@@ -45,13 +48,8 @@ public abstract class AlgorithmEncoder<T> extends AlgorithmTransferrer<T> implem
         super(encodeAlgorithmFactory, encodeAlgorithmInitializer);
     }
 
-    /**
-     * 获取编码用的二进制传输器（当前实例自身）
-     * 
-     * @return 当前编码器实例，作为编码过程的传输器
-     */
     @Override
-    public BinaryTransferrer getEncodeTransferrer() {
-        return this;
+    public final byte[] encode(byte[] source) throws CodecException {
+        return toBinary(ByteBuffer.wrap(source));
     }
 }

@@ -14,7 +14,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.codec.binary.TransferrerCodec;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.function.ThrowingFunction;
 

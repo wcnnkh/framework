@@ -1,6 +1,6 @@
 package run.soeasy.framework.messaging;
 
-import run.soeasy.framework.io.InvalidMimeTypeException;
+import run.soeasy.framework.io.mime.InvalidMimeTypeException;
 
 /**
  * 无效媒体类型异常，当媒体类型字符串不符合规范（如格式错误、包含非法字符、质量因子无效等）时抛出，

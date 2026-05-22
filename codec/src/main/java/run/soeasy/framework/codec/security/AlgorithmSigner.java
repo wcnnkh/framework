@@ -2,12 +2,15 @@ package run.soeasy.framework.codec.security;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.core.function.ThrowingConsumer;
+import run.soeasy.framework.io.transfer.BufferReader;
+import run.soeasy.framework.io.transfer.BufferWriter;
 
 /**
  * 基于安全算法的签名器抽象类，继承自{@link AlgorithmEncoder}，整合了签名生成（编码）与签名验证功能，
@@ -83,18 +86,10 @@ public abstract class AlgorithmSigner<T> extends AlgorithmEncoder<T> {
 		}
 	}
 
-	/**
-	 * 抽象方法：执行具体的签名验证逻辑（由子类实现）
-	 * 
-	 * @param algorithm  签名验证算法实例
-	 * @param source     原始数据输入流
-	 * @param bufferSize 读取缓冲区大小
-	 * @param target     待验证的签名数据
-	 * @return 验证通过返回true，否则返回false
-	 * @throws CodecException           验证逻辑中发生编解码错误时抛出
-	 * @throws IOException              输入流读取失败时抛出
-	 * @throws GeneralSecurityException 算法执行过程中发生安全异常时抛出
-	 */
-	public abstract boolean test(T algorithm, @NonNull InputStream source, int bufferSize, byte[] target)
-			throws CodecException, IOException, GeneralSecurityException;
+	@Override
+	public boolean test(byte[] source, byte[] encode) throws CodecException {
+		return super.test(source, encode);
+	}
+
+	protected abstract boolean doTest(T algorithm, @NonNull BufferReader<? super ByteBuffer> reader, @NonNull byte[] verified) throws IOException, GeneralSecurityException;
 }

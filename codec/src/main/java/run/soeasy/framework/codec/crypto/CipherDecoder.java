@@ -8,7 +8,6 @@ import java.security.spec.KeySpec;
 import javax.crypto.Cipher;
 
 import lombok.NonNull;
-import run.soeasy.framework.codec.binary.BinaryDecoder;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.io.BinaryTransferrer;

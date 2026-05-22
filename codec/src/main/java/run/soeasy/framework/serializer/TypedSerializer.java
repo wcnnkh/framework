@@ -8,7 +8,6 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.binary.ToBinaryCodec;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.io.IOUtils;
 

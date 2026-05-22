@@ -2,7 +2,7 @@ package run.soeasy.framework.messaging.convert;
 
 import java.util.Comparator;
 
-import run.soeasy.framework.io.MimeType;
+import run.soeasy.framework.io.mime.MimeType;
 
 /**
  * 消息转换器比较器，实现{@link Comparator}接口，用于对{@link MessageConverter}实例进行排序，

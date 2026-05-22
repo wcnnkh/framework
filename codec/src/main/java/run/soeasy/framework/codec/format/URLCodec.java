@@ -7,12 +7,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
+import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.CodecException;
 import run.soeasy.framework.codec.DecodeException;
 import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.codec.MultipleCodec;
 
-public class URLCodec implements MultipleCodec<String> {
+public class URLCodec implements Codec<String, String> {
 	public static final URLCodec UTF_8 = new URLCodec(StandardCharsets.UTF_8);
 	private final String charsetName;
 

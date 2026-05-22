@@ -1,7 +1,6 @@
 package run.soeasy.framework.codec.format;
 
 import run.soeasy.framework.codec.CodecException;
-import run.soeasy.framework.codec.MultipleEncoder;
 
 public class UnicodeEncoder implements MultipleEncoder<CharSequence> {
 	private static final String EMPTY = "";
