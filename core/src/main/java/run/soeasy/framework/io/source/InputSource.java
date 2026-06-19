@@ -1,8 +1,5 @@
 package run.soeasy.framework.io.source;
 
-import lombok.NonNull;
-import run.soeasy.framework.core.function.ThrowingFunction;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,6 +7,8 @@ import java.io.Reader;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+
+import lombok.NonNull;
 
 /**
  * 输入源接口，用于延迟提供 {@link InputStream} 实例。
@@ -66,19 +65,6 @@ public interface InputSource<I extends InputStream> extends ReaderSource<Reader>
     @Override
     default Reader getReader() throws IOException {
         return new InputStreamReader(getInputStream());
-    }
-
-    /**
-     * 使用自定义解码函数将字节流转换为字符流。
-     *
-     * <p>适用于需要复杂处理逻辑的场景（如解压、解密、协议解析）。
-     *
-     * @param decoder 解码函数，接收原始输入流并返回处理后的字符流
-     * @param <R>     目标字符流类型
-     * @return 新的 ReaderSource，提供解码后的字符流
-     */
-    default <R extends Reader> ReaderSource<R> decode(@NonNull ThrowingFunction<? super I, ? extends R, ? extends IOException> decoder) {
-        return () -> decoder.apply(getInputStream());
     }
 
     /**

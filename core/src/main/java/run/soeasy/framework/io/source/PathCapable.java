@@ -54,6 +54,6 @@ public interface PathCapable extends LastModifiedCapable {
      */
     @Override
     default long lastModified() throws IOException {
-        return Files.getLastModifiedTime(path).toMillis();
+        return Files.getLastModifiedTime(getPath()).toMillis();
     }
 }

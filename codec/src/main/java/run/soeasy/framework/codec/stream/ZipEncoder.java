@@ -11,11 +11,12 @@ import java.util.zip.ZipOutputStream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.codec.Encoder;
 import run.soeasy.framework.core.function.ThrowingConsumer;
-import run.soeasy.framework.io.BinaryTransferrer;
 import run.soeasy.framework.io.BufferConsumer;
 import run.soeasy.framework.io.IOUtils;
-import run.soeasy.framework.io.StreamTransferrer;
+import run.soeasy.framework.io.transfer.BinaryTransferrer;
+import run.soeasy.framework.io.transfer.StreamTransferrer;
 
 /**
  * ZIP编码器，实现对数据的ZIP压缩（编码）操作，继承自{@link BinaryEncoder}和{@link StreamTransferrer}，
@@ -30,7 +31,7 @@ import run.soeasy.framework.io.StreamTransferrer;
  */
 @Getter
 @RequiredArgsConstructor
-public class ZipEncoder implements BinaryEncoder, StreamTransferrer {
+public class ZipEncoder implements Encoder<byte[], byte[]>, StreamTransferrer {
     /**
      * 使用UTF-8字符集的默认ZIP编码器实例
      */

@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * @author soeasy.run
  */
 @RequiredArgsConstructor
-public class ThreadLocalBufferPool<B extends Buffer> implements BufferPool<B> {
+public final class ThreadLocalBufferPool<B extends Buffer> implements BufferPool<B> {
 
     /**
      * 线程本地缓冲区存储。

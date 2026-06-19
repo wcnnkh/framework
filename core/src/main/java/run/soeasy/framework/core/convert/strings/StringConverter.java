@@ -31,7 +31,7 @@ public interface StringConverter<T> extends ReversibleConverter<T, String> {
      * @throws IOException         读取失败时抛出
      */
     default T from(Readable readable, TypeDescriptor targetTypeDescriptor) throws ConversionException, IOException {
-        String content = IOUtils.toCharSequence(readable).toString();
+        String content = IOUtils.text().readToString(readable);
         return from(content, TypeDescriptor.valueOf(String.class), targetTypeDescriptor);
     }
 

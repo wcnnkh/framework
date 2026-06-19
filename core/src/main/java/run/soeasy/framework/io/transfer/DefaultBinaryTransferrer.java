@@ -1,12 +1,11 @@
 package run.soeasy.framework.io.transfer;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.io.IOUtils;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * 默认的二进制传输器实现。

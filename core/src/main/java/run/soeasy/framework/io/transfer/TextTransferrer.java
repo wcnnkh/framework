@@ -44,7 +44,7 @@ public interface TextTransferrer extends BufferTransferrer<CharBuffer> {
      * @return 完整的字符串内容
      * @throws IOException 如果发生 I/O 错误
      */
-    default String read(
+    default String readToString(
             @NonNull BufferReader<? super CharBuffer> reader
     ) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -59,7 +59,7 @@ public interface TextTransferrer extends BufferTransferrer<CharBuffer> {
      * @return 完整的字符串内容
      * @throws IOException 如果发生 I/O 错误
      */
-    default String readAll(@NonNull Readable readable) throws IOException {
+    default String readToString(@NonNull Readable readable) throws IOException {
         StringBuilder sb = new StringBuilder();
         transfer(readable, sb);
         return sb.toString();
@@ -72,7 +72,7 @@ public interface TextTransferrer extends BufferTransferrer<CharBuffer> {
      * @return 完整的字符串内容
      * @throws IOException 如果发生 I/O 错误
      */
-    default <I extends Reader> String readAll(@NonNull ReaderSource<I> readerSource) throws IOException {
+    default <I extends Reader> String readToString(@NonNull ReaderSource<I> readerSource) throws IOException {
         StringBuilder sb = new StringBuilder();
         transfer(readerSource, sb);
         return sb.toString();
@@ -88,7 +88,7 @@ public interface TextTransferrer extends BufferTransferrer<CharBuffer> {
      */
     default String toString(@NonNull CharSequence charSequence) {
         try {
-            return readAll(CharBuffer.wrap(charSequence));
+            return readToString(CharBuffer.wrap(charSequence));
         } catch (IOException e) {
             // CharBuffer.wrap 不会抛出 IOException，但为了接口兼容性保留
             throw new IllegalStateException("Internal error during character conversion", e);

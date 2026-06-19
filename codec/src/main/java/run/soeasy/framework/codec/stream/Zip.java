@@ -1,5 +1,7 @@
 package run.soeasy.framework.codec.stream;
 
+import run.soeasy.framework.codec.CompositeCodec;
+
 /**
  * ZIP格式编解码器，继承自{@link TransferrerCodec}，专门用于ZIP格式的二进制数据编解码，
  * 组合{@link ZipEncoder}（编码/压缩）和{@link ZipDecoder}（解码/解压）实现完整的ZIP处理能力。
@@ -12,7 +14,7 @@ package run.soeasy.framework.codec.stream;
  * @see ZipEncoder
  * @see ZipDecoder
  */
-public final class Zip extends TransferrerCodec<ZipEncoder, ZipDecoder> {
+public final class Zip extends CompositeCodec<ZipEncoder, ZipDecoder> {
     /**
      * 使用UTF-8字符集的默认ZIP编解码器实例，可直接用于ZIP格式的压缩与解压操作
      */

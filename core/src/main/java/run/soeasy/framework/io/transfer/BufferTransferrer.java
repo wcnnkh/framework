@@ -1,9 +1,10 @@
 package run.soeasy.framework.io.transfer;
 
-import lombok.NonNull;
-
 import java.io.IOException;
 import java.nio.Buffer;
+
+import lombok.NonNull;
+import run.soeasy.framework.core.function.ThrowingFunction;
 
 /**
  * Transfers data from a {@link BufferReader} to a {@link BufferWriter}.
@@ -38,4 +39,8 @@ public interface BufferTransferrer<B extends Buffer> {
             @NonNull BufferReader<? super B> reader,
             @NonNull BufferWriter<? super B> writer
     ) throws IOException;
+    
+    default <T extends Buffer> BufferTransferrer<T> map(@NonNull ThrowingFunction<? super BufferReader<? super B>, ? extends BufferReader<? super T>, ? extends IOException> readerMapper, @NonNull ThrowingFunction<? super BufferWriter<? super B>, ? extends BufferWriter<? super T>, ? extends IOException> writerMapper){
+    	return null;
+    }
 }

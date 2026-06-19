@@ -1,4 +1,4 @@
-package run.soeasy.framework.core.function;
+package run.soeasy.framework.core.page;
 
 /**
  * 带偏移量与长度的消费者函数接口。

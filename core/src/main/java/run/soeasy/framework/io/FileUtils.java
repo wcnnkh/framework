@@ -1,16 +1,15 @@
 package run.soeasy.framework.io;
 
-import lombok.NonNull;
-import lombok.experimental.UtilityClass;
-import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.collection.CollectionUtils;
-import run.soeasy.framework.core.function.OffsetConsumer;
-import run.soeasy.framework.core.streaming.Streamable;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
+
+import lombok.NonNull;
+import lombok.experimental.UtilityClass;
+import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 文件操作工具类，提供基于Java IO和NIO的文件系统操作工具方法。
@@ -48,7 +47,6 @@ import java.util.Collection;
  * @author soeasy.run
  * @see IOUtils 流操作工具类
  * @see ListFileIterator 目录文件迭代器
- * @see OffsetConsumer 缓冲区消费者接口
  */
 @UtilityClass
 public class FileUtils {

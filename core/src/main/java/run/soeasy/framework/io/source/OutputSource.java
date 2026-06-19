@@ -1,8 +1,5 @@
 package run.soeasy.framework.io.source;
 
-import lombok.NonNull;
-import run.soeasy.framework.core.function.ThrowingFunction;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -10,6 +7,8 @@ import java.io.Writer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+
+import lombok.NonNull;
 
 /**
  * 输出源接口，用于延迟提供 {@link OutputStream} 实例。
@@ -66,21 +65,6 @@ public interface OutputSource<O extends OutputStream> extends WriterSource<Write
     @Override
     default Writer getWriter() throws IOException {
         return new OutputStreamWriter(getOutputStream());
-    }
-
-    /**
-     * 使用自定义编码函数将字符流转换为字节流。
-     *
-     * <p>适用于需要复杂处理逻辑的场景（如压缩、加密、协议封装）。
-     *
-     * @param encoder 编码函数，接收原始输出流并返回处理后的字符流
-     * @param <W>     目标字符流类型
-     * @return 新的 WriterSource，提供编码后的字符流
-     */
-    default <W extends Writer> WriterSource<W> encode(
-            @NonNull ThrowingFunction<? super O, ? extends W, ? extends IOException> encoder
-    ) {
-        return () -> encoder.apply(getOutputStream());
     }
 
     /**
