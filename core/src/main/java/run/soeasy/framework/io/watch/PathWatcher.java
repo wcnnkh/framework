@@ -17,20 +17,20 @@ import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.Registry;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.streaming.StreamableWrapper;
-import run.soeasy.framework.io.source.PathCapable;
+import run.soeasy.framework.io.source.PathSource;
 
 /**
  * 路径监控器，继承自{@link Poller}，实现{@link Registry}、{@link Lifecycle}接口，
- * 用于集中管理文件资源（{@link PathCapable}）的监控逻辑，通过协调{@link PathPoller}和{@link WatchService}实现文件系统事件的批量处理，
+ * 用于集中管理文件资源（{@link PathSource}）的监控逻辑，通过协调{@link PathPoller}和{@link WatchService}实现文件系统事件的批量处理，
  * 并将资源变更事件通过{@link Publisher}发布，适用于需要监控多个文件资源变化的场景（如目录下多文件监控、批量文件变更追踪）。
  * 
  * <p>
- * 核心职责： - 作为{@link T}（{@link PathCapable}）的注册中心，管理所有需要监控的文件资源； -
+ * 核心职责： - 作为{@link T}（{@link PathSource}）的注册中心，管理所有需要监控的文件资源； -
  * 通过{@link Poller}的轮询能力，定期从{@link WatchService}获取文件系统事件（{@link WatchKey}）； -
  * 协调内部{@link PathPoller}处理具体资源的事件，并汇总变更通过{@link Publisher}发布； -
  * 实现{@link Lifecycle}接口，提供启动监控的入口（{@link #start()}）。
  * 
- * @param <T> 监控的资源类型，必须继承自{@link PathCapable}（文件系统资源）
+ * @param <T> 监控的资源类型，必须继承自{@link PathSource}（文件系统资源）
  * @author soeasy.run
  * @see Poller
  * @see Registry
@@ -41,7 +41,7 @@ import run.soeasy.framework.io.source.PathCapable;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class PathWatcher<T extends PathCapable> extends Poller
+public class PathWatcher<T extends PathSource> extends Poller
 		implements Registry<T>, Lifecycle, StreamableWrapper<T, Streamable<T>> {
 
 	/**

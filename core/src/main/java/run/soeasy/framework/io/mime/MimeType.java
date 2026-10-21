@@ -16,27 +16,27 @@ import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.collection.LinkedCaseInsensitiveMap;
-import run.soeasy.framework.io.source.CharsetCapable;
+import run.soeasy.framework.io.source.CharsetAware;
 
 /**
- * MIME类型核心类，实现{@link CharsetCapable}、{@link Comparable}和{@link Serializable}接口，
+ * MIME类型核心类，实现{@link CharsetAware}、{@link Comparable}和{@link Serializable}接口，
  * 用于标准化表示互联网媒体类型（Multipurpose Internet Mail Extensions），遵循RFC 2616规范，
  * 封装了主类型（type）、子类型（subtype）及相关参数（如字符集charset），支持类型解析、包含关系判断、
  * 兼容性校验等核心功能，是处理内容类型（如HTTP请求头、文件类型）的基础组件。
  * 
  * <p>核心特性：
  * - 支持通配符类型（如{@code *&#47;*}表示所有类型，{@code text/*}表示所有文本类型）；
- * - 内置字符集参数处理，实现{@link CharsetCapable}接口提供字符集访问能力；
+ * - 内置字符集参数处理，实现{@link CharsetAware}接口提供字符集访问能力；
  * - 提供丰富的比较逻辑，支持包含关系（{@link #includes(MimeType)}）、兼容性（{@link #isCompatibleWith(MimeType)}）
  *   和排序（{@link #compareTo(MimeType)}）；
  * - 参数键名不区分大小写，确保与HTTP头字段处理规则一致。
  * 
  * @author soeasy.run
- * @see CharsetCapable
+ * @see CharsetAware
  * @see MimeTypeUtils
  * @see <a href="https://tools.ietf.org/html/rfc2616#section-3.7">RFC 2616 Section 3.7</a>
  */
-public class MimeType implements CharsetCapable, Comparable<MimeType>, Serializable {
+public class MimeType implements CharsetAware, Comparable<MimeType>, Serializable {
 
     private static final long serialVersionUID = 4085923477777865903L;
 

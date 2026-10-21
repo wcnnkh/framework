@@ -16,11 +16,11 @@ import run.soeasy.framework.core.exchange.ChangeType;
 import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.streaming.Streamable;
-import run.soeasy.framework.io.source.PathCapable;
+import run.soeasy.framework.io.source.PathSource;
 
 /**
  * 路径资源轮询器，基于JDK {@link WatchService} 实现文件系统事件驱动监控，同时继承 {@link LastModifiedPoller}
- * 提供定期轮询兜底能力，专为 {@link PathCapable}（文件/目录资源）实现创建、删除、修改事件的捕获、转换与发布。
+ * 提供定期轮询兜底能力，专为 {@link PathSource}（文件/目录资源）实现创建、删除、修改事件的捕获、转换与发布。
  * 
  * <h3>核心特性</h3>
  * <ul>
@@ -38,16 +38,16 @@ import run.soeasy.framework.io.source.PathCapable;
  * 
  * <h3>适用场景</h3> 适用于需要实时监控文件/目录变更的场景（如配置文件热加载、目录文件新增/删除监听），兼顾实时性与可靠性。
  * 
- * @param <T> 资源类型，必须继承自 {@link PathCapable}，确保具备路径操作能力
+ * @param <T> 资源类型，必须继承自 {@link PathSource}，确保具备路径操作能力
  * @author soeasy.run
  * @see LastModifiedPoller
- * @see PathCapable
+ * @see PathSource
  * @see WatchService
  * @see WatchEvent
  * @see ChangeEvent
  * @see WatchKeyRegistry
  */
-public class PathPoller<T extends PathCapable> extends LastModifiedPoller<T> {
+public class PathPoller<T extends PathSource> extends LastModifiedPoller<T> {
 	private final static Logger LOGGER = Logger.getLogger(PathPoller.class.getName());
 
 	/**
@@ -133,7 +133,7 @@ public class PathPoller<T extends PathCapable> extends LastModifiedPoller<T> {
 	 * <p>
 	 * 查找逻辑：
 	 * <ol>
-	 * <li>从监控资源的路径（{@link PathCapable#getPath()}）开始向上遍历父目录；</li>
+	 * <li>从监控资源的路径（{@link PathSource#getPath()}）开始向上遍历父目录；</li>
 	 * <li>找到第一个存在且为目录的路径（WatchService仅支持监控目录）；</li>
 	 * <li>无有效目录时返回null（监控失效）。</li>
 	 * </ol>

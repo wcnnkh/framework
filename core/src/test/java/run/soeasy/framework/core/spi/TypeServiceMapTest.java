@@ -14,7 +14,7 @@ public class TypeServiceMapTest {
 		serviceMap.register(Long.class, "long-" + RandomUtils.uuid());
 		System.out.println(serviceMap.toString());
 
-		serviceMap.assignableFrom(String.class).forEach((e) -> System.out.println("String:" + e));
-		serviceMap.assignableFrom(Number.class).forEach((e) -> System.out.println("number:" + e));
+		serviceMap.filter(String.class).forEach((e) -> System.out.println("String:" + e));
+		serviceMap.filter(Number.class).forEach((e) -> System.out.println("number:" + e));
 	}
 }

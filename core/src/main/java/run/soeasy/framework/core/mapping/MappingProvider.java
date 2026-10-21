@@ -50,7 +50,7 @@ public class MappingProvider<K, V extends TypedValueAccessor, T extends Mapping<
 	 */
 	@Override
 	public T getMapping(@NonNull Object source, @NonNull TypeDescriptor requiredType) {
-		MappingFactory<? super Object, ? extends K, ? extends V, ? extends T> factory = assignableFrom(
+		MappingFactory<? super Object, ? extends K, ? extends V, ? extends T> factory = filter(
 				requiredType.getType()).first();
 		if (factory == null) {
 			return null;
@@ -69,7 +69,7 @@ public class MappingProvider<K, V extends TypedValueAccessor, T extends Mapping<
 	 */
 	@Override
 	public boolean hasMapping(@NonNull TypeDescriptor requiredType) {
-		return !assignableFrom(requiredType.getType()).isEmpty();
+		return !filter(requiredType.getType()).isEmpty();
 	}
 
 	/**

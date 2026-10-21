@@ -12,7 +12,7 @@ public class TypeServiceMap<S> extends ServiceMap<Class<?>, S> {
 		super(TypeComparator.DEFAULT);
 	}
 
-	public Streamable<S> assignableFrom(Class<?> requiredType) {
+	public Streamable<S> filter(Class<?> requiredType) {
 		S service = getContainer().get(requiredType);
 		if (service != null) {
 			return Streamable.singleton(service);

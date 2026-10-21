@@ -12,27 +12,27 @@ import run.soeasy.framework.core.exchange.ChangeEvent;
 import run.soeasy.framework.core.exchange.ChangeType;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.streaming.Streamable;
-import run.soeasy.framework.io.source.LastModifiedCapable;
+import run.soeasy.framework.io.source.LastModifiedAware;
 
 /**
  * 资源轮询监控器，继承自{@link Poller}，通过定期检测资源的最后修改时间追踪资源状态变化（创建、更新、删除），
- * 并将变更事件通过{@link Publisher}发布，是监控{@link LastModifiedCapable}类型资源状态的通用组件。
+ * 并将变更事件通过{@link Publisher}发布，是监控{@link LastModifiedAware}类型资源状态的通用组件。
  * 
  * <p>
- * 核心机制： - 基于时间戳对比：通过资源的{@link LastModifiedCapable#lastModified()}方法获取最后修改时间，与上一次记录的时间戳对比；
+ * 核心机制： - 基于时间戳对比：通过资源的{@link LastModifiedAware#lastModified()}方法获取最后修改时间，与上一次记录的时间戳对比；
  * - 事件驱动：根据时间戳变化判断变更类型（创建/更新/删除），封装为{@link ChangeEvent}并发布； -
  * 线程安全：关键操作（如时间戳获取与对比）通过同步块保证线程安全，避免并发场景下的状态不一致。
  * 
- * @param <T> 资源类型，需实现{@link LastModifiedCapable}接口（如文件资源、网络资源等可获取最后修改时间的资源）
+ * @param <T> 资源类型，需实现{@link LastModifiedAware}接口（如文件资源、网络资源等可获取最后修改时间的资源）
  * @author soeasy.run
  * @see Poller
- * @see LastModifiedCapable
+ * @see LastModifiedAware
  * @see ChangeEvent
  * @see Publisher
  */
 @RequiredArgsConstructor
 @Getter
-public class LastModifiedPoller<T extends LastModifiedCapable> extends Poller {
+public class LastModifiedPoller<T extends LastModifiedAware> extends Poller {
 	private final static Logger LOGGER = Logger.getLogger(LastModifiedPoller.class.getName());
 
 	/**
@@ -57,7 +57,7 @@ public class LastModifiedPoller<T extends LastModifiedCapable> extends Poller {
 	 * 
 	 * <p>
 	 * 执行流程： 1. 同步块内操作，确保时间戳获取与状态更新的原子性； 2.
-	 * 调用{@link Resource#lastModified()}获取当前资源的最后修改时间，若抛出{@link IOException}（如资源暂时不可访问），
+	 * 调用{@link Source#lastModified()}获取当前资源的最后修改时间，若抛出{@link IOException}（如资源暂时不可访问），
 	 * 仅通过warn级别日志记录，不中断轮询； 3.
 	 * 调用{@link #touchEvent(long, long)}对比当前与上一次的时间戳，判断是否发布变更事件； 4.
 	 * 更新{@link #lastModified}为当前时间戳，作为下一次轮询的基准。

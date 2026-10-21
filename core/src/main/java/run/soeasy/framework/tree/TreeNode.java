@@ -13,25 +13,6 @@ import run.soeasy.framework.core.domain.KeyValue;
  */
 public interface TreeNode<T> {
 	/**
-	 * 判断当前节点是否为「数据流支撑的节点」（底层是单向、一次性数据流，如 JSON 字符流解析节点）。
-	 * <p>
-	 * 不同底层实现的约束说明：
-	 * 1.  返回 true（数据流底层）：
-	 *    -  节点数据仅可单向消费一次，不可重复遍历；
-	 *    -  子节点的 {@link #arrayStream()} 和 {@link #objectStream()} 不可同时遍历（排他性）；
-	 *    -  流实例为单例，重复调用返回同一个流，遍历后即耗尽失效；
-	 * 2.  返回 false（List/Map 等容器底层）：
-	 *    -  节点数据可重复使用，支持多次遍历；
-	 *    -  子节点的两个流可同时遍历（非排他）；
-	 *    -  流实例可重复生成（或单例），每次遍历均从容器中重新获取数据。
-	 * <p>
-	 * 举例场景：JSON 字符流解析时，节点为数据流支撑（返回true）；内存中构建的树形节点为容器支撑（返回false）。
-	 *
-	 * @return true=数据流支撑节点，false=容器（List/Map等）支撑节点
-	 */
-	boolean isStreamNode();
-
-	/**
 	 * 获取当前树形节点的核心值。
 	 *
 	 * @return 节点值（具体实现可定义空值场景，如 null 或默认值）

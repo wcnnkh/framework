@@ -1,152 +1,215 @@
 package run.soeasy.framework.io.buffer;
 
-import lombok.Getter;
-import lombok.NonNull;
-
 import java.nio.Buffer;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 
+import lombok.NonNull;
+
 /**
- * Default implementation of a buffer object pool.
+ * 基于 Queue + Semaphore 的缓冲区对象池实现。
  *
- * <p>This implementation adopts the <b>Delegate Pattern</b>, delegating capacity limits,
- * blocking behavior, and thread-safety strategies entirely to the underlying {@link Queue} implementation.
- *
- * <p><b>Design Highlights:</b>
+ * <p>
+ * <b>核心设计：</b>
  * <ul>
- *   <li><b>No state management:</b> No additional counters (e.g., createdCount) to avoid performance overhead and ABA issues.</li>
- *   <li><b>Configurable behavior:</b> Switch between "bounded/unbounded", "blocking/non-blocking" strategies by injecting different Queue implementations.</li>
- *   <li><b>Thread-safe:</b> Safety is fully guaranteed by the underlying Queue.</li>
+ * <li><b>职责分离：</b>{@link Queue} 负责缓存空闲缓冲区， {@link Semaphore}
+ * 负责限制系统中同时存在的缓冲区总数（包括池内空闲和已借出使用中）。</li>
+ * <li><b>严格对等：</b>每次 {@code get()} 消耗一个许可，每次 {@code close()}
+ * 释放一个许可，确保对象总数不超上限。</li>
+ * <li><b>可选容量限制：</b>构造时传入 {@code null} semaphore（或无参构造）表示不限制创建数量。</li>
+ * <li><b>线程安全：</b>由底层 Queue 和 Semaphore 共同保证并发安全。</li>
  * </ul>
  *
- * <p><b>Usage Examples:</b>
- * <pre>{@code
- * // 1. Create a bounded, non-blocking pool with capacity 10
- * Pool<ByteBuffer, RuntimeException> blockingPool =
- *     new DefaultBufferPool<>(10, ByteBuffer::allocate);
+ * <p>
+ * <b>获取流程：</b>
+ * <ol>
+ * <li>消耗一个 semaphore 许可（如有）。</li>
+ * <li>优先从队列 {@code poll()} 获取空闲缓冲区。</li>
+ * <li>队列为空时，通过 supplier 创建新实例直接返回（不放入队列）。</li>
+ * <li>创建失败时自动释放许可（补偿），原异常向上传播。</li>
+ * </ol>
  *
- * // 2. Create an unbounded, high-performance pool (suitable for memory-rich scenarios)
- * Pool<ByteBuffer, RuntimeException> nonBlockingPool =
- *     new DefaultBufferPool<>(ByteBuffer::allocate);
+ * <p>
+ * <b>归还流程：</b>
+ * <ol>
+ * <li>调用 {@link Buffer#clear()} 重置缓冲区状态。</li>
+ * <li>尝试 {@code offer} 回队列；队列满则抛出 {@link IllegalStateException}。</li>
+ * <li>无论成功与否，在 {@code finally} 中释放一个 semaphore 许可。</li>
+ * </ol>
+ *
+ * <p>
+ * <b>异常行为：</b>
+ * <table border="1">
+ * <tr>
+ * <th>场景</th>
+ * <th>异常</th>
+ * </tr>
+ * <tr>
+ * <td>{@code get()} 时许可耗尽</td>
+ * <td>{@code IllegalStateException}</td>
+ * </tr>
+ * <tr>
+ * <td>{@code close()} 时队列已满</td>
+ * <td>{@code IllegalStateException}</td>
+ * </tr>
+ * <tr>
+ * <td>{@code get()} 时创建失败</td>
+ * <td>原异常 + 许可补偿释放</td>
+ * </tr>
+ * </table>
+ *
+ * <p>
+ * <b>使用示例：</b>
+ * 
+ * <pre>{@code
+ * // 1. 有界池：最多同时存在 10 个缓冲区
+ * BufferPool<ByteBuffer> boundedPool = new QueueBufferPool<>(10, ByteBuffer::allocateDirect);
+ *
+ * // 2. 无界池：不限制创建数量
+ * BufferPool<ByteBuffer> unboundedPool = new QueueBufferPool<>(ByteBuffer::allocate);
+ *
+ * // 3. 自定义队列 + 有界
+ * BufferPool<ByteBuffer> customPool = new QueueBufferPool<>(new ArrayBlockingQueue<>(5), ByteBuffer::allocate,
+ * 		new Semaphore(20));
+ *
+ * // 使用
+ * ByteBuffer buf = boundedPool.get();
+ * try {
+ * 	// 使用 buf
+ * } finally {
+ * 	boundedPool.close(buf);
+ * }
  * }</pre>
  *
- * @param <B> The type of buffer managed in the pool, must be a subclass of {@link Buffer}
+ * @param <B> 缓冲区类型，必须是 {@link Buffer} 的子类
+ * @author soeasy.run
  */
-@Getter
-public class QueueBufferPool<B extends Buffer>
-        implements BufferPool<B> {
-    private final Queue<B> bufferQueue;
-    private final Supplier<? extends B> bufferSupplier;
+public class QueueBufferPool<B extends Buffer> implements BufferPool<B> {
 
-    /**
-     * Creates a <b>bounded, non-blocking</b> buffer pool.
-     *
-     * <p>Uses {@link ArrayBlockingQueue} as the underlying container.
-     * When the pool is full, return operations will simply discard buffers (won't block).
-     *
-     * @param maxPoolSize    Maximum capacity of the pool
-     * @param bufferSupplier Supplier used to create new buffers
-     */
-    public QueueBufferPool(int maxPoolSize,
-                           Supplier<? extends B> bufferSupplier) {
-        this(new ArrayBlockingQueue<>(maxPoolSize), bufferSupplier);
-    }
+	@NonNull
+	private final Queue<B> bufferQueue;
+	@NonNull
+	private final Supplier<? extends B> bufferSupplier;
+	private final Semaphore semaphore;
 
-    /**
-     * Creates an <b>unbounded, non-blocking</b> buffer pool (default).
-     *
-     * <p>Uses {@link ConcurrentLinkedQueue} as the underlying container.
-     * Theoretically limited only by JVM memory size.
-     *
-     * @param bufferSupplier Supplier used to create new buffers
-     */
-    public QueueBufferPool(Supplier<? extends B> bufferSupplier) {
-        this(new ConcurrentLinkedQueue<>(), bufferSupplier);
-    }
+	/**
+	 * 创建<b>有界、非阻塞</b>缓冲区池。
+	 *
+	 * <p>
+	 * 使用 {@link ArrayBlockingQueue} 作为底层容器（容量 = 最大对象数）。 池满时 {@code get()}
+	 * 抛异常，{@code close()} 队列满时也抛异常。
+	 *
+	 * @param maxPoolSize    最大缓冲区总数
+	 * @param bufferSupplier 缓冲区创建器
+	 */
+	public QueueBufferPool(int maxPoolSize, @NonNull Supplier<? extends B> bufferSupplier) {
+		this(new ArrayBlockingQueue<>(maxPoolSize), bufferSupplier, new Semaphore(maxPoolSize));
+	}
 
-    /**
-     * Custom constructor allowing full control over the underlying queue implementation.
-     *
-     * <p>For example, you can pass {@link java.util.concurrent.LinkedBlockingQueue} to achieve blocking behavior.
-     *
-     * @param bufferQueue    Queue used to store buffers
-     * @param bufferSupplier Supplier used to create new buffers
-     */
-    public QueueBufferPool(Queue<B> bufferQueue,
-                           Supplier<? extends B> bufferSupplier) {
-        this.bufferQueue = bufferQueue;
-        this.bufferSupplier = bufferSupplier;
-    }
+	/**
+	 * 创建<b>无界、非阻塞</b>缓冲区池（默认）。
+	 *
+	 * <p>
+	 * 使用 {@link ConcurrentLinkedQueue} 作为底层容器，不限制创建数量。 适用于内存充足、追求极致性能的场景。
+	 *
+	 * @param bufferSupplier 缓冲区创建器
+	 */
+	public QueueBufferPool(@NonNull Supplier<? extends B> bufferSupplier) {
+		this(new ConcurrentLinkedQueue<>(), bufferSupplier);
+	}
 
-    /**
-     * Returns a buffer to the pool.
-     *
-     * <p><b>Note:</b> This method calls {@link Buffer#clear()} before returning to reset the buffer state.
-     * This ensures that the next time a buffer is retrieved from the pool, it is clean.
-     *
-     * <p>If the underlying queue is bounded and full, this operation will fail (depending on Queue implementation),
-     * and the buffer will be discarded and recycled by GC.
-     *
-     * @param buffer The non-null buffer to return
-     */
-    @Override
-    public void close(@NonNull B buffer) {
-        // Must clear before returning, as this buffer has left the business thread and won't have concurrent read/write
-        buffer.clear();
-        // Attempt to put into queue; if queue is full (e.g., ArrayBlockingQueue), offer returns false and buffer is discarded
-        bufferQueue.offer(buffer);
-    }
+	/**
+	 * 创建自定义队列的缓冲区池（不限制创建数量）。
+	 *
+	 * @param bufferQueue    底层队列
+	 * @param bufferSupplier 缓冲区创建器
+	 */
+	public QueueBufferPool(@NonNull Queue<B> bufferQueue, @NonNull Supplier<? extends B> bufferSupplier) {
+		this(bufferQueue, bufferSupplier, null);
+	}
 
-    /**
-     * Retrieves a buffer from the pool.
-     *
-     * <p>Retrieval flow:
-     * <ol>
-     *   <li>First attempt to poll an existing buffer from the queue.</li>
-     *   <li>If the queue is empty, create a new buffer via the supplier and immediately place it into the queue.</li>
-     * </ol>
-     *
-     * <p><b>Important:</b> This implementation does not limit creation count. Even with a bounded queue,
-     * when the pool is empty, a new object will still be created to ensure business continuity.
-     * However, if the queue is full when attempting to add the newly created buffer, an exception is thrown.
-     *
-     * @return An available buffer instance
-     * @throws IllegalStateException If the pool is full and cannot accept new buffers
-     */
-    @Override
-    public B get() {
-        // 1. Try to get from queue
-        B buffer = bufferQueue.poll();
-        if (buffer != null) {
-            return buffer;
-        }
+	/**
+	 * 全参构造。
+	 *
+	 * @param bufferQueue    底层队列
+	 * @param bufferSupplier 缓冲区创建器
+	 * @param semaphore      许可信号量（{@code null} 表示不限制创建数量）
+	 */
+	public QueueBufferPool(@NonNull Queue<B> bufferQueue, @NonNull Supplier<? extends B> bufferSupplier,
+			Semaphore semaphore) {
+		this.bufferQueue = bufferQueue;
+		this.bufferSupplier = bufferSupplier;
+		this.semaphore = semaphore;
+	}
 
-        // 2. Queue is empty, create new buffer and immediately put into queue
-        buffer = bufferSupplier.get();
-        if (!bufferQueue.offer(buffer)) {
-            throw new IllegalStateException("Buffer pool is full, cannot add new buffer");
-        }
-        return buffer;
-    }
+	/**
+	 * 清空池中所有空闲缓冲区。
+	 * <p>
+	 * <b>注意：</b>不影响已借出到外部的缓冲区，也不影响 semaphore 许可数。
+	 */
+	public void clear() {
+		bufferQueue.clear();
+	}
 
-    /**
-     * Gets the number of idle buffers currently in the pool.
-     *
-     * <p>Note: For concurrent queues, this value is only approximate (snapshot).
-     *
-     * @return Number of buffers in the pool
-     */
-    public int getPoolSize() {
-        return bufferQueue.size();
-    }
+	/**
+	 * 归还缓冲区到池中。
+	 *
+	 * <p>
+	 * 先重置缓冲区状态（{@link Buffer#clear()}），然后尝试放回队列。 队列满时抛出
+	 * {@link IllegalStateException}。 无论成功与否，均会在 {@code finally} 中释放一个 semaphore 许可。
+	 *
+	 * @param buffer 待归还的非空缓冲区
+	 * @throws IllegalStateException 如果底层队列已满，无法接收缓冲区
+	 */
+	@Override
+	public void close(@NonNull B buffer) {
+		try {
+			buffer.clear();
+			if (!bufferQueue.offer(buffer)) {
+				throw new IllegalStateException("Buffer queue is full, cannot return buffer to pool");
+			}
+		} finally {
+			release();
+		}
+	}
 
-    /**
-     * Clears all buffers in the pool.
-     */
-    public void clear() {
-        bufferQueue.clear();
-    }
+	/**
+	 * 获取缓冲区实例。
+	 *
+	 * <p>
+	 * 优先从队列获取空闲缓冲区；队列为空时创建新实例。 每次调用均会消耗一个 semaphore 许可（如有），创建失败时自动补偿释放。
+	 *
+	 * @return 可用的缓冲区实例
+	 * @throws IllegalStateException 如果许可耗尽（有界模式下）
+	 * @throws RuntimeException      如果缓冲区创建失败（原异常向上传播）
+	 */
+	@Override
+	public B get() {
+		acquire();
+		try {
+			B buffer = bufferQueue.poll();
+			if (buffer != null) {
+				return buffer;
+			}
+			return bufferSupplier.get();
+		} catch (Throwable e) {
+			release();
+			throw e;
+		}
+	}
+
+	private void acquire() {
+		if (semaphore != null && !semaphore.tryAcquire()) {
+			throw new IllegalStateException("Buffer pool is full, cannot add new buffer");
+		}
+	}
+
+	private void release() {
+		if (semaphore != null) {
+			semaphore.release();
+		}
+	}
 }

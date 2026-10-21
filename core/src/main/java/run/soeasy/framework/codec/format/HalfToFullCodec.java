@@ -1,0 +1,42 @@
+package run.soeasy.framework.codec.format;
+
+import run.soeasy.framework.codec.DirectCodec;
+
+/**
+ * 半角和全角的相互转换
+ * 
+ * @author soeasy.run
+ *
+ */
+public class HalfToFullCodec implements DirectCodec<String, String> {
+	public static final HalfToFullCodec DEFAULT = new HalfToFullCodec();
+
+	@Override
+	public String encode(String source) {
+		char c[] = source.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] == ' ') {
+				c[i] = '\u3000';
+			} else if (c[i] < '\177') {
+				c[i] = (char) (c[i] + 65248);
+
+			}
+		}
+		return new String(c);
+	}
+
+	@Override
+	public String decode(String source) {
+		char c[] = source.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] == '\u3000') {
+				c[i] = ' ';
+			} else if (c[i] > '\uFF00' && c[i] < '\uFF5F') {
+				c[i] = (char) (c[i] - 65248);
+
+			}
+		}
+		return new String(c);
+	}
+
+}

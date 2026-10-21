@@ -1,6 +1,7 @@
 package run.soeasy.framework.core.join;
 
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.buffer.BufferReader;
 
 /**
  * 元素分割器实现，支持按指定分隔符分割文本，并通过编解码器处理元素的编码和解码。
@@ -61,12 +63,12 @@ public class ElementSplitter extends ElementJoining<Object> implements Splitter<
 	 * <li>返回包含解码结果的Stream</li>
 	 * </ol>
 	 *
-	 * @param readable 可读输入流，不可为null
+	 * @param reader 可读输入流，不可为null
 	 * @return 包含解码后元素的Stream
 	 * @throws IOException 当读取或分割操作失败时抛出
 	 */
 	@Override
-	public Stream<String> split(@NonNull Readable readable) throws IOException {
-		return IOUtils.split(readable, getDelimiter()).map((e) -> e == null ? null : e.toString()).map(decoder);
+	public Stream<String> split(@NonNull BufferReader<? super CharBuffer, ? extends Throwable> reader) {
+		return IOUtils.split(reader, getDelimiter()).map((e) -> e == null ? null : e.toString()).map(decoder);
 	}
 }

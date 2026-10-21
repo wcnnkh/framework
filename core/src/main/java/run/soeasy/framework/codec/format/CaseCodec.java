@@ -1,0 +1,41 @@
+package run.soeasy.framework.codec.format;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import run.soeasy.framework.codec.DirectCodec;
+
+/**
+ * 大小写转换
+ * 
+ * @author soeasy.run
+ *
+ */
+@Data
+@AllArgsConstructor
+public class CaseCodec implements DirectCodec<String, String>{
+	/**
+	 * 首字母大小写转换
+	 */
+	public static final CaseCodec FIRST_CASE_CODEC = new CaseCodec(0, 1);
+
+	private final int formIndex;
+	private final int endIndex;
+
+	@Override
+	public String encode(String source) {
+		char[] chars = source.toCharArray();
+		for (int i = formIndex; i < endIndex; i++) {
+			chars[i] = Character.toLowerCase(chars[i]);
+		}
+		return new String(chars);
+	}
+
+	@Override
+	public String decode(String source) {
+		char[] chars = source.toCharArray();
+		for (int i = formIndex; i < endIndex; i++) {
+			chars[i] = Character.toUpperCase(chars[i]);
+		}
+		return new String(chars);
+	}
+}

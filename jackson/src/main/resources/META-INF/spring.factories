@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+run.soeasy.framework.jackson.autoconfigure.JacksonAutoConfiguration
