@@ -101,7 +101,7 @@ public class ResultSetColumnAccessor extends AbstractResultSetAccessor {
             return super.getTypeDescriptor();
         }
         Class<?> clazz = ClassUtils.getClass(className, null);
-        if (clazz == null) {
+        if (clazz == null || clazz == Object.class) {
             return super.getTypeDescriptor();
         }
         return TypeDescriptor.valueOf(clazz);

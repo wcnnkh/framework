@@ -56,7 +56,7 @@ public interface StreamByteBufferTransporter extends ByteBufferTransporter {
 			@NonNull BufferWriter<? super ByteBuffer, ? extends W> writer) throws IOException {
 		try (BufferReaderChannel readerChannel = new BufferReaderChannel(reader);
 				BufferWriterChanel writerChanel = new BufferWriterChanel(writer)) {
-			this.transfer(readerChannel, writerChanel);
+			this.readInto(readerChannel, writerChanel);
 		}
 	}
 
@@ -71,9 +71,9 @@ public interface StreamByteBufferTransporter extends ByteBufferTransporter {
 	 * @throws IOException 传输过程中发生 I/O 错误
 	 */
 	@Override
-	default void transfer(@NonNull ReadableByteChannel readable, @NonNull WritableByteChannel writable)
+	default void readInto(@NonNull ReadableByteChannel readable, @NonNull WritableByteChannel writable)
 			throws IOException {
-		this.transfer(Channels.newInputStream(readable), Channels.newOutputStream(writable));
+		this.readInto(Channels.newInputStream(readable), Channels.newOutputStream(writable));
 	}
 
 	/**
@@ -87,5 +87,5 @@ public interface StreamByteBufferTransporter extends ByteBufferTransporter {
 	 * @throws IOException 传输过程中发生 I/O 错误
 	 */
 	@Override
-	void transfer(@NonNull InputStream input, @NonNull OutputStream output) throws IOException;
+	void readInto(@NonNull InputStream input, @NonNull OutputStream output) throws IOException;
 }

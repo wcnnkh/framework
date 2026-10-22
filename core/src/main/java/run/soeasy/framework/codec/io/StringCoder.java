@@ -17,7 +17,7 @@ public interface StringCoder extends UnaryCoder<String>, CharBufferTransporter, 
 	@Override
 	default String apply(String source) {
 		try {
-			return readToString(CharBuffer.wrap(source));
+			return toCharSequence(CharBuffer.wrap(source)).toString();
 		} catch (IOException e) {
 			throw new IllegalStateException("Internal error", e);
 		}
@@ -27,8 +27,8 @@ public interface StringCoder extends UnaryCoder<String>, CharBufferTransporter, 
 	default <L extends Throwable, R extends Throwable> @NonNull Comparison evaluate(
 			@NonNull BufferReader<? super CharBuffer, ? extends L> left,
 			@NonNull BufferReader<? super CharBuffer, ? extends R> right) throws IOException, L, R {
-		String leftString = IOUtils.text().readToString(left);
-		String rightString = IOUtils.text().readToString(right);
+		String leftString = IOUtils.text().toCharSequence(left).toString();
+		String rightString = IOUtils.text().toCharSequence(right).toString();
 		return evaluate(leftString, rightString);
 	}
 }

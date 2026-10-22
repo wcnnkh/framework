@@ -40,11 +40,11 @@ public class GzipEncoder implements BinaryCoder, StreamByteBufferTransporter {
 	}
 
 	@Override
-	public void transfer(@NonNull InputStream input, @NonNull OutputStream output) throws IOException {
+	public void readInto(@NonNull InputStream input, @NonNull OutputStream output) throws IOException {
 		output = output instanceof GZIPOutputStream ? IOUtils.ignoreClose(output)
 				: mapper.apply(IOUtils.ignoreClose(output));
 		try {
-			IOUtils.binary().transfer(input, output);
+			IOUtils.binary().readInto(input, output);
 		} finally {
 			output.close();
 		}

@@ -12,7 +12,7 @@ public class UnicodeEncoder implements StringCoder, StreamCharBufferTransporter 
 	public static final UnicodeEncoder DEFAULT = new UnicodeEncoder();
 
 	@Override
-	public void transfer(@NonNull Reader reader, @NonNull Writer writer) throws IOException {
+	public void readInto(@NonNull Reader reader, @NonNull Writer writer) throws IOException {
 		int code;
 		while ((code = reader.read()) != 0) {
 			if (code < 256) {

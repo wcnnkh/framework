@@ -95,7 +95,7 @@ public interface WriterSource<W extends Writer> {
      */
     default void writeFrom(@NonNull CharBuffer content) throws IOException {
         try (W writer = getWriter()) {
-            IOUtils.text().transfer(content, writer);
+            IOUtils.text().writeTo(content, writer);
         }
     }
 

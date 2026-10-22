@@ -13,10 +13,10 @@ public interface StreamCharBufferTransporter extends CharBufferTransporter {
 			@NonNull BufferReader<? super CharBuffer, ? extends R> reader,
 			@NonNull BufferWriter<? super CharBuffer, ? extends W> writer) throws IOException {
 		try (Reader r = new CharBufferReader(reader); Writer w = new CharBufferWriter(writer)) {
-			transfer(r, w);
+			readInto(r, w);
 		}
 	}
 
 	@Override
-	void transfer(@NonNull Reader reader, @NonNull Writer writer) throws IOException;
+	void readInto(@NonNull Reader reader, @NonNull Writer writer) throws IOException;
 }

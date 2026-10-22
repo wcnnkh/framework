@@ -49,10 +49,10 @@ public class ZipDecoder implements BinaryCoder, StreamByteBufferTransporter {
 	}
 
 	@Override
-	public void transfer(@NonNull InputStream input, @NonNull OutputStream output) throws IOException {
+	public void readInto(@NonNull InputStream input, @NonNull OutputStream output) throws IOException {
 		input = input instanceof ZipInputStream ? IOUtils.ignoreClose(input) : mapper.apply(IOUtils.ignoreClose(input));
 		try {
-			IOUtils.binary().transfer(input, output);
+			IOUtils.binary().readInto(input, output);
 		} finally {
 			input.close();
 		}

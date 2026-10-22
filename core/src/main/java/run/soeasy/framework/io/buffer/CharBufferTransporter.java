@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.CharBuffer;
-
 import lombok.NonNull;
 
 /**
@@ -15,38 +14,42 @@ import lombok.NonNull;
  * 所有传输方法按<b>目标类型</b>区分命名，每种操作语义唯一：
  *
  * <ul>
- * <li>{@code transfer} — 底层传输（BufferReader/Reader →
- * Appendable/Writer/BufferWriter）</li>
- * <li>{@code readInto} — 从 {@link Readable} 读取并写入目标</li>
- * <li>{@code writeTo} — 将 {@link CharSequence} 写入目标</li>
- * <li>{@code toString} / {@code readToString} — 从源读取并转换为 String</li>
+ * <li>{@code transfer} — 底层传输（BufferReader/Reader → Appendable/Writer/BufferWriter）</li>
+ * <li>{@code readInto} — 从 {@link Reader} 读取并写入目标接收器</li>
+ * <li>{@code writeTo} — 将 {@link CharBuffer} 写入目标接收器</li>
+ * <li>{@code toCharSequence} — 从源读取，经过传输器处理，输出 CharSequence</li>
  * </ul>
  *
  * <p>
- * <b>重载决议说明：</b>当参数类型存在继承关系时（如 {@link Writer} 继承 {@link Appendable}）， Java
- * 编译器依据"最具体方法"规则自动选择匹配最具体的重载，不会产生歧义。
+ * <b>重要契约：</b>所有操作都会经过本传输器的处理逻辑，可能包含字符变换；读取源时会消费源、可能阻塞；
+ * 不会关闭外部传入的 Reader、Writer、Appendable。
+ *
+ * <p>
+ * <b>重载决议说明：</b>当参数类型存在继承关系时（如 {@link Writer} 继承 {@link Appendable}），
+ * Java 编译器依据"最具体方法"规则自动选择匹配最具体的重载，不会产生歧义。
  *
  * <p>
  * <b>使用示例：</b>
- * 
+ *
  * <pre>{@code
  * CharBufferTransporter transporter = CharBufferTransporter.of(someBufferTransporter);
  *
  * // 从 Reader 传输到 Writer
  * transporter.transfer(reader, writer);
  *
- * // 从 Readable 读取到 Appendable
- * transporter.readInto(readable, stringBuilder);
+ * // 从 Reader 读取到 Appendable
+ * transporter.readInto(reader, stringBuilder);
  *
- * // 将 CharSequence 写入 Writer
- * transporter.writeTo("hello", writer);
+ * // 将 CharBuffer 写入 Writer
+ * transporter.writeTo(charBuffer, writer);
  *
- * // 读取为 String
- * String content = transporter.toString(readerSource);
+ * // 读取为 CharSequence
+ * CharSequence content = transporter.toCharSequence(readerSource);
  * }</pre>
  *
  * @author soeasy.run
  */
+@FunctionalInterface
 public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	/**
 	 * 将任意 {@link BufferTransporter} 包装为 {@link CharBufferTransporter}。
@@ -63,13 +66,14 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	}
 
 	/**
-	 * 从 {@link BufferReader} 读取所有字符并转换为字符串。
+	 * 从 {@link BufferReader} 读取所有字符，经过传输器处理后转换为 CharSequence。
 	 *
 	 * @param reader 字符缓冲区读取器
-	 * @return 完整的字符串内容
+	 * @return 完整的字符序列
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E 读取过程抛出的异常
 	 */
-	default <E extends Throwable> String readToString(@NonNull BufferReader<? super CharBuffer, ? extends E> reader)
+	default <E extends Throwable> CharSequence toCharSequence(@NonNull BufferReader<? super CharBuffer, ? extends E> reader)
 			throws IOException, E {
 		StringBuilder appendable = new StringBuilder();
 		transfer(reader, appendable);
@@ -77,32 +81,33 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	}
 
 	/**
-	 * 从 {@link Reader} 读取所有字符并转换为字符串。
+	 * 从 {@link Reader} 读取所有字符，经过传输器处理后转换为 CharSequence。
 	 *
 	 * @param reader Reader 源
-	 * @return 完整的字符串内容
+	 * @return 完整的字符序列
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default String readToString(@NonNull Reader reader) throws IOException {
+	default CharSequence toCharSequence(@NonNull Reader reader) throws IOException {
 		StringBuilder appendable = new StringBuilder();
-		transfer(reader, (b) -> appendable.append(b));
+		readInto(reader, appendable);
 		return appendable.toString();
 	}
 
 	/**
-	 * 将 {@link CharSequence} 转换为字符串。
+	 * 将 {@link CharBuffer} 经过传输器处理后转换为 CharSequence。
 	 *
-	 * @param charSequence 字符序列
-	 * @return 转换后的字符串
+	 * @param source 字符缓冲区
+	 * @return 处理后的字符序列
+	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default String readToString(@NonNull CharBuffer source) throws IOException {
+	default CharSequence toCharSequence(@NonNull CharBuffer source) throws IOException {
 		StringBuilder appendable = new StringBuilder();
-		transfer(source, (b) -> appendable.append(b));
+		writeTo(source, appendable);
 		return appendable.toString();
 	}
 
-	default <R extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends R> reader,
-			@NonNull Appendable appendable) throws IOException, R {
+	default <E extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends E> reader,
+			@NonNull Appendable appendable) throws IOException, E {
 		transfer(reader, (b) -> appendable.append(b));
 	}
 
@@ -112,55 +117,81 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 * @param reader 字符缓冲区读取器
 	 * @param writer 字符写入器
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E 读取过程抛出的异常
 	 */
-	default <R extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends R> reader,
-			@NonNull Writer writer) throws IOException, R {
+	default <E extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends E> reader,
+			@NonNull Writer writer) throws IOException, E {
 		transfer(reader, (b) -> writer.append(b));
 	}
 
 	/**
-	 * 将 {@link CharSequence} 写入 {@link BufferWriter}。
+	 * 将 {@link CharBuffer} 经过传输器处理后写入 {@link BufferWriter}。
 	 *
-	 * @param charSequence 字符序列
-	 * @param writer       字符缓冲区写入器
+	 * @param buffer 字符缓冲区
+	 * @param writer 字符缓冲区写入器
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E 写入过程抛出的异常
 	 */
-	default <E extends Throwable> void transfer(@NonNull CharBuffer buffer,
+	default <E extends Throwable> void writeTo(@NonNull CharBuffer buffer,
 			@NonNull BufferWriter<? super CharBuffer, ? extends E> writer) throws IOException, E {
 		transfer((b) -> buffer.read(b), writer);
 	}
 
 	/**
-	 * 将 {@link CharSequence} 写入 {@link Writer}。
+	 * 将 {@link CharBuffer} 经过传输器处理后写入 {@link Writer}。
 	 *
-	 * @param charSequence 字符序列
-	 * @param writer       字符写入器
+	 * @param buffer 字符缓冲区
+	 * @param writer 字符写入器
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull CharBuffer buffer, @NonNull Writer writer) throws IOException {
+	default void writeTo(@NonNull CharBuffer buffer, @NonNull Writer writer) throws IOException {
 		transfer((b) -> buffer.read(b), writer);
 	}
 
 	/**
-	 * 从 {@link Reader} 读取字符并写入 {@link BufferWriter}。
+	 * 将 {@link CharBuffer} 经过传输器处理后写入 {@link Appendable}。
 	 *
-	 * @param reader 字符缓冲区读取器
+	 * @param buffer 字符缓冲区
+	 * @param appendable 字符接收器
+	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E 写入过程抛出的异常
+	 */
+	default <E extends Throwable> void writeTo(@NonNull CharBuffer buffer, @NonNull Appendable appendable) throws IOException, E {
+		transfer((b) -> buffer.read(b), appendable);
+	}
+
+	/**
+	 * 从 {@link Reader} 读取字符，经过传输器处理后写入 {@link BufferWriter}。
+	 *
+	 * @param reader 字符输入源
 	 * @param writer 字符缓冲区写入器
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E 读取过程抛出的异常
 	 */
-	default <W extends Throwable> void transfer(@NonNull Reader reader,
-			@NonNull BufferWriter<? super CharBuffer, ? extends W> writer) throws IOException, W {
+	default <E extends Throwable> void readInto(@NonNull Reader reader,
+			@NonNull BufferWriter<? super CharBuffer, ? extends E> writer) throws IOException, E {
 		transfer((s) -> reader.read(s), writer);
 	}
 
 	/**
-	 * 从 {@link Reader} 读取字符并直接写入 {@link Writer}。
+	 * 从 {@link Reader} 读取字符，经过传输器处理后写入 {@link Writer}。
 	 *
 	 * @param reader Reader 源
 	 * @param writer Writer 目标
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull Reader reader, @NonNull Writer writer) throws IOException {
+	default void readInto(@NonNull Reader reader, @NonNull Writer writer) throws IOException {
 		transfer((s) -> reader.read(s), writer);
+	}
+
+	/**
+	 * 从 {@link Reader} 读取字符，经过传输器处理后写入 {@link Appendable}。
+	 *
+	 * @param reader Reader 源
+	 * @param appendable 字符接收器
+	 * @throws IOException 如果发生 I/O 错误
+	 */
+	default void readInto(@NonNull Reader reader, @NonNull Appendable appendable) throws IOException {
+		transfer((s) -> reader.read(s), appendable);
 	}
 }

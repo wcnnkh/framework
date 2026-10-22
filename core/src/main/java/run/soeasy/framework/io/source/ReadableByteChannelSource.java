@@ -82,7 +82,7 @@ public interface ReadableByteChannelSource<C extends ReadableByteChannel> {
     default <E extends Throwable> void readByteBufferInto(
             @NonNull BufferWriter<? super ByteBuffer, ? extends E> consumer) throws IOException, E {
         try (C channel = readableChannel()) {
-            IOUtils.binary().transfer(channel, consumer);
+            IOUtils.binary().readInto(channel, consumer);
         }
     }
 
@@ -107,7 +107,7 @@ public interface ReadableByteChannelSource<C extends ReadableByteChannel> {
     default <W extends WritableByteChannel> void writeToChannel(@NonNull WritableByteChannelSource<W> target) throws IOException {
         try (C reader = readableChannel()) {
             try (W writer = target.writableChannel()) {
-                IOUtils.binary().transfer(reader, writer);
+                IOUtils.binary().readInto(reader, writer);
             }
         }
     }
@@ -124,7 +124,7 @@ public interface ReadableByteChannelSource<C extends ReadableByteChannel> {
      */
     default ByteBuffer readToByteBuffer() throws IOException {
         try (C channel = readableChannel()) {
-            return ByteBuffer.wrap(IOUtils.binary().readToByteArray(channel));
+            return ByteBuffer.wrap(IOUtils.binary().toByteArray(channel));
         }
     }
 
@@ -139,7 +139,7 @@ public interface ReadableByteChannelSource<C extends ReadableByteChannel> {
      */
     default byte[] readToByteArray() throws IOException {
         try (C channel = readableChannel()) {
-            return IOUtils.binary().readToByteArray(channel);
+            return IOUtils.binary().toByteArray(channel);
         }
     }
 

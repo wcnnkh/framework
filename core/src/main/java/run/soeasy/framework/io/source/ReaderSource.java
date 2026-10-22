@@ -80,7 +80,7 @@ public interface ReaderSource<R extends Reader> {
      */
     default String readToString() throws IOException {
         try (R reader = getReader()) {
-            return IOUtils.text().readToString(reader);
+            return IOUtils.text().toCharSequence(reader).toString();
         }
     }
 
@@ -110,7 +110,7 @@ public interface ReaderSource<R extends Reader> {
     default <E extends Throwable> void readCharBufferInto(
             @NonNull BufferWriter<? super CharBuffer, ? extends E> consumer) throws IOException, E {
         try (R reader = getReader()) {
-            IOUtils.text().transfer(reader, consumer);
+            IOUtils.text().readInto(reader, consumer);
         }
     }
 

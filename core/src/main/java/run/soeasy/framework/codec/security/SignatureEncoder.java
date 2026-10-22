@@ -106,8 +106,8 @@ public class SignatureEncoder extends AlgorithmSigner<Signature> {
 	@Override
 	public Comparison evaluate(Signature algorithm, @NonNull InputStream reader, @NonNull InputStream verified)
 			throws IOException, GeneralSecurityException {
-		IOUtils.binary().transfer(reader, algorithm::update);
-		return Comparison.of(algorithm.verify(IOUtils.binary().readToByteArray(verified)));
+		IOUtils.binary().readInto(reader, algorithm::update);
+		return Comparison.of(algorithm.verify(IOUtils.binary().toByteArray(verified)));
 	}
 
 	@Override

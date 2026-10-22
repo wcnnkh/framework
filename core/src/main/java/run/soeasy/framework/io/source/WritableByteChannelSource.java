@@ -76,7 +76,7 @@ public interface WritableByteChannelSource<C extends WritableByteChannel> {
     default <R extends ReadableByteChannel> void writeFromChannel(ReadableByteChannelSource<R> source) throws IOException {
         try (R reader = source.readableChannel()) {
             try (C writer = writableChannel()) {
-                IOUtils.binary().transfer(reader, writer);
+                IOUtils.binary().readInto(reader, writer);
             }
         }
     }

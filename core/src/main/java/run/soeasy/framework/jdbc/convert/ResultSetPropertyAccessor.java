@@ -55,7 +55,7 @@ public class ResultSetPropertyAccessor extends AbstractResultSetAccessor {
             throw new JdbcException(e);
         }
     }
-
+    
     /**
      * 获取当前访问的列名（或别名）
      * 

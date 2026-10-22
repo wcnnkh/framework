@@ -11,7 +11,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-
 import lombok.NonNull;
 
 /**
@@ -22,10 +21,15 @@ import lombok.NonNull;
  * 所有传输方法按<b>目标类型</b>区分命名，每种操作语义唯一：
  *
  * <ul>
- * <li>{@code readToByteArray} — 从源读取并转换为字节数组</li>
- * <li>{@code transfer} — 底层传输（BufferReader→BufferWriter）及各种源→目标的便捷重载</li>
+ * <li>{@code toByteArray} — 从源读取并经过传输器处理，输出字节数组</li>
+ * <li>{@code transfer} — 底层传输（BufferReader→BufferWriter）及 BufferReader 便捷重载</li>
  * <li>{@code writeTo} — 将 {@link ByteBuffer} 写入目标</li>
+ * <li>{@code readInto} — 将流式源读取并写入目标接收器</li>
  * </ul>
+ *
+ * <p>
+ * <b>重要契约：</b>所有操作都会经过本传输器的处理逻辑，可能包含拷贝、编码、解码、加密、解压等字节变换，不一定原样转发；
+ * 传入流/通道时会消费源并可能阻塞。
  *
  * <p>
  * <b>核心特性：</b>
@@ -38,24 +42,22 @@ import lombok.NonNull;
  *
  * <p>
  * <b>使用示例：</b>
- * 
+ *
  * <pre>{@code
  * ByteBufferTransporter transporter = ByteBufferTransporter.of(someBufferTransporter);
  *
  * // 读取文件内容到字节数组
- * byte[] data = transporter.readToByteArray(path);
+ * byte[] data = transporter.toByteArray(path);
  *
- * // 将字节数组写入文件
- * transporter.transfer(byteBuffer, Files.newOutputStream(path));
+ * // 将字节缓冲区写入文件
+ * transporter.writeTo(byteBuffer, Files.newOutputStream(path));
  * }</pre>
  *
  * @author soeasy.run
  */
 @FunctionalInterface
 public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
-
 	// ==================== 1. 工厂 ====================
-
 	/**
 	 * 将任意 {@link BufferTransporter} 包装为 {@link ByteBufferTransporter}。
 	 *
@@ -71,13 +73,14 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	}
 
 	/**
-	 * 从 {@link BufferReader} 读取所有字节并转换为字节数组。
+	 * 从 {@link BufferReader} 读取所有字节，经过传输器处理后转换为字节数组。
 	 *
 	 * @param reader 字节缓冲区读取器
 	 * @return 完整的字节数组内容
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           读取过程抛出的异常
 	 */
-	default <E extends Throwable> byte[] readToByteArray(@NonNull BufferReader<? super ByteBuffer, ? extends E> reader)
+	default <E extends Throwable> byte[] toByteArray(@NonNull BufferReader<? super ByteBuffer, ? extends E> reader)
 			throws IOException, E {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		transfer(reader, output);
@@ -85,44 +88,45 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	}
 
 	/**
-	 * 将 {@link ByteBuffer} 转换为字节数组。
+	 * 将 {@link ByteBuffer} 经过传输器处理后转换为字节数组。
 	 *
 	 * <p>
-	 * 通过 {@link ByteBufferInputStream} 包装缓冲区并完全读取。
+	 * 并非直接获取 buffer 底层数组，会完整走本传输器的变换链路。
 	 *
 	 * @param byteBuffer 字节缓冲区
-	 * @return 转换后的字节数组
+	 * @return 处理后的字节数组
+	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default byte[] readToByteArray(@NonNull ByteBuffer byteBuffer) throws IOException{
+	default byte[] toByteArray(@NonNull ByteBuffer byteBuffer) throws IOException {
 		try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-			transfer(byteBuffer, output);
+			writeTo(byteBuffer, output);
 			return output.toByteArray();
 		}
 	}
 
 	/**
-	 * 从 {@link InputStream} 读取所有字节并转换为字节数组。
+	 * 从 {@link InputStream} 读取所有字节，经过传输器处理后转换为字节数组。
 	 *
-	 * @param inputStream 输入流
+	 * @param inputStream 输入流（会被消费）
 	 * @return 完整的字节数组内容
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default byte[] readToByteArray(@NonNull InputStream inputStream) throws IOException {
+	default byte[] toByteArray(@NonNull InputStream inputStream) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		transfer(inputStream, output);
+		readInto(inputStream, output);
 		return output.toByteArray();
 	}
 
 	/**
-	 * 从 {@link ReadableByteChannel} 读取所有字节并转换为字节数组。
+	 * 从 {@link ReadableByteChannel} 读取所有字节，经过传输器处理后转换为字节数组。
 	 *
-	 * @param readableByteChannel 可读字节通道
+	 * @param readableByteChannel 可读字节通道（会被消费）
 	 * @return 完整的字节数组内容
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default byte[] readToByteArray(@NonNull ReadableByteChannel readableByteChannel) throws IOException {
+	default byte[] toByteArray(@NonNull ReadableByteChannel readableByteChannel) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		transfer(readableByteChannel, output);
+		readInto(readableByteChannel, output);
 		return output.toByteArray();
 	}
 
@@ -132,6 +136,7 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	 * @param reader 字节缓冲区读取器
 	 * @param output 输出流
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           读取过程抛出的异常
 	 */
 	default <E extends Throwable> void transfer(@NonNull BufferReader<? super ByteBuffer, ? extends E> reader,
 			@NonNull OutputStream output) throws IOException, E {
@@ -144,6 +149,7 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	 * @param reader 字节缓冲区读取器
 	 * @param target 目标路径
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           读取过程抛出的异常
 	 */
 	default <E extends Throwable> void transfer(@NonNull BufferReader<? super ByteBuffer, ? extends E> reader,
 			@NonNull Path target) throws IOException, E {
@@ -158,6 +164,7 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	 * @param reader   字节缓冲区读取器
 	 * @param writable 可写字节通道
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           读取过程抛出的异常
 	 */
 	default <E extends Throwable> void transfer(@NonNull BufferReader<? super ByteBuffer, ? extends E> reader,
 			@NonNull WritableByteChannel writable) throws IOException, E {
@@ -165,116 +172,117 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	}
 
 	/**
-	 * 将 {@link ByteBuffer} 写入 {@link BufferWriter}。
+	 * 将 {@link ByteBuffer} 经过传输器处理后写入 {@link BufferWriter}。
 	 *
 	 * @param source 字节缓冲区
 	 * @param writer 字节缓冲区写入器
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           写入过程抛出的异常
 	 */
-	default <E extends Throwable> void transfer(@NonNull ByteBuffer source,
+	default <E extends Throwable> void writeTo(@NonNull ByteBuffer source,
 			@NonNull BufferWriter<? super ByteBuffer, ? extends E> writer) throws IOException, E {
 		try (InputStream input = new ByteBufferInputStream(source)) {
-			transfer(input, writer);
+			readInto(input, writer);
 		}
 	}
 
 	/**
-	 * 将 {@link ByteBuffer} 写入 {@link OutputStream}。
+	 * 将 {@link ByteBuffer} 经过传输器处理后写入 {@link OutputStream}。
 	 *
 	 * @param source 字节缓冲区
 	 * @param output 输出流
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull ByteBuffer source, @NonNull OutputStream output) throws IOException {
+	default void writeTo(@NonNull ByteBuffer source, @NonNull OutputStream output) throws IOException {
 		try (InputStream input = new ByteBufferInputStream(source)) {
-			transfer(input, output);
+			readInto(input, output);
 		}
 	}
 
 	/**
-	 * 将 {@link ByteBuffer} 写入 {@link WritableByteChannel}。
+	 * 将 {@link ByteBuffer} 经过传输器处理后写入 {@link WritableByteChannel}。
 	 *
 	 * @param source              字节缓冲区
 	 * @param writableByteChannel 可写字节通道
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull ByteBuffer source, @NonNull WritableByteChannel writableByteChannel)
+	default void writeTo(@NonNull ByteBuffer source, @NonNull WritableByteChannel writableByteChannel)
 			throws IOException {
 		try (InputStream input = new ByteBufferInputStream(source)) {
-			transfer(input, writableByteChannel);
+			readInto(input, writableByteChannel);
 		}
 	}
 
 	/**
-	 * 从 {@link InputStream} 传输字节到 {@link BufferWriter}。
+	 * 从 {@link InputStream} 读取，经过传输器处理后写入 {@link BufferWriter}。
 	 *
 	 * @param input  输入流
 	 * @param writer 字节缓冲区写入器
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           读取过程抛出的异常
 	 */
-	default <E extends Throwable> void transfer(@NonNull InputStream input,
+	default <E extends Throwable> void readInto(@NonNull InputStream input,
 			@NonNull BufferWriter<? super ByteBuffer, ? extends E> writer) throws IOException, E {
-		transfer(Channels.newChannel(input), writer);
+		readInto(Channels.newChannel(input), writer);
 	}
 
 	/**
-	 * 在 {@link InputStream} 和 {@link OutputStream} 之间传输字节。
+	 * 在 {@link InputStream} 和 {@link OutputStream} 之间传输字节，经过传输器处理。
 	 *
 	 * @param input  输入流
 	 * @param output 输出流
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull InputStream input, @NonNull OutputStream output) throws IOException {
-		transfer(Channels.newChannel(input), Channels.newChannel(output));
+	default void readInto(@NonNull InputStream input, @NonNull OutputStream output) throws IOException {
+		readInto(Channels.newChannel(input), Channels.newChannel(output));
 	}
 
 	/**
-	 * 从 {@link InputStream} 传输字节到 {@link WritableByteChannel}。
+	 * 从 {@link InputStream} 读取，经过传输器处理后写入 {@link WritableByteChannel}。
 	 *
 	 * @param input    输入流
 	 * @param writable 可写字节通道
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull InputStream input, @NonNull WritableByteChannel writable) throws IOException {
-		transfer(Channels.newChannel(input), writable);
+	default void readInto(@NonNull InputStream input, @NonNull WritableByteChannel writable) throws IOException {
+		readInto(Channels.newChannel(input), writable);
 	}
 
 	/**
-	 * 从 {@link ReadableByteChannel} 传输字节到 {@link BufferWriter}。
+	 * 从 {@link ReadableByteChannel} 读取，经过传输器处理后写入 {@link BufferWriter}。
 	 *
 	 * <p>
-	 * 注意：使用 {@code readable::read} 方法引用作为 {@link BufferReader} 的适配， 不会与其他
-	 * {@code transfer} 重载产生歧义，因为 {@link ReadableByteChannel} 与
-	 * {@link InputStream}、{@link Path} 等类型无继承关系。
+	 * 将通道包装为 BufferReader，交给底层 transfer 处理。
 	 *
 	 * @param readable 可读字节通道
 	 * @param writer   字节缓冲区写入器
 	 * @throws IOException 如果发生 I/O 错误
+	 * @throws E           读取过程抛出的异常
 	 */
-	default <E extends Throwable> void transfer(@NonNull ReadableByteChannel readable,
+	default <E extends Throwable> void readInto(@NonNull ReadableByteChannel readable,
 			@NonNull BufferWriter<? super ByteBuffer, ? extends E> writer) throws IOException, E {
 		transfer((b) -> readable.read(b), writer);
 	}
 
 	/**
-	 * 从 {@link ReadableByteChannel} 传输字节到 {@link OutputStream}。
+	 * 从 {@link ReadableByteChannel} 读取，经过传输器处理后写入 {@link OutputStream}。
 	 *
 	 * @param readable 可读字节通道
 	 * @param output   输出流
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull ReadableByteChannel readable, @NonNull OutputStream output) throws IOException {
-		transfer(readable, Channels.newChannel(output));
+	default void readInto(@NonNull ReadableByteChannel readable, @NonNull OutputStream output) throws IOException {
+		readInto(readable, Channels.newChannel(output));
 	}
 
 	/**
-	 * 在两个 NIO 通道之间传输字节。
+	 * 在两个 NIO 通道之间传输字节，经过传输器处理。
 	 *
 	 * @param readable 可读字节通道
 	 * @param writable 可写字节通道
 	 * @throws IOException 如果发生 I/O 错误
 	 */
-	default void transfer(@NonNull ReadableByteChannel readable, @NonNull WritableByteChannel writable)
+	default void readInto(@NonNull ReadableByteChannel readable, @NonNull WritableByteChannel writable)
 			throws IOException {
 		transfer(readable::read, writable::write);
 	}

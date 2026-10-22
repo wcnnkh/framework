@@ -228,7 +228,7 @@ public class JsonIterator implements Iterator<JsonValue> {
         }
 
         if (rawBuffer.length() > 0) {
-            JsonEscaping.INSTANCE.decoder().transfer(CharBuffer.wrap(rawBuffer), tokenValue::append);
+            JsonEscaping.INSTANCE.decoder().writeTo(CharBuffer.wrap(rawBuffer), tokenValue::append);
         }
         return JsonToken.STRING;
     }

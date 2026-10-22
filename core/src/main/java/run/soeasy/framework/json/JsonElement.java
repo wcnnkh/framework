@@ -229,7 +229,7 @@ public interface JsonElement extends Exportable {
 				while (iterator.hasNext()) {
 					KeyValue<String, JsonElement> keyValue = iterator.next();
 					target.append('"');
-					JsonEscaping.INSTANCE.encoder().transfer(CharBuffer.wrap(keyValue.getKey()), target::append);
+					JsonEscaping.INSTANCE.encoder().writeTo(CharBuffer.wrap(keyValue.getKey()), target::append);
 					target.append("\": ");
 					keyValue.getValue().export(target);
 					if (iterator.hasNext()) {
@@ -258,10 +258,10 @@ public interface JsonElement extends Exportable {
 			CharSequence value = jsonPrimitive.getAsString();
 			if (jsonPrimitive.isCharSequence()) {
 				target.append('"');
-				JsonEscaping.INSTANCE.encoder().transfer(CharBuffer.wrap(value), target::append);
+				JsonEscaping.INSTANCE.encoder().writeTo(CharBuffer.wrap(value), target::append);
 				target.append('"');
 			} else {
-				JsonEscaping.INSTANCE.encoder().transfer(CharBuffer.wrap(value), target::append);
+				JsonEscaping.INSTANCE.encoder().writeTo(CharBuffer.wrap(value), target::append);
 			}
 		} else if (isJsonNull()) {
 			target.append("null");

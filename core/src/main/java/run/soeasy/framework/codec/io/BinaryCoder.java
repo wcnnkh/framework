@@ -16,7 +16,7 @@ public interface BinaryCoder extends UnaryCoder<byte[]>, ByteBufferTransporter, 
 	@Override
 	default byte[] apply(byte[] source) {
 		try {
-			return readToByteArray(ByteBuffer.wrap(source));
+			return toByteArray(ByteBuffer.wrap(source));
 		} catch (IOException e) {
 			throw new IllegalStateException("Internal error", e);
 		}
@@ -26,8 +26,8 @@ public interface BinaryCoder extends UnaryCoder<byte[]>, ByteBufferTransporter, 
 	default <L extends Throwable, R extends Throwable> @NonNull Comparison evaluate(
 			@NonNull BufferReader<? super ByteBuffer, ? extends L> left,
 			@NonNull BufferReader<? super ByteBuffer, ? extends R> right) throws IOException, L, R {
-		byte[] leftByteArray = IOUtils.binary().readToByteArray(left);
-		byte[] rightByteArray = IOUtils.binary().readToByteArray(right);
+		byte[] leftByteArray = IOUtils.binary().toByteArray(left);
+		byte[] rightByteArray = IOUtils.binary().toByteArray(right);
 		return evaluate(leftByteArray, rightByteArray);
 	}
 }

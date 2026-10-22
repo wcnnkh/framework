@@ -1,6 +1,7 @@
 package run.soeasy.framework.jdbc;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
@@ -75,7 +76,7 @@ public class PreparedStatementWrapped<T extends PreparedStatement> extends State
 	 */
 	public ResultSetWrapped query() {
 		// 将预编译语句管道映射为结果集管道，再包装为ResultSetWrapped
-		return new ResultSetWrapped(map(statement -> statement.executeQuery()));
+		return new ResultSetWrapped(map(statement -> statement.executeQuery()).onClose(ResultSet::close));
 	}
 
 	/**
