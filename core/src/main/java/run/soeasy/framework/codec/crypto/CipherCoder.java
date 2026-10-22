@@ -9,8 +9,8 @@ import javax.crypto.Cipher;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.codec.security.AlgorithmCoder;
+import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.NestedRuntimeException;
 import run.soeasy.framework.io.Binary;
 import run.soeasy.framework.io.IOUtils;
@@ -65,6 +65,7 @@ public class CipherCoder extends AlgorithmCoder<Cipher> {
 					int size = chunkSize > 0 ? algorithm.doFinal(inputBuffer, outputBuffer)
 							: algorithm.update(inputBuffer, outputBuffer);
 					if (size > 0) {
+						outputBuffer.flip();
 						writer.write(outputBuffer);
 					}
 				} catch (GeneralSecurityException e) {
@@ -80,7 +81,7 @@ public class CipherCoder extends AlgorithmCoder<Cipher> {
 			}
 		}
 
-		if (chunkSize > 0) {
+		if(chunkSize <= 0) {
 			byte[] block = algorithm.doFinal();
 			if (block != null) {
 				writer.write(ByteBuffer.wrap(block));
