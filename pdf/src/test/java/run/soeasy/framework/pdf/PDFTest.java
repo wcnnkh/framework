@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import run.soeasy.framework.core.RandomUtils;

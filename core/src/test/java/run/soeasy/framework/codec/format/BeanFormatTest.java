@@ -1,4 +1,4 @@
-package run.soeasy.framework.beans;
+package run.soeasy.framework.codec.format;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.codec.CodecException;
 
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.DirectCodec;
@@ -198,7 +197,7 @@ public class BeanFormatTest {
 
     // ------------------------------ encode/decode方法测试（编解码） ------------------------------
     @Test
-    public void testEncode_Mapping() throws CodecException {
+    public void testEncode_Mapping() {
         System.out.println("\n【开始测试】testEncode_Mapping（Mapping编码为字符串）");
         // 测试Mapping编码为字符串
         MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
@@ -217,7 +216,7 @@ public class BeanFormatTest {
     }
 
     @Test
-    public void testDecode_StringToMapping() throws CodecException {
+    public void testDecode_StringToMapping() {
         System.out.println("\n【开始测试】testDecode_StringToMapping（字符串解码为Mapping）");
         // 测试字符串解码为Mapping
         String sourceStr = "k1=v1&k1=v2&k2=v3";

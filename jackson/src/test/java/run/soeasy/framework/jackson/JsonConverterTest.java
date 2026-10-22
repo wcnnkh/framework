@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.json.JsonConverter;

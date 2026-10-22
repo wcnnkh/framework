@@ -1,10 +1,11 @@
-package run.soeasy.framework.beans;
+package run.soeasy.framework.codec.format;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.beans.BeanMapper;
+import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.format.KeyValueFormat;
 import run.soeasy.framework.core.domain.KeyValue;
 
 /**

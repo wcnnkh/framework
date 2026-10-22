@@ -16,7 +16,11 @@ public interface StringCoder extends UnaryCoder<String>, CharBufferTransporter, 
 
 	@Override
 	default String apply(String source) {
-		return readToString(CharBuffer.wrap(source));
+		try {
+			return readToString(CharBuffer.wrap(source));
+		} catch (IOException e) {
+			throw new IllegalStateException("Internal error", e);
+		}
 	}
 
 	@Override

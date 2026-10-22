@@ -120,7 +120,7 @@ public interface WriterSource<W extends Writer> {
      */
     default <R extends Reader> void writeFrom(@NonNull ReaderSource<R> source) throws IOException {
         try (W writer = getWriter()) {
-            source.readCharBufferInto(writer::append);
+            source.readCharBufferInto((c) -> writer.append(c));
         }
     }
 }

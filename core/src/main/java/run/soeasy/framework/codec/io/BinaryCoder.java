@@ -15,7 +15,11 @@ import run.soeasy.framework.io.buffer.ByteBufferTransporter;
 public interface BinaryCoder extends UnaryCoder<byte[]>, ByteBufferTransporter, ByteBufferEvaluator {
 	@Override
 	default byte[] apply(byte[] source) {
-		return readToByteArray(ByteBuffer.wrap(source));
+		try {
+			return readToByteArray(ByteBuffer.wrap(source));
+		} catch (IOException e) {
+			throw new IllegalStateException("Internal error", e);
+		}
 	}
 
 	@Override

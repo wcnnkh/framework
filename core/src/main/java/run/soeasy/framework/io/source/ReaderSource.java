@@ -128,7 +128,7 @@ public interface ReaderSource<R extends Reader> {
      */
     default <W extends Writer> void writeTo(@NonNull WriterSource<W> target) throws IOException {
         try (R reader = getReader()) {
-            target.writeCharBufferFrom(reader::read);
+            target.writeCharBufferFrom((r) -> r.read(r));
         }
     }
 

@@ -93,12 +93,10 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	 * @param byteBuffer 字节缓冲区
 	 * @return 转换后的字节数组
 	 */
-	default byte[] readToByteArray(@NonNull ByteBuffer byteBuffer) {
+	default byte[] readToByteArray(@NonNull ByteBuffer byteBuffer) throws IOException{
 		try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
 			transfer(byteBuffer, output);
 			return output.toByteArray();
-		} catch (IOException e) {
-			throw new IllegalStateException("Internal error during byte buffer conversion", e);
 		}
 	}
 
@@ -163,7 +161,7 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	 */
 	default <E extends Throwable> void transfer(@NonNull BufferReader<? super ByteBuffer, ? extends E> reader,
 			@NonNull WritableByteChannel writable) throws IOException, E {
-		transfer(reader, writable::write);
+		transfer(reader, (b) -> writable.write(b));
 	}
 
 	/**
@@ -255,7 +253,7 @@ public interface ByteBufferTransporter extends BufferTransporter<ByteBuffer> {
 	 */
 	default <E extends Throwable> void transfer(@NonNull ReadableByteChannel readable,
 			@NonNull BufferWriter<? super ByteBuffer, ? extends E> writer) throws IOException, E {
-		transfer(readable::read, writer);
+		transfer((b) -> readable.read(b), writer);
 	}
 
 	/**

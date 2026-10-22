@@ -85,7 +85,7 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 */
 	default String readToString(@NonNull Reader reader) throws IOException {
 		StringBuilder appendable = new StringBuilder();
-		transfer(reader, appendable::append);
+		transfer(reader, (b) -> appendable.append(b));
 		return appendable.toString();
 	}
 
@@ -95,19 +95,15 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 * @param charSequence 字符序列
 	 * @return 转换后的字符串
 	 */
-	default String readToString(@NonNull CharBuffer source) {
+	default String readToString(@NonNull CharBuffer source) throws IOException {
 		StringBuilder appendable = new StringBuilder();
-		try {
-			transfer(source, appendable::append);
-		} catch (IOException e) {
-			throw new IllegalStateException("Internal error during character conversion", e);
-		}
+		transfer(source, (b) -> appendable.append(b));
 		return appendable.toString();
 	}
 
 	default <R extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends R> reader,
 			@NonNull Appendable appendable) throws IOException, R {
-		transfer(reader, appendable::append);
+		transfer(reader, (b) -> appendable.append(b));
 	}
 
 	/**
@@ -119,7 +115,7 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 */
 	default <R extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends R> reader,
 			@NonNull Writer writer) throws IOException, R {
-		transfer(reader, writer::append);
+		transfer(reader, (b) -> writer.append(b));
 	}
 
 	/**
@@ -131,7 +127,7 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 */
 	default <E extends Throwable> void transfer(@NonNull CharBuffer buffer,
 			@NonNull BufferWriter<? super CharBuffer, ? extends E> writer) throws IOException, E {
-		transfer(buffer::read, writer);
+		transfer((b) -> buffer.read(b), writer);
 	}
 
 	/**
@@ -142,7 +138,7 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 * @throws IOException 如果发生 I/O 错误
 	 */
 	default void transfer(@NonNull CharBuffer buffer, @NonNull Writer writer) throws IOException {
-		transfer(buffer::read, writer);
+		transfer((b) -> buffer.read(b), writer);
 	}
 
 	/**

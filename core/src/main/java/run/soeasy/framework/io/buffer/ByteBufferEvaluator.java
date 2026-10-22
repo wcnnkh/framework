@@ -32,7 +32,7 @@ public interface ByteBufferEvaluator extends BufferEvaluator<ByteBuffer> {
 
 	default <L extends Throwable> @NonNull Comparison evaluate(@NonNull BufferReader<? super ByteBuffer, ? extends L> left,
 			@NonNull ReadableByteChannel right) throws IOException, L {
-		return evaluate(left, right::read);
+		return evaluate(left, (b) -> right.read(b));
 	}
 
 	default @NonNull Comparison evaluate(@NonNull ByteBuffer left, @NonNull ByteBuffer right) throws IOException {
@@ -80,7 +80,7 @@ public interface ByteBufferEvaluator extends BufferEvaluator<ByteBuffer> {
 
 	default @NonNull Comparison evaluate(@NonNull ReadableByteChannel left, @NonNull ReadableByteChannel right)
 			throws IOException {
-		return evaluate(left, right::read);
+		return evaluate(left, (b) -> right.read(b));
 	}
 
 	default @NonNull Comparison evaluate(@NonNull ReadableByteChannel left, @NonNull ByteBuffer right) throws IOException {
@@ -96,6 +96,6 @@ public interface ByteBufferEvaluator extends BufferEvaluator<ByteBuffer> {
 
 	default @NonNull <R extends Throwable> Comparison evaluate(@NonNull ReadableByteChannel left,
 			@NonNull BufferReader<? super ByteBuffer, ? extends R> right) throws IOException, R {
-		return evaluate(left::read, right);
+		return evaluate((b) -> left.read(b), right);
 	}
 }

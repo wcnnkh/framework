@@ -19,37 +19,37 @@ public interface CharBufferEvaluator extends BufferEvaluator<CharBuffer> {
 	default <L extends Exception> @NonNull Comparison evaluate(
 			@NonNull BufferReader<? super CharBuffer, ? extends L> left, @NonNull CharBuffer right)
 			throws IOException, L {
-		return evaluate(left, right::read);
+		return evaluate(left, (b) -> right.read(b));
 	}
 
 	default <L extends Exception> @NonNull Comparison evaluate(
 			@NonNull BufferReader<? super CharBuffer, ? extends L> left, @NonNull Reader right) throws IOException, L {
-		return evaluate(left, right::read);
+		return evaluate(left, (b) -> right.read(b));
 	}
 
 	default @NonNull Comparison evaluate(@NonNull CharBuffer left, @NonNull CharBuffer right) throws IOException {
-		return evaluate(left::read, right::read);
+		return evaluate((b) -> left.read(b), (b) -> right.read(b));
 	}
 
 	default <R extends Throwable> @NonNull Comparison evaluate(@NonNull CharBuffer left,
 			@NonNull BufferReader<? super CharBuffer, ? extends R> right) throws IOException, R {
-		return evaluate(left::read, right);
+		return evaluate((b) -> left.read(b), right);
 	}
 
 	default @NonNull Comparison evaluate(@NonNull CharBuffer left, @NonNull Reader right) throws IOException {
-		return evaluate(left::read, right::read);
+		return evaluate((b) -> left.read(b), (b) -> right.read(b));
 	}
 
 	default @NonNull Comparison evaluate(@NonNull Reader left, @NonNull Reader right) throws IOException {
-		return evaluate(left::read, right::read);
+		return evaluate((b) -> left.read(b), (b) -> right.read(b));
 	}
 
 	default <R extends Throwable> @NonNull Comparison evaluate(@NonNull Reader left,
 			@NonNull BufferReader<? super CharBuffer, ? extends R> right) throws IOException, R {
-		return evaluate(left::read, right);
+		return evaluate((b) -> left.read(b), right);
 	}
 
 	default @NonNull Comparison evaluate(@NonNull Reader left, @NonNull CharBuffer right) throws IOException {
-		return evaluate(left::read, right::read);
+		return evaluate((b) -> left.read(b), (b) -> right.read(b));
 	}
 }
