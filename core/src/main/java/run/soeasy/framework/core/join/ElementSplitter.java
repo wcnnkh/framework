@@ -1,6 +1,5 @@
 package run.soeasy.framework.core.join;
 
-import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -65,7 +64,6 @@ public class ElementSplitter extends ElementJoining<Object> implements Splitter<
 	 *
 	 * @param reader 可读输入流，不可为null
 	 * @return 包含解码后元素的Stream
-	 * @throws IOException 当读取或分割操作失败时抛出
 	 */
 	@Override
 	public Stream<String> split(@NonNull BufferReader<? super CharBuffer, ? extends Throwable> reader) {

@@ -103,7 +103,6 @@ public interface HttpResponseEntity<T> {
      * @param <R>      转换后的响应体类型（如 List&lt;User&gt;）
      * @return 包含转换后响应体的新 {@link HttpResponseEntity} 实例（响应头、状态码与原实例一致）
      * @throws NullPointerException 若 bodyType 为 null
-     * @throws run.soeasy.framework.codec.CodecException 若转换失败（如类型不兼容、无匹配转换器）
      */
     default <R> HttpResponseEntity<R> cast(Type bodyType) {
         return map(bodyType, null);
@@ -119,7 +118,6 @@ public interface HttpResponseEntity<T> {
      * @param <R>      转换后的响应体类型（如 User）
      * @return 包含转换后响应体的新 {@link HttpResponseEntity} 实例（响应头、状态码与原实例一致）
      * @throws NullPointerException 若 bodyType 为 null
-     * @throws run.soeasy.framework.codec.CodecException 若转换失败（如类型不兼容、无匹配转换器）
      */
     default <R> HttpResponseEntity<R> cast(Class<R> bodyType) {
         return map(bodyType, null);
@@ -171,7 +169,6 @@ public interface HttpResponseEntity<T> {
      * @param <R>              转换后的响应体类型（如 List&lt;User&gt;、UserVO）
      * @return 包含转换后响应体的新 {@link HttpResponseEntity} 实例（响应头、状态码与原实例一致）
      * @throws NullPointerException 若 bodyType 为 null
-     * @throws run.soeasy.framework.codec.CodecException 若无匹配转换器，或转换过程中出现类型不兼容
      */
     @SuppressWarnings("unchecked")
     default <R> HttpResponseEntity<R> map(@NonNull Type bodyType, MediaTypeConverterFactory converterFactory) {

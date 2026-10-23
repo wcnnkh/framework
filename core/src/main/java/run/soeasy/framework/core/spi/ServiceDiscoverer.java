@@ -13,7 +13,6 @@ import run.soeasy.framework.core.streaming.Streamable;
  *
  * @author soeasy.run
  * @see Streamable
- * @see TypeServiceMap#assignableFrom(Class) （典型实现依赖）
  */
 @FunctionalInterface
 public interface ServiceDiscoverer {

@@ -8,6 +8,7 @@
 		<version>2.0.0</version>
 	</parent>
 	<artifactId>redis</artifactId>
+	<name>redis</name>
 	<description>redis的相关扩展</description>
 	<dependencies>
 		<dependency>

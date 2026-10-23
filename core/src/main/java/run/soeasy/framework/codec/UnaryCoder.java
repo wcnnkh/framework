@@ -15,7 +15,7 @@ import run.soeasy.framework.core.comparator.Evaluator;
  * <li><b>JDK 互操作</b>：继承 {@link UnaryOperator}，可无缝替换所有 接受 {@code UnaryOperator}
  * 的 API（如 {@link java.util.stream.Stream#map}、 {@link java.util.Optional#map}
  * 等）</li>
- * <li><b>结果校验</b>：继承 {@link Coder} 的 {@link Coder#check(Object, Object)}
+ * <li><b>结果校验</b>：继承 {@link Coder} 的 {@link Coder#evaluate(Object, Object)}
  * 能力，可对转换结果进行断言和验证</li>
  * <li><b>函数迭代</b>：通过 {@link #repeated(int)} 将当前转换连续执行多次， 形成 fⁿ(x) 的效果</li>
  * </ul>
@@ -104,9 +104,9 @@ public interface UnaryCoder<T> extends Coder<T, T>, UnaryOperator<T> {
 	 *
 	 * @param count 执行次数，必须 ≥ 0
 	 * @return 重复执行后的新 {@link UnaryCoder}
-	 * @throws IllegalArgumentException 如果 count < 0
+	 * @throws IllegalArgumentException 如果 count &lt; 0
 	 */
-	default UnaryCoder<T> repeated(int count) {
+	default UnaryCoder<T> repeated(int count) throws IllegalArgumentException{
 		if (count < 0) {
 			throw new IllegalArgumentException("count must be non-negative");
 		}

@@ -6,6 +6,7 @@
     <version>2.0.0</version>
   </parent>
   <artifactId>jackson</artifactId>
+  <name>jackson</name>
   <description>jackson的相关扩展</description>
 	<dependencies>
 		<dependency>

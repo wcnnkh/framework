@@ -8,6 +8,7 @@
 		<version>2.0.0</version>
 	</parent>
 	<artifactId>mybatis</artifactId>
+	<name>mybatis</name>
 	<description>mybatis的相关扩展</description>
 	<dependencies>
 		<dependency>

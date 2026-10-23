@@ -6,6 +6,7 @@
     <version>2.0.0</version>
   </parent>
   <artifactId>apple</artifactId>
+  <name>apple</name>
   <description>提供Apple相关的集成，如支付...</description>
 	<dependencies>
 		<dependency>

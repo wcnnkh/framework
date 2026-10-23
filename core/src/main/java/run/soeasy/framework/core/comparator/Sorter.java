@@ -1,6 +1,7 @@
 package run.soeasy.framework.core.comparator;
 
 import java.util.Comparator;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
@@ -14,15 +15,15 @@ import lombok.NonNull;
  * <p>
  * 该接口继承 {@link Evaluator} 和 {@link java.util.Comparator}，
  * 同时具备相等性检查和排序能力。
- * {@link #check(Object, Object)} 协变返回 {@link Ordering}，
+ * {@link #evaluate(Object, Object)} 协变返回 {@link Ordering}，
  * 在判断相等性的同时提供顺序信息；
  * {@link #compare(Object, Object)} 适配 JDK 排序接口，
  * 可直接作为 {@link java.util.Comparator} 使用。
  *
  * <p>
  * 该接口<b>不覆写</b> {@link BiPredicate} 的 {@link #negate()}、
- * {@link #and(java.util.function.BiPredicate)}、
- * {@link #or(java.util.function.BiPredicate)} 方法，
+ * {@link #and(BiPredicate)}、
+ * {@link #or(BiPredicate)} 方法，
  * 保持从 {@link Evaluator} 继承的默认行为（返回 {@code Evaluator} 类型）。
  * 排序相关的组合操作通过 {@link java.util.Comparator} 的
  * {@link #reversed()} 和 {@link #thenComparing} 系列方法提供。
@@ -99,7 +100,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 当当前排序器判定两个对象相等时，
      * 使用 {@code other} 排序器进行次级比较。
      *
-     * @param other 次级排序器
+     * @param keyExtractor 次级排序器
      * @param <U>   {@code other} 的比较结果类型
      * @return 级联合成后的 {@code Sorter} 实例
      */
@@ -202,7 +203,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 基于 {@link Evaluator} 创建 {@code Sorter} 实例。
      *
      * <p>
-     * 将 {@link Evaluator#evaluator(Object, Object)} 的 {@link Comparison}
+     * 将 {@link Evaluator#evaluate(Object, Object)} 的 {@link Comparison}
      * 结果适配为 {@link Ordering}：相等返回 {@link Ordering#equal()}，
      * 不相等返回 {@link Ordering#of(int)} 且顺序值为 {@code 1}。
      *
