@@ -1,7 +1,6 @@
 package run.soeasy.framework.codec.format;
 
-import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.CodecException;
+import run.soeasy.framework.codec.DirectCodec;
 
 /**
  * 2进制与16进制的转换
@@ -9,10 +8,10 @@ import run.soeasy.framework.codec.CodecException;
  * @author soeasy.run
  *
  */
-public class HexCodec implements Codec<byte[], String> {
+public class HexCodec implements DirectCodec<byte[], String> {
 	public static final HexCodec DEFAULT = new HexCodec();
 
-	public String encode(byte[] source) throws CodecException {
+	public String encode(byte[] source) {
 		StringBuilder sign = new StringBuilder();
 		for (int i = 0; i < source.length; i++) {
 			String hex = Integer.toHexString(source[i] & 0xFF);
@@ -28,7 +27,7 @@ public class HexCodec implements Codec<byte[], String> {
 	 * 两个16进制字符表示一个字节长度 因为一个字节等于8bit（bit = 二进制位） 一个16进制字符 需要 4个二进制才能表示
 	 * 所以两个16进制字符等于一个字节
 	 */
-	public byte[] decode(String source) throws CodecException {
+	public byte[] decode(String source) {
 		if (source.length() < 1)
 			return null;
 		byte[] result = new byte[source.length() / 2];

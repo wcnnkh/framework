@@ -2,8 +2,7 @@ package run.soeasy.framework.codec.format;
 
 import java.util.Locale;
 
-import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.CodecException;
+import run.soeasy.framework.codec.DirectCodec;
 
 /**
  * 大小写转换,默认是小写--&gt;大写
@@ -11,7 +10,7 @@ import run.soeasy.framework.codec.CodecException;
  * @author soeasy.run
  *
  */
-public class LocaleCaseCodec implements Codec<String, String> {
+public class LocaleCaseCodec implements DirectCodec<String, String> {
 	public static final LocaleCaseCodec DEFAULT = new LocaleCaseCodec();
 
 	private final Locale locale;
@@ -24,7 +23,7 @@ public class LocaleCaseCodec implements Codec<String, String> {
 		this.locale = locale;
 	}
 
-	public String encode(String source) throws CodecException {
+	public String encode(String source) {
 		if (locale == null) {
 			return source.toUpperCase();
 		} else {
@@ -32,7 +31,7 @@ public class LocaleCaseCodec implements Codec<String, String> {
 		}
 	}
 
-	public String decode(String source) throws CodecException {
+	public String decode(String source) {
 		if (locale == null) {
 			return source.toLowerCase();
 		} else {

@@ -21,7 +21,7 @@ public class URLCodecTest {
 		System.out.println(decode);
 		assertTrue(decode.equals(content));
 		System.out.println("----------------multiple(10次)------------------");
-		codec = URLCodec.UTF_8.multiple(10);
+		codec = URLCodec.UTF_8.toUnary(Codec.identity()).repeated(10);
 		encode = codec.encode(content);
 		System.out.println(encode);
 		decode = codec.decode(encode);

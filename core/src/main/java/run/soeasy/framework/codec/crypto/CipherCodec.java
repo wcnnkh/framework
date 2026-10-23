@@ -14,25 +14,24 @@ import javax.crypto.spec.SecretKeySpec;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.codec.binary.TransferrerCodec;
+import run.soeasy.framework.codec.CompositeCodec;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 /**
- * 基于Cipher的加解密编解码器，继承自{@link TransferrerCodec}，整合了{@link CipherEncoder}（加密）和{@link CipherDecoder}（解密），
+ * 基于Cipher的加解密编解码器，继承自{@link CompositeCodec}，整合了{@link CipherEncoder}（加密）和{@link CipherDecoder}（解密），
  * 支持对称加密和非对称加密的完整流程，提供灵活的构造方式适配不同加密场景（如指定密钥、密钥规范、工作模式和填充方式等）。
  * 
  * <p>该类作为加解密功能的统一入口，通过组合加密器和解密器，实现数据的加密编码与解密解码一体化处理，
  * 适用于AES、RSA等各类基于{@link Cipher}的加密算法。
  * 
  * @author soeasy.run
- * @see TransferrerCodec
  * @see CipherEncoder
  * @see CipherDecoder
  * @see Cipher
  */
 @Getter
-public class CipherCodec extends TransferrerCodec<CipherTransferrer, CipherTransferrer> {
+public class CipherCodec extends CompositeCodec<byte[], byte[], CipherEncoder, CipherDecoder> {
 
     /**
      * 构造非对称加解密编解码器（基于私钥加密、公钥解密）

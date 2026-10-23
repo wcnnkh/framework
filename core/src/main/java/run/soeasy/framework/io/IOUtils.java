@@ -1,19 +1,21 @@
 package run.soeasy.framework.io;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.CharArrayWriter;
 import java.io.Closeable;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
+import java.io.FilterReader;
+import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,56 +24,80 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.page.OffsetConsumer;
+import run.soeasy.framework.core.page.OffsetCopier;
+import run.soeasy.framework.io.buffer.BufferConsumer;
+import run.soeasy.framework.io.buffer.BufferReader;
 
 /**
- * IO操作工具类，提供流处理、缓冲区操作、资源管理等核心IO功能。 该类封装了Java
- * IO/NIO的底层操作，提供统一接口实现流复制、资源关闭、数据转换等常用功能， 采用工具类设计模式，所有方法均为静态方法，避免实例化。
- *
+ * IO 操作工具类，封装 Java IO/NIO 底层操作，提供统一、高效的 IO 处理能力。
  * <p>
- * <b>核心特性：</b>
+ * 该类为工具类（不可实例化），所有方法均为静态方法，核心能力覆盖：
  * <ul>
- * <li>资源管理：安全关闭可关闭资源，支持异常处理和静默关闭</li>
- * <li>流操作：高效实现输入输出流的数据传输和转换</li>
- * <li>缓冲区处理：支持字节/字符缓冲区的批量操作和底层数组优化</li>
- * <li>数据转换：提供流、缓冲区与数组之间的高效转换方法</li>
- * <li>分隔处理：支持按分隔符分割可读源内容并生成流</li>
+ * <li>安全的资源管理：支持批量关闭 Closeable 资源，提供「普通关闭（抛异常）」和「静默关闭（忽略异常）」两种模式</li>
+ * <li>高效的数据拷贝：支持 Buffer/InputStream/Reader 等数据源的分段拷贝，适配大文件场景避免内存溢出</li>
+ * <li>灵活的数据转换：实现流/缓冲区与字节数组/字符数组/字符序列的双向转换</li>
+ * <li>文本分段处理：支持按自定义分隔符分割可读源内容，生成 Stream 流便于流式处理</li>
+ * <li>空资源提供：提供单例的空输入流/空输出流，避免重复创建空资源对象</li>
+ * <li>通用数据流转：基于 BufferFeeder/BufferConsumer 抽象，实现不同 IO 载体间的高效数据传输</li>
  * </ul>
  *
- * <p>
- * <b>使用场景：</b>
+ * <h3>设计原则</h3>
  * <ul>
- * <li>资源管理：统一处理IO资源的打开和关闭，避免资源泄漏</li>
- * <li>大数据处理：通过缓冲区消费者模式处理大文件，避免内存溢出</li>
- * <li>流操作：实现文件复制、网络数据传输等流处理场景</li>
- * <li>数据转换：实现字节流与字符流、缓冲区与数组之间的类型转换</li>
- * <li>文本处理：按行或分隔符处理文本数据，生成Stream流</li>
+ * <li>性能优先：优先使用缓冲区底层数组减少拷贝，默认缓冲区大小适配操作系统页大小（最优 64KB）</li>
+ * <li>异常可控：区分「必须处理的异常」和「可忽略的异常」，提供不同的资源关闭策略</li>
+ * <li>兼容扩展：通过 {@link OffsetCopier} {@link OffsetConsumer}
+ * 等函数式接口支持自定义数据处理逻辑</li>
+ * <li>状态安全：自动管理 Buffer 的 clear/flip 状态，避免调用者手动操作导致的状态错误</li>
+ * <li>语义统一：核心数据流转方法统一命名为 transfer，通过参数类型区分字节/字符场景，降低认知成本</li>
+ * </ul>
+ *
+ * <h3>核心概念说明</h3>
+ * <ul>
+ * <li>BufferFeeder：数据供给器，定义从外部数据源（流/通道）向 Buffer 填充数据的逻辑</li>
+ * <li>BufferCopier：数据拷贝器，定义从 Buffer 到数组的批量拷贝逻辑，支持自定义适配不同 Buffer 类型</li>
+ * <li>BufferConsumer：数据消费者，接收分段处理的数组/Buffer 数据，支持自定义消费逻辑（如写入/解析）</li>
  * </ul>
  *
  * @author soeasy.run
- * @see Resource
- * @see BufferConsumer
+ * @see Closeable
+ * @see java.nio.Buffer
+ * @see OffsetConsumer
+ * @see OffsetCopier
  */
 @UtilityClass
 public final class IOUtils {
-	private static Logger logger = Logger.getLogger(IOUtils.class.getName());
-	/** 默认字节缓冲区大小（4KB） */
-	public static final int DEFAULT_BYTE_BUFFER_SIZE = 1024 * 4;
-	/** 默认字符缓冲区大小（512B） */
-	public static final int DEFAULT_CHAR_BUFFER_SIZE = 512;
-
-	private static final byte[] EMPTY_CONTENT = new byte[0];
-	/** 空输入流单例，避免重复创建 */
+	/**
+	 * 空字节数组常量，用于创建空输入流，避免重复实例化空数组
+	 */
+	public static final byte[] EMPTY_CONTENT = new byte[0];
+	/**
+	 * 输入流/Reader 的结束标记（End of File），表示无更多数据可读
+	 */
+	public static final int EOF = -1;
+	public static final CharBuffer EMPTY_CHAR_BUFFER = CharBuffer.allocate(0);
+	public static final ByteBuffer EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0);
+	/**
+	 * A singleton.
+	 */
+	public static final OutputStream NULL_OUTPUT_STREAM = new NullOutputStream();
+	/**
+	 * 空输入流单例（内容为空的 ByteArrayInputStream），单例模式避免重复创建
+	 */
 	private static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(EMPTY_CONTENT);
-	/** 输入流结束标记 */
-	private static final int EOF = -1;
+	/**
+	 * 日志记录器，用于记录静默关闭资源时的异常（FINEST 级别，不影响正常流程）
+	 */
+	private static final Logger logger = Logger.getLogger(IOUtils.class.getName());
 
 	/**
-	 * 关闭多个可关闭资源，支持空值忽略和异常抛出。
+	 * 批量关闭可关闭资源，遇到异常立即抛出，自动忽略 null 资源。
 	 * <p>
-	 * 遍历资源数组，自动跳过null值，遇到异常时中断并抛出， 适用于try-finally块中确保资源关闭。
-	 * 
-	 * @param closeables 待关闭的资源数组（非空）
-	 * @throws IOException 关闭资源时发生的I/O异常
+	 * 适用于 try-finally 块中「必须确保资源关闭且需要处理关闭异常」的场景，遍历资源数组时跳过 null 元素， 第一个抛出的
+	 * IOException 会中断流程并向上传递。
+	 *
+	 * @param closeables 待关闭的资源数组（不可为 null，允许数组内包含 null 元素）
+	 * @throws IOException 任意资源关闭时抛出的 IO 异常（第一个抛出的异常）
 	 */
 	public static void close(@NonNull Closeable... closeables) throws IOException {
 		CollectionUtils.acceptAll(Arrays.asList(closeables), (e) -> {
@@ -83,11 +109,11 @@ public final class IOUtils {
 	}
 
 	/**
-	 * 静默关闭多个可关闭资源，忽略所有异常。
+	 * 批量静默关闭可关闭资源，忽略所有关闭异常，自动跳过 null 资源。
 	 * <p>
-	 * 遍历资源数组，跳过null值，捕获所有关闭异常并忽略， 适用于不需要处理关闭异常的场景。
-	 * 
-	 * @param closeables 待关闭的资源数组（非空）
+	 * 适用于「无需处理关闭异常」的兜底清理场景，关闭异常会被捕获并记录为 FINEST 级别日志， 不会中断后续资源的关闭流程，也不会向上抛出异常。
+	 *
+	 * @param closeables 待关闭的资源数组（不可为 null，允许数组内包含 null 元素）
 	 */
 	public static void closeQuietly(@NonNull Closeable... closeables) {
 		for (Closeable closeable : closeables) {
@@ -97,436 +123,309 @@ public final class IOUtils {
 			try {
 				closeable.close();
 			} catch (final IOException e) {
-				logger.log(Level.FINEST, e, () -> closeable.toString());
+				logger.log(Level.FINEST, e, () -> "关闭资源时发生静默异常: " + closeable);
 			}
 		}
 	}
 
 	/**
-	 * 返回空输入流单例（内容为空的字节输入流）。
+	 * 重载方法：从 ByteBuffer 拷贝数据到字节数组，交由 BufferConsumer 消费。
 	 * <p>
-	 * 提供单例模式的空输入流，避免重复创建， 适用于需要空输入流的场景（如默认参数）。
-	 * 
-	 * @return 空输入流实例
+	 * 默认使用字节数组的完整长度作为单次分段长度，内置 {@link ByteBuffer#get(byte[], int, int)} 作为拷贝器，
+	 * 该拷贝器严格适配 {@link OffsetCopier} 接口签名，实现批量数据拷贝。
+	 *
+	 * @param <E>      BufferConsumer 执行时抛出的异常类型
+	 * @param source   源 ByteBuffer（不可为 null），提供待拷贝的字节数据
+	 * @param buffer   目标字节数组（不可为 null），用于暂存拷贝的数据
+	 * @param consumer 数据消费者（不可为 null），处理拷贝后的字节数组
+	 * @return 成功拷贝并消费的总字节数
+	 * @throws E BufferConsumer 消费数据时抛出的自定义异常
+	 */
+	public static <S extends Buffer, B, E extends Throwable> long copy(@NonNull ByteBuffer source,
+			@NonNull byte[] buffer, @NonNull OffsetConsumer<? super byte[], ? extends E> consumer) throws E {
+		return copy(source, buffer, buffer.length, ByteBuffer::get, consumer);
+	}
+
+	/**
+	 * 通用 Buffer 数据拷贝方法：从源 Buffer 分段拷贝数据到目标数组，交由消费者处理。
+	 * <p>
+	 * 核心优化点：
+	 * <ul>
+	 * <li>优先使用源 Buffer 的底层数组（hasArray()）直接拷贝，减少内存复制</li>
+	 * <li>无底层数组时，调用自定义 {@link OffsetCopier} 完成数据拷贝</li>
+	 * <li>单次拷贝长度为「源 Buffer 剩余数据量」和「分段长度」的较小值，避免数组越界</li>
+	 * </ul>
+	 *
+	 * @param <S>         源 Buffer 类型（如 ByteBuffer/CharBuffer）
+	 * @param <B>         目标数组类型（如 byte[]/char[]）
+	 * @param <E>         BufferConsumer 执行时抛出的异常类型
+	 * @param source      源 Buffer（不可为 null）
+	 * @param array       目标数组（不可为 null）
+	 * @param chunkLength 单次分段处理长度（必须 &gt; 0）
+	 * @param copier      数据拷贝器（不可为 null），定义从 Buffer 到数组的拷贝逻辑
+	 * @param consumer    数据消费者（不可为 null），处理拷贝后的数组数据
+	 * @return 成功拷贝并消费的总数据量（字节/字符数）
+	 * @throws E BufferConsumer 消费数据时抛出的自定义异常
+	 */
+	public static <S extends Buffer, B, E extends Throwable> long copy(@NonNull S source, @NonNull B array,
+			int chunkLength, @NonNull OffsetCopier<? super S, ? super B> copier,
+			@NonNull OffsetConsumer<? super B, ? extends E> consumer) throws E {
+		return transfer(source, array, (a, b) -> {
+			int remaining = Math.min(a.remaining(), chunkLength);
+			if (a.hasArray()) {
+				System.arraycopy(a.array(), a.arrayOffset() + a.position(), b, 0, remaining);
+				a.position(a.position() + remaining);
+			} else {
+				copier.copy(a, b, 0, remaining);
+			}
+		}, consumer);
+	}
+
+	/**
+	 * 获取空输入流单例（内容为空的 ByteArrayInputStream）。
+	 * <p>
+	 * 单例模式避免重复创建空输入流对象，适用于「需要空输入流作为默认参数」的场景， 该流无实际内容，调用 read() 方法会直接返回 EOF（-1）。
+	 *
+	 * @return 空输入流单例（非 null）
 	 */
 	public static InputStream emptyInput() {
 		return EMPTY_INPUT_STREAM;
 	}
 
 	/**
-	 * 返回空输出流单例（不实际写入数据的输出流）。
+	 * 获取空输出流单例（所有写入操作均被忽略）。
 	 * <p>
-	 * 提供单例模式的空输出流，所有写入操作被忽略， 适用于需要空输出流的场景（如测试或占位）。
-	 * 
-	 * @return 空输出流实例
+	 * 单例模式的 NullOutputStream，适用于测试、占位或「不需要实际写入数据」的场景， 所有 write
+	 * 方法无任何副作用，不会抛出异常，也不会写入任何数据。
+	 *
+	 * @return 空输出流单例（非 null）
 	 */
 	public static OutputStream nullOutput() {
-		return NullOutputStream.NULL_OUTPUT_STREAM;
+		return NULL_OUTPUT_STREAM;
 	}
 
 	/**
-	 * 处理具有底层数组的缓冲区数据（内部工具方法）。
+	 * 按自定义分隔符分割可读源内容，生成 CharSequence 流（使用自定义字符缓冲区）。
 	 * <p>
-	 * 该方法通过函数式接口处理缓冲区底层数组， 避免直接操作缓冲区导致的性能损耗。
-	 * 
-	 * @param <B>            缓冲区类型，需继承Buffer
-	 * @param <A>            数据数组类型
-	 * @param <E>            异常类型
-	 * @param buffer         源缓冲区
-	 * @param length         处理数据长度
-	 * @param arrayReader    读取缓冲区数组的函数
-	 * @param bufferConsumer 数据处理消费者
-	 * @throws E 处理数据时抛出的异常
+	 * 适用于大文本流的分段处理，避免一次性加载全部内容到内存，分隔逻辑由 SplitReadableIterator 实现， 支持任意自定义分隔符（如换行符
+	 * \n、逗号 ,、分号 ; 等）。
+	 *
+	 * @param reader    源可读对象（不可为 null），如 Reader、CharSequenceReader 等
+	 * @param buffer    字符缓冲区（不可为 null），用于分段读取数据
+	 * @param delimiter 分隔符（不可为 null），如 "\n"、"," 等
+	 * @return 分割后的 CharSequence 流（非 null），每个元素为分隔符分隔的文本片段
 	 */
-	private static <B extends Buffer, A, E extends Throwable> void processArrayBuffer(B buffer, int length,
-			Function<? super B, ? extends A> arrayReader,
-			@NonNull BufferConsumer<? super A, ? extends E> bufferConsumer) throws E {
-		A array = arrayReader.apply(buffer);
-		int offset = buffer.arrayOffset() + buffer.position();
-		bufferConsumer.accept(array, offset, length);
-		buffer.position(buffer.position() + length);
-	}
-
-	/**
-	 * 将Reader转换为行流，自动关闭缓冲读取器。
-	 * <p>
-	 * 使用BufferedReader包装输入读取器，生成按行分割的Stream流， 流关闭时自动关闭底层读取器。
-	 * 
-	 * @param reader 输入读取器
-	 * @return 包含每行内容的Stream流
-	 */
-	public static Stream<String> readLines(Reader reader) {
-		BufferedReader bufferedReader = new BufferedReader(reader);
-		return readLines(bufferedReader).onClose(() -> closeQuietly(bufferedReader));
-	}
-
-	/**
-	 * 按指定分隔符分割可读源内容（使用自定义缓冲区）。
-	 * <p>
-	 * 通过自定义字符缓冲区和分隔符分割可读源内容， 适用于大文本流的分段处理，避免一次性加载全部内容。
-	 * 
-	 * @param source    可读源（非空）
-	 * @param buffer    字符缓冲区（非空）
-	 * @param delimiter 分隔符（非空）
-	 * @return 分割后的字符序列流
-	 */
-	public static Stream<CharSequence> split(@NonNull Readable source, @NonNull CharBuffer buffer,
+	public static Stream<CharSequence> split(@NonNull BufferReader<? super CharBuffer, ? extends Throwable> reader, @NonNull CharBuffer buffer,
 			@NonNull CharSequence delimiter) {
-		SplitReadableIterator iterator = new SplitReadableIterator(source, buffer, delimiter);
+		SplitReadableIterator iterator = new SplitReadableIterator(reader, buffer, delimiter);
 		return CollectionUtils.unknownSizeStream(iterator);
 	}
 
 	/**
-	 * 按指定分隔符分割可读源内容（使用默认缓冲区）。
+	 * 按自定义分隔符分割可读源内容，生成 CharSequence 流（使用默认字符缓冲区）。
 	 * <p>
-	 * 使用默认字符缓冲区（{@value #DEFAULT_CHAR_BUFFER_SIZE}）和分隔符分割内容， 简化常用场景的分隔操作。
-	 * 
-	 * @param source    可读源
-	 * @param delimiter 分隔符
-	 * @return 分割后的字符序列流
+	 * 重载方法，默认使用 {@link Text#DEFAULT_CHAR_BUFFER_SIZE} 大小的字符缓冲区，
+	 * 简化「无需自定义缓冲区大小」的常用场景。
+	 *
+	 * @param reader    源可读对象（不可为 null）
+	 * @param delimiter 分隔符（不可为 null）
+	 * @return 分割后的 CharSequence 流（非 null）
 	 */
-	public static Stream<CharSequence> split(Readable source, CharSequence delimiter) {
-		return split(source, CharBuffer.allocate(DEFAULT_CHAR_BUFFER_SIZE), delimiter);
+	public static Stream<CharSequence> split(BufferReader<? super CharBuffer, ? extends Throwable> reader, CharSequence delimiter) {
+		return split(reader, CharBuffer.allocate(Text.DEFAULT_CHAR_BUFFER_SIZE), delimiter);
 	}
 
 	/**
-	 * 将缓冲区剩余数据转换为指定类型数组（支持底层数组优化）。
+	 * 重载方法：将 ByteBuffer 剩余数据转换为字节数组。
 	 * <p>
-	 * 优先使用缓冲区底层数组避免拷贝，若无可直接使用数组则通过复制操作转换， 适用于高效的缓冲区数据导出场景。
-	 * 
-	 * @param <B>          缓冲区类型
+	 * 默认使用 byte[]::new 作为数组创建函数，内置 {@link ByteBuffer#get(byte[], int, int)} 作为拷贝器，
+	 * 该拷贝器严格适配 {@link OffsetCopier} 接口签名，实现批量数据拷贝。
+	 *
+	 * @param buffer 源 ByteBuffer（不可为 null）
+	 * @return 包含 ByteBuffer 剩余数据的字节数组（非 null）
+	 */
+	public static byte[] toArray(@NonNull ByteBuffer buffer) {
+		return toArray(buffer, byte[]::new, ByteBuffer::get);
+	}
+
+	/**
+	 * 重载方法：将 CharBuffer 剩余数据转换为字符数组。
+	 * <p>
+	 * 默认使用 char[]::new 作为数组创建函数，内置 {@link CharBuffer#get(char[], int, int)} 作为拷贝器，
+	 * 该拷贝器严格适配 {@link OffsetCopier} 接口签名，实现批量数据拷贝。
+	 *
+	 * @param buffer 源 CharBuffer（不可为 null）
+	 * @return 包含 CharBuffer 剩余数据的字符数组（非 null）
+	 */
+	public static char[] toArray(@NonNull CharBuffer buffer) {
+		return toArray(buffer, char[]::new, CharBuffer::get);
+	}
+
+	public static char[] toArray(@NonNull CharBuffer buffer, boolean safe) {
+		// TODO 帮我补充下面的代码，目的是如果原始数组可以直接表示那返回原始数组
+		if (!safe && buffer.hasArray() && buffer.length() == buffer.position()) {
+			return buffer.array();
+		}
+		return toArray(buffer, char[]::new, CharBuffer::get);
+	}
+
+	public static <B extends Buffer, A, E extends Throwable> void read(B source, IntFunction<? extends A> arrayFactory,
+			BufferConsumer<? super A, ? extends E> consumer) throws E {
+
+	}
+
+	/**
+	 * 通用 Buffer 转数组方法：将源 Buffer 剩余数据转换为指定类型数组。
+	 * <p>
+	 * 底层复用 {@link #copy(Buffer, Object, int, OffsetCopier, OffsetConsumer)}
+	 * 方法完成数据拷贝，若 Buffer 无剩余数据，返回空数组（长度为 0），适用于需要自定义拷贝器的场景。
+	 *
+	 * @param <S>          源 Buffer 类型
 	 * @param <A>          目标数组类型
-	 * @param buffer       源缓冲区（非空）
-	 * @param arrayReader  读取缓冲区数组的函数
-	 * @param arrayCopyer  复制缓冲区数据的函数
-	 * @param arrayCreator 数组创建函数
-	 * @return 包含缓冲区数据的新数组
+	 * @param <E>          拷贝器抛出的异常类型
+	 * @param source       源 Buffer（不可为 null）
+	 * @param arrayFactory 数组创建函数（不可为 null），创建指定长度的目标数组
+	 * @param copier       数据拷贝器（不可为 null），定义从 Buffer 到数组的拷贝逻辑
+	 * @return 包含 Buffer 剩余数据的新数组（非 null）
+	 * @throws E 拷贝器执行时抛出的自定义异常
 	 */
-	public static <B extends Buffer, A> A toArray(@NonNull B buffer, Function<? super B, ? extends A> arrayReader,
-			BiConsumer<? super B, ? super A> arrayCopyer, IntFunction<? extends A> arrayCreator) {
-		int length = buffer.remaining();
-		A newArray = arrayCreator.apply(length);
-		if (buffer.hasArray()) {
-			processArrayBuffer(buffer, length, arrayReader, (array, offset, len) -> {
-				System.arraycopy(array, offset, newArray, 0, len);
-			});
-		} else {
-			arrayCopyer.accept(buffer, newArray);
-		}
-		return newArray;
-	}
-
-	/**
-	 * 将输入流内容转换为字节数组。
-	 * <p>
-	 * 使用ByteArrayOutputStream缓冲输入流内容，适用于小文件场景， 大文件可能导致内存溢出，需谨慎使用。
-	 * 
-	 * @param input 输入流
-	 * @return 包含流内容的字节数组
-	 * @throws NullPointerException 输入流为null时抛出
-	 * @throws IOException          读取流时发生I/O异常
-	 */
-	public static byte[] toByteArray(InputStream input) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		transferTo(input, output::write);
-		return output.toByteArray();
-	}
-
-	/**
-	 * 将可读源内容转换为字符数组。
-	 * <p>
-	 * 使用CharArrayWriter缓冲可读源内容，适用于小文本场景， 通过缓冲区消费者模式实现高效转换。
-	 * 
-	 * @param readable 可读源
-	 * @return 包含可读源内容的字符数组
-	 * @throws IOException 读取时发生I/O异常
-	 */
-	public static char[] toCharArray(Readable readable) throws IOException {
-		CharArrayWriter sw = new CharArrayWriter();
-		transferTo(readable, sw::write);
-		return sw.toCharArray();
-	}
-
-	/**
-	 * 将可读源内容转换为字符序列。
-	 * <p>
-	 * 使用StringBuilder累加可读源内容，返回可变字符序列， 适用于需要后续编辑的文本处理场景。
-	 * 
-	 * @param readable 可读源（非空）
-	 * @return 包含可读源内容的StringBuilder实例
-	 * @throws IOException 读取时发生I/O异常
-	 */
-	public static CharSequence toCharSequence(@NonNull Readable readable) throws IOException {
-		StringBuilder builder = new StringBuilder();
-		transferTo(readable, builder::append);
-		return builder;
-	}
-
-	/**
-	 * 分批次传输缓冲区数据（支持自定义批次大小）。
-	 * <p>
-	 * 将缓冲区数据按指定批次大小分割传输，适用于需要控制内存占用的场景， 通过函数式接口实现自定义数据处理逻辑。
-	 * 
-	 * @param <B>            缓冲区类型
-	 * @param <A>            数组类型
-	 * @param <E>            异常类型
-	 * @param buffer         源缓冲区（非空）
-	 * @param array          目标数组（非空）
-	 * @param arrayLength    批次长度（需为正数）
-	 * @param arrayCopyer    复制缓冲区数据的函数
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总数据量
-	 * @throws E                        处理数据时抛出的异常
-	 * @throws IllegalArgumentException 当arrayLength非正时时抛出
-	 */
-	public static <B extends Buffer, A, E extends Throwable> long transferTo(@NonNull B buffer, @NonNull A array,
-			int arrayLength, BiConsumer<? super B, ? super A> arrayCopyer,
-			@NonNull BufferConsumer<? super A, ? extends E> bufferConsumer) throws E {
-		if (arrayLength <= 0) {
-			throw new IllegalArgumentException("Array length must be positive");
-		}
-
-		long total = 0;
-		int remaining = buffer.remaining();
-
-		while (remaining > 0) {
-			int chunkSize = Math.min(remaining, arrayLength);
-			int originalPosition = buffer.position();
-			buffer.limit(originalPosition + chunkSize);
-			arrayCopyer.accept(buffer, array);
-			buffer.limit(buffer.capacity());
-			bufferConsumer.accept(array, 0, chunkSize);
-			total += chunkSize;
-			buffer.position(originalPosition + chunkSize);
-			remaining -= chunkSize;
-		}
-
-		return total;
-	}
-
-	/**
-	 * 传输缓冲区数据（支持底层数组和直接缓冲区）。
-	 * <p>
-	 * 自动判断缓冲区是否具有底层数组，优先使用底层数组避免拷贝， 直接缓冲区通过复制操作转换，确保高效传输。
-	 * 
-	 * @param <B>                      缓冲区类型
-	 * @param <A>                      数组类型
-	 * @param <E>                      异常类型
-	 * @param buffer                   源缓冲区（非空）
-	 * @param arrayReader              读取缓冲区数组的函数
-	 * @param directBufferArrayCreator 直接缓冲区数组创建函数
-	 * @param directBufferCopyer       直接缓冲区数据复制函数
-	 * @param bufferConsumer           数据处理消费者
-	 * @return 传输的数据量
-	 * @throws E 处理数据时抛出的异常
-	 */
-	public static <B extends Buffer, A, E extends Throwable> int transferTo(@NonNull B buffer,
-			@NonNull Function<? super B, ? extends A> arrayReader, IntFunction<? extends A> directBufferArrayCreator,
-			BiConsumer<? super B, ? super A> directBufferCopyer,
-			@NonNull BufferConsumer<? super A, ? extends E> bufferConsumer) throws E {
-		int length = buffer.remaining();
+	public static <S extends Buffer, A, E extends Throwable> A toArray(@NonNull S source,
+			@NonNull IntFunction<? extends A> arrayFactory, @NonNull OffsetCopier<? super S, ? super A> copier)
+			throws E {
+		int length = source.remaining();
+		A array = arrayFactory.apply(length);
 		if (length == 0) {
-			return 0;
+			return array;
 		}
-
-		if (buffer.hasArray()) {
-			processArrayBuffer(buffer, length, arrayReader, bufferConsumer);
-		} else {
-			A array = directBufferArrayCreator.apply(length);
-			directBufferCopyer.accept(buffer, array);
-			bufferConsumer.accept(array, 0, length);
-		}
-		return length;
+		copy(source, array, length, copier, (a, b, c) -> {
+		});
+		return array;
 	}
 
 	/**
-	 * 传输输入流数据（使用默认缓冲区大小）。
+	 * 从源 Buffer 转移数据到目标载体，交由消费者处理。
 	 * <p>
-	 * 使用默认字节缓冲区（{@value #DEFAULT_BYTE_BUFFER_SIZE}）传输数据， 适用于大多数常规输入流传输场景。
-	 * 
-	 * @param <E>            异常类型
-	 * @param input          输入流
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字节数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取流时发生I/O异常
+	 * 核心特性：
+	 * <ul>
+	 * <li>支持 Buffer position 任意移动</li>
+	 * <li>由 transferrer 自定义数据转移逻辑，适配不同类型的 Buffer/载体组合</li>
+	 * <li>仅消费有效转移数据（transferredLength &gt; 0），避免空消费</li>
+	 * <li>最终恢复 Buffer 初始 position，保证状态安全</li>
+	 * </ul>
+	 *
+	 * @param <S>         源 Buffer 类型（如 ByteBuffer/CharBuffer）
+	 * @param <B>         目标载体类型（如 byte[]/char[]）
+	 * @param <E>         消费者抛出的异常类型
+	 * @param source      源 Buffer（不可为 null），待转移数据的缓冲区
+	 * @param buffer      目标载体（不可为 null），存储转移到的数据
+	 * @param transferrer 数据转移器（不可为 null），定义从 source 到 buffer 的转移逻辑
+	 * @param consumer    数据消费者（不可为 null），处理转移到的载体数据
+	 * @return 累计转移的有效数据长度（字节/字符数）
+	 * @throws E 转移或消费过程中抛出的自定义异常
 	 */
-	public static <E extends Throwable> long transferTo(InputStream input,
-			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(input, DEFAULT_BYTE_BUFFER_SIZE, bufferConsumer);
-	}
+	public static <S extends Buffer, B, E extends Throwable> long transfer(@NonNull S source, @NonNull B buffer,
+			@NonNull BiConsumer<? super S, ? super B> transferrer,
+			@NonNull OffsetConsumer<? super B, ? extends E> consumer) throws E {
 
-	/**
-	 * 传输输入流数据（使用自定义缓冲区）。
-	 * <p>
-	 * 通过自定义字节缓冲区传输数据，适用于需要控制缓冲区大小的场景， 避免默认缓冲区可能带来的内存浪费或不足。
-	 * 
-	 * @param <E>            异常类型
-	 * @param input          输入流（非空）
-	 * @param buffer         字节缓冲区（非空）
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字节数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取流时发生I/O异常
-	 */
-	public static <E extends Throwable> long transferTo(@NonNull InputStream input, byte[] buffer,
-			@NonNull BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
-		long count = 0;
-		int n = 0;
-		while (EOF != (n = input.read(buffer))) {
-			bufferConsumer.accept(buffer, 0, n);
-			count += n;
-		}
-		return count;
-	}
+		long totalTransferred = 0;
+		int initPos = source.position();
+		try {
+			while (source.hasRemaining()) {
+				int pos = source.position();
+				transferrer.accept(source, buffer);
+				int transferredLength = Math.abs(source.position() - pos);
+				if (transferredLength == 0 && !source.hasRemaining()) {
+					break;
+				}
 
-	/**
-	 * 传输输入流数据（使用自定义缓冲区大小）。
-	 * <p>
-	 * 根据指定缓冲区大小创建新缓冲区，适用于需要动态调整缓冲区大小的场景， 如处理不同大小的数据包。
-	 * 
-	 * @param <E>            异常类型
-	 * @param input          输入流
-	 * @param bufferSize     缓冲区大小
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字节数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取流时发生I/O异常
-	 */
-	public static <E extends Throwable> long transferTo(InputStream input, int bufferSize,
-			BufferConsumer<? super byte[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(input, new byte[bufferSize], bufferConsumer);
-	}
-
-	/**
-	 * 传输可读源数据（使用默认缓冲区大小）。
-	 * <p>
-	 * 使用默认字符缓冲区（{@value #DEFAULT_CHAR_BUFFER_SIZE}）传输数据， 适用于大多数常规可读源传输场景。
-	 * 
-	 * @param <E>            异常类型
-	 * @param readable       可读源（非空）
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字符数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取时发生I/O异常
-	 */
-	public static <E extends Throwable> long transferTo(@NonNull Readable readable,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(readable, DEFAULT_CHAR_BUFFER_SIZE, bufferConsumer);
-	}
-
-	/**
-	 * 将Readable数据源中的数据分批读取到CharBuffer，并传递给消费者处理。
-	 * <p>
-	 * 持续读取数据到缓冲区，处理后压缩缓冲区以便后续读取， 适用于大文本流处理，避免一次性加载全部数据到内存。
-	 * 
-	 * @param <E>            异常类型
-	 * @param readable       可读源（非空）
-	 * @param buffer         字符缓冲区（非空）
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字符数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取时发生I/O异常
-	 */
-	public static <E extends Throwable> long transferTo(@NonNull Readable readable, @NonNull CharBuffer buffer,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E, IOException {
-		long total = 0;
-
-		while (readable.read(buffer) != -1) {
-			buffer.flip();
-			if (buffer.remaining() == 0) {
-				buffer.clear();
-				continue;
+				if (transferredLength > 0) {
+					totalTransferred += transferredLength;
+					consumer.accept(buffer, 0, transferredLength);
+				}
 			}
-			total += transferTo(buffer, CharBuffer::array, char[]::new, CharBuffer::get, bufferConsumer);
-			buffer.compact();
+		} finally {
+			source.position(initPos);
 		}
+		return totalTransferred;
+	}
 
-		if (buffer.position() > 0) {
-			buffer.flip();
-			if (buffer.remaining() > 0) {
-				total += transferTo(buffer, CharBuffer::array, char[]::new, CharBuffer::get, bufferConsumer);
+	/**
+	 * 包装输入流，使其忽略关闭操作。
+	 *
+	 * <p>
+	 * 返回的包装流在调用 {@link InputStream#close()} 时不会关闭底层输入流。
+	 *
+	 * @param inputStream 原始输入流（不可为 null）
+	 * @return 忽略关闭操作的包装输入流
+	 */
+	public static InputStream ignoreClose(@NonNull InputStream inputStream) {
+		return new FilterInputStream(inputStream) {
+			@Override
+			public void close() throws IOException {
+				// 忽略关闭操作
 			}
-			buffer.clear();
-		}
-
-		return total;
+		};
 	}
 
 	/**
-	 * 传输可读源数据（使用自定义缓冲区大小）。
+	 * 包装输出流，使其忽略关闭操作。
+	 *
 	 * <p>
-	 * 根据指定缓冲区大小创建新字符缓冲区，适用于需要动态调整缓冲区大小的文本处理场景。
-	 * 
-	 * @param <E>            异常类型
-	 * @param readable       可读源（非空）
-	 * @param bufferSize     缓冲区大小
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字符数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取时发生I/O异常
+	 * 返回的包装流在调用 {@link OutputStream#close()} 时不会关闭底层输出流。
+	 *
+	 * @param outputStream 原始输出流（不可为 null）
+	 * @return 忽略关闭操作的包装输出流
 	 */
-	public static <E extends Throwable> long transferTo(@NonNull Readable readable, int bufferSize,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(readable, CharBuffer.allocate(bufferSize), bufferConsumer);
+	public static OutputStream ignoreClose(@NonNull OutputStream outputStream) {
+		return new FilterOutputStream(outputStream) {
+			@Override
+			public void close() throws IOException {
+				// 忽略关闭操作
+			}
+		};
 	}
 
 	/**
-	 * 传输读取器数据（使用默认缓冲区大小）。
+	 * 包装字符读取器，使其忽略关闭操作。
+	 *
 	 * <p>
-	 * 使用默认字符缓冲区（{@value #DEFAULT_CHAR_BUFFER_SIZE}）传输读取器数据， 适用于常规读取器数据处理场景。
-	 * 
-	 * @param <E>            异常类型
-	 * @param input          读取器（非空）
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字符数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取时发生I/O异常
+	 * 返回的包装器在调用 {@link Reader#close()} 时不会关闭底层读取器。
+	 *
+	 * @param reader 原始字符读取器（不可为 null）
+	 * @return 忽略关闭操作的包装字符读取器
 	 */
-	public static <E extends Throwable> long transferTo(@NonNull Reader input,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(input, DEFAULT_CHAR_BUFFER_SIZE, bufferConsumer);
+	public static Reader ignoreClose(@NonNull Reader reader) {
+		return new FilterReader(reader) {
+			@Override
+			public void close() throws IOException {
+				// 忽略关闭操作
+			}
+		};
 	}
 
 	/**
-	 * 传输读取器数据（使用自定义缓冲区）。
+	 * 包装字符写入器，使其忽略关闭操作。
+	 *
 	 * <p>
-	 * 通过自定义字符缓冲区传输读取器数据，适用于需要精确控制缓冲区的场景。
-	 * 
-	 * @param <E>            异常类型
-	 * @param input          读取器（非空）
-	 * @param buffer         字符缓冲区（非空）
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字符数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取时发生I/O异常
+	 * 返回的包装器在调用 {@link Writer#close()} 时不会关闭底层写入器。
+	 *
+	 * @param writer 原始字符写入器（不可为 null）
+	 * @return 忽略关闭操作的包装字符写入器
 	 */
-	public static <E extends Throwable> long transferTo(@NonNull Reader input, char[] buffer,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E, IOException {
-		long count = 0;
-		int n = 0;
-		while (EOF != (n = input.read(buffer))) {
-			bufferConsumer.accept(buffer, 0, n);
-			count += n;
-		}
-		return count;
+	public static Writer ignoreClose(@NonNull Writer writer) {
+		return new FilterWriter(writer) {
+			@Override
+			public void close() throws IOException {
+				// 忽略关闭操作
+			}
+		};
 	}
 
-	/**
-	 * 传输读取器数据（使用自定义缓冲区大小）。
-	 * <p>
-	 * 根据指定缓冲区大小创建新字符缓冲区，适用于不同规模的文本数据处理。
-	 * 
-	 * @param <E>            异常类型
-	 * @param input          读取器（非空）
-	 * @param bufferSize     缓冲区大小
-	 * @param bufferConsumer 数据处理消费者
-	 * @return 传输的总字符数
-	 * @throws E           处理数据时抛出的异常
-	 * @throws IOException 读取时发生I/O异常
-	 */
-	public static <E extends Throwable> long transferTo(@NonNull Reader input, int bufferSize,
-			@NonNull BufferConsumer<? super char[], ? extends E> bufferConsumer) throws E, IOException {
-		return transferTo(input, new char[bufferSize], bufferConsumer);
+	public static Binary binary() {
+		return Binary.INSTANCE;
+	}
+
+	public static Text text() {
+		return Text.INSTANCE;
 	}
 }

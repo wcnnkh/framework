@@ -1,32 +1,25 @@
 package run.soeasy.framework.codec.format;
 
-import run.soeasy.framework.codec.CodecException;
-import run.soeasy.framework.codec.MultipleEncoder;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 
-public class UnicodeEncoder implements MultipleEncoder<CharSequence> {
-	private static final String EMPTY = "";
+import lombok.NonNull;
+import run.soeasy.framework.codec.io.StringCoder;
+import run.soeasy.framework.io.buffer.StreamCharBufferTransporter;
+
+public class UnicodeEncoder implements StringCoder, StreamCharBufferTransporter {
 	public static final UnicodeEncoder DEFAULT = new UnicodeEncoder();
 
 	@Override
-	public CharSequence encode(CharSequence source) throws CodecException {
-		if (source == null) {
-			return null;
-		}
-
-		int len = source.length();
-		if (len == 0) {
-			return EMPTY;
-		}
-
-		StringBuilder builder = new StringBuilder(len);
-		for (int i = 0; i < len; i++) {
-			char ch = source.charAt(i);
-			if (ch < 256) {
-				builder.append(ch);
+	public void readInto(@NonNull Reader reader, @NonNull Writer writer) throws IOException {
+		int code;
+		while ((code = reader.read()) != 0) {
+			if (code < 256) {
+				writer.write(code);
 			} else {
-				builder.append("\\u" + Integer.toHexString(ch & 0xffff));
+				writer.write("\\u" + Integer.toHexString(code & 0xffff));
 			}
 		}
-		return builder;
 	}
 }

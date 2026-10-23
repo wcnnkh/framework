@@ -5,13 +5,14 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import run.soeasy.framework.codec.format.CharsetCodec;
+import run.soeasy.framework.codec.format.HexCodec;
 
 public class GzipTest {
 	@Test
 	public void gzip() {
 		String content = "a;dfkasdf;asfkasf;kasfsadkdkslslslsslslslsslllllllllllllllllllllllllllllllllllllllllllllllllllllld";
-		String gzip = CharsetCodec.UTF_8.gzip().encode(content);
+		String gzip = CharsetCodec.UTF_8.gzip().to(HexCodec.DEFAULT).encode(content);
 		System.out.println(gzip);
-		assertTrue(content.equals(CharsetCodec.UTF_8.gzip().decode(gzip)));
+		assertTrue(content.equals(CharsetCodec.UTF_8.gzip().to(HexCodec.DEFAULT).decode(gzip)));
 	}
 }

@@ -1,9 +1,8 @@
 package run.soeasy.framework.codec.format;
 
-import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.DecodeException;
+import run.soeasy.framework.codec.DirectCodec;
 
-public class Base64 implements Codec<byte[], String> {
+public class Base64 implements DirectCodec<byte[], String> {
 	static private final int BASELENGTH = 128;
 
 	static private final int LOOKUPLENGTH = 64;
@@ -182,7 +181,7 @@ public class Base64 implements Codec<byte[], String> {
 		int len = removeWhiteSpace(base64Data);
 
 		if (len % FOURBYTE != 0) {
-			throw new DecodeException("should be divisible by four(应该可以被四整除)");
+			throw new IllegalArgumentException("should be divisible by four(应该可以被四整除)");
 		}
 
 		int numberQuadruple = (len / FOURBYTE);

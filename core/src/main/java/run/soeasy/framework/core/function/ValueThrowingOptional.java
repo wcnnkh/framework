@@ -29,7 +29,7 @@ import lombok.NonNull;
  * @see ThrowingOptional
  * @see ValueThrowingSupplier
  */
-public class ValueThrowingOptional<T, E extends Throwable> extends ValueThrowingSupplier<T, E>
+public class ValueThrowingOptional<T, E extends Exception> extends ValueThrowingSupplier<T, E>
         implements ThrowingOptional<T, E> {
     private static final long serialVersionUID = 1L;
     

@@ -29,7 +29,7 @@ import run.soeasy.framework.core.streaming.Streamable;
  * 
  * @author soeasy.run
  */
-public class LockableContainer<C, X extends Throwable> implements ReadWriteLock {
+public class LockableContainer<C, X extends Exception> implements ReadWriteLock {
 	/**
 	 * 内部容器实例，使用volatile保证可见性
 	 */

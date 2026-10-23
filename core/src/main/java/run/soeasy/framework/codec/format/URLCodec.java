@@ -7,12 +7,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
-import run.soeasy.framework.codec.CodecException;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.codec.MultipleCodec;
+import run.soeasy.framework.codec.DirectCodec;
 
-public class URLCodec implements MultipleCodec<String> {
+public class URLCodec implements DirectCodec<String, String> {
 	public static final URLCodec UTF_8 = new URLCodec(StandardCharsets.UTF_8);
 	private final String charsetName;
 
@@ -24,19 +21,19 @@ public class URLCodec implements MultipleCodec<String> {
 		this(charset.name());
 	}
 
-	public String encode(String source) throws CodecException {
+	public String encode(String source) {
 		try {
 			return URLEncoder.encode(source, charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new EncodeException(source, e);
+			throw new IllegalArgumentException(source, e);
 		}
 	}
 
-	public String decode(String source) throws CodecException {
+	public String decode(String source) {
 		try {
 			return URLDecoder.decode(source, charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new DecodeException(source, e);
+			throw new IllegalArgumentException(source, e);
 		}
 	}
 

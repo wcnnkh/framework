@@ -10,6 +10,7 @@ package run.soeasy.framework.core.comparator;
  * 
  * @author soeasy.run
  */
+@FunctionalInterface
 public interface Ordered {
 
     /**

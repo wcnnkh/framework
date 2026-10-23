@@ -37,7 +37,7 @@ import run.soeasy.framework.core.domain.Wrapper;
  * @see ThrowingSupplier
  * @see Wrapper
  */
-public interface ThrowingSupplierWrapper<T, E extends Throwable, W extends ThrowingSupplier<T, E>>
+public interface ThrowingSupplierWrapper<T, E extends Exception, W extends ThrowingSupplier<T, E>>
 		extends ThrowingSupplier<T, E>, Wrapper<W> {
 
 	/**
@@ -100,7 +100,7 @@ public interface ThrowingSupplierWrapper<T, E extends Throwable, W extends Throw
 	 * @return 异常类型转换后的供应者实例
 	 */
 	@Override
-	default <R extends Throwable> ThrowingSupplier<T, R> throwing(
+	default <R extends Exception> ThrowingSupplier<T, R> throwing(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return getSource().throwing(throwingMapper);
 	}

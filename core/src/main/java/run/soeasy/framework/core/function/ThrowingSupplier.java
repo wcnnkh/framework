@@ -26,7 +26,7 @@ import lombok.NonNull;
  * @see ThrowingOptional
  */
 @FunctionalInterface
-public interface ThrowingSupplier<T, E extends Throwable> {
+public interface ThrowingSupplier<T, E extends Exception> {
 
 	/**
 	 * 获取供应的结果，可能抛出指定类型的异常。 作为接口的核心方法，实现类需在此方法中定义具体的结果获取逻辑（如资源加载、数据计算等）。
@@ -88,7 +88,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
 	 * @param throwingMapper 用于转换异常的函数，接收原始异常E并返回目标异常R，非空
 	 * @return 新的ThrowingSupplier，其异常类型为R
 	 */
-	default <R extends Throwable> ThrowingSupplier<T, R> throwing(
+	default <R extends Exception> ThrowingSupplier<T, R> throwing(
 			@NonNull Function<? super E, ? extends R> throwingMapper) {
 		return new ChainThrowingSupplier<>(this, ThrowingRunnable.ignore(), ThrowingFunction.identity(),
 				throwingMapper);

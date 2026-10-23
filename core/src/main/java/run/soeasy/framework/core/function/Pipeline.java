@@ -17,7 +17,7 @@ import lombok.NonNull;
  * @see ThrowingFunction
  * @see ThrowingOptional
  */
-public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E> {
+public interface Pipeline<T, E extends Exception> extends ThrowingSupplier<T, E>, AutoCloseable {
 
 	/**
 	 * 创建一个空的流水线实例，不包含任何资源或操作。
@@ -28,7 +28,7 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 	 * @return 空的流水线实例
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, E extends Throwable> Pipeline<T, E> empty() {
+	public static <T, E extends Exception> Pipeline<T, E> empty() {
 		return (Pipeline<T, E>) EmptyPipeline.INSTANCE;
 	}
 
@@ -40,7 +40,7 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 	 * @param supplier 资源供应者，提供资源的获取逻辑，非空
 	 * @return 新的流水线实例，关联指定的资源供应者
 	 */
-	public static <T, E extends Throwable> Pipeline<T, E> forSupplier(ThrowingSupplier<T, E> supplier) {
+	public static <T, E extends Exception> Pipeline<T, E> forSupplier(ThrowingSupplier<T, E> supplier) {
 		return supplier.closeable();
 	}
 
@@ -146,7 +146,7 @@ public interface Pipeline<T, E extends Throwable> extends ThrowingSupplier<T, E>
 	 * @return 异常类型转换后的流水线实例
 	 */
 	@Override
-	default <R extends Throwable> Pipeline<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
-		return new ChainPipeline<>(this, ThrowingFunction.identity(), throwingMapper, null, this::close);
+	default <R extends Exception> Pipeline<T, R> throwing(@NonNull Function<? super E, ? extends R> throwingMapper) {
+		return new ThrowingChainPipeline<>(this, throwingMapper, this::close);
 	}
 }

@@ -20,7 +20,7 @@ public class ListenableStage<V> extends Stage implements Promise<V> {
 	/** 不可取消标记（原子布尔保证线程安全） */
 	private final AtomicBoolean uncancellable = new AtomicBoolean(false);
 	/** 事件分发器：处理监听器注册和状态变更事件发布 */
-	private final DisposableDispatcher<ListenableFuture<V>> dispatcher = new DisposableDispatcher<>();
+	private volatile DisposableDispatcher<ListenableFuture<V>> dispatcher;
 
 	// ========== 构造方法 ==========
 	/**
@@ -49,8 +49,10 @@ public class ListenableStage<V> extends Stage implements Promise<V> {
 	 */
 	@Override
 	protected void onStateChangeSuccess(State oldState, State newState, Throwable cause) {
-		// 所有状态变更成功后，发布事件通知监听器
-		dispatcher.publish(this);
+		if (dispatcher != null) {
+			// 所有状态变更成功后，发布事件通知监听器
+			dispatcher.publish(this);
+		}
 	}
 
 	// ========== ListenableFuture<V> 核心方法实现 ==========
@@ -71,15 +73,16 @@ public class ListenableStage<V> extends Stage implements Promise<V> {
 	 * @return 操作结果（成功/失败）
 	 */
 	@Override
-	public Operation registerListener(@NonNull Listener<ListenableFuture<V>> listener) {
+	public synchronized Operation registerListener(@NonNull Listener<ListenableFuture<V>> listener) {
 		if (isDone()) {
-			// 第一步：发布事件触发dispatcher中所有残留监听器
-			dispatcher.publish(this);
-			// 第二步：触发当前注册的监听器（避免遗漏）
 			listener.accept(this);
 			return Operation.success();
 		}
+
 		// 未完成状态：注册监听器，等待状态变更触发
+		if (dispatcher == null) {
+			dispatcher = new DisposableDispatcher<>();
+		}
 		return dispatcher.registerListener(listener);
 	}
 

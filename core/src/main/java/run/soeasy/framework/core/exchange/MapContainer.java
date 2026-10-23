@@ -210,7 +210,7 @@ public class MapContainer<K, V, D extends Map<K, V>> implements KeyValueRegistry
 
 	@Override
 	public Stream<KeyValue<K, V>> stream() {
-		return container.entrySet().stream().map(e -> KeyValue.of(e.getKey(), e.getValue()));
+		return container.entrySet().stream().map(KeyValue::wrap);
 	}
 
 	@Override

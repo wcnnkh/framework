@@ -4,8 +4,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import run.soeasy.framework.codec.Encoder;
+import run.soeasy.framework.codec.Coder;
 import run.soeasy.framework.codec.format.CharsetCodec;
+import run.soeasy.framework.codec.format.HexCodec;
 import run.soeasy.framework.core.RandomUtils;
 
 public class MessageDigestEncoderTest {
@@ -17,9 +18,9 @@ public class MessageDigestEncoderTest {
 		String msg = "md5";
 		MessageDigestEncoder messageDigestEncoder = new MessageDigestEncoder(MessageDigestEncoder.MD5_ALGORITHM_NAME);
 		messageDigestEncoder.setSecretKey(charsetCodec.encode(msg));
-		Encoder<String, String> md5 = charsetCodec
-				.toEncoder(messageDigestEncoder.toHex());
-		String sign = md5.encode(msg);
+		Coder<String, String> md5 = charsetCodec.encoder()
+				.to(messageDigestEncoder.to(HexCodec.DEFAULT.encoder()));
+		String sign = md5.apply(msg);
 		System.out.println("md5:" + sign);
 		assertTrue(md5.test(msg, sign));
 	}

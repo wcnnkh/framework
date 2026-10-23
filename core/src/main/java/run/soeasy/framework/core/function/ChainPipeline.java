@@ -32,7 +32,7 @@ import lombok.NonNull;
  * @see ThrowingFunction
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-class ChainPipeline<S, V, E extends Throwable, T extends Throwable, W extends ThrowingSupplier<S, E>>
+class ChainPipeline<S, V, E extends Exception, T extends Exception, W extends ThrowingSupplier<S, E>>
 		implements Pipeline<V, T> {
 	/**
 	 * 原始资源的供应者，负责提供源值（S类型）。
@@ -79,7 +79,7 @@ class ChainPipeline<S, V, E extends Throwable, T extends Throwable, W extends Th
 	 * <p>不可为null，通常用于触发上游流水线的关闭操作，确保整个链式调用中的资源都能被释放，
 	 * 在{@link #close()}的finally块中执行，保证一定被调用。
 	 */
-	private final ThrowingRunnable<? extends E> closeable;
+	private final ThrowingRunnable<? extends T> closeable;
 
 	/**
 	 * 公共构造方法，初始化流水线核心组件。
@@ -93,7 +93,7 @@ class ChainPipeline<S, V, E extends Throwable, T extends Throwable, W extends Th
 	 */
 	public ChainPipeline(W source, ThrowingFunction<? super S, ? extends V, T> mapper,
 			Function<? super E, ? extends T> throwingMapper, ThrowingConsumer<? super S, ? extends E> closer,
-			ThrowingRunnable<? extends E> closeable) {
+			ThrowingRunnable<? extends T> closeable) {
 		this(source, mapper, throwingMapper, new AtomicBoolean(), null, closer, closeable);
 	}
 
@@ -178,11 +178,7 @@ class ChainPipeline<S, V, E extends Throwable, T extends Throwable, W extends Th
 					}
 				}
 			} finally {
-				try {
-					closeable.run();
-				} catch (Throwable e) {
-					throw throwingMapper.apply((E) e);
-				}
+				closeable.run();
 			}
 		}
 	}

@@ -44,7 +44,6 @@ public class SettableListenableFuture<T> implements Promise<T> {
 
         @SuppressWarnings("unchecked")
         public SettableTask() {
-            // 使用哑Callable初始化，实际不会被调用
             super((Callable<T>) DUMMY_CALLABLE);
         }
 

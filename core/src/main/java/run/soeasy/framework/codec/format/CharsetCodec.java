@@ -3,20 +3,15 @@ package run.soeasy.framework.codec.format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
-import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.CodecException;
-import run.soeasy.framework.codec.DecodeException;
-import run.soeasy.framework.codec.EncodeException;
-import run.soeasy.framework.codec.Encoder;
-import run.soeasy.framework.codec.binary.Gzip;
-import run.soeasy.framework.codec.binary.ToBinaryCodec;
+import run.soeasy.framework.codec.Coder;
 import run.soeasy.framework.codec.crypto.MAC;
+import run.soeasy.framework.codec.io.DirectSerializer;
 import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.source.CharsetAware;
 
 /**
  * 使用指定字符集进行编解码
@@ -24,7 +19,7 @@ import run.soeasy.framework.io.IOUtils;
  * @author soeasy.run
  *
  */
-public class CharsetCodec implements ToBinaryCodec<String> {
+public class CharsetCodec implements DirectSerializer<String>, CharsetAware {
 	/**
 	 * @see Charset#defaultCharset()
 	 */
@@ -62,62 +57,29 @@ public class CharsetCodec implements ToBinaryCodec<String> {
 		}
 	}
 
-	public byte[] encode(String source) throws CodecException {
-		if (source == null) {
-			return null;
-		}
-
-		try {
-			if (charset instanceof Charset) {
-				return source.getBytes((Charset) charset);
-			} else {
-				return source.getBytes((String) charset);
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new EncodeException("charset=" + charset + ", source=" + source, e);
+	@Override
+	public String deserialize(@NonNull InputStream input) throws IOException {
+		byte[] data = IOUtils.binary().toByteArray(input);
+		if (charset instanceof Charset) {
+			return new String(data, (Charset) charset);
+		} else {
+			return new String(data, (String) charset);
 		}
 	}
 
 	@Override
-	public void encode(String source, @NonNull OutputStream target) throws IOException, CodecException {
-		byte[] v = encode(source);
-		if (v == null) {
-			return;
+	public void serialize(String source, @NonNull OutputStream target) throws IOException {
+		byte[] data;
+		if (charset instanceof Charset) {
+			data = source.getBytes((Charset) charset);
+		} else {
+			data = source.getBytes((String) charset);
 		}
-		target.write(v);
+		target.write(data);
 	}
 
-	@Override
-	public String decode(InputStream source, int bufferSize) throws IOException, CodecException {
-		return decode(IOUtils.toByteArray(source));
-	}
-
-	public String decode(byte[] source) throws CodecException {
-		if (source == null) {
-			return null;
-		}
-
-		try {
-			if (charset instanceof Charset) {
-				return new String(source, (Charset) charset);
-			} else {
-				return new String(source, (String) charset);
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new DecodeException("charset=" + charset + ", source=" + source, e);
-		}
-	}
-
-	public Codec<String, String> gzip(Codec<byte[], String> codec) {
-		return to(Gzip.DEFAULT).to(codec);
-	}
-
-	public Codec<String, String> gzip() {
-		return gzip(HexCodec.DEFAULT);
-	}
-
-	public Encoder<String, byte[]> toMac(String algorithm, String secretKey) {
-		return toEncoder(new MAC(algorithm, encode(secretKey)));
+	public Coder<String, byte[]> toMac(String algorithm, String secretKey) {
+		return encoder().to(new MAC(algorithm, encode(secretKey)));
 	}
 
 	public static CharsetCodec charset(Charset charset) {

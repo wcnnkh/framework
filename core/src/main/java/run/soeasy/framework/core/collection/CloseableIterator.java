@@ -1,3 +1,4 @@
+
 package run.soeasy.framework.core.collection;
 
 import java.util.Iterator;

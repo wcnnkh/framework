@@ -11,7 +11,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
 
-import run.soeasy.framework.codec.Encoder;
+import run.soeasy.framework.codec.Coder;
 import run.soeasy.framework.codec.format.Base64;
 import run.soeasy.framework.codec.format.CharsetCodec;
 import run.soeasy.framework.core.RandomUtils;
@@ -31,8 +31,8 @@ public class SignatureEncoderTest {
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate(); // 得到私钥
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic(); // 得到公钥
 		SignatureEncoder rsaSigner = new SignatureEncoder(SignatureEncoder.SHA1_WITH_RSA, privateKey, publicKey);
-		Encoder<String, String> encoder = charsetCodec.toEncoder(rsaSigner).toEncoder(Base64.DEFAULT);
-		String sign = encoder.encode(content);
+		Coder<String, String> encoder = charsetCodec.encoder().to(rsaSigner).to(Base64.DEFAULT.encoder());
+		String sign = encoder.apply(content);
 		System.out.println("sign:" + sign);
 		assertTrue(encoder.test(content, sign));
 	}

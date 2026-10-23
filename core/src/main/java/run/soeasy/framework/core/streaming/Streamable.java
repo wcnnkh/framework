@@ -511,7 +511,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 按指定键映射函数分组，转换为KeyValues（值为元素本身）。
+	 * 按指定键映射函数分组，转换为Mapping（值为元素本身）。
 	 * 分组语义：相同键的元素会被归为一组，底层通过KeyValue封装键值对。
 	 * 
 	 * @param keyMapper 分组键的映射函数，不可为null
@@ -519,7 +519,7 @@ public interface Streamable<E> {
 	 * @return Mapping&lt;K,E&gt;实例，按键分组的视图
 	 */
 	default <K> Mapping<K, E> groupingBy(@NonNull Function<? super E, ? extends K> keyMapper) {
-		return toKeyValues(keyMapper, Function.identity());
+		return toMapping(keyMapper, Function.identity());
 	}
 
 	/**
@@ -840,7 +840,7 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 将Streamable转换为KeyValues（分别指定键/值映射函数）。
+	 * 将Streamable转换为Mapping（分别指定键/值映射函数）。
 	 * 简化操作：无需手动创建KeyValue对象，直接通过两个映射函数生成键和值。
 	 * 
 	 * @param keyMapper   元素到键的映射函数，不可为null
@@ -849,13 +849,13 @@ public interface Streamable<E> {
 	 * @param <V>         值类型
 	 * @return Mapping&lt;K,V&gt;实例
 	 */
-	default <K, V> Mapping<K, V> toKeyValues(@NonNull Function<? super E, ? extends K> keyMapper,
+	default <K, V> Mapping<K, V> toMapping(@NonNull Function<? super E, ? extends K> keyMapper,
 			@NonNull Function<? super E, ? extends V> valueMapper) {
-		return toKeyValues((e) -> KeyValue.of(keyMapper.apply(e), valueMapper.apply(e)));
+		return toMapping((e) -> KeyValue.of(keyMapper.apply(e), valueMapper.apply(e)));
 	}
 
 	/**
-	 * 将Streamable转换为KeyValues（通过映射函数将元素转为KeyValue&lt;K,V&gt;）。
+	 * 将Streamable转换为Mapping（通过映射函数将元素转为KeyValue&lt;K,V&gt;）。
 	 * 桥接设计：无数据拷贝，映射逻辑延迟至流式操作时执行，适配KeyValue场景。
 	 * 
 	 * @param mapper 元素到KeyValue的映射函数，不可为null
@@ -863,7 +863,7 @@ public interface Streamable<E> {
 	 * @param <V>    值类型
 	 * @return Mapping&lt;K,V&gt;实例，关联当前Streamable的映射视图
 	 */
-	default <K, V> Mapping<K, V> toKeyValues(@NonNull Function<? super E, ? extends KeyValue<K, V>> mapper) {
+	default <K, V> Mapping<K, V> toMapping(@NonNull Function<? super E, ? extends KeyValue<K, V>> mapper) {
 		return Mapping.forStreamable(map(mapper));
 	}
 

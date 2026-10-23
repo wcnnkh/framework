@@ -1,13 +1,14 @@
 package run.soeasy.framework.io;
 
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.CharBuffer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import lombok.Data;
+import run.soeasy.framework.core.NestedRuntimeException;
 import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.io.buffer.BufferReader;
 
 /**
  * 基于分隔符的可读内容迭代器，用于按指定分隔符将{@link Readable}
@@ -35,11 +36,11 @@ import run.soeasy.framework.core.StringUtils;
  * @see Readable
  */
 @Data
-class SplitReadableIterator implements Iterator<CharSequence> {
+final class SplitReadableIterator implements Iterator<CharSequence> {
     /**
      * 底层可读数据源
      */
-    private final Readable readable;
+    private final BufferReader<? super CharBuffer, ? extends Throwable> reader;
     
     /**
      * 用于读取数据的字符缓冲区
@@ -96,14 +97,14 @@ class SplitReadableIterator implements Iterator<CharSequence> {
         }
 
         try {
-            while (readable.read(buffer) != -1) {
+            while (reader.read(buffer) != -1) {
                 cache.append(buffer.flip().toString());
                 if (hasNextCache()) {
                     return true;
                 }
             }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        } catch (Throwable e) {
+            throw new NestedRuntimeException("Internal Error", e);
         }
 
         if (cache.length() != 0) {

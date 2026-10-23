@@ -25,7 +25,7 @@ package run.soeasy.framework.core.function;
  * @param <E> 可能抛出的异常类型（无实际意义）
  * @see Pipeline
  */
-class EmptyPipeline<T, E extends Throwable> implements Pipeline<T, E> {
+class EmptyPipeline<T, E extends Exception> implements Pipeline<T, E> {
     /**
      * 空流水线的单例实例。
      * 所有对空流水线的引用应使用此实例，确保内存中只有一个空流水线实例。

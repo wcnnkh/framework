@@ -1008,4 +1008,12 @@ public class CollectionUtils {
 		}
 		return stream;
 	}
+
+	public static <T> CloseableIterator<T> closeableIterator(@NonNull Iterator<T> iterator) {
+		return closeableIterator(iterator, null);
+	}
+
+	public static <T> CloseableIterator<T> closeableIterator(@NonNull Iterator<T> iterator, Runnable closeHandlder) {
+		return new CloseableIteratorImpl<>(iterator, closeHandlder);
+	}
 }

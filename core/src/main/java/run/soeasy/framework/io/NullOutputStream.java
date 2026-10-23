@@ -4,12 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 class NullOutputStream extends OutputStream {
-
-	/**
-	 * A singleton.
-	 */
-	public static final NullOutputStream NULL_OUTPUT_STREAM = new NullOutputStream();
-
 	/**
 	 * Does nothing - output to <code>/dev/null</code>.
 	 * 
