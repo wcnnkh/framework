@@ -161,7 +161,7 @@ public final class IOUtils {
 	 * @param <E>         BufferConsumer 执行时抛出的异常类型
 	 * @param source      源 Buffer（不可为 null）
 	 * @param array       目标数组（不可为 null）
-	 * @param chunkLength 单次分段处理长度（必须 > 0）
+	 * @param chunkLength 单次分段处理长度（必须 &gt; 0）
 	 * @param copier      数据拷贝器（不可为 null），定义从 Buffer 到数组的拷贝逻辑
 	 * @param consumer    数据消费者（不可为 null），处理拷贝后的数组数据
 	 * @return 成功拷贝并消费的总数据量（字节/字符数）
@@ -210,7 +210,7 @@ public final class IOUtils {
 	 * 适用于大文本流的分段处理，避免一次性加载全部内容到内存，分隔逻辑由 SplitReadableIterator 实现， 支持任意自定义分隔符（如换行符
 	 * \n、逗号 ,、分号 ; 等）。
 	 *
-	 * @param source    源可读对象（不可为 null），如 Reader、CharSequenceReader 等
+	 * @param reader    源可读对象（不可为 null），如 Reader、CharSequenceReader 等
 	 * @param buffer    字符缓冲区（不可为 null），用于分段读取数据
 	 * @param delimiter 分隔符（不可为 null），如 "\n"、"," 等
 	 * @return 分割后的 CharSequence 流（非 null），每个元素为分隔符分隔的文本片段
@@ -227,7 +227,7 @@ public final class IOUtils {
 	 * 重载方法，默认使用 {@link Text#DEFAULT_CHAR_BUFFER_SIZE} 大小的字符缓冲区，
 	 * 简化「无需自定义缓冲区大小」的常用场景。
 	 *
-	 * @param source    源可读对象（不可为 null）
+	 * @param reader    源可读对象（不可为 null）
 	 * @param delimiter 分隔符（不可为 null）
 	 * @return 分割后的 CharSequence 流（非 null）
 	 */
@@ -309,7 +309,7 @@ public final class IOUtils {
 	 * <ul>
 	 * <li>支持 Buffer position 任意移动</li>
 	 * <li>由 transferrer 自定义数据转移逻辑，适配不同类型的 Buffer/载体组合</li>
-	 * <li>仅消费有效转移数据（transferredLength > 0），避免空消费</li>
+	 * <li>仅消费有效转移数据（transferredLength &gt; 0），避免空消费</li>
 	 * <li>最终恢复 Buffer 初始 position，保证状态安全</li>
 	 * </ul>
 	 *

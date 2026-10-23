@@ -33,9 +33,9 @@ import run.soeasy.framework.core.mapping.property.PropertyMappingFilter;
 public class BeanUtils {
     /**
      * {@link BeanMapper} 单例实例：采用 volatile 修饰保证多线程环境下的可见性，
-     * 首次调用 {@link #getBeanMapper()} 时通过双重检查锁初始化，全局唯一。
+     * 首次调用 {@link #getMapper()} 时通过双重检查锁初始化，全局唯一。
      */
-    public static volatile BeanMapper beanMapper;
+    private static volatile BeanMapper mapper;
 
     /**
      * 属性复制（显式指定源/目标类）：适用于需精确控制源/目标类型解析的场景（如多态、接口适配）
@@ -86,14 +86,14 @@ public class BeanUtils {
      * @return 全局唯一的 {@link BeanMapper} 实例（非空）
      */
     public static BeanMapper getMapper() {
-        if (beanMapper == null) {
+        if (mapper == null) {
             synchronized (BeanMapper.class) {
-                if (beanMapper == null) {
-                    beanMapper = new BeanMapper();
+                if (mapper == null) {
+                	mapper = new BeanMapper();
                 }
             }
         }
-        return beanMapper;
+        return mapper;
     }
 
     /**

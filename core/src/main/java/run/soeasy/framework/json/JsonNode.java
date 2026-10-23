@@ -12,7 +12,7 @@ import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.tree.TreeNode;
 
 /**
- * JSON 节点实现类（流式数据专属），适配 {@link TreeNode<JsonValue>}
+ * JSON 节点实现类（流式数据专属）
  * 接口，无条件跳过子节点嵌套内容（无回退流式特性）。
  * 遵循接口约定：流为单例，遍历后即耗尽失效。
  *

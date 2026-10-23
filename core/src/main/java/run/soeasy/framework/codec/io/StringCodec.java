@@ -4,8 +4,8 @@ import run.soeasy.framework.codec.UnaryCodec;
 
 public interface StringCodec extends UnaryCodec<String> {
 	@Override
-	StringCoder encoder();
+	StringEncoder encoder();
 
 	@Override
-	StringCoder decoder();
+	StringDecoder decoder();
 }

@@ -45,7 +45,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 对两个对象执行比较，返回带顺序信息的比较结果。
      *
      * <p>
-     * 协变覆写 {@link Evaluator#check(Object, Object)}，
+     * 协变覆写 {@link Evaluator#evaluate(Object, Object)}，
      * 返回 {@link Ordering} 以在相等性判断之外提供排序能力。
      * 参数位置具有语义含义，实现类不应假定参数可交换。
      *
@@ -61,7 +61,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 比较两个对象并返回顺序值。
      *
      * <p>
-     * 默认实现委托给 {@link #check(Object, Object)} 并调用
+     * 默认实现委托给 {@link #evaluate(Object, Object)} 并调用
      * {@link Ordering#getOrder()} 获取顺序值，
      * 兼容 {@link java.util.Comparator} 接口。
      *
@@ -82,7 +82,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 返回顺序反转的排序器。
      *
      * <p>
-     * 保持参数位置不变，对 {@link #check(Object, Object)} 返回的顺序值取负。
+     * 保持参数位置不变，对 {@link #evaluate(Object, Object)} 返回的顺序值取负。
      * 参数位置的语义不会被交换，仅排序方向反转。
      *
      * @return 顺序反转后的 {@code Sorter} 实例
@@ -221,7 +221,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 返回一个始终返回"相等"结果的排序器。
      *
      * <p>
-     * 无论传入什么参数，{@link #check(Object, Object)} 始终返回
+     * 无论传入什么参数，{@link #evaluate(Object, Object)} 始终返回
      * {@link Ordering#equal()}。
      *
      * @param <T> 被比较对象的类型
@@ -235,7 +235,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 返回一个始终返回"小于"结果的排序器。
      *
      * <p>
-     * 无论传入什么参数，{@link #check(Object, Object)} 始终返回
+     * 无论传入什么参数，{@link #evaluate(Object, Object)} 始终返回
      * {@link Ordering#less()}。
      *
      * @param <T> 被比较对象的类型
@@ -249,7 +249,7 @@ public interface Sorter<T> extends Evaluator<T, T>, Comparator<T> {
      * 返回一个始终返回"大于"结果的排序器。
      *
      * <p>
-     * 无论传入什么参数，{@link #check(Object, Object)} 始终返回
+     * 无论传入什么参数，{@link #evaluate(Object, Object)} 始终返回
      * {@link Ordering#greater()}。
      *
      * @param <T> 被比较对象的类型

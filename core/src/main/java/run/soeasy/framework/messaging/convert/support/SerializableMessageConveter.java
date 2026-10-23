@@ -3,6 +3,7 @@ package run.soeasy.framework.messaging.convert.support;
 import java.io.IOException;
 
 import lombok.NonNull;
+import run.soeasy.framework.codec.serializer.SerializationConverter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedData;
@@ -10,20 +11,19 @@ import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.mime.MimeType;
 import run.soeasy.framework.messaging.MediaType;
 import run.soeasy.framework.messaging.Message;
-import run.soeasy.framework.serializer.Serializer;
 
 /**
- * 可序列化消息转换器，继承自{@link AbstractBinaryMessageConverter}，基于{@link Serializer}实现对象与二进制数据的转换，
+ * 可序列化消息转换器，继承自{@link AbstractBinaryMessageConverter}，基于{@link SerializationConverter}实现对象与二进制数据的转换，
  * 支持在序列化/反序列化过程中传入类型描述符，确保类型转换的准确性，适用于需要通过二进制序列化（如通用二进制协议、跨平台数据传输）处理消息的场景。
  * 
  * <p>核心特性：
- * - 依赖{@link Serializer}处理对象与字节数组的双向转换，支持带类型描述符的序列化/反序列化；
+ * - 依赖{@link SerializationConverter}处理对象与字节数组的双向转换，支持带类型描述符的序列化/反序列化；
  * - 仅支持{@link MediaType#APPLICATION_OCTET_STREAM}（二进制流）媒体类型；
  * - 适用于任意Java对象的二进制传输，通过类型描述符解决泛型、多态等场景的类型匹配问题。
  * 
  * @author soeasy.run
  * @see AbstractBinaryMessageConverter
- * @see Serializer
+ * @see SerializationConverter
  * @see MediaType#APPLICATION_OCTET_STREAM
  */
 public class SerializableMessageConveter extends AbstractBinaryMessageConverter<Object> {
@@ -32,14 +32,14 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
      * 序列化工具，用于执行对象的序列化（对象→字节数组）和反序列化（字节数组→对象），
      * 支持传入类型描述符以确保转换的类型准确性（如泛型类型、接口实现类等）。
      */
-    private final Serializer serializer;
+    private final SerializationConverter serializer;
 
     /**
      * 初始化可序列化消息转换器，指定序列化工具并注册支持的媒体类型
      * 
      * @param serializer 序列化工具（非空，需支持带类型描述符的序列化与反序列化操作）
      */
-    public SerializableMessageConveter(Serializer serializer) {
+    public SerializableMessageConveter(SerializationConverter serializer) {
         super(Object.class); // 支持任意对象类型作为转换目标
         // 注册支持的媒体类型：二进制流（application/octet-stream）
         getMediaTypeRegistry().registerAll(Streamable.array(MediaType.APPLICATION_OCTET_STREAM));
@@ -49,7 +49,7 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
     /**
      * 将二进制字节数组反序列化为目标类型的对象
      * 
-     * <p>通过{@link Serializer#deserialize(byte[], TypeDescriptor)}将字节数组转换为目标类型对象，
+     * <p>通过{@link SerializationConverter#deserialize(byte[], TypeDescriptor)}将字节数组转换为目标类型对象，
      * 传入目标类型描述符（{@link TargetDescriptor#getRequiredTypeDescriptor()}）以确保反序列化结果
      * 与预期类型一致（解决泛型擦除、多态类型转换等问题，如将字节数组准确反序列化为List&lt;String&gt;而非List）。
      * 
@@ -69,7 +69,7 @@ public class SerializableMessageConveter extends AbstractBinaryMessageConverter<
     /**
      * 将对象序列化为二进制字节数组
      * 
-     * <p>通过{@link Serializer#serialize(Object, TypeDescriptor)}将对象转换为字节数组，
+     * <p>通过{@link SerializationConverter#serialize(Object, TypeDescriptor)}将对象转换为字节数组，
      * 传入对象的返回类型描述符（{@link TypedData#getReturnTypeDescriptor()}）以确保序列化过程
      * 保留准确的类型信息（如对接口类型的对象，序列化其实际实现类的信息）。
      * 

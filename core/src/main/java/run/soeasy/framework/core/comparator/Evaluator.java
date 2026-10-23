@@ -9,7 +9,7 @@ import lombok.NonNull;
  *
  * <p>
  * 该接口作为比较体系的顶层抽象，定义两个对象（类型可不同）之间的
- * 比较契约。实现类通过 {@link #check(Object, Object)} 方法
+ * 比较契约。实现类通过 {@link #evaluate(Object, Object)} 方法
  * 封装具体的比较逻辑，返回 {@link Comparison} 结果。
  *
  * <p>
@@ -71,7 +71,7 @@ public interface Evaluator<L, R> extends BiPredicate<L, R> {
      * 判断两个对象是否满足比较条件，返回布尔结果。
      *
      * <p>
-     * 默认实现委托给 {@link #check(Object, Object)} 并调用
+     * 默认实现委托给 {@link #evaluate(Object, Object)} 并调用
      * {@link Comparison#isEqual()} 获取布尔值。
      * 对于只关心"是否匹配"而无需完整比较结果的场景，可直接使用此方法。
      *
@@ -88,7 +88,7 @@ public interface Evaluator<L, R> extends BiPredicate<L, R> {
      * 对当前检查器的比较结果取反，返回一个新的检查器。
      *
      * <p>
-     * 新检查器的 {@link #check(Object, Object)} 返回原检查器结果的
+     * 新检查器的 {@link #evaluate(Object, Object)} 返回原检查器结果的
      * 逻辑非（相等变不相等，不相等变相等）。
      *
      * <p>
@@ -168,7 +168,7 @@ public interface Evaluator<L, R> extends BiPredicate<L, R> {
      * 基于 {@link Comparison} 常量创建 {@code Evaluator} 实例。
      *
      * <p>
-     * 无论传入什么参数，{@link #check(Object, Object)} 始终返回
+     * 无论传入什么参数，{@link #evaluate(Object, Object)} 始终返回
      * 同一个 {@link Comparison} 实例。适用于需要固定比较结果的场景。
      *
      * @param comparison 固定的比较结果
@@ -184,7 +184,7 @@ public interface Evaluator<L, R> extends BiPredicate<L, R> {
      * 返回一个始终返回"相等"结果的检查器。
      *
      * <p>
-     * 无论传入什么参数，{@link #check(Object, Object)} 始终返回
+     * 无论传入什么参数，{@link #evaluate(Object, Object)} 始终返回
      * {@link Comparison#equal()}。
      *
      * @param <L> 左操作数的类型
@@ -199,7 +199,7 @@ public interface Evaluator<L, R> extends BiPredicate<L, R> {
      * 返回一个始终返回"不相等"结果的检查器。
      *
      * <p>
-     * 无论传入什么参数，{@link #check(Object, Object)} 始终返回
+     * 无论传入什么参数，{@link #evaluate(Object, Object)} 始终返回
      * {@link Comparison#notEqual()}。
      *
      * @param <L> 左操作数的类型
@@ -244,7 +244,7 @@ public interface Evaluator<L, R> extends BiPredicate<L, R> {
      * 对现有检查器的比较结果取反，返回一个新的检查器。
      *
      * <p>
-     * 新检查器的 {@link #check(Object, Object)} 返回原检查器结果的
+     * 新检查器的 {@link #evaluate(Object, Object)} 返回原检查器结果的
      * 逻辑非（相等变不相等，不相等变相等）。
      *
      * @param evaluator 原始检查器

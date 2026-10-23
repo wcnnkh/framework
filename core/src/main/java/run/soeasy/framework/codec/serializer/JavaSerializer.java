@@ -1,4 +1,4 @@
-package run.soeasy.framework.serializer;
+package run.soeasy.framework.codec.serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 
 import run.soeasy.framework.io.IOUtils;
 
-public class JavaSerializer implements TypedSerializer {
+public class JavaSerializer implements ObjectSerializer {
 	public final static JavaSerializer INSTANCE = new JavaSerializer();
 
 	@Override

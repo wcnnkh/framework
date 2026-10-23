@@ -26,32 +26,6 @@ package run.soeasy.framework.codec;
  * <li>与 {@link CompositeCodec} 配合：简单场景用 DirectCodec，复杂组合用 CompositeCodec</li>
  * </ul>
  *
- * <p>
- * <b>使用示例：</b>
- *
- * <pre>{@code
- * public class HexCodec extends DirectCodec<byte[], String> {
- *     @Override
- *     public String encode(byte[] source) {
- *         return Hex.encodeHexString(source);
- *     }
- *
- *     @Override
- *     public byte[] decode(String target) {
- *         return Hex.decodeHex(target);
- *     }
- * }
- *
- * // 使用
- * HexCodec hex = new HexCodec();
- * String encoded = hex.encode("hello".getBytes());
- * byte[] decoded = hex.decode(encoded);
- *
- * // encoder()/decoder() 自动适配为 Coder
- * Coder<byte[], String> coder = hex.encoder();
- * stream.map(coder).collect(Collectors.toList());
- * }</pre>
- *
  * @author soeasy.run
  * @param <S> 源数据类型（解码后类型，编码前类型）
  * @param <T> 目标数据类型（编码后类型，解码前类型）

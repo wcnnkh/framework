@@ -41,27 +41,6 @@ import lombok.NonNull;
  * </ol>
  *
  * <p>
- * <b>异常行为：</b>
- * <table border="1">
- * <tr>
- * <th>场景</th>
- * <th>异常</th>
- * </tr>
- * <tr>
- * <td>{@code get()} 时许可耗尽</td>
- * <td>{@code IllegalStateException}</td>
- * </tr>
- * <tr>
- * <td>{@code close()} 时队列已满</td>
- * <td>{@code IllegalStateException}</td>
- * </tr>
- * <tr>
- * <td>{@code get()} 时创建失败</td>
- * <td>原异常 + 许可补偿释放</td>
- * </tr>
- * </table>
- *
- * <p>
  * <b>使用示例：</b>
  * 
  * <pre>{@code

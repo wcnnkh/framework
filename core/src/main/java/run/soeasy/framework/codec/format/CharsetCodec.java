@@ -1,13 +1,17 @@
 package run.soeasy.framework.codec.format;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import lombok.NonNull;
 import run.soeasy.framework.codec.Coder;
-import run.soeasy.framework.codec.DirectCodec;
-import run.soeasy.framework.codec.commons.ToBinaryCodec;
 import run.soeasy.framework.codec.crypto.MAC;
+import run.soeasy.framework.codec.io.DirectSerializer;
+import run.soeasy.framework.io.IOUtils;
 
 /**
  * 使用指定字符集进行编解码
@@ -15,7 +19,7 @@ import run.soeasy.framework.codec.crypto.MAC;
  * @author soeasy.run
  *
  */
-public class CharsetCodec implements DirectCodec<String, byte[]>, ToBinaryCodec<String> {
+public class CharsetCodec implements DirectSerializer<String> {
 	/**
 	 * @see Charset#defaultCharset()
 	 */
@@ -69,20 +73,25 @@ public class CharsetCodec implements DirectCodec<String, byte[]>, ToBinaryCodec<
 		}
 	}
 
-	public String decode(byte[] source) {
-		if (source == null) {
-			return null;
+	@Override
+	public String deserialize(@NonNull InputStream input) throws IOException {
+		byte[] data = IOUtils.binary().toByteArray(input);
+		if (charset instanceof Charset) {
+			return new String(data, (Charset) charset);
+		} else {
+			return new String(data, (String) charset);
 		}
+	}
 
-		try {
-			if (charset instanceof Charset) {
-				return new String(source, (Charset) charset);
-			} else {
-				return new String(source, (String) charset);
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("charset=" + charset + ", source=" + source, e);
+	@Override
+	public void serialize(String source, @NonNull OutputStream target) throws IOException {
+		byte[] data;
+		if (charset instanceof Charset) {
+			data = source.getBytes((Charset) charset);
+		} else {
+			data = source.getBytes((String) charset);
 		}
+		target.write(data);
 	}
 
 	public Coder<String, byte[]> toMac(String algorithm, String secretKey) {

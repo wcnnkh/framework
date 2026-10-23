@@ -117,8 +117,7 @@ public interface Codec<S, T> {
 	/**
 	 * 获取解码器（负责 T → S 方向的转换）。
 	 * <p>
-	 * 返回的 {@link Coder} 实例用于执行解码操作， 可通过 {@link Coder#apply(Object)} 直接调用， 也可通过
-	 * {@link Coder#check(Object, Object)} 进行结果校验。
+	 * 返回的 {@link Coder} 实例用于执行解码操作， 可通过 {@link Coder#apply(Object)} 直接调用
 	 *
 	 * @return 解码器实例，不可为 null
 	 */
@@ -139,8 +138,7 @@ public interface Codec<S, T> {
 	/**
 	 * 获取编码器（负责 S → T 方向的转换）。
 	 * <p>
-	 * 返回的 {@link Coder} 实例用于执行编码操作， 可通过 {@link Coder#apply(Object)} 直接调用， 也可通过
-	 * {@link Coder#check(Object, Object)} 进行结果校验。
+	 * 返回的 {@link Coder} 实例用于执行编码操作， 可通过 {@link Coder#apply(Object)} 直接调用
 	 *
 	 * @return 编码器实例，不可为 null
 	 */

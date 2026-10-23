@@ -1,4 +1,4 @@
-package run.soeasy.framework.serializer;
+package run.soeasy.framework.codec.serializer;
 
 public class SerializerException extends RuntimeException {
 	private static final long serialVersionUID = 5341163945147654715L;

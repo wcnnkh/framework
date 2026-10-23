@@ -24,7 +24,7 @@ import run.soeasy.framework.messaging.OutputMessage;
  * @param <T> 转换器支持的目标对象类型（如byte[]、Image、自定义二进制对象等）
  * @author soeasy.run
  * @see ObjectMessageConverter
- * @see InputMessage#toByteArray()
+ * @see InputMessage#readToByteArray()
  */
 public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageConverter<T> {
 
@@ -74,7 +74,7 @@ public abstract class AbstractBinaryMessageConverter<T> extends ObjectMessageCon
      * 重写消息读取逻辑：先获取消息体字节数组，再委托{@link #parseObject}解析为目标类型
      * 
      * <p>步骤：
-     * 1. 调用{@link InputMessage#toByteArray()}获取消息体的字节数组；
+     * 1. 调用{@link InputMessage#readToByteArray()}获取消息体的字节数组；
      * 2. 调用{@link #parseObject}将字节数组解析为{@code T}类型对象。
      * 
      * @param targetDescriptor 目标类型描述符（非空）

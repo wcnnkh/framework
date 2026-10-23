@@ -35,8 +35,6 @@ public interface TreeNode<T> {
 
 	/**
 	 * 获取数组节点的子节点流。
-	 * <p>
-	 * 流的特性依赖底层实现（参考 {@link #isStreamNode()} 的约束说明）。
 	 *
 	 * @return 数组子节点流（非数组节点返回的流可能为空或无效，由实现类保证）
 	 */
@@ -44,8 +42,6 @@ public interface TreeNode<T> {
 
 	/**
 	 * 获取对象节点的键值对子节点流。
-	 * <p>
-	 * 流的特性依赖底层实现（参考 {@link #isStreamNode()} 的约束说明）。
 	 *
 	 * @return 对象子节点键值对流（非对象节点返回的流可能为空或无效，由实现类保证）
 	 */

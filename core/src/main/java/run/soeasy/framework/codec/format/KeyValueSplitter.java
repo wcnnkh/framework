@@ -1,6 +1,5 @@
 package run.soeasy.framework.codec.format;
 
-import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -96,7 +95,6 @@ public class KeyValueSplitter extends KeyValueJoiner<Object, Object> implements 
 	 *
 	 * @param reader 可读输入流，不可为null
 	 * @return 包含键值对对象的Stream，可能包含null（无效键值对）
-	 * @throws IOException 当读取或分割操作失败时抛出
 	 */
 	@Override
 	public Stream<KeyValue<String, String>> split(BufferReader<? super CharBuffer, ? extends Throwable> reader) {

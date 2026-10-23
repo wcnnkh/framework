@@ -6,7 +6,8 @@ import java.util.Arrays;
 
 import lombok.NonNull;
 import run.soeasy.framework.codec.io.StringCodec;
-import run.soeasy.framework.codec.io.StringCoder;
+import run.soeasy.framework.codec.io.StringDecoder;
+import run.soeasy.framework.codec.io.StringEncoder;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.BufferPool;
 import run.soeasy.framework.io.buffer.BufferReader;
@@ -61,12 +62,12 @@ public final class JsonEscaping implements StringCodec {
     private final BufferPool<CharBuffer> bufferPool;
 
     @Override
-    public StringCoder encoder() {
+    public StringEncoder encoder() {
         return encoder;
     }
 
     @Override
-    public StringCoder decoder() {
+    public StringDecoder decoder() {
         return decoder;
     }
 
@@ -78,7 +79,7 @@ public final class JsonEscaping implements StringCodec {
         this.bufferPool = bufferPool;
     }
 
-    private final StringCoder encoder = new StringCoder() {
+    private final StringEncoder encoder = new StringEncoder() {
         @Override
         public <R extends Throwable, W extends Throwable> void transfer(
                 @NonNull BufferReader<? super CharBuffer, ? extends R> reader,
@@ -87,7 +88,7 @@ public final class JsonEscaping implements StringCodec {
         }
     };
 
-    private final StringCoder decoder = new StringCoder() {
+    private final StringDecoder decoder = new StringDecoder() {
         @Override
         public <R extends Throwable, W extends Throwable> void transfer(
                 @NonNull BufferReader<? super CharBuffer, ? extends R> reader,

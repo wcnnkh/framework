@@ -8,6 +8,7 @@ import java.security.spec.KeySpec;
 import javax.crypto.Cipher;
 
 import lombok.NonNull;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
@@ -24,7 +25,7 @@ import run.soeasy.framework.core.function.ThrowingFunction;
  * @see CipherCoder
  * @see Cipher
  */
-public class CipherEncoder extends CipherCoder {
+public class CipherEncoder extends CipherCoder implements BinaryEncoder{
 
 	/**
 	 * 构造加密编码器（基于Cipher算法工厂和初始化器）

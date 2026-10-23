@@ -57,7 +57,7 @@ public class LastModifiedPoller<T extends LastModifiedAware> extends Poller {
 	 * 
 	 * <p>
 	 * 执行流程： 1. 同步块内操作，确保时间戳获取与状态更新的原子性； 2.
-	 * 调用{@link Source#lastModified()}获取当前资源的最后修改时间，若抛出{@link IOException}（如资源暂时不可访问），
+	 * 调用{@link LastModifiedAware#lastModified()}获取当前资源的最后修改时间，若抛出{@link IOException}（如资源暂时不可访问），
 	 * 仅通过warn级别日志记录，不中断轮询； 3.
 	 * 调用{@link #touchEvent(long, long)}对比当前与上一次的时间戳，判断是否发布变更事件； 4.
 	 * 更新{@link #lastModified}为当前时间戳，作为下一次轮询的基准。

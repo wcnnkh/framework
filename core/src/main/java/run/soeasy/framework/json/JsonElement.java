@@ -205,7 +205,6 @@ public interface JsonElement extends Exportable {
 	 * <li>{@link JsonPrimitive}：字符串类型返回带双引号的转义字符串，数字/布尔值返回原始字符串表示（如"abc"、123、true）</li>
 	 * <li>{@link JsonNull}：返回字符串"null"（符合JSON规范的显式空值表示）</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @return 标准化、合规的JSON格式字符串（非null，即使是空元素也会返回对应默认值，如空对象"{}"、空数组"[]"）
 	 * @throws IllegalStateException 当序列化过程中意外发生{@link IOException}时抛出，包含原始异常信息，便于问题排查

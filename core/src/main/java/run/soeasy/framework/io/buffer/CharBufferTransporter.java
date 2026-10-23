@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.CharBuffer;
+
 import lombok.NonNull;
 
 /**
@@ -76,7 +77,7 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	default <E extends Throwable> CharSequence toCharSequence(@NonNull BufferReader<? super CharBuffer, ? extends E> reader)
 			throws IOException, E {
 		StringBuilder appendable = new StringBuilder();
-		transfer(reader, appendable);
+		transfer(reader, appendable::append);
 		return appendable.toString();
 	}
 
@@ -89,7 +90,7 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 */
 	default CharSequence toCharSequence(@NonNull Reader reader) throws IOException {
 		StringBuilder appendable = new StringBuilder();
-		readInto(reader, appendable);
+		readInto(reader, appendable::append);
 		return appendable.toString();
 	}
 
@@ -102,13 +103,8 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 */
 	default CharSequence toCharSequence(@NonNull CharBuffer source) throws IOException {
 		StringBuilder appendable = new StringBuilder();
-		writeTo(source, appendable);
+		writeTo(source, appendable::append);
 		return appendable.toString();
-	}
-
-	default <E extends Throwable> void transfer(@NonNull BufferReader<? super CharBuffer, ? extends E> reader,
-			@NonNull Appendable appendable) throws IOException, E {
-		transfer(reader, (b) -> appendable.append(b));
 	}
 
 	/**
@@ -149,18 +145,6 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	}
 
 	/**
-	 * 将 {@link CharBuffer} 经过传输器处理后写入 {@link Appendable}。
-	 *
-	 * @param buffer 字符缓冲区
-	 * @param appendable 字符接收器
-	 * @throws IOException 如果发生 I/O 错误
-	 * @throws E 写入过程抛出的异常
-	 */
-	default <E extends Throwable> void writeTo(@NonNull CharBuffer buffer, @NonNull Appendable appendable) throws IOException, E {
-		transfer((b) -> buffer.read(b), appendable);
-	}
-
-	/**
 	 * 从 {@link Reader} 读取字符，经过传输器处理后写入 {@link BufferWriter}。
 	 *
 	 * @param reader 字符输入源
@@ -182,16 +166,5 @@ public interface CharBufferTransporter extends BufferTransporter<CharBuffer> {
 	 */
 	default void readInto(@NonNull Reader reader, @NonNull Writer writer) throws IOException {
 		transfer((s) -> reader.read(s), writer);
-	}
-
-	/**
-	 * 从 {@link Reader} 读取字符，经过传输器处理后写入 {@link Appendable}。
-	 *
-	 * @param reader Reader 源
-	 * @param appendable 字符接收器
-	 * @throws IOException 如果发生 I/O 错误
-	 */
-	default void readInto(@NonNull Reader reader, @NonNull Appendable appendable) throws IOException {
-		transfer((s) -> reader.read(s), appendable);
 	}
 }

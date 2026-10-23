@@ -122,7 +122,6 @@ public interface UnaryCodec<T> extends Codec<T, T> {
 	 *
 	 * @param count 执行次数，必须 ≥ 1
 	 * @return 重复执行后的新 {@link UnaryCodec}
-	 * @throws IllegalArgumentException 如果 count < 1
 	 */
 	default UnaryCodec<T> repeated(int count) {
 		return new UnaryCodec<T>() {

@@ -1,4 +1,4 @@
-package run.soeasy.framework.codec;
+ package run.soeasy.framework.codec;
 
 import java.util.function.Function;
 
@@ -15,7 +15,7 @@ import run.soeasy.framework.core.comparator.Comparison;
  * <ul>
  * <li><b>函数式转换</b>：继承 {@link Function}，可通过 {@link #apply(Object)} 执行转换， 支持
  * Lambda 表达式创建实例</li>
- * <li><b>结果校验</b>：继承 {@link Evaluator}，通过 {@link #check(Object, Object)} 将
+ * <li><b>结果校验</b>：继承 {@link Evaluator}，通过 {@link #evaluate(Object, Object)} 将
  * 源数据转换后与期望值进行比较，适用于数据验证和断言场景</li>
  * <li><b>链式组合</b>：通过 {@link #from(Coder)} 和 {@link #to(Coder)} 进行前置/后置 转换拼接，等价于
  * {@link #compose(Function)} 和 {@link #andThen(Function)} 的语义化别名</li>
@@ -54,7 +54,7 @@ import run.soeasy.framework.core.comparator.Comparison;
  * String result = base64Coder.apply(inputBytes);
  *
  * // 结果校验
- * Comparison comparison = base64Coder.check(inputBytes, expectedString);
+ * Comparison comparison = base64Coder.evaluate(inputBytes, expectedString);
  * if (comparison.isMatch()) { ... }
  *
  * // 链式组合

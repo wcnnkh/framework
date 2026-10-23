@@ -1,12 +1,11 @@
 package run.soeasy.framework.codec.io;
 
 import run.soeasy.framework.codec.UnaryCodec;
-import run.soeasy.framework.codec.commons.ToBinaryCodec;
 
-public interface BinaryCodec extends UnaryCodec<byte[]>, ToBinaryCodec<byte[]> {
+public interface BinaryCodec extends UnaryCodec<byte[]>, Serializer<byte[]> {
 	@Override
-	BinaryCoder encoder();
+	BinaryEncoder encoder();
 
 	@Override
-	BinaryCoder decoder();
+	BinaryDecoder decoder();
 }

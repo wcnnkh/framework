@@ -105,7 +105,7 @@ public interface WriterSource<W extends Writer> {
      * <p>
      * 本方法负责获取写者，并委托 {@code source} 的读取逻辑完成数据获取。
      * 数据以 {@link CharBuffer} 形式从 {@code source} 逐段读取，
-     * 通过 {@link Writer#append(CharBuffer)} 写入当前写者。
+     * 通过 {@link Writer#append(CharSequence)} 写入当前写者。
      *
      * <p>
      * <b>资源责任：</b>

@@ -7,13 +7,13 @@ import run.soeasy.framework.codec.CompositeCodec;
 import run.soeasy.framework.io.buffer.BufferTransporter;
 
 public class SimpleBinaryCodec<S extends BufferTransporter<? extends ByteBuffer>, T extends BufferTransporter<? extends ByteBuffer>>
-		extends CompositeCodec<byte[], byte[], SimpleBinaryCoder<S>, SimpleBinaryCoder<T>> implements BinaryCodec {
+		extends CompositeCodec<byte[], byte[], SimpleBinaryEncoder<S>, SimpleBinaryDecoder<T>> implements BinaryCodec {
 
 	public SimpleBinaryCodec(@NonNull S encodeTransporter, @NonNull T decodeTransporter) {
-		this(new SimpleBinaryCoder<>(encodeTransporter), new SimpleBinaryCoder<>(decodeTransporter));
+		this(new SimpleBinaryEncoder<>(encodeTransporter), new SimpleBinaryDecoder<>(decodeTransporter));
 	}
 
-	public SimpleBinaryCodec(@NonNull SimpleBinaryCoder<S> encoder, @NonNull SimpleBinaryCoder<T> decoder) {
+	public SimpleBinaryCodec(@NonNull SimpleBinaryEncoder<S> encoder, @NonNull SimpleBinaryDecoder<T> decoder) {
 		super(encoder, decoder);
 	}
 }

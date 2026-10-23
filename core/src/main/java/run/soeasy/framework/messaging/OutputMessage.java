@@ -11,8 +11,8 @@ import run.soeasy.framework.io.source.OutputStreamSource;
 import run.soeasy.framework.io.source.WriterSource;
 
 /**
- * 可输出消息接口，继承自 {@link Message}，
- * 扩展了消息的写入能力，支持设置消息元数据（内容类型、长度）和输出流操作， 是消息发送场景（如 HTTP 响应、消息队列发送）中表示可写入消息的核心接口。
+ * 可输出消息接口，继承自 {@link Message}， 扩展了消息的写入能力，支持设置消息元数据（内容类型、长度）和输出流操作， 是消息发送场景（如
+ * HTTP 响应、消息队列发送）中表示可写入消息的核心接口。
  *
  * <p>
  * 该接口通过默认方法提供了元数据的便捷设置入口，内容类型、字符集等由调用方 通过 {@link MediaType}
@@ -27,10 +27,6 @@ public interface OutputMessage extends Message, OutputStreamSource<OutputStream>
 
 	/**
 	 * 设置消息的内容类型。
-	 *
-	 * <p>
-	 * 直接将指定的 {@link MediaType} 设置到消息头部，不做任何字符集合并或转换。 如需携带字符集，请使用
-	 * {@link MediaType#withCharset(String)} 构造。
 	 *
 	 * @param contentType 消息的内容类型（非空）
 	 */

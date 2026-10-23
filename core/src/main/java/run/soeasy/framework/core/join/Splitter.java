@@ -1,6 +1,5 @@
 package run.soeasy.framework.core.join;
 
-import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.stream.Stream;
 
@@ -23,7 +22,6 @@ public interface Splitter<E> {
 	 * 
 	 * @param reader 字符输入流
 	 * @return 解析出的元素流
-	 * @throws IOException 当读取流失败时抛出
 	 */
 	Stream<E> split(@NonNull BufferReader<? super CharBuffer, ? extends Throwable> reader);
 }

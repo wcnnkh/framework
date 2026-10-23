@@ -3,7 +3,7 @@ package run.soeasy.framework.codec.zip;
 import run.soeasy.framework.codec.CompositeCodec;
 
 /**
- * ZIP格式编解码器，继承自{@link TransferrerCodec}，专门用于ZIP格式的二进制数据编解码，
+ * ZIP格式编解码器，继承自{@link CompositeCodec}，专门用于ZIP格式的二进制数据编解码，
  * 组合{@link ZipEncoder}（编码/压缩）和{@link ZipDecoder}（解码/解压）实现完整的ZIP处理能力。
  * 
  * <p>
@@ -11,7 +11,7 @@ import run.soeasy.framework.codec.CompositeCodec;
  * 适用于大多数需要ZIP压缩和解压的场景，简化ZIP格式数据的处理流程。
  * 
  * @author soeasy.run
- * @see TransferrerCodec
+ * @see CompositeCodec
  * @see ZipEncoder
  * @see ZipDecoder
  */
