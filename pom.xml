@@ -63,7 +63,7 @@
 		<pdfbox.version>2.0.32</pdfbox.version>
 		<redisson.version>3.23.3</redisson.version>
 		<commons-io.version>2.11.0</commons-io.version>
-		<commons-beanutil.version>1.9.4</commons-beanutil.version>
+		<commons-beanutil.version>1.11.0</commons-beanutil.version>
 		<commons-validator.version>1.7</commons-validator.version>
 		<guava.version>31.1-jre</guava.version>
 	</properties>
