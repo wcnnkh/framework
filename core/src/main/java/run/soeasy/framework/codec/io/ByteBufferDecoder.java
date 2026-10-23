@@ -26,7 +26,7 @@ public interface ByteBufferDecoder<T> extends Decoder<T, ByteBuffer>, Coder<byte
 
 	default T decode(@NonNull ByteBuffer source) throws IOException {
 		try (InputStream input = new ByteBufferInputStream(source)) {
-			return decode(source);
+			return decode(input);
 		}
 	}
 
