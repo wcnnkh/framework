@@ -12,14 +12,15 @@
 2.模块说明
 -------------------
 
- aop   				面向切面编程，抽象了切面操作，默认实现jdk代理  
- beans 				对java bean的相关操作  
- core 				核心模块，提供常见的工具和各种抽象  
- dom     			提供dom读写的抽象和java原生实现  
- jdbc				对jdbc操作进行简化抽象  
- json				对json的简单操作(目前仅实现对象转json字符串)  
- messaging			对消息实体和消息转换的抽象，提供了一些简单的实现  
- xml					对xml的读写默认实现  
+ core   			核心模块，无任何依赖，提供常用的抽象
+ context 			框架的上下文依赖，目前包含常用工具、基类定义、spring上下文
+ apple 				Apple支付接口的相关封装
+ jackson     		Jackson的依赖和封装
+ mybatis			mybatis的依赖和封装
+ mybatis-plus		mybatis-plus的依赖和封装
+ pdf			    pdf的相关操作
+ redis				redis的依赖和封装
+ web                web层的封装
  
 --------------------
 
