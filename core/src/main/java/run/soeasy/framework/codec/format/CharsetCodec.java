@@ -3,7 +3,6 @@ package run.soeasy.framework.codec.format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -12,6 +11,7 @@ import run.soeasy.framework.codec.Coder;
 import run.soeasy.framework.codec.crypto.MAC;
 import run.soeasy.framework.codec.io.DirectSerializer;
 import run.soeasy.framework.io.IOUtils;
+import run.soeasy.framework.io.source.CharsetAware;
 
 /**
  * 使用指定字符集进行编解码
@@ -19,7 +19,7 @@ import run.soeasy.framework.io.IOUtils;
  * @author soeasy.run
  *
  */
-public class CharsetCodec implements DirectSerializer<String> {
+public class CharsetCodec implements DirectSerializer<String>, CharsetAware {
 	/**
 	 * @see Charset#defaultCharset()
 	 */
@@ -54,22 +54,6 @@ public class CharsetCodec implements DirectSerializer<String> {
 			return (Charset) charset;
 		} else {
 			return Charset.forName((String) charset);
-		}
-	}
-
-	public byte[] encode(String source) {
-		if (source == null) {
-			return null;
-		}
-
-		try {
-			if (charset instanceof Charset) {
-				return source.getBytes((Charset) charset);
-			} else {
-				return source.getBytes((String) charset);
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("charset=" + charset + ", source=" + source, e);
 		}
 	}
 

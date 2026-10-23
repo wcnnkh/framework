@@ -10,7 +10,7 @@ import run.soeasy.framework.codec.DirectCodec;
  */
 public class HalfToFullCodec implements DirectCodec<String, String> {
 	public static final HalfToFullCodec DEFAULT = new HalfToFullCodec();
-
+	
 	@Override
 	public String encode(String source) {
 		char c[] = source.toCharArray();
@@ -38,5 +38,4 @@ public class HalfToFullCodec implements DirectCodec<String, String> {
 		}
 		return new String(c);
 	}
-
 }

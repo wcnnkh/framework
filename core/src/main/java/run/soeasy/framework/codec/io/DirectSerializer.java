@@ -24,7 +24,7 @@ public interface DirectSerializer<T> extends Serializer<T>, DirectCodec<T, byte[
 			public <E extends Throwable> void encode(T source,
 					@NonNull BufferWriter<? super ByteBuffer, ? extends E> writer) throws IOException, E {
 				try (WritableByteChannel output = new BufferWriterChanel(writer)) {
-					encode(source, output);
+					this.encode(source, output);
 				}
 			}
  
@@ -43,7 +43,7 @@ public interface DirectSerializer<T> extends Serializer<T>, DirectCodec<T, byte[
 			public <E extends Throwable> T decode(@NonNull BufferReader<? super ByteBuffer, ? extends E> source)
 					throws IOException, E {
 				try (ReadableByteChannel input = new BufferReaderChannel(source)) {
-					return decode(input);
+					return this.decode(input);
 				}
 			}
 
