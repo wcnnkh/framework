@@ -65,7 +65,7 @@
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons-beanutil.version>1.9.4</commons-beanutil.version>
 		<commons-validator.version>1.7</commons-validator.version>
-		<guava.version>31.1-jre</guava.version>
+		<guava.version>32.0.0-jre</guava.version>
 	</properties>
 
 	<dependencyManagement>
