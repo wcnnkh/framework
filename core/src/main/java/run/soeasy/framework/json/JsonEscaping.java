@@ -72,7 +72,7 @@ public final class JsonEscaping implements StringCodec {
     }
 
     private JsonEscaping() {
-        this(IOUtils.text());
+        this(IOUtils.text().getBufferPool());
     }
 
     public JsonEscaping(BufferPool<CharBuffer> bufferPool) {

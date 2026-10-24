@@ -7,10 +7,10 @@ import lombok.NonNull;
 import run.soeasy.framework.io.buffer.BufferPool;
 import run.soeasy.framework.io.buffer.DefaultBufferTransporter;
 import run.soeasy.framework.io.buffer.DefaultByteBufferTransporter;
-import run.soeasy.framework.io.buffer.ThreadLocalBufferPool;
+import run.soeasy.framework.io.buffer.NoneBufferPool;
 
 @Getter
-public final class Binary extends DefaultByteBufferTransporter implements BufferPool<ByteBuffer> {
+public final class Binary extends DefaultByteBufferTransporter {
 	/**
 	 * 默认字节缓冲区大小（兼顾性能与内存占用）：
 	 * <ul>
@@ -30,23 +30,13 @@ public final class Binary extends DefaultByteBufferTransporter implements Buffer
 	private Binary() {
 		this(DEFAULT_BYTE_BUFFER_SIZE);
 	}
-	
+
 	public Binary(int bufferSize) {
-		this(new ThreadLocalBufferPool<>(bufferSize, ByteBuffer::allocate));
+		this(new NoneBufferPool<>(bufferSize, ByteBuffer::allocate));
 	}
 
 	public Binary(@NonNull BufferPool<ByteBuffer> bufferPool) {
 		super(new DefaultBufferTransporter<>(bufferPool));
 		this.bufferPool = bufferPool;
-	}
-
-	@Override
-	public ByteBuffer get() {
-		return bufferPool.get();
-	}
-
-	@Override
-	public void close(@NonNull ByteBuffer source) {
-		bufferPool.close(source);
 	}
 }
