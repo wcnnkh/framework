@@ -11,7 +11,7 @@ import run.soeasy.framework.core.function.Pool;
  * 编码约定：
  * <ul>
  * <li>调用 {@link #get()} 获取缓冲区；</li>
- * <li>必须在 {@code try-finally} 块中调用 {@link #close(B)} 归还，保持统一写法；</li>
+ * <li>必须在 {@code try-finally} 块中调用 {@link #close(Buffer)} 归还，保持统一写法；</li>
  * </ul>
  *
  * <p>

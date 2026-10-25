@@ -192,6 +192,7 @@ public class ReflectionField implements Property, Serializable {
 
     /**
      * 获取字段所属声明类
+     * @return 字段所属声明类
      */
     public final Class<?> getDeclaringClass() {
         return declaringClass;
