@@ -10,7 +10,8 @@ import java.util.zip.ZipInputStream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.codec.io.BinaryCoder;
+import run.soeasy.framework.codec.io.BinaryDecoder;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
@@ -24,12 +25,12 @@ import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
  * 支持直接处理{@link ZipInputStream}或自动将普通输入流包装为ZIP输入流。
  *
  * @author soeasy.run
- * @see BinaryCoder
+ * @see BinaryEncoder
  * @see ZipInputStream
  */
 @Getter
 @RequiredArgsConstructor
-public class ZipDecoder implements BinaryCoder, StreamByteBufferTransporter {
+public class ZipDecoder implements BinaryDecoder, StreamByteBufferTransporter {
 
 	public static final ZipDecoder DEFAULT = new ZipDecoder();
 	/**

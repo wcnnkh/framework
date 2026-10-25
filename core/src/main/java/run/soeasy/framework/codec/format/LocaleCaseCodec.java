@@ -2,7 +2,7 @@ package run.soeasy.framework.codec.format;
 
 import java.util.Locale;
 
-import run.soeasy.framework.codec.DirectCodec;
+import run.soeasy.framework.codec.io.DirectStringCodec;
 
 /**
  * 大小写转换,默认是小写--&gt;大写
@@ -10,7 +10,7 @@ import run.soeasy.framework.codec.DirectCodec;
  * @author soeasy.run
  *
  */
-public class LocaleCaseCodec implements DirectCodec<String, String> {
+public class LocaleCaseCodec implements DirectStringCodec {
 	public static final LocaleCaseCodec DEFAULT = new LocaleCaseCodec();
 
 	private final Locale locale;

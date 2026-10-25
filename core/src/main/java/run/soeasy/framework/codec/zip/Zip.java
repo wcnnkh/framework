@@ -1,6 +1,7 @@
 package run.soeasy.framework.codec.zip;
 
 import run.soeasy.framework.codec.CompositeCodec;
+import run.soeasy.framework.codec.io.BinaryCodec;
 
 /**
  * ZIP格式编解码器，继承自{@link CompositeCodec}，专门用于ZIP格式的二进制数据编解码，
@@ -15,7 +16,7 @@ import run.soeasy.framework.codec.CompositeCodec;
  * @see ZipEncoder
  * @see ZipDecoder
  */
-public final class Zip extends CompositeCodec<byte[], byte[], ZipEncoder, ZipDecoder> {
+public final class Zip extends CompositeCodec<byte[], byte[], ZipEncoder, ZipDecoder> implements BinaryCodec {
 	/**
 	 * 使用UTF-8字符集的默认ZIP编解码器实例，可直接用于ZIP格式的压缩与解压操作
 	 */

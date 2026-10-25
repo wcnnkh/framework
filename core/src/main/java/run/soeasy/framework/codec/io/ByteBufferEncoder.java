@@ -11,6 +11,8 @@ import java.nio.channels.WritableByteChannel;
 
 import lombok.NonNull;
 import run.soeasy.framework.codec.Coder;
+import run.soeasy.framework.codec.format.Base64;
+import run.soeasy.framework.codec.format.HexCodec;
 import run.soeasy.framework.core.comparator.Comparison;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.BufferReader;
@@ -51,5 +53,23 @@ public interface ByteBufferEncoder<T> extends Encoder<T, ByteBuffer>, Coder<T, b
 
 	default @NonNull Comparison evaluate(T left, @NonNull ReadableByteChannel right) throws IOException {
 		return evaluate(left, IOUtils.binary().toByteArray(right));
+	}
+	
+	/**
+	 * 返回一个将序列化结果转换为 Base64 字符串的编解码器。
+	 *
+	 * @return Base64 编码的 Codec
+	 */
+	default Coder<T, String> toBase64() {
+		return to(Base64.DEFAULT.encoder());
+	}
+
+	/**
+	 * 返回一个将序列化结果转换为十六进制字符串的编解码器。
+	 *
+	 * @return Hex 编码的 Codec
+	 */
+	default Coder<T, String> toHex() {
+		return to(HexCodec.DEFAULT.encoder());
 	}
 }

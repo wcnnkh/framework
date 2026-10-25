@@ -2,7 +2,7 @@ package run.soeasy.framework.codec.format;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import run.soeasy.framework.codec.DirectCodec;
+import run.soeasy.framework.codec.io.DirectStringCodec;
 
 /**
  * 大小写转换
@@ -12,7 +12,7 @@ import run.soeasy.framework.codec.DirectCodec;
  */
 @Data
 @AllArgsConstructor
-public class CaseCodec implements DirectCodec<String, String>{
+public class CaseCodec implements DirectStringCodec{
 	/**
 	 * 首字母大小写转换
 	 */

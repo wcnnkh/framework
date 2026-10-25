@@ -10,6 +10,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import lombok.NonNull;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.codec.security.AlgorithmCoder;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.function.ThrowingConsumer;
@@ -28,7 +29,7 @@ import run.soeasy.framework.io.buffer.BufferWriter;
  * @see AlgorithmCoder
  * @see Mac
  */
-public class MAC extends AlgorithmCoder<Mac> {
+public class MAC extends AlgorithmCoder<Mac> implements BinaryEncoder{
 
     /**
      * 构造MAC编码器（基于算法名称和密钥字节数组）

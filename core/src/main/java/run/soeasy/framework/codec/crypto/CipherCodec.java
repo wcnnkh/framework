@@ -15,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.codec.CompositeCodec;
+import run.soeasy.framework.codec.io.BinaryCodec;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
@@ -31,7 +32,7 @@ import run.soeasy.framework.core.function.ThrowingFunction;
  * @see Cipher
  */
 @Getter
-public class CipherCodec extends CompositeCodec<byte[], byte[], CipherEncoder, CipherDecoder> {
+public class CipherCodec extends CompositeCodec<byte[], byte[], CipherEncoder, CipherDecoder> implements BinaryCodec {
 
     /**
      * 构造非对称加解密编解码器（基于私钥加密、公钥解密）

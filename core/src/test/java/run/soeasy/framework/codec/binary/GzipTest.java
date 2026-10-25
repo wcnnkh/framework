@@ -6,13 +6,14 @@ import org.junit.Test;
 
 import run.soeasy.framework.codec.format.CharsetCodec;
 import run.soeasy.framework.codec.format.HexCodec;
+import run.soeasy.framework.codec.zip.Gzip;
 
 public class GzipTest {
 	@Test
 	public void gzip() {
 		String content = "a;dfkasdf;asfkasf;kasfsadkdkslslslsslslslsslllllllllllllllllllllllllllllllllllllllllllllllllllllld";
-		String gzip = CharsetCodec.UTF_8.gzip().to(HexCodec.DEFAULT).encode(content);
+		String gzip = CharsetCodec.UTF_8.to(Gzip.DEFAULT).to(HexCodec.DEFAULT).encode(content);
 		System.out.println(gzip);
-		assertTrue(content.equals(CharsetCodec.UTF_8.gzip().to(HexCodec.DEFAULT).decode(gzip)));
+		assertTrue(content.equals(CharsetCodec.UTF_8.to(Gzip.DEFAULT).to(HexCodec.DEFAULT).decode(gzip)));
 	}
 }

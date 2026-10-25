@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.BufferReader;
 import run.soeasy.framework.io.buffer.BufferWriter;
@@ -25,7 +26,7 @@ import run.soeasy.framework.io.buffer.BufferWriter;
  */
 @Getter
 @Setter
-public class MessageDigestEncoder extends AlgorithmCoder<MessageDigest> {
+public class MessageDigestEncoder extends AlgorithmCoder<MessageDigest> implements BinaryEncoder {
 	/**
 	 * MD5算法名称常量
 	 */

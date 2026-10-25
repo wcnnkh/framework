@@ -6,6 +6,7 @@ import java.security.GeneralSecurityException;
 
 import lombok.Getter;
 import lombok.NonNull;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.core.comparator.Comparison;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 
@@ -22,7 +23,7 @@ import run.soeasy.framework.core.function.ThrowingConsumer;
  * @see AlgorithmFactory
  */
 @Getter
-public abstract class AlgorithmSigner<T> extends AlgorithmCoder<T> {
+public abstract class AlgorithmEncoder<T> extends AlgorithmCoder<T> implements BinaryEncoder {
 
 	/**
 	 * 用于签名验证的算法工厂，负责创建和初始化验证签名所需的算法实例
@@ -36,7 +37,7 @@ public abstract class AlgorithmSigner<T> extends AlgorithmCoder<T> {
 	 * @param encodeAlgorithmFactory 签名生成算法工厂（用于生成签名，继承自编码逻辑）
 	 * @param verifyAlgorithmFactory 签名验证算法工厂（用于验证签名有效性）
 	 */
-	public AlgorithmSigner(@NonNull AlgorithmFactory<? extends T> encodeAlgorithmFactory,
+	public AlgorithmEncoder(@NonNull AlgorithmFactory<? extends T> encodeAlgorithmFactory,
 			@NonNull AlgorithmFactory<? extends T> verifyAlgorithmFactory) {
 		super(encodeAlgorithmFactory);
 		this.verifyAlgorithmFactory = verifyAlgorithmFactory;
@@ -50,7 +51,7 @@ public abstract class AlgorithmSigner<T> extends AlgorithmCoder<T> {
 	 * @param verifyAlgorithmFactory     签名验证算法工厂
 	 * @param verifyAlgorithmInitializer 签名验证算法初始化器（如设置公钥、验证参数等）
 	 */
-	public AlgorithmSigner(@NonNull AlgorithmFactory<? extends T> encodeAlgorithmFactory,
+	public AlgorithmEncoder(@NonNull AlgorithmFactory<? extends T> encodeAlgorithmFactory,
 			@NonNull ThrowingConsumer<? super T, ? extends GeneralSecurityException> encodeAlgorithmInitializer,
 			@NonNull AlgorithmFactory<? extends T> verifyAlgorithmFactory,
 			@NonNull ThrowingConsumer<? super T, ? extends GeneralSecurityException> verifyAlgorithmInitializer) {

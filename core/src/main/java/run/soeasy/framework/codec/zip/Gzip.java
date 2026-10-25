@@ -34,7 +34,7 @@ import run.soeasy.framework.codec.io.BinaryCodec;
  * @see GZIPOutputStream
  */
 
-public final class Gzip extends CompositeCodec<byte[], byte[], GzipEncoder, GzipDecoder> {
+public final class Gzip extends CompositeCodec<byte[], byte[], GzipEncoder, GzipDecoder> implements BinaryCodec {
 	public static final Gzip DEFAULT = new Gzip();
 
 	public Gzip() {
