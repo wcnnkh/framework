@@ -7,9 +7,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
-import run.soeasy.framework.codec.DirectCodec;
+import run.soeasy.framework.codec.io.DirectStringCodec;
 
-public class URLCodec implements DirectCodec<String, String> {
+public class URLCodec implements DirectStringCodec {
 	public static final URLCodec UTF_8 = new URLCodec(StandardCharsets.UTF_8);
 	private final String charsetName;
 

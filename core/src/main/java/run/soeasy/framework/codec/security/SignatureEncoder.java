@@ -17,17 +17,17 @@ import run.soeasy.framework.io.buffer.BufferReader;
 import run.soeasy.framework.io.buffer.BufferWriter;
 
 /**
- * 数字签名编码器，继承自{@link AlgorithmSigner}，基于Java安全框架的{@link Signature}实现数字签名的生成与验证，
+ * 数字签名编码器，继承自{@link AlgorithmEncoder}，基于Java安全框架的{@link Signature}实现数字签名的生成与验证，
  * 支持各类标准签名算法（如SHA1WithRSA），适用于需要确保数据完整性和身份认证的场景（如接口签名、文件签名等）。
  * 
  * <p>
  * 该类通过私钥初始化签名生成算法，通过公钥或证书初始化签名验证算法，实现签名生成（编码）与验证的一体化流程。
  * 
  * @author soeasy.run
- * @see AlgorithmSigner
+ * @see AlgorithmEncoder
  * @see Signature
  */
-public class SignatureEncoder extends AlgorithmSigner<Signature> {
+public class SignatureEncoder extends AlgorithmEncoder<Signature> {
 	/**
 	 * 常用签名算法：SHA1哈希算法结合RSA加密算法（"SHA1WithRSA"）
 	 */

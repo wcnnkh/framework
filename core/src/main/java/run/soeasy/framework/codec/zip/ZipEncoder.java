@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.codec.io.BinaryCoder;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
@@ -24,13 +25,13 @@ import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
  * 提供默认UTF-8字符集实例{@link #UTF_8}，支持对普通输入流进行ZIP压缩或直接处理{@link ZipInputStream}。
  * 
  * @author soeasy.run
- * @see BinaryCoder
+ * @see BinaryEncoder
  * @see StreamByteBufferTransporter
  * @see ZipOutputStream
  */
 @Getter
 @RequiredArgsConstructor
-public class ZipEncoder implements BinaryCoder, StreamByteBufferTransporter {
+public class ZipEncoder implements BinaryEncoder, StreamByteBufferTransporter {
 	/**
 	 * 使用UTF-8字符集的默认ZIP编码器实例
 	 */

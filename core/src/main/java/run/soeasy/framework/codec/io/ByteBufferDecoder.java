@@ -37,7 +37,7 @@ public interface ByteBufferDecoder<T> extends Decoder<T, ByteBuffer>, Coder<byte
 	default T decode(@NonNull ReadableByteChannel source) throws IOException {
 		return decode(source::read);
 	}
-	
+
 	default <E extends Throwable> @NonNull Comparison evaluate(
 			@NonNull BufferReader<? super ByteBuffer, ? extends E> left, T right) throws IOException, E {
 		return evaluate(IOUtils.binary().toByteArray(left), right);

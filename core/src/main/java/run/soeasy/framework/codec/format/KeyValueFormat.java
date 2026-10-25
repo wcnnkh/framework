@@ -1,7 +1,8 @@
 package run.soeasy.framework.codec.format;
 
 import java.io.IOException;
-import java.nio.CharBuffer;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,7 +14,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.beans.BeanUtils;
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.codec.DirectCodec;
+import run.soeasy.framework.codec.io.DirectFormatter;
 import run.soeasy.framework.core.collection.ArrayUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Converter;
@@ -60,7 +61,7 @@ import run.soeasy.framework.core.type.ResolvableType;
 @Getter
 @Setter
 public class KeyValueFormat extends KeyValueSplitter
-		implements StringFormat<Object>, ConverterAware, DirectCodec<Mapping<String, String>, String> {
+		implements StringFormat<Object>, ConverterAware, DirectFormatter<Mapping<String, String>> {
 
 	/**
 	 * 键值对属性映射器，用于对象与键值对结构的双向映射：
@@ -183,26 +184,14 @@ public class KeyValueFormat extends KeyValueSplitter
 		return keyValueMapper.convert(map, mapTypeDescriptor, targetTypeDescriptor);
 	}
 
-	/**
-	 * 将 {@link Mapping} 编码为键值对字符串
-	 * 
-	 * @param source 待编码的 Mapping，不可为 null
-	 * @return 编码后的键值对字符串
-	 */
 	@Override
-	public final String encode(Mapping<String, String> source) {
-		return convert(source, String.class);
+	public void format(Mapping<String, String> source, @NonNull Writer target) throws IOException {
+		Joiner.joinAll(target, source.stream().iterator(), this);
 	}
 
-	/**
-	 * 将键值对字符串解码为 {@link Mapping}
-	 * 
-	 * @param source 待解码的键值对字符串，不可为 null
-	 * @return 解码后的 Mapping（保持键的插入顺序）
-	 */
 	@Override
-	public final Mapping<String, String> decode(String source) {
-		Map<String, List<String>> map = split(CharBuffer.wrap(source)::read).collect(Collectors.groupingBy(KeyValue::getKey,
+	public Mapping<String, String> parse(@NonNull Reader source) throws IOException {
+		Map<String, List<String>> map = split(source::read).collect(Collectors.groupingBy(KeyValue::getKey,
 				LinkedHashMap::new, Collectors.mapping(KeyValue::getValue, Collectors.toList())));
 		return Mapping.ofMultiMapped(map);
 	}

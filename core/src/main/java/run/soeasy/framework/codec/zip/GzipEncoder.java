@@ -8,7 +8,7 @@ import java.util.zip.GZIPOutputStream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.codec.io.BinaryCoder;
+import run.soeasy.framework.codec.io.BinaryEncoder;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
@@ -23,11 +23,11 @@ import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
  * 支持直接处理{@link GZIPInputStream}或对普通输入流进行GZIP压缩。
  *
  * @author soeasy.run
- * @see BinaryCoder
+ * @see BinaryEncoder
  * @see GZIPOutputStream
  */
 @RequiredArgsConstructor
-public class GzipEncoder implements BinaryCoder, StreamByteBufferTransporter {
+public class GzipEncoder implements BinaryEncoder, StreamByteBufferTransporter {
 	/**
 	 * GzipEncoder的默认实例，可直接用于GZIP压缩操作
 	 */

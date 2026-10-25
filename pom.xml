@@ -8,8 +8,8 @@
 	http://www.mojohaus.org/versions-maven-plugin/set-mojo.html -->
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
-	<!-- mvn versions:set -DnewVersion=2.0.1 -DgenerateBackupPoms=false -->
-	<version>2.0.1</version>
+	<!-- mvn versions:set -DnewVersion=2.0.2 -DgenerateBackupPoms=false -->
+	<version>2.0.2</version>
 	<packaging>pom</packaging>
 	<name>framework</name>
 	<description>为自定义框架提供抽象和基础实现</description>
@@ -99,47 +99,47 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>core</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>context</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>jackson</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>web</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>apple</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>pdf</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>redis</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>mybatis</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>mybatis-plus</artifactId>
-				<version>2.0.1</version>
+				<version>2.0.2</version>
 			</dependency>
 
 			<!-- 其他依赖管理 -->

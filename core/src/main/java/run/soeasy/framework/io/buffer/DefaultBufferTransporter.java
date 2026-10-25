@@ -40,13 +40,13 @@ public class DefaultBufferTransporter<B extends Buffer> implements BufferTranspo
 	private final BufferPool<B> bufferPool;
 
 	/**
-	 * 创建一个使用{@link ThreadLocalBufferPool}的传输器。
+	 * 创建一个使用{@link NoneBufferPool}的传输器。
 	 *
 	 * @param bufferCapacity 每个缓冲区的容量
 	 * @param bufferCreator  缓冲区创建函数
 	 */
 	public DefaultBufferTransporter(int bufferCapacity, IntFunction<? extends B> bufferCreator) {
-		this(new ThreadLocalBufferPool<>(bufferCapacity, bufferCreator));
+		this(new NoneBufferPool<>(bufferCapacity, bufferCreator));
 	}
 
 	/**

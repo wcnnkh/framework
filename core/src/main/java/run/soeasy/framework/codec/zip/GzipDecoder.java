@@ -7,7 +7,7 @@ import java.util.zip.GZIPInputStream;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.codec.io.BinaryCoder;
+import run.soeasy.framework.codec.io.BinaryDecoder;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.io.IOUtils;
 import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
@@ -24,7 +24,7 @@ import run.soeasy.framework.io.buffer.StreamByteBufferTransporter;
  * @see GZIPInputStream
  */
 @RequiredArgsConstructor
-public class GzipDecoder implements BinaryCoder, StreamByteBufferTransporter {
+public class GzipDecoder implements BinaryDecoder, StreamByteBufferTransporter {
 	/**
 	 * GzipDecoder的默认实例，可直接用于GZIP解压操作
 	 */
