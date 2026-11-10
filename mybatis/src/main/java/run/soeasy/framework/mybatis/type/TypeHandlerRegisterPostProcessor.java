@@ -6,7 +6,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import lombok.extern.slf4j.Slf4j;
-import run.soeasy.framework.context.ContextUtils;
+import run.soeasy.framework.context.util.ContextUtils;
 import run.soeasy.framework.mybatis.type.support.MeasuredValueTypeHandler;
 
 /**

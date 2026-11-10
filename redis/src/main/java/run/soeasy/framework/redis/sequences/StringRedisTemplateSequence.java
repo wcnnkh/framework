@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 
 import lombok.NonNull;
-import run.soeasy.framework.context.ContextUtils;
+import run.soeasy.framework.context.util.ContextUtils;
 import run.soeasy.framework.core.StringUtils;
 
 /**

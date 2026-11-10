@@ -27,7 +27,7 @@ public class BeanInfoMapping extends StreamablePropertyMapping<BeanProperty> {
 			try {
 				beanInfo = beanInfoFactory.getBeanInfo(beanClass);
 			} catch (IntrospectionException e) {
-				throw new FatalBeanException("Failed to obtain BeanInfo for class [" + beanClass + "]", e);
+				throw new IllegalArgumentException("Failed to obtain BeanInfo for class [" + beanClass + "]", e);
 			}
 			// 将属性描述符转换为BeanProperty，并过滤忽略的属性
 			return Stream.of(beanInfo.getPropertyDescriptors())

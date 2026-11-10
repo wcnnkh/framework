@@ -24,7 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.NonNull;
-import run.soeasy.framework.commons.io.ResourceAdapter;
+import run.soeasy.framework.context.io.ResourceAdapter;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.messaging.convert.support.QueryStringFormat;
 

@@ -12,7 +12,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 
 import lombok.NonNull;
-import run.soeasy.framework.context.ContextUtils;
+import run.soeasy.framework.context.util.ContextUtils;
 
 /**
  * 基于 Redisson 客户端实现的分布式序列生成器。

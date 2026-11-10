@@ -8,6 +8,16 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import run.soeasy.framework.context.time.Day;
+import run.soeasy.framework.context.time.Hour;
+import run.soeasy.framework.context.time.Millisecond;
+import run.soeasy.framework.context.time.Minute;
+import run.soeasy.framework.context.time.Month;
+import run.soeasy.framework.context.time.Second;
+import run.soeasy.framework.context.time.TimeFormatter;
+import run.soeasy.framework.context.time.TimeUnitRange;
+import run.soeasy.framework.context.time.Year;
+
 public class TimeUnitTest {
 
 	@Test
