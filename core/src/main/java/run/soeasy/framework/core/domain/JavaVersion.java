@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * Java版本工具类，用于解析和比较Java版本信息。

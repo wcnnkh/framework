@@ -5,8 +5,8 @@ import java.util.EventObject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.RandomUtils;
-import run.soeasy.framework.core.TimeUtils;
+import run.soeasy.framework.core.time.TimeUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 /**
  * 基础事件抽象类，定义所有事件的公共属性和行为规范。

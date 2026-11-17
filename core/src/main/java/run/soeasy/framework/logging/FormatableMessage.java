@@ -6,8 +6,8 @@ import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.io.Exportable;
 
 /**

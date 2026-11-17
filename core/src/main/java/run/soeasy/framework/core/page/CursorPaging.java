@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.util.Assert;
 
 /**
  * 基于游标的分页实现，使用懒加载机制，首次访问数据时执行实际查询。

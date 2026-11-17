@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.Random;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.io.mime.MimeType.SpecificityComparator;
 
 /**

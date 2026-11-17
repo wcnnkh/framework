@@ -4,7 +4,7 @@ import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class RedissonSequenceTest {
 	//@Test

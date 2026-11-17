@@ -4,7 +4,7 @@ import java.lang.reflect.TypeVariable;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 基于「显式泛型参数数组」的类型变量解析器（全面支持版）

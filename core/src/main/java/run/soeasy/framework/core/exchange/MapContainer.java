@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**

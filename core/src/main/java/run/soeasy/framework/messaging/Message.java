@@ -2,8 +2,8 @@ package run.soeasy.framework.messaging;
 
 import java.nio.charset.Charset;
 
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.io.source.CharsetAware;
+import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.io.mime.MimeType;
 
 /**

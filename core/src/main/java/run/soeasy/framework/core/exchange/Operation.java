@@ -1,13 +1,12 @@
 package run.soeasy.framework.core.exchange;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.streaming.Streamable;
 
@@ -157,6 +156,18 @@ public interface Operation {
 		}
 	}
 
+	default Operation and(@NonNull Operation operation) {
+		return composite(Mode.AND, operation);
+	}
+
+	default Operation or(@NonNull Operation operation) {
+		return composite(Mode.OR, operation);
+	}
+
+	default Operation composite(@NonNull Mode mode, @NonNull Operation operation) {
+		return new CompositeOperation<>(mode, Streamable.array(this, operation));
+	}
+
 	// ========== 静态创建方法 ==========
 
 	/**
@@ -201,18 +212,15 @@ public interface Operation {
 	 * @param processor 元素转操作的处理器（非null，异常自动转为失败操作）
 	 * @return 批量操作实例
 	 */
-	static <S> Operation batch(@NonNull Streamable<? extends S> elements, @NonNull Mode mode,
+	static <S> Operations<Operation> batch(@NonNull Streamable<? extends S> elements, @NonNull Mode mode,
 			@NonNull ThrowingFunction<? super S, ? extends Operation, ? extends Throwable> processor) {
-		List<Operation> operations = new ArrayList<>();
-		elements.forEach(element -> {
-			Operation operation;
+		List<Operation> operations = elements.map((element) -> {
 			try {
-				operation = processor.apply(element);
+				return processor.apply(element);
 			} catch (Throwable e) {
-				operation = failure(e);
+				return failure(e);
 			}
-			operations.add(operation);
-		});
-		return new CompositeOperation(mode, operations);
+		}).toList();
+		return new CompositeOperation<>(mode, Streamable.of(operations));
 	}
 }

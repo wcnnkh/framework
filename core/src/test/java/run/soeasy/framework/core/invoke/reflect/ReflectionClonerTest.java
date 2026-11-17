@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.ToString;
-import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.mapping.property.Cloner;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class ReflectionClonerTest {
 	@Test

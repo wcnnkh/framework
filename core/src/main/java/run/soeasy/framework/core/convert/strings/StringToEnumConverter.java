@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.convert.strings;
 
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.strings.StringUtils;
 
 @SuppressWarnings("rawtypes")
 public class StringToEnumConverter implements StringConverter<Enum> {

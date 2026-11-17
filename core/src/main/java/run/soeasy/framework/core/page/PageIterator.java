@@ -2,8 +2,8 @@ package run.soeasy.framework.core.page;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Iterator;

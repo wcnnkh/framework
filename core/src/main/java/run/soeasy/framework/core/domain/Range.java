@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.util.Assert;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 范围模型，用于表示由下界和上界定义的连续区间。

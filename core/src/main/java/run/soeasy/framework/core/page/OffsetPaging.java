@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.NumberUtils;
+import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.util.Assert;
 
 /**
  * 基于偏移量的分页实现，通过偏移量（offset）和每页大小（pageSize）实现分页，偏移量作为Long型游标集成至游标分页体系。

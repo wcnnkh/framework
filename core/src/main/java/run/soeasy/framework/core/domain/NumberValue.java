@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.NumberUtils;
+import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**

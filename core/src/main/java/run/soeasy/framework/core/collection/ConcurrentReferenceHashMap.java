@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.util.Assert;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 支持软引用或弱引用的并发哈希映射，用于实现内存敏感的缓存。

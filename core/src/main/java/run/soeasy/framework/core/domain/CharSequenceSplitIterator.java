@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 字符序列分割迭代器，用于按指定过滤器集合分割字符序列，

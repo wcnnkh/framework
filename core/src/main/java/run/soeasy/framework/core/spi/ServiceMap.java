@@ -4,9 +4,9 @@ import java.util.Comparator;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import lombok.Getter;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
 import run.soeasy.framework.core.exchange.MapContainer;
 import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.streaming.Streamable;
 

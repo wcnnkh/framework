@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class OffsetPagingTest {
 	@Test

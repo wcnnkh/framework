@@ -8,8 +8,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
 import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.spi.ServiceMap;
 import run.soeasy.framework.core.streaming.Streamable;
 

@@ -7,8 +7,8 @@ import java.util.Iterator;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 合并注解元素实现类，实现{@link AnnotatedElement}接口，

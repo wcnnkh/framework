@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.codec.security.AlgorithmFactory;
 import run.soeasy.framework.codec.security.ConfigurableAlgorithmFactory;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * Cipher工厂类，继承自{@link ConfigurableAlgorithmFactory}，专门用于创建和配置{@link Cipher}实例，

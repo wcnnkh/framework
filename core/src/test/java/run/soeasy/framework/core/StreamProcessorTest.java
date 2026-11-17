@@ -7,6 +7,8 @@ import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
+import run.soeasy.framework.core.util.RandomUtils;
+
 public class StreamProcessorTest {
 	@Test
 	public void test() throws Throwable {

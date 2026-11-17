@@ -2,8 +2,8 @@ package run.soeasy.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
 
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.collection.ArrayUtils;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 注解属性映射抽象基类，实现{@link AnnotationProperties}接口，

@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 import run.soeasy.framework.io.FileUtils;
 
 public class PDFTest {

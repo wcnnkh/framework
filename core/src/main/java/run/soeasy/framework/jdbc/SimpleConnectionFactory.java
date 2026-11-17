@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import lombok.Data;
 import lombok.NonNull;
-import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 简单的数据库连接工厂，实现{@link ConnectionFactory}接口，基于{@link DriverManager}创建数据库连接，

@@ -1,9 +1,9 @@
 package run.soeasy.framework.messaging;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.exchange.KeyValueRegistry;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 消息头集合核心接口，继承自{@link KeyValueRegistry}&lt;String, String&gt;，专为消息头管理设计（如HTTP请求头/响应头）。

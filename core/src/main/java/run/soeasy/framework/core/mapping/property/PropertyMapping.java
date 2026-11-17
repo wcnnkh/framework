@@ -12,8 +12,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.NumberUtils;
 import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.streaming.Streamable;
 

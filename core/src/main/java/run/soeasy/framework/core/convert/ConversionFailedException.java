@@ -2,7 +2,7 @@ package run.soeasy.framework.core.convert;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 类型转换失败异常，用于表示转换过程中发生的具体失败场景。

@@ -5,7 +5,6 @@ import java.util.List;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
@@ -16,6 +15,7 @@ import run.soeasy.framework.core.exchange.KeyValueRegistry;
 import run.soeasy.framework.core.exchange.Registry;
 import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 @RequiredArgsConstructor
 public class AnyPropertyMapping implements PropertyMapping<PropertyAccessor> {

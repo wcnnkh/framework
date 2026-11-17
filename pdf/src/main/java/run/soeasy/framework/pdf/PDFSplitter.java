@@ -10,7 +10,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 /**
  * PDF 按页拆分器

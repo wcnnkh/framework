@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.spi;
 
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.comparator.OrderComparator;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 服务比较器，继承自{@link OrderComparator}，用于服务组件的排序，

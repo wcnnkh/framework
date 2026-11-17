@@ -1,8 +1,8 @@
 package run.soeasy.framework.core.execute;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.type.ClassUtils;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 可执行模板接口，继承自{@link ExecutableDescriptor}，定义了可执行元素（方法、构造函数等）的执行规范，

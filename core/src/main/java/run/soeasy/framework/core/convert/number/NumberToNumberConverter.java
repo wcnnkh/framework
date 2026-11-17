@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.NumberUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.math.NumberUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.core.type.ReflectionUtils;
 

@@ -4,9 +4,9 @@ import java.math.BigInteger;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.strings.StringUtils;
 
 @Getter
 @Setter

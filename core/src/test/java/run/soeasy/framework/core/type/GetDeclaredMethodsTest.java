@@ -2,7 +2,7 @@ package run.soeasy.framework.core.type;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 public class GetDeclaredMethodsTest {
 	@Test

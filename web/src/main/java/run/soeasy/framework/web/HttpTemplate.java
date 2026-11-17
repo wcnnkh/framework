@@ -18,9 +18,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import run.soeasy.framework.core.RandomUtils;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.Converter;
+import run.soeasy.framework.core.strings.StringUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 /**
  * 增强型HTTP客户端实现类，继承Spring

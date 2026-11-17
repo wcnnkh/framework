@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.spi;
 
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
 import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 
 /**
  * 服务注入器容器，管理多个服务注入器并批量执行注入操作。

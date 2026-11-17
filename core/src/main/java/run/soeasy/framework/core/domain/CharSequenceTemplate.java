@@ -6,8 +6,8 @@ import java.util.function.Function;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.strings.StringUtils;
 
 /**
  * 字符序列模板类，实现{@link CharSequence}和{@link Version}接口，

@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,11 +34,11 @@ import java.util.stream.StreamSupport;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import run.soeasy.framework.core.Assert;
-import run.soeasy.framework.core.ObjectUtils;
 import run.soeasy.framework.core.function.ThrowingConsumer;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.type.ReflectionUtils;
+import run.soeasy.framework.core.util.Assert;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 集合工具类
@@ -1015,5 +1016,26 @@ public class CollectionUtils {
 
 	public static <T> CloseableIterator<T> closeableIterator(@NonNull Iterator<T> iterator, Runnable closeHandlder) {
 		return new CloseableIteratorImpl<>(iterator, closeHandlder);
+	}
+	
+	/**
+	 * 将源集合通过指定映射函数转换为非空Set，并过滤掉所有null元素（包括源元素和映射后的元素）。
+	 *
+	 * @param source 源集合，可为空（为空时返回空Set）
+	 * @param mapper 元素映射函数，用于将源元素转换为目标元素，不能为空
+	 * @param <S>    源集合元素类型
+	 * @param <T>    目标Set元素类型
+	 * @return 包含映射后非null元素的Set（使用LinkedHashSet保持源集合的迭代顺序）
+	 */
+	public static <S, T> Set<T> mapToNonNullSet(Collection<? extends S> source,
+			@NonNull Function<? super S, ? extends T> mapper) {
+		if (CollectionUtils.isEmpty(source)) {
+			return Collections.emptySet();
+		}
+
+		return source.stream().filter((e) -> e != null) // 过滤源集合中的null元素
+				.map(mapper) // 应用映射函数
+				.filter((e) -> e != null) // 过滤映射后的null元素
+				.collect(Collectors.toCollection(LinkedHashSet::new)); // 保持顺序的Set
 	}
 }

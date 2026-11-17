@@ -15,9 +15,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import lombok.experimental.UtilityClass;
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.collection.LinkedMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
+import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
 import run.soeasy.framework.jdbc.convert.ResultSetMapper;
 

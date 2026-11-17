@@ -14,7 +14,7 @@ import org.junit.Test;
 import run.soeasy.framework.codec.Codec;
 import run.soeasy.framework.codec.format.Base64;
 import run.soeasy.framework.codec.format.CharsetCodec;
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class RSATest {
 	public static String content = RandomUtils.uuid()

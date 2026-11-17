@@ -7,8 +7,8 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.RandomUtils;
 import run.soeasy.framework.core.collection.CollectionUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class CollectionUtilsTest {
 	@Test

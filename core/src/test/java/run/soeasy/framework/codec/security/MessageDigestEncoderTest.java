@@ -7,7 +7,7 @@ import org.junit.Test;
 import run.soeasy.framework.codec.Coder;
 import run.soeasy.framework.codec.format.CharsetCodec;
 import run.soeasy.framework.codec.format.HexCodec;
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class MessageDigestEncoderTest {
 	public static String content = RandomUtils.uuid() + "这是一段加解密测试内容!";

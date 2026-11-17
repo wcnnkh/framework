@@ -2,7 +2,7 @@ package run.soeasy.framework.core.exchange;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.domain.KeyValue;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.streaming.Streamable;
 

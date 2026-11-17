@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import run.soeasy.framework.context.sequences.PersistentSequence;
+import run.soeasy.framework.sequences.PersistentSequence;
 
 /**
  * 基于 Redis 的分布式序列生成器抽象基类。

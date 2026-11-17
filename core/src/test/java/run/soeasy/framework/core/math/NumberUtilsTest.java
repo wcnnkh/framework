@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import run.soeasy.framework.core.NumberUtils;
-
 public class NumberUtilsTest {
 	@Test
 	public void test() {

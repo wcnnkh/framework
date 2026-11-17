@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 import lombok.Data;
 import run.soeasy.framework.core.NestedRuntimeException;
-import run.soeasy.framework.core.StringUtils;
+import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.io.buffer.BufferReader;
 
 /**

@@ -3,7 +3,7 @@ package run.soeasy.framework.core.domain;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.ObjectUtils;
+import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
  * 通用包装器实现，提供对目标对象的透明包装，实现{@link Wrapper}接口。

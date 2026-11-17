@@ -3,7 +3,7 @@ package run.soeasy.framework.core.domain;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import run.soeasy.framework.core.NumberUtils;
+import run.soeasy.framework.core.math.NumberUtils;
 
 /**
  * 高精度整数实现类，继承自{@link NumberAdder}（提供数值累加与重置契约），封装Java原生{@link BigInteger}，

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import run.soeasy.framework.codec.Codec;
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class URLCodecTest {
 	public static String content = RandomUtils.uuid() + "这是一段加解密测试内容!";

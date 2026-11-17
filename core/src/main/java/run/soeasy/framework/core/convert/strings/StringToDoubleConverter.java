@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.convert.strings;
 
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public class StringToDoubleConverter implements StringConverter<Double> {
 	public static StringToDoubleConverter DEFAULT = new StringToDoubleConverter();

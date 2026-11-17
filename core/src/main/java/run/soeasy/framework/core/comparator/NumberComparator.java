@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.util.Comparator;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.NumberUtils;
+import run.soeasy.framework.core.math.NumberUtils;
 
 /**
  * 高精度数值比较器：支持所有 {@link Number} 子类的无偏差比较，兼顾性能与精度

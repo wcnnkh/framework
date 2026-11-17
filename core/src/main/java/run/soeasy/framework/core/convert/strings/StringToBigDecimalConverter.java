@@ -2,9 +2,9 @@ package run.soeasy.framework.core.convert.strings;
 
 import java.math.BigDecimal;
 
-import run.soeasy.framework.core.StringUtils;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.strings.StringUtils;
 
 public class StringToBigDecimalConverter implements StringConverter<BigDecimal> {
 	public static StringToBigDecimalConverter DEFAULT = new StringToBigDecimalConverter();

@@ -1,5 +1,7 @@
 package run.soeasy.framework.core.comparator;
 
+import lombok.NonNull;
+
 /**
  * 带顺序信息的比较结果。
  *
@@ -57,6 +59,10 @@ public interface Ordering extends Comparison, Ordered {
 		return () -> -1;
 	}
 
+	static <T extends Comparable<T>> Ordering comparable(@NonNull T left, T right) {
+		return () -> left.compareTo(right);
+	}
+
 	/**
 	 * 基于比较结果码创建 {@code Ordering} 实例。
 	 *
@@ -66,6 +72,10 @@ public interface Ordering extends Comparison, Ordered {
 	static Ordering of(int order) {
 		int value = order;
 		return () -> value;
+	}
+
+	default Ordering reverse() {
+		return () -> Math.negateExact(getOrder());
 	}
 
 	/**

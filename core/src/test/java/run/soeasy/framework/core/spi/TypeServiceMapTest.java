@@ -2,7 +2,7 @@ package run.soeasy.framework.core.spi;
 
 import org.junit.Test;
 
-import run.soeasy.framework.core.RandomUtils;
+import run.soeasy.framework.core.util.RandomUtils;
 
 public class TypeServiceMapTest {
 	@Test

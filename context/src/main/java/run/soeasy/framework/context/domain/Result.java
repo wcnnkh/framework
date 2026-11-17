@@ -1,12 +1,16 @@
 package run.soeasy.framework.context.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * 通用响应结果基类（无数据载体）
@@ -269,4 +273,29 @@ public class Result implements Serializable {
     public static <T> DataResult<T> success() {
         return SUCCESS.data();
     }
+    
+    /**
+	 * 批量执行指定的处理逻辑，针对传入的key集合完成批量处理，并汇总执行失败的key结果
+	 *
+	 * @param <K>       待处理key的泛型类型
+	 * @param keys      待处理的key集合，支持任意非空集合类型（若仅含单个key则直接执行，不进入批量逻辑）
+	 * @param processor 单个key的处理逻辑函数，入参为K类型的key，返回该key的处理结果Result
+	 * @return 批量执行结果： 1. 若所有key处理成功（或仅单个key且处理成功），返回Result.success()； 2.
+	 *         若存在处理失败的key，返回Result.error()，错误信息包含所有失败的key列表（格式：Failure list:[key1,
+	 *         key2...]）
+	 */
+	public static <K> Result batchExecution(@NonNull Collection<K> keys, @NonNull Function<? super K, ? extends Result> processor) {
+		if (keys.size() == 1) {
+			return processor.apply(keys.iterator().next());
+		}
+
+		List<K> failList = new ArrayList<>();
+		for (K key : keys) {
+			Result result = processor.apply(key);
+			if (!result.isSuccess()) {
+				failList.add(key);
+			}
+		}
+		return failList.isEmpty() ? Result.success() : Result.error("Failure list:" + failList);
+	}
 }

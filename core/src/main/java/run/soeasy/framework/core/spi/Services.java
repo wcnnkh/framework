@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 import lombok.Getter;
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
 import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.streaming.Streamable;
 

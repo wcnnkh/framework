@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import run.soeasy.framework.core.Assert;
+import run.soeasy.framework.core.util.Assert;
 
 /**
  * 边界模型，用于表示一个范围的单侧边界。

@@ -2,7 +2,7 @@ package run.soeasy.framework.core.exchange;
 
 import java.util.concurrent.TimeUnit;
 
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.streaming.Streamable;
 
 @FunctionalInterface

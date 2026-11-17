@@ -2,9 +2,9 @@ package run.soeasy.framework.core.page;
 
 import java.util.NoSuchElementException;
 
-import run.soeasy.framework.core.Assert;
 import run.soeasy.framework.core.collection.LinkedIterator;
 import run.soeasy.framework.core.streaming.Streamable;
+import run.soeasy.framework.core.util.Assert;
 
 /**
  * 基于游标的分页接口，定义基于游标的分页查询机制，支持获取分页元数据、页跳转及全量页的延迟遍历。

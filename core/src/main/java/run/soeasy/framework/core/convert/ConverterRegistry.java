@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.CompositeOperation.Mode;
 import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Operations.Mode;
 import run.soeasy.framework.core.spi.ServiceMap;
 import run.soeasy.framework.core.streaming.Streamable;
 
