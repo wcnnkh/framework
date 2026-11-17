@@ -58,12 +58,10 @@ import run.soeasy.framework.core.streaming.Streamable;
  * <p>
  * <b>四、回滚契约（rollback）</b>
  * <ul>
- * <li>{@link #rollback()} 是<b>表达式构造</b>，不是执行命令：只生成代表「本次补偿流程」的信号，
- * 不自动执行、不阻塞；要真正执行补偿，必须对返回的信号调用 {@code await()}</li>
- * <li>每次调用都生成一套独立的补偿信号。框架<b>不记录</b>「是否已发起过回滚」，也不拦截重复调用，
+ * <li>{@link #rollback()} 每次调用都生成一套独立的补偿信号。框架<b>不记录</b>「是否已发起过回滚」，也不拦截重复调用，
  * 补偿的幂等与防重下沉到叶子实现自行保证</li>
- * <li>{@link #isRollbackSupported()} 是<b>能力维度</b>（是否具备补偿能力）；
- * {@link #isRolledBack()} 是<b>状态维度</b>（补偿是否已执行完成），二者不可混用</li>
+ * <li>{@link #isRollbackSupported()} 是<b>能力维度</b>（是否具备补偿能力）；</li>
+ * <li>{@link #isRolledBack()} 是<b>状态维度</b>（补偿是否已执行完成），二者不可混用</li>
  * </ul>
  *
  * <p>
@@ -726,15 +724,6 @@ public interface Signal {
 	boolean await(long timeout, @NonNull TimeUnit unit) throws InterruptedException;
 
 	/**
-	 * 包装为单元素组合信号（串行 And），便于统一按「组合信号」处理（例如统一读取子信号集合）。
-	 *
-	 * @return 单元素组合信号
-	 */
-	default Signal boxed() {
-		return new CompositeSignals<>(SequentialAnd.INSTANCE, Streamable.singleton(this));
-	}
-
-	/**
 	 * 尝试取消执行，语义对齐 {@link java.util.concurrent.Future#cancel(boolean)}。
 	 *
 	 * <p>
@@ -850,4 +839,32 @@ public interface Signal {
 		}
 		return this;
 	}
+	
+	/**
+	 * 包装为单元素组合信号（串行 And），便于统一按「组合信号」处理（例如统一读取子信号集合）。
+	 * <p>
+	 * boxed：叶子 Signal → 包装成 Signals（单元素组合容器），类型向上对齐；
+	 * 本默认实现直接返回自身，子类 {@link Signals} 重写为真实包装逻辑。
+	 * </p>
+	 * @return 单元素组合信号
+	 */
+	default Signal boxed() {
+	    return this;
+	}
+
+	/**
+	 * 解包：将当前叶子信号包装为单元素 {@link Signals} 容器，方便统一用组合容器API遍历子元素、读取pattern。
+	 * <p>
+	 * 与 boxed 配对：
+	 * <ul>
+	 * <li>boxed：偏向 Signal 侧，返回 Signal 类型，统一编排入口</li>
+	 * <li>unboxed：偏向容器侧，返回 Signals 强类型，拿到 getElements / getCompositePattern</li>
+	 * </ul>
+	 * 包装后是一个只包含自己的串行And单元素组合视图，不会改变原有状态、等待、取消、回滚行为。
+	 * @return 承载当前信号的单元素组合容器
+	 */
+	default Signals<? extends Signal> unboxed(){
+	    return new CompositeSignals<>(SequentialAnd.INSTANCE, Streamable.singleton(this));
+	}
+
 }
