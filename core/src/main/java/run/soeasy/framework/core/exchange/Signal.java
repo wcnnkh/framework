@@ -46,13 +46,13 @@ public interface Signal {
 		}
 
 		@Override
-		public <E extends Signal> boolean isSuccess(@NonNull Streamable<E> elements) {
-			return match(elements, Signal::isSuccess);
+		public <E extends Signal> boolean isRollbackSupported(@NonNull Streamable<E> elements) {
+			return match(elements, Signal::isRollbackSupported);
 		}
 
 		@Override
-		public <E extends Signal> boolean isRollbackSupported(@NonNull Streamable<E> elements) {
-			return match(elements, Signal::isRollbackSupported);
+		public <E extends Signal> boolean isSuccess(@NonNull Streamable<E> elements) {
+			return match(elements, Signal::isSuccess);
 		}
 
 		public abstract <E extends Signal> boolean match(Streamable<E> elements, Predicate<? super E> predicate);
@@ -232,46 +232,17 @@ public interface Signal {
 		}
 	}
 
+	static <E extends Signal> Signals<E> all(@NonNull Streamable<E> elements) {
+		return composite(SequentialAnd.INSTANCE, elements);
+	}
+
+	static <E extends Signal> Signals<E> any(@NonNull Streamable<E> elements) {
+		return composite(ParallelOr.INSTANCE, elements);
+	}
+
 	static <E extends Signal> Signals<E> batch(@NonNull Streamable<E> elements) {
-		return new CompositeSignals<>(SequentialAnd.INSTANCE, Streamable.of(elements.toList()));
-	}
-
-	public static <V> Promise<V> promise() {
-		return new Promise<>();
-	}
-
-	/**
-	 * 通用成功
-	 * 
-	 * @param <V>
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <V> Promise<V> success() {
-		return (Promise<V>) Promise.SUCCESS;
-	}
-
-	/**
-	 * 通用错误
-	 * 
-	 * @param <V>
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <V> Promise<V> failure() {
-		return (Promise<V>) Promise.FAILURE;
-	}
-
-	public static <V> Task<V> run(@NonNull Runnable runnable) {
-		Task<V> task = new Task<V>(runnable);
-		task.run();
-		return task;
-	}
-
-	public static <V> Task<V> run(@NonNull Runnable runnable, @NonNull Executor executor) {
-		Task<V> task = new Task<V>(runnable);
-		executor.execute(task);
-		return task;
+		// 不使用视图，防止没有实现执行子操作
+		return all(Streamable.of(elements.toList()));
 	}
 
 	public static <V> Task<V> call(@NonNull Callable<V> callable) {
@@ -286,6 +257,49 @@ public interface Signal {
 		return task;
 	}
 
+	static <E extends Signal> Signals<E> composite(@NonNull CompositePattern compositePattern,
+			@NonNull Streamable<E> elements) {
+		return new CompositeSignals<>(compositePattern, elements);
+	}
+
+	/**
+	 * 通用错误
+	 * 
+	 * @param <V>
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V> Promise<V> failure() {
+		return (Promise<V>) Promise.FAILURE;
+	}
+
+	public static <V> Promise<V> promise() {
+		return new Promise<>();
+	}
+
+	public static <V> Task<V> run(@NonNull Runnable runnable) {
+		Task<V> task = new Task<V>(runnable);
+		task.run();
+		return task;
+	}
+
+	public static <V> Task<V> run(@NonNull Runnable runnable, @NonNull Executor executor) {
+		Task<V> task = new Task<V>(runnable);
+		executor.execute(task);
+		return task;
+	}
+
+	/**
+	 * 通用成功
+	 * 
+	 * @param <V>
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V> Promise<V> success() {
+		return (Promise<V>) Promise.SUCCESS;
+	}
+
 	/**
 	 * 串行 And 组合：先等待当前信号，再依次等待 {@code others}。
 	 *
@@ -296,12 +310,18 @@ public interface Signal {
 	 * @return 串行 And 组合信号
 	 */
 	default Signal and(@NonNull Signal... others) {
-		return composite(SequentialAnd.INSTANCE, others);
+		return all(Streamable.array(this).concat(others));
 	}
 
 	void await() throws InterruptedException, ExecutionException;
 
 	void await(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
+
+	default Signal boxed() {
+		return this;
+	}
+
+	boolean cancel(boolean mayInterruptIfRunning);
 
 	default Throwable cause() {
 		if (isDone()) {
@@ -314,6 +334,12 @@ public interface Signal {
 		return null;
 	}
 
+	boolean isCancelled();
+
+	boolean isDone();
+
+	boolean isRollbackSupported();
+
 	default boolean isSuccess() {
 		try {
 			await();
@@ -322,44 +348,6 @@ public interface Signal {
 		}
 		return false;
 	}
-
-	default Signal boxed() {
-		return this;
-	}
-
-	boolean cancel(boolean mayInterruptIfRunning);
-
-	/**
-	 * 使用指定组合模式，将当前信号与 {@code others} 合并为组合信号。
-	 *
-	 * @param compositePattern 组合规则 And / Or 及其具体实现
-	 * @param others           其他信号
-	 * @return 组合信号
-	 */
-	default Signal composite(@NonNull CompositePattern compositePattern, @NonNull Signal... others) {
-		return new CompositeSignals<>(compositePattern, Streamable.array(this).concat(others));
-	}
-
-	boolean isCancelled();
-
-	boolean isDone();
-
-	/**
-	 * 并行 Or 组合：当前信号与 {@code others} 并行等待，任一完成即整体完成。
-	 *
-	 * <p>
-	 * 返回的组合信号同样实现 {@link Signal}，可继续参与外层编排；若外层仍是并行 Or，会自动拍平为一层。
-	 *
-	 * @param others 其他信号
-	 * @return 并行 Or 组合信号
-	 */
-	default Signal or(@NonNull Signal... others) {
-		return composite(ParallelOr.INSTANCE, others);
-	}
-
-	boolean isRollbackSupported();
-
-	Signal rollback();
 
 	default ListenableSignal<? extends Signal> listenable() {
 		return Signal.call(() -> {
@@ -371,4 +359,19 @@ public interface Signal {
 			return null;
 		});
 	}
+
+	/**
+	 * 并行 Or 组合：当前信号与 {@code others} 并行等待，任一完成即整体完成。
+	 *
+	 * <p>
+	 * 返回的组合信号同样实现 {@link Signal}，可继续参与外层编排；若外层仍是并行 Or，会自动拍平为一层。
+	 *
+	 * @param others 其他信号
+	 * @return 并行 Or 组合信号
+	 */
+	default Signal or(@NonNull Signal... others) {
+		return any(Streamable.array(this).concat(others));
+	}
+
+	Signal rollback();
 }
