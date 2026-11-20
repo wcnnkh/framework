@@ -361,7 +361,7 @@ public interface Signal {
 
 	Signal rollback();
 
-	default Signals<? extends Signal> unboxed() {
-		return new CompositeSignals<>(SequentialAnd.INSTANCE, Streamable.singleton(this));
+	default Listenable<Signal> listenable() {
+		return Listenable.ignore();
 	}
 }

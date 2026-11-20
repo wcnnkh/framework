@@ -89,10 +89,4 @@ public interface Signals<T extends Signal> extends Signal {
 	default Signal boxed() {
 		return new CompositeSignals<>(getCompositePattern(), Streamable.singleton(this));
 	}
-
-	@Override
-	default Signals<T> unboxed() {
-		return this;
-	}
-
 }
