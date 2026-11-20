@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 import lombok.NonNull;
 import run.soeasy.framework.core.exchange.ChangeEvent;
 import run.soeasy.framework.core.exchange.ChangeType;
-import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.exchange.Publisher;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.source.PathSource;
 
@@ -209,10 +209,10 @@ public class PathPoller<T extends PathSource> extends LastModifiedPoller<T> {
 	 * </ol>
 	 * 
 	 * @param watchEvents 待处理的文件系统事件集合（非空）
-	 * @return 事件发布结果（{@link Operation}），包含发布状态/结果
+	 * @return 事件发布结果（{@link Signal}），包含发布状态/结果
 	 * @throws NullPointerException watchEvents为null时抛出
 	 */
-	private Operation publishWatchEvents(Streamable<WatchEvent<Path>> watchEvents) {
+	private Signal publishWatchEvents(Streamable<WatchEvent<Path>> watchEvents) {
 		// 过滤并转换为ChangeEvent，再发布
 		return getChangeEventProducer().publish(watchEvents.map(this::eventConvert).filter(event -> event != null));
 	}
@@ -220,16 +220,16 @@ public class PathPoller<T extends PathSource> extends LastModifiedPoller<T> {
 	/**
 	 * 将当前PathPoller注册到指定WatchService，管理生成的WatchKey。
 	 * <p>
-	 * 注册成功后，WatchKey会被加入{@link #watchKeyRegistry}统一管理；注册失败返回failure类型的Operation。
+	 * 注册成功后，WatchKey会被加入{@link #watchKeyRegistry}统一管理；注册失败返回failure类型的Signal。
 	 * 
 	 * @param watchService 文件系统监控服务（非空）
 	 * @return 注册结果
 	 * @throws NullPointerException watchService为null时抛出
 	 */
-	public Operation registerTo(WatchService watchService) {
+	public Signal registerTo(WatchService watchService) {
 		WatchKey watchKey = newWatchKey(watchService);
 		if (watchKey == null) {
-			return Operation.failure(new RuntimeException("注册失败：无有效监控目录或WatchService注册失败")); // 注册失败
+			return Signal.promise().failure(new RuntimeException("注册失败：无有效监控目录或WatchService注册失败")); // 注册失败
 		}
 		// 将WatchKey注册到内部管理中心
 		return watchKeyRegistry.register(watchKey);

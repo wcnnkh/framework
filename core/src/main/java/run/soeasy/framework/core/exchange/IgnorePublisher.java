@@ -40,7 +40,7 @@ class IgnorePublisher<T> implements Publisher<T> {
      * @return 表示操作成功的回执
      */
     @Override
-    public Operation publish(T resource) {
-        return Operation.success();
+    public Signal publish(T resource) {
+        return Signal.success();
     }
 }

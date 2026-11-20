@@ -46,7 +46,7 @@ public class DisposableDispatcher<T> extends AbstractChannel<T> implements Liste
 	 * @return 注册操作的回执，可用于取消注册
 	 */
 	@Override
-	public Operation registerListener(@NonNull Listener<T> listener) {
+	public Signal registerListener(@NonNull Listener<T> listener) {
 		return registry.register(listener);
 	}
 

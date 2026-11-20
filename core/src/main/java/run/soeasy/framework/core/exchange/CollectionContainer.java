@@ -85,23 +85,12 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 * @throws RuntimeException 底层Collection抛出的异常（如null元素不允许、并发修改异常）
 	 */
 	@Override
-	public Operation register(E element) {
-		try {
-			boolean addSuccess = container.add(element);
-			if (!addSuccess) {
-				return Operation.failure(new RuntimeException(String.format("注册失败：元素添加失败（可能已存在），元素=%s", element)));
+	public Signal register(E element) {
+		return Signal.run(() -> {
+			if (!container.add(element)) {
+				throw new RuntimeException(String.format("注册失败：元素添加失败（可能已存在），元素=%s", element));
 			}
-
-			return Operation.success(isRollbackSupported() ? () -> {
-				try {
-					return deregister(element).sync().isSuccess();
-				} catch (Exception e) {
-					throw new RuntimeException(String.format("注册回滚失败，元素=%s", element), e);
-				}
-			} : null);
-		} catch (Exception e) {
-			return Operation.failure(new RuntimeException(String.format("注册异常，元素=%s", element), e));
-		}
+		}).rollback(isRollbackSupported() ? ((e) -> deregister(element)) : null);
 	}
 
 	/**
@@ -112,32 +101,16 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	 * 4. 删除失败（元素不存在）返回失败状态的Operation。
 	 *
 	 * @param element 待注销的业务元素（非null）
-	 * @return 操作句柄：
-	 *         <ul>
-	 *         <li>成功：Operation.success（支持回滚的集合绑定回滚逻辑，否则无）；
-	 *         <li>失败：Operation.failure（包含具体失败原因）。
-	 *         </ul>
+	 * @return Signal
 	 * @throws RuntimeException 底层Collection抛出的异常（如并发修改异常）
 	 */
 	@Override
-	public Operation deregister(E element) {
-		try {
-			boolean removeSuccess = container.remove(element);
-			if (!removeSuccess) {
-				return Operation.failure(new RuntimeException(String.format("注销失败：元素不存在或删除失败，元素=%s", element)));
+	public Signal deregister(E element) {
+		return Signal.run(() -> {
+			if (!container.remove(element)) {
+				throw new RuntimeException(String.format("注销失败：元素不存在或删除失败，元素=%s", element));
 			}
-
-			// 仅支持回滚的集合绑定回滚逻辑（重新注册元素）
-			return Operation.success(isRollbackSupported() ? () -> {
-				try {
-					return register(element).sync().isSuccess();
-				} catch (Exception e) {
-					throw new RuntimeException(String.format("注销回滚失败，元素=%s", element), e);
-				}
-			} : null);
-		} catch (Exception e) {
-			return Operation.failure(new RuntimeException(String.format("注销异常，元素=%s", element), e));
-		}
+		}).rollback(isRollbackSupported() ? ((e) -> deregister(element)) : null);
 	}
 
 	// --------------------- 集合状态查询 ---------------------
@@ -167,9 +140,9 @@ public class CollectionContainer<E, D extends Collection<E>> implements Registry
 	}
 
 	@Override
-	public Operation reset() {
+	public Signal reset() {
 		container.clear();
-		return Operation.success();
+		return Signal.success();
 	}
 
 	@Override

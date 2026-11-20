@@ -8,8 +8,7 @@ import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConverterNotFoundException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;
-import run.soeasy.framework.core.exchange.Operation;
-import run.soeasy.framework.core.exchange.Operations.Mode;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.spi.ServiceMap;
 import run.soeasy.framework.core.streaming.Streamable;
 
@@ -131,9 +130,9 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	 * @param conditionalTransformer 条件转换器，不可为null
 	 * @return 注册句柄，可用于后续取消注册
 	 */
-	public Operation register(ConditionalTransformer conditionalTransformer) {
+	public Signal register(ConditionalTransformer conditionalTransformer) {
 		Set<TypeMapping> typeMappings = conditionalTransformer.getTransformableTypeMappings();
-		return Operation.batch(Streamable.of(typeMappings), Mode.AND, (e) -> register(e, conditionalTransformer));
+		return Signal.batch(Streamable.of(typeMappings).mapPure((e) -> register(e, conditionalTransformer)));
 	}
 
 	/**
@@ -146,7 +145,7 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	 * @param consumer   转换逻辑函数，参数为(源对象, 目标对象)
 	 * @return 注册句柄，可用于后续取消注册
 	 */
-	public <S, T> Operation register(Class<S> sourceType, Class<T> targetType,
+	public <S, T> Signal register(Class<S> sourceType, Class<T> targetType,
 			BiConsumer<? super S, ? super T> consumer) {
 		ConsumeTransformer<S, T> transformer = new ConsumeTransformer<>(sourceType, targetType, consumer);
 		return register(transformer);

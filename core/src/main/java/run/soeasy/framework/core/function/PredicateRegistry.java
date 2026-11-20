@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.exchange.CollectionContainer;
-import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Signal;
 
 /**
  * 泛型谓词注册表 基于策略模式实现规则解耦，支持内置枚举规则/自定义规则，底层用CopyOnWriteArrayList保证并发安全。
@@ -97,9 +97,9 @@ public class PredicateRegistry<T> extends
 	 * 注册指定对象的等值匹配谓词
 	 * 
 	 * @param object 等值匹配的目标对象（泛型T类型）
-	 * @return 用于操作已注册谓词的{@link Operation}实例
+	 * @return 用于操作已注册谓词的{@link Signal}实例
 	 */
-	public Operation registerEqual(T object) {
+	public Signal registerEqual(T object) {
 		return register(Predicate.isEqual(object));
 	}
 

@@ -5,9 +5,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import lombok.Getter;
 import run.soeasy.framework.core.exchange.MapContainer;
-import run.soeasy.framework.core.exchange.Operation;
-import run.soeasy.framework.core.exchange.Operations.Mode;
-import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Streamable;
 
 @Getter
@@ -20,18 +18,18 @@ public class ServiceMap<K, S> extends MapContainer<K, S, ConcurrentSkipListMap<K
 	}
 
 	@Override
-	public Operation inject(S service) {
+	public Signal inject(S service) {
 		return injectors.inject(service);
 	}
 
-	public Operation injectAll() {
-		return Operation.batch(map((e) -> e.getValue()), Mode.AND, this::inject);
+	public Signal injectAll() {
+		return Signal.batch(map((e) -> e.getValue()).map(this::inject));
 	}
 
 	@Override
-	public Operation register(K key, S value) {
-		Operation injected = inject(value);
-		Operation registed = super.register(key, value);
-		return Operation.batch(Streamable.array(injected, registed), Mode.AND, ThrowingFunction.identity());
+	public Signal register(K key, S value) {
+		Signal injected = inject(value);
+		Signal registed = super.register(key, value);
+		return Signal.batch(Streamable.array(injected, registed));
 	}
 }

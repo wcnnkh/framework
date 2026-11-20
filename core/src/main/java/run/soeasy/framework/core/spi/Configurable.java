@@ -1,7 +1,7 @@
 package run.soeasy.framework.core.spi;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Signal;
 
 /**
  * 可配置接口，定义通过服务发现工厂进行配置的能力。
@@ -23,7 +23,7 @@ public interface Configurable {
      * @return 配置操作的结果收据，包含成功/失败状态及可能的异常信息
      * @throws NullPointerException 若discovery为null
      */
-    Operation configure(@NonNull ServiceDiscoverer discovery);
+	Signal configure(@NonNull ServiceDiscoverer discovery);
 
     /**
      * 使用系统默认的服务发现工厂进行配置
@@ -34,7 +34,7 @@ public interface Configurable {
      * 
      * @return 配置操作的结果收据
      */
-    default Operation configure() {
+    default Signal configure() {
         return configure(SystemServiceDiscoverer.getInstance());
     }
 }

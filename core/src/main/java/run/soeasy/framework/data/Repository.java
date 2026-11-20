@@ -1,6 +1,6 @@
 package run.soeasy.framework.data;
 
-import run.soeasy.framework.core.exchange2.Signal;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 
 public interface Repository<K, V> extends Mapping<K, V> {

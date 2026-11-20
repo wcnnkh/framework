@@ -7,7 +7,7 @@ import run.soeasy.framework.core.streaming.Streamable;
 interface FakeSinglePublisher<T, W extends Publisher<Streamable<T>>> extends Publisher<T>, Wrapper<W> {
 
 	@Override
-	default Operation publish(T resource) {
+	default Signal publish(T resource) {
 		return getSource().publish(Streamable.singleton(resource));
 	}
 

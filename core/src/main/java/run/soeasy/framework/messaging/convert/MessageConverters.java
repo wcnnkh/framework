@@ -9,7 +9,7 @@ import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
 import run.soeasy.framework.core.convert.value.SourceDescriptor;
 import run.soeasy.framework.core.convert.value.TargetDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValue;
-import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.io.mime.MimeType;
@@ -114,7 +114,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 			if (converter instanceof MessageConverterAware) {
 				((MessageConverterAware) converter).setMessageConverter(messageConverterAware);
 			}
-			return Operation.SUCCESS;
+			return Signal.success();
 		});
 	}
 

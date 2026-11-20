@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.type.ResolvableType;
 
@@ -116,21 +116,21 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	}
 
 	/**
-	 * 配置结果缓存，键为{@link ServiceDiscoverer}，值为{@link Operation}
+	 * 配置结果缓存，键为{@link ServiceDiscoverer}，值为{@link Signal}
 	 * <p>
 	 * 1. 基于{@link ConcurrentHashMap}实现，保证多线程下的并发安全；
 	 * 2. 每次调用{@link #configure(ServiceDiscoverer)}都会尝试更新该缓存；
 	 * 3. 缓存值记录配置操作的结果，并支持回滚能力判断。
 	 * </p>
 	 */
-	private final ConcurrentHashMap<ServiceDiscoverer, Operation> configurationMap = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<ServiceDiscoverer, Signal> configurationMap = new ConcurrentHashMap<>();
 
 	/**
 	 * 执行/刷新服务配置（实现{@link Configurable#configure(ServiceDiscoverer)}接口）
 	 * <p>
 	 * 刷新核心规则：
 	 * <ol>
-	 * <li>前置校验：获取目标服务类，若为null则返回失败的{@link Operation}；</li>
+	 * <li>前置校验：获取目标服务类，若为null则返回失败的{@link Signal}；</li>
 	 * <li>旧配置校验：
 	 *   <ul>
 	 *   <li>旧配置存在 &amp;&amp; 不支持回滚 → 拒绝刷新，返回旧配置；</li>
@@ -138,8 +138,8 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	 *   <li>无旧配置 → 直接执行首次配置；</li>
 	 *   </ul>
 	 * </li>
-	 * <li>新配置执行：通过服务发现器获取服务实例，注册到容器并返回新的{@link Operation}；</li>
-	 * <li>异常处理：配置过程中抛出异常时，记录SEVERE日志并返回失败的{@link Operation}。</li>
+	 * <li>新配置执行：通过服务发现器获取服务实例，注册到容器并返回新的{@link Signal}；</li>
+	 * <li>异常处理：配置过程中抛出异常时，记录SEVERE日志并返回失败的{@link Signal}。</li>
 	 * </ol>
 	 *
 	 * @param serviceDiscoverer 服务发现器，不可为null，用于获取待注册的服务实例
@@ -147,17 +147,17 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 	 *         <ul>
 	 *         <li>成功：包含注册的服务实例数量、回滚能力等信息；</li>
 	 *         <li>失败：包含异常信息、失败原因；</li>
-	 *         <li>拒绝刷新：返回旧配置的{@link Operation}；</li>
+	 *         <li>拒绝刷新：返回旧配置的{@link Signal}；</li>
 	 *         </ul>
 	 * @throws NullPointerException 若serviceDiscoverer为null时抛出
 	 */
 	@Override
-	public Operation configure(@NonNull ServiceDiscoverer serviceDiscoverer) {
+	public Signal configure(@NonNull ServiceDiscoverer serviceDiscoverer) {
 		Class<? extends S> serviceClass = getServiceClass();
 		if (serviceClass == null) {
 			String errorMsg = "Failed to get service class (generic type resolution failed and not set manually)";
 			log.warning(errorMsg);
-			return Operation.failure(new IllegalStateException(errorMsg));
+			return Signal.promise().failure(new IllegalStateException(errorMsg));
 		}
 
 		return configurationMap.compute(serviceDiscoverer, (dis, oldOp) -> {
@@ -171,8 +171,8 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				}
 
 				// 步骤2：执行旧配置的回滚操作
-				boolean rollbackSuccess = oldOp.rollback();
-				if (rollbackSuccess) {
+				Signal rollbackSuccess = oldOp.rollback();
+				if (rollbackSuccess.isSuccess()) {
 					log.fine("Old operation for service discoverer [" + dis.getClass().getName()
 							+ "] rolled back successfully before refresh");
 				} else {
@@ -186,7 +186,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				log.finer("Start refreshing configuration for service discoverer [" + dis.getClass().getName()
 						+ "], service class: " + serviceClass.getName());
 				Streamable<? extends S> serviceInstances = dis.getServices(serviceClass);
-				Operation newOp = registerAll(serviceInstances);
+				Signal newOp = registerAll(serviceInstances);
 
 				// 日志区分首次配置和刷新
 				if (oldOp == null) {
@@ -201,7 +201,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				String errorMsg = "Exception thrown during configuration refresh for service discoverer ["
 						+ dis.getClass().getName() + "], service class: " + serviceClass.getName();
 				log.log(Level.SEVERE, errorMsg, e);
-				return Operation.failure(e);
+				return Signal.promise().failure(e);
 			}
 		});
 	}

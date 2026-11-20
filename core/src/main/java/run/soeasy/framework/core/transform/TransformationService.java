@@ -3,7 +3,7 @@ package run.soeasy.framework.core.transform;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.spi.ServiceInjectors;
 
 /**
@@ -49,7 +49,7 @@ public class TransformationService implements Transformer {
                 TransformerAware transformerAware = (TransformerAware) service;
                 transformerAware.setTransformer(this);
             }
-            return Operation.SUCCESS;
+            return Signal.success();
         });
         transformers.getInjectors().register(injectors);
 		registry.getInjectors().register(injectors);
@@ -68,8 +68,8 @@ public class TransformationService implements Transformer {
      * @param transformer 待注册的转换器，不可为null
      * @return 注册句柄，可用于取消注册
      */
-    public Operation register(Transformer transformer) {
-    	Operation registration = transformers instanceof ConditionalTransformer
+    public Signal register(Transformer transformer) {
+    	Signal registration = transformers instanceof ConditionalTransformer
                 ? registry.register((ConditionalTransformer) transformer)
                 : transformers.register(transformer);
         if (!registration.isCancelled()) {

@@ -81,7 +81,7 @@ public class EventDispatcher<T> extends AbstractChannel<T> implements Listenable
 	 * @throws NullPointerException 若listener为null
 	 */
 	@Override
-	public Operation registerListener(Listener<T> listener) {
+	public Signal registerListener(Listener<T> listener) {
 		return registry.register(listener);
 	}
 

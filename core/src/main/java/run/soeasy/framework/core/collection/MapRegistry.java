@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.KeyValueRegistry;
-import run.soeasy.framework.core.exchange.Operation;
+import run.soeasy.framework.core.exchange.Signal;
 
 /**
  * 映射型注册中心接口（原子性保障 + 兼容Null值 + 无内部类）
@@ -33,13 +33,12 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	default Operation register(K key, V value) {
+	default Signal register(K key, V value) {
 		// 仅校验键非空（Map键通用语义）
 		if (key == null) {
-			return Operation.failure(new RuntimeException("Register failed: key is null"));
+			return Signal.promise().failure(new RuntimeException("Register failed: key is null"));
 		}
-
-		try {
+		return Signal.call(() -> {
 			// 用数组传递原子块内状态：[0] = 旧值(V), [1] = 操作成功标识(Boolean)
 			Object[] atomicState = new Object[2];
 			// 核心：全程在compute原子块内完成“查旧值+设新值+标记结果”
@@ -50,28 +49,29 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 			});
 
 			boolean success = atomicState[1] == Boolean.TRUE;
-			if (success) {
-				V oldValue = (V) atomicState[0];
-				// 回滚逻辑：基于compute原子操作，用数组传递回滚结果
-				return Operation.success(() -> {
-					boolean[] rollbackSuccess = new boolean[1];
-					compute(key, (k, currentValue) -> {
-						// 原子块内判断：仅当当前值与注册值一致时恢复旧值
-						if (Objects.equals(currentValue, value)) {
-							rollbackSuccess[0] = true;
-							return oldValue; // 恢复旧值（Null则删除键）
-						}
-						rollbackSuccess[0] = false;
-						return currentValue; // 不匹配则不修改
-					});
-					return rollbackSuccess[0];
-				});
-			} else {
-				return Operation.failure(new RuntimeException("Register failed: atomic compute error"));
+			if (!success) {
+				throw new RuntimeException("Register failed: atomic compute error");
 			}
-		} catch (Exception e) {
-			return Operation.failure(e);
-		}
+			return (V) atomicState[0];
+		}).rollback((oldValue) -> {
+			// 回滚逻辑：基于compute原子操作，用数组传递回滚结果
+			return Signal.run(() -> {
+				boolean[] rollbackSuccess = new boolean[1];
+				compute(key, (k, currentValue) -> {
+					// 原子块内判断：仅当当前值与注册值一致时恢复旧值
+					if (Objects.equals(currentValue, value)) {
+						rollbackSuccess[0] = true;
+						return oldValue; // 恢复旧值（Null则删除键）
+					}
+					rollbackSuccess[0] = false;
+					return currentValue; // 不匹配则不修改
+				});
+
+				if (!rollbackSuccess[0]) {
+					throw new RuntimeException("Rollback failed: atomic compute error");
+				}
+			});
+		});
 	}
 
 	/**
@@ -82,12 +82,12 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 	 * @return Operation 原子操作结果
 	 */
 	@Override
-	default Operation deregister(K key, V value) {
+	default Signal deregister(K key, V value) {
 		if (key == null) {
-			return Operation.failure(new RuntimeException("Deregister failed: key is null"));
+			return Signal.promise().failure(new RuntimeException("Deregister failed: key is null"));
 		}
 
-		try {
+		return Signal.run(() -> {
 			// 用数组传递原子块内匹配结果
 			boolean[] matchResult = new boolean[1];
 			// 核心：原子块内完成“匹配判断+删除+结果标记”
@@ -101,16 +101,11 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 				}
 			});
 
-			if (matchResult[0]) {
-				// 回滚逻辑：原子重新注册该键值对
-				return Operation.success(() -> register(key, value).isSuccess());
-			} else {
-				return Operation.failure(new RuntimeException(String.format(
-						"Deregister failed: key=%s value mismatch (target=%s, current=%s)", key, value, get(key))));
+			if (!matchResult[0]) {
+				throw new RuntimeException(String.format(
+						"Deregister failed: key=%s value mismatch (target=%s, current=%s)", key, value, get(key)));
 			}
-		} catch (Exception e) {
-			return Operation.failure(e);
-		}
+		}).rollback((e) -> register(key, value));
 	}
 
 	/**
@@ -119,30 +114,25 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 	 * @return Operation 原子操作结果
 	 */
 	@Override
-	default Operation reset() {
-		try {
-			// clear在ConcurrentHashMap/HashMap等实现中均为原子操作
-			clear();
-			return Operation.success();
-		} catch (Exception e) {
-			return Operation.failure(e);
-		}
+	default Signal reset() {
+		// clear在ConcurrentHashMap/HashMap等实现中均为原子操作
+		return Signal.run(() -> clear());
 	}
 
 	/**
 	 * 原子注销指定键（无视值，全程compute原子操作，无内部类）
 	 * 
 	 * @param key 注销键（非Null）
-	 * @return Operation 原子操作结果
+	 * @return Signal 原子操作结果
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	default Operation deregisterKey(K key) {
+	default Signal deregisterKey(K key) {
 		if (key == null) {
-			return Operation.failure(new RuntimeException("DeregisterKey failed: key is null"));
+			return Signal.promise().failure(new RuntimeException("DeregisterKey failed: key is null"));
 		}
 
-		try {
+		return Signal.call(() -> {
 			// 用数组传递原子块内状态：[0] = 旧值(V), [1] = 操作成功标识(Boolean)
 			Object[] atomicState = new Object[2];
 			// 核心：原子块内完成“查旧值+删除+结果标记”
@@ -153,17 +143,11 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 			});
 
 			boolean success = atomicState[1] == Boolean.TRUE;
-			if (success) {
-				V oldValue = (V) atomicState[0];
-				// 回滚逻辑：原子恢复旧值
-				return Operation.success(() -> register(key, oldValue).isSuccess());
-			} else {
-				return Operation
-						.failure(new RuntimeException(String.format("DeregisterKey failed: key=%s not found", key)));
+			if (!success) {
+				throw new RuntimeException(String.format("DeregisterKey failed: key=%s not found", key));
 			}
-		} catch (Exception e) {
-			return Operation.failure(e);
-		}
+			return (V) atomicState[0];
+		}).rollback((oldValue) -> register(key, oldValue));
 	}
 
 	@Override

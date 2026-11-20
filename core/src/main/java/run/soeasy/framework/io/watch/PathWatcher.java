@@ -12,9 +12,9 @@ import lombok.Setter;
 import run.soeasy.framework.core.concurrent.Poller;
 import run.soeasy.framework.core.exchange.ChangeEvent;
 import run.soeasy.framework.core.exchange.Lifecycle;
-import run.soeasy.framework.core.exchange.Operation;
 import run.soeasy.framework.core.exchange.Publisher;
 import run.soeasy.framework.core.exchange.Registry;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.streaming.StreamableWrapper;
 import run.soeasy.framework.io.source.PathSource;
@@ -147,7 +147,7 @@ public class PathWatcher<T extends PathSource> extends Poller
 	}
 
 	@Override
-	public Operation register(T element) {
+	public Signal register(T element) {
 		PathPoller<T> pathPoller = new PathPoller<>(element, publisher);
 		if (!isRunning()) {
 			start();
@@ -156,11 +156,7 @@ public class PathWatcher<T extends PathSource> extends Poller
 	}
 
 	@Override
-	public Operation deregister(T element) {
-		return null;
+	public Signal deregister(T element) {
+		return Signal.failure();
 	}
-
-	// 以下方法为接口默认实现或未展示的Lifecycle/Registry方法，根据实际场景补充：
-	// - 如stop()方法（实现Lifecycle）：停止轮询并清理资源
-	// - 如unregister(T)方法（实现Registry）：移除指定资源的监控
 }

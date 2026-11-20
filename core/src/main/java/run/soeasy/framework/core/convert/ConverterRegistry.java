@@ -5,8 +5,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import lombok.NonNull;
-import run.soeasy.framework.core.exchange.Operation;
-import run.soeasy.framework.core.exchange.Operations.Mode;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.spi.ServiceMap;
 import run.soeasy.framework.core.streaming.Streamable;
 
@@ -141,7 +140,7 @@ public class ConverterRegistry extends ServiceMap<TypeMapping, Converter> implem
 	 * @return 注册句柄，用于取消注册
 	 * @throws NullPointerException 若参数为null
 	 */
-	public final <S, T> Operation register(@NonNull Class<S> sourceClass, @NonNull Class<T> targetClass,
+	public final <S, T> Signal register(@NonNull Class<S> sourceClass, @NonNull Class<T> targetClass,
 			Function<? super S, ? extends T> function) {
 		FunctionConverter<S, T> converter = new FunctionConverter<>(sourceClass, targetClass, function);
 		return register(converter);
@@ -156,8 +155,8 @@ public class ConverterRegistry extends ServiceMap<TypeMapping, Converter> implem
 	 * @return 组合注册句柄，取消时会移除所有相关注册
 	 * @throws NullPointerException 若转换器为null
 	 */
-	public Operation register(@NonNull ConditionalConverter conditionalConverter) {
+	public Signal register(@NonNull ConditionalConverter conditionalConverter) {
 		Set<TypeMapping> typeMappings = conditionalConverter.getConvertibleTypeMappings();
-		return Operation.batch(Streamable.of(typeMappings), Mode.AND, (e) -> register(e, conditionalConverter));
+		return Signal.batch(Streamable.of(typeMappings).map((e) -> register(e, conditionalConverter)));
 	}
 }

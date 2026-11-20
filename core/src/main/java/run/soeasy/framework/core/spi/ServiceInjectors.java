@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.spi;
 
-import run.soeasy.framework.core.exchange.Operation;
-import run.soeasy.framework.core.exchange.Operations.Mode;
+import run.soeasy.framework.core.exchange.Signal;
 
 /**
  * 服务注入器容器，管理多个服务注入器并批量执行注入操作。
@@ -38,7 +37,7 @@ public class ServiceInjectors<S> extends ServiceRegistry<ServiceInjector<? super
 	 * @return 注册句柄，可用于取消注入操作
 	 */
 	@Override
-	public Operation inject(S service) {
-		return Operation.batch(this, Mode.AND, (e) -> e.inject(service));
+	public Signal inject(S service) {
+		return Signal.batch(this.map((e) -> e.inject(service)));
 	}
 }
