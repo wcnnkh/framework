@@ -361,7 +361,14 @@ public interface Signal {
 
 	Signal rollback();
 
-	default Listenable<Signal> listenable() {
-		return Listenable.ignore();
+	default ListenableSignal<? extends Signal> listenable() {
+		return Signal.call(() -> {
+			try {
+				await();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			return null;
+		});
 	}
 }

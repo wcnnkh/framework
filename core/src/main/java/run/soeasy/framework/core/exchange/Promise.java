@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 
-public class Promise<V> extends CompletableFuture<V> implements Stage<V> {
+public class Promise<V> extends CompletableFuture<V> implements ListenableStage<V> {
 	protected static final Promise<Object> UNSUPPORTED_ROLLBACK = new Promise<Object>();
 	protected static final Promise<Object> SUCCESS = new Promise<Object>();
 	protected static final Promise<Object> FAILURE = new Promise<Object>();
@@ -18,6 +18,9 @@ public class Promise<V> extends CompletableFuture<V> implements Stage<V> {
 
 	private final Function<? super V, ? extends Signal> rollback;
 	private volatile Signal signal;
+	private volatile DisposableDispatcher<Stage<V>> dispatcher;
+	private volatile DisposableDispatcher<Stage<V>> successDispatcher;
+	private volatile DisposableDispatcher<Stage<V>> failureDispatcher;
 
 	public Promise() {
 		this(null);
@@ -61,6 +64,42 @@ public class Promise<V> extends CompletableFuture<V> implements Stage<V> {
 		return new Promise<V>(this.rollback).failure(cause);
 	}
 
+	@Override
+	public boolean complete(V value) {
+		try {
+			return super.complete(value);
+		} finally {
+			onSuccess(value);
+		}
+	}
+
+	@Override
+	public boolean completeExceptionally(Throwable ex) {
+		try {
+			return super.completeExceptionally(ex);
+		} finally {
+			onFailure(ex);
+		}
+	}
+
+	protected synchronized void onSuccess(V value) {
+		if (successDispatcher != null) {
+			successDispatcher.publish(this);
+		}
+		if (dispatcher != null) {
+			dispatcher.publish(this);
+		}
+	}
+
+	protected synchronized void onFailure(Throwable ex) {
+		if (failureDispatcher != null) {
+			failureDispatcher.publish(this);
+		}
+		if (dispatcher != null) {
+			dispatcher.publish(this);
+		}
+	}
+
 	public Promise<V> rollback(Function<? super V, ? extends Signal> rollback) {
 		if (rollback == this.rollback || (rollback != null && rollback.equals(this.rollback))) {
 			return this;
@@ -77,5 +116,53 @@ public class Promise<V> extends CompletableFuture<V> implements Stage<V> {
 			}
 		}
 		return promise;
+	}
+
+	@Override
+	public Signal registerSuccessListener(Listener<Stage<V>> listener) {
+		if (isDone() && isSuccess()) {
+			return Signal.run(() -> listener.accept(this));
+		}
+
+		if (successDispatcher == null) {
+			synchronized (this) {
+				if (successDispatcher == null) {
+					successDispatcher = new DisposableDispatcher<Stage<V>>();
+				}
+			}
+		}
+		return successDispatcher.registerListener(listener);
+	}
+
+	@Override
+	public Signal registerFailureListener(Listener<Stage<V>> listener) {
+		if (isDone() && !isSuccess()) {
+			return Signal.run(() -> listener.accept(this));
+		}
+
+		if (failureDispatcher == null) {
+			synchronized (this) {
+				if (failureDispatcher == null) {
+					failureDispatcher = new DisposableDispatcher<Stage<V>>();
+				}
+			}
+		}
+		return failureDispatcher.registerListener(listener);
+	}
+
+	@Override
+	public Signal registerListener(@NonNull Listener<Stage<V>> listener) {
+		if (isDone()) {
+			return Signal.run(() -> listener.accept(this));
+		}
+
+		if (dispatcher == null) {
+			synchronized (this) {
+				if (dispatcher == null) {
+					dispatcher = new DisposableDispatcher<Stage<V>>();
+				}
+			}
+		}
+		return dispatcher.registerListener(listener);
 	}
 }

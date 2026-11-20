@@ -28,4 +28,16 @@ public interface Stage<V> extends Signal, Future<V> {
 		}
 		return null;
 	}
+
+	@Override
+	default ListenableStage<V> listenable() {
+		return Signal.call(() -> {
+			try {
+				return get();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			return null;
+		});
+	}
 }
