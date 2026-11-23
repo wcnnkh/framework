@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -13,13 +14,17 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.collection.LinkedMultiValueMap;
 import run.soeasy.framework.core.collection.MultiValueMap;
+import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.core.type.ClassUtils;
-import run.soeasy.framework.data.jdbc.convert.JdbcMapper;
 
 /**
  * JDBC工具类，提供JDBC操作中的常用静态方法，包括结果集处理、列名解析、参数设置、数据类型判断等，
@@ -174,16 +179,36 @@ public final class JdbcUtils {
 		}
 	}
 
-	private static volatile JdbcMapper resultSetMapper;
+	public static boolean execute(@NonNull Connection connection, @NonNull Sql sql) throws SQLException {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql.getStatement())) {
+			setParams(preparedStatement, sql.getArgs());
+			return preparedStatement.execute();
+		}
+	}
 
-	public static JdbcMapper getResultSetMapper() {
-		if (resultSetMapper == null) {
-			synchronized (JdbcUtils.class) {
-				if (resultSetMapper == null) {
-					resultSetMapper = new JdbcMapper();
+	public static int executeUpdate(@NonNull Connection connection, @NonNull Sql sql) throws SQLException {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql.getStatement())) {
+			setParams(preparedStatement, sql.getArgs());
+			return preparedStatement.executeUpdate();
+		}
+	}
+
+	public static <T> List<T> query(@NonNull Connection connection, @NonNull Sql sql,
+			@NonNull ThrowingFunction<? super ResultSet, ? extends T, ? extends SQLException> mapper)
+			throws SQLException {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql.getStatement())) {
+			setParams(preparedStatement, sql.getArgs());
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				List<T> list = null;
+				while (resultSet.next()) {
+					if (list == null) {
+						list = new ArrayList<>();
+					}
+					T result = mapper.apply(resultSet);
+					list.add(result);
 				}
+				return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);
 			}
 		}
-		return resultSetMapper;
 	}
 }

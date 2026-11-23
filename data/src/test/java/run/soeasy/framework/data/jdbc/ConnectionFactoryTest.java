@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.junit.Test;
 
 import lombok.Data;
+import run.soeasy.framework.data.jdbc.repository.JdbcTemplate;
 
 public class ConnectionFactoryTest {
 	@Data
@@ -32,9 +33,10 @@ public class ConnectionFactoryTest {
 			System.out.println("---------");
 			System.out.println(connectionFactory.newPipeline().prepareStatement(querySql).query().map(JdbcUtils::getRowValueMap).optional().get());
 			System.out.println("---------");
-			connectionFactory.newPipeline().prepareStatement(querySql).query().rows((rs) -> {
-				return JdbcUtils.getResultSetMapper().convert(rs, User.class);
-			}).forEach((user) -> {
+			
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(connectionFactory);
+			//entityQueryer.setEntityDescriptor(TypeDescriptor.valueOf(User.class));
+			jdbcTemplate.query(User.class, querySql).forEach((user) -> {
 				assert user.getAge() == 1;
 			});
 		}finally {

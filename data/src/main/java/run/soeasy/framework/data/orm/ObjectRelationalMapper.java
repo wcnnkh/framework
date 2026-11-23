@@ -9,20 +9,17 @@ import run.soeasy.framework.core.mapping.property.PropertyAccessor;
 import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
 import run.soeasy.framework.core.mapping.property.PropertyMapping;
 import run.soeasy.framework.core.streaming.Streamable;
-import run.soeasy.framework.data.orm.annotation.AnnotationColumnResolver;
-import run.soeasy.framework.data.orm.annotation.AnnotationEntityResolver;
-import run.soeasy.framework.data.orm.annotation.AnnotationPrimaryKeyResolver;
 import run.soeasy.framework.data.orm.resolver.ColumnResolver;
+import run.soeasy.framework.data.orm.resolver.ConfigurableColumnResolver;
+import run.soeasy.framework.data.orm.resolver.ConfigurableEntityResolver;
+import run.soeasy.framework.data.orm.resolver.ConfigurablePrimaryKeyResolver;
 import run.soeasy.framework.data.orm.resolver.EntityResolver;
 import run.soeasy.framework.data.orm.resolver.PrimaryKeyResolver;
 
 public class ObjectRelationalMapper extends BeanMapper implements EntityResolver, ColumnResolver, PrimaryKeyResolver {
-	@NonNull
-	private EntityResolver entityResolver = new AnnotationEntityResolver();
-	@NonNull
-	private ColumnResolver columnResolver = new AnnotationColumnResolver();
-	@NonNull
-	private PrimaryKeyResolver primaryKeyResolver = new AnnotationPrimaryKeyResolver();
+	private final ConfigurableEntityResolver entityResolver = new ConfigurableEntityResolver();
+	private final ConfigurableColumnResolver columnResolver = new ConfigurableColumnResolver();
+	private final ConfigurablePrimaryKeyResolver primaryKeyResolver = new ConfigurablePrimaryKeyResolver();
 
 	@Override
 	protected boolean doFilterableMapping(
@@ -60,21 +57,17 @@ public class ObjectRelationalMapper extends BeanMapper implements EntityResolver
 	}
 
 	@Override
-	public Streamable<String> getEntityAlias(@NonNull TypeDescriptor entityDescriptor) {
-		return entityResolver.getEntityAlias(entityDescriptor);
-	}
-
-	@Override
 	public boolean isExclude(@NonNull TypeDescriptor entityDescriptor, @NonNull PropertyDescriptor propertyDescriptor) {
 		return columnResolver.isExclude(entityDescriptor, propertyDescriptor);
 	}
 
 	public Streamable<PropertyDescriptor> getColumns(@NonNull TypeDescriptor entityDescriptor) {
-		return null;
+		return getObjectTemplate(entityDescriptor.getType()).elements()
+				.filter((property) -> !isExclude(entityDescriptor, property)).map(PropertyDescriptor.class::cast);
 	}
 
-	public Streamable<PropertyAccessor> getProperties(@NonNull Object entity,
-			@NonNull TypeDescriptor entityDescriptor) {
-		return null;
+	public Streamable<PropertyAccessor> getColumns(@NonNull TypeDescriptor entityDescriptor, @NonNull Object entity) {
+		return getMapping(entity, entityDescriptor).elements()
+				.filter((property) -> !isExclude(entityDescriptor, property));
 	}
 }

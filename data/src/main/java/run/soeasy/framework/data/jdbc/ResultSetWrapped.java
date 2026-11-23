@@ -51,9 +51,7 @@ public class ResultSetWrapped extends JdbcWrapped<ResultSet> {
      * @return 包含转换后元素的{@link Streamable}实例，可用于遍历或流式处理结果集数据
      */
     public <T> Streamable<T> rows(ThrowingFunction<? super ResultSet, ? extends T, ? extends SQLException> mapper) {
-        // 创建结果集迭代器，关联当前管道与映射函数
-        ResultSetIterator<T> iterator = new ResultSetIterator<>(this, mapper);
         // 将迭代器转换为Streamable集合，支持流式处理
-        return Streamable.of(() -> CollectionUtils.unknownSizeStream(iterator));
+        return Streamable.of(() -> CollectionUtils.unknownSizeStream(new ResultSetIterator<>(this, mapper)));
     }
 }

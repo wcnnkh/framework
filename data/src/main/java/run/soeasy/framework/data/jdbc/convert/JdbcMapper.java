@@ -8,7 +8,7 @@ import run.soeasy.framework.data.orm.ObjectRelationalMapper;
 
 public class JdbcMapper extends ObjectRelationalMapper {
 	private ConversionService conversionService = new ConversionService();
-	
+
 	public JdbcMapper() {
 		getMappingProvider().registerFactory(ResultSet.class, (s, e) -> new ResultSetProperties(s));
 		conversionService.register(SystemConversionService.getInstance());

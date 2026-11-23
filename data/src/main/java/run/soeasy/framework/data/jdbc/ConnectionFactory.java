@@ -1,9 +1,15 @@
 package run.soeasy.framework.data.jdbc;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import lombok.NonNull;
+import run.soeasy.framework.core.exchange.Signal;
+import run.soeasy.framework.core.exchange.Stage;
 import run.soeasy.framework.core.function.Pipeline;
+import run.soeasy.framework.core.function.ThrowingFunction;
+import run.soeasy.framework.core.streaming.Streamable;
 
 /**
  * 数据库连接工厂接口，定义获取数据库连接（{@link Connection}）的标准方法，
@@ -49,5 +55,26 @@ public interface ConnectionFactory {
 		Pipeline<Connection, SQLException> connectionPipeline = Pipeline.forSupplier(this::getConnection)
 				.onClose(Connection::close).closeable();
 		return new ConnectionWrapped(connectionPipeline);
+	}
+
+	default Stage<Boolean> execute(@NonNull Sql sql) {
+		return Signal.call(() -> {
+			try (Connection connection = getConnection()) {
+				return JdbcUtils.execute(connection, sql);
+			}
+		});
+	}
+
+	default Stage<Integer> executeUpdate(@NonNull Sql sql) {
+		return Signal.call(() -> {
+			try (Connection connection = getConnection()) {
+				return JdbcUtils.executeUpdate(connection, sql);
+			}
+		});
+	}
+
+	default <T> Streamable<T> query(@NonNull Sql sql,
+			@NonNull ThrowingFunction<? super ResultSet, ? extends T, ? extends SQLException> mapper) {
+		return newPipeline().prepareStatement(sql.getStatement()).setParams(sql.getArgs()).query().rows(mapper);
 	}
 }
