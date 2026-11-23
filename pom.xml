@@ -49,6 +49,7 @@
 		<module>redis</module>
 		<module>mybatis</module>
 		<module>mybatis-plus</module>
+		<module>data</module>
 	</modules>
 
 	<properties>
@@ -139,6 +140,11 @@
 			<dependency>
 				<groupId>run.soeasy.framework</groupId>
 				<artifactId>mybatis-plus</artifactId>
+				<version>2.0.3</version>
+			</dependency>
+			<dependency>
+				<groupId>run.soeasy.framework</groupId>
+				<artifactId>data</artifactId>
 				<version>2.0.3</version>
 			</dependency>
 
