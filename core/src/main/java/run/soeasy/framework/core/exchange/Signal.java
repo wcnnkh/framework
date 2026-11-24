@@ -245,6 +245,11 @@ public interface Signal {
 		return all(Streamable.of(elements.toList()));
 	}
 
+	@SuppressWarnings("unchecked")
+	static <E extends Signal> Signals<E> batch(@NonNull E... elements) {
+		return all(Streamable.array(elements));
+	}
+
 	public static <V> Task<V> call(@NonNull Callable<V> callable) {
 		Task<V> task = new Task<V>(callable);
 		task.run();

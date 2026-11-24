@@ -90,4 +90,9 @@ public interface Property extends PropertyDescriptor {
     default PropertyAccessor accessor(Object target) {
         return new ObjectPropertyAccessor<>(this, target);
     }
+
+    @Override
+    default Property rename(String name) {
+    	return new NamedProperty<>(this, name);
+    }
 }

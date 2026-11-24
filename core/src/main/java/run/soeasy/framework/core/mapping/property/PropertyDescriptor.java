@@ -1,5 +1,6 @@
 package run.soeasy.framework.core.mapping.property;
 
+import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.AccessibleDescriptor;
 
 /**
@@ -54,7 +55,7 @@ public interface PropertyDescriptor extends AccessibleDescriptor {
      * @throws NullPointerException 若name为null
      * @see NamedAccessibleDescriptor
      */
-    default PropertyDescriptor rename(String name) {
+    default PropertyDescriptor rename(@NonNull String name) {
         return new NamedAccessibleDescriptor<>(this, name);
     }
 }

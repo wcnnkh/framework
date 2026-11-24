@@ -105,4 +105,9 @@ public interface PropertyWrapper<W extends Property> extends Property, PropertyD
     default PropertyAccessor accessor(Object target) {
         return getSource().accessor(target);
     }
+    
+    @Override
+    default Property rename(String name) {
+    	return getSource().rename(name);
+    }
 }
