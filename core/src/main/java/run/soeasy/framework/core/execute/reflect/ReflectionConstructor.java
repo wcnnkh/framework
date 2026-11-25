@@ -84,7 +84,7 @@ public class ReflectionConstructor extends ReflectionExecutable<Constructor<?>>
         if (constructor == null) {
             synchronized (this) {
                 if (constructor == null) {
-                    constructor = ReflectionUtils.findConstructor(declaringClass, parameterTypes).first();
+                    constructor = ReflectionUtils.findConstructor(declaringClass, parameterTypes).getFirst();
                     super.setSource(constructor);
                 }
             }

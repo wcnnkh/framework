@@ -44,6 +44,6 @@ public interface KeyValueRegistry<K, V> extends Registry<KeyValue<K, V>>, Mappin
 	}
 
 	default Signal deregisterKeys(@NonNull Streamable<? extends K> keys) {
-		return Signal.batch(keys.mapPure(this::deregisterKey));
+		return Signal.batch(keys.map(this::deregisterKey));
 	}
 }

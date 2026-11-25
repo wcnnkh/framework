@@ -43,7 +43,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 			}
 			return signal;
 		}
-		return Promise.UNSUPPORTED_ROLLBACK;
+		return Signal.failure(new UnsupportedOperationException());
 	}
 
 	public Task<V> rollback(Function<? super V, ? extends Signal> rollback) {

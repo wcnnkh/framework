@@ -36,7 +36,7 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 	default Signal register(K key, V value) {
 		// 仅校验键非空（Map键通用语义）
 		if (key == null) {
-			return Signal.promise().failure(new RuntimeException("Register failed: key is null"));
+			return Signal.failure(new RuntimeException("Register failed: key is null"));
 		}
 		return Signal.call(() -> {
 			// 用数组传递原子块内状态：[0] = 旧值(V), [1] = 操作成功标识(Boolean)
@@ -84,7 +84,7 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 	@Override
 	default Signal deregister(K key, V value) {
 		if (key == null) {
-			return Signal.promise().failure(new RuntimeException("Deregister failed: key is null"));
+			return Signal.failure(new RuntimeException("Deregister failed: key is null"));
 		}
 
 		return Signal.run(() -> {
@@ -129,7 +129,7 @@ public interface MapRegistry<K, V> extends Map<K, V>, KeyValueRegistry<K, V> {
 	@Override
 	default Signal deregisterKey(K key) {
 		if (key == null) {
-			return Signal.promise().failure(new RuntimeException("DeregisterKey failed: key is null"));
+			return Signal.failure(new RuntimeException("DeregisterKey failed: key is null"));
 		}
 
 		return Signal.call(() -> {

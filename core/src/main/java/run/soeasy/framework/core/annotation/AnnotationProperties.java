@@ -94,7 +94,7 @@ public interface AnnotationProperties<A extends Annotation>
 			return getValues(method.getName()).findFirst()
 					.map((typedValue) -> typedValue
 							.map(TypeDescriptor.forExecutableReturnType(method), Converter.assignable()).get())
-					.orElse(null);
+					.get();
 		}
 		throw new IllegalArgumentException(
 				String.format("Method [%s] is unsupported for synthesized annotation type [%s]", method, getType()));

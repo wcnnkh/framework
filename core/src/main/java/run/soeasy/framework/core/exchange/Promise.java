@@ -6,14 +6,10 @@ import java.util.function.Function;
 import lombok.NonNull;
 
 public class Promise<V> extends CompletableFuture<V> implements ListenableStage<V> {
-	protected static final Promise<Object> UNSUPPORTED_ROLLBACK = new Promise<Object>();
 	protected static final Promise<Object> SUCCESS = new Promise<Object>();
-	protected static final Promise<Object> FAILURE = new Promise<Object>();
 
 	static {
-		UNSUPPORTED_ROLLBACK.completeExceptionally(new UnsupportedOperationException("rollback"));
-		SUCCESS.success(null);
-		FAILURE.failure(new RuntimeException());
+		SUCCESS.complete(null);
 	}
 
 	private final Function<? super V, ? extends Signal> rollback;
@@ -47,21 +43,7 @@ public class Promise<V> extends CompletableFuture<V> implements ListenableStage<
 			}
 			return signal;
 		}
-		return UNSUPPORTED_ROLLBACK;
-	}
-
-	public Promise<V> success(V result) {
-		if (complete(result)) {
-			return this;
-		}
-		return new Promise<V>(this.rollback).success(result);
-	}
-
-	public Promise<V> failure(@NonNull Throwable cause) {
-		if (completeExceptionally(cause)) {
-			return this;
-		}
-		return new Promise<V>(this.rollback).failure(cause);
+		return Signal.failure(new UnsupportedOperationException());
 	}
 
 	@Override

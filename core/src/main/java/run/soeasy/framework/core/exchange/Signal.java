@@ -24,7 +24,7 @@ public interface Signal {
 		@Override
 		public <E extends Signal> boolean cancel(@NonNull Streamable<E> elements, boolean mayInterruptIfRunning) {
 			// 取消所有的，只对结果进行判断
-			return elements.mapPure((e) -> e.cancel(mayInterruptIfRunning)).toList().stream()
+			return elements.map((e) -> e.cancel(mayInterruptIfRunning)).toList().stream()
 					.allMatch(Boolean.TRUE::equals);
 		}
 
@@ -62,7 +62,7 @@ public interface Signal {
 		@Override
 		public <E extends Signal> boolean cancel(@NonNull Streamable<E> elements, boolean mayInterruptIfRunning) {
 			// 取消所有的，只对结果进行判断
-			return elements.mapPure((e) -> e.cancel(mayInterruptIfRunning)).toList().stream()
+			return elements.map((e) -> e.cancel(mayInterruptIfRunning)).toList().stream()
 					.anyMatch(Boolean.TRUE::equals);
 		}
 
@@ -267,21 +267,6 @@ public interface Signal {
 		return new CompositeSignals<>(compositePattern, elements);
 	}
 
-	/**
-	 * 通用错误
-	 * 
-	 * @param <V>
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <V> Promise<V> failure() {
-		return (Promise<V>) Promise.FAILURE;
-	}
-
-	public static <V> Promise<V> promise() {
-		return new Promise<>();
-	}
-
 	public static <V> Task<V> run(@NonNull Runnable runnable) {
 		Task<V> task = new Task<V>(runnable);
 		task.run();
@@ -303,6 +288,18 @@ public interface Signal {
 	@SuppressWarnings("unchecked")
 	public static <V> Promise<V> success() {
 		return (Promise<V>) Promise.SUCCESS;
+	}
+
+	public static <V> Promise<V> success(V result) {
+		Promise<V> promise = new Promise<V>();
+		promise.complete(result);
+		return promise;
+	}
+
+	public static <V> Promise<V> failure(@NonNull Throwable cause) {
+		Promise<V> promise = new Promise<V>();
+		promise.completeExceptionally(cause);
+		return promise;
 	}
 
 	/**
@@ -363,19 +360,6 @@ public interface Signal {
 			}
 			return null;
 		});
-	}
-
-	/**
-	 * 并行 Or 组合：当前信号与 {@code others} 并行等待，任一完成即整体完成。
-	 *
-	 * <p>
-	 * 返回的组合信号同样实现 {@link Signal}，可继续参与外层编排；若外层仍是并行 Or，会自动拍平为一层。
-	 *
-	 * @param others 其他信号
-	 * @return 并行 Or 组合信号
-	 */
-	default Signal or(@NonNull Signal... others) {
-		return any(Streamable.array(this).concat(others));
 	}
 
 	Signal rollback();

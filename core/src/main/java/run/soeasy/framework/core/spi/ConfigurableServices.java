@@ -157,7 +157,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 		if (serviceClass == null) {
 			String errorMsg = "Failed to get service class (generic type resolution failed and not set manually)";
 			log.warning(errorMsg);
-			return Signal.promise().failure(new IllegalStateException(errorMsg));
+			return Signal.failure(new IllegalStateException(errorMsg));
 		}
 
 		return configurationMap.compute(serviceDiscoverer, (dis, oldOp) -> {
@@ -201,7 +201,7 @@ public class ConfigurableServices<S> extends Services<S> implements Configurable
 				String errorMsg = "Exception thrown during configuration refresh for service discoverer ["
 						+ dis.getClass().getName() + "], service class: " + serviceClass.getName();
 				log.log(Level.SEVERE, errorMsg, e);
-				return Signal.promise().failure(e);
+				return Signal.failure(e);
 			}
 		});
 	}

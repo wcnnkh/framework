@@ -132,7 +132,7 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	 */
 	public Signal register(ConditionalTransformer conditionalTransformer) {
 		Set<TypeMapping> typeMappings = conditionalTransformer.getTransformableTypeMappings();
-		return Signal.batch(Streamable.of(typeMappings).mapPure((e) -> register(e, conditionalTransformer)));
+		return Signal.batch(Streamable.of(typeMappings).map((e) -> register(e, conditionalTransformer)));
 	}
 
 	/**

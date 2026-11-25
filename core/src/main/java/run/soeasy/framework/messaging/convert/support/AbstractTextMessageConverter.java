@@ -71,7 +71,7 @@ public abstract class AbstractTextMessageConverter<T> extends AbstractBinaryMess
 
 		if (charset == null) {
 			// 从支持的媒体类型中查找与contentType兼容且包含字符集的
-			charset = getMediaTypeRegistry().map((e) -> e.getCharset()).first();
+			charset = getMediaTypeRegistry().map((e) -> e.getCharset()).findFirst().orElse(null);
 		}
 		// 最终使用默认字符集
 		return charset == null ? getDefaultCharset() : charset;

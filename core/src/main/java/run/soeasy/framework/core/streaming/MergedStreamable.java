@@ -55,16 +55,6 @@ public class MergedStreamable<E> implements Streamable<E> {
 	}
 
 	@Override
-	public Streamable<E> parallel() {
-		return new MergedStreamable<>(left.parallel(), right.parallel());
-	}
-
-	@Override
-	public Streamable<E> sequential() {
-		return new MergedStreamable<>(left.sequential(), right.sequential());
-	}
-
-	@Override
 	public Streamable<E> onClose(@NonNull Runnable closeHandler) {
 		return new MergedStreamable<>(left.onClose(closeHandler), right.onClose(closeHandler));
 	}

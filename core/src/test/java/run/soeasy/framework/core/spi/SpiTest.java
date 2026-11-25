@@ -17,7 +17,7 @@ public class SpiTest implements SpiTestInterface {
 	@Test
 	public void run() {
 		Streamable<SpiTestInterface> spiServiceLoader = ServiceDiscoverer.load(SpiTestInterface.class);
-		SpiTestInterface spiTestInterface = spiServiceLoader.first();
+		SpiTestInterface spiTestInterface = spiServiceLoader.getFirst();
 		String text = spiTestInterface.test();
 		assertTrue(TEST_TEXT.equals(text));
 	}

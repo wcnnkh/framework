@@ -97,7 +97,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
         if (method == null) {
             synchronized (this) {
                 if (method == null) {
-                    method = ReflectionUtils.findMethod(declaringClass, name, parameterTypes).first();
+                    method = ReflectionUtils.findMethod(declaringClass, name, parameterTypes).getFirst();
                     super.setSource(method);
                 }
             }
@@ -142,7 +142,7 @@ public class ReflectionMethod extends ReflectionExecutable<Method> implements In
         if (!isWriteable()) {
             throw new UnsupportedOperationException(getSource().toString());
         }
-        return getParameterMapping().elements().first().getReturnTypeDescriptor();
+        return getParameterMapping().elements().getFirst().getReturnTypeDescriptor();
     }
 
     /**

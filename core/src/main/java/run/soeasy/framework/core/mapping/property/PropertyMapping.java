@@ -66,7 +66,8 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	 * <p>
 	 * 保证与{@link Mapping}&lt;String, E&gt;的泛型约束一致，底层通过{@link #elements()}映射实现，无数据拷贝。
 	 *
-	 * @return 「属性名-描述符」的键值对流（{@link Stream}&lt;{KeyValue}&lt;String, E&gt;&gt;），非null
+	 * @return 「属性名-描述符」的键值对流（{@link Stream}&lt;{KeyValue}&lt;String,
+	 *         E&gt;&gt;），非null
 	 */
 	@Override
 	default Stream<KeyValue<String, E>> stream() {
@@ -145,11 +146,11 @@ public interface PropertyMapping<E extends PropertyDescriptor> extends Mapping<S
 	 * @see Streamable#unique()
 	 * @see #getValues(Object)
 	 */
-	default Optional<E> uniqueProperty(@NonNull Object key) {
+	default Optional<E> findProperty(@NonNull Object key) {
 		if (key instanceof Number) {
-			return at(NumberUtils.toInteger((Number) key)).map(KeyValue::getValue);
+			return findAt(NumberUtils.toInteger((Number) key)).map(KeyValue::getValue);
 		} else if (key instanceof String) {
-			return getValues((String) key).unique();
+			return getValues((String) key).findUnique();
 		}
 		return Optional.empty();
 	}

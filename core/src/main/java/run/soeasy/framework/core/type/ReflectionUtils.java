@@ -212,7 +212,7 @@ public class ReflectionUtils {
 			return null;
 		}
 
-		Method method = findMethod(source.getClass(), "clone").withSuperclass().first();
+		Method method = findMethod(source.getClass(), "clone").withSuperclass().findFirst().orElse(null);
 		if (method == null) {
 			return null;
 		}
@@ -633,8 +633,7 @@ public class ReflectionUtils {
 	    Constructor<?> constructor = getDeclaredConstructors(instanceClass)
 	            .filter((e) -> e.getParameterCount() == args.length)
 	            .sorted(new ExecutableMatchComparator<>(parameterTypes))
-	            .findFirst()
-	            .orElse(null);
+	            .findFirst().orElse(null);
 
 	    // 未找到匹配构造器，抛出参数不匹配异常
 	    if (constructor == null) {

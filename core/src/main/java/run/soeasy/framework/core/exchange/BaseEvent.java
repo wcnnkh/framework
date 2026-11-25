@@ -99,7 +99,7 @@ public class BaseEvent extends EventObject {
 	 */
 	@Override
 	public String toString() {
-		return TimeUtils.format(timestamp, "yyyy-MM-dd HH::mm::ss,SSS").orElse(null) + " on event " + id + " source "
+		return TimeUtils.format(timestamp, "yyyy-MM-dd HH::mm::ss,SSS").quietly().orElse(null) + " on event " + id + " source "
 				+ source;
 	}
 }

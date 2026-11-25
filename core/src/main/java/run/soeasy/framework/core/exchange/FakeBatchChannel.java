@@ -14,6 +14,6 @@ interface FakeBatchChannel<T, W extends Channel<T>> extends BatchChannel<T>, Fak
 
 	@Override
 	default Signal publish(Streamable<T> resource, long timeout, TimeUnit timeUnit) {
-		return Signal.batch(resource.mapPure((e) -> getSource().publish(e, timeout, timeUnit)));
+		return Signal.batch(resource.map((e) -> getSource().publish(e, timeout, timeUnit)));
 	}
 }

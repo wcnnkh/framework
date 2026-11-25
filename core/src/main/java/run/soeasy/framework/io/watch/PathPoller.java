@@ -229,7 +229,7 @@ public class PathPoller<T extends PathSource> extends LastModifiedPoller<T> {
 	public Signal registerTo(WatchService watchService) {
 		WatchKey watchKey = newWatchKey(watchService);
 		if (watchKey == null) {
-			return Signal.promise().failure(new RuntimeException("注册失败：无有效监控目录或WatchService注册失败")); // 注册失败
+			return Signal.failure(new RuntimeException("注册失败：无有效监控目录或WatchService注册失败")); // 注册失败
 		}
 		// 将WatchKey注册到内部管理中心
 		return watchKeyRegistry.register(watchKey);

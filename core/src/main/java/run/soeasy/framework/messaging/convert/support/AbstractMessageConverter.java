@@ -177,7 +177,7 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 			MimeType contentType) throws IOException {
 		MimeType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {
-			contentTypeToUse = mediaTypeRegistry.first();
+			contentTypeToUse = mediaTypeRegistry.findFirst().orElse(null);
 		}
 
 		return doRead(targetDescriptor, message, contentTypeToUse);
@@ -203,7 +203,8 @@ public abstract class AbstractMessageConverter implements MessageConverter {
 		MediaType contentTypeToUse = contentType;
 		if (contentTypeToUse == null) {
 			// 筛选非通配符类型的媒体类型（优先使用具体类型）
-			contentTypeToUse = mediaTypeRegistry.filter((e) -> !e.isWildcardType() && !e.isWildcardSubtype()).first();
+			contentTypeToUse = mediaTypeRegistry.filter((e) -> !e.isWildcardType() && !e.isWildcardSubtype())
+					.findFirst().orElse(null);
 		}
 
 		// 若输出消息未设置Content-Type，自动设置

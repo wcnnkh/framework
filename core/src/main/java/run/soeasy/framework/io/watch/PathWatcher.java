@@ -157,6 +157,6 @@ public class PathWatcher<T extends PathSource> extends Poller
 
 	@Override
 	public Signal deregister(T element) {
-		return Signal.failure();
+		return Signal.failure(new UnsupportedOperationException());
 	}
 }

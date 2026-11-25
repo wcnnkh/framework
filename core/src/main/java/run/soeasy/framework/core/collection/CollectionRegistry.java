@@ -29,7 +29,7 @@ public interface CollectionRegistry<E> extends Collection<E>, Registry<E> {
 	default Signal register(E element) {
 		// 空值校验：封装为异常传给failure
 		if (element == null) {
-			return Signal.promise().failure(new RuntimeException("Register failed: element is null"));
+			return Signal.failure(new RuntimeException("Register failed: element is null"));
 		}
 		return Signal.run(() -> {
 			if (!add(element)) {
@@ -50,7 +50,7 @@ public interface CollectionRegistry<E> extends Collection<E>, Registry<E> {
 	default Signal deregister(E element) {
 		// 空值校验：封装为异常传给failure
 		if (element == null) {
-			return Signal.promise().failure(new RuntimeException("Deregister failed: element is null"));
+			return Signal.failure(new RuntimeException("Deregister failed: element is null"));
 		}
 		return Signal.run(() -> {
 			if (!remove(element)) {

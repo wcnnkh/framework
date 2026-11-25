@@ -29,6 +29,6 @@ public class CompositeServiceDiscoverer extends Services<ServiceDiscoverer> impl
 
 	@Override
 	public <S> Streamable<S> getServices(@NonNull Class<S> requiredType) {
-		return map((e) -> e.getServices(requiredType)).filter((e) -> e != null).first();
+		return map((e) -> e.getServices(requiredType)).filter((e) -> e != null).findFirst().orElse(Streamable.empty());
 	}
 }

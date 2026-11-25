@@ -91,7 +91,7 @@ public class CipherFactory extends ConfigurableAlgorithmFactory<Cipher> {
             @NonNull CipherKeyInitializer<? super K> cipherKeyInitializer) {
         this(opmode, () -> Cipher.getInstance(transformation),
                 // 从Cipher算法中提取基础算法名称作为KeyFactory的算法（如从"AES/CBC..."中提取"AES"）
-                (e) -> KeyFactory.getInstance(StringUtils.split(e.getAlgorithm(), "/").first().toString()), 
+                (e) -> KeyFactory.getInstance(StringUtils.split(e.getAlgorithm(), "/").findFirst().map(Object::toString).get()), 
                 keySpi,
                 cipherKeyInitializer);
     }

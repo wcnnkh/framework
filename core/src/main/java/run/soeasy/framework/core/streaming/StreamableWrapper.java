@@ -23,8 +23,8 @@ import lombok.NonNull;
 import run.soeasy.framework.core.collection.CloseableIterator;
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.domain.Wrapper;
+import run.soeasy.framework.core.exchange.Stage;
 import run.soeasy.framework.core.function.ThrowingConsumer;
-import run.soeasy.framework.core.function.ThrowingFunction;
 
 /**
  * Streamable包装器核心接口：封装对{@link Streamable}实例的包装能力，所有{@link Streamable}方法默认透传至被包装的源实例
@@ -106,52 +106,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	/**
-	 * 使用抛出异常的函数处理流，并导出处理结果。
-	 *
-	 * @param processor 处理流的函数，可以抛出异常
-	 * @param <T>       处理结果的类型
-	 * @param <X>       可能抛出的异常类型
-	 * @return 处理后的结果
-	 * @throws X 如果处理器抛出指定类型的异常
-	 */
-	@Override
-	default <T, X extends Throwable> T extract(ThrowingFunction<? super Stream<E>, ? extends T, ? extends X> processor)
-			throws X {
-		return getSource().extract(processor);
-	}
-
-	/**
-	 * 返回流中的任意一个元素，可能为空。
-	 *
-	 * @return 包含任意元素的Optional，若无元素则为empty
-	 */
-	@Override
-	default Optional<E> findAny() {
-		return getSource().findAny();
-	}
-
-	/**
-	 * 返回流中的第一个元素，可能为空。
-	 *
-	 * @return 包含第一个元素的Optional，若无元素则为empty
-	 */
-	@Override
-	default Optional<E> findFirst() {
-		return getSource().findFirst();
-	}
-
-	/**
-	 * 返回流中的第一个元素，若流为空则抛出异常。
-	 *
-	 * @return 流中的第一个元素
-	 * @throws NoSuchElementException 如果流为空
-	 */
-	@Override
-	default E first() {
-		return getSource().first();
-	}
-
-	/**
 	 * 对流中的每个元素执行给定的操作。
 	 *
 	 * @param action 要执行的操作
@@ -172,18 +126,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	/**
-	 * 返回流中唯一的元素，若流为空或元素不唯一则抛出异常。
-	 *
-	 * @return 流中唯一的元素
-	 * @throws NoSuchElementException   如果流为空
-	 * @throws NoUniqueElementException 如果流中有多个元素
-	 */
-	@Override
-	default E getUnique() throws NoSuchElementException, NoUniqueElementException {
-		return getSource().getUnique();
-	}
-
-	/**
 	 * 检查流是否为空。
 	 *
 	 * @return 如果流中没有元素则返回true，否则返回false
@@ -201,17 +143,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	@Override
 	default boolean isUnique() {
 		return getSource().isUnique();
-	}
-
-	/**
-	 * 返回流中的最后一个元素，若流为空则抛出异常。
-	 *
-	 * @return 流中的最后一个元素
-	 * @throws NoSuchElementException 如果流为空
-	 */
-	@Override
-	default E last() {
-		return getSource().last();
 	}
 
 	/**
@@ -356,11 +287,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default <T> Streamable<T> mapPure(@NonNull Function<? super E, ? extends T> mapper) {
-		return getSource().mapPure(mapper);
-	}
-
-	@Override
 	default Streamable<E> reload() {
 		return getSource().reload();
 	}
@@ -386,10 +312,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 		return getSource().distinct();
 	}
 
-	default E getAt(int index) throws IndexOutOfBoundsException {
-		return getSource().getAt(index);
-	}
-
 	@Override
 	default Streamable<E> limit(long maxSize) {
 		return getSource().limit(maxSize);
@@ -411,18 +333,8 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default Streamable<E> parallel() {
-		return getSource().parallel();
-	}
-
-	@Override
 	default Streamable<E> peek(@NonNull Consumer<? super E> action) {
 		return getSource().peek(action);
-	}
-
-	@Override
-	default Optional<E> reduce(@NonNull BinaryOperator<E> accumulator) {
-		return getSource().reduce(accumulator);
 	}
 
 	@Override
@@ -434,11 +346,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	default <U> U reduce(U identity, @NonNull BiFunction<U, ? super E, U> accumulator,
 			@NonNull BinaryOperator<U> combiner) {
 		return getSource().reduce(identity, accumulator, combiner);
-	}
-
-	@Override
-	default Streamable<E> sequential() {
-		return getSource().sequential();
 	}
 
 	@Override
@@ -464,11 +371,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	@Override
 	default <C extends Collection<E>> C toCollection(@NonNull Class<?> collectionType) {
 		return getSource().toCollection(collectionType);
-	}
-
-	@Override
-	default Streamable<E> unordered() {
-		return getSource().unordered();
 	}
 
 	@Override
@@ -501,16 +403,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default Optional<E> unique() {
-		return getSource().unique();
-	}
-
-	@Override
-	default Optional<E> at(int index) {
-		return getSource().at(index);
-	}
-
-	@Override
 	default boolean isRandomAccess() {
 		return getSource().isRandomAccess();
 	}
@@ -526,4 +418,68 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 		return getSource().toMapping(keyMapper, valueMapper);
 	}
 
+	@Override
+	default Stage<E> at(int index) {
+		return getSource().at(index);
+	}
+
+	@Override
+	default Stage<E> first() {
+		return getSource().first();
+	}
+
+	@Override
+	default Stage<E> last() {
+		return getSource().last();
+	}
+
+	@Override
+	default Stage<E> reduce(@NonNull BinaryOperator<E> accumulator) {
+		return getSource().reduce(accumulator);
+	}
+
+	@Override
+	default Stage<E> unique() {
+		return getSource().unique();
+	}
+
+	@Override
+	default Optional<E> findAt(int index) {
+		return getSource().findAt(index);
+	}
+
+	@Override
+	default Optional<E> findFirst() {
+		return getSource().findFirst();
+	}
+
+	@Override
+	default Optional<E> findLast() {
+		return getSource().findLast();
+	}
+
+	@Override
+	default Optional<E> findUnique() {
+		return getSource().findUnique();
+	}
+
+	@Override
+	default E getAt(int index) throws IndexOutOfBoundsException {
+		return getSource().getAt(index);
+	}
+
+	@Override
+	default E getFirst() throws NoSuchElementException {
+		return getSource().getFirst();
+	}
+
+	@Override
+	default E getLast() throws NoSuchElementException {
+		return getSource().getLast();
+	}
+
+	@Override
+	default E getUnique() throws NoSuchElementException, NoUniqueElementException {
+		return getSource().getUnique();
+	}
 }

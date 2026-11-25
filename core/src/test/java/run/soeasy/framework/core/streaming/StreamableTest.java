@@ -46,7 +46,7 @@ public class StreamableTest {
         // 3. singleton() 单元素测试
         Streamable<Integer> singletonStream = Streamable.singleton(100);
         assertEquals(1, singletonStream.count());
-        assertEquals(Integer.valueOf(100), singletonStream.first());
+        assertEquals(Integer.valueOf(100), singletonStream.findFirst().get());
 
         // 4. of(Iterable) 可迭代对象测试
         List<String> list = Arrays.asList("x", "y");
@@ -96,15 +96,15 @@ public class StreamableTest {
         Streamable<String> singletonStream = Streamable.singleton("test");
 
         // at()：宽松索引（越界返回empty）
-        assertEquals(Optional.of("a"), strStream.at(0));
-        assertEquals(Optional.ofNullable(null), strStream.at(3));
-        assertEquals(Optional.empty(), strStream.at(-1));
-        assertEquals(Optional.empty(), strStream.at(10));
-        assertEquals(Optional.empty(), emptyStream.at(0));
+        assertEquals(Optional.of("a"), strStream.findAt(0));
+        assertEquals(Optional.ofNullable(null), Optional.ofNullable(strStream.getAt(3)));
+        assertEquals(Optional.empty(), strStream.findAt(-1));
+        assertEquals(Optional.empty(), strStream.findAt(10));
+        assertEquals(Optional.empty(), emptyStream.findAt(0));
 
         // getAt()：严格索引（越界抛异常）
-        assertEquals("a", strStream.getAt(0));
-        assertNull(strStream.getAt(3));
+        assertEquals("a", strStream.findAt(0).get());
+        assertNull(strStream.at(3).quietly().orElse(null));
         try {
             strStream.getAt(-1);
             fail("未抛出索引越界异常");
@@ -122,22 +122,22 @@ public class StreamableTest {
         assertTrue(outOfBounds);
 
         // first()/last()
-        assertEquals("a", strStream.first());
-        assertNull(emptyStream.first());
-        assertEquals(null, strStream.last());
-        assertEquals("test", singletonStream.last());
+        assertEquals("a", strStream.getFirst());
+        assertNull(emptyStream.findFirst().orElse(null));
+        assertEquals(null, strStream.getLast());
+        assertEquals("test", singletonStream.getLast());
 
         // unique()/getUnique()
         assertTrue(singletonStream.isUnique());
         assertFalse(strStream.isUnique());
-        assertEquals(Optional.of("test"), singletonStream.unique());
-        assertEquals(Optional.empty(), strStream.unique());
-        assertEquals(Optional.empty(), emptyStream.unique());
+        assertEquals(Optional.of("test"), singletonStream.findUnique());
+        assertEquals(Optional.empty(), strStream.findUnique());
+        assertEquals(Optional.empty(), emptyStream.findUnique());
 
         // getUnique() 异常场景
-        assertEquals("test", singletonStream.getUnique());
+        assertEquals("test", singletonStream.findUnique().get());
         try {
-            emptyStream.getUnique();
+            emptyStream.findUnique().get();
             fail("空流未抛出NoSuchElementException");
         } catch (NoSuchElementException e) {
             // 预期异常

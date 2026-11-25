@@ -71,6 +71,6 @@ public class ConfigurableParameterNameDiscoverer extends ConfigurableServices<Pa
 	 */
 	@Override
 	public String[] getParameterNames(@NonNull Executable executable) {
-		return map((e) -> e.getParameterNames(executable)).filter((e) -> e != null).first();
+		return map((e) -> e.getParameterNames(executable)).filter((e) -> e != null).findFirst().orElse(null);
 	}
 }

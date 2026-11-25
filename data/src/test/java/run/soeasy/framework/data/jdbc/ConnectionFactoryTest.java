@@ -48,7 +48,7 @@ public class ConnectionFactoryTest {
 			entity.setName(RandomUtils.randomString(10));
 			jdbcTemplate.insert(User.class, entity);
 			jdbcTemplate.queryAll(User.class).forEach((user) -> {
-				User result = jdbcTemplate.query(User.class, user).first();
+				User result = jdbcTemplate.query(User.class, user).getFirst();
 				assert result.equals(user);
 				jdbcTemplate.update(User.class, result);
 				System.out.println(user);

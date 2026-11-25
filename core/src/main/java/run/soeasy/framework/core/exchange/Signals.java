@@ -28,7 +28,7 @@ public interface Signals<T extends Signal> extends Signal {
 		<E extends Signal> boolean isRollbackSupported(@NonNull Streamable<E> elements);
 
 		default <E extends Signal> Signal rollback(@NonNull Streamable<E> elements) {
-			List<Signal> list = elements.mapPure(Signal::rollback).toList();
+			List<Signal> list = elements.map(Signal::rollback).toList();
 			return new CompositeSignals<>(this, Streamable.of(list));
 		}
 	}

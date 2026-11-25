@@ -26,7 +26,7 @@ public class JsonConverterTest {
 		assert !jsonElement.isJsonArray();
 		assert jsonElement.isJsonObject();
 
-		JsonElement name = jsonElement.getAsJsonObject().getValues("name").first();
+		JsonElement name = jsonElement.getAsJsonObject().getValues("name").findFirst().get();
 		System.out.println(name);
 		System.out.println(name.getAsJsonPrimitive().getAsString());
 		assert name.isJsonPrimitive();

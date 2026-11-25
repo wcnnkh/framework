@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.RandomAccess;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -15,6 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.exchange.Signal;
+import run.soeasy.framework.core.exchange.Stage;
 
 @RequiredArgsConstructor
 public class CachedStreamable<E, W extends Streamable<? extends E>> implements Streamable<E>, Serializable {
@@ -126,31 +127,15 @@ public class CachedStreamable<E, W extends Streamable<? extends E>> implements S
 	}
 
 	@Override
-	public E getAt(int index) throws IndexOutOfBoundsException {
+	public Stage<E> at(int index) {
 		if (index < 0) {
-			throw new IndexOutOfBoundsException("Index: " + index + " (negative index is not allowed)");
+			return Signal
+					.failure(new IndexOutOfBoundsException("Index: " + index + " (negative index is not allowed)"));
 		}
 
 		Collection<E> collection = getCollection();
 		if (collection instanceof List) {
-			return ((List<E>) collection).get(index);
-		}
-		return Streamable.super.getAt(index);
-	}
-
-	@Override
-	public Optional<E> at(int index) {
-		if (index < 0) {
-			return Optional.empty();
-		}
-
-		Collection<E> collection = getCollection();
-		if (index >= collection.size()) {
-			return Optional.empty();
-		}
-
-		if (collection instanceof List) {
-			return Optional.ofNullable(((List<E>) collection).get(index));
+			return Signal.call(() -> ((List<E>) collection).get(index));
 		}
 		return Streamable.super.at(index);
 	}

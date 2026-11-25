@@ -75,8 +75,8 @@ public interface PropertyMappingWrapper<E extends PropertyDescriptor, W extends 
 	}
 	
 	@Override
-	default Optional<E> uniqueProperty(@NonNull Object key) {
-		return getSource().uniqueProperty(key);
+	default Optional<E> findProperty(@NonNull Object key) {
+		return getSource().findProperty(key);
 	}
 	
 	@Override

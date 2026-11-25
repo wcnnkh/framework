@@ -50,8 +50,8 @@ import run.soeasy.framework.core.util.ObjectUtils;
 @UtilityClass
 public class CollectionUtils {
 	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.findDeclaredField(EnumSet.class, "elementType")
-			.first();
-	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findDeclaredField(EnumMap.class, "keyType").first();
+			.getFirst();
+	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findDeclaredField(EnumMap.class, "keyType").getFirst();
 	static {
 		ReflectionUtils.makeAccessible(KEY_TYPE_FIELD);
 		ReflectionUtils.makeAccessible(ELEMENT_TYPE_FIELD);

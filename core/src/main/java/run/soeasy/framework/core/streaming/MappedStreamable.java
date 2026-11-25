@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import lombok.Getter;
+import run.soeasy.framework.core.exchange.Stage;
 
 /**
  * 纯映射的Streamable装饰器：基于原有Streamable做无副作用的map转换
@@ -18,13 +19,13 @@ import lombok.Getter;
  * @author soeasy.run
  */
 @Getter
-public class PureMappedStreamable<E, T> implements Streamable<T> {
+class MappedStreamable<E, T> implements Streamable<T> {
 
 	/** 原始Streamable实例，所有核心能力的底层依赖（上游保证非空） */
 	private final Streamable<E> originalStreamable;
 
 	/** 纯映射器：无副作用、幂等，仅做E->T的转换（上游保证非空） */
-	private final Function<? super E, ? extends T> pureMapper;
+	private final Function<? super E, ? extends T> mapper;
 
 	/**
 	 * 构造纯映射的Streamable
@@ -33,11 +34,11 @@ public class PureMappedStreamable<E, T> implements Streamable<T> {
 	 * </p>
 	 *
 	 * @param originalStreamable 原始Streamable
-	 * @param pureMapper         纯映射器
+	 * @param mapper             纯映射器
 	 */
-	public PureMappedStreamable(Streamable<E> originalStreamable, Function<? super E, ? extends T> pureMapper) {
+	public MappedStreamable(Streamable<E> originalStreamable, Function<? super E, ? extends T> mapper) {
 		this.originalStreamable = originalStreamable;
-		this.pureMapper = pureMapper;
+		this.mapper = mapper;
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class PureMappedStreamable<E, T> implements Streamable<T> {
 	 */
 	@Override
 	public Stream<T> stream() {
-		return originalStreamable.stream().map(pureMapper);
+		return originalStreamable.stream().map(mapper);
 	}
 
 	// ========== 核心性能优化：复用原Streamable的计算结果 ==========
@@ -67,33 +68,63 @@ public class PureMappedStreamable<E, T> implements Streamable<T> {
 		return originalStreamable.isUnique();
 	}
 
-	// ========== 补充高性能方法：避免重复创建流/映射 ==========
+	@Override
+	public Stage<T> first() {
+		return originalStreamable.first().map(mapper);
+	}
+
+	@Override
+	public Stage<T> last() {
+		return originalStreamable.last().map(mapper);
+	}
+
+	@Override
+	public Stage<T> unique() {
+		return originalStreamable.unique().map(mapper);
+	}
+
+	@Override
+	public Stage<T> at(int index) {
+		return originalStreamable.at(index).map(mapper);
+	}
+
 	@Override
 	public Optional<T> findFirst() {
-		return originalStreamable.findFirst().map(pureMapper);
+		return originalStreamable.findFirst().map(mapper);
 	}
 
 	@Override
-	public T first() {
-		E originalFirst = originalStreamable.first();
-		return originalFirst == null ? null : pureMapper.apply(originalFirst);
+	public Optional<T> findAt(int index) {
+		return originalStreamable.findAt(index).map(mapper);
 	}
 
 	@Override
-	public T last() {
-		E originalLast = originalStreamable.last();
-		return originalLast == null ? null : pureMapper.apply(originalLast);
+	public Optional<T> findLast() {
+		return originalStreamable.findLast().map(mapper);
+	}
+
+	@Override
+	public Optional<T> findUnique() {
+		return originalStreamable.findUnique().map(mapper);
+	}
+
+	@Override
+	public T getAt(int index) throws IndexOutOfBoundsException {
+		return mapper.apply(originalStreamable.getAt(index));
+	}
+
+	@Override
+	public T getFirst() throws NoSuchElementException {
+		return mapper.apply(originalStreamable.getFirst());
+	}
+
+	@Override
+	public T getLast() throws NoSuchElementException {
+		return mapper.apply(originalStreamable.getLast());
 	}
 
 	@Override
 	public T getUnique() throws NoSuchElementException, NoUniqueElementException {
-		E originalUnique = originalStreamable.getUnique();
-		return pureMapper.apply(originalUnique);
-	}
-
-	@Override
-	public T getAt(int index) {
-		E originalUnique = originalStreamable.getAt(index);
-		return pureMapper.apply(originalUnique);
+		return mapper.apply(originalStreamable.getUnique());
 	}
 }

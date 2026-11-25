@@ -42,6 +42,6 @@ public class MessageConverterComparator implements Comparator<MessageConverter> 
                 return -1;
             }
             return 0;
-    	}).filter((e) -> e == -1).findAny().isPresent()? -1:1;
+    	}).filter((e) -> e == -1).findFirst().isPresent()? -1:1;
     }
 }

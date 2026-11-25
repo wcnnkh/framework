@@ -51,7 +51,7 @@ public class MappingProvider<K, V extends TypedValueAccessor, T extends Mapping<
 	@Override
 	public T getMapping(@NonNull Object source, @NonNull TypeDescriptor requiredType) {
 		MappingFactory<? super Object, ? extends K, ? extends V, ? extends T> factory = filter(
-				requiredType.getType()).first();
+				requiredType.getType()).findFirst().orElse(null);
 		if (factory == null) {
 			return null;
 		}

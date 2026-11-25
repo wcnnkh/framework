@@ -158,7 +158,7 @@ public class ResultSetProperties implements PropertyMapping<PropertyAccessor> {
      * @throws JdbcException 获取元数据/列信息失败时抛出（非索引越界场景）
      */
     @Override
-    public Optional<KeyValue<String, PropertyAccessor>> at(int index) {
+    public Optional<KeyValue<String, PropertyAccessor>> findAt(int index) {
         try {
             return Optional.of(getAt(index));
         } catch (IndexOutOfBoundsException e) {

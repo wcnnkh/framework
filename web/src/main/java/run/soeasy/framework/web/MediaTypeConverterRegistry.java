@@ -80,7 +80,7 @@ public class MediaTypeConverterRegistry extends ServiceMap<MediaType, Converter>
 	 */
 	@Override
 	public Converter getConverter(@NonNull MediaType mediaType) {
-		Converter converter = getValues(mediaType).first();
+		Converter converter = getValues(mediaType).findFirst().orElse(null);
 		if (converter != null) {
 			return converter;
 		}
