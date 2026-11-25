@@ -84,9 +84,4 @@ public interface Signals<T extends Signal> extends Signal {
 	default Signal rollback() {
 		return getCompositePattern().rollback(getElements());
 	}
-
-	@Override
-	default Signal boxed() {
-		return new CompositeSignals<>(getCompositePattern(), Streamable.singleton(this));
-	}
 }

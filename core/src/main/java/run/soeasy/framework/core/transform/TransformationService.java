@@ -114,7 +114,7 @@ public class TransformationService implements Transformer {
      * @return 转换成功返回true，否则false
      */
     @Override
-    public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+    public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
             @NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
         if (registry.canTransform(sourceTypeDescriptor, targetTypeDescriptor)) {
             return registry.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);

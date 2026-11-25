@@ -54,8 +54,7 @@ public class AnnotationEntityResolver implements EntityResolver {
 	}
 
 	@Override
-	public String getColumnName(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
+	public String getColumnName(@NonNull PropertyDescriptor propertyDescriptor) {
 		Column column = propertyDescriptor.getReturnTypeDescriptor().getAnnotation(Column.class);
 		if (column != null && StringUtils.isNotEmpty(column.name())) {
 			return column.name();
@@ -64,8 +63,7 @@ public class AnnotationEntityResolver implements EntityResolver {
 	}
 
 	@Override
-	public Streamable<String> getColumnAlias(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
+	public Streamable<String> getColumnAlias(@NonNull PropertyDescriptor propertyDescriptor) {
 		Column column = propertyDescriptor.getReturnTypeDescriptor().getAnnotation(Column.class);
 		if (column != null && column.alias().length > 0) {
 			return Streamable.array(column.alias());
@@ -95,11 +93,5 @@ public class AnnotationEntityResolver implements EntityResolver {
 			return column.exclude();
 		}
 		return false;
-	}
-
-	@Override
-	public boolean isEntity(@NonNull TypeDescriptor typeDescriptor) {
-		return typeDescriptor.isAnnotationPresent(Entity.class)
-				|| typeDescriptor.getType().isAnnotationPresent(Entity.class);
 	}
 }

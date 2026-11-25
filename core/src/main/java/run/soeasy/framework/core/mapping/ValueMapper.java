@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 
 /**
@@ -69,11 +70,11 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
      * @return 映射成功返回true，否则false
      */
     @Override
-    public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
+    public Signal doMapping(@NonNull MappingContext<K, V, T> sourceContext,
                              @NonNull MappingContext<K, V, T> targetContext) {
         // 验证上下文是否存在可用的键值对
         if (!(sourceContext.hasKeyValue() && targetContext.hasKeyValue())) {
-            return false;
+            return Signal.failure();
         }
 
         // 获取源值访问器和目标值访问器
@@ -82,13 +83,13 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
         
         // 验证访问权限
         if (!(sourceAccessor.isReadable() && targetAccessor.isWriteable())) {
-            return false;
+            return Signal.failure();
         }
 
         // 验证转换器是否支持该类型转换
         if (!converter.canConvert(sourceAccessor.getReturnTypeDescriptor(),
                                   targetAccessor.getRequiredTypeDescriptor())) {
-            return false;
+            return Signal.failure();
         }
 
         // 执行类型转换
@@ -98,12 +99,12 @@ public class ValueMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V
         
         // 处理必需值的空值情况
         if (value == null && targetAccessor.isRequired()) {
-            return false;
+            return Signal.failure();
         }
         
         // 设置转换后的值
         targetAccessor.set(value);
-        return true;
+        return Signal.success();
     }
 
     /**

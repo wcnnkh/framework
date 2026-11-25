@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;
+import run.soeasy.framework.core.exchange.Signal;
 
 /**
  * 自定义条件转换器，实现{@link ConditionalTransformer}接口，
@@ -87,7 +88,7 @@ public class CustomizeConditionalTransformer implements ConditionalTransformer {
      * @throws NullPointerException 若transformer为null
      */
     @Override
-    public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+    public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
             @NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
         return transformer.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
     }

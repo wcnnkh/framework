@@ -2,6 +2,7 @@ package run.soeasy.framework.core.mapping;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 
 /**
@@ -42,6 +43,6 @@ public interface Mapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>
      * @return 映射成功返回true，否则返回false
      * @throws NullPointerException 若任一参数为null
      */
-    boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext, 
+    Signal doMapping(@NonNull MappingContext<K, V, T> sourceContext, 
                       @NonNull MappingContext<K, V, T> targetContext);
 }

@@ -52,10 +52,9 @@ public class ConfigurableEntityResolver extends ConfigurableServices<EntityResol
 	}
 
 	@Override
-	public String getColumnName(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
+	public String getColumnName(@NonNull PropertyDescriptor propertyDescriptor) {
 		EntityResolverChain chain = new EntityResolverChain(iterator(), defaultEntityResolver);
-		String name = chain.getColumnName(typeDescriptor, propertyDescriptor);
+		String name = chain.getColumnName(propertyDescriptor);
 		if (StringUtils.isNotEmpty(name)) {
 			return name;
 		}
@@ -66,21 +65,14 @@ public class ConfigurableEntityResolver extends ConfigurableServices<EntityResol
 	}
 
 	@Override
-	public Streamable<String> getColumnAlias(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
+	public Streamable<String> getColumnAlias(@NonNull PropertyDescriptor propertyDescriptor) {
 		EntityResolverChain chain = new EntityResolverChain(iterator(), defaultEntityResolver);
-		return chain.getColumnAlias(typeDescriptor, propertyDescriptor);
+		return chain.getColumnAlias(propertyDescriptor);
 	}
 
 	@Override
 	public boolean isExclude(@NonNull TypeDescriptor typeDescriptor, @NonNull PropertyDescriptor propertyDescriptor) {
 		EntityResolverChain chain = new EntityResolverChain(iterator(), defaultEntityResolver);
 		return chain.isExclude(typeDescriptor, propertyDescriptor);
-	}
-
-	@Override
-	public boolean isEntity(@NonNull TypeDescriptor typeDescriptor) {
-		EntityResolverChain chain = new EntityResolverChain(iterator(), defaultEntityResolver);
-		return chain.isEntity(typeDescriptor);
 	}
 }

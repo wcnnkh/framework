@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import lombok.Getter;
-import run.soeasy.framework.core.exchange.Stage;
+import run.soeasy.framework.core.exchange.Trace;
 
 /**
  * 纯映射的Streamable装饰器：基于原有Streamable做无副作用的map转换
@@ -69,22 +69,22 @@ class MappedStreamable<E, T> implements Streamable<T> {
 	}
 
 	@Override
-	public Stage<T> first() {
+	public Trace<T> first() {
 		return originalStreamable.first().map(mapper);
 	}
 
 	@Override
-	public Stage<T> last() {
+	public Trace<T> last() {
 		return originalStreamable.last().map(mapper);
 	}
 
 	@Override
-	public Stage<T> unique() {
+	public Trace<T> unique() {
 		return originalStreamable.unique().map(mapper);
 	}
 
 	@Override
-	public Stage<T> at(int index) {
+	public Trace<T> at(int index) {
 		return originalStreamable.at(index).map(mapper);
 	}
 

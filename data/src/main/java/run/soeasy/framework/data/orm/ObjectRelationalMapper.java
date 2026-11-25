@@ -1,13 +1,9 @@
 package run.soeasy.framework.data.orm;
 
-import java.util.concurrent.ConcurrentSkipListSet;
-
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.beans.BeanMapper;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exchange.CollectionContainer;
-import run.soeasy.framework.core.exchange.Registry;
 import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.mapping.MappingContext;
 import run.soeasy.framework.core.mapping.MappingFilter;
@@ -23,7 +19,6 @@ import run.soeasy.framework.data.orm.resolver.EntityResolver;
 @Getter
 public class ObjectRelationalMapper extends BeanMapper implements Configurable, EntityResolver {
 	private final ConfigurableEntityResolver entityResolver = new ConfigurableEntityResolver();
-	private final Registry<Class<?>> entityRegistry = new CollectionContainer<>(new ConcurrentSkipListSet<>());
 
 	public ObjectRelationalMapper() {
 		this.configure();
@@ -35,24 +30,13 @@ public class ObjectRelationalMapper extends BeanMapper implements Configurable, 
 	}
 
 	@Override
-	public boolean isEntity(@NonNull TypeDescriptor typeDescriptor) {
-		if (entityRegistry.contains(typeDescriptor.getType())) {
-			return true;
-		}
-
-		return entityResolver.isEntity(typeDescriptor);
+	public Streamable<String> getColumnAlias(@NonNull PropertyDescriptor propertyDescriptor) {
+		return entityResolver.getColumnAlias(propertyDescriptor);
 	}
 
 	@Override
-	public Streamable<String> getColumnAlias(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
-		return entityResolver.getColumnAlias(typeDescriptor, propertyDescriptor);
-	}
-
-	@Override
-	public String getColumnName(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
-		return entityResolver.getColumnName(typeDescriptor, propertyDescriptor);
+	public String getColumnName(@NonNull PropertyDescriptor propertyDescriptor) {
+		return entityResolver.getColumnName(propertyDescriptor);
 	}
 
 	@Override
@@ -77,7 +61,7 @@ public class ObjectRelationalMapper extends BeanMapper implements Configurable, 
 	}
 
 	@Override
-	protected boolean doFilterableMapping(
+	protected Signal doFilterableMapping(
 			@NonNull MappingContext<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> sourceContext,
 			@NonNull MappingContext<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> targetContext,
 			@NonNull Iterable<MappingFilter<String, PropertyAccessor, PropertyMapping<PropertyAccessor>>> filters) {
@@ -90,9 +74,6 @@ public class ObjectRelationalMapper extends BeanMapper implements Configurable, 
 	}
 
 	public EntityDescriptor<PropertyDescriptor> getEntityDescriptor(@NonNull TypeDescriptor typeDescriptor) {
-		if (!isEntity(typeDescriptor)) {
-			throw new IllegalArgumentException("This is not an entity:" + typeDescriptor);
-		}
 		return new EntityDescriptor<>(getEntityName(typeDescriptor), getEntityAlias(typeDescriptor), typeDescriptor,
 				getObjectTemplate(typeDescriptor.getType()).elements()
 						.filter((property) -> !isExclude(typeDescriptor, property))
@@ -101,9 +82,6 @@ public class ObjectRelationalMapper extends BeanMapper implements Configurable, 
 
 	public EntityDescriptor<PropertyAccessor> getEntityDescriptor(@NonNull TypeDescriptor typeDescriptor,
 			@NonNull Object entity) {
-		if (!isEntity(typeDescriptor)) {
-			throw new IllegalArgumentException("This is not an entity:" + typeDescriptor);
-		}
 		return new EntityDescriptor<>(getEntityName(typeDescriptor), getEntityAlias(typeDescriptor), typeDescriptor,
 				getMapping(entity, typeDescriptor).elements().filter((property) -> !isExclude(typeDescriptor, property))
 						.map((property) -> toColumn(typeDescriptor, property)));
@@ -111,7 +89,7 @@ public class ObjectRelationalMapper extends BeanMapper implements Configurable, 
 
 	protected <T extends PropertyDescriptor> ColumnDescriptor<T> toColumn(@NonNull TypeDescriptor typeDescriptor,
 			T property) {
-		return new ColumnDescriptor<>(property, getColumnName(typeDescriptor, property),
-				isPrimaryKey(typeDescriptor, property), getColumnAlias(typeDescriptor, property));
+		return new ColumnDescriptor<>(property, getColumnName(property), isPrimaryKey(typeDescriptor, property),
+				getColumnAlias(property));
 	}
 }

@@ -2,6 +2,7 @@ package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 
 /**
@@ -62,9 +63,9 @@ public class Transformers extends ConfigurableServices<Transformer> implements T
 	 * @return 转换成功返回true，否则false
 	 */
 	@Override
-	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
 		return filter((e) -> e.canTransform(sourceTypeDescriptor, targetTypeDescriptor))
-				.anyMatch((e) -> e.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor));
+				.map((e) -> e.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor)).getFirst();
 	}
 }

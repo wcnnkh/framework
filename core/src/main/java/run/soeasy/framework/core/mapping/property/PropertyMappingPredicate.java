@@ -4,6 +4,7 @@ import java.util.function.BiPredicate;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.mapping.Mapper;
 import run.soeasy.framework.core.mapping.MappingContext;
 
@@ -64,7 +65,7 @@ public class PropertyMappingPredicate implements PropertyMappingFilter {
 	 * @throws NullPointerException 若任何参数为null
 	 */
 	@Override
-	public boolean doMapping(
+	public Signal doMapping(
 			@NonNull MappingContext<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> sourceContext,
 			@NonNull MappingContext<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> targetContext,
 			@NonNull Mapper<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> mapper) {
@@ -76,7 +77,7 @@ public class PropertyMappingPredicate implements PropertyMappingFilter {
 
 			// 应用谓词条件，若不满足则终止映射
 			if (!predicate.test(sourceProperty, targetProperty)) {
-				return false;
+				return Signal.failure();
 			}
 		}
 		// 继续执行后续映射流程

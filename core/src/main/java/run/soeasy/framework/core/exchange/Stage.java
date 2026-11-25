@@ -1,59 +1,39 @@
 package run.soeasy.framework.core.exchange;
 
 import java.util.Optional;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import lombok.NonNull;
 
-public interface Stage<V> extends Signal, Future<V> {
-	@Override
-	boolean cancel(boolean mayInterruptIfRunning);
-
-	@Override
-	default void await() throws InterruptedException, ExecutionException {
-		get();
-	}
-
-	@Override
-	default void await(long timeout, @NonNull TimeUnit unit)
-			throws InterruptedException, ExecutionException, TimeoutException {
-		get(timeout, unit);
-	}
-
+public interface Stage<V> extends Signal {
 	default V getNow() {
 		if (isDone()) {
 			try {
-				return get();
+				return join();
 			} catch (Throwable e) {
 			}
 		}
 		return null;
 	}
 
+	V join();
+
+	V join(long timeout, @NonNull TimeUnit unit) throws TimeoutException;
+
 	@Override
-	default ListenableStage<V> listenable() {
-		return Signal.call(() -> {
-			try {
-				return get();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-			return null;
-		});
+	default ListenableTrace<V> listenable() {
+		return Signal.call(this::join);
 	}
 
-	default <R> Stage<R> map(@NonNull Function<? super V, ? extends R> mapper) {
-		return new MappedStage<>(this, mapper);
+	default <R> Trace<R> map(@NonNull Function<? super V, ? extends R> mapper) {
+		return new MappedTrace<>(this, mapper);
 	}
 
 	default Optional<V> quietly() {
 		try {
-			V value = get();
+			V value = join();
 			return Optional.ofNullable(value);
 		} catch (Throwable e) {
 			if (SignalException.unwrap(e) instanceof InterruptedException) {
@@ -63,14 +43,20 @@ public interface Stage<V> extends Signal, Future<V> {
 		}
 	}
 
-	default V join() throws CompletionException{
+	default Optional<V> quietly(long timeout, @NonNull TimeUnit unit) {
 		try {
-			return get();
+			V value = join(timeout, unit);
+			return Optional.ofNullable(value);
 		} catch (Throwable e) {
 			if (SignalException.unwrap(e) instanceof InterruptedException) {
 				Thread.currentThread().interrupt();
 			}
-			throw new CompletionException(e);
+			return Optional.empty();
 		}
 	}
+
+	default Trace<V> trace() {
+		return map(Function.identity());
+	}
+
 }

@@ -11,19 +11,19 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-class MappedStage<S, T, W extends Stage<S>> implements Stage<T>, SignalWrapper<W> {
+class MappedTrace<S, T, W extends Stage<S>> implements Trace<T>, SignalWrapper<W> {
 	private final W source;
 	private final Function<? super S, ? extends T> mapper;
 
 	@Override
 	public T get() throws InterruptedException, ExecutionException {
-		S value = source.get();
+		S value = source.join();
 		return mapper.apply(value);
 	}
 
 	@Override
 	public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		S value = source.get();
+		S value = source.join(timeout, unit);
 		return mapper.apply(value);
 	}
 
@@ -44,8 +44,8 @@ class MappedStage<S, T, W extends Stage<S>> implements Stage<T>, SignalWrapper<W
 	}
 
 	@Override
-	public ListenableStage<T> listenable() {
-		return new MappedListenableStage<>(source.listenable(), mapper);
+	public ListenableTrace<T> listenable() {
+		return new MappedListenableTrace<>(source.listenable(), mapper);
 	}
 
 	@Override

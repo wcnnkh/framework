@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.exchange.Promise;
-import run.soeasy.framework.core.exchange.Stage;
+import run.soeasy.framework.core.exchange.Trace;
 import run.soeasy.framework.core.function.ThrowingFunction;
 
 @RequiredArgsConstructor
@@ -14,7 +14,7 @@ public class RetryTemplate implements RetryExecutor {
 	private final RetryPolicy retryPolicy;
 
 	@Override
-	public <T, E extends Throwable> Stage<T> submit(
+	public <T, E extends Throwable> Trace<T> submit(
 			@NonNull ThrowingFunction<? super RetryContext, ? extends T, ? extends E> retryFunction) {
 		RetryContext retryContext = retryPolicy.open(RetrySynchronizationManager.getContext());
 		RetrySynchronizationManager.register(retryContext);

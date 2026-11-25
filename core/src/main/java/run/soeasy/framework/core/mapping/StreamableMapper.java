@@ -1,5 +1,6 @@
 package run.soeasy.framework.core.mapping;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +11,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.util.ObjectUtils;
 
 /**
@@ -92,7 +95,8 @@ import run.soeasy.framework.core.util.ObjectUtils;
  */
 @Getter
 @Setter
-public class StreamableMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends FilterableMapper<K, V, T> {
+public class StreamableMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>>
+		extends FilterableMapper<K, V, T> {
 
 	/**
 	 * 构造仅包含过滤器的ArrayMapper实例
@@ -128,23 +132,22 @@ public class StreamableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * @return boolean：true表示至少有一个元素映射成功；false表示无元素映射成功（或上下文不合法）
 	 */
 	@Override
-	protected boolean doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
+	protected Signal doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext, @NonNull Iterable<MappingFilter<K, V, T>> filters) {
 		// 验证上下文条件：必须包含映射集合且不能同时包含单键值对
 		if (sourceContext.hasKeyValue()
 				|| targetContext.hasKeyValue() && !(sourceContext.hasMapping() && targetContext.hasMapping())) {
-			return false;
+			return Signal.failure();
 		}
 
 		// 获取源映射集合元素列表（转换为可修改列表以便移除元素）
 		List<KeyValue<K, V>> sourceList = sourceContext.getMapping().collect(Collectors.toList());
 		if (sourceList.isEmpty()) {
-			return false;
+			return Signal.failure();
 		}
 
-		// 记录成功映射的元素数量
-		int count = 0;
-
+		// 记录成功映射的元素
+		List<Signal> signals = new ArrayList<Signal>();
 		// 遍历目标映射集合
 		try (Stream<KeyValue<K, V>> targetStream = targetContext.getMapping().stream()) {
 			Iterator<KeyValue<K, V>> targetIterator = targetStream.iterator();
@@ -162,15 +165,16 @@ public class StreamableMapper<K, V extends TypedValueAccessor, T extends Mapping
 					}
 
 					// 使用内部映射器处理元素映射
-					if (super.doFilterableMapping(sourceContext.current(source), targetContext.nested(target),
-							filters)) {
+					Signal signal = super.doFilterableMapping(sourceContext.current(source),
+							targetContext.nested(target), filters);
+					signals.add(signal);
+					if (signal.isSuccess()) {
 						// 映射成功后从源集合移除，避免重复处理
 						sourceIterator.remove();
-						count++;
 					}
 				}
 			}
 		}
-		return count > 0;
+		return Signal.any(Streamable.of(signals));
 	}
 }

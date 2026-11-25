@@ -9,6 +9,7 @@ import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.Converter;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.spi.ConfigurableServices;
 import run.soeasy.framework.core.spi.ServiceComparator;
 import run.soeasy.framework.core.streaming.Mapping;
@@ -226,7 +227,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * @throws ConversionException 转换过程中发生错误时抛出
 	 */
 	@Override
-	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
 		return transform(source, sourceTypeDescriptor, target, targetTypeDescriptor, Collections.emptyList());
 	}
@@ -242,14 +243,14 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * @return 转换成功返回true，否则false
 	 * @throws ConversionException 转换过程中发生错误时抛出
 	 */
-	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor,
 			@NonNull Iterable<MappingFilter<K, V, T>> filters) throws ConversionException {
 		if (hasMapping(sourceTypeDescriptor) && hasMapping(targetTypeDescriptor)) {
 			return doMapping(getMapping(source, sourceTypeDescriptor), getMapping(target, targetTypeDescriptor),
 					filters);
 		}
-		return false;
+		return Signal.failure();
 	}
 
 	/**
@@ -261,7 +262,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * @return 映射成功返回true，否则false
 	 * @throws ConversionException 转换过程中发生错误时抛出
 	 */
-	public boolean doMapping(@NonNull T sourceMapping, @NonNull T targetMapping,
+	public Signal doMapping(@NonNull T sourceMapping, @NonNull T targetMapping,
 			@NonNull Iterable<MappingFilter<K, V, T>> filters) throws ConversionException {
 		return doMapping(new MappingContext<>(sourceMapping), new MappingContext<>(targetMapping), filters);
 	}
@@ -356,7 +357,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * 接口默认方法的final实现，防止子类重写
 	 */
 	@Override
-	public final boolean transform(@NonNull Object source, @NonNull Object target) {
+	public final Signal transform(@NonNull Object source, @NonNull Object target) {
 		return Transformer.super.transform(source, target);
 	}
 
@@ -364,7 +365,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * 接口默认方法的final实现，防止子类重写
 	 */
 	@Override
-	public final boolean transform(@NonNull Object source, @NonNull Object target,
+	public final Signal transform(@NonNull Object source, @NonNull Object target,
 			@NonNull TypeDescriptor targetTypeDescriptor) {
 		return Transformer.super.transform(source, target, targetTypeDescriptor);
 	}
@@ -373,7 +374,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * 接口默认方法的final实现，防止子类重写
 	 */
 	@Override
-	public final boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public final Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target) {
 		return Transformer.super.transform(source, sourceTypeDescriptor, target);
 	}
@@ -381,7 +382,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	/**
 	 * 接口默认方法的final实现，防止子类重写
 	 */
-	public final <U> boolean transform(Object source, TypeDescriptor sourceTypeDescriptor, U target,
+	public final <U> Signal transform(Object source, TypeDescriptor sourceTypeDescriptor, U target,
 			Class<? extends U> targetClass) {
 		return Transformer.super.transform(source, sourceTypeDescriptor, target, targetClass);
 	}
@@ -389,7 +390,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	/**
 	 * 接口默认方法的final实现，防止子类重写
 	 */
-	public final <S, U> boolean transform(S source, Class<? extends S> sourceClass, U target,
+	public final <S, U> Signal transform(S source, Class<? extends S> sourceClass, U target,
 			Class<? extends U> targetClass) {
 		return Transformer.super.transform(source, sourceClass, target, targetClass);
 	}
@@ -397,7 +398,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	/**
 	 * 接口默认方法的final实现，防止子类重写
 	 */
-	public final <U> boolean transform(Object source, U target, Class<? extends U> targetClass) {
+	public final <U> Signal transform(Object source, U target, Class<? extends U> targetClass) {
 		return Transformer.super.transform(source, target, targetClass);
 	}
 
@@ -405,7 +406,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * 接口默认方法的final实现，防止子类重写
 	 */
 	@Override
-	public final <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass,
+	public final <S> Signal transform(@NonNull S source, @NonNull Class<? extends S> sourceClass,
 			@NonNull Object target) {
 		return Transformer.super.transform(source, sourceClass, target);
 	}
@@ -414,7 +415,7 @@ public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * 接口默认方法的final实现，防止子类重写
 	 */
 	@Override
-	public final <S> boolean transform(@NonNull S source, @NonNull Class<? extends S> sourceClass,
+	public final <S> Signal transform(@NonNull S source, @NonNull Class<? extends S> sourceClass,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
 		return Transformer.super.transform(source, sourceClass, target, targetTypeDescriptor);
 	}

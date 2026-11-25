@@ -1,6 +1,8 @@
 package run.soeasy.framework.core.mapping;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
 import run.soeasy.framework.core.domain.KeyValue;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.util.ObjectUtils;
@@ -135,15 +138,15 @@ public class MappedMapper<K, V extends TypedValueAccessor, T extends Mapping<K, 
 	 * @return boolean：true表示至少有一个值映射成功；false表示无值映射成功（或上下文不合法）
 	 */
 	@Override
-	protected boolean doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
+	protected Signal doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext, @NonNull Iterable<MappingFilter<K, V, T>> filters) {
 		// 验证上下文必须包含映射集合且不能包含单键值对
 		if (sourceContext.hasKeyValue()
 				|| targetContext.hasKeyValue() && !(sourceContext.hasMapping() && targetContext.hasMapping())) {
-			return false;
+			return Signal.failure();
 		}
 
-		int count = 0;
+		List<Signal> list = new ArrayList<Signal>();
 		try (Stream<KeyValue<K, V>> sourceStream = sourceContext.getMapping().stream()) {
 			Iterator<KeyValue<K, V>> iterator = sourceStream.iterator();
 			while (iterator.hasNext()) {
@@ -153,14 +156,13 @@ public class MappedMapper<K, V extends TypedValueAccessor, T extends Mapping<K, 
 					Iterator<V> targetIterator = targetStream.iterator();
 					while (targetIterator.hasNext()) {
 						V targetValue = targetIterator.next();
-						if (super.doFilterableMapping(sourceContext.current(source),
-								targetContext.current(KeyValue.of(source.getKey(), targetValue)), filters)) {
-							count++;
-						}
+						Signal signal = super.doFilterableMapping(sourceContext.current(source),
+								targetContext.current(KeyValue.of(source.getKey(), targetValue)), filters);
+						list.add(signal);
 					}
 				}
 			}
 		}
-		return count > 0;
+		return Signal.any(Streamable.of(list));
 	}
 }

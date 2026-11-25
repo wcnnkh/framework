@@ -6,12 +6,12 @@ import java.util.function.Function;
 
 import lombok.NonNull;
 
-public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
+public class Task<V> extends FutureTask<V> implements ListenableTrace<V> {
 	private final Function<? super V, ? extends Signal> rollback;
 	private volatile Signal signal;
-	private volatile DisposableDispatcher<Stage<V>> dispatcher;
-	private volatile DisposableDispatcher<Stage<V>> successDispatcher;
-	private volatile DisposableDispatcher<Stage<V>> failureDispatcher;
+	private volatile DisposableDispatcher<Trace<V>> dispatcher;
+	private volatile DisposableDispatcher<Trace<V>> successDispatcher;
+	private volatile DisposableDispatcher<Trace<V>> failureDispatcher;
 
 	public Task(Callable<V> callable) {
 		this(callable, null);
@@ -43,7 +43,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 			}
 			return signal;
 		}
-		return Signal.failure(new UnsupportedOperationException());
+		return Signal.failure();
 	}
 
 	public Task<V> rollback(Function<? super V, ? extends Signal> rollback) {
@@ -96,7 +96,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 	}
 
 	@Override
-	public Signal registerSuccessListener(Listener<Stage<V>> listener) {
+	public Signal registerSuccessListener(Listener<Trace<V>> listener) {
 		if (isDone() && isSuccess()) {
 			return Signal.run(() -> listener.accept(this));
 		}
@@ -104,7 +104,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 		if (successDispatcher == null) {
 			synchronized (this) {
 				if (successDispatcher == null) {
-					successDispatcher = new DisposableDispatcher<Stage<V>>();
+					successDispatcher = new DisposableDispatcher<Trace<V>>();
 				}
 			}
 		}
@@ -112,7 +112,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 	}
 
 	@Override
-	public Signal registerFailureListener(Listener<Stage<V>> listener) {
+	public Signal registerFailureListener(Listener<Trace<V>> listener) {
 		if (isDone() && !isSuccess()) {
 			return Signal.run(() -> listener.accept(this));
 		}
@@ -120,7 +120,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 		if (failureDispatcher == null) {
 			synchronized (this) {
 				if (failureDispatcher == null) {
-					failureDispatcher = new DisposableDispatcher<Stage<V>>();
+					failureDispatcher = new DisposableDispatcher<Trace<V>>();
 				}
 			}
 		}
@@ -128,7 +128,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 	}
 
 	@Override
-	public Signal registerListener(@NonNull Listener<Stage<V>> listener) {
+	public Signal registerListener(@NonNull Listener<Trace<V>> listener) {
 		if (isDone()) {
 			return Signal.run(() -> listener.accept(this));
 		}
@@ -136,7 +136,7 @@ public class Task<V> extends FutureTask<V> implements ListenableStage<V> {
 		if (dispatcher == null) {
 			synchronized (this) {
 				if (dispatcher == null) {
-					dispatcher = new DisposableDispatcher<Stage<V>>();
+					dispatcher = new DisposableDispatcher<Trace<V>>();
 				}
 			}
 		}

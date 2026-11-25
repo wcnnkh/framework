@@ -3,6 +3,7 @@ package run.soeasy.framework.core.mapping;
 import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 
 /**
@@ -120,7 +121,7 @@ public class GenericMapper<K, V extends TypedValueAccessor, T extends Mapping<K,
 	 * @return boolean：true表示至少有一个层级的映射成功；false表示所有层级映射失败（或上下文类型不匹配）
 	 */
 	@Override
-	protected boolean doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
+	protected Signal doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext, @NonNull Iterable<MappingFilter<K, V, T>> filters) {
 		// 场景1：单键值对映射（源和目标均为单个键值对）
 		if (sourceContext.hasKeyValue() && targetContext.hasKeyValue()) {

@@ -6,6 +6,7 @@ import java.util.Set;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.convert.TypeMapping;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
@@ -92,7 +93,7 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+    default Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
             @NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
         TypeMapping typeMapping = getTypeMapping();
         
@@ -104,7 +105,7 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
         else if (typeMapping.canConvert(targetTypeDescriptor, sourceTypeDescriptor)) {
             return from((T) source, sourceTypeDescriptor, (S) target, targetTypeDescriptor);
         }
-        return false;
+        return Signal.failure();
     }
 
     /**
@@ -119,7 +120,7 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
      * @param targetTypeDescriptor 目标类型描述符
      * @return 转换成功返回true
      */
-    boolean to(S source, TypeDescriptor sourceTypeDescriptor, T target, TypeDescriptor targetTypeDescriptor);
+    Signal to(S source, TypeDescriptor sourceTypeDescriptor, T target, TypeDescriptor targetTypeDescriptor);
 
     /**
      * 反向转换方法：T类型对象转换到S类型对象
@@ -134,5 +135,5 @@ public interface ReversibleTransformer<S, T> extends ConditionalTransformer {
      * @param targetTypeDescriptor 目标类型描述符
      * @return 转换成功返回true
      */
-    boolean from(T source, TypeDescriptor sourceTypeDescriptor, S target, TypeDescriptor targetTypeDescriptor);
+    Signal from(T source, TypeDescriptor sourceTypeDescriptor, S target, TypeDescriptor targetTypeDescriptor);
 }

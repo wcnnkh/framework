@@ -5,6 +5,7 @@ import java.util.Arrays;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.mapping.property.PropertyAccessor;
 import run.soeasy.framework.core.mapping.property.PropertyMapping;
 import run.soeasy.framework.core.mapping.property.PropertyMappingFilter;
@@ -53,7 +54,7 @@ public class BeanUtils {
      * @return 属性复制操作的执行结果标识，具体结果含义由 {@link BeanMapper#transform} 定义
      * @throws NullPointerException 若 sourceClass、targetClass、target 或 filters 为 null
      */
-    public static <S, T> boolean copyProperties(S source, @NonNull Class<? extends S> sourceClass, T target,
+    public static <S, T> Signal copyProperties(S source, @NonNull Class<? extends S> sourceClass, T target,
             @NonNull Class<? extends T> targetClass, @NonNull PropertyMappingFilter... filters) {
         return getMapper().transform(source, TypeDescriptor.valueOf(sourceClass), target,
                 TypeDescriptor.valueOf(targetClass), Arrays.asList(filters));
@@ -73,7 +74,7 @@ public class BeanUtils {
      * @return 属性复制操作的执行结果标识，具体结果含义由 {@link BeanMapper#transform} 定义
      * @throws NullPointerException 若 source、target 或 filters 为 null
      */
-    public static <S, T> boolean copyProperties(@NonNull S source, @NonNull T target,
+    public static <S, T> Signal copyProperties(@NonNull S source, @NonNull T target,
             @NonNull PropertyMappingFilter... filters) {
         return copyProperties(source, source.getClass(), target, target.getClass(), filters);
     }

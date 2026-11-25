@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 
 import lombok.NonNull;
 import run.soeasy.framework.beans.BeanUtils;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.mapping.Mapper;
 import run.soeasy.framework.core.mapping.MappingContext;
 import run.soeasy.framework.core.mapping.property.PropertyAccessor;
@@ -41,7 +42,7 @@ public interface MybatisEntityFiller {
 			BeanUtils.copyProperties(sourceEntity, targetEntity, new PropertyMappingFilter() {
 
 				@Override
-				public boolean doMapping(
+				public Signal doMapping(
 						@NonNull MappingContext<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> sourceContext,
 						@NonNull MappingContext<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> targetContext,
 						@NonNull Mapper<String, PropertyAccessor, PropertyMapping<PropertyAccessor>> mapper) {
@@ -49,13 +50,13 @@ public interface MybatisEntityFiller {
 						if (!forceUpdate) {
 							Object targetValue = targetContext.getKeyValue().getValue().get();
 							if (targetValue != null) {
-								return false;
+								return Signal.failure();
 							}
 						}
 
 						Object sourceValue = sourceContext.getKeyValue().getValue().get();
 						if (sourceValue == null) {
-							return false;
+							return Signal.failure();
 						}
 						if (logger != null && logger.isDebugEnabled()) {
 							logger.debug("The data filled with {}.{} is: {}", target.getClass().getName(),

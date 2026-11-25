@@ -10,14 +10,11 @@ public interface EntityResolver {
 
 	Streamable<String> getEntityAlias(@NonNull TypeDescriptor typeDescriptor);
 
-	String getColumnName(@NonNull TypeDescriptor typeDescriptor, @NonNull PropertyDescriptor propertyDescriptor);
+	String getColumnName(@NonNull PropertyDescriptor propertyDescriptor);
 
-	Streamable<String> getColumnAlias(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor);
+	Streamable<String> getColumnAlias(@NonNull PropertyDescriptor propertyDescriptor);
 
 	boolean isExclude(@NonNull TypeDescriptor typeDescriptor, @NonNull PropertyDescriptor propertyDescriptor);
 
 	boolean isPrimaryKey(@NonNull TypeDescriptor typeDescriptor, @NonNull PropertyDescriptor propertyDescriptor);
-	
-	boolean isEntity(@NonNull TypeDescriptor typeDescriptor);
 }

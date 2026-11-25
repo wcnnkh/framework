@@ -27,10 +27,6 @@ public interface CollectionRegistry<E> extends Collection<E>, Registry<E> {
 	 */
 	@Override
 	default Signal register(E element) {
-		// 空值校验：封装为异常传给failure
-		if (element == null) {
-			return Signal.failure(new RuntimeException("Register failed: element is null"));
-		}
 		return Signal.run(() -> {
 			if (!add(element)) {
 				throw new RuntimeException(
@@ -48,10 +44,6 @@ public interface CollectionRegistry<E> extends Collection<E>, Registry<E> {
 	 */
 	@Override
 	default Signal deregister(E element) {
-		// 空值校验：封装为异常传给failure
-		if (element == null) {
-			return Signal.failure(new RuntimeException("Deregister failed: element is null"));
-		}
 		return Signal.run(() -> {
 			if (!remove(element)) {
 				throw new RuntimeException(

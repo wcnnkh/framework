@@ -2,6 +2,7 @@ package run.soeasy.framework.core.transform;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.exchange.Signal;
 
 /**
  * 忽略所有转换请求的转换器，实现{@link Transformer}接口的单例实现。
@@ -46,9 +47,9 @@ class IgnoreTransformer implements Transformer {
      * @return 始终返回false
      */
     @Override
-    public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+    public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
             @NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
         // 忽略所有转换请求，不执行任何操作
-        return false;
+        return Signal.failure();
     }
 }

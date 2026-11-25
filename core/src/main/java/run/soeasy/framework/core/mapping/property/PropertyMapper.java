@@ -1,7 +1,9 @@
 package run.soeasy.framework.core.mapping.property;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -13,9 +15,11 @@ import lombok.NonNull;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.mapping.DefaultMapper;
 import run.soeasy.framework.core.mapping.MappingFilter;
 import run.soeasy.framework.core.streaming.Mapping;
+import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.type.ClassMembers;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 
@@ -172,11 +176,10 @@ public class PropertyMapper<E extends Property>
 	 * @param filters   映射过滤器集合
 	 * @return 若发生映射转换返回true，否则返回false
 	 */
-	private boolean doClassMembersMapping(Object source, Map<Class<?>, ClassMembers<E>> sourceMap, Object target,
+	private Signal doClassMembersMapping(Object source, Map<Class<?>, ClassMembers<E>> sourceMap, Object target,
 			Map<Class<?>, ClassMembers<E>> targetMap,
 			Iterable<MappingFilter<String, PropertyAccessor, PropertyMapping<PropertyAccessor>>> filters) {
-		boolean changed = false;
-
+		List<Signal> signals = new ArrayList<Signal>();
 		// 遍历源类成员映射
 		for (Entry<Class<?>, ClassMembers<E>> entry : sourceMap.entrySet()) {
 			// 获取对应目标类成员
@@ -190,11 +193,10 @@ public class PropertyMapper<E extends Property>
 			PropertyMapping<PropertyAccessor> targetProperties = createTypedProperties(targetMembers, target);
 
 			// 执行映射转换
-			if (doMapping(sourceProperties, targetProperties, filters)) {
-				changed = true;
-			}
+			Signal signal = doMapping(sourceProperties, targetProperties, filters);
+			signals.add(signal);
 		}
-		return changed;
+		return Signal.any(Streamable.of(signals));
 	}
 
 	/**
@@ -220,7 +222,7 @@ public class PropertyMapper<E extends Property>
 	 * @throws ConversionException 转换过程中发生错误时抛出
 	 */
 	@Override
-	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor,
 			@NonNull Iterable<MappingFilter<String, PropertyAccessor, PropertyMapping<PropertyAccessor>>> filters)
 			throws ConversionException {
@@ -244,42 +246,38 @@ public class PropertyMapper<E extends Property>
 								HashMap::new));
 
 				// 执行双向映射转换
-				boolean leftChanged = doClassMembersMapping(source, sourceMap, target, targetMap, filters);
-				boolean rightChanged = doClassMembersMapping(target, targetMap, source, sourceMap, filters);
-				return leftChanged || rightChanged;
+				Signal leftChanged = doClassMembersMapping(source, sourceMap, target, targetMap, filters);
+				Signal rightChanged = doClassMembersMapping(target, targetMap, source, sourceMap, filters);
+				return Signal.any(Streamable.array(leftChanged, rightChanged));
 			} else if (hasMapping(targetTypeDescriptor)) {
 				// 目标没有类成员加载器但有映射关系的情况
 				PropertyMapping<PropertyAccessor> targetMapping = getMapping(target, targetTypeDescriptor);
-				boolean changed = false;
-
 				// 遍历源类成员并执行映射
+				List<Signal> signals = new ArrayList<Signal>();
 				try (Stream<ClassMembers<E>> sourceMembers = sourceMembersLoader.getElements().stream()) {
 					Iterator<ClassMembers<E>> sourceIterator = sourceMembers.iterator();
 					while (sourceIterator.hasNext()) {
 						ClassMembers<E> classMembers = sourceIterator.next();
-						if (doMapping(createTypedProperties(classMembers, source), targetMapping, filters)) {
-							changed = true;
-						}
+						Signal signal = doMapping(createTypedProperties(classMembers, source), targetMapping, filters);
+						signals.add(signal);
 					}
 				}
-				return changed;
+				return Signal.any(Streamable.of(signals));
 			}
 		} else if (targetMembersLoader != null && hasMapping(sourceTypeDescriptor)) {
 			// 源没有类成员加载器但目标有且源有映射关系的情况
 			PropertyMapping<PropertyAccessor> sourceMapping = getMapping(source, sourceTypeDescriptor);
-			boolean changed = false;
-
+			List<Signal> signals = new ArrayList<Signal>();
 			// 遍历目标类成员并执行映射
 			try (Stream<ClassMembers<E>> targetMembers = targetMembersLoader.getElements().stream()) {
 				Iterator<ClassMembers<E>> targetIterator = targetMembers.iterator();
 				while (targetIterator.hasNext()) {
 					ClassMembers<E> classMembers = targetIterator.next();
-					if (doMapping(sourceMapping, createTypedProperties(classMembers, target), filters)) {
-						changed = true;
-					}
+					Signal signal = doMapping(sourceMapping, createTypedProperties(classMembers, target), filters);
+					signals.add(signal);
 				}
 			}
-			return changed;
+			return Signal.any(Streamable.of(signals));
 		}
 
 		// 其他情况委托给父类处理

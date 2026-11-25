@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 import run.soeasy.framework.core.streaming.Streamable;
 
@@ -107,11 +108,10 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * 
 	 * @param sourceContext 源映射上下文，不可为null，包含待映射的源数据、键值关联规则等信息
 	 * @param targetContext 目标映射上下文，不可为null，用于接收映射后的目标数据
-	 * @return boolean：true表示映射成功（过滤器未中断且基础映射执行成功，或仅过滤逻辑执行成功）；
-	 *         false表示映射失败（过滤器中断流程，或基础映射执行失败）
+	 * @return Signal：映射执行结果（成功/失败）
 	 */
 	@Override
-	public final boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
+	public final Signal doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext) {
 		// 创建链式映射器，将过滤器集合转换为迭代器，并设置基础映射器为最终处理器
 		return doFilterableMapping(sourceContext, targetContext, filters);
@@ -127,10 +127,9 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * @param sourceContext 源映射上下文，不可为null，包含待映射的源数据、键值关联规则等信息
 	 * @param targetContext 目标映射上下文，不可为null，用于接收映射后的目标数据
 	 * @param filters       额外的过滤器集合，不可为null，将在初始过滤器之后执行
-	 * @return boolean：true表示映射成功（合并后的过滤器链未中断且基础映射执行成功）；
-	 *         false表示映射失败（过滤器中断流程，或基础映射执行失败）
+	 * @return Signal：映射执行结果（成功/失败）
 	 */
-	public final boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
+	public final Signal doMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext, @NonNull Iterable<MappingFilter<K, V, T>> filters) {
 		Streamable<MappingFilter<K, V, T>> elements = Streamable.of(this.filters).concat(Streamable.of(filters));
 		return doFilterableMapping(sourceContext, targetContext, elements.toList());
@@ -145,9 +144,9 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * @param sourceContext 源映射上下文，不可为null
 	 * @param targetContext 目标映射上下文，不可为null
 	 * @param filters       待执行的过滤器链，不可为null（可能是初始过滤器或合并后的过滤器）
-	 * @return boolean：映射执行结果（成功/失败）
+	 * @return Signal：映射执行结果（成功/失败）
 	 */
-	protected boolean doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
+	protected Signal doFilterableMapping(@NonNull MappingContext<K, V, T> sourceContext,
 			@NonNull MappingContext<K, V, T> targetContext, @NonNull Iterable<MappingFilter<K, V, T>> filters) {
 		ChainMapper<K, V, T> chain = new ChainMapper<>(filters.iterator(), mapper);
 		return chain.doMapping(sourceContext, targetContext);

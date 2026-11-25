@@ -105,11 +105,11 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	 * @throws ConverterNotFoundException 未找到支持的转换器时抛出
 	 */
 	@Override
-	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) {
 		Transformer transformer = getTransformer(sourceTypeDescriptor, targetTypeDescriptor);
 		if (transformer == null) {
-			throw new ConverterNotFoundException(sourceTypeDescriptor, targetTypeDescriptor);
+			return Signal.failure(new ConverterNotFoundException(sourceTypeDescriptor, targetTypeDescriptor));
 		}
 		return transformer.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 	}
@@ -145,8 +145,7 @@ public class TransformerRegistry extends ServiceMap<TypeMapping, Transformer> im
 	 * @param consumer   转换逻辑函数，参数为(源对象, 目标对象)
 	 * @return 注册句柄，可用于后续取消注册
 	 */
-	public <S, T> Signal register(Class<S> sourceType, Class<T> targetType,
-			BiConsumer<? super S, ? super T> consumer) {
+	public <S, T> Signal register(Class<S> sourceType, Class<T> targetType, BiConsumer<? super S, ? super T> consumer) {
 		ConsumeTransformer<S, T> transformer = new ConsumeTransformer<>(sourceType, targetType, consumer);
 		return register(transformer);
 	}

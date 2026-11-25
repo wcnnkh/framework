@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.exchange.Stage;
+import run.soeasy.framework.core.exchange.Trace;
 import run.soeasy.framework.core.streaming.Streamable;
 
 /**
@@ -125,7 +126,7 @@ public class TimeUtils {
 	 * @param patterns      解析使用的模式字符串数组（非空，如"yyyy-MM-dd HH:mm:ss"）
 	 * @return 解析后的Instant Optional，解析失败时返回空
 	 */
-	public static Stage<Instant> parse(@NonNull String formattedTime, @NonNull String... patterns) {
+	public static Trace<Instant> parse(@NonNull String formattedTime, @NonNull String... patterns) {
 		return parse(formattedTime, Streamable.array(patterns).map(DateTimeFormatter::ofPattern))
 				.map((e) -> e.atZone(ZoneId.systemDefault()).toInstant());
 	}

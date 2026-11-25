@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import run.soeasy.framework.core.convert.value.TypedValueAccessor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.streaming.Mapping;
 
 /**
@@ -68,7 +69,7 @@ class ChainMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> impl
      * @return 映射成功返回true，否则false
      */
     @Override
-    public boolean doMapping(@NonNull MappingContext<K, V, T> sourceContext,
+    public Signal doMapping(@NonNull MappingContext<K, V, T> sourceContext,
                              @NonNull MappingContext<K, V, T> targetContext) {
         if (iterator.hasNext()) {
             // 执行下一个过滤器的映射处理，并传入自身以支持链式调用
@@ -77,7 +78,7 @@ class ChainMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> impl
             // 过滤器链执行完毕后，委托给最终映射器处理
             return mapper.doMapping(sourceContext, targetContext);
         }
-        return false;
+        return Signal.failure();
     }
 
     /**

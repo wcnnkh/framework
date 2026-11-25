@@ -50,22 +50,12 @@ public interface SignalWrapper<W extends Signal> extends Signal, Wrapper<W> {
 	}
 
 	@Override
-	default Signal boxed() {
-		return getSource().boxed();
-	}
-
-	@Override
-	default Throwable cause() {
-		return getSource().cause();
-	}
-
-	@Override
 	default boolean isSuccess() {
 		return getSource().isSuccess();
 	}
 
 	@Override
-	default ListenableSignal<? extends Signal> listenable() {
+	default ListenableTrace<?> listenable() {
 		return getSource().listenable();
 	}
 }

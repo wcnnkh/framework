@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.ConversionException;
 import run.soeasy.framework.core.convert.TypeDescriptor;
+import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.execute.reflect.ReflectionField;
 import run.soeasy.framework.core.type.ClassMembersLoader;
 import run.soeasy.framework.core.type.ImmutableTypeRegistry;
@@ -228,7 +229,7 @@ public class Cloner extends PropertyMapper<ReflectionField> {
 	 * @throws ConversionException 转换过程中发生错误时抛出
 	 */
 	@Override
-	public boolean transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
+	public Signal transform(@NonNull Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Object target, @NonNull TypeDescriptor targetTypeDescriptor) throws ConversionException {
 		IdentityHashMap<Object, Object> identityMap = IDENTITY_MAP_CONTEXT.get();
 		boolean root = false;
@@ -249,7 +250,7 @@ public class Cloner extends PropertyMapper<ReflectionField> {
 							targetTypeDescriptor.elementTypeDescriptor(sourceElement));
 					Array.set(target, i, targetElement);
 				}
-				return cloneSize > 0;
+				return cloneSize > 0 ? Signal.success() : Signal.failure();
 			}
 			return super.transform(source, sourceTypeDescriptor, target, targetTypeDescriptor);
 		} finally {

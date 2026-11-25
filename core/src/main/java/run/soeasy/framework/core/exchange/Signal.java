@@ -240,14 +240,14 @@ public interface Signal {
 		return composite(ParallelOr.INSTANCE, elements);
 	}
 
-	static <E extends Signal> Signals<E> batch(@NonNull Streamable<E> elements) {
-		// 不使用视图，防止没有实现执行子操作
-		return all(Streamable.of(elements.toList()));
-	}
-
 	@SuppressWarnings("unchecked")
 	static <E extends Signal> Signals<E> batch(@NonNull E... elements) {
 		return all(Streamable.array(elements));
+	}
+
+	static <E extends Signal> Signals<E> batch(@NonNull Streamable<E> elements) {
+		// 不使用视图，防止没有实现执行子操作
+		return all(Streamable.of(elements.toList()));
 	}
 
 	public static <V> Task<V> call(@NonNull Callable<V> callable) {
@@ -265,6 +265,16 @@ public interface Signal {
 	static <E extends Signal> Signals<E> composite(@NonNull CompositePattern compositePattern,
 			@NonNull Streamable<E> elements) {
 		return new CompositeSignals<>(compositePattern, elements);
+	}
+
+	public static <V> Stage<V> failure() {
+		return new Option<V>();
+	}
+
+	public static <V> Promise<V> failure(@NonNull Throwable cause) {
+		Promise<V> promise = new Promise<V>();
+		promise.completeExceptionally(cause);
+		return promise;
 	}
 
 	public static <V> Task<V> run(@NonNull Runnable runnable) {
@@ -285,21 +295,12 @@ public interface Signal {
 	 * @param <V>
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static <V> Promise<V> success() {
-		return (Promise<V>) Promise.SUCCESS;
+	public static <V> Stage<V> success() {
+		return success(null);
 	}
 
-	public static <V> Promise<V> success(V result) {
-		Promise<V> promise = new Promise<V>();
-		promise.complete(result);
-		return promise;
-	}
-
-	public static <V> Promise<V> failure(@NonNull Throwable cause) {
-		Promise<V> promise = new Promise<V>();
-		promise.completeExceptionally(cause);
-		return promise;
+	public static <V> Stage<V> success(V result) {
+		return new Option<V>(result);
 	}
 
 	/**
@@ -319,22 +320,7 @@ public interface Signal {
 
 	void await(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
 
-	default Signal boxed() {
-		return this;
-	}
-
 	boolean cancel(boolean mayInterruptIfRunning);
-
-	default Throwable cause() {
-		if (isDone()) {
-			try {
-				await();
-			} catch (Throwable e) {
-				return SignalException.unwrap(e);
-			}
-		}
-		return null;
-	}
 
 	boolean isCancelled();
 
@@ -351,13 +337,9 @@ public interface Signal {
 		return false;
 	}
 
-	default ListenableSignal<? extends Signal> listenable() {
+	default ListenableTrace<?> listenable() {
 		return Signal.call(() -> {
-			try {
-				await();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
+			await();
 			return null;
 		});
 	}

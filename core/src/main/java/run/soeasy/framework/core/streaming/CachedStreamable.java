@@ -128,11 +128,6 @@ public class CachedStreamable<E, W extends Streamable<? extends E>> implements S
 
 	@Override
 	public Stage<E> at(int index) {
-		if (index < 0) {
-			return Signal
-					.failure(new IndexOutOfBoundsException("Index: " + index + " (negative index is not allowed)"));
-		}
-
 		Collection<E> collection = getCollection();
 		if (collection instanceof List) {
 			return Signal.call(() -> ((List<E>) collection).get(index));

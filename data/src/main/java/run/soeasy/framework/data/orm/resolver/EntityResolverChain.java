@@ -34,23 +34,21 @@ final class EntityResolverChain implements EntityResolver {
 	}
 
 	@Override
-	public Streamable<String> getColumnAlias(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
+	public Streamable<String> getColumnAlias(@NonNull PropertyDescriptor propertyDescriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getColumnAlias(typeDescriptor, propertyDescriptor, this);
+			return iterator.next().getColumnAlias(propertyDescriptor, this);
 		} else if (next != null) {
-			return next.getColumnAlias(typeDescriptor, propertyDescriptor);
+			return next.getColumnAlias(propertyDescriptor);
 		}
 		return Streamable.empty();
 	}
 
 	@Override
-	public String getColumnName(@NonNull TypeDescriptor typeDescriptor,
-			@NonNull PropertyDescriptor propertyDescriptor) {
+	public String getColumnName(@NonNull PropertyDescriptor propertyDescriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getColumnName(typeDescriptor, propertyDescriptor, this);
+			return iterator.next().getColumnName(propertyDescriptor, this);
 		} else if (next != null) {
-			return next.getColumnName(typeDescriptor, propertyDescriptor);
+			return next.getColumnName(propertyDescriptor);
 		}
 		return null;
 	}
@@ -72,16 +70,6 @@ final class EntityResolverChain implements EntityResolver {
 			return iterator.next().isPrimaryKey(typeDescriptor, propertyDescriptor, this);
 		} else if (next != null) {
 			return next.isPrimaryKey(typeDescriptor, propertyDescriptor);
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isEntity(@NonNull TypeDescriptor typeDescriptor) {
-		if (iterator.hasNext()) {
-			return iterator.next().isEntity(typeDescriptor, this);
-		} else if (next != null) {
-			return next.isEntity(typeDescriptor);
 		}
 		return false;
 	}
