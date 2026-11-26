@@ -141,8 +141,8 @@ public interface Streamable<E> {
 	 * 
 	 * @return 缓存版Streamable&lt;E&gt;实例，多次访问流时复用已收集的List数据
 	 */
-	default Streamable<E> cached() {
-		return cached(ArrayList::new);
+	default Streamable<E> cache() {
+		return cache(ArrayList::new);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public interface Streamable<E> {
 	 * @param collectionFactory 集合工厂函数，用于创建缓存容器，不可为null
 	 * @return 缓存版Streamable&lt;E&gt;实例，复用自定义集合的缓存数据
 	 */
-	default Streamable<E> cached(@NonNull Supplier<? extends Collection<E>> collectionFactory) {
+	default Streamable<E> cache(@NonNull Supplier<? extends Collection<E>> collectionFactory) {
 		return new CachedStreamable<>(this, collectionFactory);
 	}
 

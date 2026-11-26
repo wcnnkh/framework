@@ -5,11 +5,13 @@ import java.sql.ResultSet;
 import run.soeasy.framework.core.convert.ConversionService;
 import run.soeasy.framework.core.convert.support.SystemConversionService;
 import run.soeasy.framework.data.orm.ObjectRelationalMapper;
+import run.soeasy.framework.data.orm.naming.SnakeCase;
 
 public class JdbcMapper extends ObjectRelationalMapper {
 	private ConversionService conversionService = new ConversionService();
 
 	public JdbcMapper() {
+		getEntityResolver().setNamingStrategy(SnakeCase.INSTANCE);
 		getMappingProvider().registerFactory(ResultSet.class, (s, e) -> new ResultSetProperties(s));
 		conversionService.register(SystemConversionService.getInstance());
 		conversionService.register(new SqlDateConversionService());

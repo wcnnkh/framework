@@ -39,13 +39,13 @@ public interface SliceWrapper<K, V, W extends Slice<K, V>> extends Slice<K, V>, 
 	}
 
 	@Override
-	default Slice<K, V> cached() {
-		return getSource().cached();
+	default Slice<K, V> cache() {
+		return getSource().cache();
 	}
 
 	@Override
-	default Slice<K, V> cached(@NonNull Supplier<? extends Collection<V>> collectionFactory) {
-		return getSource().cached(collectionFactory);
+	default Slice<K, V> cache(@NonNull Supplier<? extends Collection<V>> collectionFactory) {
+		return getSource().cache(collectionFactory);
 	}
 
 }

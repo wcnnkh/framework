@@ -377,7 +377,7 @@ public class LockableContainer<C, X extends Exception> implements ReadWriteLock 
 		}
 
 		if (isThreadSafe()) {
-			return elements.cached();
+			return elements.cache();
 		}
 		return elements;
 	}

@@ -79,8 +79,7 @@ public interface Signal {
 		private final Executor executor;
 
 		@Override
-		public <E extends Signal> void await(@NonNull Streamable<E> elements)
-				throws InterruptedException, ExecutionException {
+		public <E extends Signal> void sync(@NonNull Streamable<E> elements) {
 			List<? extends Signal> list = elements.toList();
 			if (isDone(Streamable.of(list))) {
 				return;
@@ -89,24 +88,23 @@ public interface Signal {
 			@SuppressWarnings("rawtypes")
 			CompletableFuture[] completableFutures = list.stream().map((stage) -> {
 				Runnable runnable = () -> {
-					try {
-						stage.await();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					} catch (ExecutionException e) {
-						throw new SignalException(e, stage);
-					}
+					stage.sync();
 				};
 				return executor == null ? CompletableFuture.runAsync(runnable)
 						: CompletableFuture.runAsync(runnable, executor);
 			}).toArray(CompletableFuture[]::new);
 			CompletableFuture<?> completableFuture = CompletableFuture.allOf(completableFutures);
-			completableFuture.get();
+			try {
+				completableFuture.get();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException e) {
+			}
 		}
 
 		@Override
-		public <E extends Signal> void await(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
-				throws InterruptedException, ExecutionException, TimeoutException {
+		public <E extends Signal> void sync(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
+				throws TimeoutException {
 			List<? extends Signal> list = elements.toList();
 			if (isDone(Streamable.of(list))) {
 				return;
@@ -115,19 +113,18 @@ public interface Signal {
 			@SuppressWarnings("rawtypes")
 			CompletableFuture[] completableFutures = list.stream().map((stage) -> {
 				Runnable runnable = () -> {
-					try {
-						stage.await();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					} catch (ExecutionException e) {
-						throw new SignalException(e, stage);
-					}
+					stage.sync();
 				};
 				return executor == null ? CompletableFuture.runAsync(runnable)
 						: CompletableFuture.runAsync(runnable, executor);
 			}).toArray(CompletableFuture[]::new);
 			CompletableFuture<?> completableFuture = CompletableFuture.allOf(completableFutures);
-			completableFuture.get(timeout, unit);
+			try {
+				completableFuture.get(timeout, unit);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException e) {
+			}
 		}
 	}
 
@@ -139,8 +136,7 @@ public interface Signal {
 		private final Executor executor;
 
 		@Override
-		public <E extends Signal> void await(@NonNull Streamable<E> elements)
-				throws InterruptedException, ExecutionException {
+		public <E extends Signal> void sync(@NonNull Streamable<E> elements) {
 			List<? extends Signal> list = elements.toList();
 			if (isDone(Streamable.of(list))) {
 				return;
@@ -149,24 +145,23 @@ public interface Signal {
 			@SuppressWarnings("rawtypes")
 			CompletableFuture[] completableFutures = list.stream().map((stage) -> {
 				Runnable runnable = () -> {
-					try {
-						stage.await();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					} catch (ExecutionException e) {
-						throw new SignalException(e, stage);
-					}
+					stage.sync();
 				};
 				return executor == null ? CompletableFuture.runAsync(runnable)
 						: CompletableFuture.runAsync(runnable, executor);
 			}).toArray(CompletableFuture[]::new);
 			CompletableFuture<?> completableFuture = CompletableFuture.anyOf(completableFutures);
-			completableFuture.get();
+			try {
+				completableFuture.get();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException e) {
+			}
 		}
 
 		@Override
-		public <E extends Signal> void await(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
-				throws InterruptedException, ExecutionException, TimeoutException {
+		public <E extends Signal> void sync(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
+				throws TimeoutException {
 			List<? extends Signal> list = elements.toList();
 			if (isDone(Streamable.of(list))) {
 				return;
@@ -175,19 +170,18 @@ public interface Signal {
 			@SuppressWarnings("rawtypes")
 			CompletableFuture[] completableFutures = list.stream().map((stage) -> {
 				Runnable runnable = () -> {
-					try {
-						stage.await();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					} catch (ExecutionException e) {
-						throw new SignalException(e, stage);
-					}
+					stage.sync();
 				};
 				return executor == null ? CompletableFuture.runAsync(runnable)
 						: CompletableFuture.runAsync(runnable, executor);
 			}).toArray(CompletableFuture[]::new);
 			CompletableFuture<?> completableFuture = CompletableFuture.anyOf(completableFutures);
-			completableFuture.get(timeout, unit);
+			try {
+				completableFuture.get(timeout, unit);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException e) {
+			}
 		}
 	}
 
@@ -195,8 +189,7 @@ public interface Signal {
 		private static final SequentialAnd INSTANCE = new SequentialAnd();
 
 		@Override
-		public <E extends Signal> void await(@NonNull Streamable<E> elements)
-				throws InterruptedException, ExecutionException {
+		public <E extends Signal> void sync(@NonNull Streamable<E> elements) {
 			try (Stream<? extends Signal> stream = elements.stream()) {
 				Iterator<? extends Signal> iterator = stream.iterator();
 				while (iterator.hasNext()) {
@@ -204,14 +197,14 @@ public interface Signal {
 					if (element.isDone()) {
 						continue;
 					}
-					element.await();
+					element.sync();
 				}
 			}
 		}
 
 		@Override
-		public <E extends Signal> void await(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
-				throws InterruptedException, ExecutionException, TimeoutException {
+		public <E extends Signal> void sync(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
+				throws TimeoutException {
 			long deadline = System.nanoTime() + unit.toNanos(timeout);
 			try (Stream<? extends Signal> stream = elements.stream()) {
 				Iterator<? extends Signal> iterator = stream.iterator();
@@ -223,10 +216,9 @@ public interface Signal {
 
 					long t = deadline - System.nanoTime();
 					if (t < 0) {
-						throw new SignalTimeoutException(element);
+						throw new TimeoutException();
 					}
-
-					element.await(t, TimeUnit.NANOSECONDS);
+					element.sync(t, TimeUnit.NANOSECONDS);
 				}
 			}
 		}
@@ -316,9 +308,9 @@ public interface Signal {
 		return all(Streamable.array(this).concat(others));
 	}
 
-	void await() throws InterruptedException, ExecutionException;
+	Signal sync();
 
-	void await(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
+	Signal sync(long timeout, @NonNull TimeUnit unit) throws TimeoutException;
 
 	boolean cancel(boolean mayInterruptIfRunning);
 
@@ -328,20 +320,10 @@ public interface Signal {
 
 	boolean isRollbackSupported();
 
-	default boolean isSuccess() {
-		try {
-			await();
-			return true;
-		} catch (Throwable e) {
-		}
-		return false;
-	}
+	boolean isSuccess();
 
 	default ListenableTrace<?> listenable() {
-		return Signal.call(() -> {
-			await();
-			return null;
-		});
+		return Signal.run(this::sync);
 	}
 
 	Signal rollback();

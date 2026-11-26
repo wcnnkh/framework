@@ -48,11 +48,10 @@ public interface Converter extends Convertible {
 	 * @return 转换后的目标类型实例
 	 * @throws ConversionException 如果转换过程中发生错误
 	 */
-	@SuppressWarnings("unchecked")
 	default <T> T convert(@NonNull Object source, @NonNull Class<? extends T> targetClass) throws ConversionException {
-		return (T) convert(source,
+		return targetClass.cast(convert(source,
 				source == null ? TypeDescriptor.valueOf(Object.class) : TypeDescriptor.forObject(source),
-				TypeDescriptor.valueOf(targetClass));
+				TypeDescriptor.valueOf(targetClass)));
 	}
 
 	/**
@@ -92,10 +91,9 @@ public interface Converter extends Convertible {
 	 * @return 转换后的目标类型实例
 	 * @throws ConversionException 如果转换过程中发生错误
 	 */
-	@SuppressWarnings("unchecked")
 	default <T> T convert(Object source, @NonNull TypeDescriptor sourceTypeDescriptor,
 			@NonNull Class<? extends T> targetClass) throws ConversionException {
-		return (T) convert(source, sourceTypeDescriptor, TypeDescriptor.valueOf(targetClass));
+		return targetClass.cast(convert(source, sourceTypeDescriptor, TypeDescriptor.valueOf(targetClass)));
 	}
 
 	/**

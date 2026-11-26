@@ -35,6 +35,11 @@ public class CachedStreamable<E, W extends Streamable<? extends E>> implements S
 	public Collection<E> toCollection() {
 		return getCollection();
 	}
+	
+	@Override
+	public Streamable<E> cache() {
+		return this;
+	}
 
 	@Override
 	public boolean contains(Object element) {

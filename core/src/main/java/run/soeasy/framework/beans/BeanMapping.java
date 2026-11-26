@@ -25,7 +25,7 @@ public class BeanMapping extends StreamablePropertyMapping<BeanProperty> {
 
 	public BeanMapping(@NonNull Class<?> beanClass, @NonNull BeanInfo beanInfo) {
 		this(beanClass, beanInfo, Streamable.array(beanInfo.getPropertyDescriptors())
-				.map((descriptor) -> new BeanProperty(beanClass, descriptor)).cached());
+				.map((descriptor) -> new BeanProperty(beanClass, descriptor)).cache());
 	}
 
 	public PropertyMapping<BeanProperty> standard() {

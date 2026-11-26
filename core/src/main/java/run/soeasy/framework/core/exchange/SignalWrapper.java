@@ -1,6 +1,5 @@
 package run.soeasy.framework.core.exchange;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -9,14 +8,13 @@ import run.soeasy.framework.core.domain.Wrapper;
 
 public interface SignalWrapper<W extends Signal> extends Signal, Wrapper<W> {
 	@Override
-	default void await() throws InterruptedException, ExecutionException {
-		getSource().await();
+	default Signal sync() {
+		return getSource().sync();
 	}
 
 	@Override
-	default void await(long timeout, @NonNull TimeUnit unit)
-			throws InterruptedException, ExecutionException, TimeoutException {
-		getSource().await(timeout, unit);
+	default Signal sync(long timeout, @NonNull TimeUnit unit) throws TimeoutException {
+		return getSource().sync(timeout, unit);
 	}
 
 	@Override

@@ -57,12 +57,12 @@ public interface Slice<K, V> extends Streamable<V> {
 	Long getTotalCount();
 	
 	@Override
-	default Slice<K, V> cached() {
-		return cached(ArrayList::new);
+	default Slice<K, V> cache() {
+		return cache(ArrayList::new);
 	}
 
 	@Override
-	default Slice<K, V> cached(@NonNull Supplier<? extends Collection<V>> collectionFactory) {
+	default Slice<K, V> cache(@NonNull Supplier<? extends Collection<V>> collectionFactory) {
 		return new CachedSlice<>(this, collectionFactory);
 	}
 

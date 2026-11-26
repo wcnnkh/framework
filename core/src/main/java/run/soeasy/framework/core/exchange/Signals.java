@@ -1,7 +1,6 @@
 package run.soeasy.framework.core.exchange;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -20,10 +19,10 @@ public interface Signals<T extends Signal> extends Signal {
 
 		<E extends Signal> boolean isSuccess(@NonNull Streamable<E> elements);
 
-		<E extends Signal> void await(@NonNull Streamable<E> elements) throws InterruptedException, ExecutionException;
+		<E extends Signal> void sync(@NonNull Streamable<E> elements);
 
-		<E extends Signal> void await(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
-				throws InterruptedException, ExecutionException, TimeoutException;
+		<E extends Signal> void sync(@NonNull Streamable<E> elements, long timeout, @NonNull TimeUnit unit)
+				throws TimeoutException;
 
 		<E extends Signal> boolean isRollbackSupported(@NonNull Streamable<E> elements);
 
@@ -55,14 +54,15 @@ public interface Signals<T extends Signal> extends Signal {
 	}
 
 	@Override
-	default void await() throws InterruptedException, ExecutionException {
-		getCompositePattern().await(getElements());
+	default Signals<T> sync() {
+		getCompositePattern().sync(getElements());
+		return this;
 	}
 
 	@Override
-	default void await(long timeout, @NonNull TimeUnit unit)
-			throws InterruptedException, ExecutionException, TimeoutException {
-		getCompositePattern().await(getElements(), timeout, unit);
+	default Signals<T> sync(long timeout, @NonNull TimeUnit unit) throws TimeoutException {
+		getCompositePattern().sync(getElements(), timeout, unit);
+		return this;
 	}
 
 	@Override

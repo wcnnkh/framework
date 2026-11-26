@@ -3,8 +3,8 @@ package run.soeasy.framework.data.orm.naming;
 import lombok.NonNull;
 
 public class SnakeCase implements NamingStrategy {
-	public static final SnakeCase SNAKE_CASE = new SnakeCase();
-
+	public static final SnakeCase INSTANCE = new SnakeCase();
+	
     /**
      * 小驼峰 → 下划线蛇形命名
      * 用于SQL生成阶段：实体属性名转数据库字段名

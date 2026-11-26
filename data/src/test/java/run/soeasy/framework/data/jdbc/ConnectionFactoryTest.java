@@ -32,8 +32,9 @@ public class ConnectionFactoryTest {
 			boolean executed = connectionFactory.newPipeline().prepareStatement(createTableSql).execute();
 			System.out.println(executed);
 			System.out.println("---------");
-			int value = connectionFactory.newPipeline().prepareStatement("insert into user (name, age) values (?,?)")
-					.setParams("soeasy.run", 1).executeUpdate();
+			int value = connectionFactory.newPipeline()
+					.prepareStatement("insert into user (user_name, age) values (?,?)").setParams("soeasy.run", 1)
+					.executeUpdate();
 			System.out.println(value);
 			String querySql = "select * from user";
 			System.out.println("---------");

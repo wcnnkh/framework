@@ -4,7 +4,7 @@ import lombok.NonNull;
 
 public class CamelCase implements NamingStrategy {
 	public static final CamelCase INSTANCE = new CamelCase();
-
+	
     /**
      * 蛇形命名（下划线分隔）转小驼峰 camelCase
      * 对齐 MyBatis UnderscoreToCamelCase 标准行为

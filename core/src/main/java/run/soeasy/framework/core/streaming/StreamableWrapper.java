@@ -257,13 +257,13 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	@Override
-	default Streamable<E> cached() {
-		return getSource().cached();
+	default Streamable<E> cache() {
+		return getSource().cache();
 	}
 
 	@Override
-	default Streamable<E> cached(@NonNull Supplier<? extends Collection<E>> collectionFactory) {
-		return getSource().cached(collectionFactory);
+	default Streamable<E> cache(@NonNull Supplier<? extends Collection<E>> collectionFactory) {
+		return getSource().cache(collectionFactory);
 	}
 
 	@Override

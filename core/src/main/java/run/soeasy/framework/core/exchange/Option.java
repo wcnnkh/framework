@@ -32,14 +32,6 @@ public final class Option<V> implements Stage<V> {
 	}
 
 	@Override
-	public void await() {
-	}
-
-	@Override
-	public void await(long timeout, @NonNull TimeUnit unit) {
-	}
-
-	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		return false;
 	}
@@ -75,22 +67,6 @@ public final class Option<V> implements Stage<V> {
 	}
 
 	@Override
-	public V join() {
-		if (success) {
-			return value;
-		}
-		throw new NoSuchElementException("No value present");
-	}
-
-	@Override
-	public V join(long timeout, @NonNull TimeUnit unit) throws TimeoutException {
-		if (success) {
-			return value;
-		}
-		throw new NoSuchElementException("No value present");
-	}
-
-	@Override
 	public V getNow() {
 		return value;
 	}
@@ -111,5 +87,18 @@ public final class Option<V> implements Stage<V> {
 		}
 
 		return new Option<V>(this.success, this.value, rollback);
+	}
+
+	@Override
+	public V join() {
+		if (success) {
+			return value;
+		}
+		throw new NoSuchElementException("No value present");
+	}
+
+	@Override
+	public final V join(long timeout, @NonNull TimeUnit unit) throws TimeoutException {
+		return join();
 	}
 }

@@ -19,6 +19,11 @@ public class CachedSlice<K, V, W extends Slice<K, V>> extends CachedStreamable<V
 	}
 
 	@Override
+	public Slice<K, V> cache() {
+		return this;
+	}
+
+	@Override
 	public W getSource() {
 		return source;
 	}
