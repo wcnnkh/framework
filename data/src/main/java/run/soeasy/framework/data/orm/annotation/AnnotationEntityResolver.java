@@ -5,7 +5,7 @@ import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.strings.StringUtils;
-import run.soeasy.framework.data.orm.resolver.EntityResolver;
+import run.soeasy.framework.data.orm.EntityResolver;
 
 public class AnnotationEntityResolver implements EntityResolver {
 

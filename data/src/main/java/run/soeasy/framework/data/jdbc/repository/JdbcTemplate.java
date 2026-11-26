@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.exchange.Stage;
 import run.soeasy.framework.core.mapping.property.PropertyAccessor;
 import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
@@ -30,11 +29,11 @@ public class JdbcTemplate {
 		this(connectionFactory, new JdbcMapper(), new CommonSqlDialect());
 	}
 
-	public final <T> Signal delete(@NonNull Class<T> entityClass, @NonNull T entity) {
+	public final <T> Stage<Integer> delete(@NonNull Class<T> entityClass, @NonNull T entity) {
 		return delete(TypeDescriptor.valueOf(entityClass), entity);
 	}
 
-	public <T> Signal delete(@NonNull TypeDescriptor typeDescriptor, @NonNull T entity) {
+	public <T> Stage<Integer> delete(@NonNull TypeDescriptor typeDescriptor, @NonNull T entity) {
 		EntityDescriptor<PropertyAccessor> entityDescriptor = jdbcMapper.getEntityDescriptor(typeDescriptor, entity);
 		Sql sql = sqlDialect.toDeleteSql(entityDescriptor);
 		return connectionFactory.executeUpdate(sql);

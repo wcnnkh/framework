@@ -1,4 +1,4 @@
-package run.soeasy.framework.data.orm.resolver;
+package run.soeasy.framework.data.orm;
 
 import java.util.Iterator;
 

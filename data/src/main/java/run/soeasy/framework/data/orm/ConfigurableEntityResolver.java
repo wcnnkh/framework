@@ -1,4 +1,4 @@
-package run.soeasy.framework.data.orm.resolver;
+package run.soeasy.framework.data.orm;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -11,7 +11,6 @@ import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.strings.StringUtils;
 import run.soeasy.framework.data.orm.annotation.AnnotationEntityResolver;
 import run.soeasy.framework.data.orm.naming.CamelCase;
-import run.soeasy.framework.data.orm.naming.NamingStrategy;
 
 @Getter
 @Setter

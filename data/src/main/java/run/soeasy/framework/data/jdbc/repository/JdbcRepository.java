@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
-import run.soeasy.framework.core.exchange.Signal;
+import run.soeasy.framework.core.exchange.Stage;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.data.Repository;
 
@@ -23,12 +23,12 @@ public class JdbcRepository<T> implements Repository<T> {
 	}
 
 	@Override
-	public Signal delete(@NonNull T entity) {
+	public Stage<Integer> delete(@NonNull T entity) {
 		return jdbcTemplate.delete(entityTypeDescriptor, entity);
 	}
 
 	@Override
-	public Signal insert(@NonNull T entity) {
+	public Stage<Integer> insert(@NonNull T entity) {
 		return jdbcTemplate.insert(entityTypeDescriptor, entity);
 	}
 
@@ -44,7 +44,7 @@ public class JdbcRepository<T> implements Repository<T> {
 	}
 
 	@Override
-	public Signal update(@NonNull T entity) {
+	public Stage<Integer> update(@NonNull T entity) {
 		return jdbcTemplate.update(entityTypeDescriptor, entity);
 	}
 }

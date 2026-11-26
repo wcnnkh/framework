@@ -21,8 +21,6 @@ import run.soeasy.framework.core.spi.Configurable;
 import run.soeasy.framework.core.spi.ServiceDiscoverer;
 import run.soeasy.framework.core.streaming.Streamable;
 import run.soeasy.framework.core.strings.StringUtils;
-import run.soeasy.framework.data.orm.resolver.ConfigurableEntityResolver;
-import run.soeasy.framework.data.orm.resolver.EntityResolver;
 
 @Getter
 public class ObjectRelationalMapper extends BeanMapper implements Configurable, EntityResolver {

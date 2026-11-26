@@ -1,4 +1,4 @@
-package run.soeasy.framework.data.orm.naming;
+package run.soeasy.framework.data.orm;
 
 import java.io.IOException;
 import java.nio.CharBuffer;

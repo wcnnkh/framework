@@ -1,4 +1,4 @@
-package run.soeasy.framework.data.orm.resolver;
+package run.soeasy.framework.data.orm;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.convert.TypeDescriptor;

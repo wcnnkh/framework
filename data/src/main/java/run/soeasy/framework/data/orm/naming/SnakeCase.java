@@ -1,6 +1,7 @@
 package run.soeasy.framework.data.orm.naming;
 
 import lombok.NonNull;
+import run.soeasy.framework.data.orm.NamingStrategy;
 
 public class SnakeCase implements NamingStrategy {
 	public static final SnakeCase INSTANCE = new SnakeCase();

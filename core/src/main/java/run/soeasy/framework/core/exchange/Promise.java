@@ -17,6 +17,7 @@ public class Promise<V> extends CompletableFuture<V> implements ListenableTrace<
 	private volatile DisposableDispatcher<Trace<V>> dispatcher;
 	private volatile DisposableDispatcher<Trace<V>> successDispatcher;
 	private volatile DisposableDispatcher<Trace<V>> failureDispatcher;
+	protected volatile Throwable cause;
 
 	public Promise() {
 		this(null);
@@ -47,21 +48,27 @@ public class Promise<V> extends CompletableFuture<V> implements ListenableTrace<
 	}
 
 	@Override
+	public Throwable cause() {
+		return cause;
+	}
+
+	@Override
 	public boolean complete(V value) {
-		try {
-			return super.complete(value);
-		} finally {
+		if (super.complete(value)) {
 			onSuccess(value);
+			return true;
 		}
+		return false;
 	}
 
 	@Override
 	public boolean completeExceptionally(Throwable ex) {
-		try {
-			return super.completeExceptionally(ex);
-		} finally {
+		if (super.completeExceptionally(ex)) {
+			this.cause = ex;
 			onFailure(ex);
+			return true;
 		}
+		return false;
 	}
 
 	protected synchronized void onSuccess(V value) {
