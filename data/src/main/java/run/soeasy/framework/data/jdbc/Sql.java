@@ -41,7 +41,7 @@ public class Sql implements Serializable {
      */
     @NonNull
     private final Object[] args;
-
+    
     /**
      * 构造SQL对象（指定SQL语句和参数数组）
      * 

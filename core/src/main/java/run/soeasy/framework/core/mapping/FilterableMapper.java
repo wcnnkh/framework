@@ -1,6 +1,5 @@
 package run.soeasy.framework.core.mapping;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +79,6 @@ import run.soeasy.framework.core.streaming.Streamable;
  * @see ChainMapper 过滤器责任链实现类，负责调度过滤器与基础映射器
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> implements Mapper<K, V, T> {
@@ -97,7 +95,7 @@ public class FilterableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * <p>
 	 * 需在所有过滤器正常执行完毕后调用（若过滤器中断流程则不执行）； 若未设置（null），则过滤器链执行完毕后直接返回true（仅执行过滤逻辑，无核心映射）。
 	 */
-	private Mapper<K, V, T> mapper;
+	private final Mapper<K, V, T> mapper;
 
 	/**
 	 * 执行带过滤逻辑的映射转换（使用初始过滤器链）

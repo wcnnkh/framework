@@ -11,9 +11,9 @@ import java.util.List;
  * @author soeasy.run
  * @param <E> 列表元素类型
  * @param <T> 具体列表实现类型
- * @see CollectionFactory
+ * @see CollectionKit
  */
-public interface ListFactory<E, T extends List<E>> extends CollectionFactory<E, T> {
+public interface ListKit<E, T extends List<E>> extends CollectionKit<E, T> {
     
     /**
      * 将源集合转换为只读形式的列表，用于安全地对外展示。

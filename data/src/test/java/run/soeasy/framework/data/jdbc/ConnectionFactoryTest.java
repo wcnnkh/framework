@@ -19,14 +19,14 @@ public class ConnectionFactoryTest {
 	private static class User {
 		@PrimaryKey
 		private Long id;
-		private String name;
+		private String userName;
 		private Integer age;
 	}
 
 	@Test
 	public void test() throws SQLException, IOException {
 		String createTableSql = "CREATE TABLE IF NOT EXISTS user (" + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-				+ "name TEXT NOT NULL," + "age INTEGER)";
+				+ "user_name TEXT NOT NULL," + "age INTEGER)";
 		ConnectionFactory connectionFactory = new SqlitConnectionFactory("jdbc:sqlite:embedded_sqlite.db");
 		try {
 			boolean executed = connectionFactory.newPipeline().prepareStatement(createTableSql).execute();
@@ -45,7 +45,7 @@ public class ConnectionFactoryTest {
 			User entity = new User();
 			entity.setAge(1);
 			entity.setId(System.currentTimeMillis());
-			entity.setName(RandomUtils.randomString(10));
+			entity.setUserName(RandomUtils.randomString(10));
 			jdbcTemplate.insert(User.class, entity);
 			jdbcTemplate.queryAll(User.class).forEach((user) -> {
 				User result = jdbcTemplate.query(User.class, user).getFirst();

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import lombok.NonNull;
 import run.soeasy.framework.core.exchange.Signal;
-import run.soeasy.framework.core.exchange.Trace;
+import run.soeasy.framework.core.exchange.Stage;
 import run.soeasy.framework.core.function.Pipeline;
 import run.soeasy.framework.core.function.ThrowingFunction;
 import run.soeasy.framework.core.streaming.Streamable;
@@ -56,8 +56,8 @@ public interface ConnectionFactory {
 				.onClose(Connection::close).closeable();
 		return new ConnectionWrapped(connectionPipeline);
 	}
-
-	default Trace<Boolean> execute(@NonNull Sql sql) {
+	
+	default Stage<Boolean> execute(@NonNull Sql sql) {
 		return Signal.call(() -> {
 			try (Connection connection = getConnection()) {
 				return JdbcUtils.execute(connection, sql);
@@ -65,7 +65,7 @@ public interface ConnectionFactory {
 		});
 	}
 
-	default Trace<Integer> executeUpdate(@NonNull Sql sql) {
+	default Stage<Integer> executeUpdate(@NonNull Sql sql) {
 		return Signal.call(() -> {
 			try (Connection connection = getConnection()) {
 				return JdbcUtils.executeUpdate(connection, sql);

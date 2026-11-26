@@ -112,7 +112,7 @@ public class MappedMapper<K, V extends TypedValueAccessor, T extends Mapping<K, 
 	 * @param filters 集合级与值级过滤器链，不可为null
 	 */
 	public MappedMapper(@NonNull Iterable<MappingFilter<K, V, T>> filters) {
-		super(filters);
+		this(filters, null);
 	}
 
 	/**

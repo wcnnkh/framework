@@ -95,6 +95,6 @@ public class EventDispatcher<T> extends AbstractChannel<T> implements Listenable
 	 */
 	public void syncPublish(T resource) {
 		Streamable<Listener<? super T>> elements = filter.apply(registry);
-		elements.consume((stream) -> CollectionUtils.acceptAll(stream.iterator(), (e) -> e.accept(resource)));
+		CollectionUtils.acceptAll(elements.toList(), (e) -> e.accept(resource));
 	}
 }

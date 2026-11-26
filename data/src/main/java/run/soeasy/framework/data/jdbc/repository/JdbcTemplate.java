@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import run.soeasy.framework.core.convert.TypeDescriptor;
 import run.soeasy.framework.core.exchange.Signal;
-import run.soeasy.framework.core.exchange.Trace;
+import run.soeasy.framework.core.exchange.Stage;
 import run.soeasy.framework.core.mapping.property.PropertyAccessor;
 import run.soeasy.framework.core.mapping.property.PropertyDescriptor;
 import run.soeasy.framework.core.streaming.Streamable;
@@ -40,11 +40,11 @@ public class JdbcTemplate {
 		return connectionFactory.executeUpdate(sql);
 	}
 
-	public final <T> Trace<Integer> insert(@NonNull Class<T> entityClass, @NonNull T entity) {
+	public final <T> Stage<Integer> insert(@NonNull Class<T> entityClass, @NonNull T entity) {
 		return insert(TypeDescriptor.valueOf(entityClass), entity);
 	}
 
-	public <T> Trace<Integer> insert(@NonNull TypeDescriptor typeDescriptor, @NonNull T entity) {
+	public <T> Stage<Integer> insert(@NonNull TypeDescriptor typeDescriptor, @NonNull T entity) {
 		EntityDescriptor<PropertyAccessor> entityDescriptor = jdbcMapper.getEntityDescriptor(typeDescriptor, entity);
 		Sql sql = sqlDialect.toInsertSql(entityDescriptor);
 		return connectionFactory.executeUpdate(sql);
@@ -89,11 +89,11 @@ public class JdbcTemplate {
 		return query(typeDescriptor, sql);
 	}
 
-	public final <T> Trace<Integer> update(@NonNull Class<T> entityClass, @NonNull T entity) {
+	public final <T> Stage<Integer> update(@NonNull Class<T> entityClass, @NonNull T entity) {
 		return update(TypeDescriptor.valueOf(entityClass), entity);
 	}
 
-	public <T> Trace<Integer> update(@NonNull TypeDescriptor typeDescriptor, @NonNull T entity) {
+	public <T> Stage<Integer> update(@NonNull TypeDescriptor typeDescriptor, @NonNull T entity) {
 		EntityDescriptor<PropertyAccessor> entityDescriptor = jdbcMapper.getEntityDescriptor(typeDescriptor, entity);
 		Sql sql = sqlDialect.toUpdateSql(entityDescriptor);
 		return connectionFactory.executeUpdate(sql);

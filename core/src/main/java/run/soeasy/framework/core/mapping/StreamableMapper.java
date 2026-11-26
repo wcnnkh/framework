@@ -106,7 +106,7 @@ public class StreamableMapper<K, V extends TypedValueAccessor, T extends Mapping
 	 * @param filters 集合级与元素级过滤器链，不可为null
 	 */
 	public StreamableMapper(@NonNull Iterable<MappingFilter<K, V, T>> filters) {
-		super(filters);
+		this(filters, null);
 	}
 
 	/**

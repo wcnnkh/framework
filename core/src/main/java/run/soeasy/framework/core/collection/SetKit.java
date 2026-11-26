@@ -12,9 +12,9 @@ import java.util.Set;
  * @author soeasy.run
  * @param <E> 集合元素类型
  * @param <T> 具体Set实现类型
- * @see CollectionFactory
+ * @see CollectionKit
  */
-public interface SetFactory<E, T extends Set<E>> extends CollectionFactory<E, T> {
+public interface SetKit<E, T extends Set<E>> extends CollectionKit<E, T> {
     
     /**
      * 将源集合转换为只读形式的Set，用于安全地对外展示。
@@ -45,7 +45,7 @@ public interface SetFactory<E, T extends Set<E>> extends CollectionFactory<E, T>
     @Override
     default T clone(Collection<E> source) {
         int newCapacity = Math.max(source.size(), Math.round((source.size() + 1) * (DEFAULT_LOAD_FACTOR * 2 - 1)));
-        T target = createCollection(newCapacity, DEFAULT_LOAD_FACTOR);
+        T target = create(newCapacity, DEFAULT_LOAD_FACTOR);
         target.addAll(source);
         return target;
     }

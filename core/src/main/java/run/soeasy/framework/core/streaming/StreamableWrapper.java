@@ -24,7 +24,6 @@ import run.soeasy.framework.core.collection.CloseableIterator;
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.domain.Wrapper;
 import run.soeasy.framework.core.exchange.Stage;
-import run.soeasy.framework.core.function.ThrowingConsumer;
 
 /**
  * Streamable包装器核心接口：封装对{@link Streamable}实例的包装能力，所有{@link Streamable}方法默认透传至被包装的源实例
@@ -116,16 +115,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	}
 
 	/**
-	 * 按流的 encounter order 对流中的每个元素执行给定的操作。
-	 *
-	 * @param action 要执行的操作
-	 */
-	@Override
-	default void forEachOrdered(Consumer<? super E> action) {
-		getSource().forEachOrdered(action);
-	}
-
-	/**
 	 * 检查流是否为空。
 	 *
 	 * @return 如果流中没有元素则返回true，否则返回false
@@ -164,17 +153,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	@Override
 	default Stream<E> stream() {
 		return getSource().stream();
-	}
-
-	/**
-	 * 测试流是否满足给定的谓词。
-	 *
-	 * @param predicate 用于测试流的谓词
-	 * @return 如果流满足谓词则返回true，否则返回false
-	 */
-	@Override
-	default boolean check(Predicate<? super Stream<E>> predicate) {
-		return getSource().check(predicate);
 	}
 
 	/**
@@ -235,19 +213,6 @@ public interface StreamableWrapper<E, W extends Streamable<E>> extends Streamabl
 	@Override
 	default Set<E> toSet() {
 		return getSource().toSet();
-	}
-
-	/**
-	 * 使用抛出异常的消费者处理流。
-	 *
-	 * @param processor 处理流的消费者，可以抛出异常
-	 * @param <X>       可能抛出的异常类型
-	 * @throws X 如果处理器抛出指定类型的异常
-	 */
-	@Override
-	default <X extends Throwable> void consume(@NonNull ThrowingConsumer<? super Stream<E>, ? extends X> processor)
-			throws X {
-		getSource().consume(processor);
 	}
 
 	@Override

@@ -32,8 +32,6 @@ import run.soeasy.framework.core.collection.CollectionUtils;
 import run.soeasy.framework.core.domain.KeyValue;
 import run.soeasy.framework.core.exchange.Signal;
 import run.soeasy.framework.core.exchange.Stage;
-import run.soeasy.framework.core.function.ThrowingConsumer;
-import run.soeasy.framework.core.function.ThrowingFunction;
 
 /**
  * 可流式操作核心接口，为各类数据源提供统一的流式处理能力，核心特性：
@@ -120,7 +118,9 @@ public interface Streamable<E> {
 	 * @return 所有元素匹配返回true，否则false；空流返回true
 	 */
 	default boolean allMatch(@NonNull Predicate<? super E> predicate) {
-		return check((stream) -> stream.allMatch(predicate));
+		try (Stream<E> stream = stream()) {
+			return stream.allMatch(predicate);
+		}
 	}
 
 	/**
@@ -130,7 +130,9 @@ public interface Streamable<E> {
 	 * @return 存在匹配元素返回true，否则false；空流返回false
 	 */
 	default boolean anyMatch(@NonNull Predicate<? super E> predicate) {
-		return check((stream) -> stream.anyMatch(predicate));
+		try (Stream<E> stream = stream()) {
+			return stream.anyMatch(predicate);
+		}
 	}
 
 	/**
@@ -152,21 +154,6 @@ public interface Streamable<E> {
 	 */
 	default Streamable<E> cached(@NonNull Supplier<? extends Collection<E>> collectionFactory) {
 		return new CachedStreamable<>(this, collectionFactory);
-	}
-
-	/**
-	 * 测试流状态并返回布尔结果，自动关闭流（无论测试成功/异常）。 核心能力：封装流的创建-使用-关闭生命周期，避免手动关闭流导致的资源泄漏。
-	 * 
-	 * @param predicate 流测试谓词，接收流并返回测试结果，不可为null
-	 * @return 测试谓词的返回结果
-	 */
-	default boolean check(@NonNull Predicate<? super Stream<E>> predicate) {
-		Stream<E> stream = stream();
-		try {
-			return predicate.test(stream);
-		} finally {
-			stream.close();
-		}
 	}
 
 	/**
@@ -235,23 +222,6 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 消费流元素（执行无返回值操作），自动关闭流，支持抛出指定类型异常。 覆盖所有流消费场景（如forEach/peek），统一生命周期管理。
-	 * 
-	 * @param <X>       消费操作可能抛出的异常类型
-	 * @param processor 流消费处理器，接收流并执行操作，不可为null
-	 * @throws X 消费处理器执行过程中抛出的异常
-	 */
-	default <X extends Throwable> void consume(@NonNull ThrowingConsumer<? super Stream<E>, ? extends X> processor)
-			throws X {
-		Stream<E> stream = stream();
-		try {
-			processor.accept(stream);
-		} finally {
-			stream.close();
-		}
-	}
-
-	/**
 	 * 判断流是否包含指定元素（基于{@link Objects#equals(Object, Object)}判断元素相等）。
 	 * 空元素处理：支持查找null元素（流中存在null时，输入null返回true）。
 	 * 
@@ -296,8 +266,9 @@ public interface Streamable<E> {
 	 */
 	default <T> boolean equalsInAnyOrder(@NonNull Streamable<? extends T> other,
 			@NonNull BiPredicate<? super E, ? super T> predicate) {
-		return check((leftStream) -> other.check((rightStream) -> CollectionUtils
-				.equalsInAnyOrder(leftStream.iterator(), rightStream.iterator(), predicate)));
+		try (Stream<E> leftStream = stream(); Stream<? extends T> rightStream = other.stream()) {
+			return CollectionUtils.equalsInAnyOrder(leftStream.iterator(), rightStream.iterator(), predicate);
+		}
 	}
 
 	/**
@@ -316,8 +287,9 @@ public interface Streamable<E> {
 	 */
 	default <T> boolean equalsInOrder(@NonNull Streamable<? extends T> other,
 			@NonNull BiPredicate<? super E, ? super T> predicate) {
-		return check((leftStream) -> other.check((rightStream) -> CollectionUtils.equalsInOrder(leftStream.iterator(),
-				rightStream.iterator(), predicate)));
+		try (Stream<E> leftStream = stream(); Stream<? extends T> rightStream = other.stream()) {
+			return CollectionUtils.equalsInOrder(leftStream.iterator(), rightStream.iterator(), predicate);
+		}
 	}
 
 	/**
@@ -348,16 +320,9 @@ public interface Streamable<E> {
 	 * @param action 元素操作函数，不可为null
 	 */
 	default void forEach(@NonNull Consumer<? super E> action) {
-		consume((stream) -> stream.forEach(action));
-	}
-
-	/**
-	 * 按迭代顺序遍历流中所有元素，执行指定操作，自动关闭流。 即使在并行流中，也会按源顺序执行操作（性能略低于forEach，但保证顺序）。
-	 * 
-	 * @param action 元素操作函数，不可为null
-	 */
-	default void forEachOrdered(@NonNull Consumer<? super E> action) {
-		consume((stream) -> stream.forEachOrdered(action));
+		try (Stream<E> stream = stream()) {
+			stream.forEach(action);
+		}
 	}
 
 	/**
@@ -406,7 +371,7 @@ public interface Streamable<E> {
 	 * @return 流仅有一个元素返回true，否则false
 	 */
 	default boolean isUnique() {
-		return check((stream) -> {
+		try (Stream<E> stream = stream()) {
 			Iterator<E> iterator = stream.iterator();
 			if (!iterator.hasNext()) {
 				return false;
@@ -417,7 +382,7 @@ public interface Streamable<E> {
 				return false;
 			}
 			return true;
-		});
+		}
 	}
 
 	/**
@@ -476,7 +441,9 @@ public interface Streamable<E> {
 	 * @return 无匹配元素返回true，否则false；空流返回true
 	 */
 	default boolean noneMatch(@NonNull Predicate<? super E> predicate) {
-		return check((stream) -> stream.noneMatch(predicate));
+		try (Stream<E> stream = stream()) {
+			return stream.noneMatch(predicate);
+		}
 	}
 
 	/**
@@ -585,7 +552,6 @@ public interface Streamable<E> {
 
 	/**
 	 * 获取原始流（需手动关闭），核心抽象方法，所有流式操作的基础。
-	 * 注意：直接调用此方法需手动关闭流（try-finally），建议优先使用{@link #check(Predicate)}、{@link #extract(ThrowingFunction)}等封装方法。
 	 * 
 	 * @return 原始元素流，未关闭状态
 	 */

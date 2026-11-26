@@ -19,7 +19,7 @@ import run.soeasy.framework.core.type.InstanceFactorySupporteds;
 import run.soeasy.framework.core.type.ResolvableType;
 
 /**
- * 默认映射器，继承自{@link GenericMapper}，实现多接口整合的通用映射功能，
+ * 默认映射器，继承自{@link StructureMapper}，实现多接口整合的通用映射功能，
  * 支持类型转换、实例创建、映射创建等核心能力，是框架中最全面的映射实现。
  * <p>
  * 该映射器整合了以下核心组件：
@@ -57,14 +57,14 @@ import run.soeasy.framework.core.type.ResolvableType;
  * @param <T> 映射上下文的类型，需实现{@link Mapping}
  * 
  * @author soeasy.run
- * @see GenericMapper
+ * @see StructureMapper
  * @see Transformer
  * @see Converter
  * @see InstanceFactory
  */
 @Getter
 @Setter
-public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends GenericMapper<K, V, T>
+public class DefaultMapper<K, V extends TypedValueAccessor, T extends Mapping<K, V>> extends StructureMapper<K, V, T>
 		implements Transformer, Converter, InstanceFactory, MappingFactory<Object, K, V, T> {
 
 	/** 实例工厂，用于创建目标对象实例，默认使用反射实现 */
