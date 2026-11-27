@@ -15,7 +15,7 @@ public interface ListenableTrace<V> extends Trace<V>, Listenable<Trace<V>> {
 		return new MappedListenableTrace<>(this, mapper);
 	}
 
-	Signal registerSuccessListener(@NonNull Listener<Trace<V>> listener);
+	Signal onSuccess(@NonNull Listener<Trace<V>> listener);
 
-	Signal registerFailureListener(@NonNull Listener<Trace<V>> listener);
+	Signal onFailure(@NonNull Listener<Trace<V>> listener);
 }

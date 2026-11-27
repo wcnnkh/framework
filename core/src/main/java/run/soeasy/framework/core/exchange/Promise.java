@@ -108,7 +108,7 @@ public class Promise<V> extends CompletableFuture<V> implements ListenableTrace<
 	}
 
 	@Override
-	public Signal registerSuccessListener(Listener<Trace<V>> listener) {
+	public Signal onSuccess(Listener<Trace<V>> listener) {
 		if (isDone() && isSuccess()) {
 			return Signal.run(() -> listener.accept(this));
 		}
@@ -124,7 +124,7 @@ public class Promise<V> extends CompletableFuture<V> implements ListenableTrace<
 	}
 
 	@Override
-	public Signal registerFailureListener(Listener<Trace<V>> listener) {
+	public Signal onFailure(Listener<Trace<V>> listener) {
 		if (isDone() && !isSuccess()) {
 			return Signal.run(() -> listener.accept(this));
 		}

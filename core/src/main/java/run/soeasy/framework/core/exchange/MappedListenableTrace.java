@@ -17,13 +17,13 @@ class MappedListenableTrace<S, T, W extends ListenableTrace<S>> extends MappedTr
 	}
 
 	@Override
-	public Signal registerSuccessListener(Listener<Trace<T>> listener) {
-		return getSource().registerSuccessListener((e) -> e.map(getMapper()));
+	public Signal onSuccess(Listener<Trace<T>> listener) {
+		return getSource().onSuccess((e) -> e.map(getMapper()));
 	}
 
 	@Override
-	public Signal registerFailureListener(Listener<Trace<T>> listener) {
-		return getSource().registerFailureListener((e) -> e.map(getMapper()));
+	public Signal onFailure(Listener<Trace<T>> listener) {
+		return getSource().onFailure((e) -> e.map(getMapper()));
 	}
 
 	@Override
